@@ -17,7 +17,9 @@ describe('findUp', () => {
   });
 
   test('Starting at a specific path', () => {
-    expect(findUp('util.test.ts', path.join(__dirname, 'integ-handlers'))).toMatch(/aws-lambda-go-alpha\/test\/util.test.ts$/);
+    expect(findUp('util.test.ts', path.join(__dirname, 'integ-handlers'))).toMatch(
+      /aws-lambda-go-alpha\/test\/util.test.ts$/
+    );
   });
 
   test('Non existing file starting at a non existing relative path', () => {
@@ -40,17 +42,9 @@ describe('exec', () => {
       signal: null,
     });
 
-    const proc = exec(
-      'cmd',
-      ['arg1', 'arg2'],
-      { env: { KEY: 'value' } },
-    );
+    const proc = exec('cmd', ['arg1', 'arg2'], { env: { KEY: 'value' } });
 
-    expect(spawnSyncMock).toHaveBeenCalledWith(
-      'cmd',
-      ['arg1', 'arg2'],
-      { env: { KEY: 'value' } },
-    );
+    expect(spawnSyncMock).toHaveBeenCalledWith('cmd', ['arg1', 'arg2'], { env: { KEY: 'value' } });
     expect(proc.stdout.toString()).toBe('stdout');
 
     spawnSyncMock.mockRestore();

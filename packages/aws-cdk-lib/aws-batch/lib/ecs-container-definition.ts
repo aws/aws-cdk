@@ -603,8 +603,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.command = props.command;
     this.environment = props.environment;
     this.executionRole =
-      props.executionRole ??
-      createExecutionRole(this, 'ExecutionRole', props.logging ? true : false);
+      props.executionRole ?? createExecutionRole(this, 'ExecutionRole', props.logging ? true : false);
     this.jobRole = props.jobRole;
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
@@ -696,11 +695,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
                     volume.accessPointId || volume.useJobRole
                       ? {
                           accessPointId: volume.accessPointId,
-                          iam: volume.useJobRole
-                            ? 'ENABLED'
-                            : volume.useJobRole === false
-                              ? 'DISABLED'
-                              : undefined,
+                          iam: volume.useJobRole ? 'ENABLED' : volume.useJobRole === false ? 'DISABLED' : undefined,
                         }
                       : undefined,
                 },
@@ -911,10 +906,7 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
 /**
  * A container orchestrated by ECS that uses EC2 resources
  */
-export class EcsEc2ContainerDefinition
-  extends EcsContainerDefinitionBase
-  implements IEcsEc2ContainerDefinition
-{
+export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implements IEcsEc2ContainerDefinition {
   public readonly privileged?: boolean;
   public readonly ulimits: Ulimit[];
   public readonly gpu?: number;

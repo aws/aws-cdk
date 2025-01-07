@@ -7,9 +7,7 @@ const ALLOWED_METHODS = ['ANY', ...ALL_METHODS];
 
 export function validateHttpMethod(method: string, messagePrefix: string = '') {
   if (!ALLOWED_METHODS.includes(method)) {
-    throw new Error(
-      `${messagePrefix}Invalid HTTP method "${method}". Allowed methods: ${ALLOWED_METHODS.join(',')}`
-    );
+    throw new Error(`${messagePrefix}Invalid HTTP method "${method}". Allowed methods: ${ALLOWED_METHODS.join(',')}`);
   }
 }
 
@@ -59,9 +57,7 @@ export function parseAwsApiCall(
   }
 
   if (path && action) {
-    throw new Error(
-      `"path" and "action" are mutually exclusive (path="${path}", action="${action}")`
-    );
+    throw new Error(`"path" and "action" are mutually exclusive (path="${path}", action="${action}")`);
   }
 
   if (path) {

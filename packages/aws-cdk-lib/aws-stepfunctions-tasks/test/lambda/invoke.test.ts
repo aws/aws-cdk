@@ -7,7 +7,6 @@ import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 /* eslint-disable quote-props */
 
 describe('LambdaInvoke', () => {
-
   let stack: Stack;
   let lambdaFunction: lambda.Function;
 
@@ -45,10 +44,7 @@ describe('LambdaInvoke', () => {
       },
       Parameters: {
         FunctionName: {
-          'Fn::GetAtt': [
-            'Fn9270CBC0',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
         },
         'Payload.$': '$',
       },
@@ -81,36 +77,35 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::lambda:invoke',
-          ],
-        ],
-      },
-      End: true,
-      Parameters: {
-        FunctionName: {
-          'Fn::GetAtt': [
-            'Fn9270CBC0',
-            'Arn',
+    expect(stack.resolve(task.toStateJson())).toEqual(
+      expect.objectContaining({
+        Type: 'Task',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':states:::lambda:invoke',
+            ],
           ],
         },
-        Payload: {
-          foo: 'bar',
+        End: true,
+        Parameters: {
+          FunctionName: {
+            'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
+          },
+          Payload: {
+            foo: 'bar',
+          },
+          InvocationType: 'RequestResponse',
+          ClientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
+          Qualifier: '1',
         },
-        InvocationType: 'RequestResponse',
-        ClientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
-        Qualifier: '1',
-      },
-    }));
+      })
+    );
   });
 
   test('resultSelector', () => {
@@ -123,47 +118,46 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::lambda:invoke',
+    expect(stack.resolve(task.toStateJson())).toEqual(
+      expect.objectContaining({
+        Type: 'Task',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':states:::lambda:invoke',
+            ],
           ],
+        },
+        End: true,
+        Parameters: {
+          FunctionName: {
+            'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
+          },
+          'Payload.$': '$',
+        },
+        ResultSelector: {
+          'Result.$': '$.output.Payload',
+        },
+        Retry: [
+          {
+            ErrorEquals: [
+              'Lambda.ClientExecutionTimeoutException',
+              'Lambda.ServiceException',
+              'Lambda.AWSLambdaException',
+              'Lambda.SdkClientException',
+            ],
+            IntervalSeconds: 2,
+            MaxAttempts: 6,
+            BackoffRate: 2,
+          },
         ],
-      },
-      End: true,
-      Parameters: {
-        FunctionName: {
-          'Fn::GetAtt': [
-            'Fn9270CBC0',
-            'Arn',
-          ],
-        },
-        'Payload.$': '$',
-      },
-      ResultSelector: {
-        'Result.$': '$.output.Payload',
-      },
-      Retry: [
-        {
-          ErrorEquals: [
-            'Lambda.ClientExecutionTimeoutException',
-            'Lambda.ServiceException',
-            'Lambda.AWSLambdaException',
-            'Lambda.SdkClientException',
-          ],
-          IntervalSeconds: 2,
-          MaxAttempts: 6,
-          BackoffRate: 2,
-        },
-      ],
-    }));
+      })
+    );
   });
 
   testDeprecated('invoke Lambda function and wait for task token', () => {
@@ -178,34 +172,33 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::lambda:invoke.waitForTaskToken',
-          ],
-        ],
-      },
-      End: true,
-      Parameters: {
-        FunctionName: {
-          'Fn::GetAtt': [
-            'Fn9270CBC0',
-            'Arn',
+    expect(stack.resolve(task.toStateJson())).toEqual(
+      expect.objectContaining({
+        Type: 'Task',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':states:::lambda:invoke.waitForTaskToken',
+            ],
           ],
         },
-        Payload: {
-          'token.$': '$$.Task.Token',
+        End: true,
+        Parameters: {
+          FunctionName: {
+            'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
+          },
+          Payload: {
+            'token.$': '$$.Task.Token',
+          },
+          Qualifier: 'my-alias',
         },
-        Qualifier: 'my-alias',
-      },
-    }));
+      })
+    );
   });
 
   test('pass part of state input as input to Lambda function ', () => {
@@ -216,31 +209,30 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::lambda:invoke',
-          ],
-        ],
-      },
-      End: true,
-      Parameters: {
-        'FunctionName': {
-          'Fn::GetAtt': [
-            'Fn9270CBC0',
-            'Arn',
+    expect(stack.resolve(task.toStateJson())).toEqual(
+      expect.objectContaining({
+        Type: 'Task',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':states:::lambda:invoke',
+            ],
           ],
         },
-        'Payload.$': '$.foo',
-      },
-    }));
+        End: true,
+        Parameters: {
+          FunctionName: {
+            'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
+          },
+          'Payload.$': '$.foo',
+        },
+      })
+    );
   });
 
   test('Invoke lambda with payloadResponseOnly', () => {
@@ -251,16 +243,15 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
-      End: true,
-      Type: 'Task',
-      Resource: {
-        'Fn::GetAtt': [
-          'Fn9270CBC0',
-          'Arn',
-        ],
-      },
-    }));
+    expect(stack.resolve(task.toStateJson())).toEqual(
+      expect.objectContaining({
+        End: true,
+        Type: 'Task',
+        Resource: {
+          'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
+        },
+      })
+    );
   });
 
   test('Invoke lambda with payloadResponseOnly with payload', () => {
@@ -274,19 +265,18 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
-      End: true,
-      Type: 'Task',
-      Resource: {
-        'Fn::GetAtt': [
-          'Fn9270CBC0',
-          'Arn',
-        ],
-      },
-      Parameters: {
-        foo: 'bar',
-      },
-    }));
+    expect(stack.resolve(task.toStateJson())).toEqual(
+      expect.objectContaining({
+        End: true,
+        Type: 'Task',
+        Resource: {
+          'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
+        },
+        Parameters: {
+          foo: 'bar',
+        },
+      })
+    );
   });
 
   test('with retryOnServiceExceptions set to false', () => {
@@ -314,10 +304,7 @@ describe('LambdaInvoke', () => {
       },
       Parameters: {
         FunctionName: {
-          'Fn::GetAtt': [
-            'Fn9270CBC0',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
         },
         'Payload.$': '$',
       },
@@ -334,7 +321,9 @@ describe('LambdaInvoke', () => {
           token: sfn.JsonPath.taskToken,
         }),
       });
-    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
+    }).toThrow(
+      /The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./
+    );
   });
 
   test('fails when invocationType used with payloadResponseOnly', () => {
@@ -347,7 +336,9 @@ describe('LambdaInvoke', () => {
         }),
         invocationType: LambdaInvocationType.REQUEST_RESPONSE,
       });
-    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
+    }).toThrow(
+      /The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./
+    );
   });
 
   test('fails when clientContext used with payloadResponseOnly', () => {
@@ -360,7 +351,9 @@ describe('LambdaInvoke', () => {
         }),
         clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
       });
-    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
+    }).toThrow(
+      /The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./
+    );
   });
 
   testDeprecated('fails when qualifier used with payloadResponseOnly', () => {
@@ -373,7 +366,9 @@ describe('LambdaInvoke', () => {
         }),
         qualifier: '1',
       });
-    }).toThrow(/The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./);
+    }).toThrow(
+      /The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified./
+    );
   });
 
   test('fails when WAIT_FOR_TASK_TOKEN integration pattern is used without supplying a task token in payload', () => {
@@ -391,6 +386,8 @@ describe('LambdaInvoke', () => {
         lambdaFunction,
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
       });
-    }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/);
+    }).toThrow(
+      /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/
+    );
   });
 });

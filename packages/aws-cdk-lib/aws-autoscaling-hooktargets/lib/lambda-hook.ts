@@ -26,10 +26,7 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
    * If the `IRole` does not exist in `options`, will create an `IRole` and an SNS Topic and attach both to the lifecycle hook.
    * If the `IRole` does exist in `options`, will only create an SNS Topic and attach it to the lifecycle hook.
    */
-  public bind(
-    _scope: Construct,
-    options: autoscaling.BindHookTargetOptions
-  ): autoscaling.LifecycleHookTargetConfig {
+  public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
     const topic = new sns.Topic(_scope, 'Topic', {
       masterKey: this.encryptionKey,
     });

@@ -2,7 +2,7 @@ import { IntrinsicParser } from '../../lib/private/intrinstics';
 
 test('parse JSON path', () => {
   expect(parse('$.Path')).toEqual({ type: 'path', path: '$.Path' });
-  expect(parse('$[\'complex\'].Path')).toEqual({ type: 'path', path: '$[\'complex\'].Path' });
+  expect(parse("$['complex'].Path")).toEqual({ type: 'path', path: "$['complex'].Path" });
 
   // Can add whitespace
   expect(parse(' $.Path')).toEqual({ type: 'path', path: '$.Path' });
@@ -14,7 +14,10 @@ test('JSON path with quoted literal', () => {
 });
 
 test('Complex JSON path between square brackets', () => {
-  expect(parse("$[?('Eva Green' in @['starring'])]")).toEqual({ type: 'path', path: "$[?('Eva Green' in @['starring'])]" });
+  expect(parse("$[?('Eva Green' in @['starring'])]")).toEqual({
+    type: 'path',
+    path: "$[?('Eva Green' in @['starring'])]",
+  });
 });
 
 test('JSON path must be contiguous', () => {
@@ -25,10 +28,12 @@ test('parse fncall with path', () => {
   expect(parse('States.Array($$.Context.Token)')).toEqual({
     type: 'fncall',
     functionName: 'States.Array',
-    arguments: [{
-      type: 'path',
-      path: '$$.Context.Token',
-    }],
+    arguments: [
+      {
+        type: 'path',
+        path: '$$.Context.Token',
+      },
+    ],
   });
 });
 

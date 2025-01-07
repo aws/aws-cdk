@@ -52,10 +52,7 @@ const MAX_LEN = 256;
 
 const HASH_LEN = 8;
 
-export function makeUniqueResourceName(
-  components: string[],
-  options: MakeUniqueResourceNameOptions
-) {
+export function makeUniqueResourceName(components: string[], options: MakeUniqueResourceNameOptions) {
   const maxLength = options.maxLength ?? 256;
   const separator = options.separator ?? '';
   const prefix = options.prefix ?? '';
@@ -70,8 +67,7 @@ export function makeUniqueResourceName(
   // need to rename all resources.
   if (components.length === 1) {
     const topLevelResource =
-      prefix +
-      removeNonAllowedSpecialCharacters(components[0], separator, options.allowedSpecialCharacters);
+      prefix + removeNonAllowedSpecialCharacters(components[0], separator, options.allowedSpecialCharacters);
 
     if (topLevelResource.length <= maxLength) {
       return topLevelResource;
@@ -84,17 +80,13 @@ export function makeUniqueResourceName(
     prefix +
     removeDupes(components)
       .filter((pathElement) => pathElement !== HIDDEN_FROM_HUMAN_ID)
-      .map((pathElement) =>
-        removeNonAllowedSpecialCharacters(pathElement, separator, options.allowedSpecialCharacters)
-      )
+      .map((pathElement) => removeNonAllowedSpecialCharacters(pathElement, separator, options.allowedSpecialCharacters))
       .filter((pathElement) => pathElement)
       .join(separator)
       .concat(separator);
 
   const maxhumanLength = maxLength - HASH_LEN;
-  return human.length > maxhumanLength
-    ? `${splitInMiddle(human, maxhumanLength)}${hash}`
-    : `${human}${hash}`;
+  return human.length > maxhumanLength ? `${splitInMiddle(human, maxhumanLength)}${hash}` : `${human}${hash}`;
 }
 
 /**
@@ -110,14 +102,8 @@ function pathHash(path: string[]): string {
 /**
  * Removes all non-allowed special characters in a string.
  */
-function removeNonAllowedSpecialCharacters(
-  s: string,
-  _separator: string,
-  allowedSpecialCharacters?: string
-) {
-  const pattern = allowedSpecialCharacters
-    ? `[^A-Za-z0-9${allowedSpecialCharacters}]`
-    : '[^A-Za-z0-9]';
+function removeNonAllowedSpecialCharacters(s: string, _separator: string, allowedSpecialCharacters?: string) {
+  const pattern = allowedSpecialCharacters ? `[^A-Za-z0-9${allowedSpecialCharacters}]` : '[^A-Za-z0-9]';
   const regex = new RegExp(pattern, 'g');
   return s.replace(regex, '');
 }

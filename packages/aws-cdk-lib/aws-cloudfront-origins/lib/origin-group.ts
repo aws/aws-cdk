@@ -31,15 +31,10 @@ export interface OriginGroupProps {
 export class OriginGroup implements cloudfront.IOrigin {
   public constructor(private readonly props: OriginGroupProps) {}
 
-  public bind(
-    scope: Construct,
-    options: cloudfront.OriginBindOptions
-  ): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     const primaryOriginConfig = this.props.primaryOrigin.bind(scope, options);
     if (primaryOriginConfig.failoverConfig) {
-      throw new Error(
-        'An OriginGroup cannot use an Origin with its own failover configuration as its primary origin!'
-      );
+      throw new Error('An OriginGroup cannot use an Origin with its own failover configuration as its primary origin!');
     }
 
     return {

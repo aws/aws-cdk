@@ -101,9 +101,11 @@ describeDeprecated('RunGlueJobTask', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [Match.objectLike({
-          Action: 'glue:StartJobRun',
-        })],
+        Statement: [
+          Match.objectLike({
+            Action: 'glue:StartJobRun',
+          }),
+        ],
       },
     });
   });
@@ -120,14 +122,11 @@ describeDeprecated('RunGlueJobTask', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [Match.objectLike({
-          Action: [
-            'glue:StartJobRun',
-            'glue:GetJobRun',
-            'glue:GetJobRuns',
-            'glue:BatchStopJobRun',
-          ],
-        })],
+        Statement: [
+          Match.objectLike({
+            Action: ['glue:StartJobRun', 'glue:GetJobRun', 'glue:GetJobRuns', 'glue:BatchStopJobRun'],
+          }),
+        ],
       },
     });
   });

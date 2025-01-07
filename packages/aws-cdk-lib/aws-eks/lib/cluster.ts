@@ -2,13 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
-import {
-  IAccessPolicy,
-  IAccessEntry,
-  AccessEntry,
-  AccessPolicy,
-  AccessScopeType,
-} from './access-entry';
+import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
@@ -257,11 +251,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param chart the cdk8s chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  addCdk8sChart(
-    id: string,
-    chart: Construct,
-    options?: KubernetesManifestOptions
-  ): KubernetesManifest;
+  addCdk8sChart(id: string, chart: Construct, options?: KubernetesManifestOptions): KubernetesManifest;
 
   /**
    * Connect capacity in the form of an existing AutoScalingGroup to the EKS cluster.
@@ -1160,18 +1150,12 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param chart the cdk8s chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  public addCdk8sChart(
-    id: string,
-    chart: Construct,
-    options: KubernetesManifestOptions = {}
-  ): KubernetesManifest {
+  public addCdk8sChart(id: string, chart: Construct, options: KubernetesManifestOptions = {}): KubernetesManifest {
     const cdk8sChart = chart as any;
 
     // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
     if (typeof cdk8sChart.toJson !== 'function') {
-      throw new Error(
-        `Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`
-      );
+      throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
     }
 
     const manifest = new KubernetesManifest(this, id, {
@@ -1267,12 +1251,8 @@ abstract class ClusterBase extends Resource implements ICluster {
       autoScalingGroup.addUserData(...userData);
     }
 
-    autoScalingGroup.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy')
-    );
-    autoScalingGroup.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy')
-    );
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
     autoScalingGroup.role.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly')
     );
@@ -1363,11 +1343,7 @@ export class Cluster extends ClusterBase {
    * @param id the id or name to import as
    * @param attrs the cluster properties to use for importing information
    */
-  public static fromClusterAttributes(
-    scope: Construct,
-    id: string,
-    attrs: ClusterAttributes
-  ): ICluster {
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
   }
 
@@ -1638,9 +1614,7 @@ export class Cluster extends ClusterBase {
       ? props.kubectlLambdaRole
       : new iam.Role(this, 'KubectlHandlerRole', {
           assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-          managedPolicies: [
-            iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-          ],
+          managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
         });
 
     this.tagSubnets();
@@ -1665,13 +1639,8 @@ export class Cluster extends ClusterBase {
       { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     ];
 
-    const selectedSubnetIdsPerGroup = this.vpcSubnets.map(
-      (s) => this.vpc.selectSubnets(s).subnetIds
-    );
-    if (
-      selectedSubnetIdsPerGroup.some(Token.isUnresolved) &&
-      selectedSubnetIdsPerGroup.length > 1
-    ) {
+    const selectedSubnetIdsPerGroup = this.vpcSubnets.map((s) => this.vpc.selectSubnets(s).subnetIds);
+    if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
       throw new Error(
         'eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.'
       );
@@ -1722,15 +1691,11 @@ export class Cluster extends ClusterBase {
     const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
 
     if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
-      throw new Error(
-        'Cannot place cluster handler in the VPC since no private subnets could be selected'
-      );
+      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
     }
 
     if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {
-      throw new Error(
-        'Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true'
-      );
+      throw new Error('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true');
     }
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
@@ -1785,10 +1750,7 @@ export class Cluster extends ClusterBase {
       // the provider to the vpc so that it will work even when restricting public access.
 
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
-      if (
-        this.vpc instanceof ec2.Vpc &&
-        !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)
-      ) {
+      if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
         throw new Error(
           'Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.'
         );
@@ -1816,10 +1778,7 @@ export class Cluster extends ClusterBase {
     this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
 
     this.clusterName = this.getResourceNameAttribute(resource.ref);
-    this.clusterArn = this.getResourceArnAttribute(
-      resource.attrArn,
-      clusterArnComponents(this.physicalName)
-    );
+    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
@@ -1946,22 +1905,15 @@ export class Cluster extends ClusterBase {
    * @param serviceName The name of the service.
    * @param options Additional operation options.
    */
-  public getServiceLoadBalancerAddress(
-    serviceName: string,
-    options: ServiceLoadBalancerAddressOptions = {}
-  ): string {
-    const loadBalancerAddress = new KubernetesObjectValue(
-      this,
-      `${serviceName}LoadBalancerAddress`,
-      {
-        cluster: this,
-        objectType: 'service',
-        objectName: serviceName,
-        objectNamespace: options.namespace,
-        jsonPath: '.status.loadBalancer.ingress[0].hostname',
-        timeout: options.timeout,
-      }
-    );
+  public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
+    const loadBalancerAddress = new KubernetesObjectValue(this, `${serviceName}LoadBalancerAddress`, {
+      cluster: this,
+      objectType: 'service',
+      objectName: serviceName,
+      objectNamespace: options.namespace,
+      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      timeout: options.timeout,
+    });
 
     return loadBalancerAddress.value;
   }
@@ -1972,22 +1924,15 @@ export class Cluster extends ClusterBase {
    * @param ingressName The name of the ingress.
    * @param options Additional operation options.
    */
-  public getIngressLoadBalancerAddress(
-    ingressName: string,
-    options: IngressLoadBalancerAddressOptions = {}
-  ): string {
-    const loadBalancerAddress = new KubernetesObjectValue(
-      this,
-      `${ingressName}LoadBalancerAddress`,
-      {
-        cluster: this,
-        objectType: 'ingress',
-        objectName: ingressName,
-        objectNamespace: options.namespace,
-        jsonPath: '.status.loadBalancer.ingress[0].hostname',
-        timeout: options.timeout,
-      }
-    );
+  public getIngressLoadBalancerAddress(ingressName: string, options: IngressLoadBalancerAddressOptions = {}): string {
+    const loadBalancerAddress = new KubernetesObjectValue(this, `${ingressName}LoadBalancerAddress`, {
+      cluster: this,
+      objectType: 'ingress',
+      objectName: ingressName,
+      objectNamespace: options.namespace,
+      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      timeout: options.timeout,
+    });
 
     return loadBalancerAddress.value;
   }
@@ -2011,10 +1956,7 @@ export class Cluster extends ClusterBase {
     id: string,
     options: AutoScalingGroupCapacityOptions
   ): autoscaling.AutoScalingGroup {
-    if (
-      options.machineImageType === MachineImageType.BOTTLEROCKET &&
-      options.bootstrapOptions !== undefined
-    ) {
+    if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
       throw new Error('bootstrapOptions is not supported for Bottlerocket');
     }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
@@ -2060,14 +2002,9 @@ export class Cluster extends ClusterBase {
    * @param options options for creating a new nodegroup
    */
   public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
-    const hasInferentiaOrTrainiumInstanceType = [
-      options?.instanceType,
-      ...(options?.instanceTypes ?? []),
-    ].some(
+    const hasInferentiaOrTrainiumInstanceType = [options?.instanceType, ...(options?.instanceTypes ?? [])].some(
       (i) =>
-        i &&
-        (nodeTypeForInstanceType(i) === NodeType.INFERENTIA ||
-          nodeTypeForInstanceType(i) === NodeType.TRAINIUM)
+        i && (nodeTypeForInstanceType(i) === NodeType.INFERENTIA || nodeTypeForInstanceType(i) === NodeType.TRAINIUM)
     );
 
     if (hasInferentiaOrTrainiumInstanceType) {
@@ -2269,10 +2206,7 @@ export class Cluster extends ClusterBase {
    */
   private addNeuronDevicePlugin() {
     if (!this._neuronDevicePlugin) {
-      const fileContents = fs.readFileSync(
-        path.join(__dirname, 'addons', 'neuron-device-plugin.yaml'),
-        'utf8'
-      );
+      const fileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
       this._neuronDevicePlugin = this.addManifest('NeuronDevicePlugin', sanitized);
     }
@@ -2295,9 +2229,7 @@ export class Cluster extends ClusterBase {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID =
-            Token.isUnresolved(subnet.subnetId) || Token.isUnresolved([subnet.subnetId])
-              ? ''
-              : ` ${subnet.subnetId}`;
+            Token.isUnresolved(subnet.subnetId) || Token.isUnresolved([subnet.subnetId]) ? '' : ` ${subnet.subnetId}`;
           Annotations.of(this).addWarningV2(
             '@aws-cdk/aws-eks:clusterMustManuallyTagSubnet',
             `Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`
@@ -2555,11 +2487,7 @@ class ImportedCluster extends ClusterBase {
       : undefined;
     this.kubectlLambdaRole = props.kubectlLambdaRole;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId
-      ? ec2.SecurityGroup.fromSecurityGroupId(
-          this,
-          'KubectlSecurityGroup',
-          props.kubectlSecurityGroupId
-        )
+      ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId)
       : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds
@@ -2572,11 +2500,7 @@ class ImportedCluster extends ClusterBase {
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId
-      ? ec2.SecurityGroup.fromSecurityGroupId(
-          this,
-          'ClusterHandlerSecurityGroup',
-          props.clusterHandlerSecurityGroupId
-        )
+      ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId)
       : undefined;
     this.kubectlProvider = props.kubectlProvider;
     this.onEventLayer = props.onEventLayer;
@@ -2584,9 +2508,7 @@ class ImportedCluster extends ClusterBase {
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
-      this.connections.addSecurityGroup(
-        ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid)
-      );
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
     }
 

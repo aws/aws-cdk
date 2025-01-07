@@ -52,8 +52,7 @@ const CASES: Case[] = [
   //////////////////////////////////////////////////////////////////////
   {
     name: 'Match.objectEquals with missing key',
-    target: {
-    },
+    target: {},
     matcher: Match.objectEquals({
       Value: 'Value',
     }),
@@ -117,9 +116,7 @@ const CASES: Case[] = [
       ],
     },
     matcher: Match.objectLike({
-      List: Match.arrayWith([
-        Match.objectLike({ Value: '5' }),
-      ]),
+      List: Match.arrayWith([Match.objectLike({ Value: '5' })]),
     }),
   },
   //////////////////////////////////////////////////////////////////////
@@ -135,10 +132,7 @@ const CASES: Case[] = [
       ],
     },
     matcher: Match.objectLike({
-      List: Match.arrayWith([
-        Match.objectLike({ Value: '2' }),
-        Match.objectLike({ Value: '5' }),
-      ]),
+      List: Match.arrayWith([Match.objectLike({ Value: '2' }), Match.objectLike({ Value: '5' })]),
     }),
   },
   //////////////////////////////////////////////////////////////////////
@@ -149,7 +143,7 @@ const CASES: Case[] = [
   },
 ];
 
-CASES.forEach(c => {
+CASES.forEach((c) => {
   test(c.name, () => {
     const result = c.matcher.test(c.target);
     expect(`${c.note ?? ''}\n${result.renderMismatch()}`).toMatchSnapshot();

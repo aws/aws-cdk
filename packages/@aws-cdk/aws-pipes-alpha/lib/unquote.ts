@@ -25,10 +25,8 @@ const removeQuotes = (match: string): string => match.replace(/^"|"$/g, '');
 const removeQuotesFromVariables = (stringWithQuotes: string, replacer: (match: string) => string) =>
   stringWithQuotes.replace(pipeVariableRegex, replacer);
 
-const removeQuotesFromEventPathExpression = (
-  stringWithQuotes: string,
-  replacer: (match: string) => string
-) => stringWithQuotes.replace(eventPathRegex, replacer);
+const removeQuotesFromEventPathExpression = (stringWithQuotes: string, replacer: (match: string) => string) =>
+  stringWithQuotes.replace(eventPathRegex, replacer);
 
 /**
  * Removes the quotes from PipeVariables and EventPathExpressions
@@ -37,9 +35,6 @@ const removeQuotesFromEventPathExpression = (
  */
 export const unquote = (stringWithQuotes: string) => {
   const stringWithoutVariablesQuotes = removeQuotesFromVariables(stringWithQuotes, removeQuotes);
-  const stringWithoutEventPathQuotes = removeQuotesFromEventPathExpression(
-    stringWithoutVariablesQuotes,
-    removeQuotes
-  );
+  const stringWithoutEventPathQuotes = removeQuotesFromEventPathExpression(stringWithoutVariablesQuotes, removeQuotes);
   return stringWithoutEventPathQuotes;
 };

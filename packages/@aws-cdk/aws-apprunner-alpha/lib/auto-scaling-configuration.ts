@@ -116,11 +116,7 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   /**
    * Imports an App Runner Auto Scaling Configuration from its ARN
    */
-  public static fromArn(
-    scope: Construct,
-    id: string,
-    autoScalingConfigurationArn: string
-  ): IAutoScalingConfiguration {
+  public static fromArn(scope: Construct, id: string, autoScalingConfigurationArn: string): IAutoScalingConfiguration {
     const resourceParts = cdk.Fn.split('/', autoScalingConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
@@ -181,10 +177,7 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
       props.autoScalingConfigurationName !== undefined &&
       !cdk.Token.isUnresolved(props.autoScalingConfigurationName)
     ) {
-      if (
-        props.autoScalingConfigurationName.length < 4 ||
-        props.autoScalingConfigurationName.length > 32
-      ) {
+      if (props.autoScalingConfigurationName.length < 4 || props.autoScalingConfigurationName.length > 32) {
         throw new Error(
           `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${props.autoScalingConfigurationName.length} characters.`
         );

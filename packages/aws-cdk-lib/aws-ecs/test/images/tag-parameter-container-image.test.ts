@@ -65,28 +65,22 @@ describe('tag parameter container image', () => {
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::ECR::Repository', {
         RepositoryName: repositoryName,
         RepositoryPolicyText: {
-          Statement: [{
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':iam::service-account:root',
-                ]],
+          Statement: [
+            {
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::service-account:root']],
+                },
+              },
+              Condition: {
+                StringEquals: {
+                  'aws:PrincipalTag/aws-cdk:id': 'ServiceStack_c8a38b9d3ed0e8d960dd0d679c0bab1612dafa96f5',
+                },
               },
             },
-            Condition: {
-              StringEquals: {
-                'aws:PrincipalTag/aws-cdk:id': 'ServiceStack_c8a38b9d3ed0e8d960dd0d679c0bab1612dafa96f5',
-              },
-            },
-          }],
+          ],
         },
       });
 
@@ -94,18 +88,13 @@ describe('tag parameter container image', () => {
         PolicyDocument: Match.objectLike({
           Statement: Match.arrayWith([
             Match.objectLike({
-              Action: [
-                'ecr:BatchCheckLayerAvailability',
-                'ecr:GetDownloadUrlForLayer',
-                'ecr:BatchGetImage',
-              ],
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
               Effect: 'Allow',
               Resource: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  `:ecr:us-west-1:pipeline-account:repository/${repositoryName}`,
-                ]],
+                'Fn::Join': [
+                  '',
+                  ['arn:', { Ref: 'AWS::Partition' }, `:ecr:us-west-1:pipeline-account:repository/${repositoryName}`],
+                ],
               },
             }),
             Match.objectLike({

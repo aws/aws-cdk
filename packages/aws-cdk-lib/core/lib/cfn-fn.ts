@@ -128,11 +128,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
-    if (
-      !Token.isUnresolved(index) &&
-      !Token.isUnresolved(array) &&
-      !array.some(Token.isUnresolved)
-    ) {
+    if (!Token.isUnresolved(index) && !Token.isUnresolved(array) && !array.some(Token.isUnresolved)) {
       return array[index];
     }
 
@@ -230,11 +226,7 @@ export class Fn {
    * `Fn.split(',', Fn.importValue(exportName), assumedLength)`,
    * but easier to read and impossible to forget to pass `assumedLength`.
    */
-  public static importListValue(
-    sharedValueToImport: string,
-    assumedLength: number,
-    delimiter = ','
-  ): string[] {
+  public static importListValue(sharedValueToImport: string, assumedLength: number, delimiter = ','): string[] {
     return Fn.split(delimiter, Fn.importValue(sharedValueToImport), assumedLength);
   }
 
@@ -245,12 +237,7 @@ export class Fn {
    * Prefer to use `CfnMapping.findInMap` in general.
    * @returns a token represented as a string
    */
-  public static findInMap(
-    mapName: string,
-    topLevelKey: string,
-    secondLevelKey: string,
-    defaultValue?: string
-  ): string {
+  public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string, defaultValue?: string): string {
     return Fn._findInMap(mapName, topLevelKey, secondLevelKey, defaultValue).toString();
   }
 
@@ -288,9 +275,7 @@ export class Fn {
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
-  public static conditionAnd(
-    ...conditions: ICfnConditionExpression[]
-  ): ICfnRuleConditionExpression {
+  public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
       throw new Error('Fn.conditionAnd() needs at least one argument');
     }
@@ -300,9 +285,7 @@ export class Fn {
     if (conditions.length <= 10) {
       return new FnAnd(...conditions);
     }
-    return Fn.conditionAnd(
-      ..._inGroupsOf(conditions, 10).map((group) => Fn.conditionAnd(...group))
-    );
+    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map((group) => Fn.conditionAnd(...group)));
   }
 
   /**
@@ -331,11 +314,7 @@ export class Fn {
    * evaluates to false.
    * @returns an FnCondition token
    */
-  public static conditionIf(
-    conditionId: string,
-    valueIfTrue: any,
-    valueIfFalse: any
-  ): ICfnRuleConditionExpression {
+  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): ICfnRuleConditionExpression {
     return new FnIf(conditionId, valueIfTrue, valueIfFalse);
   }
 
@@ -378,10 +357,7 @@ export class Fn {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    * @returns an FnCondition token
    */
-  public static conditionContains(
-    listOfStrings: string[],
-    value: string
-  ): ICfnRuleConditionExpression {
+  public static conditionContains(listOfStrings: string[], value: string): ICfnRuleConditionExpression {
     return new FnContains(listOfStrings, value);
   }
 
@@ -392,10 +368,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public static conditionEachMemberEquals(
-    listOfStrings: string[],
-    value: string
-  ): ICfnRuleConditionExpression {
+  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnRuleConditionExpression {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -410,10 +383,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public static conditionEachMemberIn(
-    stringsToCheck: string[],
-    stringsToMatch: string[]
-  ): ICfnRuleConditionExpression {
+  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnRuleConditionExpression {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -715,9 +685,7 @@ class FnCidr extends FnBase {
    */
   constructor(ipBlock: any, count: any, sizeMask?: any) {
     if (count < 1 || count > 256) {
-      throw new Error(
-        `Fn::Cidr's count attribute must be between 1 and 256, ${count} was provided.`
-      );
+      throw new Error(`Fn::Cidr's count attribute must be between 1 and 256, ${count} was provided.`);
     }
     super('Fn::Cidr', [ipBlock, count, sizeMask]);
   }
@@ -943,9 +911,7 @@ class FnJoin implements IResolvable {
    * generate shorter output.
    */
   private resolveValues(context: IResolveContext) {
-    const resolvedValues = this.listOfValues.map((x) =>
-      Reference.isReference(x) ? x : context.resolve(x)
-    );
+    const resolvedValues = this.listOfValues.map((x) => (Reference.isReference(x) ? x : context.resolve(x)));
     return minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }

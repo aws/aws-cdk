@@ -32,10 +32,13 @@ test('creates a route calculator with empty description', () => {
 });
 
 test('throws with invalid description', () => {
-  expect(() => new RouteCalculator(stack, 'RouteCalculator', {
-    description: 'a'.repeat(1001),
-    dataSource: DataSource.ESRI,
-  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+  expect(
+    () =>
+      new RouteCalculator(stack, 'RouteCalculator', {
+        description: 'a'.repeat(1001),
+        dataSource: DataSource.ESRI,
+      })
+  ).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
 test('create a route calculator with name', () => {
@@ -51,17 +54,27 @@ test('create a route calculator with name', () => {
 });
 
 test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (routeCalculatorName) => {
-  expect(() => new RouteCalculator(stack, 'RouteCalculator', {
-    routeCalculatorName,
-    dataSource: DataSource.ESRI,
-  })).toThrow(`\`routeCalculatorName\` must be between 1 and 100 characters, got: ${routeCalculatorName.length} characters.`);
+  expect(
+    () =>
+      new RouteCalculator(stack, 'RouteCalculator', {
+        routeCalculatorName,
+        dataSource: DataSource.ESRI,
+      })
+  ).toThrow(
+    `\`routeCalculatorName\` must be between 1 and 100 characters, got: ${routeCalculatorName.length} characters.`
+  );
 });
 
 test('throws with invalid name', () => {
-  expect(() => new RouteCalculator(stack, 'RouteCalculator', {
-    routeCalculatorName: 'inv@lid',
-    dataSource: DataSource.ESRI,
-  })).toThrow('`routeCalculatorName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
+  expect(
+    () =>
+      new RouteCalculator(stack, 'RouteCalculator', {
+        routeCalculatorName: 'inv@lid',
+        dataSource: DataSource.ESRI,
+      })
+  ).toThrow(
+    '`routeCalculatorName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.'
+  );
 });
 
 test('grant read actions', () => {
@@ -75,22 +88,22 @@ test('grant read actions', () => {
 
   routeCalculator.grantRead(role);
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
-    PolicyDocument: Match.objectLike({
-      Statement: [
-        {
-          Action: 'geo:CalculateRoute',
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'RouteCalculator0F2D109D',
-              'Arn',
-            ],
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::IAM::Policy',
+    Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: 'geo:CalculateRoute',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['RouteCalculator0F2D109D', 'Arn'],
+            },
           },
-        },
-      ],
-    }),
-  }));
+        ],
+      }),
+    })
+  );
 });
 
 test('import from arn', () => {
@@ -113,9 +126,11 @@ test('import from name', () => {
 
   // THEN
   expect(routeCalculator.routeCalculatorName).toEqual(routeCalculatorName);
-  expect(routeCalculator.routeCalculatorArn).toEqual(stack.formatArn({
-    service: 'geo',
-    resource: 'route-calculator',
-    resourceName: 'MyRouteCalculator',
-  }));
+  expect(routeCalculator.routeCalculatorArn).toEqual(
+    stack.formatArn({
+      service: 'geo',
+      resource: 'route-calculator',
+      resourceName: 'MyRouteCalculator',
+    })
+  );
 });

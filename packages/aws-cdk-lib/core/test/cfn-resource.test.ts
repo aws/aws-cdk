@@ -59,8 +59,9 @@ describe('cfn resource', () => {
       'AWS::Redshift::Cluster',
     ];
 
-    test.each(supportedResources) (
-      'works as expected when used on supported resources (old behavior)', (resourceType) => {
+    test.each(supportedResources)(
+      'works as expected when used on supported resources (old behavior)',
+      (resourceType) => {
         // GIVEN
         const app = new core.App();
         const stack = new core.Stack(app, 'TestStack');
@@ -79,11 +80,12 @@ describe('cfn resource', () => {
             UpdateReplacePolicy: 'Snapshot',
           },
         });
-      },
+      }
     );
 
-    test.each(supportedResources) (
-      'works as expected when used on supported resources (under feature flag)', (resourceType) => {
+    test.each(supportedResources)(
+      'works as expected when used on supported resources (under feature flag)',
+      (resourceType) => {
         // GIVEN
         const app = new core.App({ context: { [VALIDATE_SNAPSHOT_REMOVAL_POLICY]: true } });
         const stack = new core.Stack(app, 'TestStack');
@@ -102,7 +104,7 @@ describe('cfn resource', () => {
             UpdateReplacePolicy: 'Snapshot',
           },
         });
-      },
+      }
     );
 
     test('warns on unsupported resources (without feature flag)', () => {
@@ -120,7 +122,8 @@ describe('cfn resource', () => {
       expect(getWarnings(app.synth())).toEqual([
         {
           path: '/Default/Resource',
-          message: 'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::Lambda::FunctionSnapshotRemovalPolicyIgnored]',
+          message:
+            'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::Lambda::FunctionSnapshotRemovalPolicyIgnored]',
         },
       ]);
     });
@@ -134,7 +137,9 @@ describe('cfn resource', () => {
       });
 
       // THEN
-      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrow('AWS::Lambda::Function does not support snapshot removal policy');
+      expect(() => resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT)).toThrow(
+        'AWS::Lambda::Function does not support snapshot removal policy'
+      );
     });
   });
 
@@ -149,9 +154,7 @@ describe('cfn resource', () => {
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
           Type: 'Test::Resource::Fake1',
-          DependsOn: [
-            'Resource2',
-          ],
+          DependsOn: ['Resource2'],
         },
         Resource2: {
           Type: 'Test::Resource::Fake2',
@@ -196,7 +199,10 @@ describe('cfn resource', () => {
       expect(stack1.dependencies.length).toEqual(1);
       expect(stack1.dependencies[0].node.id).toEqual(stack2.node.id);
       // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
-      expect(resource1.obtainDependencies().map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
+      expect(resource1.obtainDependencies().map((x) => x.node.path)).toEqual([
+        resource3.node.path,
+        resource2.node.path,
+      ]);
 
       resource1.removeDependency(resource2);
       // For symmetry, removing a dependency that doesn't exist should be a no-op
@@ -218,7 +224,7 @@ describe('cfn resource', () => {
       resource1.replaceDependency(resource2, resource3);
       expect(stack1.dependencies).toEqual([stack3]);
       // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
-      expect(resource1.obtainDependencies().map(x => x.node.path)).toEqual([resource3.node.path]);
+      expect(resource1.obtainDependencies().map((x) => x.node.path)).toEqual([resource3.node.path]);
 
       // Replacing a dependency that doesn't exist should raise an exception
       expect(() => {
@@ -405,7 +411,7 @@ describe('cfn resource', () => {
       });
 
       // THEN
-      const metadata = res.node.metadata.find(m => m.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
+      const metadata = res.node.metadata.find((m) => m.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
       expect(metadata).toBeDefined();
       expect(metadata?.trace).toBeDefined();
       expect(metadata?.trace?.length).toBeGreaterThan(0);

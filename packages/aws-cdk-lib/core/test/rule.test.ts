@@ -7,7 +7,10 @@ describe('rule', () => {
 
     const rule = new CfnRule(stack, 'MyRule');
     rule.addAssertion(Fn.conditionEquals('lhs', 'rhs'), 'lhs equals rhs');
-    rule.addAssertion(Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains(['hello', 'world'], 'world'))), 'some assertion');
+    rule.addAssertion(
+      Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains(['hello', 'world'], 'world'))),
+      'some assertion'
+    );
 
     expect(toCloudFormation(stack)).toEqual({
       Rules: {

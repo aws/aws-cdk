@@ -51,17 +51,14 @@ describe('schedule target', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: [{
-              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
-            },
-            {
-              'Fn::Join': [
-                '', [
-                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-                  ':*',
-                ],
-              ],
-            }],
+            Resource: [
+              {
+                'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+              },
+              {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':*']],
+              },
+            ],
           },
         ],
       },
@@ -207,17 +204,14 @@ describe('schedule target', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: [{
-              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
-            },
-            {
-              'Fn::Join': [
-                '', [
-                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-                  ':*',
-                ],
-              ],
-            }],
+            Resource: [
+              {
+                'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+              },
+              {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':*']],
+              },
+            ],
           },
         ],
       },
@@ -239,60 +233,65 @@ describe('schedule target', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'lambda:InvokeFunction',
-            Effect: 'Allow',
-            Resource: [{
-              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
-            },
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
             {
-              'Fn::Join': [
-                '', [
-                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-                  ':*',
-                ],
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+                },
+                {
+                  'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':*']],
+                },
               ],
-            }],
-          },
-        ],
+            },
+          ],
+        },
+        Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
@@ -313,82 +312,88 @@ describe('schedule target', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
-            },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'GroupC77FDACD',
-                    'Arn',
-                  ],
-                },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
               },
-            },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
-      },
-    }, 1);
-
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'lambda:InvokeFunction',
-            Effect: 'Allow',
-            Resource: [{
-              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+              Action: 'sts:AssumeRole',
             },
             {
-              'Fn::Join': [
-                '', [
-                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-                  ':*',
-                ],
-              ],
-            }],
-          },
-        ],
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::GetAtt': ['GroupC77FDACD', 'Arn'],
+                  },
+                },
+              },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
+            },
+          ],
+        },
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
-    }, 1);
+      1
+    );
+
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+                },
+                {
+                  'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':*']],
+                },
+              ],
+            },
+          ],
+        },
+        Roles: [{ Ref: 'SchedulerRoleForTarget637b5173FB8068' }],
+      },
+      1
+    );
   });
 
   test('creates IAM policy for imported lambda function in the same account', () => {
-    const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
+    const importedFunc = lambda.Function.fromFunctionArn(
+      stack,
+      'ImportedFunction',
+      'arn:aws:lambda:us-east-1:123456789012:function/somefunc'
+    );
 
     const lambdaTarget = new LambdaInvoke(importedFunc);
 
@@ -535,17 +540,14 @@ describe('schedule target', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: [{
-              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
-            },
-            {
-              'Fn::Join': [
-                '', [
-                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-                  ':*',
-                ],
-              ],
-            }],
+            Resource: [
+              {
+                'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+              },
+              {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':*']],
+              },
+            ],
           },
         ],
       },
@@ -554,7 +556,11 @@ describe('schedule target', () => {
   });
 
   test('creates IAM policy for imported lambda function with imported IAM role in the same account', () => {
-    const importedFunc = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:123456789012:function/somefunc');
+    const importedFunc = lambda.Function.fromFunctionArn(
+      stack,
+      'ImportedFunction',
+      'arn:aws:lambda:us-east-1:123456789012:function/somefunc'
+    );
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const lambdaTarget = new LambdaInvoke(importedFunc, {
@@ -596,14 +602,10 @@ describe('schedule target', () => {
 
   test('using imported lambda function should not throw', () => {
     const lambdaFuncArn = 'arn:aws:lambda:us-east-1:234567890123:function/somefunc';
-    const importedFunc = lambda.Function.fromFunctionAttributes(
-      stack,
-      'ImportedLambdaFunction',
-      {
-        functionArn: lambdaFuncArn,
-        skipPermissions: true,
-      },
-    );
+    const importedFunc = lambda.Function.fromFunctionAttributes(stack, 'ImportedLambdaFunction', {
+      functionArn: lambdaFuncArn,
+      skipPermissions: true,
+    });
 
     const lambdaTarget = new LambdaInvoke(importedFunc);
     new Schedule(stack, 'MyScheduleDummy', {
@@ -617,10 +619,7 @@ describe('schedule target', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: [
-              lambdaFuncArn,
-              `${lambdaFuncArn}:*`,
-            ],
+            Resource: [lambdaFuncArn, `${lambdaFuncArn}:*`],
           },
         ],
       },
@@ -646,17 +645,14 @@ describe('schedule target', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: [{
-              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
-            },
-            {
-              'Fn::Join': [
-                '', [
-                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-                  ':*',
-                ],
-              ],
-            }],
+            Resource: [
+              {
+                'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+              },
+              {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':*']],
+              },
+            ],
           },
           {
             Action: 'sqs:SendMessage',
@@ -689,17 +685,14 @@ describe('schedule target', () => {
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: [{
-              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
-            },
-            {
-              'Fn::Join': [
-                '', [
-                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-                  ':*',
-                ],
-              ],
-            }],
+            Resource: [
+              {
+                'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
+              },
+              {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':*']],
+              },
+            ],
           },
           {
             Action: 'sqs:SendMessage',
@@ -744,11 +737,13 @@ describe('schedule target', () => {
       maxEventAge: Duration.days(3),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: lambdaTarget,
-      })).toThrow(/Maximum event age is 1 day/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: lambdaTarget,
+        })
+    ).toThrow(/Maximum event age is 1 day/);
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
@@ -756,11 +751,13 @@ describe('schedule target', () => {
       maxEventAge: Duration.seconds(59),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: lambdaTarget,
-      })).toThrow(/Minimum event age is 1 minute/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: lambdaTarget,
+        })
+    ).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
@@ -768,10 +765,12 @@ describe('schedule target', () => {
       retryAttempts: 200,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: lambdaTarget,
-      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: lambdaTarget,
+        })
+    ).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 });

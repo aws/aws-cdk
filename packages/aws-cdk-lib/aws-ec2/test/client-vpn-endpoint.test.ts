@@ -55,16 +55,10 @@ test('client vpn endpoint', () => {
       Enabled: true,
       LambdaFunctionArn: 'function-arn',
     },
-    DnsServers: [
-      '8.8.8.8',
-      '8.8.4.4',
-    ],
+    DnsServers: ['8.8.8.8', '8.8.4.4'],
     SecurityGroupIds: [
       {
-        'Fn::GetAtt': [
-          'VpcEndpointSecurityGroup7B25EFDC',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['VpcEndpointSecurityGroup7B25EFDC', 'GroupId'],
       },
     ],
     VpcId: {
@@ -111,10 +105,7 @@ test('client vpn endpoint', () => {
       Ref: 'VpcEndpoint6FF034F6',
     },
     TargetNetworkCidr: {
-      'Fn::GetAtt': [
-        'Vpc8378EB38',
-        'CidrBlock',
-      ],
+      'Fn::GetAtt': ['Vpc8378EB38', 'CidrBlock'],
     },
     AuthorizeAllGroups: true,
   });
@@ -125,25 +116,16 @@ test('client vpn endpoint with custom security groups', () => {
     cidr: '10.100.0.0/16',
     serverCertificateArn: 'server-certificate-arn',
     clientCertificateArn: 'client-certificate-arn',
-    securityGroups: [
-      new ec2.SecurityGroup(stack, 'SG1', { vpc }),
-      new ec2.SecurityGroup(stack, 'SG2', { vpc }),
-    ],
+    securityGroups: [new ec2.SecurityGroup(stack, 'SG1', { vpc }), new ec2.SecurityGroup(stack, 'SG2', { vpc })],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
     SecurityGroupIds: [
       {
-        'Fn::GetAtt': [
-          'SG1BA065B6E',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'],
       },
       {
-        'Fn::GetAtt': [
-          'SG20CE3219C',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['SG20CE3219C', 'GroupId'],
       },
     ],
   });
@@ -235,10 +217,7 @@ test('client vpn endpoint with custom route', () => {
       DestinationCidrBlock: '10.100.0.0/16',
       TargetVpcSubnetId: 'local',
     },
-    DependsOn: [
-      'VpcEndpointAssociation06B066321',
-      'VpcEndpointAssociation12B51A67F',
-    ],
+    DependsOn: ['VpcEndpointAssociation06B066321', 'VpcEndpointAssociation12B51A67F'],
   });
 });
 
@@ -272,27 +251,33 @@ test('client vpn endpoint with client login banner', () => {
 });
 
 test('throws with more than 2 dns servers', () => {
-  expect(() => vpc.addClientVpnEndpoint('Endpoint', {
-    cidr: '10.100.0.0/16',
-    serverCertificateArn: 'server-certificate-arn',
-    clientCertificateArn: 'client-certificate-arn',
-    dnsServers: ['1.1.1.1', '2.2.2.2', '3.3.3.3'],
-  })).toThrow(/A client VPN endpoint can have up to two DNS servers/);
+  expect(() =>
+    vpc.addClientVpnEndpoint('Endpoint', {
+      cidr: '10.100.0.0/16',
+      serverCertificateArn: 'server-certificate-arn',
+      clientCertificateArn: 'client-certificate-arn',
+      dnsServers: ['1.1.1.1', '2.2.2.2', '3.3.3.3'],
+    })
+  ).toThrow(/A client VPN endpoint can have up to two DNS servers/);
 });
 
 test('throws when specifying logGroup with logging disabled', () => {
-  expect(() => vpc.addClientVpnEndpoint('Endpoint', {
-    cidr: '10.100.0.0/16',
-    serverCertificateArn: 'server-certificate-arn',
-    clientCertificateArn: 'client-certificate-arn',
-    logging: false,
-    logGroup: new logs.LogGroup(stack, 'LogGroup'),
-  })).toThrow(/Cannot specify `logGroup` or `logStream` when logging is disabled/);
+  expect(() =>
+    vpc.addClientVpnEndpoint('Endpoint', {
+      cidr: '10.100.0.0/16',
+      serverCertificateArn: 'server-certificate-arn',
+      clientCertificateArn: 'client-certificate-arn',
+      logging: false,
+      logGroup: new logs.LogGroup(stack, 'LogGroup'),
+    })
+  ).toThrow(/Cannot specify `logGroup` or `logStream` when logging is disabled/);
 });
 
 test('throws without authentication options', () => {
-  expect(() => vpc.addClientVpnEndpoint('Endpoint', {
-    cidr: '10.100.0.0/16',
-    serverCertificateArn: 'server-certificate-arn',
-  })).toThrow(/A client VPN endpoint must use at least one authentication option/);
+  expect(() =>
+    vpc.addClientVpnEndpoint('Endpoint', {
+      cidr: '10.100.0.0/16',
+      serverCertificateArn: 'server-certificate-arn',
+    })
+  ).toThrow(/A client VPN endpoint must use at least one authentication option/);
 });

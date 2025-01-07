@@ -78,10 +78,7 @@ export class Peer {
   /**
    * A security group ID
    */
-  public static securityGroupId(
-    securityGroupId: string,
-    sourceSecurityGroupOwnerId?: string
-  ): IPeer {
+  public static securityGroupId(securityGroupId: string, sourceSecurityGroupOwnerId?: string): IPeer {
     return new SecurityGroupId(securityGroupId, sourceSecurityGroupOwnerId);
   }
 
@@ -152,9 +149,7 @@ class CidrIPv6 implements IPeer {
       }
 
       if (!cidrMatch[3]) {
-        throw new Error(
-          `CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`
-        );
+        throw new Error(`CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
       }
     }
 

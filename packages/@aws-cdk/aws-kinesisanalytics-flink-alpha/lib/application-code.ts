@@ -31,11 +31,7 @@ export abstract class ApplicationCode {
    * @param fileKey - a key pointing to a Flink JAR file
    * @param objectVersion - an optional version string for the provided fileKey
    */
-  public static fromBucket(
-    bucket: s3.IBucket,
-    fileKey: string,
-    objectVersion?: string
-  ): ApplicationCode {
+  public static fromBucket(bucket: s3.IBucket, fileKey: string, objectVersion?: string): ApplicationCode {
     return new BucketApplicationCode({
       bucket,
       fileKey,

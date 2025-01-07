@@ -8,8 +8,10 @@ import { IScheduleTarget, Schedule, ScheduleTargetConfig, TimeWindow } from '../
 import { ScheduleExpression } from '../lib/schedule-expression';
 
 class SomeLambdaTarget implements IScheduleTarget {
-  public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
-  }
+  public constructor(
+    private readonly fn: lambda.IFunction,
+    private readonly role: iam.IRole
+  ) {}
 
   public bind(): ScheduleTargetConfig {
     return {
@@ -72,7 +74,6 @@ describe('Schedule', () => {
     ['metricAllDropped', 'InvocationDroppedCount'],
     ['metricAllSentToDLQ', 'InvocationsSentToDeadLetterCount'],
     ['metricAllSentToDLQTruncated', 'InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded'],
-
   ])('returns expected metric for %s', (metricMethodName: string, metricName: string) => {
     // WHEN
     const metric = (Schedule as any)[metricMethodName]();

@@ -64,11 +64,7 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
   /**
    * Use an existing dedicated IP pool
    */
-  public static fromDedicatedIpPoolName(
-    scope: Construct,
-    id: string,
-    dedicatedIpPoolName: string
-  ): IDedicatedIpPool {
+  public static fromDedicatedIpPoolName(scope: Construct, id: string, dedicatedIpPoolName: string): IDedicatedIpPool {
     class Import extends Resource implements IDedicatedIpPool {
       public readonly dedicatedIpPoolName = dedicatedIpPoolName;
     }

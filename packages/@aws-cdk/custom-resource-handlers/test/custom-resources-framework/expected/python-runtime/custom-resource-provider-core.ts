@@ -2,20 +2,13 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { Stack } from '../../stack';
-import {
-  CustomResourceProviderBase,
-  CustomResourceProviderOptions,
-} from '../../custom-resource-provider';
+import { CustomResourceProviderBase, CustomResourceProviderOptions } from '../../custom-resource-provider';
 
 export class TestProvider extends CustomResourceProviderBase {
   /**
    * Returns a stack-level singleton ARN (service token) for the custom resource provider.
    */
-  public static getOrCreate(
-    scope: Construct,
-    uniqueid: string,
-    props?: CustomResourceProviderOptions
-  ): string {
+  public static getOrCreate(scope: Construct, uniqueid: string, props?: CustomResourceProviderOptions): string {
     return this.getOrCreateProvider(scope, uniqueid, props).serviceToken;
   }
 

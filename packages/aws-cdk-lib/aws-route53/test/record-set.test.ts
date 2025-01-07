@@ -31,9 +31,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        'zzz',
-      ],
+      ResourceRecords: ['zzz'],
       TTL: '1800',
     });
   });
@@ -62,9 +60,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        'bbb',
-      ],
+      ResourceRecords: ['bbb'],
       TTL: '6077',
     });
   });
@@ -114,9 +110,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '1.2.3.4',
-      ],
+      ResourceRecords: ['1.2.3.4'],
     });
   });
 
@@ -142,10 +136,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '1.2.3.4',
-        '5.6.7.8',
-      ],
+      ResourceRecords: ['1.2.3.4', '5.6.7.8'],
       TTL: '1800',
     });
   });
@@ -342,9 +333,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
-      ],
+      ResourceRecords: ['2001:0db8:85a3:0000:0000:8a2e:0370:7334'],
       TTL: '1800',
     });
   });
@@ -407,9 +396,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        'hello',
-      ],
+      ResourceRecords: ['hello'],
       TTL: '1800',
     });
   });
@@ -436,9 +423,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '"should be enclosed with double quotes"',
-      ],
+      ResourceRecords: ['"should be enclosed with double quotes"'],
       TTL: '1800',
     });
   });
@@ -484,12 +469,14 @@ describe('record set', () => {
     new route53.SrvRecord(stack, 'SRV', {
       zone,
       recordName: 'www',
-      values: [{
-        hostName: 'aws.com',
-        port: 8080,
-        priority: 10,
-        weight: 5,
-      }],
+      values: [
+        {
+          hostName: 'aws.com',
+          port: 8080,
+          priority: 10,
+          weight: 5,
+        },
+      ],
     });
 
     // THEN
@@ -499,9 +486,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '10 5 8080 aws.com',
-      ],
+      ResourceRecords: ['10 5 8080 aws.com'],
       TTL: '1800',
     });
   });
@@ -518,11 +503,13 @@ describe('record set', () => {
     new route53.CaaRecord(stack, 'CAA', {
       zone,
       recordName: 'www',
-      values: [{
-        flag: 0,
-        tag: route53.CaaTag.ISSUE,
-        value: 'ssl.com',
-      }],
+      values: [
+        {
+          flag: 0,
+          tag: route53.CaaTag.ISSUE,
+          value: 'ssl.com',
+        },
+      ],
     });
 
     // THEN
@@ -532,9 +519,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '0 issue "ssl.com"',
-      ],
+      ResourceRecords: ['0 issue "ssl.com"'],
       TTL: '1800',
     });
   });
@@ -559,9 +544,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '0 issue "amazon.com"',
-      ],
+      ResourceRecords: ['0 issue "amazon.com"'],
       TTL: '1800',
     });
   });
@@ -587,9 +570,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '0 issue "amazon.com"',
-      ],
+      ResourceRecords: ['0 issue "amazon.com"'],
       TTL: '1800',
     });
   });
@@ -606,10 +587,12 @@ describe('record set', () => {
     new route53.MxRecord(stack, 'MX', {
       zone,
       recordName: 'mail',
-      values: [{
-        hostName: 'workmail.aws',
-        priority: 10,
-      }],
+      values: [
+        {
+          hostName: 'workmail.aws',
+          priority: 10,
+        },
+      ],
     });
 
     // THEN
@@ -619,9 +602,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '10 workmail.aws',
-      ],
+      ResourceRecords: ['10 workmail.aws'],
       TTL: '1800',
     });
   });
@@ -648,10 +629,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        'ns-1.awsdns.co.uk.',
-        'ns-2.awsdns.com.',
-      ],
+      ResourceRecords: ['ns-1.awsdns.co.uk.', 'ns-2.awsdns.com.'],
       TTL: '1800',
     });
   });
@@ -678,9 +656,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '12345 3 1 123456789abcdef67890123456789abcdef67890',
-      ],
+      ResourceRecords: ['12345 3 1 123456789abcdef67890123456789abcdef67890'],
       TTL: '1800',
     });
   });
@@ -707,9 +683,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        'ns-1777.awsdns-30.co.uk.',
-      ],
+      ResourceRecords: ['ns-1777.awsdns-30.co.uk.'],
       TTL: '172800',
     });
   });
@@ -737,10 +711,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '1.2.3.4',
-        '5.6.7.8',
-      ],
+      ResourceRecords: ['1.2.3.4', '5.6.7.8'],
       TTL: '1800',
       GeoLocation: {
         ContinentCode: 'EU',
@@ -772,10 +743,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '1.2.3.4',
-        '5.6.7.8',
-      ],
+      ResourceRecords: ['1.2.3.4', '5.6.7.8'],
       TTL: '1800',
       GeoLocation: {
         CountryCode: 'DE',
@@ -807,10 +775,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '1.2.3.4',
-        '5.6.7.8',
-      ],
+      ResourceRecords: ['1.2.3.4', '5.6.7.8'],
       TTL: '1800',
       GeoLocation: {
         CountryCode: 'US',
@@ -843,10 +808,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '1.2.3.4',
-        '5.6.7.8',
-      ],
+      ResourceRecords: ['1.2.3.4', '5.6.7.8'],
       TTL: '1800',
       GeoLocation: {
         CountryCode: 'UA',
@@ -879,10 +841,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        '1.2.3.4',
-        '5.6.7.8',
-      ],
+      ResourceRecords: ['1.2.3.4', '5.6.7.8'],
       TTL: '1800',
       GeoLocation: {
         CountryCode: '*',
@@ -914,26 +873,17 @@ describe('record set', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
       ServiceToken: {
-        'Fn::GetAtt': [
-          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265', 'Arn'],
       },
       AssumeRoleArn: {
-        'Fn::GetAtt': [
-          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E', 'Arn'],
       },
       ParentZoneId: {
         Ref: 'ParentHostedZoneC2BD86E1',
       },
       DelegatedZoneName: 'sub.myzone.com',
       DelegatedZoneNameServers: {
-        'Fn::GetAtt': [
-          'ChildHostedZone4B14AC71',
-          'NameServers',
-        ],
+        'Fn::GetAtt': ['ChildHostedZone4B14AC71', 'NameServers'],
       },
       TTL: 60,
     });
@@ -967,26 +917,17 @@ describe('record set', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
       ServiceToken: {
-        'Fn::GetAtt': [
-          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265', 'Arn'],
       },
       AssumeRoleArn: {
-        'Fn::GetAtt': [
-          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E', 'Arn'],
       },
       ParentZoneId: {
         Ref: 'ParentHostedZoneC2BD86E1',
       },
       DelegatedZoneName: 'sub.myzone.com',
       DelegatedZoneNameServers: {
-        'Fn::GetAtt': [
-          'ChildHostedZone4B14AC71',
-          'NameServers',
-        ],
+        'Fn::GetAtt': ['ChildHostedZone4B14AC71', 'NameServers'],
       },
       TTL: 60,
       AssumeRoleRegion: 'fake-region-1',
@@ -1019,24 +960,15 @@ describe('record set', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
       ServiceToken: {
-        'Fn::GetAtt': [
-          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265', 'Arn'],
       },
       AssumeRoleArn: {
-        'Fn::GetAtt': [
-          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E', 'Arn'],
       },
       ParentZoneName: 'myzone.com',
       DelegatedZoneName: 'sub.myzone.com',
       DelegatedZoneNameServers: {
-        'Fn::GetAtt': [
-          'ChildHostedZone4B14AC71',
-          'NameServers',
-        ],
+        'Fn::GetAtt': ['ChildHostedZone4B14AC71', 'NameServers'],
       },
       TTL: 60,
     });
@@ -1104,38 +1036,35 @@ describe('record set', () => {
 
     // THEN
     const childHostedZones = [
-      { name: 'sub.myzone.com', id: 'ChildHostedZone4B14AC71', dependsOn: 'DelegationcrossaccountzonedelegationhandlerrolePolicy1E157602' },
-      { name: 'anothersub.myzone.com', id: 'ChildHostedZone2A37198F0', dependsOn: 'Delegation2crossaccountzonedelegationhandlerrolePolicy713BEAC3' },
+      {
+        name: 'sub.myzone.com',
+        id: 'ChildHostedZone4B14AC71',
+        dependsOn: 'DelegationcrossaccountzonedelegationhandlerrolePolicy1E157602',
+      },
+      {
+        name: 'anothersub.myzone.com',
+        id: 'ChildHostedZone2A37198F0',
+        dependsOn: 'Delegation2crossaccountzonedelegationhandlerrolePolicy713BEAC3',
+      },
     ];
 
     for (var childHostedZone of childHostedZones) {
       Template.fromStack(stack).hasResource('Custom::CrossAccountZoneDelegation', {
         Properties: {
           ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265', 'Arn'],
           },
           AssumeRoleArn: {
-            'Fn::GetAtt': [
-              'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E', 'Arn'],
           },
           ParentZoneName: 'myzone.com',
           DelegatedZoneName: childHostedZone.name,
           DelegatedZoneNameServers: {
-            'Fn::GetAtt': [
-              childHostedZone.id,
-              'NameServers',
-            ],
+            'Fn::GetAtt': [childHostedZone.id, 'NameServers'],
           },
           TTL: 60,
         },
-        DependsOn: [
-          childHostedZone.dependsOn,
-        ],
+        DependsOn: [childHostedZone.dependsOn],
       });
     }
   });
@@ -1184,28 +1113,34 @@ describe('record set', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E', 'Arn'],
               },
             },
           ],
         },
         Roles: [
           {
-            'Fn::Select': [1, {
-              'Fn::Split': ['/', {
-                'Fn::Select': [5, {
-                  'Fn::Split': [':', {
-                    'Fn::GetAtt': [
-                      'CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B',
-                      'Arn',
+            'Fn::Select': [
+              1,
+              {
+                'Fn::Split': [
+                  '/',
+                  {
+                    'Fn::Select': [
+                      5,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B', 'Arn'],
+                          },
+                        ],
+                      },
                     ],
-                  }],
-                }],
-              }],
-            }],
+                  },
+                ],
+              },
+            ],
           },
         ],
       });
@@ -1253,24 +1188,20 @@ describe('record set', () => {
                 Effect: 'Allow',
                 Action: 'route53:ListResourceRecordSets',
                 Resource: {
-                  'Fn::Join': ['', [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':route53:::hostedzone/',
-                    { Ref: 'HostedZoneDB99F866' },
-                  ]],
+                  'Fn::Join': [
+                    '',
+                    ['arn:', { Ref: 'AWS::Partition' }, ':route53:::hostedzone/', { Ref: 'HostedZoneDB99F866' }],
+                  ],
                 },
               },
               {
                 Effect: 'Allow',
                 Action: 'route53:ChangeResourceRecordSets',
                 Resource: {
-                  'Fn::Join': ['', [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':route53:::hostedzone/',
-                    { Ref: 'HostedZoneDB99F866' },
-                  ]],
+                  'Fn::Join': [
+                    '',
+                    ['arn:', { Ref: 'AWS::Partition' }, ':route53:::hostedzone/', { Ref: 'HostedZoneDB99F866' }],
+                  ],
                 },
                 Condition: {
                   'ForAllValues:StringEquals': {
@@ -1310,9 +1241,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        'zzz',
-      ],
+      ResourceRecords: ['zzz'],
       TTL: '1800',
       Weight: 50,
       SetIdentifier: 'WEIGHT_50_ID_RecordSet',
@@ -1343,9 +1272,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        'zzz',
-      ],
+      ResourceRecords: ['zzz'],
       TTL: '1800',
       Weight: 0,
       SetIdentifier: 'WEIGHT_0_ID_RecordSet',
@@ -1390,9 +1317,7 @@ describe('record set', () => {
       HostedZoneId: {
         Ref: 'HostedZoneDB99F866',
       },
-      ResourceRecords: [
-        'zzz',
-      ],
+      ResourceRecords: ['zzz'],
       TTL: '1800',
       Weight: {
         Ref: 'RecordWeight',
@@ -1412,23 +1337,23 @@ describe('record set', () => {
     });
   });
 
-  test.each([
-    [-1],
-    [256],
-  ])('throw error for invalid weight %s', (weight: number) => {
+  test.each([[-1], [256]])('throw error for invalid weight %s', (weight: number) => {
     // GIVEN
     const stack = new Stack();
 
     const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
 
     // THEN
-    expect(() => new route53.RecordSet(stack, 'Basic', {
-      zone,
-      recordName: 'www',
-      recordType: route53.RecordType.CNAME,
-      target: route53.RecordTarget.fromValues('zzz'),
-      weight,
-    })).toThrow(`weight must be between 0 and 255 inclusive, got: ${weight}`);
+    expect(
+      () =>
+        new route53.RecordSet(stack, 'Basic', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.CNAME,
+          target: route53.RecordTarget.fromValues('zzz'),
+          weight,
+        })
+    ).toThrow(`weight must be between 0 and 255 inclusive, got: ${weight}`);
   });
 
   test('throw error for invalid setIdentifier', () => {
@@ -1438,14 +1363,17 @@ describe('record set', () => {
     const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
 
     // THEN
-    expect(() => new route53.RecordSet(stack, 'Basic', {
-      zone,
-      recordName: 'www',
-      recordType: route53.RecordType.CNAME,
-      target: route53.RecordTarget.fromValues('zzz'),
-      weight: 20,
-      setIdentifier: 'a'.repeat(129),
-    })).toThrow('setIdentifier must be between 1 and 128 characters long, got: 129');
+    expect(
+      () =>
+        new route53.RecordSet(stack, 'Basic', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.CNAME,
+          target: route53.RecordTarget.fromValues('zzz'),
+          weight: 20,
+          setIdentifier: 'a'.repeat(129),
+        })
+    ).toThrow('setIdentifier must be between 1 and 128 characters long, got: 129');
   });
 
   test.each([
@@ -1455,7 +1383,12 @@ describe('record set', () => {
     { multiValueAnswer: true, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
     { multiValueAnswer: true, region: 'us-east-1' },
     { multiValueAnswer: true, weight: 20 },
-    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
+    {
+      weight: 20,
+      geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
+      region: 'us-east-1',
+      multiValueAnswer: true,
+    },
   ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
     // GIVEN
     const stack = new Stack();
@@ -1463,14 +1396,17 @@ describe('record set', () => {
     const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
 
     // THEN
-    expect(() => new route53.RecordSet(stack, 'Basic', {
-      zone,
-      recordName: 'www',
-      recordType: route53.RecordType.CNAME,
-      target: route53.RecordTarget.fromValues('zzz'),
-      setIdentifier: 'uniqueId',
-      ...props,
-    })).toThrow('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+    expect(
+      () =>
+        new route53.RecordSet(stack, 'Basic', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.CNAME,
+          target: route53.RecordTarget.fromValues('zzz'),
+          setIdentifier: 'uniqueId',
+          ...props,
+        })
+    ).toThrow('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
   });
 
   test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {
@@ -1480,13 +1416,16 @@ describe('record set', () => {
     const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
 
     // THEN
-    expect(() => new route53.RecordSet(stack, 'Basic', {
-      zone,
-      recordName: 'www',
-      recordType: route53.RecordType.CNAME,
-      target: route53.RecordTarget.fromValues('zzz'),
-      setIdentifier: 'uniqueId',
-    })).toThrow('setIdentifier can only be specified for non-simple routing policies');
+    expect(
+      () =>
+        new route53.RecordSet(stack, 'Basic', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.CNAME,
+          target: route53.RecordTarget.fromValues('zzz'),
+          setIdentifier: 'uniqueId',
+        })
+    ).toThrow('setIdentifier can only be specified for non-simple routing policies');
   });
 
   test('with multiValueAnswer', () => {
@@ -1511,9 +1450,7 @@ describe('record set', () => {
       },
       MultiValueAnswer: true,
       Name: 'www.myzone.',
-      ResourceRecords: [
-        'zzz',
-      ],
+      ResourceRecords: ['zzz'],
       SetIdentifier: 'MVA_ID_RecordSet',
       TTL: '1800',
       Type: 'CNAME',
@@ -1532,12 +1469,15 @@ describe('record set', () => {
     const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
 
     // THEN
-    expect(() => new route53.RecordSet(stack, 'Basic', {
-      zone,
-      recordName: 'www',
-      recordType: route53.RecordType.A,
-      target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
-      multiValueAnswer: true,
-    })).toThrow('multiValueAnswer cannot be specified for alias record');
+    expect(
+      () =>
+        new route53.RecordSet(stack, 'Basic', {
+          zone,
+          recordName: 'www',
+          recordType: route53.RecordType.A,
+          target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+          multiValueAnswer: true,
+        })
+    ).toThrow('multiValueAnswer cannot be specified for alias record');
   });
 });

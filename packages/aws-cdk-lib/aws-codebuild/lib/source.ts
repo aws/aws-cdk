@@ -493,9 +493,7 @@ export class FilterGroup {
 
   private addBaseRefFilter(refName: string, include: boolean) {
     if (this.actions.has(EventAction.PUSH)) {
-      throw new Error(
-        'A base reference condition cannot be added if a Group contains a PUSH event action'
-      );
+      throw new Error('A base reference condition cannot be added if a Group contains a PUSH event action');
     }
     return this.addFilter(WebhookFilterTypes.BASE_REF, refName, include);
   }
@@ -622,9 +620,7 @@ abstract class ThirdPartyGitSource extends GitSource {
           : {
               webhook,
               buildType: this.webhookTriggersBatchBuild ? 'BUILD_BATCH' : undefined,
-              filterGroups: anyFilterGroupsProvided
-                ? this.webhookFilters.map((fg) => fg._toJson())
-                : undefined,
+              filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map((fg) => fg._toJson()) : undefined,
             },
     };
   }
@@ -791,8 +787,7 @@ class GitHubSource extends CommonGithubSource {
     super(props);
     this.organization = props.repo === undefined ? props.owner : undefined;
     this.webhookFilters =
-      props.webhookFilters ??
-      (this.organization ? [FilterGroup.inEventOf(EventAction.WORKFLOW_JOB_QUEUED)] : []);
+      props.webhookFilters ?? (this.organization ? [FilterGroup.inEventOf(EventAction.WORKFLOW_JOB_QUEUED)] : []);
     this.sourceLocation = this.organization
       ? 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION'
       : `https://github.com/${props.owner}/${props.repo}.git`;
@@ -851,15 +846,11 @@ class GitHubEnterpriseSource extends CommonGithubSource {
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
     if (this.hasCommitMessageFilterAndPrEvent()) {
-      throw new Error(
-        'COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events'
-      );
+      throw new Error('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
     }
 
     if (this.hasFilePathFilterAndPrEvent()) {
-      throw new Error(
-        'FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events'
-      );
+      throw new Error('FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events');
     }
 
     const superConfig = super.bind(_scope, _project);
@@ -876,16 +867,12 @@ class GitHubEnterpriseSource extends CommonGithubSource {
 
   private hasCommitMessageFilterAndPrEvent() {
     return this.webhookFilters.some(
-      (fg) =>
-        fg._filters.some((fp) => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) &&
-        this.hasPrEvent(fg._actions)
+      (fg) => fg._filters.some((fp) => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) && this.hasPrEvent(fg._actions)
     );
   }
   private hasFilePathFilterAndPrEvent() {
     return this.webhookFilters.some(
-      (fg) =>
-        fg._filters.some((fp) => fp.type === WebhookFilterTypes.FILE_PATH) &&
-        this.hasPrEvent(fg._actions)
+      (fg) => fg._filters.some((fp) => fp.type === WebhookFilterTypes.FILE_PATH) && this.hasPrEvent(fg._actions)
     );
   }
   private hasPrEvent(actions: EventAction[]) {
@@ -946,9 +933,7 @@ class BitBucketSource extends ThirdPartyGitSource {
   public bind(_scope: Construct, _project: IProject): SourceConfig {
     // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
     if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
-      throw new Error(
-        'BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action'
-      );
+      throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
     }
 
     const superConfig = super.bind(_scope, _project);

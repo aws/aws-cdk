@@ -14,7 +14,7 @@ describe('InputTransformation', () => {
       source: new TestSource(),
       target: new TestTarget(),
     });
-  } );
+  });
 
   describe('fromText', () => {
     it('should return the input string', () => {
@@ -62,7 +62,9 @@ describe('InputTransformation', () => {
       const resolvedResult = stack.resolve(result);
 
       // THEN
-      expect(resolvedResult.inputTemplate).toEqual({ 'Fn::Join': ['', ['role-name ', { Ref: 'Role1ABCC5F0' }, ' text']] });
+      expect(resolvedResult.inputTemplate).toEqual({
+        'Fn::Join': ['', ['role-name ', { Ref: 'Role1ABCC5F0' }, ' text']],
+      });
     });
 
     it('should work with token values', () => {
@@ -133,7 +135,9 @@ describe('InputTransformation', () => {
       const resolvedResult = stack.resolve(result);
 
       // THEN
-      expect(resolvedResult.inputTemplate).toEqual({ 'Fn::Join': ['', ['{"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}']] });
+      expect(resolvedResult.inputTemplate).toEqual({
+        'Fn::Join': ['', ['{"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}']],
+      });
     });
 
     it('should return object with event path', () => {
@@ -164,7 +168,9 @@ describe('InputTransformation', () => {
       const resolvedResult = stack.resolve(result);
 
       // THEN
-      expect(resolvedResult.inputTemplate).toEqual({ 'Fn::Join': ['', ['{"foo":<$.foo.bar>,"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}']] });
+      expect(resolvedResult.inputTemplate).toEqual({
+        'Fn::Join': ['', ['{"foo":<$.foo.bar>,"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}']],
+      });
     });
 
     it('should return object with pipe variable', () => {
@@ -178,7 +184,7 @@ describe('InputTransformation', () => {
 
       // THEN
       expect(resolvedResult.inputTemplate).toEqual('{"pipeName":<aws.pipes.pipe-name>}');
-    } );
+    });
 
     it('should return object with pipe variable and intrinsic function', () => {
       // GIVEN
@@ -195,8 +201,10 @@ describe('InputTransformation', () => {
       const resolvedResult = stack.resolve(result);
 
       // THEN
-      expect(resolvedResult.inputTemplate).toEqual({ 'Fn::Join': ['', ['{"pipeName":<aws.pipes.pipe-name>,"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}']] });
-    } );
+      expect(resolvedResult.inputTemplate).toEqual({
+        'Fn::Join': ['', ['{"pipeName":<aws.pipes.pipe-name>,"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}']],
+      });
+    });
 
     it('should return object with pipe variable and event path', () => {
       // GIVEN
@@ -228,7 +236,12 @@ describe('InputTransformation', () => {
       const resolvedResult = stack.resolve(result);
 
       // THEN
-      expect(resolvedResult.inputTemplate).toEqual({ 'Fn::Join': ['', ['{"pipeName":<aws.pipes.pipe-name>,"foo":<$.foo.bar>,"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}']] });
+      expect(resolvedResult.inputTemplate).toEqual({
+        'Fn::Join': [
+          '',
+          ['{"pipeName":<aws.pipes.pipe-name>,"foo":<$.foo.bar>,"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}'],
+        ],
+      });
     });
 
     it('should return unquoted string if dynamic value is set manually', () => {
@@ -244,7 +257,5 @@ describe('InputTransformation', () => {
       // THEN
       expect(resolvedResult.inputTemplate).toEqual('{"pipeName":<aws.pipes.pipe-name>,"path":<$.foo.bar>}');
     });
-  },
-  );
-
+  });
 });

@@ -34,9 +34,7 @@ export class Capture extends Matcher {
     }
 
     if (this.pattern !== undefined) {
-      const innerMatcher = Matcher.isMatcher(this.pattern)
-        ? this.pattern
-        : Match.objectLike(this.pattern);
+      const innerMatcher = Matcher.isMatcher(this.pattern) ? this.pattern : Match.objectLike(this.pattern);
       const innerResult = innerMatcher.test(actual);
       if (innerResult.hasFailed()) {
         return innerResult;

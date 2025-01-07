@@ -6,7 +6,6 @@ import { TestSource } from './test-classes';
 import { StateMachineInvocationType, SfnStateMachine } from '../lib/stepfunctions';
 
 describe('step-function', () => {
-
   it('should have only target arn', () => {
     // ARRANGE
     const app = new App();
@@ -77,7 +76,10 @@ describe('step-function', () => {
     const inputTransformation = InputTransformation.fromObject({
       key: '👀',
     });
-    const target = new SfnStateMachine(stateMachine, { inputTransformation, invocationType: StateMachineInvocationType.FIRE_AND_FORGET });
+    const target = new SfnStateMachine(stateMachine, {
+      inputTransformation,
+      invocationType: StateMachineInvocationType.FIRE_AND_FORGET,
+    });
 
     new Pipe(stack, 'MySfnPipe', {
       source: new TestSource(),
@@ -223,7 +225,11 @@ describe('step-function', () => {
     // ACT & ASSERT
     expect(() => {
       new SfnStateMachine(stateMachine, { invocationType: StateMachineInvocationType.REQUEST_RESPONSE });
-    }).toThrow(new Error('STANDARD state machine workflows do not support the REQUEST_RESPONSE invocation type. Use FIRE_AND_FORGET instead.'));
+    }).toThrow(
+      new Error(
+        'STANDARD state machine workflows do not support the REQUEST_RESPONSE invocation type. Use FIRE_AND_FORGET instead.'
+      )
+    );
   });
 
   it('should work with an imported standard state machine', () => {
@@ -234,9 +240,16 @@ describe('step-function', () => {
     const stateMachine = new StateMachine(stack, 'MyStateMachine', {
       definitionBody: DefinitionBody.fromChainable(new Pass(stack, 'Wave', { stateName: '👋' })),
     });
-    const importedStateMachine = StateMachine.fromStateMachineArn(stack, 'ImportedStateMachine', stateMachine.stateMachineArn);
+    const importedStateMachine = StateMachine.fromStateMachineArn(
+      stack,
+      'ImportedStateMachine',
+      stateMachine.stateMachineArn
+    );
 
-    const target = new SfnStateMachine(importedStateMachine, { inputTransformation: InputTransformation.fromObject({ key: '👀' }), invocationType: StateMachineInvocationType.FIRE_AND_FORGET }) ;
+    const target = new SfnStateMachine(importedStateMachine, {
+      inputTransformation: InputTransformation.fromObject({ key: '👀' }),
+      invocationType: StateMachineInvocationType.FIRE_AND_FORGET,
+    });
 
     new Pipe(stack, 'MySfnPipe', {
       source: new TestSource(),
@@ -265,9 +278,16 @@ describe('step-function', () => {
       definitionBody: DefinitionBody.fromChainable(new Pass(stack, 'Wave', { stateName: '👋' })),
       stateMachineType: StateMachineType.EXPRESS,
     });
-    const importedStateMachine = StateMachine.fromStateMachineArn(stack, 'ImportedStateMachine', stateMachine.stateMachineArn);
+    const importedStateMachine = StateMachine.fromStateMachineArn(
+      stack,
+      'ImportedStateMachine',
+      stateMachine.stateMachineArn
+    );
 
-    const target = new SfnStateMachine(importedStateMachine, { inputTransformation: InputTransformation.fromObject({ key: '👀' }), invocationType: StateMachineInvocationType.FIRE_AND_FORGET }) ;
+    const target = new SfnStateMachine(importedStateMachine, {
+      inputTransformation: InputTransformation.fromObject({ key: '👀' }),
+      invocationType: StateMachineInvocationType.FIRE_AND_FORGET,
+    });
 
     new Pipe(stack, 'MySfnPipe', {
       source: new TestSource(),
@@ -296,9 +316,16 @@ describe('step-function', () => {
       definitionBody: DefinitionBody.fromChainable(new Pass(stack, 'Wave', { stateName: '👋' })),
       stateMachineType: StateMachineType.EXPRESS,
     });
-    const importedStateMachine = StateMachine.fromStateMachineArn(stack, 'ImportedStateMachine', stateMachine.stateMachineArn);
+    const importedStateMachine = StateMachine.fromStateMachineArn(
+      stack,
+      'ImportedStateMachine',
+      stateMachine.stateMachineArn
+    );
 
-    const target = new SfnStateMachine(importedStateMachine, { inputTransformation: InputTransformation.fromObject({ key: '👀' }), invocationType: StateMachineInvocationType.REQUEST_RESPONSE }) ;
+    const target = new SfnStateMachine(importedStateMachine, {
+      inputTransformation: InputTransformation.fromObject({ key: '👀' }),
+      invocationType: StateMachineInvocationType.REQUEST_RESPONSE,
+    });
 
     new Pipe(stack, 'MySfnPipe', {
       source: new TestSource(),
@@ -330,7 +357,10 @@ describe('step-function', () => {
     // ACT & ASSERT
     expect(() => {
       new SfnStateMachine(stateMachine, { invocationType: StateMachineInvocationType.REQUEST_RESPONSE });
-    }).toThrow(new Error('STANDARD state machine workflows do not support the REQUEST_RESPONSE invocation type. Use FIRE_AND_FORGET instead.'));
+    }).toThrow(
+      new Error(
+        'STANDARD state machine workflows do not support the REQUEST_RESPONSE invocation type. Use FIRE_AND_FORGET instead.'
+      )
+    );
   });
-
 });

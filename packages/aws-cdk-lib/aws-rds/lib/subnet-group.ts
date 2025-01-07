@@ -60,11 +60,7 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
   /**
    * Imports an existing subnet group by name.
    */
-  public static fromSubnetGroupName(
-    scope: Construct,
-    id: string,
-    subnetGroupName: string
-  ): ISubnetGroup {
+  public static fromSubnetGroupName(scope: Construct, id: string, subnetGroupName: string): ISubnetGroup {
     return new (class extends Resource implements ISubnetGroup {
       public readonly subnetGroupName = subnetGroupName;
     })(scope, id);

@@ -9,7 +9,6 @@ const dockerCmd = process.env.CDK_DOCKER ?? 'docker';
 describe('bundling', () => {
   afterEach(() => {
     sinon.restore();
-
   });
 
   test('bundling with image from registry', () => {
@@ -35,16 +34,29 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith(dockerCmd, [
-      'run', '--rm',
-      '-u', 'user:group',
-      '-v', '/host-path:/container-path:delegated',
-      '--env', 'VAR1=value1',
-      '--env', 'VAR2=value2',
-      '-w', '/working-directory',
-      'alpine',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '-u',
+          'user:group',
+          '-v',
+          '/host-path:/container-path:delegated',
+          '--env',
+          'VAR1=value1',
+          '--env',
+          'VAR2=value2',
+          '-w',
+          '/working-directory',
+          'alpine',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('bundling with image from asset', () => {
@@ -68,24 +80,31 @@ describe('bundling', () => {
     });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      buildArgs: {
-        TEST_ARG: 'cdk-test',
-      },
-    })).digest('hex');
+    const tagHash = crypto
+      .createHash('sha256')
+      .update(
+        JSON.stringify({
+          path: 'docker-path',
+          buildArgs: {
+            TEST_ARG: 'cdk-test',
+          },
+        })
+      )
+      .digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
-      'build', '-t', tag,
-      '--build-arg', 'TEST_ARG=cdk-test',
-      'docker-path',
-    ])).toEqual(true);
+    expect(
+      spawnSyncStub.firstCall.calledWith(dockerCmd, [
+        'build',
+        '-t',
+        tag,
+        '--build-arg',
+        'TEST_ARG=cdk-test',
+        'docker-path',
+      ])
+    ).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
-      'run', '--rm',
-      tag,
-    ])).toEqual(true);
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, ['run', '--rm', tag])).toEqual(true);
   });
 
   test('bundling with image from asset with cache disabled', () => {
@@ -107,22 +126,22 @@ describe('bundling', () => {
     });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      cacheDisabled: true,
-    })).digest('hex');
+    const tagHash = crypto
+      .createHash('sha256')
+      .update(
+        JSON.stringify({
+          path: 'docker-path',
+          cacheDisabled: true,
+        })
+      )
+      .digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
-      'build', '-t', tag,
-      '--no-cache',
-      'docker-path',
-    ])).toEqual(true);
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, ['build', '-t', tag, '--no-cache', 'docker-path'])).toEqual(
+      true
+    );
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
-      'run', '--rm',
-      tag,
-    ])).toEqual(true);
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, ['run', '--rm', tag])).toEqual(true);
   });
 
   test('bundling with image from asset with platform', () => {
@@ -143,22 +162,22 @@ describe('bundling', () => {
     const image = DockerImage.fromBuild('docker-path', { platform: platform });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      platform,
-    })).digest('hex');
+    const tagHash = crypto
+      .createHash('sha256')
+      .update(
+        JSON.stringify({
+          path: 'docker-path',
+          platform,
+        })
+      )
+      .digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
-      'build', '-t', tag,
-      '--platform', platform,
-      'docker-path',
-    ])).toEqual(true);
+    expect(
+      spawnSyncStub.firstCall.calledWith(dockerCmd, ['build', '-t', tag, '--platform', platform, 'docker-path'])
+    ).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
-      'run', '--rm',
-      tag,
-    ])).toEqual(true);
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, ['run', '--rm', tag])).toEqual(true);
   });
 
   test('bundling with image from asset with cache-to & cache-from', () => {
@@ -176,34 +195,45 @@ describe('bundling', () => {
     fingerprintStub.callsFake(() => imageHash);
     const cacheTo = { type: 'local', params: { dest: 'path/to/local/dir' } };
     const cacheFrom1 = {
-      type: 's3', params: { region: 'us-west-2', bucket: 'my-bucket', name: 'foo' },
+      type: 's3',
+      params: { region: 'us-west-2', bucket: 'my-bucket', name: 'foo' },
     };
     const cacheFrom2 = {
-      type: 'gha', params: { url: 'https://example.com', token: 'abc123', scope: 'gh-ref-image2' },
+      type: 'gha',
+      params: { url: 'https://example.com', token: 'abc123', scope: 'gh-ref-image2' },
     };
 
     const options = { cacheTo, cacheFrom: [cacheFrom1, cacheFrom2] };
     const image = DockerImage.fromBuild('docker-path', options);
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      ...options,
-    })).digest('hex');
+    const tagHash = crypto
+      .createHash('sha256')
+      .update(
+        JSON.stringify({
+          path: 'docker-path',
+          ...options,
+        })
+      )
+      .digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
-      'build', '-t', tag,
-      '--cache-from', 'type=s3,region=us-west-2,bucket=my-bucket,name=foo',
-      '--cache-from', 'type=gha,url=https://example.com,token=abc123,scope=gh-ref-image2',
-      '--cache-to', 'type=local,dest=path/to/local/dir',
-      'docker-path',
-    ])).toEqual(true);
+    expect(
+      spawnSyncStub.firstCall.calledWith(dockerCmd, [
+        'build',
+        '-t',
+        tag,
+        '--cache-from',
+        'type=s3,region=us-west-2,bucket=my-bucket,name=foo',
+        '--cache-from',
+        'type=gha,url=https://example.com,token=abc123,scope=gh-ref-image2',
+        '--cache-to',
+        'type=local,dest=path/to/local/dir',
+        'docker-path',
+      ])
+    ).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
-      'run', '--rm',
-      tag,
-    ])).toEqual(true);
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, ['run', '--rm', tag])).toEqual(true);
   });
 
   test('bundling with image from asset with target stage', () => {
@@ -224,23 +254,22 @@ describe('bundling', () => {
     const image = DockerImage.fromBuild('docker-path', { targetStage: targetStage });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      targetStage,
-    })).digest('hex');
+    const tagHash = crypto
+      .createHash('sha256')
+      .update(
+        JSON.stringify({
+          path: 'docker-path',
+          targetStage,
+        })
+      )
+      .digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
-      'build', '-t', tag,
-      '--target', targetStage,
-      'docker-path',
-    ])).toEqual(true);
+    expect(
+      spawnSyncStub.firstCall.calledWith(dockerCmd, ['build', '-t', tag, '--target', targetStage, 'docker-path'])
+    ).toEqual(true);
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
-      'run', '--rm',
-      tag,
-    ])).toEqual(true);
-
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, ['run', '--rm', tag])).toEqual(true);
   });
 
   test('throws in case of spawnSync error', () => {
@@ -293,9 +322,14 @@ describe('bundling', () => {
 
     const image = DockerImage.fromBuild('docker-path');
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-    })).digest('hex');
+    const tagHash = crypto
+      .createHash('sha256')
+      .update(
+        JSON.stringify({
+          path: 'docker-path',
+        })
+      )
+      .digest('hex');
 
     expect(image.image).toEqual(`cdk-${tagHash}`);
     expect(image.toJSON()).toEqual(imageHash);
@@ -364,18 +398,32 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith(dockerCmd, [
-      'run', '--rm',
-      '-u', 'user:group',
-      '-v', '/host-path:/container-path:delegated',
-      '--env', 'VAR1=value1',
-      '--env', 'VAR2=value2',
-      '-w', '/working-directory',
-      '--entrypoint', '/cool/entrypoint',
-      'alpine',
-      '--cool-entrypoint-arg',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '-u',
+          'user:group',
+          '-v',
+          '/host-path:/container-path:delegated',
+          '--env',
+          'VAR1=value1',
+          '--env',
+          'VAR2=value2',
+          '-w',
+          '/working-directory',
+          '--entrypoint',
+          '/cool/entrypoint',
+          'alpine',
+          '--cool-entrypoint-arg',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('cp utility copies from an image', () => {
@@ -395,7 +443,9 @@ describe('bundling', () => {
 
     // THEN
     expect(spawnSyncStub.calledWith(sinon.match.any, ['create', 'alpine'], sinon.match.any)).toEqual(true);
-    expect(spawnSyncStub.calledWith(sinon.match.any, ['cp', `${containerId}:/foo/bar`, '/baz'], sinon.match.any)).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(sinon.match.any, ['cp', `${containerId}:/foo/bar`, '/baz'], sinon.match.any)
+    ).toEqual(true);
     expect(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId])).toEqual(true);
   });
 
@@ -411,15 +461,14 @@ describe('bundling', () => {
       signal: null,
     });
 
-    spawnSyncStub.withArgs(sinon.match.any, sinon.match.array.startsWith(['cp']), sinon.match.any)
-      .returns({
-        status: 1,
-        stderr: Buffer.from('it failed for a very good reason'),
-        stdout: Buffer.from('stdout'),
-        pid: 123,
-        output: ['stdout', 'stderr'],
-        signal: null,
-      });
+    spawnSyncStub.withArgs(sinon.match.any, sinon.match.array.startsWith(['cp']), sinon.match.any).returns({
+      status: 1,
+      stderr: Buffer.from('it failed for a very good reason'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
 
     // WHEN
     expect(() => {
@@ -475,17 +524,31 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith(dockerCmd, [
-      'run', '--rm',
-      '--security-opt', 'no-new-privileges',
-      '-u', 'user:group',
-      '-v', '/host-path:/container-path:delegated',
-      '--env', 'VAR1=value1',
-      '--env', 'VAR2=value2',
-      '-w', '/working-directory',
-      'alpine',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '--security-opt',
+          'no-new-privileges',
+          '-u',
+          'user:group',
+          '-v',
+          '/host-path:/container-path:delegated',
+          '--env',
+          'VAR1=value1',
+          '--env',
+          'VAR2=value2',
+          '-w',
+          '/working-directory',
+          'alpine',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('adding user provided network options', () => {
@@ -510,15 +573,27 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith(dockerCmd, [
-      'run', '--rm',
-      '--network', 'host',
-      '-u', 'user:group',
-      '-v', '/host-path:/container-path:delegated',
-      '-w', '/working-directory',
-      'alpine',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '--network',
+          'host',
+          '-u',
+          'user:group',
+          '-v',
+          '/host-path:/container-path:delegated',
+          '-w',
+          '/working-directory',
+          'alpine',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('adding user provided platform', () => {
@@ -543,15 +618,27 @@ describe('bundling', () => {
       user: 'user:group',
     });
 
-    expect(spawnSyncStub.calledWith(dockerCmd, [
-      'run', '--rm',
-      '--platform', 'linux/amd64',
-      '-u', 'user:group',
-      '-v', '/host-path:/container-path:delegated',
-      '-w', '/working-directory',
-      'alpine',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '--platform',
+          'linux/amd64',
+          '-u',
+          'user:group',
+          '-v',
+          '/host-path:/container-path:delegated',
+          '-w',
+          '/working-directory',
+          'alpine',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('adding user provided docker volume options', () => {
@@ -578,18 +665,31 @@ describe('bundling', () => {
     } catch {
       // We expect this to fail as the test environment will not have the required docker setup for the command to exit successfully
       // nevertheless what we want to check here is that the command was built correctly and triggered
-    };
+    }
 
-    expect(spawnSyncStub.calledWith(dockerCmd, [
-      'run', '--rm',
-      '-u', 'user:group',
-      '--volumes-from', 'foo',
-      '--volumes-from', 'bar',
-      '-v', '/host-path:/container-path:delegated',
-      '-w', '/working-directory',
-      'alpine',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '-u',
+          'user:group',
+          '--volumes-from',
+          'foo',
+          '--volumes-from',
+          'bar',
+          '-v',
+          '/host-path:/container-path:delegated',
+          '-w',
+          '/working-directory',
+          'alpine',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('ensure selinux docker mount', () => {
@@ -623,14 +723,25 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
-      'run', '--rm',
-      '-u', 'user:group',
-      '-v', '/host-path:/container-path:z,delegated',
-      '-w', '/working-directory',
-      'alpine',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.secondCall.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '-u',
+          'user:group',
+          '-v',
+          '/host-path:/container-path:z,delegated',
+          '-w',
+          '/working-directory',
+          'alpine',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('ensure selinux docker mount on linux with selinux disabled', () => {
@@ -664,17 +775,28 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
-      'run', '--rm',
-      '-u', 'user:group',
-      '-v', '/host-path:/container-path:delegated',
-      '-w', '/working-directory',
-      'alpine',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.secondCall.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '-u',
+          'user:group',
+          '-v',
+          '/host-path:/container-path:delegated',
+          '-w',
+          '/working-directory',
+          'alpine',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
-  test('ensure no selinux docker mount if selinuxenabled isn\'t an available command', () => {
+  test("ensure no selinux docker mount if selinuxenabled isn't an available command", () => {
     // GIVEN
     sinon.stub(process, 'platform').value('linux');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync');
@@ -705,14 +827,25 @@ describe('bundling', () => {
     });
 
     // THEN
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
-      'run', '--rm',
-      '-u', 'user:group',
-      '-v', '/host-path:/container-path:delegated',
-      '-w', '/working-directory',
-      'alpine',
-      'cool', 'command',
-    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.secondCall.calledWith(
+        dockerCmd,
+        [
+          'run',
+          '--rm',
+          '-u',
+          'user:group',
+          '-v',
+          '/host-path:/container-path:delegated',
+          '-w',
+          '/working-directory',
+          'alpine',
+          'cool',
+          'command',
+        ],
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('ensure correct Docker CLI arguments are returned', () => {

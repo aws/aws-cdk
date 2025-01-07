@@ -69,19 +69,23 @@ test('esbuild bundling in Docker', () => {
         KEY: 'value',
       },
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL} --loader:.png=dataurl`,
       ],
       workingDirectory: '/',
     }),
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-nodejs\/lib$/), expect.objectContaining({
-    buildArgs: expect.objectContaining({
-      IMAGE: expect.stringMatching(/build-nodejs/),
-    }),
-    platform: 'linux/amd64',
-  }));
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+    expect.stringMatching(/aws-lambda-nodejs\/lib$/),
+    expect.objectContaining({
+      buildArgs: expect.objectContaining({
+        IMAGE: expect.stringMatching(/build-nodejs/),
+      }),
+      platform: 'linux/amd64',
+    })
+  );
 });
 
 test('esbuild bundling with handler named index.ts', () => {
@@ -99,7 +103,8 @@ test('esbuild bundling with handler named index.ts', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/index.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL}`,
       ],
     }),
@@ -122,7 +127,8 @@ test('esbuild bundling with verbose log level', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/index.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL} --log-level=verbose`,
       ],
     }),
@@ -144,7 +150,8 @@ test('esbuild bundling with tsx handler', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/handler.tsx" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL}`,
       ],
     }),
@@ -167,13 +174,14 @@ test('esbuild with Windows paths', () => {
     forceDockerBundling: true,
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: expect.arrayContaining([
-        expect.stringContaining('/lib/entry.ts'),
-      ]),
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    expect.any(String),
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: expect.arrayContaining([expect.stringContaining('/lib/entry.ts')]),
+      }),
+    })
+  );
 
   osPlatformMock.mockRestore();
 });
@@ -196,7 +204,8 @@ test('esbuild bundling with externals and dependencies', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           `esbuild --bundle "/asset-input/test/bundling.test.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
@@ -250,7 +259,8 @@ test('esbuild bundling with esbuild options', () => {
   });
 
   // Correctly bundles with esbuild
-  const defineInstructions = '--define:process.env.KEY="\\"VALUE\\"" --define:process.env.BOOL="true" --define:process.env.NUMBER="7777" --define:process.env.STRING="\\"this is a \\\\\\"test\\\\\\"\\""';
+  const defineInstructions =
+    '--define:process.env.KEY="\\"VALUE\\"" --define:process.env.BOOL="true" --define:process.env.NUMBER="7777" --define:process.env.STRING="\\"this is a \\\\\\"test\\\\\\"\\""';
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
@@ -272,19 +282,24 @@ test('esbuild bundling with esbuild options', () => {
   });
 
   // Make sure that the define instructions are working as expected with the esbuild CLI
-  const bundleProcess = util.exec('bash', ['-c', `npx esbuild --bundle ${`${__dirname}/handlers/define.ts`} ${defineInstructions}`]);
+  const bundleProcess = util.exec('bash', [
+    '-c',
+    `npx esbuild --bundle ${`${__dirname}/handlers/define.ts`} ${defineInstructions}`,
+  ]);
   expect(bundleProcess.stdout.toString()).toMatchSnapshot();
 });
 
 test('throws with ESM and NODEJS_12_X', () => {
-  expect(() => Bundling.bundle(stack, {
-    entry,
-    projectRoot,
-    depsLockFilePath,
-    runtime: Runtime.NODEJS_12_X,
-    architecture: Architecture.X86_64,
-    format: OutputFormat.ESM,
-  })).toThrow(/ECMAScript module output format is not supported by the nodejs12.x runtime/);
+  expect(() =>
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: Runtime.NODEJS_12_X,
+      architecture: Architecture.X86_64,
+      format: OutputFormat.ESM,
+    })
+  ).toThrow(/ECMAScript module output format is not supported by the nodejs12.x runtime/);
 });
 
 test('esbuild bundling source map default', () => {
@@ -303,7 +318,8 @@ test('esbuild bundling source map default', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
           `--sourcemap --external:${STANDARD_EXTERNAL}`,
@@ -316,7 +332,7 @@ test('esbuild bundling source map default', () => {
 test.each([
   [Runtime.NODEJS_18_X, 'node18'],
   [Runtime.NODEJS_20_X, 'node20'],
-]) ('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
+])('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
   const cdkApp = new App({
     context: {
       '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
@@ -336,7 +352,8 @@ test.each([
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/handler.ts" --target=${target} --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/* --external:@smithy/*`,
       ],
     }),
@@ -364,7 +381,8 @@ test('esbuild bundling with bundleAwsSdk true with feature flag enabled using No
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
       ],
     }),
@@ -391,7 +409,8 @@ test('esbuild bundling with feature flag enabled using Node Latest', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
       ],
     }),
@@ -418,7 +437,8 @@ test('esbuild bundling with feature flag enabled using Node 16', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
       ],
     }),
@@ -439,7 +459,8 @@ test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/*`,
       ],
     }),
@@ -461,7 +482,8 @@ test('esbuild bundling includes aws-sdk', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
       ],
     }),
@@ -484,7 +506,8 @@ test('esbuild bundling source map inline', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
           `--sourcemap=inline --external:${STANDARD_EXTERNAL}`,
@@ -508,7 +531,8 @@ test('esbuild bundling is correctly done with custom runtime matching predefined
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
           `--sourcemap=inline --external:${STANDARD_EXTERNAL}`,
@@ -533,7 +557,8 @@ test('esbuild bundling source map enabled when only source map mode exists', () 
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
           `--sourcemap=inline --external:${STANDARD_EXTERNAL}`,
@@ -573,9 +598,7 @@ test('Detects yarn.lock', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(yarnLock), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
-      command: expect.arrayContaining([
-        expect.stringMatching(/yarn\.lock.+yarn install --no-immutable/),
-      ]),
+      command: expect.arrayContaining([expect.stringMatching(/yarn\.lock.+yarn install --no-immutable/)]),
     }),
   });
 });
@@ -597,7 +620,9 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(
+          /echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/
+        ),
       ]),
     }),
   });
@@ -619,9 +644,7 @@ test('Detects bun.lockb', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(bunLock), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
-      command: expect.arrayContaining([
-        expect.stringMatching(/bun\.lockb.+bun install --frozen-lockfile/),
-      ]),
+      command: expect.arrayContaining([expect.stringMatching(/bun\.lockb.+bun install --frozen-lockfile/)]),
     }),
   });
 });
@@ -639,11 +662,14 @@ test('with Docker build args', () => {
     forceDockerBundling: true,
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
-    buildArgs: expect.objectContaining({
-      HELLO: 'WORLD',
-    }),
-  }));
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+    expect.stringMatching(/lib$/),
+    expect.objectContaining({
+      buildArgs: expect.objectContaining({
+        HELLO: 'WORLD',
+      }),
+    })
+  );
 });
 
 test('Local bundling', () => {
@@ -679,7 +705,7 @@ test('Local bundling', () => {
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
       cwd: '/project',
-    }),
+    })
   );
 
   // Docker image is not built
@@ -702,9 +728,11 @@ test('Incorrect esbuild version', () => {
     architecture: Architecture.X86_64,
   });
 
-  expect(() => bundler.local?.tryBundle('/outdir', {
-    image: STANDARD_RUNTIME.bundlingImage,
-  })).toThrow(/Expected esbuild version 0.x but got 3.4.5/);
+  expect(() =>
+    bundler.local?.tryBundle('/outdir', {
+      image: STANDARD_RUNTIME.bundlingImage,
+    })
+  ).toThrow(/Expected esbuild version 0.x but got 3.4.5/);
 });
 
 test('Custom bundling docker image', () => {
@@ -735,10 +763,7 @@ test('with command hooks', () => {
     architecture: Architecture.X86_64,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
-        return [
-          `echo hello > ${inputDir}/a.txt`,
-          `cp ${inputDir}/a.txt ${outputDir}`,
-        ];
+        return [`echo hello > ${inputDir}/a.txt`, `cp ${inputDir}/a.txt ${outputDir}`];
       },
       afterBundling(inputDir: string, outputDir: string): string[] {
         return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
@@ -754,8 +779,11 @@ test('with command hooks', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
-        expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+        'bash',
+        '-c',
+        expect.stringMatching(
+          /^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/
+        ),
       ],
     }),
   });
@@ -776,7 +804,8 @@ test('esbuild bundling with projectRoot', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/index.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL} --tsconfig=/asset-input/lib/custom-tsconfig.ts`,
       ],
     }),
@@ -802,7 +831,8 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           `esbuild --bundle "/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
@@ -835,7 +865,8 @@ test('esbuild bundling with pre compilations', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           `tsc \"/asset-input/test/bundling.test.ts\" ${compilerOptions} &&`,
           `esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=${STANDARD_TARGET} --platform=node --outfile=\"/asset-output/index.js\" --external:${STANDARD_EXTERNAL}`,
@@ -859,7 +890,6 @@ test('throws with pre compilation and not found tsconfig', () => {
       architecture: Architecture.X86_64,
     });
   }).toThrow('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
-
 });
 
 test('with custom hash', () => {
@@ -874,10 +904,13 @@ test('with custom hash', () => {
   });
 
   // Correctly passes asset hash options
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), expect.objectContaining({
-    assetHash: 'custom',
-    assetHashType: AssetHashType.CUSTOM,
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    path.dirname(depsLockFilePath),
+    expect.objectContaining({
+      assetHash: 'custom',
+      assetHashType: AssetHashType.CUSTOM,
+    })
+  );
 });
 
 test('Custom bundling entrypoint', () => {
@@ -1032,7 +1065,7 @@ test('Custom bundling file copy variant', () => {
   });
 });
 
-test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', () => {
+test("bundling using NODEJS_LATEST doesn't externalize anything by default", () => {
   Bundling.bundle(stack, {
     entry,
     projectRoot,
@@ -1045,7 +1078,8 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
       ],
     }),
@@ -1062,8 +1096,9 @@ test('bundling with <= Node16 warns when sdk v3 is external', () => {
     externalModules: ['@aws-sdk/client-s3'],
   });
 
-  Annotations.fromStack(stack).hasWarning('*',
-    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
+  Annotations.fromStack(stack).hasWarning(
+    '*',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]'
   );
 });
 
@@ -1077,11 +1112,13 @@ test('bundling with <= Node16 does not warn with default externalModules', () =>
     architecture: Architecture.X86_64,
   });
 
-  Annotations.fromStack(myStack).hasNoWarning('*',
-    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
+  Annotations.fromStack(myStack).hasNoWarning(
+    '*',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]'
   );
-  Annotations.fromStack(myStack).hasNoWarning('*',
-    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
+  Annotations.fromStack(myStack).hasNoWarning(
+    '*',
+    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]'
   );
 });
 
@@ -1095,8 +1132,9 @@ test('bundling with >= Node18 warns when sdk v2 is external', () => {
     externalModules: ['aws-sdk'],
   });
 
-  Annotations.fromStack(stack).hasWarning('*',
-    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
+  Annotations.fromStack(stack).hasWarning(
+    '*',
+    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]'
   );
 });
 
@@ -1110,11 +1148,13 @@ test('bundling with >= Node18 does not warn with default externalModules', () =>
     architecture: Architecture.X86_64,
   });
 
-  Annotations.fromStack(myStack).hasNoWarning('*',
-    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
+  Annotations.fromStack(myStack).hasNoWarning(
+    '*',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]'
   );
-  Annotations.fromStack(myStack).hasNoWarning('*',
-    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
+  Annotations.fromStack(myStack).hasNoWarning(
+    '*',
+    'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]'
   );
 });
 
@@ -1128,8 +1168,9 @@ test('bundling with NODEJS_LATEST warns when any dependencies are external', () 
     externalModules: ['my-external-dep'],
   });
 
-  Annotations.fromStack(stack).hasWarning('*',
-    'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version. [ack: @aws-cdk/aws-lambda-nodejs:variableRuntimeExternals]',
+  Annotations.fromStack(stack).hasWarning(
+    '*',
+    'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version. [ack: @aws-cdk/aws-lambda-nodejs:variableRuntimeExternals]'
   );
 });
 
@@ -1142,8 +1183,9 @@ test('Node 16 runtimes warn about sdk v2 upgrades', () => {
     architecture: Architecture.X86_64,
   });
 
-  Annotations.fromStack(stack).hasWarning('*',
-    'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]',
+  Annotations.fromStack(stack).hasWarning(
+    '*',
+    'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]'
   );
 });
 

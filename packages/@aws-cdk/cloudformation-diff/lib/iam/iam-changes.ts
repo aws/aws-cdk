@@ -204,9 +204,7 @@ export class IamChanges {
     const ret: string[][] = [];
     const header = ['', 'Resource', 'InstanceArn', 'AccessControlAttributes'];
 
-    function formatAccessControlAttribute(
-      aca: ISsoInstanceACAConfig.AccessControlAttribute
-    ): string {
+    function formatAccessControlAttribute(aca: ISsoInstanceACAConfig.AccessControlAttribute): string {
       return `Key: ${aca?.Key}, Values: [${aca?.Value?.Source.join(', ')}]`;
     }
 
@@ -249,15 +247,11 @@ export class IamChanges {
       'CustomerManagedPolicyReferences',
     ];
 
-    function formatManagedPolicyRef(
-      s: ISsoPermissionSet.CustomerManagedPolicyReference | undefined
-    ): string {
+    function formatManagedPolicyRef(s: ISsoPermissionSet.CustomerManagedPolicyReference | undefined): string {
       return `Name: ${s?.Name || ''}, Path: ${s?.Path || ''}`;
     }
 
-    function formatSsoPermissionsBoundary(
-      ssoPb: ISsoPermissionSet.PermissionsBoundary | undefined
-    ): string {
+    function formatSsoPermissionsBoundary(ssoPb: ISsoPermissionSet.PermissionsBoundary | undefined): string {
       // ManagedPolicyArn OR CustomerManagedPolicyReference can be specified -- but not both.
       if (ssoPb?.ManagedPolicyArn !== undefined) {
         return `ManagedPolicyArn: ${ssoPb?.ManagedPolicyArn || ''}`;
@@ -319,12 +313,8 @@ export class IamChanges {
     switch (propertyChange.scrutinyType) {
       case PropertyScrutinyType.InlineIdentityPolicies:
         // AWS::IAM::{ Role | User | Group }.Policies
-        this.statements.addOld(
-          ...this.readIdentityPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId)
-        );
-        this.statements.addNew(
-          ...this.readIdentityPolicies(propertyChange.newValue, propertyChange.resourceLogicalId)
-        );
+        this.statements.addOld(...this.readIdentityPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId));
+        this.statements.addNew(...this.readIdentityPolicies(propertyChange.newValue, propertyChange.resourceLogicalId));
         break;
       case PropertyScrutinyType.InlineResourcePolicy:
         // Any PolicyDocument on a resource (including AssumeRolePolicyDocument)
@@ -365,16 +355,10 @@ export class IamChanges {
         break;
       case ResourceScrutinyType.SsoPermissionSet:
         this.ssoPermissionSets.addOld(
-          ...this.readSsoPermissionSet(
-            resourceChange.oldProperties,
-            resourceChange.resourceLogicalId
-          )
+          ...this.readSsoPermissionSet(resourceChange.oldProperties, resourceChange.resourceLogicalId)
         );
         this.ssoPermissionSets.addNew(
-          ...this.readSsoPermissionSet(
-            resourceChange.newProperties,
-            resourceChange.resourceLogicalId
-          )
+          ...this.readSsoPermissionSet(resourceChange.newProperties, resourceChange.resourceLogicalId)
         );
         break;
       case ResourceScrutinyType.SsoAssignmentResource:
@@ -387,16 +371,10 @@ export class IamChanges {
         break;
       case ResourceScrutinyType.SsoInstanceACAConfigResource:
         this.ssoInstanceACAConfigs.addOld(
-          ...this.readSsoInstanceACAConfigs(
-            resourceChange.oldProperties,
-            resourceChange.resourceLogicalId
-          )
+          ...this.readSsoInstanceACAConfigs(resourceChange.oldProperties, resourceChange.resourceLogicalId)
         );
         this.ssoInstanceACAConfigs.addNew(
-          ...this.readSsoInstanceACAConfigs(
-            resourceChange.newProperties,
-            resourceChange.resourceLogicalId
-          )
+          ...this.readSsoInstanceACAConfigs(resourceChange.newProperties, resourceChange.resourceLogicalId)
         );
         break;
     }
@@ -414,13 +392,8 @@ export class IamChanges {
 
     return flatMap(policies, (policy: any) => {
       // check if the Policy itself is not an intrinsic, like an Fn::If
-      const unparsedStatement = policy.PolicyDocument?.Statement
-        ? policy.PolicyDocument.Statement
-        : policy;
-      return defaultPrincipal(
-        appliesToPrincipal,
-        parseStatements(renderIntrinsics(unparsedStatement))
-      );
+      const unparsedStatement = policy.PolicyDocument?.Statement ? policy.PolicyDocument.Statement : policy;
+      return defaultPrincipal(appliesToPrincipal, parseStatements(renderIntrinsics(unparsedStatement)));
     });
   }
 
@@ -434,9 +407,7 @@ export class IamChanges {
 
     properties = renderIntrinsics(properties);
 
-    const principals = (properties.Groups || [])
-      .concat(properties.Users || [])
-      .concat(properties.Roles || []);
+    const principals = (properties.Groups || []).concat(properties.Users || []).concat(properties.Roles || []);
     return flatMap(principals, (principal: string) => {
       const ref = 'AWS:' + principal;
       return defaultPrincipal(ref, parseStatements(properties.PolicyDocument.Statement));
@@ -519,9 +490,7 @@ export class IamChanges {
     const policyKeys = Object.keys(properties).filter((key) => key.indexOf('Policy') > -1);
 
     // Find the key that identifies the resource(s) this policy applies to
-    const resourceKeys = Object.keys(properties).filter(
-      (key) => !policyKeys.includes(key) && !key.endsWith('Name')
-    );
+    const resourceKeys = Object.keys(properties).filter((key) => !policyKeys.includes(key) && !key.endsWith('Name'));
     let resources = resourceKeys.length === 1 ? properties[resourceKeys[0]] : ['???'];
 
     // For some resources, this is a singleton string, for some it's an array

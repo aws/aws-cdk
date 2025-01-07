@@ -1,10 +1,5 @@
 import { Construct } from 'constructs';
-import {
-  Ec2Service,
-  Ec2TaskDefinition,
-  PlacementConstraint,
-  PlacementStrategy,
-} from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import {
@@ -122,8 +117,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       // Create log driver if logging is enabled
       const enableLogging = taskImageOptions.enableLogging ?? true;
       const logDriver =
-        taskImageOptions.logDriver ??
-        (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+        taskImageOptions.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {

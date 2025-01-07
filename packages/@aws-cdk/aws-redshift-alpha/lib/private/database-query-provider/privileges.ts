@@ -27,9 +27,7 @@ export async function handler(
       event.OldResourceProperties as unknown as UserTablePrivilegesHandlerProps & ClusterProps,
       event.StackId
     );
-    const physicalId = replace
-      ? makePhysicalId(username, clusterProps, event.RequestId)
-      : event.PhysicalResourceId;
+    const physicalId = replace ? makePhysicalId(username, clusterProps, event.RequestId) : event.PhysicalResourceId;
     return { PhysicalResourceId: physicalId };
   } else {
     /* eslint-disable-next-line dot-notation */
@@ -108,8 +106,7 @@ async function updatePrivileges(
 
   const tablesToGrant = tablePrivileges.filter(({ tableId, tableName, actions }) => {
     const tableAdded = !oldTablePrivileges.find(
-      ({ tableId: otherTableId, tableName: otherTableName }) =>
-        tableId === otherTableId && tableName === otherTableName
+      ({ tableId: otherTableId, tableName: otherTableName }) => tableId === otherTableId && tableName === otherTableName
     );
     const actionsAdded = oldTablePrivileges.find(
       ({ tableId: otherTableId, actions: otherActions }) =>

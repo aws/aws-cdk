@@ -1,10 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
-import {
-  IComputeEnvironment,
-  ComputeEnvironmentBase,
-  ComputeEnvironmentProps,
-} from './compute-environment-base';
+import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
 
@@ -45,10 +41,7 @@ export interface UnmanagedComputeEnvironmentProps extends ComputeEnvironmentProp
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
-export class UnmanagedComputeEnvironment
-  extends ComputeEnvironmentBase
-  implements IUnmanagedComputeEnvironment
-{
+export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implements IUnmanagedComputeEnvironment {
   /**
    * Import an UnmanagedComputeEnvironment by its arn
    */
@@ -89,9 +82,7 @@ export class UnmanagedComputeEnvironment
       serviceRole:
         props?.serviceRole?.roleArn ??
         new Role(this, 'BatchServiceRole', {
-          managedPolicies: [
-            ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
-          ],
+          managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole')],
           assumedBy: new ServicePrincipal('batch.amazonaws.com'),
         }).roleArn,
     });

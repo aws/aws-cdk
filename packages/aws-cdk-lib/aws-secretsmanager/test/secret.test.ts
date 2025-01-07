@@ -49,12 +49,7 @@ test('secret with kms', () => {
         {
           Effect: 'Allow',
           Resource: '*',
-          Action: [
-            'kms:Decrypt',
-            'kms:Encrypt',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-          ],
+          Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
           Principal: {
             AWS: {
               'Fn::Join': [
@@ -93,10 +88,7 @@ test('secret with kms', () => {
         {
           Effect: 'Allow',
           Resource: '*',
-          Action: [
-            'kms:CreateGrant',
-            'kms:DescribeKey',
-          ],
+          Action: ['kms:CreateGrant', 'kms:DescribeKey'],
           Principal: {
             AWS: {
               'Fn::Join': [
@@ -195,9 +187,12 @@ describe('secretStringBeta1', () => {
   });
 
   testDeprecated('toToken throws when provided an unsafe plaintext string', () => {
-    expect(() => new secretsmanager.Secret(stack, 'Secret', {
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken('unsafeP@$$'),
-    })).toThrow(/appears to be plaintext/);
+    expect(
+      () =>
+        new secretsmanager.Secret(stack, 'Secret', {
+          secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken('unsafeP@$$'),
+        })
+    ).toThrow(/appears to be plaintext/);
   });
 
   testDeprecated('toToken allows referencing a construct attribute', () => {
@@ -212,10 +207,12 @@ describe('secretStringBeta1', () => {
   });
 
   testDeprecated('toToken allows referencing a construct attribute in nested JSON', () => {
-    const secretString = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
-      key: accessKey.secretAccessKey.toString(),
-      username: 'myUser',
-    }));
+    const secretString = secretsmanager.SecretStringValueBeta1.fromToken(
+      JSON.stringify({
+        key: accessKey.secretAccessKey.toString(),
+        username: 'myUser',
+      })
+    );
     new secretsmanager.Secret(stack, 'Secret', {
       secretStringBeta1: secretString,
     });
@@ -228,10 +225,7 @@ describe('secretStringBeta1', () => {
           [
             '{"key":"',
             {
-              'Fn::GetAtt': [
-                'MyKey6AB29FA6',
-                'SecretAccessKey',
-              ],
+              'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'],
             },
             '","username":"myUser"}',
           ],
@@ -245,19 +239,25 @@ describe('secretStringBeta1', () => {
     // check is the simplest and most consistent to implement. Covering this edge case of
     // a resolved Token representing a Ref/Fn::GetAtt is out of scope for this initial pass.
     const secretKey = stack.resolve(accessKey.secretAccessKey);
-    expect(() => new secretsmanager.Secret(stack, 'Secret', {
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(secretKey),
-    })).toThrow(/appears to be plaintext/);
+    expect(
+      () =>
+        new secretsmanager.Secret(stack, 'Secret', {
+          secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(secretKey),
+        })
+    ).toThrow(/appears to be plaintext/);
   });
 
   testDeprecated('throws if both generateSecretString and secretStringBeta1 are provided', () => {
-    expect(() => new secretsmanager.Secret(stack, 'Secret', {
-      generateSecretString: {
-        generateStringKey: 'username',
-        secretStringTemplate: JSON.stringify({ username: 'username' }),
-      },
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
-    })).toThrow(/Cannot specify/);
+    expect(
+      () =>
+        new secretsmanager.Secret(stack, 'Secret', {
+          generateSecretString: {
+            generateStringKey: 'username',
+            secretStringTemplate: JSON.stringify({ username: 'username' }),
+          },
+          secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
+        })
+    ).toThrow(/Cannot specify/);
   });
 });
 
@@ -289,14 +289,13 @@ test('grantRead', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: { Ref: 'SecretA720EF05' },
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: { Ref: 'SecretA720EF05' },
+        },
+      ],
     },
   });
 });
@@ -330,14 +329,13 @@ test('grantRead with KMS Key', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: { Ref: 'SecretA720EF05' },
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: { Ref: 'SecretA720EF05' },
+        },
+      ],
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -364,10 +362,7 @@ test('grantRead with KMS Key', () => {
           Effect: 'Allow',
           Principal: {
             AWS: {
-              'Fn::GetAtt': [
-                'Role1ABCC5F0',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
             },
           },
           Resource: '*',
@@ -392,17 +387,11 @@ test('grantRead cross account', () => {
     ResourcePolicy: {
       Statement: [
         {
-          Action: [
-            'secretsmanager:GetSecretValue',
-            'secretsmanager:DescribeSecret',
-          ],
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
           Effect: 'Allow',
           Condition: {
             'ForAnyValue:StringEquals': {
-              'secretsmanager:VersionStage': [
-                'FOO',
-                'bar',
-              ],
+              'secretsmanager:VersionStage': ['FOO', 'bar'],
             },
           },
           Principal: {
@@ -433,41 +422,43 @@ test('grantRead cross account', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: Match.arrayWith([{
-        Action: 'kms:Decrypt',
-        Condition: {
-          StringEquals: {
-            'kms:ViaService': {
+      Statement: Match.arrayWith([
+        {
+          Action: 'kms:Decrypt',
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
               'Fn::Join': [
                 '',
                 [
-                  'secretsmanager.',
+                  'arn:',
                   {
-                    Ref: 'AWS::Region',
+                    Ref: 'AWS::Partition',
                   },
-                  '.amazonaws.com',
+                  ':iam::1234:root',
                 ],
               ],
             },
           },
+          Resource: '*',
         },
-        Effect: 'Allow',
-        Principal: {
-          AWS: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':iam::1234:root',
-              ],
-            ],
-          },
-        },
-        Resource: '*',
-      }]),
+      ]),
       Version: '2012-10-17',
     },
   });
@@ -486,52 +477,50 @@ test('grantRead with version label constraint', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: { Ref: 'SecretA720EF05' },
-        Condition: {
-          'ForAnyValue:StringEquals': {
-            'secretsmanager:VersionStage': ['FOO', 'bar'],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: { Ref: 'SecretA720EF05' },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'secretsmanager:VersionStage': ['FOO', 'bar'],
+            },
           },
         },
-      }],
+      ],
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: Match.arrayWith([{
-        Action: 'kms:Decrypt',
-        Condition: {
-          StringEquals: {
-            'kms:ViaService': {
-              'Fn::Join': [
-                '',
-                [
-                  'secretsmanager.',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  '.amazonaws.com',
+      Statement: Match.arrayWith([
+        {
+          Action: 'kms:Decrypt',
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
                 ],
-              ],
+              },
             },
           },
-        },
-        Effect: 'Allow',
-        Principal: {
-          AWS: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
-            ],
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
+            },
           },
+          Resource: '*',
         },
-        Resource: '*',
-      }]),
+      ]),
       Version: '2012-10-17',
     },
   });
@@ -549,14 +538,13 @@ test('grantWrite', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:PutSecretValue',
-          'secretsmanager:UpdateSecret',
-        ],
-        Effect: 'Allow',
-        Resource: { Ref: 'SecretA720EF05' },
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+          Effect: 'Allow',
+          Resource: { Ref: 'SecretA720EF05' },
+        },
+      ],
     },
   });
 });
@@ -574,51 +562,45 @@ test('grantWrite with kms', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:PutSecretValue',
-          'secretsmanager:UpdateSecret',
-        ],
-        Effect: 'Allow',
-        Resource: { Ref: 'SecretA720EF05' },
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+          Effect: 'Allow',
+          Resource: { Ref: 'SecretA720EF05' },
+        },
+      ],
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: Match.arrayWith([{
-        Action: [
-          'kms:Encrypt',
-          'kms:ReEncrypt*',
-          'kms:GenerateDataKey*',
-        ],
-        Condition: {
-          StringEquals: {
-            'kms:ViaService': {
-              'Fn::Join': [
-                '',
-                [
-                  'secretsmanager.',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  '.amazonaws.com',
+      Statement: Match.arrayWith([
+        {
+          Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
                 ],
-              ],
+              },
             },
           },
-        },
-        Effect: 'Allow',
-        Principal: {
-          AWS: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
-            ],
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
+            },
           },
+          Resource: '*',
         },
-        Resource: '*',
-      }]),
+      ]),
     },
   });
 });
@@ -639,11 +621,7 @@ test('secretValue', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('CDK::Phony::Resource', {
     value: {
-      'Fn::Join': ['', [
-        '{{resolve:secretsmanager:',
-        { Ref: 'SecretA720EF05' },
-        ':SecretString:::}}',
-      ]],
+      'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'SecretA720EF05' }, ':SecretString:::}}']],
     },
   });
 });
@@ -661,10 +639,13 @@ describe('secretName', () => {
 
     Template.fromStack(stack).hasOutput('MySecretName', {
       Value: {
-        'Fn::Join': ['-', [
-          { 'Fn::Select': [0, { 'Fn::Split': ['-', resourceName] }] },
-          { 'Fn::Select': [1, { 'Fn::Split': ['-', resourceName] }] },
-        ]],
+        'Fn::Join': [
+          '-',
+          [
+            { 'Fn::Select': [0, { 'Fn::Split': ['-', resourceName] }] },
+            { 'Fn::Select': [1, { 'Fn::Split': ['-', resourceName] }] },
+          ],
+        ],
       },
     });
   });
@@ -750,7 +731,9 @@ testDeprecated('import by secretArn', () => {
   expect(secret.secretName).toBe('MySecret');
   expect(secret.encryptionKey).toBeUndefined();
   expect(stack.resolve(secret.secretValue)).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
-  expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+  expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(
+    `{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`
+  );
 });
 
 test('import by secretArn throws if ARN is malformed', () => {
@@ -758,9 +741,11 @@ test('import by secretArn throws if ARN is malformed', () => {
   const arnWithoutResourceName = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret';
 
   // WHEN
-  expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret1', {
-    secretPartialArn: arnWithoutResourceName,
-  })).toThrow(/invalid ARN format/);
+  expect(() =>
+    secretsmanager.Secret.fromSecretAttributes(stack, 'Secret1', {
+      secretPartialArn: arnWithoutResourceName,
+    })
+  ).toThrow(/invalid ARN format/);
 });
 
 testDeprecated('import by secretArn supports secret ARNs without suffixes', () => {
@@ -779,12 +764,19 @@ testDeprecated('import by secretArn does not strip suffixes unless the suffix le
   // GIVEN
   const arnWith5CharacterSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:github-token';
   const arnWith6CharacterSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:github-token-f3gDy9';
-  const arnWithMultiple6CharacterSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:github-token-f3gDy9-acb123';
+  const arnWithMultiple6CharacterSuffix =
+    'arn:aws:secretsmanager:eu-west-1:111111111111:secret:github-token-f3gDy9-acb123';
 
   // THEN
-  expect(secretsmanager.Secret.fromSecretArn(stack, 'Secret5', arnWith5CharacterSuffix).secretName).toEqual('github-token');
-  expect(secretsmanager.Secret.fromSecretArn(stack, 'Secret6', arnWith6CharacterSuffix).secretName).toEqual('github-token');
-  expect(secretsmanager.Secret.fromSecretArn(stack, 'Secret6Twice', arnWithMultiple6CharacterSuffix).secretName).toEqual('github-token-f3gDy9');
+  expect(secretsmanager.Secret.fromSecretArn(stack, 'Secret5', arnWith5CharacterSuffix).secretName).toEqual(
+    'github-token'
+  );
+  expect(secretsmanager.Secret.fromSecretArn(stack, 'Secret6', arnWith6CharacterSuffix).secretName).toEqual(
+    'github-token'
+  );
+  expect(
+    secretsmanager.Secret.fromSecretArn(stack, 'Secret6Twice', arnWithMultiple6CharacterSuffix).secretName
+  ).toEqual('github-token-f3gDy9');
 });
 
 test('import by secretArn supports tokens for ARNs', () => {
@@ -800,7 +792,12 @@ test('import by secretArn supports tokens for ARNs', () => {
   // THEN
   expect(secretB.secretArn).toBe(secretA.secretArn);
   Template.fromStack(stackB).hasOutput('secretBSecretName', {
-    Value: { 'Fn::Select': [6, { 'Fn::Split': [':', { 'Fn::ImportValue': 'StackA:ExportsOutputRefSecretA188F281703FC8A52' }] }] },
+    Value: {
+      'Fn::Select': [
+        6,
+        { 'Fn::Split': [':', { 'Fn::ImportValue': 'StackA:ExportsOutputRefSecretA188F281703FC8A52' }] },
+      ],
+    },
   });
 });
 
@@ -831,7 +828,9 @@ test('fromSecretCompleteArn', () => {
   expect(secret.secretName).toBe('MySecret');
   expect(secret.encryptionKey).toBeUndefined();
   expect(stack.resolve(secret.secretValue)).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
-  expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+  expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(
+    `{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`
+  );
 });
 
 test('fromSecretCompleteArn - grants', () => {
@@ -848,22 +847,18 @@ test('fromSecretCompleteArn - grants', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: secretArn,
-      },
-      {
-        Action: [
-          'secretsmanager:PutSecretValue',
-          'secretsmanager:UpdateSecret',
-        ],
-        Effect: 'Allow',
-        Resource: secretArn,
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: secretArn,
+        },
+        {
+          Action: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+          Effect: 'Allow',
+          Resource: secretArn,
+        },
+      ],
     },
   });
 });
@@ -900,7 +895,9 @@ test('fromSecretPartialArn', () => {
   expect(secret.secretName).toBe('MySecret');
   expect(secret.encryptionKey).toBeUndefined();
   expect(stack.resolve(secret.secretValue)).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
-  expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+  expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(
+    `{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`
+  );
 });
 
 test('fromSecretPartialArn - grants', () => {
@@ -917,22 +914,18 @@ test('fromSecretPartialArn - grants', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: `${secretArn}-??????`,
-      },
-      {
-        Action: [
-          'secretsmanager:PutSecretValue',
-          'secretsmanager:UpdateSecret',
-        ],
-        Effect: 'Allow',
-        Resource: `${secretArn}-??????`,
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: `${secretArn}-??????`,
+        },
+        {
+          Action: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+          Effect: 'Allow',
+          Resource: `${secretArn}-??????`,
+        },
+      ],
     },
   });
 });
@@ -945,7 +938,8 @@ describe('fromSecretAttributes', () => {
 
     // WHEN
     const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
-      secretCompleteArn: secretArn, encryptionKey,
+      secretCompleteArn: secretArn,
+      encryptionKey,
     });
 
     // THEN
@@ -954,39 +948,51 @@ describe('fromSecretAttributes', () => {
     expect(secret.secretName).toBe('MySecret');
     expect(secret.encryptionKey).toBe(encryptionKey);
     expect(stack.resolve(secret.secretValue)).toBe(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
-    expect(stack.resolve(secret.secretValueFromJson('password'))).toBe(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+    expect(stack.resolve(secret.secretValueFromJson('password'))).toBe(
+      `{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`
+    );
   });
 
   testDeprecated('throws if secretArn and either secretCompleteArn or secretPartialArn are provided', () => {
     const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
     const error = /cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`/;
-    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
-      secretArn,
-      secretCompleteArn: secretArn,
-    })).toThrow(error);
-    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
-      secretArn,
-      secretPartialArn: secretArn,
-    })).toThrow(error);
+    expect(() =>
+      secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+        secretArn,
+        secretCompleteArn: secretArn,
+      })
+    ).toThrow(error);
+    expect(() =>
+      secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+        secretArn,
+        secretPartialArn: secretArn,
+      })
+    ).toThrow(error);
   });
 
   test('throws if no ARN is provided', () => {
-    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {})).toThrow(/must use only one of `secretCompleteArn` or `secretPartialArn`/);
+    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {})).toThrow(
+      /must use only one of `secretCompleteArn` or `secretPartialArn`/
+    );
   });
 
   test('throws if both complete and partial ARNs are provided', () => {
     const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
-    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
-      secretPartialArn: secretArn,
-      secretCompleteArn: secretArn,
-    })).toThrow(/must use only one of `secretCompleteArn` or `secretPartialArn`/);
+    expect(() =>
+      secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+        secretPartialArn: secretArn,
+        secretCompleteArn: secretArn,
+      })
+    ).toThrow(/must use only one of `secretCompleteArn` or `secretPartialArn`/);
   });
 
   test('throws if secretCompleteArn is not complete', () => {
-    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
-      secretCompleteArn: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret',
-    })).toThrow(/does not appear to be complete/);
+    expect(() =>
+      secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+        secretCompleteArn: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret',
+      })
+    ).toThrow(/does not appear to be complete/);
   });
 
   test('parses environment from secretArn', () => {
@@ -1015,7 +1021,9 @@ testDeprecated('import by secret name', () => {
   expect(secret.secretName).toBe(secretName);
   expect(secret.secretFullArn).toBeUndefined();
   expect(stack.resolve(secret.secretValue)).toBe(`{{resolve:secretsmanager:${secretName}:SecretString:::}}`);
-  expect(stack.resolve(secret.secretValueFromJson('password'))).toBe(`{{resolve:secretsmanager:${secretName}:SecretString:password::}}`);
+  expect(stack.resolve(secret.secretValueFromJson('password'))).toBe(
+    `{{resolve:secretsmanager:${secretName}:SecretString:password::}}`
+  );
 });
 
 testDeprecated('import by secret name with grants', () => {
@@ -1029,35 +1037,34 @@ testDeprecated('import by secret name with grants', () => {
 
   // THEN
   const expectedSecretReference = {
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':secretsmanager:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':secret:MySecret*',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':secretsmanager:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':secret:MySecret*',
+      ],
+    ],
   };
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: expectedSecretReference,
-      },
-      {
-        Action: [
-          'secretsmanager:PutSecretValue',
-          'secretsmanager:UpdateSecret',
-        ],
-        Effect: 'Allow',
-        Resource: expectedSecretReference,
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: expectedSecretReference,
+        },
+        {
+          Action: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+          Effect: 'Allow',
+          Resource: expectedSecretReference,
+        },
+      ],
     },
   });
 });
@@ -1070,19 +1077,24 @@ test('import by secret name v2', () => {
   const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', secretName);
 
   // THEN
-  expect(secret.secretArn).toBe(`arn:${stack.partition}:secretsmanager:${stack.region}:${stack.account}:secret:MySecret`);
+  expect(secret.secretArn).toBe(
+    `arn:${stack.partition}:secretsmanager:${stack.region}:${stack.account}:secret:MySecret`
+  );
   expect(secret.secretName).toBe(secretName);
   expect(secret.secretFullArn).toBeUndefined();
   expect(stack.resolve(secret.secretValue)).toEqual({
-    'Fn::Join': ['', [
-      '{{resolve:secretsmanager:arn:',
-      { Ref: 'AWS::Partition' },
-      ':secretsmanager:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':secret:MySecret:SecretString:::}}',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        '{{resolve:secretsmanager:arn:',
+        { Ref: 'AWS::Partition' },
+        ':secretsmanager:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':secret:MySecret:SecretString:::}}',
+      ],
+    ],
   });
 });
 
@@ -1097,35 +1109,34 @@ test('import by secret name v2 with grants', () => {
 
   // THEN
   const expectedSecretReference = {
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':secretsmanager:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':secret:MySecret-??????',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':secretsmanager:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':secret:MySecret-??????',
+      ],
+    ],
   };
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: expectedSecretReference,
-      },
-      {
-        Action: [
-          'secretsmanager:PutSecretValue',
-          'secretsmanager:UpdateSecret',
-        ],
-        Effect: 'Allow',
-        Resource: expectedSecretReference,
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: expectedSecretReference,
+        },
+        {
+          Action: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+          Effect: 'Allow',
+          Resource: expectedSecretReference,
+        },
+      ],
     },
   });
 });
@@ -1196,19 +1207,25 @@ test('add a rotation schedule to an attached secret', () => {
 });
 
 test('throws when specifying secretStringTemplate but not generateStringKey', () => {
-  expect(() => new secretsmanager.Secret(stack, 'Secret', {
-    generateSecretString: {
-      secretStringTemplate: JSON.stringify({ username: 'username' }),
-    },
-  })).toThrow(/`secretStringTemplate`.+`generateStringKey`/);
+  expect(
+    () =>
+      new secretsmanager.Secret(stack, 'Secret', {
+        generateSecretString: {
+          secretStringTemplate: JSON.stringify({ username: 'username' }),
+        },
+      })
+  ).toThrow(/`secretStringTemplate`.+`generateStringKey`/);
 });
 
 test('throws when specifying generateStringKey but not secretStringTemplate', () => {
-  expect(() => new secretsmanager.Secret(stack, 'Secret', {
-    generateSecretString: {
-      generateStringKey: 'password',
-    },
-  })).toThrow(/`secretStringTemplate`.+`generateStringKey`/);
+  expect(
+    () =>
+      new secretsmanager.Secret(stack, 'Secret', {
+        generateSecretString: {
+          generateStringKey: 'password',
+        },
+      })
+  ).toThrow(/`secretStringTemplate`.+`generateStringKey`/);
 });
 
 test('equivalence of SecretValue and Secret.fromSecretAttributes', () => {
@@ -1216,7 +1233,9 @@ test('equivalence of SecretValue and Secret.fromSecretAttributes', () => {
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
   // WHEN
-  const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretCompleteArn: secretArn }).secretValueFromJson('password');
+  const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', {
+    secretCompleteArn: secretArn,
+  }).secretValueFromJson('password');
   const value = cdk.SecretValue.secretsManager(secretArn, { jsonField: 'password' });
 
   // THEN
@@ -1228,11 +1247,13 @@ test('can add to the resource policy of a secret', () => {
   const secret = new secretsmanager.Secret(stack, 'Secret');
 
   // WHEN
-  secret.addToResourcePolicy(new iam.PolicyStatement({
-    actions: ['secretsmanager:GetSecretValue'],
-    resources: ['*'],
-    principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/cool-user')],
-  }));
+  secret.addToResourcePolicy(
+    new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecretValue'],
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/cool-user')],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
@@ -1261,10 +1282,12 @@ test('fails if secret policy has no actions', () => {
   const secret = new secretsmanager.Secret(stack, 'Secret');
 
   // WHEN
-  secret.addToResourcePolicy(new iam.PolicyStatement({
-    resources: ['*'],
-    principals: [new iam.ArnPrincipal('arn')],
-  }));
+  secret.addToResourcePolicy(
+    new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    })
+  );
 
   // THEN
   expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
@@ -1276,13 +1299,17 @@ test('fails if secret policy has no IAM principals', () => {
   const secret = new secretsmanager.Secret(stack, 'Secret');
 
   // WHEN
-  secret.addToResourcePolicy(new iam.PolicyStatement({
-    resources: ['*'],
-    actions: ['secretsmanager:*'],
-  }));
+  secret.addToResourcePolicy(
+    new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['secretsmanager:*'],
+    })
+  );
 
   // THEN
-  expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+  expect(() => app.synth()).toThrow(
+    /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/
+  );
 });
 
 test('with replication regions', () => {
@@ -1290,7 +1317,10 @@ test('with replication regions', () => {
   const secret = new secretsmanager.Secret(stack, 'Secret', {
     replicaRegions: [{ region: 'eu-west-1' }],
   });
-  secret.addReplicaRegion('eu-central-1', kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:eu-central-1:123456789012:key/my-key-id'));
+  secret.addReplicaRegion(
+    'eu-central-1',
+    kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:eu-central-1:123456789012:key/my-key-id')
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
@@ -1320,11 +1350,7 @@ describe('secretObjectValue', () => {
       SecretString: {
         'Fn::Join': [
           '',
-          [
-            '{"username":"username","password":"',
-            { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] },
-            '"}',
-          ],
+          ['{"username":"username","password":"', { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] }, '"}'],
         ],
       },
     });
@@ -1347,11 +1373,7 @@ describe('secretObjectValue', () => {
       SecretString: {
         'Fn::Join': [
           '',
-          [
-            '{"username":"username","password":"',
-            { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] },
-            '"}',
-          ],
+          ['{"username":"username","password":"', { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] }, '"}'],
         ],
       },
     });
@@ -1372,23 +1394,20 @@ test('cross-environment grant with direct object reference', () => {
   Template.fromStack(consumerStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': ['', [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':secretsmanager:foo:1111111111:secret:MySecret-??????',
-          ]],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              ['arn:', { Ref: 'AWS::Partition' }, ':secretsmanager:foo:1111111111:secret:MySecret-??????'],
+            ],
+          },
         },
-      }],
+      ],
     },
   });
-
 });
 
 test('cross-environment grant with imported from completeArn', () => {
@@ -1406,17 +1425,15 @@ test('cross-environment grant with imported from completeArn', () => {
   Template.fromStack(consumerStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: secretCompleteArn,
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: secretCompleteArn,
+        },
+      ],
     },
   });
-
 });
 
 test('cross-environment grant with imported from partialArn', () => {
@@ -1434,15 +1451,13 @@ test('cross-environment grant with imported from partialArn', () => {
   Template.fromStack(consumerStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: `${secretPartialArn}-??????`,
-      }],
+      Statement: [
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: `${secretPartialArn}-??????`,
+        },
+      ],
     },
   });
-
 });

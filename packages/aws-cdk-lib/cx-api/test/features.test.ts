@@ -4,8 +4,8 @@ import * as feats from '../lib/features';
 import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
 test('all future flags have defaults configured', () => {
-  Object.keys(feats.FLAGS).forEach(flag => {
-    expect(typeof(feats.futureFlagDefault(flag))).toEqual('boolean');
+  Object.keys(feats.FLAGS).forEach((flag) => {
+    expect(typeof feats.futureFlagDefault(flag)).toEqual('boolean');
   });
 });
 
@@ -45,16 +45,18 @@ test('feature flag defaults may not be changed anymore', () => {
 });
 
 test('expired feature flags may not be changed anymore', () => {
-  expect(feats.CURRENT_VERSION_EXPIRED_FLAGS).toEqual([
-    feats.DOCKER_IGNORE_SUPPORT,
-    feats.ECS_REMOVE_DEFAULT_DESIRED_COUNT,
-    feats.EFS_DEFAULT_ENCRYPTION_AT_REST,
-    feats.ENABLE_DIFF_NO_FAIL_CONTEXT,
-    feats.ENABLE_STACK_NAME_DUPLICATES_CONTEXT,
-    feats.KMS_DEFAULT_KEY_POLICIES,
-    feats.S3_GRANT_WRITE_WITHOUT_ACL,
-    feats.SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME,
-  ].sort());
+  expect(feats.CURRENT_VERSION_EXPIRED_FLAGS).toEqual(
+    [
+      feats.DOCKER_IGNORE_SUPPORT,
+      feats.ECS_REMOVE_DEFAULT_DESIRED_COUNT,
+      feats.EFS_DEFAULT_ENCRYPTION_AT_REST,
+      feats.ENABLE_DIFF_NO_FAIL_CONTEXT,
+      feats.ENABLE_STACK_NAME_DUPLICATES_CONTEXT,
+      feats.KMS_DEFAULT_KEY_POLICIES,
+      feats.S3_GRANT_WRITE_WITHOUT_ACL,
+      feats.SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME,
+    ].sort()
+  );
 });
 
 test.each([
@@ -72,10 +74,12 @@ test.each([
 });
 
 // eslint-disable-next-line @cdklabs/no-invalid-path
-const currentv2: string = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', '..', 'version.v2.json'), { encoding: 'utf-8' })).version;
+const currentv2: string = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', '..', '..', '..', 'version.v2.json'), { encoding: 'utf-8' })
+).version;
 
 describe(`introducedIn.v2 is either <= ${currentv2} or magic value "${MAGIC_V2NEXT}"`, () => {
-  test.each(Object.keys(feats.FLAGS))('for flag %p', flag => {
+  test.each(Object.keys(feats.FLAGS))('for flag %p', (flag) => {
     const v2In = feats.FLAGS[flag].introducedIn.v2;
     if (v2In === undefined || v2In === MAGIC_V2NEXT) {
       return;

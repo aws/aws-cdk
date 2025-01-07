@@ -46,10 +46,7 @@ class ValidationError extends Error {
  *        <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
  *      </ul>
  */
-export function determineFullyQualifiedDomainName(
-  providedName: string,
-  hostedZone: IHostedZone
-): string {
+export function determineFullyQualifiedDomainName(providedName: string, hostedZone: IHostedZone): string {
   if (providedName.endsWith('.')) {
     return providedName;
   }

@@ -12,34 +12,35 @@ test('use AwsApi as an event rule target', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.AwsApi({
-    service: 'ECS',
-    action: 'updateService',
-    parameters: {
-      service: 'cool-service',
-      forceNewDeployment: true,
-    },
-    catchErrorPattern: 'error',
-    apiVersion: '2019-01-01',
-  }));
+  rule.addTarget(
+    new targets.AwsApi({
+      service: 'ECS',
+      action: 'updateService',
+      parameters: {
+        service: 'cool-service',
+        forceNewDeployment: true,
+      },
+      catchErrorPattern: 'error',
+      apiVersion: '2019-01-01',
+    })
+  );
 
-  rule.addTarget(new targets.AwsApi({
-    service: 'RDS',
-    action: 'createDBSnapshot',
-    parameters: {
-      DBInstanceIdentifier: 'cool-instance',
-    },
-  }));
+  rule.addTarget(
+    new targets.AwsApi({
+      service: 'RDS',
+      action: 'createDBSnapshot',
+      parameters: {
+        DBInstanceIdentifier: 'cool-instance',
+      },
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620', 'Arn'],
         },
         Id: 'Target0',
         Input: JSON.stringify({
@@ -55,10 +56,7 @@ test('use AwsApi as an event rule target', () => {
       },
       {
         Arn: {
-          'Fn::GetAtt': [
-            'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620', 'Arn'],
         },
         Id: 'Target1',
         Input: JSON.stringify({
@@ -102,27 +100,27 @@ test('with policy statement', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.AwsApi({
-    service: 'service',
-    action: 'action',
-    policyStatement: new iam.PolicyStatement({
-      actions: ['s3:GetObject'],
-      resources: ['resource'],
-    }),
-  }));
+  rule.addTarget(
+    new targets.AwsApi({
+      service: 'service',
+      action: 'action',
+      policyStatement: new iam.PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: ['resource'],
+      }),
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620', 'Arn'],
         },
         Id: 'Target0',
-        Input: JSON.stringify({ // No `policyStatement`
+        Input: JSON.stringify({
+          // No `policyStatement`
           service: 'service',
           action: 'action',
         }),
@@ -163,5 +161,8 @@ test('with service not in AWS SDK', () => {
   rule.addTarget(awsApi);
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('*', 'Service no-such-service does not exist in the AWS SDK. Check the list of available services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html [ack: @aws-cdk/aws-events-targets:no-such-serviceDoesNotExist]');
+  Annotations.fromStack(stack).hasWarning(
+    '*',
+    'Service no-such-service does not exist in the AWS SDK. Check the list of available services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html [ack: @aws-cdk/aws-events-targets:no-such-serviceDoesNotExist]'
+  );
 });

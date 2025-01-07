@@ -105,10 +105,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
   /**
    * Builds a code generated Lambda function class.
    */
-  public static buildFunction(
-    scope: HandlerFrameworkModule,
-    props: HandlerFrameworkClassProps
-  ): HandlerFrameworkClass {
+  public static buildFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
     return new (class Function extends HandlerFrameworkClass {
       public constructor() {
         super(scope, {
@@ -135,9 +132,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
         ]);
         const metadataStatements: Statement[] = [
-          expr.directCode(
-            `this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`
-          ),
+          expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
         ];
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -234,16 +229,11 @@ export abstract class HandlerFrameworkClass extends ClassType {
             ),
           ],
           ['handler', expr.lit(props.handler)],
-          [
-            'runtime',
-            this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider }),
-          ],
+          ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
         const metadataStatements: Statement[] = [
           expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_SINGLETON}', true)`),
-          expr.directCode(
-            `this.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`
-          ),
+          expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
           expr.directCode(
             `if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`
           ),
@@ -283,10 +273,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
             fromLocation: CORE_INTERNAL_STACK_IMPORT_PATH,
           });
           scope.registerImport(CORE_MODULE, {
-            targets: [
-              CORE_MODULE.CustomResourceProviderBase,
-              CORE_MODULE.CustomResourceProviderOptions,
-            ],
+            targets: [CORE_MODULE.CustomResourceProviderBase, CORE_MODULE.CustomResourceProviderOptions],
             fromLocation: CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH,
           });
         } else {
@@ -304,8 +291,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           static: true,
           returnType: Type.STRING,
           docs: {
-            summary:
-              'Returns a stack-level singleton ARN (service token) for the custom resource provider.',
+            summary: 'Returns a stack-level singleton ARN (service token) for the custom resource provider.',
           },
         });
         getOrCreateMethod.addParameter({
@@ -348,23 +334,14 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(
-            expr.ident('stack'),
-            $T(CORE_MODULE.Stack).of(expr.directCode(_scope.spec.name))
-          ),
-          stmt.constVar(
-            expr.ident('existing'),
-            expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)
-          ),
+          stmt.constVar(expr.ident('stack'), $T(CORE_MODULE.Stack).of(expr.directCode(_scope.spec.name))),
+          stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`))
         );
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          [
-            'codeDirectory',
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          ],
+          ['codeDirectory', PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`))],
           [
             'runtimeName',
             this.buildRuntimeProperty(scope, {
@@ -433,24 +410,17 @@ export abstract class HandlerFrameworkClass extends ClassType {
     }
   }
 
-  private buildRuntimeProperty(
-    scope: HandlerFrameworkModule,
-    options: BuildRuntimePropertyOptions = {}
-  ) {
+  private buildRuntimeProperty(scope: HandlerFrameworkModule, options: BuildRuntimePropertyOptions = {}) {
     const { runtime, isCustomResourceProvider, isEvalNodejsProvider } = options;
 
     if (runtime) {
-      return isCustomResourceProvider
-        ? expr.lit(runtime)
-        : expr.directCode(toLambdaRuntime(runtime));
+      return isCustomResourceProvider ? expr.lit(runtime) : expr.directCode(toLambdaRuntime(runtime));
     }
 
     if (isCustomResourceProvider) {
       scope.registerImport(CORE_MODULE, {
         targets: [CORE_MODULE.determineLatestNodeRuntimeName],
-        fromLocation: scope.isCoreInternal
-          ? CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH
-          : CORE_MODULE.fqn,
+        fromLocation: scope.isCoreInternal ? CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH : CORE_MODULE.fqn,
       });
     }
 

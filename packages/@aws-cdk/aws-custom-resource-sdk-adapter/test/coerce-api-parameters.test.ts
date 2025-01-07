@@ -4,18 +4,13 @@ import { TypeCoercionStateMachine } from '../lib/parameter-types';
 const encode = (v: any) => new TextEncoder().encode(v);
 
 describe('Uint8Array', () => {
-
   describe('should coerce', () => {
     test('a nested value', () => {
       // GIVEN
       const obj = { a: { b: { c: 'dummy-value' } } };
 
       // WHEN
-      new Coercer([
-        { a: 1 },
-        { b: 2 },
-        { c: 'b' },
-      ]).testCoerce(obj);
+      new Coercer([{ a: 1 }, { b: 2 }, { c: 'b' }]).testCoerce(obj);
 
       // EXPECT
       expect(obj).toMatchObject({ a: { b: { c: encode('dummy-value') } } });
@@ -25,30 +20,17 @@ describe('Uint8Array', () => {
       // GIVEN
       const obj = {
         a: {
-          b: [
-            { z: '1' },
-            { z: '2' },
-            { z: '3' },
-          ],
+          b: [{ z: '1' }, { z: '2' }, { z: '3' }],
         },
       };
 
       // WHEN
-      new Coercer([
-        { a: 1 },
-        { b: 2 },
-        { '*': 3 },
-        { z: 'b' },
-      ]).testCoerce(obj);
+      new Coercer([{ a: 1 }, { b: 2 }, { '*': 3 }, { z: 'b' }]).testCoerce(obj);
 
       // EXPECT
       expect(obj).toMatchObject({
         a: {
-          b: [
-            { z: encode('1') },
-            { z: encode('2') },
-            { z: encode('3') },
-          ],
+          b: [{ z: encode('1') }, { z: encode('2') }, { z: encode('3') }],
         },
       });
     });
@@ -62,20 +44,12 @@ describe('Uint8Array', () => {
       };
 
       // THEN
-      new Coercer([
-        { a: 1 },
-        { b: 2 },
-        { '*': 'b' },
-      ]).testCoerce(obj);
+      new Coercer([{ a: 1 }, { b: 2 }, { '*': 'b' }]).testCoerce(obj);
 
       // EXPECT
       expect(obj).toMatchObject({
         a: {
-          b: [
-            encode('1'),
-            encode('2'),
-            encode('3'),
-          ],
+          b: [encode('1'), encode('2'), encode('3')],
         },
       });
     });
@@ -86,16 +60,10 @@ describe('Uint8Array', () => {
         a: {
           b: [
             {
-              z: [
-                { y: '1' },
-                { y: '2' },
-              ],
+              z: [{ y: '1' }, { y: '2' }],
             },
             {
-              z: [
-                { y: 'A' },
-                { y: 'B' },
-              ],
+              z: [{ y: 'A' }, { y: 'B' }],
             },
           ],
         },
@@ -107,10 +75,7 @@ describe('Uint8Array', () => {
       // EXPECT
       expect(obj).toMatchObject({
         a: {
-          b: [
-            { z: [{ y: encode('1') }, { y: encode('2') }] },
-            { z: [{ y: encode('A') }, { y: encode('B') }] },
-          ],
+          b: [{ z: [{ y: encode('1') }, { y: encode('2') }] }, { z: [{ y: encode('A') }, { y: encode('B') }] }],
         },
       });
     });
@@ -136,7 +101,6 @@ describe('Uint8Array', () => {
       // EXPECT
       expect(obj).toMatchObject({ a: { b: { c: encode('0') } } });
     });
-
   });
 
   describe('should NOT coerce', () => {
@@ -197,7 +161,6 @@ describe('Uint8Array', () => {
   });
 
   describe('given an api call description', () => {
-
     test('can convert string parameters to Uint8Array when needed', () => {
       const params = coerceApiParameters('KMS', 'encrypt', {
         KeyId: 'key-id',
@@ -206,11 +169,7 @@ describe('Uint8Array', () => {
 
       expect(params).toMatchObject({
         KeyId: 'key-id',
-        Plaintext: new Uint8Array([
-          100, 117, 109, 109,
-          121, 45, 100, 97,
-          116, 97,
-        ]),
+        Plaintext: new Uint8Array([100, 117, 109, 109, 121, 45, 100, 97, 116, 97]),
       });
     });
 
@@ -265,7 +224,8 @@ describe('Uint8Array', () => {
         Items: [
           {
             Section: {
-              Items: [ // <-- same type as 'Items' above
+              Items: [
+                // <-- same type as 'Items' above
                 {
                   Question: {
                     Weight: '9000',
@@ -294,11 +254,9 @@ describe('Uint8Array', () => {
       });
     });
   });
-
 });
 
 describe('number', () => {
-
   describe('should coerce', () => {
     test('a nested value', () => {
       // GIVEN
@@ -315,11 +273,7 @@ describe('number', () => {
       // GIVEN
       const obj = {
         a: {
-          b: [
-            { z: '1' },
-            { z: '2' },
-            { z: '3' },
-          ],
+          b: [{ z: '1' }, { z: '2' }, { z: '3' }],
         },
       };
 
@@ -329,11 +283,7 @@ describe('number', () => {
       // EXPECT
       expect(obj).toMatchObject({
         a: {
-          b: [
-            { z: 1 },
-            { z: 2 },
-            { z: 3 },
-          ],
+          b: [{ z: 1 }, { z: 2 }, { z: 3 }],
         },
       });
     });
@@ -352,11 +302,7 @@ describe('number', () => {
       // EXPECT
       expect(obj).toMatchObject({
         a: {
-          b: [
-            1,
-            2,
-            3,
-          ],
+          b: [1, 2, 3],
         },
       });
     });
@@ -367,16 +313,10 @@ describe('number', () => {
         a: {
           b: [
             {
-              z: [
-                { y: '1' },
-                { y: '2' },
-              ],
+              z: [{ y: '1' }, { y: '2' }],
             },
             {
-              z: [
-                { y: '3' },
-                { y: '4' },
-              ],
+              z: [{ y: '3' }, { y: '4' }],
             },
           ],
         },
@@ -388,10 +328,7 @@ describe('number', () => {
       // EXPECT
       expect(obj).toMatchObject({
         a: {
-          b: [
-            { z: [{ y: 1 }, { y: 2 }] },
-            { z: [{ y: 3 }, { y: 4 }] },
-          ],
+          b: [{ z: [{ y: 1 }, { y: 2 }] }, { z: [{ y: 3 }, { y: 4 }] }],
         },
       });
     });
@@ -477,7 +414,6 @@ describe('number', () => {
   });
 
   describe('given an api call description', () => {
-
     test('can convert string parameters to number when needed', () => {
       const params = coerceApiParameters('Amplify', 'listApps', {
         maxResults: '15',
@@ -490,19 +426,25 @@ describe('number', () => {
 
     test('can convert string parameters to number in arrays', () => {
       const params = coerceApiParameters('ECS', 'createService', {
-        loadBalancers: [{
-          containerPort: '8080',
-        }, {
-          containerPort: '9000',
-        }],
+        loadBalancers: [
+          {
+            containerPort: '8080',
+          },
+          {
+            containerPort: '9000',
+          },
+        ],
       });
 
       expect(params).toMatchObject({
-        loadBalancers: [{
-          containerPort: 8080,
-        }, {
-          containerPort: 9000,
-        }],
+        loadBalancers: [
+          {
+            containerPort: 8080,
+          },
+          {
+            containerPort: 9000,
+          },
+        ],
       });
     });
 
@@ -553,11 +495,7 @@ describe('date', () => {
       // EXPECT
       expect(obj).toMatchObject({
         a: {
-          b: [
-            { z: new Date('2023-01-01') },
-            { z: new Date('2023-01-02') },
-            { z: new Date('2023-01-03') },
-          ],
+          b: [{ z: new Date('2023-01-01') }, { z: new Date('2023-01-02') }, { z: new Date('2023-01-03') }],
         },
       });
     });
@@ -566,11 +504,7 @@ describe('date', () => {
       // GIVEN
       const obj = {
         a: {
-          b: [
-            new Date('2023-01-01').toJSON(),
-            new Date('2023-01-02').toJSON(),
-            new Date('2023-01-03').toJSON(),
-          ],
+          b: [new Date('2023-01-01').toJSON(), new Date('2023-01-02').toJSON(), new Date('2023-01-03').toJSON()],
         },
       };
 
@@ -580,11 +514,7 @@ describe('date', () => {
       // EXPECT
       expect(obj).toMatchObject({
         a: {
-          b: [
-            new Date('2023-01-01'),
-            new Date('2023-01-02'),
-            new Date('2023-01-03'),
-          ],
+          b: [new Date('2023-01-01'), new Date('2023-01-02'), new Date('2023-01-03')],
         },
       });
     });
@@ -595,16 +525,10 @@ describe('date', () => {
         a: {
           b: [
             {
-              z: [
-                { y: new Date('2023-01-01').toJSON() },
-                { y: new Date('2023-01-02').toJSON() },
-              ],
+              z: [{ y: new Date('2023-01-01').toJSON() }, { y: new Date('2023-01-02').toJSON() }],
             },
             {
-              z: [
-                { y: new Date('2023-01-03').toJSON() },
-                { y: new Date('2023-01-04').toJSON() },
-              ],
+              z: [{ y: new Date('2023-01-03').toJSON() }, { y: new Date('2023-01-04').toJSON() }],
             },
           ],
         },

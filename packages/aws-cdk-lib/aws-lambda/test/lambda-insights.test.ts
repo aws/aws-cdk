@@ -11,7 +11,7 @@ function functionWithInsightsVersion(
   stack: cdk.Stack,
   id: string,
   insightsVersion: lambda.LambdaInsightsVersion,
-  architecture?: lambda.Architecture,
+  architecture?: lambda.Architecture
 ): lambda.IFunction {
   return new lambda.Function(stack, id, {
     functionName: id,
@@ -28,11 +28,20 @@ function functionWithInsightsVersion(
  */
 function verifyRoleHasCorrectPolicies(stack: cdk.Stack) {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-    ManagedPolicyArns:
-      [
-        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
-        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy']] },
-      ],
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy'],
+        ],
+      },
+    ],
   });
 }
 
@@ -91,15 +100,17 @@ describe('lambda-insights', () => {
 
     // Still resolves because all elements of the mapping map to the same value
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: [{
-        'Fn::FindInMap': [
-          'CloudwatchlambdainsightsversionMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          '1x0x98x0xx86x64',
-        ],
-      }],
+      Layers: [
+        {
+          'Fn::FindInMap': [
+            'CloudwatchlambdainsightsversionMap',
+            {
+              Ref: 'AWS::Region',
+            },
+            '1x0x98x0xx86x64',
+          ],
+        },
+      ],
     });
 
     // On synthesis it should not throw an error
@@ -116,16 +127,20 @@ describe('lambda-insights', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'MyLambda1',
-      Layers: [{
-        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x98x0xx86x64'],
-      }],
+      Layers: [
+        {
+          'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x98x0xx86x64'],
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'MyLambda2',
-      Layers: [{
-        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x98x0xx86x64'],
-      }],
+      Layers: [
+        {
+          'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x98x0xx86x64'],
+        },
+      ],
     });
 
     Template.fromStack(stack).hasMapping('CloudwatchlambdainsightsversionMap', {
@@ -141,8 +156,9 @@ describe('lambda-insights', () => {
   test('insights layer is skipped for container images and the role is updated', () => {
     const stack = new cdk.Stack();
     new lambda.DockerImageFunction(stack, 'MyFunction', {
-      code: lambda.DockerImageCode.fromEcr(ecr.Repository.fromRepositoryArn(stack, 'MyRepo',
-        'arn:aws:ecr:us-east-1:123456789012:repository/MyRepo')),
+      code: lambda.DockerImageCode.fromEcr(
+        ecr.Repository.fromRepositoryArn(stack, 'MyRepo', 'arn:aws:ecr:us-east-1:123456789012:repository/MyRepo')
+      ),
       insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
     });
 
@@ -160,11 +176,10 @@ describe('lambda-insights', () => {
       },
       ManagedPolicyArns: Match.arrayWith([
         {
-          'Fn::Join': ['', [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
-          ]],
+          'Fn::Join': [
+            '',
+            ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy'],
+          ],
         },
       ]),
     });
@@ -175,7 +190,12 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
-    functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_119_0, lambda.Architecture.ARM_64);
+    functionWithInsightsVersion(
+      stack,
+      'MyLambda',
+      lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
+      lambda.Architecture.ARM_64
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: ['arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:1'],
@@ -190,7 +210,14 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
-    expect(() => functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_98_0, lambda.Architecture.ARM_64)).toThrow('Insights version 1.0.98.0 does not exist.');
+    expect(() =>
+      functionWithInsightsVersion(
+        stack,
+        'MyLambda',
+        lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
+        lambda.Architecture.ARM_64
+      )
+    ).toThrow('Insights version 1.0.98.0 does not exist.');
   });
   test('throws if arm is available in this version, but not in this region', () => {
     const app = new cdk.App();
@@ -199,7 +226,12 @@ describe('lambda-insights', () => {
     });
 
     expect(() => {
-      functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_119_0, lambda.Architecture.ARM_64);
+      functionWithInsightsVersion(
+        stack,
+        'MyLambda',
+        lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
+        lambda.Architecture.ARM_64
+      );
     }).toThrow('Insights version 1.0.119.0 is not supported in region us-west-1');
   });
 
@@ -207,26 +239,42 @@ describe('lambda-insights', () => {
     // We mess with the fact database a bit here -- add a fact for the ARM LambdaInsights layer which
     // is different from the existing facts, to force the region info to render a lookup table (instead
     // of being able to just insert a literal).
-    Fact.register({ name: FactName.cloudwatchLambdaInsightsVersion('1.0.119.0', 'arm64'), region: 'eu-west-1', value: 'CompletelyDifferent' }, true);
+    Fact.register(
+      {
+        name: FactName.cloudwatchLambdaInsightsVersion('1.0.119.0', 'arm64'),
+        region: 'eu-west-1',
+        value: 'CompletelyDifferent',
+      },
+      true
+    );
 
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
 
     functionWithInsightsVersion(stack, 'MyLambda1', lambda.LambdaInsightsVersion.VERSION_1_0_119_0);
-    functionWithInsightsVersion(stack, 'MyLambda2', lambda.LambdaInsightsVersion.VERSION_1_0_119_0, lambda.Architecture.ARM_64);
+    functionWithInsightsVersion(
+      stack,
+      'MyLambda2',
+      lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
+      lambda.Architecture.ARM_64
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'MyLambda1',
-      Layers: [{
-        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x119x0xx86x64'],
-      }],
+      Layers: [
+        {
+          'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x119x0xx86x64'],
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'MyLambda2',
-      Layers: [{
-        'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x119x0xarm64'],
-      }],
+      Layers: [
+        {
+          'Fn::FindInMap': ['CloudwatchlambdainsightsversionMap', { Ref: 'AWS::Region' }, '1x0x119x0xarm64'],
+        },
+      ],
     });
 
     Template.fromStack(stack).hasMapping('CloudwatchlambdainsightsversionMap', {
@@ -244,7 +292,12 @@ describe('lambda-insights', () => {
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
-    functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_143_0, lambda.Architecture.X86_64);
+    functionWithInsightsVersion(
+      stack,
+      'MyLambda',
+      lambda.LambdaInsightsVersion.VERSION_1_0_143_0,
+      lambda.Architecture.X86_64
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: ['arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:21'],

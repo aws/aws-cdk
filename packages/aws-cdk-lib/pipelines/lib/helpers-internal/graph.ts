@@ -335,13 +335,9 @@ export class Graph<A> extends GraphNode<A> {
     const lines = new Array<string>();
 
     lines.push('digraph G {');
-    lines.push(
-      '  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen'
-    );
+    lines.push('  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen');
     lines.push('  # because the layout looks more natural that way.');
-    lines.push(
-      '  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.'
-    );
+    lines.push('  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.');
     lines.push('  # To render: `dot -Tsvg input.dot > graph.svg`, open in a browser.');
     lines.push('  node [shape="box"];');
     for (const child of this.nodes) {
@@ -522,9 +518,7 @@ export class GraphNodeCollection<A> {
     //
     //   A, B, C, 1, 2    }---> C
     //   A, B, C, 3       }
-    while (
-      paths.every((path) => paths[0].length >= 2 && path.length >= 2 && path[1] === paths[0][1])
-    ) {
+    while (paths.every((path) => paths[0].length >= 2 && path.length >= 2 && path[1] === paths[0][1])) {
       for (const path of paths) {
         path.shift();
       }

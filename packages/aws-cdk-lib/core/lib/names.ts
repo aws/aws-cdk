@@ -85,15 +85,11 @@ export class Names {
     const componentsPath = node.scopes
       .slice(
         node.scopes.indexOf(
-          node.scopes
-            .reverse()
-            .find((component) => Stack.isStack(component) && !unresolved(component.stackName))!
+          node.scopes.reverse().find((component) => Stack.isStack(component) && !unresolved(component.stackName))!
         )
       )
       .map((component) =>
-        Stack.isStack(component) && !unresolved(component.stackName)
-          ? component.stackName
-          : Node.of(component).id
+        Stack.isStack(component) && !unresolved(component.stackName) ? component.stackName : Node.of(component).id
       );
 
     return makeUniqueResourceName(componentsPath, options);

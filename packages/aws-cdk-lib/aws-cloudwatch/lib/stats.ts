@@ -203,12 +203,7 @@ function assertPercentage(x?: number) {
 /**
  * Formatting helper because all these stats look the same
  */
-function boundaryPercentileStat(
-  oneBoundaryStat: string,
-  twoBoundaryStat: string,
-  p1: number,
-  p2: number | undefined
-) {
+function boundaryPercentileStat(oneBoundaryStat: string, twoBoundaryStat: string, p1: number, p2: number | undefined) {
   assertPercentage(p1);
   assertPercentage(p2);
   if (p2 !== undefined) {

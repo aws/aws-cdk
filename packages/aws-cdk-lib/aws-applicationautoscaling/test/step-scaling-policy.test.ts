@@ -7,106 +7,111 @@ import * as appscaling from '../lib';
 
 describe('step scaling policy', () => {
   test('alarm thresholds are valid numbers', () => {
-    fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_input_intervals(), (intervals) => {
         const template = setupStepScaling(intervals);
 
         const lowerThreshold = template.lowerThreshold;
         const upperThreshold = template.upperThreshold;
 
         return reportFalse(
-          (lowerThreshold === undefined || (lowerThreshold > 0 && lowerThreshold !== Infinity))
-          && (upperThreshold === undefined || (upperThreshold > 0 && upperThreshold !== Infinity)),
+          (lowerThreshold === undefined || (lowerThreshold > 0 && lowerThreshold !== Infinity)) &&
+            (upperThreshold === undefined || (upperThreshold > 0 && upperThreshold !== Infinity)),
           lowerThreshold,
-          upperThreshold);
-      },
-    ));
-
+          upperThreshold
+        );
+      })
+    );
   });
 
   test('generated step intervals are valid intervals', () => {
-    fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_input_intervals(), (intervals) => {
         const template = setupStepScaling(intervals);
         const steps = template.allStepsAbsolute();
 
-        return reportFalse(steps.every(step => {
-          return step.MetricIntervalLowerBound! < step.MetricIntervalUpperBound!;
-        }), steps, 'template', JSON.stringify(template, undefined, 2));
-      },
-    ));
-
+        return reportFalse(
+          steps.every((step) => {
+            return step.MetricIntervalLowerBound! < step.MetricIntervalUpperBound!;
+          }),
+          steps,
+          'template',
+          JSON.stringify(template, undefined, 2)
+        );
+      })
+    );
   });
 
   test('generated step intervals are nonoverlapping', () => {
-    fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_input_intervals(), (intervals) => {
         const template = setupStepScaling(intervals);
         const steps = template.allStepsAbsolute();
 
         for (let i = 0; i < steps.length; i++) {
           const compareTo = steps.slice(i + 1);
-          if (compareTo.some(x => overlaps(steps[i], x))) {
+          if (compareTo.some((x) => overlaps(steps[i], x))) {
             return reportFalse(false, steps);
           }
         }
 
         return true;
-      },
-    ), { verbose: true });
-
+      }),
+      { verbose: true }
+    );
   });
 
   test('all template intervals occur in input array', () => {
-    fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_input_intervals(), (intervals) => {
         const template = setupStepScaling(intervals);
         const steps = template.allStepsAbsolute();
 
-        return steps.every(step => {
-          return reportFalse(intervals.find(interval => {
-            const acceptableLowerBounds = step.MetricIntervalLowerBound === -Infinity ? [undefined, 0] : [undefined, step.MetricIntervalLowerBound];
-            // eslint-disable-next-line max-len
-            const acceptableUpperBounds = step.MetricIntervalUpperBound === Infinity ? [undefined, Infinity] : [undefined, step.MetricIntervalUpperBound];
+        return steps.every((step) => {
+          return reportFalse(
+            intervals.find((interval) => {
+              const acceptableLowerBounds =
+                step.MetricIntervalLowerBound === -Infinity
+                  ? [undefined, 0]
+                  : [undefined, step.MetricIntervalLowerBound];
+              // eslint-disable-next-line max-len
+              const acceptableUpperBounds =
+                step.MetricIntervalUpperBound === Infinity
+                  ? [undefined, Infinity]
+                  : [undefined, step.MetricIntervalUpperBound];
 
-            return (acceptableLowerBounds.includes(interval.lower) && acceptableUpperBounds.includes(interval.upper));
-          }) !== undefined, step, intervals);
+              return acceptableLowerBounds.includes(interval.lower) && acceptableUpperBounds.includes(interval.upper);
+            }) !== undefined,
+            step,
+            intervals
+          );
         });
-      },
-    ));
-
+      })
+    );
   });
 
   test('lower alarm uses lower policy', () => {
-    fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_input_intervals(), (intervals) => {
         const template = setupStepScaling(intervals);
         const alarm = template.resource(template.lowerAlarm);
         fc.pre(alarm !== undefined);
 
         return reportFalse(alarm.Properties.AlarmActions[0].Ref === template.lowerPolicy, alarm);
-      },
-    ));
-
+      })
+    );
   });
 
   test('upper alarm uses upper policy', () => {
-    fc.assert(fc.property(
-      arbitrary_input_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_input_intervals(), (intervals) => {
         const template = setupStepScaling(intervals);
         const alarm = template.resource(template.upperAlarm);
         fc.pre(alarm !== undefined);
 
         return reportFalse(alarm.Properties.AlarmActions[0].Ref === template.upperPolicy, alarm);
-      },
-    ));
-
+      })
+    );
   });
 
   test('test step scaling on metric', () => {
@@ -140,9 +145,7 @@ describe('step scaling policy', () => {
           },
         ],
       },
-
     });
-
   });
 
   test('step scaling from percentile metric', () => {
@@ -171,15 +174,12 @@ describe('step scaling policy', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 1,
-      AlarmActions: [
-        { Ref: 'TargetTrackingUpperPolicy72CEFA77' },
-      ],
+      AlarmActions: [{ Ref: 'TargetTrackingUpperPolicy72CEFA77' }],
       ExtendedStatistic: 'p99',
       MetricName: 'Metric',
       Namespace: 'Test',
       Threshold: 100,
     });
-
   });
 
   test('step scaling with evaluation period configured', () => {
@@ -215,7 +215,6 @@ describe('step scaling policy', () => {
       Namespace: 'Test',
       Threshold: 100,
     });
-
   });
 
   test('step scaling with invalid evaluation period throws error', () => {
@@ -312,7 +311,9 @@ describe('step scaling policy', () => {
         datapointsToAlarm: 15,
         metricAggregationType: appscaling.MetricAggregationType.MAXIMUM,
       });
-    }).toThrow(/datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: 15, evaluationPeriods: 10/);
+    }).toThrow(
+      /datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: 15, evaluationPeriods: 10/
+    );
   });
 
   test('step scaling with datapointsToAlarm without evaluationPeriods throws error', () => {
@@ -343,9 +344,7 @@ describe('step scaling policy', () => {
     expect(() => {
       target.scaleOnMetric('Tracking', {
         metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
-        scalingSteps: [
-          { lower: 0, upper: 2, change: +1 },
-        ],
+        scalingSteps: [{ lower: 0, upper: 2, change: +1 }],
       });
     }).toThrow(/must supply at least 2/);
   });
@@ -373,7 +372,7 @@ describe('step scaling policy', () => {
         metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
         scalingSteps: steps,
       });
-    }).toThrow('\'scalingSteps\' can have at most 40 steps, got 41');
+    }).toThrow("'scalingSteps' can have at most 40 steps, got 41");
   });
 });
 
@@ -398,8 +397,7 @@ class ScalingStackTemplate {
   public readonly upperPolicy = 'TargetScaleIntervalUpperPolicy7C751132';
   public readonly upperAlarm = 'TargetScaleIntervalUpperAlarm69FD1BBB';
 
-  constructor(private readonly template: any) {
-  }
+  constructor(private readonly template: any) {}
 
   public get lowerThreshold() {
     return this.threshold(this.lowerAlarm);
@@ -420,10 +418,14 @@ class ScalingStackTemplate {
   public allStepsAbsolute() {
     const ret = new Array<TemplateStep>();
     const lowerThreshold = this.lowerThreshold;
-    if (lowerThreshold !== undefined) { ret.push(...this.lowerSteps!.map(x => makeAbsolute(lowerThreshold, x))); }
+    if (lowerThreshold !== undefined) {
+      ret.push(...this.lowerSteps!.map((x) => makeAbsolute(lowerThreshold, x)));
+    }
 
     const upperThreshold = this.upperThreshold;
-    if (upperThreshold !== undefined) { ret.push(...this.upperSteps!.map(x => makeAbsolute(upperThreshold, x))); }
+    if (upperThreshold !== undefined) {
+      ret.push(...this.upperSteps!.map((x) => makeAbsolute(upperThreshold, x)));
+    }
 
     return ret;
   }
@@ -433,11 +435,11 @@ class ScalingStackTemplate {
   }
 
   private threshold(id: string): number | undefined {
-    return apply(this.resource(id), x => x.Properties.Threshold);
+    return apply(this.resource(id), (x) => x.Properties.Threshold);
   }
 
   private steps(id: string): TemplateStep[] | undefined {
-    return apply(this.resource(id), x => x.Properties.StepScalingPolicyConfiguration.StepAdjustments);
+    return apply(this.resource(id), (x) => x.Properties.StepScalingPolicyConfiguration.StepAdjustments);
   }
 }
 
@@ -449,15 +451,17 @@ interface TemplateStep {
 
 function makeAbsolute(threshold: number, step: TemplateStep) {
   return concrete({
-    MetricIntervalLowerBound: apply(step.MetricIntervalLowerBound, x => x + threshold),
-    MetricIntervalUpperBound: apply(step.MetricIntervalUpperBound, x => x + threshold),
+    MetricIntervalLowerBound: apply(step.MetricIntervalLowerBound, (x) => x + threshold),
+    MetricIntervalUpperBound: apply(step.MetricIntervalUpperBound, (x) => x + threshold),
     ScalingAdjustment: step.ScalingAdjustment,
   });
 }
 
 function overlaps(a: TemplateStep, b: TemplateStep) {
-  return (a.MetricIntervalLowerBound! < b.MetricIntervalUpperBound!
-    && a.MetricIntervalUpperBound! > b.MetricIntervalLowerBound!);
+  return (
+    a.MetricIntervalLowerBound! < b.MetricIntervalUpperBound! &&
+    a.MetricIntervalUpperBound! > b.MetricIntervalLowerBound!
+  );
 }
 
 function concrete(step: TemplateStep) {
@@ -473,7 +477,9 @@ function ifUndefined<T>(x: T | undefined, def: T): T {
 }
 
 function apply<T, U>(x: T | undefined, f: (x: T) => U | undefined): U | undefined {
-  if (x === undefined) { return undefined; }
+  if (x === undefined) {
+    return undefined;
+  }
   return f(x);
 }
 

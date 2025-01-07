@@ -32,20 +32,11 @@ describe('blueprint with one stage', () => {
     const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
-    expect(childrenAt(graph)).toEqual([
-      'Source',
-      'Build',
-      'CrossAccount',
-    ]);
+    expect(childrenAt(graph)).toEqual(['Source', 'Build', 'CrossAccount']);
 
-    expect(childrenAt(graph, 'CrossAccount')).toEqual([
-      'Stack',
-    ]);
+    expect(childrenAt(graph, 'CrossAccount')).toEqual(['Stack']);
 
-    expect(childrenAt(graph, 'CrossAccount', 'Stack')).toEqual([
-      'Prepare',
-      'Deploy',
-    ]);
+    expect(childrenAt(graph, 'CrossAccount', 'Stack')).toEqual(['Prepare', 'Deploy']);
   });
 
   test('self mutation gets inserted at the right place', () => {
@@ -53,16 +44,9 @@ describe('blueprint with one stage', () => {
     const graph = new PipelineGraph(blueprint, { selfMutation: true }).graph;
 
     // THEN
-    expect(childrenAt(graph)).toEqual([
-      'Source',
-      'Build',
-      'UpdatePipeline',
-      'CrossAccount',
-    ]);
+    expect(childrenAt(graph)).toEqual(['Source', 'Build', 'UpdatePipeline', 'CrossAccount']);
 
-    expect(childrenAt(graph, 'UpdatePipeline')).toEqual([
-      'SelfMutate',
-    ]);
+    expect(childrenAt(graph, 'UpdatePipeline')).toEqual(['SelfMutate']);
   });
 });
 
@@ -89,15 +73,9 @@ describe('blueprint with wave and stage', () => {
     const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
-    expect(childrenAt(graph, 'Wave')).toEqual([
-      'Alpha',
-      'Beta',
-    ]);
+    expect(childrenAt(graph, 'Wave')).toEqual(['Alpha', 'Beta']);
 
-    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
-      'Stack',
-      'Approve',
-    ]);
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual(['Stack', 'Approve']);
   });
 
   test('pre-action gets added inside stage graph', () => {
@@ -108,10 +86,7 @@ describe('blueprint with wave and stage', () => {
     const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
-    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
-      'Gogogo',
-      'Stack',
-    ]);
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual(['Gogogo', 'Stack']);
   });
 
   test('pre, changeSet, and post are added correctly inside stack graph', () => {
@@ -119,12 +94,18 @@ describe('blueprint with wave and stage', () => {
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
     const stack = appWithExposedStacks.stacks[0];
     blueprint.waves[0].addStage(appWithExposedStacks, {
-      stackSteps: [{
-        stack,
-        pre: [new cdkp.ManualApprovalStep('Step1'), new cdkp.ManualApprovalStep('Step2'), new cdkp.ManualApprovalStep('Step3')],
-        changeSet: [new cdkp.ManualApprovalStep('Manual Approval')],
-        post: [new cdkp.ManualApprovalStep('Post Approval')],
-      }],
+      stackSteps: [
+        {
+          stack,
+          pre: [
+            new cdkp.ManualApprovalStep('Step1'),
+            new cdkp.ManualApprovalStep('Step2'),
+            new cdkp.ManualApprovalStep('Step3'),
+          ],
+          changeSet: [new cdkp.ManualApprovalStep('Manual Approval')],
+          post: [new cdkp.ManualApprovalStep('Post Approval')],
+        },
+      ],
     });
 
     // WHEN
@@ -146,20 +127,13 @@ describe('blueprint with wave and stage', () => {
     // GIVEN
     const goStep = new cdkp.ManualApprovalStep('Gogogo');
     const checkStep = new cdkp.ManualApprovalStep('Check');
-    blueprint.waves[0].stages[0].addPre(
-      checkStep,
-      goStep,
-    );
+    blueprint.waves[0].stages[0].addPre(checkStep, goStep);
 
     // WHEN
     const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
-    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
-      'Check',
-      'Gogogo',
-      'Stack',
-    ]);
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual(['Check', 'Gogogo', 'Stack']);
   });
 
   test('steps can depend on each other', () => {
@@ -167,40 +141,30 @@ describe('blueprint with wave and stage', () => {
     const goStep = new cdkp.ManualApprovalStep('Gogogo');
     const checkStep = new cdkp.ManualApprovalStep('Check');
     checkStep.addStepDependency(goStep);
+    blueprint.waves[0].stages[0].addPre(checkStep, goStep);
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual(['Gogogo', 'Check', 'Stack']);
+  });
+
+  test('Steps.sequence adds correct dependencies', () => {
+    // GIVEN
     blueprint.waves[0].stages[0].addPre(
-      checkStep,
-      goStep,
+      ...Step.sequence([
+        new cdkp.ManualApprovalStep('Gogogo'),
+        new cdkp.ManualApprovalStep('Check'),
+        new cdkp.ManualApprovalStep('DoubleCheck'),
+      ])
     );
 
     // WHEN
     const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
-    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
-      'Gogogo',
-      'Check',
-      'Stack',
-    ]);
-  });
-
-  test('Steps.sequence adds correct dependencies', () => {
-    // GIVEN
-    blueprint.waves[0].stages[0].addPre(...Step.sequence([
-      new cdkp.ManualApprovalStep('Gogogo'),
-      new cdkp.ManualApprovalStep('Check'),
-      new cdkp.ManualApprovalStep('DoubleCheck'),
-    ]));
-
-    // WHEN
-    const graph = new PipelineGraph(blueprint).graph;
-
-    // THEN
-    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
-      'Gogogo',
-      'Check',
-      'DoubleCheck',
-      'Stack',
-    ]);
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual(['Gogogo', 'Check', 'DoubleCheck', 'Stack']);
   });
 });
 
@@ -252,10 +216,12 @@ describe('options for other engines', () => {
     });
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Alpha');
     blueprint.addStage(appWithExposedStacks, {
-      stackSteps: [{
-        stack: appWithExposedStacks.stacks[0],
-        pre: [new ManualApprovalStep('PreCheck')],
-      }],
+      stackSteps: [
+        {
+          stack: appWithExposedStacks.stacks[0],
+          pre: [new ManualApprovalStep('PreCheck')],
+        },
+      ],
     });
 
     // WHEN
@@ -264,10 +230,7 @@ describe('options for other engines', () => {
     });
 
     // THEN
-    expect(childrenAt(graph.graph, 'Alpha', 'Stack1')).toEqual([
-      'PreCheck',
-      'Deploy',
-    ]);
+    expect(childrenAt(graph.graph, 'Alpha', 'Stack1')).toEqual(['PreCheck', 'Deploy']);
   });
 
   test('specifying changeSet step with "prepareStep: false" will throw', () => {
@@ -279,16 +242,21 @@ describe('options for other engines', () => {
     });
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Alpha');
     blueprint.addStage(appWithExposedStacks, {
-      stackSteps: [{
-        stack: appWithExposedStacks.stacks[0],
-        changeSet: [new ManualApprovalStep('ChangeSetApproval')],
-      }],
+      stackSteps: [
+        {
+          stack: appWithExposedStacks.stacks[0],
+          changeSet: [new ManualApprovalStep('ChangeSetApproval')],
+        },
+      ],
     });
 
     // THEN
-    expect(() => new PipelineGraph(blueprint, {
-      prepareStep: false,
-    })).toThrow(/Cannot use 'changeSet' steps/);
+    expect(
+      () =>
+        new PipelineGraph(blueprint, {
+          prepareStep: false,
+        })
+    ).toThrow(/Cannot use 'changeSet' steps/);
   });
 });
 
@@ -323,13 +291,9 @@ describe('with app with output', () => {
     const graph = new PipelineGraph(blueprint).graph;
 
     // THEN
-    expect(childrenAt(graph, 'Alpha')).toEqual([
-      'Stack',
-      'PrintBucketName',
-    ]);
+    expect(childrenAt(graph, 'Alpha')).toEqual(['Stack', 'PrintBucketName']);
 
-    expect(nodeAt(graph, 'Alpha', 'PrintBucketName').dependencies).toContain(
-      nodeAt(graph, 'Alpha', 'Stack', 'Deploy'));
+    expect(nodeAt(graph, 'Alpha', 'PrintBucketName').dependencies).toContain(nodeAt(graph, 'Alpha', 'Stack', 'Deploy'));
   });
 
   test('pre-action cannot use stack output', () => {
@@ -385,16 +349,19 @@ function nodeAt(g: Graph<any>, ...descend: string[]) {
 }
 
 function childNames(g: Graph<any>) {
-  return Array.from(flatten(g.sortedChildren())).map(n => n.id);
+  return Array.from(flatten(g.sortedChildren())).map((n) => n.id);
 }
 
 function assertGraph<A>(g: GraphNode<A> | undefined): Graph<A> {
-  if (!g) { throw new Error('Expected a graph node, got undefined'); }
-  if (!(g instanceof Graph)) { throw new Error(`Expected a Graph, got: ${g}`); }
+  if (!g) {
+    throw new Error('Expected a graph node, got undefined');
+  }
+  if (!(g instanceof Graph)) {
+    throw new Error(`Expected a Graph, got: ${g}`);
+  }
   return g;
 }
 
 class Blueprint extends cdkp.PipelineBase {
-  protected doBuildPipeline(): void {
-  }
+  protected doBuildPipeline(): void {}
 }

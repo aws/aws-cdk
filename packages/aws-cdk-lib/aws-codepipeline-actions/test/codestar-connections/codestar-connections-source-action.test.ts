@@ -16,35 +16,35 @@ describe('CodeStar Connections source Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
-            'Actions': [
+            Name: 'Source',
+            Actions: [
               {
-                'Name': 'BitBucket',
-                'ActionTypeId': {
-                  'Owner': 'AWS',
-                  'Provider': 'CodeStarSourceConnection',
+                Name: 'BitBucket',
+                ActionTypeId: {
+                  Owner: 'AWS',
+                  Provider: 'CodeStarSourceConnection',
                 },
-                'Configuration': {
-                  'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
-                  'FullRepositoryId': 'aws/aws-cdk',
-                  'BranchName': 'master',
+                Configuration: {
+                  ConnectionArn:
+                    'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                  FullRepositoryId: 'aws/aws-cdk',
+                  BranchName: 'master',
                 },
               },
             ],
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'CodeBuild',
+                Name: 'CodeBuild',
               },
             ],
           },
         ],
       });
-
     });
   });
 
@@ -56,28 +56,23 @@ describe('CodeStar Connections source Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': [
-              'logs:CreateLogGroup',
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-            ],
+            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
           },
           {},
           {},
           {},
           {},
           {
-            'Action': 'codestar-connections:UseConnection',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+            Action: 'codestar-connections:UseConnection',
+            Effect: 'Allow',
+            Resource: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
           },
         ],
       },
     });
-
   });
 
   test('grant s3 putObjectACL to the following CodeBuild Project', () => {
@@ -88,25 +83,18 @@ describe('CodeStar Connections source Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': Match.arrayWith([
+      PolicyDocument: {
+        Statement: Match.arrayWith([
           Match.objectLike({
-            'Action': [
-              's3:PutObjectAcl',
-              's3:PutObjectVersionAcl',
-            ],
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                { 'Fn::GetAtt': ['PipelineArtifactsBucket22248F97', 'Arn'] },
-                '/*',
-              ]],
+            Action: ['s3:PutObjectAcl', 's3:PutObjectVersionAcl'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['PipelineArtifactsBucket22248F97', 'Arn'] }, '/*']],
             },
           }),
         ]),
       },
     });
-
   });
 
   test('setting triggerOnPush=false reflects in the configuration', () => {
@@ -117,36 +105,36 @@ describe('CodeStar Connections source Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {
-          'Name': 'Source',
-          'Actions': [
+          Name: 'Source',
+          Actions: [
             {
-              'Name': 'BitBucket',
-              'ActionTypeId': {
-                'Owner': 'AWS',
-                'Provider': 'CodeStarSourceConnection',
+              Name: 'BitBucket',
+              ActionTypeId: {
+                Owner: 'AWS',
+                Provider: 'CodeStarSourceConnection',
               },
-              'Configuration': {
-                'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
-                'FullRepositoryId': 'aws/aws-cdk',
-                'BranchName': 'master',
-                'DetectChanges': false,
+              Configuration: {
+                ConnectionArn:
+                  'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                FullRepositoryId: 'aws/aws-cdk',
+                BranchName: 'master',
+                DetectChanges: false,
               },
             },
           ],
         },
         {
-          'Name': 'Build',
-          'Actions': [
+          Name: 'Build',
+          Actions: [
             {
-              'Name': 'CodeBuild',
+              Name: 'CodeBuild',
             },
           ],
         },
       ],
     });
-
   });
 
   test('exposes variables', () => {
@@ -154,17 +142,18 @@ describe('CodeStar Connections source Action', () => {
     createBitBucketAndCodeBuildPipeline(stack);
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {
-          'Name': 'Source',
+          Name: 'Source',
         },
         {
-          'Name': 'Build',
-          'Actions': [
+          Name: 'Build',
+          Actions: [
             {
-              'Name': 'CodeBuild',
-              'Configuration': {
-                'EnvironmentVariables': '[{"name":"CommitId","type":"PLAINTEXT","value":"#{Source_BitBucket_NS.CommitId}"}]',
+              Name: 'CodeBuild',
+              Configuration: {
+                EnvironmentVariables:
+                  '[{"name":"CommitId","type":"PLAINTEXT","value":"#{Source_BitBucket_NS.CommitId}"}]',
               },
             },
           ],
@@ -180,23 +169,23 @@ describe('CodeStar Connections source Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {
-          'Name': 'Source',
-          'Actions': [
+          Name: 'Source',
+          Actions: [
             {
-              'Name': 'BitBucket',
-              'Namespace': 'kornicameister',
+              Name: 'BitBucket',
+              Namespace: 'kornicameister',
             },
           ],
         },
         {
-          'Name': 'Build',
-          'Actions': [
+          Name: 'Build',
+          Actions: [
             {
-              'Name': 'CodeBuild',
-              'Configuration': {
-                'EnvironmentVariables': '[{"name":"CommitId","type":"PLAINTEXT","value":"#{kornicameister.CommitId}"}]',
+              Name: 'CodeBuild',
+              Configuration: {
+                EnvironmentVariables: '[{"name":"CommitId","type":"PLAINTEXT","value":"#{kornicameister.CommitId}"}]',
               },
             },
           ],
@@ -265,7 +254,8 @@ describe('CodeStar Connections source Action', () => {
 });
 
 function createBitBucketAndCodeBuildPipeline(
-  stack: Stack, props: Partial<cpactions.CodeStarConnectionsSourceActionProps> = {},
+  stack: Stack,
+  props: Partial<cpactions.CodeStarConnectionsSourceActionProps> = {}
 ): codepipeline.Pipeline {
   const sourceOutput = new codepipeline.Artifact();
   const sourceAction = new cpactions.CodeStarConnectionsSourceAction({

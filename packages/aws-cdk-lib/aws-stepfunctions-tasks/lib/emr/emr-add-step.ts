@@ -170,11 +170,7 @@ export class EmrAddStep extends sfn.TaskStateBase {
 
     const policyStatements = [
       new iam.PolicyStatement({
-        actions: [
-          'elasticmapreduce:AddJobFlowSteps',
-          'elasticmapreduce:DescribeStep',
-          'elasticmapreduce:CancelSteps',
-        ],
+        actions: ['elasticmapreduce:AddJobFlowSteps', 'elasticmapreduce:DescribeStep', 'elasticmapreduce:CancelSteps'],
         resources: [
           stack.formatArn({
             service: 'elasticmapreduce',

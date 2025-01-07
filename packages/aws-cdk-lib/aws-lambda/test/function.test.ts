@@ -34,23 +34,28 @@ describe('function', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument:
-      {
-        Statement:
-          [{
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: { Service: 'lambda.amazonaws.com' },
-          }],
+          },
+        ],
         Version: '2012-10-17',
       },
-      ManagedPolicyArns:
-        [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+          ],
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties:
-      {
+      Properties: {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
@@ -69,19 +74,26 @@ describe('function', () => {
       initialPolicy: [new iam.PolicyStatement({ actions: ['*'], resources: ['*'] })],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument:
-      {
-        Statement:
-          [{
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: { Service: 'lambda.amazonaws.com' },
-          }],
+          },
+        ],
         Version: '2012-10-17',
       },
       ManagedPolicyArns:
         // eslint-disable-next-line max-len
-        [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
+        [
+          {
+            'Fn::Join': [
+              '',
+              ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+            ],
+          },
+        ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -115,11 +127,14 @@ describe('function', () => {
 
   test('fails if inline code is used for an invalid runtime', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'bar',
-      runtime: lambda.Runtime.DOTNET_CORE_2,
-    })).toThrow();
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'bar',
+          runtime: lambda.Runtime.DOTNET_CORE_2,
+        })
+    ).toThrow();
   });
 
   describe('addPermissions', () => {
@@ -149,7 +164,14 @@ describe('function', () => {
         },
         ManagedPolicyArns:
           // eslint-disable-next-line max-len
-          [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
+          [
+            {
+              'Fn::Join': [
+                '',
+                ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+              ],
+            },
+          ],
       });
 
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -159,25 +181,17 @@ describe('function', () => {
           },
           Handler: 'bar',
           Role: {
-            'Fn::GetAtt': [
-              'MyLambdaServiceRole4539ECB6',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'],
           },
           Runtime: 'python3.9',
         },
-        DependsOn: [
-          'MyLambdaServiceRole4539ECB6',
-        ],
+        DependsOn: ['MyLambdaServiceRole4539ECB6'],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:*',
         FunctionName: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         Principal: 's3.amazonaws.com',
         SourceAccount: {
@@ -202,10 +216,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:*',
         FunctionName: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         Principal: account.accountId,
         PrincipalOrgID: org.organizationId,
@@ -216,8 +227,9 @@ describe('function', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
 
-      expect(() => fn.addPermission('F1', { principal: new iam.CanonicalUserPrincipal('org') }))
-        .toThrow(/Invalid principal type for Lambda permission statement/);
+      expect(() => fn.addPermission('F1', { principal: new iam.CanonicalUserPrincipal('org') })).toThrow(
+        /Invalid principal type for Lambda permission statement/
+      );
 
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
@@ -294,10 +306,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         Principal: service,
         SourceAccount: sourceAccount,
@@ -321,10 +330,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         Principal: service,
         SourceArn: sourceArn,
@@ -347,10 +353,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         Principal: service,
         PrincipalOrgID: principalOrgId,
@@ -361,44 +364,52 @@ describe('function', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
 
-      expect(() => fn.addPermission('F1', {
-        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
-          ArnEquals: {
-            'aws:SourceArn': 'source-arn',
-          },
-        }),
-      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
-      expect(() => fn.addPermission('F2', {
-        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
-          StringLike: {
-            'aws:SourceAccount': 'source-account',
-          },
-        }),
-      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
-      expect(() => fn.addPermission('F3', {
-        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
-          ArnLike: {
-            's3:DataAccessPointArn': 'data-access-point-arn',
-          },
-        }),
-      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() =>
+        fn.addPermission('F1', {
+          principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+            ArnEquals: {
+              'aws:SourceArn': 'source-arn',
+            },
+          }),
+        })
+      ).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() =>
+        fn.addPermission('F2', {
+          principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+            StringLike: {
+              'aws:SourceAccount': 'source-account',
+            },
+          }),
+        })
+      ).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() =>
+        fn.addPermission('F3', {
+          principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+            ArnLike: {
+              's3:DataAccessPointArn': 'data-access-point-arn',
+            },
+          }),
+        })
+      ).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
     });
 
     test('fails if the principal has condition combinations that are not supported', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
 
-      expect(() => fn.addPermission('F2', {
-        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
-          StringEquals: {
-            'aws:SourceAccount': 'source-account',
-            'aws:PrincipalOrgID': 'principal-org-id',
-          },
-          ArnLike: {
-            'aws:SourceArn': 'source-arn',
-          },
-        }),
-      })).toThrow(/PrincipalWithConditions had unsupported condition combinations for Lambda permission statement/);
+      expect(() =>
+        fn.addPermission('F2', {
+          principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+            StringEquals: {
+              'aws:SourceAccount': 'source-account',
+              'aws:PrincipalOrgID': 'principal-org-id',
+            },
+            ArnLike: {
+              'aws:SourceArn': 'source-arn',
+            },
+          }),
+        })
+      ).toThrow(/PrincipalWithConditions had unsupported condition combinations for Lambda permission statement/);
     });
 
     test('BYORole', () => {
@@ -415,9 +426,7 @@ describe('function', () => {
         runtime: lambda.Runtime.PYTHON_3_9,
         handler: 'index.test',
         role,
-        initialPolicy: [
-          new iam.PolicyStatement({ actions: ['inline:inline'], resources: ['*'] }),
-        ],
+        initialPolicy: [new iam.PolicyStatement({ actions: ['inline:inline'], resources: ['*'] })],
       });
 
       fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'], resources: ['*'] }));
@@ -441,7 +450,11 @@ describe('function', () => {
     const stack2 = new cdk.Stack();
 
     // WHEN
-    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
+    const imported = lambda.Function.fromFunctionArn(
+      stack2,
+      'Imported',
+      'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords'
+    );
 
     // THEN
     expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
@@ -457,30 +470,42 @@ describe('function', () => {
 
     // THEN
     expect(stack.resolve(imported.functionArn)).toStrictEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':lambda:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':function:my-function',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':lambda:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':function:my-function',
+        ],
+      ],
     });
     expect(stack.resolve(imported.functionName)).toStrictEqual({
-      'Fn::Select': [6, {
-        'Fn::Split': [':', {
-          'Fn::Join': ['', [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':lambda:',
-            { Ref: 'AWS::Region' },
+      'Fn::Select': [
+        6,
+        {
+          'Fn::Split': [
             ':',
-            { Ref: 'AWS::AccountId' },
-            ':function:my-function',
-          ]],
-        }],
-      }],
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':lambda:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':function:my-function',
+                ],
+              ],
+            },
+          ],
+        },
+      ],
     });
   });
 
@@ -665,7 +690,10 @@ describe('function', () => {
             fn.currentVersion;
 
             // THEN
-            const warns = Annotations.fromStack(stack).findWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+            const warns = Annotations.fromStack(stack).findWarning(
+              '/Default/MyLambda',
+              Match.stringLikeRegexp(warningMessage)
+            );
             expect(warns).toHaveLength(1);
           });
         });
@@ -705,7 +733,9 @@ describe('function', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
           Name: 'prod',
           FunctionName: { Ref: 'MyLambdaCCE802FB' },
-          FunctionVersion: { 'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CCe2d14849ae02766d3abd365a8a0f12ae', 'Version'] },
+          FunctionVersion: {
+            'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CCe2d14849ae02766d3abd365a8a0f12ae', 'Version'],
+          },
         });
       });
 
@@ -769,18 +799,42 @@ describe('function', () => {
           Ref: 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645',
         },
         S3Key: {
-          'Fn::Join': ['', [
-            { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC' }] }] },
-            { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC' }] }] },
-          ]],
+          'Fn::Join': [
+            '',
+            [
+              {
+                'Fn::Select': [
+                  0,
+                  {
+                    'Fn::Split': [
+                      '||',
+                      {
+                        Ref: 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC',
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                'Fn::Select': [
+                  1,
+                  {
+                    'Fn::Split': [
+                      '||',
+                      {
+                        Ref: 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          ],
         },
       },
       Handler: 'index.handler',
       Role: {
-        'Fn::GetAtt': [
-          'MyLambdaServiceRole4539ECB6',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'],
       },
       Runtime: 'python3.9',
     });
@@ -832,10 +886,7 @@ describe('function', () => {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'MyLambdaDeadLetterQueue399EEA2D',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyLambdaDeadLetterQueue399EEA2D', 'Arn'],
             },
           },
         ],
@@ -855,26 +906,17 @@ describe('function', () => {
         },
         Handler: 'index.handler',
         Role: {
-          'Fn::GetAtt': [
-            'MyLambdaServiceRole4539ECB6',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'],
         },
         Runtime: lambda.Runtime.NODEJS_LATEST.name,
         DeadLetterConfig: {
           TargetArn: {
-            'Fn::GetAtt': [
-              'MyLambdaDeadLetterQueue399EEA2D',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyLambdaDeadLetterQueue399EEA2D', 'Arn'],
           },
         },
         FunctionName: 'OneFunctionToRuleThemAll',
       },
-      DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
-        'MyLambdaServiceRole4539ECB6',
-      ],
+      DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
   });
 
@@ -895,10 +937,7 @@ describe('function', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
-          'Fn::GetAtt': [
-            'MyLambdaDeadLetterQueue399EEA2D',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaDeadLetterQueue399EEA2D', 'Arn'],
         },
       },
     });
@@ -920,10 +959,7 @@ describe('function', () => {
       },
       Handler: 'index.handler',
       Role: {
-        'Fn::GetAtt': [
-          'MyLambdaServiceRole4539ECB6',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'],
       },
       Runtime: lambda.Runtime.NODEJS_LATEST.name,
     });
@@ -951,10 +987,7 @@ describe('function', () => {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'DeadLetterQueue9F481546',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
             },
           },
         ],
@@ -965,10 +998,7 @@ describe('function', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
-          'Fn::GetAtt': [
-            'DeadLetterQueue9F481546',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
         },
       },
     });
@@ -997,10 +1027,7 @@ describe('function', () => {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'DeadLetterQueue9F481546',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
             },
           },
         ],
@@ -1011,10 +1038,7 @@ describe('function', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
-          'Fn::GetAtt': [
-            'DeadLetterQueue9F481546',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
         },
       },
     });
@@ -1028,13 +1052,16 @@ describe('function', () => {
       retentionPeriod: cdk.Duration.days(14),
     });
 
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      deadLetterQueueEnabled: false,
-      deadLetterQueue: dlQueue,
-    })).toThrow(/deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          deadLetterQueueEnabled: false,
+          deadLetterQueue: dlQueue,
+        })
+    ).toThrow(/deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
   });
 
   test('default function with SNS DLQ when client provides Topic to be used as DLQ', () => {
@@ -1077,13 +1104,16 @@ describe('function', () => {
 
     const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
 
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      deadLetterQueueEnabled: false,
-      deadLetterTopic: dlTopic,
-    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          deadLetterQueueEnabled: false,
+          deadLetterTopic: dlTopic,
+        })
+    ).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
   });
 
   test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to true', () => {
@@ -1091,13 +1121,16 @@ describe('function', () => {
 
     const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
 
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      deadLetterQueueEnabled: true,
-      deadLetterTopic: dlTopic,
-    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          deadLetterQueueEnabled: true,
+          deadLetterTopic: dlTopic,
+        })
+    ).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
   });
 
   test('error when both topic and queue are presented as DLQ', () => {
@@ -1106,13 +1139,16 @@ describe('function', () => {
     const dlQueue = new sqs.Queue(stack, 'DLQ');
     const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
 
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      deadLetterQueue: dlQueue,
-      deadLetterTopic: dlTopic,
-    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          deadLetterQueue: dlQueue,
+          deadLetterTopic: dlTopic,
+        })
+    ).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
   });
 
   test('default function with Active tracing', () => {
@@ -1129,10 +1165,7 @@ describe('function', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'xray:PutTraceSegments',
-              'xray:PutTelemetryRecords',
-            ],
+            Action: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -1154,20 +1187,14 @@ describe('function', () => {
         },
         Handler: 'index.handler',
         Role: {
-          'Fn::GetAtt': [
-            'MyLambdaServiceRole4539ECB6',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'],
         },
         Runtime: lambda.Runtime.NODEJS_LATEST.name,
         TracingConfig: {
           Mode: 'Active',
         },
       },
-      DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
-        'MyLambdaServiceRole4539ECB6',
-      ],
+      DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
   });
 
@@ -1185,10 +1212,7 @@ describe('function', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'xray:PutTraceSegments',
-              'xray:PutTelemetryRecords',
-            ],
+            Action: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -1210,20 +1234,14 @@ describe('function', () => {
         },
         Handler: 'index.handler',
         Role: {
-          'Fn::GetAtt': [
-            'MyLambdaServiceRole4539ECB6',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'],
         },
         Runtime: lambda.Runtime.NODEJS_LATEST.name,
         TracingConfig: {
           Mode: 'PassThrough',
         },
       },
-      DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
-        'MyLambdaServiceRole4539ECB6',
-      ],
+      DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
   });
 
@@ -1246,16 +1264,11 @@ describe('function', () => {
         },
         Handler: 'index.handler',
         Role: {
-          'Fn::GetAtt': [
-            'MyLambdaServiceRole4539ECB6',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'],
         },
         Runtime: lambda.Runtime.NODEJS_LATEST.name,
       },
-      DependsOn: [
-        'MyLambdaServiceRole4539ECB6',
-      ],
+      DependsOn: ['MyLambdaServiceRole4539ECB6'],
     });
   });
 
@@ -1368,7 +1381,12 @@ describe('function', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':', { 'Fn::GetAtt': ['v248F3DDCC', 'Version'] }]] },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':', { 'Fn::GetAtt': ['v248F3DDCC', 'Version'] }],
+                ],
+              },
             },
           ],
         },
@@ -1392,10 +1410,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: 'apigateway.amazonaws.com',
       });
@@ -1418,10 +1433,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: '123456789012',
       });
@@ -1444,10 +1456,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: 'arn:aws:iam::123456789012:role/someRole',
       });
@@ -1470,10 +1479,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: '*',
         PrincipalOrgID: 'my-org-id',
@@ -1498,10 +1504,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: 'elasticloadbalancing.amazonaws.com',
       });
@@ -1557,10 +1560,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: 'arn:aws:iam::123456789012:role/someRole',
       });
@@ -1571,7 +1571,11 @@ describe('function', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { account: '123456789012' },
       });
-      const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
+      const fn = lambda.Function.fromFunctionArn(
+        stack,
+        'Function',
+        'arn:aws:lambda:us-east-1:123456789012:function:MyFn'
+      );
 
       // WHEN
       fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
@@ -1586,11 +1590,15 @@ describe('function', () => {
 
     test('on an imported function (unresolved account)', () => {
       const stack = new cdk.Stack();
-      const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
+      const fn = lambda.Function.fromFunctionArn(
+        stack,
+        'Function',
+        'arn:aws:lambda:us-east-1:123456789012:function:MyFn'
+      );
 
-      expect(
-        () => fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')),
-      ).toThrow(/Cannot modify permission to lambda function/);
+      expect(() => fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'))).toThrow(
+        /Cannot modify permission to lambda function/
+      );
     });
 
     test('on an imported function (unresolved account & w/ allowPermissions)', () => {
@@ -1617,7 +1625,11 @@ describe('function', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: { account: '111111111111' }, // Different account
       });
-      const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
+      const fn = lambda.Function.fromFunctionArn(
+        stack,
+        'Function',
+        'arn:aws:lambda:us-east-1:123456789012:function:MyFn'
+      );
 
       // THEN
       expect(() => {
@@ -1648,7 +1660,7 @@ describe('function', () => {
       const stack = new cdk.Stack();
       const compositePrincipal = new iam.CompositePrincipal(
         new iam.AccountPrincipal('1234'),
-        new iam.AccountPrincipal('5678'),
+        new iam.AccountPrincipal('5678')
       );
 
       const fn = new lambda.Function(stack, 'Function', {
@@ -1664,20 +1676,14 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: '1234',
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: '5678',
       });
@@ -1690,7 +1696,7 @@ describe('function', () => {
         new iam.AccountPrincipal('1234'),
         new iam.ServicePrincipal('apigateway.amazonaws.com'),
         new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
-        new iam.OrganizationPrincipal('my-org-id'),
+        new iam.OrganizationPrincipal('my-org-id')
       );
 
       const fn = new lambda.Function(stack, 'Function', {
@@ -1706,40 +1712,28 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: '1234',
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: 'apigateway.amazonaws.com',
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: 'arn:aws:iam::123456789012:role/someRole',
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: '*',
         PrincipalOrgID: 'my-org-id',
@@ -1841,7 +1835,7 @@ describe('function', () => {
     // use escape hatch to change the content of the layer
     // this simulates updating the layer code which changes the version.
     const cfnLayer = layer.node.defaultChild as lambda.CfnLayerVersion;
-    const newCode = (new lambda.S3Code(bucket, 'NewObjectKey')).bind(layer);
+    const newCode = new lambda.S3Code(bucket, 'NewObjectKey').bind(layer);
     cfnLayer.content = {
       s3Bucket: newCode.s3Location!.bucketName,
       s3Key: newCode.s3Location!.objectKey,
@@ -1862,31 +1856,39 @@ describe('function', () => {
     });
 
     // THEN
-    expect(() => new lambda.Function(stack, 'Function', {
-      layers: [layer],
-      runtime: new lambda.Runtime('something1', lambda.RuntimeFamily.NODEJS, {
-        supportsInlineCode: true,
-      }),
-      code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
-      handler: 'index.main',
-    })).toThrow(/something1 is not in \[something2\]/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'Function', {
+          layers: [layer],
+          runtime: new lambda.Runtime('something1', lambda.RuntimeFamily.NODEJS, {
+            supportsInlineCode: true,
+          }),
+          code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
+          handler: 'index.main',
+        })
+    ).toThrow(/something1 is not in \[something2\]/);
   });
 
   test('using more than 5 layers', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
-      layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
-    }));
+    const layers = new Array(6).fill(
+      lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
+        layerVersionArn: 'arn:aws:...',
+        compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
+      })
+    );
 
     // THEN
-    expect(() => new lambda.Function(stack, 'Function', {
-      layers,
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
-      handler: 'index.main',
-    })).toThrow(/Unable to add layer:/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'Function', {
+          layers,
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
+          handler: 'index.main',
+        })
+    ).toThrow(/Unable to add layer:/);
   });
 
   test('environment variables work in China', () => {
@@ -1969,10 +1971,7 @@ describe('function', () => {
       code: lambda.Code.fromInline('boom'),
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.bam',
-      events: [
-        new EventSource(),
-        new EventSource(),
-      ],
+      events: [new EventSource(), new EventSource()],
     });
 
     // THEN
@@ -2084,7 +2083,9 @@ describe('function', () => {
     });
 
     // THEN
-    expect(() => fn.configureAsyncInvoke({ retryAttempts: 0 })).toThrow(/An EventInvokeConfig has already been configured/);
+    expect(() => fn.configureAsyncInvoke({ retryAttempts: 0 })).toThrow(
+      /An EventInvokeConfig has already been configured/
+    );
   });
 
   test('event invoke config on imported lambda', () => {
@@ -2127,10 +2128,7 @@ describe('function', () => {
         Ref: 'fn5FF616E3',
       },
       Qualifier: {
-        'Fn::GetAtt': [
-          'fnVersion197FA813F',
-          'Version',
-        ],
+        'Fn::GetAtt': ['fnVersion197FA813F', 'Version'],
       },
       MaximumRetryAttempts: 0,
     });
@@ -2169,7 +2167,9 @@ describe('function', () => {
     fn.addEnvironment('OTHER_KEY', 'other_value', { removeInEdge: true });
 
     // THEN
-    expect(() => fn._checkEdgeCompatibility()).toThrow(/The function Default\/fn contains environment variables \[KEY\] and is not compatible with Lambda@Edge/);
+    expect(() => fn._checkEdgeCompatibility()).toThrow(
+      /The function Default\/fn contains environment variables \[KEY\] and is not compatible with Lambda@Edge/
+    );
   });
 
   test('add incompatible layer', () => {
@@ -2190,7 +2190,8 @@ describe('function', () => {
 
     // THEN
     expect(() => func.addLayers(layer)).toThrow(
-      /This lambda function uses a runtime that is incompatible with this layer/);
+      /This lambda function uses a runtime that is incompatible with this layer/
+    );
   });
 
   test('add compatible layer', () => {
@@ -2242,11 +2243,14 @@ describe('function', () => {
     const stack = new cdk.Stack();
 
     // WHEN/THEN
-    expect(() => new lambda.Function(stack, 'fn', {
-      handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      code: lambda.Code.fromInline(''),
-    })).toThrow(/Lambda inline code cannot be empty/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'fn', {
+          handler: 'foo',
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          code: lambda.Code.fromInline(''),
+        })
+    ).toThrow(/Lambda inline code cannot be empty/);
   });
 
   test('logGroup is correctly returned', () => {
@@ -2355,11 +2359,14 @@ describe('function', () => {
 
   test('fails when inline code is specified on an incompatible runtime', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'fn', {
-      handler: 'foo',
-      runtime: lambda.Runtime.PROVIDED,
-      code: lambda.Code.fromInline('foo'),
-    })).toThrow(/Inline source not allowed for/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'fn', {
+          handler: 'foo',
+          runtime: lambda.Runtime.PROVIDED,
+          code: lambda.Code.fromInline('foo'),
+        })
+    ).toThrow(/Inline source not allowed for/);
   });
 
   test('multiple calls to latestVersion returns the same version', () => {
@@ -2375,10 +2382,7 @@ describe('function', () => {
     const version2 = fn.latestVersion;
 
     const expectedArn = {
-      'Fn::Join': ['', [
-        { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-        ':$LATEST',
-      ]],
+      'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':$LATEST']],
     };
     expect(version1).toEqual(version2);
     expect(stack.resolve(version1.functionArn)).toEqual(expectedArn);
@@ -2411,10 +2415,7 @@ describe('function', () => {
         },
       },
       KmsKeyArn: {
-        'Fn::GetAtt': [
-          'EnvVarEncryptKey1A7CABDB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['EnvVarEncryptKey1A7CABDB', 'Arn'],
       },
     });
   });
@@ -2439,10 +2440,7 @@ describe('function', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'codeguru-profiler:ConfigureAgent',
-                'codeguru-profiler:PostAgentProfile',
-              ],
+              Action: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
               Effect: 'Allow',
               Resource: {
                 'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'],
@@ -2485,10 +2483,7 @@ describe('function', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'codeguru-profiler:ConfigureAgent',
-                'codeguru-profiler:PostAgentProfile',
-              ],
+              Action: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
               Effect: 'Allow',
               Resource: {
                 'Fn::GetAtt': ['ProfilingGroup26979FD7', 'Arn'],
@@ -2510,10 +2505,7 @@ describe('function', () => {
           Variables: {
             AWS_CODEGURU_PROFILER_GROUP_NAME: { Ref: 'ProfilingGroup26979FD7' },
             AWS_CODEGURU_PROFILER_GROUP_ARN: {
-              'Fn::GetAtt': [
-                'ProfilingGroup26979FD7',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['ProfilingGroup26979FD7', 'Arn'],
             },
             AWS_CODEGURU_PROFILER_TARGET_REGION: { Ref: 'AWS::Region' },
             AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
@@ -2529,17 +2521,18 @@ describe('function', () => {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.PYTHON_3_9,
-        profilingGroup: ProfilingGroup.fromProfilingGroupArn(stack, 'ProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup'),
+        profilingGroup: ProfilingGroup.fromProfilingGroupArn(
+          stack,
+          'ProfilingGroup',
+          'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup'
+        ),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'codeguru-profiler:ConfigureAgent',
-                'codeguru-profiler:PostAgentProfile',
-              ],
+              Action: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
               Effect: 'Allow',
               Resource: 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
             },
@@ -2558,7 +2551,8 @@ describe('function', () => {
         Environment: {
           Variables: {
             AWS_CODEGURU_PROFILER_GROUP_NAME: 'MyAwesomeProfilingGroup',
-            AWS_CODEGURU_PROFILER_GROUP_ARN: 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
+            AWS_CODEGURU_PROFILER_GROUP_ARN:
+              'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
             AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
           },
         },
@@ -2578,22 +2572,31 @@ describe('function', () => {
 
       Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
 
-      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', Match.not({
-        Environment: {
-          Variables: {
-            AWS_CODEGURU_PROFILER_GROUP_ARN: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:', { Ref: 'AWS::Partition' }, ':codeguru-profiler:', { Ref: 'AWS::Region' },
-                  ':', { Ref: 'AWS::AccountId' }, ':profilingGroup/', { Ref: 'ProfilingGroup26979FD7' },
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::Lambda::Function',
+        Match.not({
+          Environment: {
+            Variables: {
+              AWS_CODEGURU_PROFILER_GROUP_ARN: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':codeguru-profiler:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':profilingGroup/',
+                    { Ref: 'ProfilingGroup26979FD7' },
+                  ],
                 ],
-              ],
+              },
+              AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
             },
-            AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
           },
-        },
-      }));
+        })
+      );
     });
 
     test('default function with profiling enabled and client provided env vars', () => {
@@ -2616,16 +2619,10 @@ describe('function', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'codeguru-profiler:ConfigureAgent',
-                'codeguru-profiler:PostAgentProfile',
-              ],
+              Action: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'MyLambdaProfilingGroupEC6DE32F',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'],
               },
             },
           ],
@@ -2650,7 +2647,12 @@ describe('function', () => {
         },
       });
 
-      Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'));
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/MyLambda',
+        Match.stringLikeRegexp(
+          'AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'
+        )
+      );
     });
 
     test('default function with client provided Profiling Group and client provided env vars', () => {
@@ -2673,16 +2675,10 @@ describe('function', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'codeguru-profiler:ConfigureAgent',
-                'codeguru-profiler:PostAgentProfile',
-              ],
+              Action: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'ProfilingGroup26979FD7',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['ProfilingGroup26979FD7', 'Arn'],
               },
             },
           ],
@@ -2707,21 +2703,29 @@ describe('function', () => {
         },
       });
 
-      Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'));
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/MyLambda',
+        Match.stringLikeRegexp(
+          'AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'
+        )
+      );
     });
 
     test('throws an error when used with an unsupported runtime', () => {
       const stack = new cdk.Stack();
-      expect(() => new lambda.Function(stack, 'MyLambda', {
-        code: new lambda.InlineCode('foo'),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_LATEST,
-        profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
-        environment: {
-          AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
-          AWS_CODEGURU_PROFILER_ENABLED: 'yes',
-        },
-      })).toThrow(/not supported by runtime/);
+      expect(
+        () =>
+          new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_LATEST,
+            profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
+            environment: {
+              AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+              AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+            },
+          })
+      ).toThrow(/not supported by runtime/);
     });
   });
 
@@ -2801,7 +2805,6 @@ describe('function', () => {
   });
 
   describe('filesystem', () => {
-
     test('mount efs filesystem', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -3070,67 +3073,91 @@ describe('function', () => {
     test('only one of inline, s3 or imageConfig are allowed', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'Fn1', {
-        code: new MyCode({}),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.GO_1_X,
-      })).toThrow(/lambda.Code must specify exactly one of/);
+      expect(
+        () =>
+          new lambda.Function(stack, 'Fn1', {
+            code: new MyCode({}),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.GO_1_X,
+          })
+      ).toThrow(/lambda.Code must specify exactly one of/);
 
-      expect(() => new lambda.Function(stack, 'Fn2', {
-        code: new MyCode({
-          inlineCode: 'foo',
-          image: { imageUri: 'bar' },
-        }),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.GO_1_X,
-      })).toThrow(/lambda.Code must specify exactly one of/);
+      expect(
+        () =>
+          new lambda.Function(stack, 'Fn2', {
+            code: new MyCode({
+              inlineCode: 'foo',
+              image: { imageUri: 'bar' },
+            }),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.GO_1_X,
+          })
+      ).toThrow(/lambda.Code must specify exactly one of/);
 
-      expect(() => new lambda.Function(stack, 'Fn3', {
-        code: new MyCode({
-          image: { imageUri: 'baz' },
-          s3Location: { bucketName: 's3foo', objectKey: 's3bar' },
-        }),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.GO_1_X,
-      })).toThrow(/lambda.Code must specify exactly one of/);
+      expect(
+        () =>
+          new lambda.Function(stack, 'Fn3', {
+            code: new MyCode({
+              image: { imageUri: 'baz' },
+              s3Location: { bucketName: 's3foo', objectKey: 's3bar' },
+            }),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.GO_1_X,
+          })
+      ).toThrow(/lambda.Code must specify exactly one of/);
 
-      expect(() => new lambda.Function(stack, 'Fn4', {
-        code: new MyCode({ inlineCode: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.GO_1_X,
-      })).toThrow(/lambda.Code must specify exactly one of/);
+      expect(
+        () =>
+          new lambda.Function(stack, 'Fn4', {
+            code: new MyCode({ inlineCode: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.GO_1_X,
+          })
+      ).toThrow(/lambda.Code must specify exactly one of/);
     });
 
     test('handler must be FROM_IMAGE when image asset is specified', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'Fn1', {
-        code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      })).not.toThrow();
+      expect(
+        () =>
+          new lambda.Function(stack, 'Fn1', {
+            code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
+            handler: lambda.Handler.FROM_IMAGE,
+            runtime: lambda.Runtime.FROM_IMAGE,
+          })
+      ).not.toThrow();
 
-      expect(() => new lambda.Function(stack, 'Fn2', {
-        code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.FROM_IMAGE,
-      })).toThrow(/handler must be.*FROM_IMAGE/);
+      expect(
+        () =>
+          new lambda.Function(stack, 'Fn2', {
+            code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.FROM_IMAGE,
+          })
+      ).toThrow(/handler must be.*FROM_IMAGE/);
     });
 
     test('runtime must be FROM_IMAGE when image asset is specified', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'Fn1', {
-        code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      })).not.toThrow();
+      expect(
+        () =>
+          new lambda.Function(stack, 'Fn1', {
+            code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
+            handler: lambda.Handler.FROM_IMAGE,
+            runtime: lambda.Runtime.FROM_IMAGE,
+          })
+      ).not.toThrow();
 
-      expect(() => new lambda.Function(stack, 'Fn2', {
-        code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.GO_1_X,
-      })).toThrow(/runtime must be.*FROM_IMAGE/);
+      expect(
+        () =>
+          new lambda.Function(stack, 'Fn2', {
+            code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
+            handler: lambda.Handler.FROM_IMAGE,
+            runtime: lambda.Runtime.GO_1_X,
+          })
+      ).toThrow(/runtime must be.*FROM_IMAGE/);
     });
 
     test('imageUri is correctly configured', () => {
@@ -3201,10 +3228,7 @@ describe('function', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         CodeSigningConfigArn: {
-          'Fn::GetAtt': [
-            'CodeSigningConfigD8D41C10',
-            'CodeSigningConfigArn',
-          ],
+          'Fn::GetAtt': ['CodeSigningConfigD8D41C10', 'CodeSigningConfigArn'],
         },
       });
     });
@@ -3219,10 +3243,13 @@ describe('function', () => {
       code,
     });
 
-    expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
-      code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
-      layers: [layer],
-    })).toThrow(/Layers are not supported for container image functions/);
+    expect(
+      () =>
+        new lambda.DockerImageFunction(stack, 'MyLambda', {
+          code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
+          layers: [layer],
+        })
+    ).toThrow(/Layers are not supported for container image functions/);
   });
 
   testDeprecated('specified architectures is recognized', () => {
@@ -3257,25 +3284,31 @@ describe('function', () => {
 
   testDeprecated('both architectures and architecture are not recognized', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      handler: 'index.handler',
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyFunction', {
+          code: lambda.Code.fromInline('foo'),
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          handler: 'index.handler',
 
-      architecture: lambda.Architecture.ARM_64,
-      architectures: [lambda.Architecture.X86_64],
-    })).toThrow(/architecture or architectures must be specified/);
+          architecture: lambda.Architecture.ARM_64,
+          architectures: [lambda.Architecture.X86_64],
+        })
+    ).toThrow(/architecture or architectures must be specified/);
   });
 
   testDeprecated('Only one architecture allowed', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      handler: 'index.handler',
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyFunction', {
+          code: lambda.Code.fromInline('foo'),
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          handler: 'index.handler',
 
-      architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
-    })).toThrow(/one architecture must be specified/);
+          architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
+        })
+    ).toThrow(/one architecture must be specified/);
   });
 
   test('Architecture is properly readable from the function', () => {
@@ -3291,17 +3324,20 @@ describe('function', () => {
 
   test('Error when function name is longer than 64 chars', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      handler: 'index.handler',
-      functionName: 'a'.repeat(65),
-    })).toThrow(/Function name can not be longer than 64 characters/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyFunction', {
+          code: lambda.Code.fromInline('foo'),
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          handler: 'index.handler',
+          functionName: 'a'.repeat(65),
+        })
+    ).toThrow(/Function name can not be longer than 64 characters/);
   });
 
   test('Error when function name contains invalid characters', () => {
     const stack = new cdk.Stack();
-    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => {
+    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach((invalidChar) => {
       expect(() => {
         new lambda.Function(stack, `foo${invalidChar}`, {
           code: new lambda.InlineCode('foo'),
@@ -3330,12 +3366,15 @@ describe('function', () => {
 
   test('Error when function description is longer than 256 chars', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      handler: 'index.handler',
-      description: 'a'.repeat(257),
-    })).toThrow(/Function description can not be longer than 256 characters/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyFunction', {
+          code: lambda.Code.fromInline('foo'),
+          runtime: lambda.Runtime.NODEJS_LATEST,
+          handler: 'index.handler',
+          description: 'a'.repeat(257),
+        })
+    ).toThrow(/Function description can not be longer than 256 characters/);
   });
 
   test('No error when function name is Tokenized and Unresolved', () => {
@@ -3370,10 +3409,7 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
         AuthType: 'AWS_IAM',
         TargetFunctionArn: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
       });
     });
@@ -3403,22 +3439,13 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
         AuthType: 'NONE',
         TargetFunctionArn: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         Cors: {
           AllowCredentials: true,
-          AllowHeaders: [
-            'X-Custom-Header',
-          ],
-          AllowMethods: [
-            'GET',
-          ],
-          AllowOrigins: [
-            'https://example.com',
-          ],
+          AllowHeaders: ['X-Custom-Header'],
+          AllowMethods: ['GET'],
+          AllowOrigins: ['https://example.com'],
           MaxAge: 300,
         },
       });
@@ -3449,10 +3476,7 @@ describe('function', () => {
               Action: 'lambda:InvokeFunctionUrl',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'MyLambdaCCE802FB',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
               },
             },
           ],
@@ -3476,8 +3500,7 @@ describe('function', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-        Properties:
-        {
+        Properties: {
           Code: { ZipFile: 'java11-test-function.zip' },
           Handler: 'example.Handler::handleRequest',
           Runtime: 'java11',
@@ -3500,26 +3523,28 @@ describe('function', () => {
 
       //THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-        Properties:
-            {
-              Handler: 'example.Handler::handleRequest',
-              Runtime: 'java11',
-              SnapStart: {
-                ApplyOn: 'PublishedVersions',
-              },
-            },
+        Properties: {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
       });
     });
 
     test('runtime validation for snapStart', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
-        code: new lambda.InlineCode('foo'),
-        handler: 'bar',
-        runtime: lambda.Runtime.NODEJS_18_X,
-        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrow('SnapStart currently not supported by runtime nodejs18.x');
+      expect(
+        () =>
+          new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'bar',
+            runtime: lambda.Runtime.NODEJS_18_X,
+            snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+          })
+      ).toThrow('SnapStart currently not supported by runtime nodejs18.x');
     });
 
     test('arm64 function using snapStart', () => {
@@ -3535,15 +3560,14 @@ describe('function', () => {
 
       //THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-        Properties:
-            {
-              Handler: 'example.Handler::handleRequest',
-              Runtime: 'java11',
-              Architectures: ['arm64'],
-              SnapStart: {
-                ApplyOn: 'PublishedVersions',
-              },
-            },
+        Properties: {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          Architectures: ['arm64'],
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
       });
     });
 
@@ -3559,26 +3583,32 @@ describe('function', () => {
       });
       const accessPoint = fs.addAccessPoint('AccessPoint');
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
-        vpc,
-        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
-        handler: 'example.Handler::handleRequest',
-        runtime: lambda.Runtime.JAVA_11,
-        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
-        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrow('SnapStart is currently not supported using EFS');
+      expect(
+        () =>
+          new lambda.Function(stack, 'MyLambda', {
+            vpc,
+            code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+            handler: 'example.Handler::handleRequest',
+            runtime: lambda.Runtime.JAVA_11,
+            filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+            snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+          })
+      ).toThrow('SnapStart is currently not supported using EFS');
     });
 
     test('ephemeral storage limit validation for snapStart', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
-        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
-        handler: 'example.Handler::handleRequest',
-        runtime: lambda.Runtime.JAVA_11,
-        ephemeralStorageSize: Size.mebibytes(1024),
-        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+      expect(
+        () =>
+          new lambda.Function(stack, 'MyLambda', {
+            code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+            handler: 'example.Handler::handleRequest',
+            runtime: lambda.Runtime.JAVA_11,
+            ephemeralStorageSize: Size.mebibytes(1024),
+            snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+          })
+      ).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
     });
   });
 
@@ -3593,8 +3623,7 @@ describe('function', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-        Properties:
-        {
+        Properties: {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
           Runtime: lambda.Runtime.NODEJS_LATEST.name,
@@ -3613,8 +3642,7 @@ describe('function', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-        Properties:
-        {
+        Properties: {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
           Runtime: lambda.Runtime.NODEJS_LATEST.name,
@@ -3632,8 +3660,7 @@ describe('function', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-        Properties:
-        {
+        Properties: {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
           Runtime: lambda.Runtime.NODEJS_LATEST.name,
@@ -3681,10 +3708,7 @@ describe('function', () => {
       Properties: {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: service,
         SourceAccount: {
@@ -3698,10 +3722,7 @@ describe('function', () => {
       Properties: {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
-          'Fn::GetAtt': [
-            'Function76856677',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Function76856677', 'Arn'],
         },
         Principal: service,
         SourceAccount: {
@@ -3773,15 +3794,20 @@ describe('function', () => {
   test('Adot Instrumentation errors out when not using INSTRUMENT_HANDLER', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new lambda.Function(stack, 'Fn1', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_10,
-      adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
-        execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
-      },
-    })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'Fn1', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_10,
+          adotInstrumentation: {
+            layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(
+              lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0
+            ),
+            execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
+          },
+        })
+    ).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
   });
 
   test('adds ADOT instrumentation to a container image Lambda function', () => {
@@ -3800,7 +3826,7 @@ describe('function', () => {
             layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
-        }),
+        })
     ).toThrow(/ADOT Lambda layer can't be configured with container image package type/);
   });
 
@@ -3836,12 +3862,15 @@ describe('function', () => {
     test('throws when allowAllIpv6Outbound is defined without vpc', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
-        code: new lambda.InlineCode('foo'),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_LATEST,
-        allowAllIpv6Outbound: true,
-      })).toThrow(/Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC/);
+      expect(
+        () =>
+          new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_LATEST,
+            allowAllIpv6Outbound: true,
+          })
+      ).toThrow(/Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC/);
     });
 
     test('throws when both allowAllIpv6Outbound and securityGroup are defined', () => {
@@ -3849,14 +3878,17 @@ describe('function', () => {
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
-        code: new lambda.InlineCode('foo'),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_LATEST,
-        allowAllIpv6Outbound: true,
-        vpc,
-        securityGroup: securityGroup,
-      })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup./);
+      expect(
+        () =>
+          new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_LATEST,
+            allowAllIpv6Outbound: true,
+            vpc,
+            securityGroup: securityGroup,
+          })
+      ).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup./);
     });
 
     test('throws when both allowAllIpv6Outbound and securityGroups are defined', () => {
@@ -3864,26 +3896,32 @@ describe('function', () => {
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc: vpc });
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
-        code: new lambda.InlineCode('foo'),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_LATEST,
-        allowAllIpv6Outbound: true,
-        vpc,
-        securityGroups: [securityGroup],
-      })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups./);
+      expect(
+        () =>
+          new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_LATEST,
+            allowAllIpv6Outbound: true,
+            vpc,
+            securityGroups: [securityGroup],
+          })
+      ).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups./);
     });
   });
 });
 
 test('throws if ephemeral storage size is out of bound', () => {
   const stack = new cdk.Stack();
-  expect(() => new lambda.Function(stack, 'MyLambda', {
-    code: new lambda.InlineCode('foo'),
-    handler: 'bar',
-    runtime: lambda.Runtime.NODEJS_LATEST,
-    ephemeralStorageSize: Size.mebibytes(511),
-  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB/);
+  expect(
+    () =>
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        ephemeralStorageSize: Size.mebibytes(511),
+      })
+  ).toThrow(/Ephemeral storage size must be between 512 and 10240 MB/);
 });
 
 test('set ephemeral storage to desired size', () => {
@@ -3896,8 +3934,7 @@ test('set ephemeral storage to desired size', () => {
   });
 
   Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-    Properties:
-    {
+    Properties: {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
       Runtime: lambda.Runtime.NODEJS_LATEST.name,
@@ -3933,8 +3970,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
   Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION));
 
   Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-    Properties:
-    {
+    Properties: {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
       Runtime: lambda.Runtime.NODEJS_LATEST.name,
@@ -3945,14 +3981,17 @@ test('FunctionVersionUpgrade adds new description to function', () => {
 
 test('function using a reserved environment variable', () => {
   const stack = new cdk.Stack();
-  expect(() => new lambda.Function(stack, 'MyLambda', {
-    code: new lambda.InlineCode('foo'),
-    handler: 'index.handler',
-    runtime: lambda.Runtime.PYTHON_3_9,
-    environment: {
-      AWS_REGION: 'ap-southeast-2',
-    },
-  })).toThrow(/AWS_REGION environment variable is reserved/);
+  expect(
+    () =>
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_9,
+        environment: {
+          AWS_REGION: 'ap-southeast-2',
+        },
+      })
+  ).toThrow(/AWS_REGION environment variable is reserved/);
 });
 
 test('test 2.87.0 version hash stability', () => {
@@ -3968,9 +4007,7 @@ test('test 2.87.0 version hash stability', () => {
   // WHEN
   const layer = new lambda.LayerVersion(stack, 'MyLayer', {
     code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
-    compatibleRuntimes: [
-      theRuntime,
-    ],
+    compatibleRuntimes: [theRuntime],
   });
 
   const role = new iam.Role(stack, 'MyRole', {
@@ -3994,9 +4031,7 @@ test('test 2.87.0 version hash stability', () => {
     currentVersionOptions: {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     },
-    layers: [
-      layer,
-    ],
+    layers: [layer],
   });
 
   new lambda.Alias(stack, 'MyAlias', {
@@ -4009,10 +4044,7 @@ test('test 2.87.0 version hash stability', () => {
   Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
     Properties: {
       FunctionVersion: {
-        'Fn::GetAtt': [
-          'MyLambdaCurrentVersionE7A382CC36ba24a5a2aa206296d3e383129fd83a',
-          'Version',
-        ],
+        'Fn::GetAtt': ['MyLambdaCurrentVersionE7A382CC36ba24a5a2aa206296d3e383129fd83a', 'Version'],
       },
     },
   });
@@ -4029,33 +4061,42 @@ describe('VPC configuration', () => {
       vpc,
       allowAllOutbound: false,
     });
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      securityGroup,
-      securityGroups: [securityGroup],
-    })).toThrow(/Only one of the function props, securityGroup or securityGroups, is allowed/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          securityGroup,
+          securityGroups: [securityGroup],
+        })
+    ).toThrow(/Only one of the function props, securityGroup or securityGroups, is allowed/);
   });
 
   test('with allowAllOutbound and no VPC', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      allowAllOutbound: true,
-    })).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          allowAllOutbound: true,
+        })
+    ).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
   });
 
   test('with allowAllOutbound and no VPC', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      allowAllOutbound: true,
-    })).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          allowAllOutbound: true,
+        })
+    ).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
   });
 
   test('with securityGroup and no VPC', () => {
@@ -4068,12 +4109,15 @@ describe('VPC configuration', () => {
       vpc,
       allowAllOutbound: false,
     });
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      securityGroup,
-    })).toThrow(/Cannot configure 'securityGroup' without configuring a VPC/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          securityGroup,
+        })
+    ).toThrow(/Cannot configure 'securityGroup' without configuring a VPC/);
   });
 
   test('with securityGroups and no VPC', () => {
@@ -4086,22 +4130,28 @@ describe('VPC configuration', () => {
       vpc,
       allowAllOutbound: false,
     });
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      securityGroups: [securityGroup],
-    })).toThrow(/Cannot configure 'securityGroups' without configuring a VPC/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          securityGroups: [securityGroup],
+        })
+    ).toThrow(/Cannot configure 'securityGroups' without configuring a VPC/);
   });
 
   test('with vpcSubnets and no VPC', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
-    })).toThrow(/Cannot configure 'vpcSubnets' without configuring a VPC/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+        })
+    ).toThrow(/Cannot configure 'vpcSubnets' without configuring a VPC/);
   });
 
   test('with securityGroup and allowAllOutbound', () => {
@@ -4114,14 +4164,17 @@ describe('VPC configuration', () => {
       vpc,
       allowAllOutbound: false,
     });
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      vpc,
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      securityGroup,
-      allowAllOutbound: false,
-    })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroup./);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          vpc,
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          securityGroup,
+          allowAllOutbound: false,
+        })
+    ).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroup./);
   });
 
   test('with securityGroups and allowAllOutbound', () => {
@@ -4134,14 +4187,17 @@ describe('VPC configuration', () => {
       vpc,
       allowAllOutbound: false,
     });
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      vpc,
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      securityGroups: [securityGroup],
-      allowAllOutbound: false,
-    })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroups./);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          vpc,
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          securityGroups: [securityGroup],
+          allowAllOutbound: false,
+        })
+    ).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroups./);
   });
 
   test('with VPC and empty securityGroups creates a default security group', () => {
@@ -4164,12 +4220,15 @@ describe('VPC configuration', () => {
 
   test('with no VPC and empty securityGroups', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      securityGroups: [],
-    })).not.toThrow();
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          securityGroups: [],
+        })
+    ).not.toThrow();
   });
 
   test('with empty securityGroups and allowAllOutbound', () => {
@@ -4178,24 +4237,30 @@ describe('VPC configuration', () => {
       maxAzs: 3,
       natGateways: 1,
     });
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      vpc,
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      securityGroups: [],
-      allowAllOutbound: false,
-    })).not.toThrow();
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          vpc,
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          securityGroups: [],
+          allowAllOutbound: false,
+        })
+    ).not.toThrow();
   });
 
   test('with ipv6AllowedForDualStack and no VPC', () => {
     const stack = new cdk.Stack();
-    expect(() => new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      ipv6AllowedForDualStack: true,
-    })).toThrow(/Cannot configure 'ipv6AllowedForDualStack' without configuring a VPC/);
+    expect(
+      () =>
+        new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_9,
+          ipv6AllowedForDualStack: true,
+        })
+    ).toThrow(/Cannot configure 'ipv6AllowedForDualStack' without configuring a VPC/);
   });
 
   test('set ipv6AllowedForDualStack with VPC', () => {
@@ -4220,21 +4285,15 @@ describe('VPC configuration', () => {
     });
 
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties:
-      {
+      Properties: {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Runtime: 'python3.9',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
         VpcConfig: {
           Ipv6AllowedForDualStack: true,
-          SecurityGroupIds: [
-            { 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] },
-          ],
-          SubnetIds: [
-            { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
-            { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
-          ],
+          SecurityGroupIds: [{ 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] }],
+          SubnetIds: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
         },
       },
     });
@@ -4262,21 +4321,15 @@ describe('VPC configuration', () => {
     });
 
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties:
-      {
+      Properties: {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Runtime: 'python3.9',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
         VpcConfig: {
           Ipv6AllowedForDualStack: false,
-          SecurityGroupIds: [
-            { 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] },
-          ],
-          SubnetIds: [
-            { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
-            { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
-          ],
+          SecurityGroupIds: [{ 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] }],
+          SubnetIds: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
         },
       },
     });

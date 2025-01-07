@@ -1,6 +1,12 @@
 import { Template, Match } from '../../../assertions';
 import { Stack } from '../../../core';
-import { ProviderAttribute, SigningAlgorithm, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata } from '../../lib';
+import {
+  ProviderAttribute,
+  SigningAlgorithm,
+  UserPool,
+  UserPoolIdentityProviderSaml,
+  UserPoolIdentityProviderSamlMetadata,
+} from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('saml', () => {
@@ -212,11 +218,14 @@ describe('UserPoolIdentityProvider', () => {
       const pool = new UserPool(stack, 'userpool');
 
       // THEN
-      expect(() => new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
-        userPool: pool,
-        name: 'xy',
-        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
-      })).toThrow(/Expected provider name to be between 3 and 32 characters/);
+      expect(
+        () =>
+          new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
+            userPool: pool,
+            name: 'xy',
+            metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+          })
+      ).toThrow(/Expected provider name to be between 3 and 32 characters/);
     });
 
     test('generates a valid name when unique id is too short', () => {

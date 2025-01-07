@@ -33,21 +33,24 @@ test('Bundling a function without dependencies', () => {
   });
 
   // Correctly bundles
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output && cd /asset-output',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: ['bash', '-c', 'rsync -rLv /asset-input/ /asset-output && cd /asset-output'],
+      }),
+    })
+  );
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
-    buildArgs: expect.objectContaining({
-      IMAGE: expect.stringMatching(/build-python/),
-    }),
-    platform: 'linux/amd64',
-  }));
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+    expect.stringMatching(path.join(__dirname, '..', 'lib')),
+    expect.objectContaining({
+      buildArgs: expect.objectContaining({
+        IMAGE: expect.stringMatching(/build-python/),
+      }),
+      platform: 'linux/amd64',
+    })
+  );
 
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
@@ -62,14 +65,18 @@ test('Bundling a function with requirements.txt', () => {
   });
 
   // Correctly bundles
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
+        ],
+      }),
+    })
+  );
 
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
@@ -87,14 +94,18 @@ test('Bundling a function with requirements.txt using assetExcludes', () => {
   });
 
   // Correctly bundles
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        "rsync -rLv --exclude='.ignorelist' /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output",
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          "rsync -rLv --exclude='.ignorelist' /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output",
+        ],
+      }),
+    })
+  );
 
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
@@ -110,14 +121,18 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
   });
 
   // Correctly bundles with requirements.txt pip installed
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
+        ],
+      }),
+    })
+  );
 });
 
 test('Bundling Python 2.7 with requirements.txt installed', () => {
@@ -129,14 +144,18 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
   });
 
   // Correctly bundles with requirements.txt pip installed
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output && cd /asset-output && python -m pip install -r requirements.txt -t /asset-output',
+        ],
+      }),
+    })
+  );
 });
 
 test('Bundling a layer with dependencies', () => {
@@ -149,14 +168,18 @@ test('Bundling a layer with dependencies', () => {
     outputPathSuffix: 'python',
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
+        ],
+      }),
+    })
+  );
 });
 
 test('Bundling a python code layer', () => {
@@ -169,14 +192,14 @@ test('Bundling a python code layer', () => {
     outputPathSuffix: 'python',
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: ['bash', '-c', 'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python'],
+      }),
+    })
+  );
 });
 
 test('Bundling a function with pipenv dependencies', () => {
@@ -189,14 +212,18 @@ test('Bundling a function with pipenv dependencies', () => {
     outputPathSuffix: 'python',
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv requirements > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv requirements > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python',
+        ],
+      }),
+    })
+  );
 
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
@@ -217,14 +244,18 @@ test('Bundling a function with pipenv dependencies with assetExcludes', () => {
     assetExcludes: ['.ignorefile'],
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        "rsync -rLv --exclude='.ignorefile' /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv requirements > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python",
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          "rsync -rLv --exclude='.ignorefile' /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv requirements > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python",
+        ],
+      }),
+    })
+  );
 
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
@@ -244,14 +275,18 @@ test('Bundling a function with poetry dependencies', () => {
     outputPathSuffix: 'python',
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
+        ],
+      }),
+    })
+  );
 
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
@@ -272,15 +307,18 @@ test('Bundling a function with poetry and assetExcludes', () => {
     assetExcludes: ['.ignorefile'],
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        "rsync -rLv --exclude='.ignorefile' /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python",
-      ],
-    }),
-  }));
-
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          "rsync -rLv --exclude='.ignorefile' /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python",
+        ],
+      }),
+    })
+  );
 });
 
 test('Bundling a function with poetry and no assetExcludes', () => {
@@ -293,14 +331,14 @@ test('Bundling a function with poetry and no assetExcludes', () => {
     outputPathSuffix: 'python',
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        expect.not.stringContaining('--exclude'),
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: ['bash', '-c', expect.not.stringContaining('--exclude')],
+      }),
+    })
+  );
 });
 
 test('Bundling a function with poetry dependencies, with hashes', () => {
@@ -314,14 +352,18 @@ test('Bundling a function with poetry dependencies, with hashes', () => {
     poetryIncludeHashes: true,
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
+        ],
+      }),
+    })
+  );
 
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
@@ -342,14 +384,18 @@ test('Bundling a function with poetry dependencies, without urls', () => {
     poetryWithoutUrls: true,
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --without-urls --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && poetry export --without-hashes --without-urls --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python',
+        ],
+      }),
+    })
+  );
 
   const files = fs.readdirSync(assetCode.path);
   expect(files).toContain('index.py');
@@ -371,15 +417,19 @@ test('Bundling a function with custom bundling image', () => {
     image,
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      image,
-      command: [
-        'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        image,
+        command: [
+          'bash',
+          '-c',
+          'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && python -m pip install -r requirements.txt -t /asset-output/python',
+        ],
+      }),
+    })
+  );
 
   expect(DockerImage.fromBuild).toHaveBeenCalledTimes(1);
   expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(entry));
@@ -394,11 +444,14 @@ test('Bundling with custom build args', () => {
     buildArgs: { PIP_INDEX_URL: testPypi },
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
-    buildArgs: expect.objectContaining({
-      PIP_INDEX_URL: testPypi,
-    }),
-  }));
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+    expect.stringMatching(path.join(__dirname, '..', 'lib')),
+    expect.objectContaining({
+      buildArgs: expect.objectContaining({
+        PIP_INDEX_URL: testPypi,
+      }),
+    })
+  );
 });
 
 test('Bundling with custom environment vars`', () => {
@@ -411,13 +464,16 @@ test('Bundling with custom environment vars`', () => {
     },
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      environment: {
-        KEY: 'value',
-      },
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        environment: {
+          KEY: 'value',
+        },
+      }),
+    })
+  );
 });
 
 test('Bundling with volumes from other container', () => {
@@ -426,14 +482,16 @@ test('Bundling with volumes from other container', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     volumesFrom: ['777f7dc92da7'],
-
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      volumesFrom: ['777f7dc92da7'],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        volumesFrom: ['777f7dc92da7'],
+      }),
+    })
+  );
 });
 
 test('Bundling with custom volume paths', () => {
@@ -442,14 +500,16 @@ test('Bundling with custom volume paths', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
-
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      }),
+    })
+  );
 });
 
 test('Bundling with custom working directory', () => {
@@ -458,14 +518,16 @@ test('Bundling with custom working directory', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     workingDirectory: '/my-dir',
-
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      workingDirectory: '/my-dir',
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        workingDirectory: '/my-dir',
+      }),
+    })
+  );
 });
 
 test('Bundling with custom user', () => {
@@ -474,14 +536,16 @@ test('Bundling with custom user', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     user: 'user:group',
-
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      user: 'user:group',
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        user: 'user:group',
+      }),
+    })
+  );
 });
 
 test('Bundling with custom securityOpt', () => {
@@ -490,14 +554,16 @@ test('Bundling with custom securityOpt', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     securityOpt: 'no-new-privileges',
-
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      securityOpt: 'no-new-privileges',
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        securityOpt: 'no-new-privileges',
+      }),
+    })
+  );
 });
 
 test('Bundling with custom network', () => {
@@ -506,14 +572,16 @@ test('Bundling with custom network', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     network: 'host',
-
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      network: 'host',
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        network: 'host',
+      }),
+    })
+  );
 });
 
 test('Bundling with docker copy variant', () => {
@@ -522,14 +590,16 @@ test('Bundling with docker copy variant', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
-
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
+      }),
+    })
+  );
 });
 
 test('Do not build docker image when skipping bundling', () => {
@@ -562,10 +632,7 @@ test('with command hooks', () => {
     skip: false,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
-        return [
-          `echo hello > ${inputDir}/a.txt`,
-          `cp ${inputDir}/a.txt ${outputDir}`,
-        ];
+        return [`echo hello > ${inputDir}/a.txt`, `cp ${inputDir}/a.txt ${outputDir}`];
       },
       afterBundling(inputDir: string, outputDir: string): string[] {
         return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
@@ -573,12 +640,18 @@ test('with command hooks', () => {
     },
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
-      ],
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    entry,
+    expect.objectContaining({
+      bundling: expect.objectContaining({
+        command: [
+          'bash',
+          '-c',
+          expect.stringMatching(
+            /^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/
+          ),
+        ],
+      }),
+    })
+  );
 });

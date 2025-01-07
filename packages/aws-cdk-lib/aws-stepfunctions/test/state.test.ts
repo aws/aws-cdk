@@ -3,7 +3,7 @@ import * as assert from '../../assertions';
 import * as cdk from '../../core';
 import { DefinitionBody, JsonPath, StateMachine } from '../lib';
 
-test('JsonPath.DISCARD can be used to discard a state\'s output', () => {
+test("JsonPath.DISCARD can be used to discard a state's output", () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');

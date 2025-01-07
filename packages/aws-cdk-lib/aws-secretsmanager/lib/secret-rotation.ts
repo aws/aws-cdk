@@ -178,11 +178,7 @@ export class SecretRotationApplication {
    */
   private readonly applicationName: string;
 
-  constructor(
-    applicationId: string,
-    semanticVersion: string,
-    options?: SecretRotationApplicationOptions
-  ) {
+  constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
     // partitions are handled explicitly via applicationArnForPartition()
     // eslint-disable-next-line @cdklabs/no-literal-partition
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
@@ -334,17 +330,12 @@ export class SecretRotation extends Construct {
     }
 
     if (props.application.isMultiUser && !props.masterSecret) {
-      throw new Error(
-        'The `masterSecret` must be specified for application using the multi user scheme.'
-      );
+      throw new Error('The `masterSecret` must be specified for application using the multi user scheme.');
     }
 
     // Max length of 64 chars, get the last 64 chars
     const uniqueId = Names.uniqueId(this);
-    const rotationFunctionName = uniqueId.substring(
-      Math.max(uniqueId.length - 64, 0),
-      uniqueId.length
-    );
+    const rotationFunctionName = uniqueId.substring(Math.max(uniqueId.length - 64, 0), uniqueId.length);
 
     const securityGroup =
       props.securityGroup ||

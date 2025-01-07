@@ -7,7 +7,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('build fleet', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
 
@@ -21,46 +20,47 @@ describe('build fleet', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-        AssumeRolePolicyDocument:
-          {
-            Statement:
-              [{
-                Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: { Service: 'gamelift.amazonaws.com' },
-              }],
-            Version: '2012-10-17',
-          },
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'gamelift.amazonaws.com' },
+            },
+          ],
+          Version: '2012-10-17',
+        },
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
-          {
-            BuildId: { Ref: 'Build45A36621' },
-            NewGameSessionProtectionPolicy: 'NoProtection',
-            FleetType: 'ON_DEMAND',
-            EC2InstanceType: 'c4.large',
-            CertificateConfiguration: {
-              CertificateType: 'DISABLED',
-            },
-            MaxSize: 1,
-            MinSize: 0,
-            RuntimeConfiguration: {
-              ServerProcesses: [
-                {
-                  ConcurrentExecutions: 1,
-                  LaunchPath: 'test-launch-path',
-                },
-              ],
-            },
+        Properties: {
+          BuildId: { Ref: 'Build45A36621' },
+          NewGameSessionProtectionPolicy: 'NoProtection',
+          FleetType: 'ON_DEMAND',
+          EC2InstanceType: 'c4.large',
+          CertificateConfiguration: {
+            CertificateType: 'DISABLED',
           },
+          MaxSize: 1,
+          MinSize: 0,
+          RuntimeConfiguration: {
+            ServerProcesses: [
+              {
+                ConcurrentExecutions: 1,
+                LaunchPath: 'test-launch-path',
+              },
+            ],
+          },
+        },
       });
     });
 
@@ -70,16 +70,21 @@ describe('build fleet', () => {
         incorrectFleetName += 'A';
       }
 
-      expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
-        fleetName: incorrectFleetName,
-        content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-        runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
-        },
-      })).toThrow(/Fleet name can not be longer than 1024 characters but has 1025 characters./);
+      expect(
+        () =>
+          new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+            fleetName: incorrectFleetName,
+            content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+            runtimeConfiguration: {
+              serverProcesses: [
+                {
+                  launchPath: 'test-launch-path',
+                },
+              ],
+            },
+          })
+      ).toThrow(/Fleet name can not be longer than 1024 characters but has 1025 characters./);
     });
 
     test('with an incorrect description', () => {
@@ -88,45 +93,60 @@ describe('build fleet', () => {
         incorrectDescription += 'A';
       }
 
-      expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
-        fleetName: 'test-fleet',
-        description: incorrectDescription,
-        content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-        runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
-        },
-      })).toThrow(/Fleet description can not be longer than 1024 characters but has 1025 characters./);
+      expect(
+        () =>
+          new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+            fleetName: 'test-fleet',
+            description: incorrectDescription,
+            content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+            runtimeConfiguration: {
+              serverProcesses: [
+                {
+                  launchPath: 'test-launch-path',
+                },
+              ],
+            },
+          })
+      ).toThrow(/Fleet description can not be longer than 1024 characters but has 1025 characters./);
     });
 
     test('with an incorrect minSize value', () => {
-      expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
-        fleetName: 'test-fleet',
-        content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-        runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
-        },
-        minSize: -1,
-      })).toThrow(/The minimum number of instances allowed in the Fleet cannot be lower than 0, given -1/);
+      expect(
+        () =>
+          new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+            fleetName: 'test-fleet',
+            content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+            runtimeConfiguration: {
+              serverProcesses: [
+                {
+                  launchPath: 'test-launch-path',
+                },
+              ],
+            },
+            minSize: -1,
+          })
+      ).toThrow(/The minimum number of instances allowed in the Fleet cannot be lower than 0, given -1/);
     });
 
     test('with an incorrect maxSize value', () => {
-      expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
-        fleetName: 'test-fleet',
-        content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-        runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
-        },
-        maxSize: -1,
-      })).toThrow(/The maximum number of instances allowed in the Fleet cannot be lower than 0, given -1/);
+      expect(
+        () =>
+          new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+            fleetName: 'test-fleet',
+            content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+            runtimeConfiguration: {
+              serverProcesses: [
+                {
+                  launchPath: 'test-launch-path',
+                },
+              ],
+            },
+            maxSize: -1,
+          })
+      ).toThrow(/The maximum number of instances allowed in the Fleet cannot be lower than 0, given -1/);
     });
 
     test('with too much locations from constructor', () => {
@@ -137,17 +157,22 @@ describe('build fleet', () => {
         });
       }
 
-      expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
-        fleetName: 'test-fleet',
-        locations: incorrectLocations,
-        content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-        runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
-        },
-      })).toThrow(/No more than 100 locations are allowed per fleet, given 101/);
+      expect(
+        () =>
+          new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+            fleetName: 'test-fleet',
+            locations: incorrectLocations,
+            content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+            runtimeConfiguration: {
+              serverProcesses: [
+                {
+                  launchPath: 'test-launch-path',
+                },
+              ],
+            },
+          })
+      ).toThrow(/No more than 100 locations are allowed per fleet, given 101/);
     });
 
     test('with too much locations', () => {
@@ -164,9 +189,11 @@ describe('build fleet', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
       });
 
@@ -182,17 +209,22 @@ describe('build fleet', () => {
         });
       }
 
-      expect(() => new gamelift.BuildFleet(stack, 'MyBuildFleet', {
-        fleetName: 'test-fleet',
-        ingressRules: incorrectIngressRules,
-        content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-        runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
-        },
-      })).toThrow(/No more than 50 ingress rules are allowed per fleet, given 51/);
+      expect(
+        () =>
+          new gamelift.BuildFleet(stack, 'MyBuildFleet', {
+            fleetName: 'test-fleet',
+            ingressRules: incorrectIngressRules,
+            content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+            runtimeConfiguration: {
+              serverProcesses: [
+                {
+                  launchPath: 'test-launch-path',
+                },
+              ],
+            },
+          })
+      ).toThrow(/No more than 50 ingress rules are allowed per fleet, given 51/);
     });
   });
 
@@ -207,9 +239,11 @@ describe('build fleet', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
       });
     });
@@ -220,17 +254,16 @@ describe('build fleet', () => {
 
       // THEN
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
+        Properties: {
+          EC2InboundPermissions: [
             {
-              EC2InboundPermissions: [
-                {
-                  IpRange: '0.0.0.0/0',
-                  FromPort: 144,
-                  ToPort: 144,
-                  Protocol: 'TCP',
-                },
-              ],
+              IpRange: '0.0.0.0/0',
+              FromPort: 144,
+              ToPort: 144,
+              Protocol: 'TCP',
             },
+          ],
+        },
       });
     });
 
@@ -240,18 +273,16 @@ describe('build fleet', () => {
 
       // THEN
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
+        Properties: {
+          EC2InboundPermissions: [
             {
-
-              EC2InboundPermissions: [
-                {
-                  IpRange: '0.0.0.0/0',
-                  FromPort: 100,
-                  ToPort: 200,
-                  Protocol: 'TCP',
-                },
-              ],
+              IpRange: '0.0.0.0/0',
+              FromPort: 100,
+              ToPort: 200,
+              Protocol: 'TCP',
             },
+          ],
+        },
       });
     });
 
@@ -261,19 +292,16 @@ describe('build fleet', () => {
 
       // THEN
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
+        Properties: {
+          EC2InboundPermissions: [
             {
-
-              EC2InboundPermissions: [
-                {
-                  IpRange: '0.0.0.0/0',
-                  FromPort: 144,
-                  ToPort: 144,
-                  Protocol: 'UDP',
-                },
-              ],
-
+              IpRange: '0.0.0.0/0',
+              FromPort: 144,
+              ToPort: 144,
+              Protocol: 'UDP',
             },
+          ],
+        },
       });
     });
 
@@ -283,19 +311,16 @@ describe('build fleet', () => {
 
       // THEN
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
+        Properties: {
+          EC2InboundPermissions: [
             {
-
-              EC2InboundPermissions: [
-                {
-                  IpRange: '0.0.0.0/0',
-                  FromPort: 100,
-                  ToPort: 200,
-                  Protocol: 'UDP',
-                },
-              ],
-
+              IpRange: '0.0.0.0/0',
+              FromPort: 100,
+              ToPort: 200,
+              Protocol: 'UDP',
             },
+          ],
+        },
       });
     });
 
@@ -305,19 +330,16 @@ describe('build fleet', () => {
 
       // THEN
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
+        Properties: {
+          EC2InboundPermissions: [
             {
-
-              EC2InboundPermissions: [
-                {
-                  IpRange: '1.2.3.4/5',
-                  FromPort: 1026,
-                  ToPort: 60000,
-                  Protocol: 'TCP',
-                },
-              ],
-
+              IpRange: '1.2.3.4/5',
+              FromPort: 1026,
+              ToPort: 60000,
+              Protocol: 'TCP',
             },
+          ],
+        },
       });
     });
 
@@ -327,42 +349,41 @@ describe('build fleet', () => {
 
       // THEN
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
+        Properties: {
+          EC2InboundPermissions: [
             {
-
-              EC2InboundPermissions: [
-                {
-                  IpRange: '1.2.3.4/5',
-                  FromPort: 1026,
-                  ToPort: 60000,
-                  Protocol: 'UDP',
-                },
-              ],
-
+              IpRange: '1.2.3.4/5',
+              FromPort: 1026,
+              ToPort: 60000,
+              Protocol: 'UDP',
             },
+          ],
+        },
       });
     });
 
     test('add invalid IPv4 CIDR address', () => {
       // WHEN
-      expect(() => fleet.addIngressRule(gamelift.Peer.ipv4('1.2.3/23'), gamelift.Port.tcp(144)))
-        .toThrow('Invalid IPv4 CIDR: \"1.2.3/23\"');
+      expect(() => fleet.addIngressRule(gamelift.Peer.ipv4('1.2.3/23'), gamelift.Port.tcp(144))).toThrow(
+        'Invalid IPv4 CIDR: \"1.2.3/23\"'
+      );
     });
 
     test('add IPv4 CIDR address without mask', () => {
       // WHEN
-      expect(() => fleet.addIngressRule(gamelift.Peer.ipv4('1.2.3.4'), gamelift.Port.tcp(144)))
-        .toThrow('CIDR mask is missing in IPv4: \"1.2.3.4\". Did you mean \"1.2.3.4/32\"?');
+      expect(() => fleet.addIngressRule(gamelift.Peer.ipv4('1.2.3.4'), gamelift.Port.tcp(144))).toThrow(
+        'CIDR mask is missing in IPv4: \"1.2.3.4\". Did you mean \"1.2.3.4/32\"?'
+      );
     });
 
     test('add too much ingress rules', () => {
       for (let i = 0; i < 50; i++) {
         fleet.addIngressRule(gamelift.Peer.anyIpv4(), gamelift.Port.tcpRange(100, 200));
       }
-      expect(() => fleet.addIngressRule(gamelift.Peer.anyIpv4(), gamelift.Port.tcp(144)))
-        .toThrow('No more than 50 ingress rules are allowed per fleet');
+      expect(() => fleet.addIngressRule(gamelift.Peer.anyIpv4(), gamelift.Port.tcp(144))).toThrow(
+        'No more than 50 ingress rules are allowed per fleet'
+      );
     });
-
   });
 
   describe('add locations', () => {
@@ -376,9 +397,11 @@ describe('build fleet', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
       });
     });
@@ -388,12 +411,13 @@ describe('build fleet', () => {
       fleet.addLocation('eu-west-1');
 
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
-              {
-                Locations: [{
-                  Location: 'eu-west-1',
-                }],
-              },
+        Properties: {
+          Locations: [
+            {
+              Location: 'eu-west-1',
+            },
+          ],
+        },
       });
     });
 
@@ -402,17 +426,18 @@ describe('build fleet', () => {
       fleet.addLocation('eu-west-1', 3, 1, 4);
 
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
-                {
-                  Locations: [{
-                    Location: 'eu-west-1',
-                    LocationCapacity: {
-                      DesiredEC2Instances: 3,
-                      MinSize: 1,
-                      MaxSize: 4,
-                    },
-                  }],
-                },
+        Properties: {
+          Locations: [
+            {
+              Location: 'eu-west-1',
+              LocationCapacity: {
+                DesiredEC2Instances: 3,
+                MinSize: 1,
+                MaxSize: 4,
+              },
+            },
+          ],
+        },
       });
     });
   });
@@ -423,7 +448,11 @@ describe('build fleet', () => {
       const stack2 = new cdk.Stack();
 
       // WHEN
-      const imported = gamelift.BuildFleet.fromBuildFleetArn(stack2, 'Imported', 'arn:aws:gamelift:us-east-1:123456789012:fleet/sample-fleet-id');
+      const imported = gamelift.BuildFleet.fromBuildFleetArn(
+        stack2,
+        'Imported',
+        'arn:aws:gamelift:us-east-1:123456789012:fleet/sample-fleet-id'
+      );
 
       // THEN
       expect(imported.fleetArn).toEqual('arn:aws:gamelift:us-east-1:123456789012:fleet/sample-fleet-id');
@@ -440,15 +469,18 @@ describe('build fleet', () => {
 
       // THEN
       expect(stack.resolve(imported.fleetArn)).toStrictEqual({
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':gamelift:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':fleet/sample-fleet-id',
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':gamelift:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':fleet/sample-fleet-id',
+          ],
+        ],
       });
       expect(stack.resolve(imported.fleetId)).toStrictEqual('sample-fleet-id');
       expect(imported.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: imported }));
@@ -467,9 +499,11 @@ describe('build fleet', () => {
       content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
       runtimeConfiguration: {
-        serverProcesses: [{
-          launchPath: 'test-launch-path',
-        }],
+        serverProcesses: [
+          {
+            launchPath: 'test-launch-path',
+          },
+        ],
       },
       role: role,
     });
@@ -500,9 +534,11 @@ describe('build fleet', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
       });
     });
@@ -644,19 +680,20 @@ describe('build fleet', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
         peerVpc: vpc,
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::Fleet', {
-        Properties:
-            {
-              PeerVpcAwsAccountId: { Ref: 'AWS::AccountId' },
-              PeerVpcId: { Ref: 'Vpc8378EB38' },
-            },
+        Properties: {
+          PeerVpcAwsAccountId: { Ref: 'AWS::AccountId' },
+          PeerVpcId: { Ref: 'Vpc8378EB38' },
+        },
       });
     });
 
@@ -670,14 +707,15 @@ describe('build fleet', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
         peerVpc: vpc,
       });
       Annotations.fromStack(stack).hasWarning('/Default/MyBuildFleet', Match.stringLikeRegexp(warningMessage));
     });
   });
-
 });

@@ -150,11 +150,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
   /**
    * Import a PlacementGroup by its arn
    */
-  public static fromPlacementGroupName(
-    scope: Construct,
-    id: string,
-    placementGroupName: string
-  ): IPlacementGroup {
+  public static fromPlacementGroupName(scope: Construct, id: string, placementGroupName: string): IPlacementGroup {
     class Import extends Resource implements IPlacementGroup {
       public readonly placementGroupName = placementGroupName;
     }
@@ -179,9 +175,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
 
     if (this.partitions && this.strategy) {
       if (this.strategy !== PlacementGroupStrategy.PARTITION) {
-        throw new Error(
-          `PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`
-        );
+        throw new Error(`PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`);
       }
     } else if (this.partitions && !this.strategy) {
       this.strategy = PlacementGroupStrategy.PARTITION;
@@ -192,9 +186,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
         this.strategy = PlacementGroupStrategy.SPREAD;
       }
       if (this.strategy !== PlacementGroupStrategy.SPREAD) {
-        throw new Error(
-          `PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`
-        );
+        throw new Error(`PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`);
       }
     }
 

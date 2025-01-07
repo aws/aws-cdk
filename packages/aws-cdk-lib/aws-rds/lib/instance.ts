@@ -49,10 +49,7 @@ import * as cxapi from '../../cx-api';
 /**
  * A database instance
  */
-export interface IDatabaseInstance
-  extends IResource,
-    ec2.IConnectable,
-    secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * The instance identifier.
    */
@@ -217,9 +214,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     }
 
     if (!this.instanceResourceId) {
-      throw new Error(
-        'For imported Database Instances, instanceResourceId is required to grantConnect()'
-      );
+      throw new Error('For imported Database Instances, instanceResourceId is required to grantConnect()');
     }
 
     if (!dbUser) {
@@ -824,9 +819,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
     if (props.multiAz === true && props.availabilityZone) {
-      throw new Error(
-        'Requesting a specific availability zone is not valid for Multi-AZ instances'
-      );
+      throw new Error('Requesting a specific availability zone is not valid for Multi-AZ instances');
     }
 
     const subnetGroup =
@@ -835,10 +828,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         description: `Subnet group for ${this.node.id} database`,
         vpc: this.vpc,
         vpcSubnets: this.vpcPlacement,
-        removalPolicy: renderUnless(
-          helperRemovalPolicy(props.removalPolicy),
-          RemovalPolicy.DESTROY
-        ),
+        removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
       });
 
     const securityGroups = props.securityGroups || [
@@ -859,20 +849,14 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         props.monitoringRole ||
         new iam.Role(this, 'MonitoringRole', {
           assumedBy: new iam.ServicePrincipal('monitoring.rds.amazonaws.com'),
-          managedPolicies: [
-            iam.ManagedPolicy.fromAwsManagedPolicyName(
-              'service-role/AmazonRDSEnhancedMonitoringRole'
-            ),
-          ],
+          managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')],
         });
     }
 
     const storageType = props.storageType ?? StorageType.GP2;
     const iops = defaultIops(storageType, props.iops);
     if (props.storageThroughput && storageType !== StorageType.GP3) {
-      throw new Error(
-        `The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`
-      );
+      throw new Error(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`);
     }
     if (
       storageType === StorageType.GP3 &&
@@ -912,11 +896,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
             new iam.ServicePrincipal('rds.amazonaws.com'),
             new iam.ServicePrincipal('directoryservice.rds.amazonaws.com')
           ),
-          managedPolicies: [
-            iam.ManagedPolicy.fromAwsManagedPolicyName(
-              'service-role/AmazonRDSDirectoryServiceAccess'
-            ),
-          ],
+          managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess')],
         });
     }
 
@@ -927,8 +907,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         : props.instanceIdentifier;
 
     const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
-    const isInPublicSubnet =
-      this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC;
+    const isInPublicSubnet = this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC;
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -961,8 +940,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       port: props.port !== undefined ? Tokenization.stringifyNumber(props.port) : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-      processorFeatures:
-        props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
+      processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.publiclyAccessible ?? isInPublicSubnet,
       storageType,
       storageThroughput: props.storageThroughput,
@@ -1113,8 +1091,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       }
     }
 
-    this.instanceType =
-      props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
+    this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     if (props.parameterGroup && props.parameters) {
       throw new Error('You cannot specify both parameterGroup and parameters');
@@ -1148,9 +1125,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    * @param options the options for the rotation,
    *                if you want to override the defaults
    */
-  public addRotationSingleUser(
-    options: RotationSingleUserOptions = {}
-  ): secretsmanager.SecretRotation {
+  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for an instance without secret.');
     }
@@ -1173,10 +1148,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   /**
    * Adds the multi user rotation to this instance.
    */
-  public addRotationMultiUser(
-    id: string,
-    options: RotationMultiUserOptions
-  ): secretsmanager.SecretRotation {
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for an instance without secret.');
     }
@@ -1319,10 +1291,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
  *
  * @resource AWS::RDS::DBInstance
  */
-export class DatabaseInstanceFromSnapshot
-  extends DatabaseInstanceSource
-  implements IDatabaseInstance
-{
+export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource implements IDatabaseInstance {
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1337,9 +1306,7 @@ export class DatabaseInstanceFromSnapshot
     let secret = credentials?.secret;
     if (!secret && credentials?.generatePassword) {
       if (!credentials.username) {
-        throw new Error(
-          '`credentials` `username` must be specified when `generatePassword` is set to true'
-        );
+        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
@@ -1355,8 +1322,7 @@ export class DatabaseInstanceFromSnapshot
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
       masterUserPassword:
-        secret?.secretValueFromJson('password')?.unsafeUnwrap() ??
-        credentials?.password?.unsafeUnwrap(), // Safe usage
+        secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.instanceIdentifier = instance.ref;
@@ -1471,9 +1437,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
-    this.instanceResourceId = FeatureFlags.of(this).isEnabled(
-      cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY
-    )
+    this.instanceResourceId = FeatureFlags.of(this).isEnabled(cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY)
       ? instance.attrDbiResourceId
       : instance.attrDbInstanceArn;
 
@@ -1492,9 +1456,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
  *
  * @param features the processor features
  */
-function renderProcessorFeatures(
-  features: ProcessorFeatures
-): CfnDBInstance.ProcessorFeatureProperty[] | undefined {
+function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.ProcessorFeatureProperty[] | undefined {
   const featuresList = Object.entries(features).map(([name, value]) => ({
     name,
     value: value.toString(),

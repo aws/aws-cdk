@@ -2,13 +2,7 @@ import { QueueProps } from './index';
 import { Token } from '../../core';
 
 export function validateProps(props: QueueProps) {
-  validateRange(
-    'delivery delay',
-    props.deliveryDelay && props.deliveryDelay.toSeconds(),
-    0,
-    900,
-    'seconds'
-  );
+  validateRange('delivery delay', props.deliveryDelay && props.deliveryDelay.toSeconds(), 0, 900, 'seconds');
   validateRange('maximum message size', props.maxMessageSizeBytes, 1_024, 262_144, 'bytes');
   validateRange(
     'message retention period',
@@ -39,13 +33,7 @@ export function validateProps(props: QueueProps) {
   );
 }
 
-function validateRange(
-  label: string,
-  value: number | undefined,
-  minValue: number,
-  maxValue: number,
-  unit?: string
-) {
+function validateRange(label: string, value: number | undefined, minValue: number, maxValue: number, unit?: string) {
   if (value === undefined || Token.isUnresolved(value)) {
     return;
   }

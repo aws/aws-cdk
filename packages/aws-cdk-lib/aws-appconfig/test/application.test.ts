@@ -2,13 +2,7 @@ import { Template } from '../../assertions';
 import { FargateTaskDefinition } from '../../aws-ecs';
 import { Code, Function, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
-import {
-  Application,
-  Platform,
-  LambdaDestination,
-  Parameter,
-  ActionPoint,
-} from '../lib';
+import { Application, Platform, LambdaDestination, Parameter, ActionPoint } from '../lib';
 
 describe('appconfig', () => {
   test('basic appconfig', () => {
@@ -44,8 +38,12 @@ describe('appconfig', () => {
   });
 
   test('get lambda layer arn', () => {
-    expect(Application.getLambdaLayerVersionArn('us-east-1')).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:128');
-    expect(Application.getLambdaLayerVersionArn('us-east-1', Platform.ARM_64)).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:61');
+    expect(Application.getLambdaLayerVersionArn('us-east-1')).toEqual(
+      'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:128'
+    );
+    expect(Application.getLambdaLayerVersionArn('us-east-1', Platform.ARM_64)).toEqual(
+      'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:61'
+    );
   });
 
   test('add agent to ecs', () => {
@@ -123,9 +121,7 @@ describe('appconfig', () => {
       description: 'This is my description',
       extensionName: 'MyExtension',
       latestVersionNumber: 1,
-      parameters: [
-        Parameter.required('myparam', 'val'),
-      ],
+      parameters: [Parameter.required('myparam', 'val')],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
@@ -546,8 +542,11 @@ describe('appconfig', () => {
 
   test('from application arn', () => {
     const stack = new cdk.Stack();
-    const app = Application.fromApplicationArn(stack, 'Application',
-      'arn:aws:appconfig:us-west-2:123456789012:application/abc123');
+    const app = Application.fromApplicationArn(
+      stack,
+      'Application',
+      'arn:aws:appconfig:us-west-2:123456789012:application/abc123'
+    );
 
     expect(app.applicationId).toEqual('abc123');
   });
@@ -555,8 +554,7 @@ describe('appconfig', () => {
   test('from application arn with no resource name', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      Application.fromApplicationArn(stack, 'Application',
-        'arn:aws:appconfig:us-west-2:123456789012:application/');
+      Application.fromApplicationArn(stack, 'Application', 'arn:aws:appconfig:us-west-2:123456789012:application/');
     }).toThrow('Missing required application id from application ARN');
   });
 

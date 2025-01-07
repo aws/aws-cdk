@@ -54,7 +54,7 @@ test('use classic ELB as record target with health check', () => {
     target: route53.RecordTarget.fromAlias(
       new targets.ClassicLoadBalancerTarget(lb, {
         evaluateTargetHealth: true,
-      }),
+      })
     ),
   });
 

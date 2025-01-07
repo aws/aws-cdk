@@ -99,10 +99,7 @@ describeDeprecated('StartExecution', () => {
             },
           },
           {
-            Action: [
-              'states:DescribeExecution',
-              'states:StopExecution',
-            ],
+            Action: ['states:DescribeExecution', 'states:StopExecution'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -140,11 +137,7 @@ describeDeprecated('StartExecution', () => {
             },
           },
           {
-            Action: [
-              'events:PutTargets',
-              'events:PutRule',
-              'events:DescribeRule',
-            ],
+            Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [

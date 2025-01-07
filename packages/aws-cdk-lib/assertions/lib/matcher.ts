@@ -271,9 +271,7 @@ export class MatchResult {
       if (r.target && typeof r.target === 'object') {
         indents.push('  ');
         emit('{\n');
-        const keys = Array.from(
-          new Set([...Object.keys(r.target), ...Array.from(remainingFailures)])
-        ).sort();
+        const keys = Array.from(new Set([...Object.keys(r.target), ...Array.from(remainingFailures)])).sort();
 
         for (const [first, key] of enumFirst(keys)) {
           if (!first) {

@@ -38,10 +38,7 @@ export class AthenaGetQueryExecution extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      AthenaGetQueryExecution.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, AthenaGetQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = [
       new iam.PolicyStatement({

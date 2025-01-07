@@ -45,7 +45,7 @@ test('CallAwsService task', () => {
     },
     End: true,
     Parameters: {
-      'Bucket': 'my-bucket',
+      Bucket: 'my-bucket',
       'Key.$': '$.key',
     },
   });
@@ -150,40 +150,49 @@ test('with unresolved tokens', () => {
 });
 
 test('throws with invalid integration pattern', () => {
-  expect(() => new tasks.CallAwsService(stack, 'GetObject', {
-    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-    service: 's3',
-    action: 'getObject',
-    parameters: {
-      Bucket: 'my-bucket',
-      Key: sfn.JsonPath.stringAt('$.key'),
-    },
-    iamResources: ['*'],
-  })).toThrow(/The RUN_JOB integration pattern is not supported for CallAwsService/);
+  expect(
+    () =>
+      new tasks.CallAwsService(stack, 'GetObject', {
+        integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+        service: 's3',
+        action: 'getObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: sfn.JsonPath.stringAt('$.key'),
+        },
+        iamResources: ['*'],
+      })
+  ).toThrow(/The RUN_JOB integration pattern is not supported for CallAwsService/);
 });
 
 test('throws if action is not camelCase', () => {
-  expect(() => new tasks.CallAwsService(stack, 'GetObject', {
-    service: 's3',
-    action: 'GetObject',
-    parameters: {
-      Bucket: 'my-bucket',
-      Key: sfn.JsonPath.stringAt('$.key'),
-    },
-    iamResources: ['*'],
-  })).toThrow(/action must be camelCase, got: GetObject/);
+  expect(
+    () =>
+      new tasks.CallAwsService(stack, 'GetObject', {
+        service: 's3',
+        action: 'GetObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: sfn.JsonPath.stringAt('$.key'),
+        },
+        iamResources: ['*'],
+      })
+  ).toThrow(/action must be camelCase, got: GetObject/);
 });
 
 test('throws if parameters has keys as not PascalCase', () => {
-  expect(() => new tasks.CallAwsService(stack, 'GetObject', {
-    service: 's3',
-    action: 'getObject',
-    parameters: {
-      bucket: 'my-bucket',
-      key: sfn.JsonPath.stringAt('$.key'),
-    },
-    iamResources: ['*'],
-  })).toThrow(/parameter names must be PascalCase, got: bucket, key/);
+  expect(
+    () =>
+      new tasks.CallAwsService(stack, 'GetObject', {
+        service: 's3',
+        action: 'getObject',
+        parameters: {
+          bucket: 'my-bucket',
+          key: sfn.JsonPath.stringAt('$.key'),
+        },
+        iamResources: ['*'],
+      })
+  ).toThrow(/parameter names must be PascalCase, got: bucket, key/);
 });
 
 test('can pass additional IAM statements', () => {

@@ -65,8 +65,7 @@ export function renderAlarmConfiguration(
   const removeAlarms = props.removeAlarms ?? true;
   if (removeAlarms) {
     return {
-      alarms:
-        props.alarms.length > 0 ? props.alarms.map((a) => ({ name: a.alarmName })) : undefined,
+      alarms: props.alarms.length > 0 ? props.alarms.map((a) => ({ name: a.alarmName })) : undefined,
       enabled: !ignoreAlarmConfiguration && props.alarms.length > 0,
       ignorePollAlarmFailure: props.ignorePollAlarmFailure,
     };
@@ -81,9 +80,7 @@ export function renderAlarmConfiguration(
       };
 }
 
-export function deploymentConfig(
-  name: string
-): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
+export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
   return {
     deploymentConfigName: name,
     deploymentConfigArn: arnForDeploymentConfig(name),
@@ -147,10 +144,7 @@ export function renderAutoRollbackConfiguration(
     : undefined;
 }
 
-export function validateName(
-  type: 'Application' | 'Deployment group' | 'Deployment config',
-  name: string
-): string[] {
+export function validateName(type: 'Application' | 'Deployment group' | 'Deployment config', name: string): string[] {
   const ret = [];
 
   if (!Token.isUnresolved(name) && name !== undefined) {

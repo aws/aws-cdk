@@ -16,34 +16,20 @@ type HandlerRegistry = { [section: string]: DiffHandler };
 const DIFF_HANDLERS: HandlerRegistry = {
   AWSTemplateFormatVersion: (diff, oldValue, newValue) =>
     (diff.awsTemplateFormatVersion = impl.diffAttribute(oldValue, newValue)),
-  Description: (diff, oldValue, newValue) =>
-    (diff.description = impl.diffAttribute(oldValue, newValue)),
+  Description: (diff, oldValue, newValue) => (diff.description = impl.diffAttribute(oldValue, newValue)),
   Metadata: (diff, oldValue, newValue) =>
-    (diff.metadata = new types.DifferenceCollection(
-      diffKeyedEntities(oldValue, newValue, impl.diffMetadata)
-    )),
+    (diff.metadata = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffMetadata))),
   Parameters: (diff, oldValue, newValue) =>
-    (diff.parameters = new types.DifferenceCollection(
-      diffKeyedEntities(oldValue, newValue, impl.diffParameter)
-    )),
+    (diff.parameters = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffParameter))),
   Mappings: (diff, oldValue, newValue) =>
-    (diff.mappings = new types.DifferenceCollection(
-      diffKeyedEntities(oldValue, newValue, impl.diffMapping)
-    )),
+    (diff.mappings = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffMapping))),
   Conditions: (diff, oldValue, newValue) =>
-    (diff.conditions = new types.DifferenceCollection(
-      diffKeyedEntities(oldValue, newValue, impl.diffCondition)
-    )),
-  Transform: (diff, oldValue, newValue) =>
-    (diff.transform = impl.diffAttribute(oldValue, newValue)),
+    (diff.conditions = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffCondition))),
+  Transform: (diff, oldValue, newValue) => (diff.transform = impl.diffAttribute(oldValue, newValue)),
   Resources: (diff, oldValue, newValue) =>
-    (diff.resources = new types.DifferenceCollection(
-      diffKeyedEntities(oldValue, newValue, impl.diffResource)
-    )),
+    (diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource))),
   Outputs: (diff, oldValue, newValue) =>
-    (diff.outputs = new types.DifferenceCollection(
-      diffKeyedEntities(oldValue, newValue, impl.diffOutput)
-    )),
+    (diff.outputs = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffOutput))),
 };
 
 /**
@@ -123,18 +109,13 @@ export function diffTemplate(
 }
 
 function isReplacement(impact: types.ResourceImpact) {
-  return (
-    impact === types.ResourceImpact.MAY_REPLACE || impact === types.ResourceImpact.WILL_REPLACE
-  );
+  return impact === types.ResourceImpact.MAY_REPLACE || impact === types.ResourceImpact.WILL_REPLACE;
 }
 
 /**
  * For all properties in 'source' that have a "replacement" impact, propagate that impact to "dest"
  */
-function propagatePropertyReplacement(
-  source: types.ResourceDifference,
-  dest: types.ResourceDifference
-) {
+function propagatePropertyReplacement(source: types.ResourceDifference, dest: types.ResourceDifference) {
   for (const [propertyName, diff] of Object.entries(source.propertyUpdates)) {
     if (diff.changeImpact && isReplacement(diff.changeImpact)) {
       // Use the propertydiff of source in target. The result of this happens to be clear enough.

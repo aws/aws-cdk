@@ -44,9 +44,7 @@ export class Default {
       return serviceFqn;
     }
 
-    function determineConfiguration(
-      service: string
-    ): (service: string, region: string, urlSuffix: string) => string {
+    function determineConfiguration(service: string): (service: string, region: string, urlSuffix: string) => string {
       function universal(s: string) {
         return `${s}.amazonaws.com`;
       }

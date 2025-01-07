@@ -26,12 +26,12 @@ describe('schedule target', () => {
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     mockS3Destination = {
       bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
-        dependable = new class extends Construct {
+        dependable = new (class extends Construct {
           constructor(depScope: Construct, id: string) {
             super(depScope, id);
             new CfnResource(this, 'Resource', { type: 'CDK::Dummy' });
           }
-        }(scope, 'Dummy Dep');
+        })(scope, 'Dummy Dep');
         return {
           extendedS3DestinationConfiguration: {
             bucketArn: bucketArn,
@@ -169,52 +169,60 @@ describe('schedule target', () => {
       target: firehoseTarget,
     });
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'firehose:PutRecord',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'firehose:PutRecord',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [firehoseStreamId, 'Arn'],
+              },
             },
-          },
-        ],
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
@@ -234,70 +242,75 @@ describe('schedule target', () => {
       group,
     });
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'GroupC77FDACD',
-                    'Arn',
-                  ],
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::GetAtt': ['GroupC77FDACD', 'Arn'],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'firehose:PutRecord',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [firehoseStreamId, 'Arn'],
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'firehose:PutRecord',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [firehoseStreamId, 'Arn'],
+              },
             },
-          },
-        ],
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM policy for firehose in another stack with the same account', () => {
@@ -535,11 +548,13 @@ describe('schedule target', () => {
       maxEventAge: Duration.days(3),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Maximum event age is 1 day/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: firehoseTarget,
+        })
+    ).toThrow(/Maximum event age is 1 day/);
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
@@ -547,11 +562,13 @@ describe('schedule target', () => {
       maxEventAge: Duration.seconds(59),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Minimum event age is 1 minute/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: firehoseTarget,
+        })
+    ).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
@@ -559,10 +576,12 @@ describe('schedule target', () => {
       retryAttempts: 200,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: firehoseTarget,
-      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: firehoseTarget,
+        })
+    ).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 });

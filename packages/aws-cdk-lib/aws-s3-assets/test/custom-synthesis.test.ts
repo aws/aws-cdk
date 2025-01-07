@@ -6,7 +6,19 @@
 
 import * as path from 'path';
 import { Template } from '../../assertions';
-import { StackSynthesizer, FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
+import {
+  StackSynthesizer,
+  FileAssetSource,
+  FileAssetLocation,
+  DockerImageAssetSource,
+  DockerImageAssetLocation,
+  ISynthesisSession,
+  App,
+  Stack,
+  AssetManifestBuilder,
+  CfnParameter,
+  CfnResource,
+} from '../../core';
 import { AssetManifestArtifact } from '../../cx-api';
 import { Asset } from '../lib';
 
@@ -41,25 +53,30 @@ test('use custom synthesizer', () => {
     Bucket: { 'Fn::Sub': '${BucketName}' },
     ObjectKey: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
     S3Url: { 'Fn::Sub': 's3://${BucketName}/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt' },
-    HttpUrl: { 'Fn::Sub': 'https://s3.${AWS::Region}.${AWS::URLSuffix}/${BucketName}/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt' },
+    HttpUrl: {
+      'Fn::Sub':
+        'https://s3.${AWS::Region}.${AWS::URLSuffix}/${BucketName}/78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
+    },
   });
 
-  expect(assetArtifact.contents).toEqual(expect.objectContaining({
-    files: expect.objectContaining({
-      '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197': {
-        destinations: {
-          'current_account-current_region': {
-            bucketName: 'write-bucket',
-            objectKey: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
+  expect(assetArtifact.contents).toEqual(
+    expect.objectContaining({
+      files: expect.objectContaining({
+        '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197': {
+          destinations: {
+            'current_account-current_region': {
+              bucketName: 'write-bucket',
+              objectKey: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
+            },
+          },
+          source: {
+            packaging: 'file',
+            path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
           },
         },
-        source: {
-          packaging: 'file',
-          path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
-        },
-      },
-    }),
-  }));
+      }),
+    })
+  );
 });
 
 class CustomSynthesizer extends StackSynthesizer {
@@ -83,7 +100,7 @@ class CustomSynthesizer extends StackSynthesizer {
   }
 
   addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
-    void(asset);
+    void asset;
     throw new Error('Docker images are not supported here');
   }
 

@@ -49,9 +49,7 @@ describe('FSx for Lustre File System', () => {
 
     Template.fromStack(stack).hasResource('AWS::FSx::FileSystem', {});
     Template.fromStack(stack).hasResource('AWS::EC2::SecurityGroup', {});
-    strictEqual(
-      fileSystem.dnsName,
-      `${fileSystem.fileSystemId}.fsx.${stack.region}.${Aws.URL_SUFFIX}`);
+    strictEqual(fileSystem.dnsName, `${fileSystem.fileSystemId}.fsx.${stack.region}.${Aws.URL_SUFFIX}`);
 
     Template.fromStack(stack).hasResource('AWS::FSx::FileSystem', {
       DeletionPolicy: 'Retain',
@@ -139,27 +137,26 @@ describe('FSx for Lustre File System', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {});
   });
 
-  test.each([
-    FileSystemTypeVersion.V_2_10,
-    FileSystemTypeVersion.V_2_12,
-    FileSystemTypeVersion.V_2_15,
-  ])('file system is created correctly with fileSystemTypeVersion %s', (fileSystemTypeVersion: FileSystemTypeVersion) => {
-    lustreConfiguration = {
-      deploymentType: LustreDeploymentType.SCRATCH_2,
-    };
+  test.each([FileSystemTypeVersion.V_2_10, FileSystemTypeVersion.V_2_12, FileSystemTypeVersion.V_2_15])(
+    'file system is created correctly with fileSystemTypeVersion %s',
+    (fileSystemTypeVersion: FileSystemTypeVersion) => {
+      lustreConfiguration = {
+        deploymentType: LustreDeploymentType.SCRATCH_2,
+      };
 
-    new LustreFileSystem(stack, 'FsxFileSystem', {
-      lustreConfiguration,
-      storageCapacityGiB: storageCapacity,
-      vpc,
-      vpcSubnet,
-      fileSystemTypeVersion,
-    });
+      new LustreFileSystem(stack, 'FsxFileSystem', {
+        lustreConfiguration,
+        storageCapacityGiB: storageCapacity,
+        vpc,
+        vpcSubnet,
+        fileSystemTypeVersion,
+      });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
-      FileSystemTypeVersion: fileSystemTypeVersion,
-    });
-  });
+      Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+        FileSystemTypeVersion: fileSystemTypeVersion,
+      });
+    }
+  );
 
   describe('when validating props', () => {
     describe('fileSystemTypeVersion', () => {
@@ -311,7 +308,9 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrow(`The export path "${exportPath}" is invalid. Expecting the format: s3://{IMPORT_PATH}/optional-prefix`);
+        }).toThrow(
+          `The export path "${exportPath}" is invalid. Expecting the format: s3://{IMPORT_PATH}/optional-prefix`
+        );
       });
 
       test('export path with no import path', () => {
@@ -354,7 +353,6 @@ describe('FSx for Lustre File System', () => {
       });
 
       test('autoImportPath requires importPath', () => {
-
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
           autoImportPolicy: LustreAutoImportPolicy.NEW_CHANGED_DELETED,
@@ -403,11 +401,7 @@ describe('FSx for Lustre File System', () => {
     });
 
     describe('importedFileChunkSize', () => {
-      test.each([
-        1,
-        256000,
-        512000,
-      ])('valid file chunk size of %d', (size: number) => {
+      test.each([1, 256000, 512000])('valid file chunk size of %d', (size: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
           importedFileChunkSizeMiB: size,
@@ -428,10 +422,7 @@ describe('FSx for Lustre File System', () => {
         });
       });
 
-      test.each([
-        0,
-        512001,
-      ])('invalid file chunk size of %d', (size: number) => {
+      test.each([0, 512001])('invalid file chunk size of %d', (size: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.SCRATCH_2,
           importedFileChunkSizeMiB: size,
@@ -508,7 +499,9 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrow(`The import path "${importPath}" is invalid. Expecting the format: s3://{BUCKET_NAME}/optional-prefix`);
+        }).toThrow(
+          `The import path "${importPath}" is invalid. Expecting the format: s3://{BUCKET_NAME}/optional-prefix`
+        );
       });
 
       test('invalid import path length', () => {
@@ -555,11 +548,7 @@ describe('FSx for Lustre File System', () => {
     });
 
     describe('perUnitStorageThroughput_PERSISTENT_1', () => {
-      test.each([
-        50,
-        100,
-        200,
-      ])('valid perUnitStorageThroughput of %d for SSD storage', (throughput: number) => {
+      test.each([50, 100, 200])('valid perUnitStorageThroughput of %d for SSD storage', (throughput: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
           perUnitStorageThroughput: throughput,
@@ -580,27 +569,27 @@ describe('FSx for Lustre File System', () => {
         });
       });
 
-      test.each([
-        1,
-        125,
-        250,
-        500,
-        1000,
-      ])('invalid perUnitStorageThroughput for SSD storage', (invalidValue: number) => {
-        lustreConfiguration = {
-          deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: invalidValue,
-        };
+      test.each([1, 125, 250, 500, 1000])(
+        'invalid perUnitStorageThroughput for SSD storage',
+        (invalidValue: number) => {
+          lustreConfiguration = {
+            deploymentType: LustreDeploymentType.PERSISTENT_1,
+            perUnitStorageThroughput: invalidValue,
+          };
 
-        expect(() => {
-          new LustreFileSystem(stack, 'FsxFileSystem', {
-            lustreConfiguration,
-            storageCapacityGiB: storageCapacity,
-            vpc,
-            vpcSubnet,
-          });
-        }).toThrow('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 SSD storage, got: ' + invalidValue);
-      });
+          expect(() => {
+            new LustreFileSystem(stack, 'FsxFileSystem', {
+              lustreConfiguration,
+              storageCapacityGiB: storageCapacity,
+              vpc,
+              vpcSubnet,
+            });
+          }).toThrow(
+            'perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 SSD storage, got: ' +
+              invalidValue
+          );
+        }
+      );
 
       test.each([12, 40])('valid perUnitStorageThroughput of %d for HDD storage', (validValue: number) => {
         lustreConfiguration = {
@@ -626,22 +615,27 @@ describe('FSx for Lustre File System', () => {
         });
       });
 
-      test.each([1, 50, 100, 125, 200, 250, 500, 1000])('invalid perUnitStorageThroughput of %d for HDD storage', (invalidValue: number) => {
-        lustreConfiguration = {
-          deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: invalidValue,
-        };
+      test.each([1, 50, 100, 125, 200, 250, 500, 1000])(
+        'invalid perUnitStorageThroughput of %d for HDD storage',
+        (invalidValue: number) => {
+          lustreConfiguration = {
+            deploymentType: LustreDeploymentType.PERSISTENT_1,
+            perUnitStorageThroughput: invalidValue,
+          };
 
-        expect(() => {
-          new LustreFileSystem(stack, 'FsxFileSystem', {
-            lustreConfiguration,
-            storageCapacityGiB: storageCapacity,
-            vpc,
-            vpcSubnet,
-            storageType: StorageType.HDD,
-          });
-        }).toThrow('perUnitStorageThroughput must be 12 or 40 MB/s/TiB for PERSISTENT_1 HDD storage, got: ' + invalidValue);
-      });
+          expect(() => {
+            new LustreFileSystem(stack, 'FsxFileSystem', {
+              lustreConfiguration,
+              storageCapacityGiB: storageCapacity,
+              vpc,
+              vpcSubnet,
+              storageType: StorageType.HDD,
+            });
+          }).toThrow(
+            'perUnitStorageThroughput must be 12 or 40 MB/s/TiB for PERSISTENT_1 HDD storage, got: ' + invalidValue
+          );
+        }
+      );
 
       test('setting perUnitStorageThroughput on wrong deploymentType', () => {
         lustreConfiguration = {
@@ -661,12 +655,7 @@ describe('FSx for Lustre File System', () => {
     });
 
     describe('perUnitStorageThroughput_Persistent_2', () => {
-      test.each([
-        125,
-        250,
-        500,
-        1000,
-      ])('valid perUnitStorageThroughput of %d', (throughput: number) => {
+      test.each([125, 250, 500, 1000])('valid perUnitStorageThroughput of %d', (throughput: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_2,
           perUnitStorageThroughput: throughput,
@@ -687,13 +676,7 @@ describe('FSx for Lustre File System', () => {
         });
       });
 
-      test.each([
-        1,
-        50,
-        100,
-        200,
-        550,
-      ])('invalid perUnitStorageThroughput', (invalidValue: number) => {
+      test.each([1, 50, 100, 200, 550])('invalid perUnitStorageThroughput', (invalidValue: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_2,
           perUnitStorageThroughput: invalidValue,
@@ -706,7 +689,10 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrow('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + invalidValue);
+        }).toThrow(
+          'perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' +
+            invalidValue
+        );
       });
     });
 
@@ -748,40 +734,46 @@ describe('FSx for Lustre File System', () => {
         [2401, LustreDeploymentType.PERSISTENT_1],
         [1, LustreDeploymentType.PERSISTENT_2],
         [2401, LustreDeploymentType.PERSISTENT_2],
-      ])('invalid value of %d for storage capacity on %s', (invalidValue: number, deploymentType: LustreDeploymentType) => {
-        lustreConfiguration = {
-          deploymentType,
-        };
+      ])(
+        'invalid value of %d for storage capacity on %s',
+        (invalidValue: number, deploymentType: LustreDeploymentType) => {
+          lustreConfiguration = {
+            deploymentType,
+          };
 
-        expect(() => {
+          expect(() => {
+            new LustreFileSystem(stack, 'FsxFileSystem', {
+              lustreConfiguration,
+              storageCapacityGiB: invalidValue,
+              vpc,
+              vpcSubnet,
+            });
+          }).toThrow(/storageCapacity must be 1,200, 2,400, or a multiple of 2,400/);
+        }
+      );
+
+      test.each([1200, 2400, 3600, 7200])(
+        'proper multiple for storage capacity using %d with SCRATCH_1',
+        (validValue: number) => {
+          lustreConfiguration = {
+            deploymentType: LustreDeploymentType.SCRATCH_1,
+          };
+
           new LustreFileSystem(stack, 'FsxFileSystem', {
             lustreConfiguration,
-            storageCapacityGiB: invalidValue,
+            storageCapacityGiB: validValue,
             vpc,
             vpcSubnet,
           });
-        }).toThrow(/storageCapacity must be 1,200, 2,400, or a multiple of 2,400/);
-      });
 
-      test.each([1200, 2400, 3600, 7200])('proper multiple for storage capacity using %d with SCRATCH_1', (validValue: number) => {
-        lustreConfiguration = {
-          deploymentType: LustreDeploymentType.SCRATCH_1,
-        };
-
-        new LustreFileSystem(stack, 'FsxFileSystem', {
-          lustreConfiguration,
-          storageCapacityGiB: validValue,
-          vpc,
-          vpcSubnet,
-        });
-
-        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
-          LustreConfiguration: {
-            DeploymentType: LustreDeploymentType.SCRATCH_1,
-          },
-          StorageCapacity: validValue,
-        });
-      });
+          Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+            LustreConfiguration: {
+              DeploymentType: LustreDeploymentType.SCRATCH_1,
+            },
+            StorageCapacity: validValue,
+          });
+        }
+      );
 
       test.each([1, 3601])('invalid value of %d for storage capacity with SCRATCH_1', (invalidValue: number) => {
         lustreConfiguration = {
@@ -803,63 +795,76 @@ describe('FSx for Lustre File System', () => {
         [12000, 12],
         [1800, 40],
         [3600, 40],
-      ])('proper multiple for storage capacity using %d with PERSISTENT_1 HDD', (validValue: number, throughput: number) => {
-        lustreConfiguration = {
-          deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: throughput,
-        };
+      ])(
+        'proper multiple for storage capacity using %d with PERSISTENT_1 HDD',
+        (validValue: number, throughput: number) => {
+          lustreConfiguration = {
+            deploymentType: LustreDeploymentType.PERSISTENT_1,
+            perUnitStorageThroughput: throughput,
+          };
 
-        new LustreFileSystem(stack, 'FsxFileSystem', {
-          lustreConfiguration,
-          storageCapacityGiB: validValue,
-          vpc,
-          vpcSubnet,
-          storageType: StorageType.HDD,
-        });
-
-        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
-          LustreConfiguration: {
-            DeploymentType: LustreDeploymentType.PERSISTENT_1,
-            PerUnitStorageThroughput: throughput,
-          },
-          StorageCapacity: validValue,
-          StorageType: StorageType.HDD,
-        });
-      });
-
-      test.each([1, 6001])('invalid value of %d for storage capacity with PERSISTENT_1 HDD with 12 MB/s/TiB throughput', (invalidValue: number) => {
-        lustreConfiguration = {
-          deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: 12,
-        };
-
-        expect(() => {
           new LustreFileSystem(stack, 'FsxFileSystem', {
             lustreConfiguration,
-            storageCapacityGiB: invalidValue,
+            storageCapacityGiB: validValue,
             vpc,
             vpcSubnet,
             storageType: StorageType.HDD,
           });
-        }).toThrow('storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput');
-      });
 
-      test.each([1, 1801])('invalid value of %d for storage capacity with PERSISTENT_1 HDD with 40 MB/s/TiB throughput', (invalidValue: number) => {
-        lustreConfiguration = {
-          deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: 40,
-        };
-
-        expect(() => {
-          new LustreFileSystem(stack, 'FsxFileSystem', {
-            lustreConfiguration,
-            storageCapacityGiB: invalidValue,
-            vpc,
-            vpcSubnet,
-            storageType: StorageType.HDD,
+          Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+            LustreConfiguration: {
+              DeploymentType: LustreDeploymentType.PERSISTENT_1,
+              PerUnitStorageThroughput: throughput,
+            },
+            StorageCapacity: validValue,
+            StorageType: StorageType.HDD,
           });
-        }).toThrow('storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput');
-      });
+        }
+      );
+
+      test.each([1, 6001])(
+        'invalid value of %d for storage capacity with PERSISTENT_1 HDD with 12 MB/s/TiB throughput',
+        (invalidValue: number) => {
+          lustreConfiguration = {
+            deploymentType: LustreDeploymentType.PERSISTENT_1,
+            perUnitStorageThroughput: 12,
+          };
+
+          expect(() => {
+            new LustreFileSystem(stack, 'FsxFileSystem', {
+              lustreConfiguration,
+              storageCapacityGiB: invalidValue,
+              vpc,
+              vpcSubnet,
+              storageType: StorageType.HDD,
+            });
+          }).toThrow(
+            'storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput'
+          );
+        }
+      );
+
+      test.each([1, 1801])(
+        'invalid value of %d for storage capacity with PERSISTENT_1 HDD with 40 MB/s/TiB throughput',
+        (invalidValue: number) => {
+          lustreConfiguration = {
+            deploymentType: LustreDeploymentType.PERSISTENT_1,
+            perUnitStorageThroughput: 40,
+          };
+
+          expect(() => {
+            new LustreFileSystem(stack, 'FsxFileSystem', {
+              lustreConfiguration,
+              storageCapacityGiB: invalidValue,
+              vpc,
+              vpcSubnet,
+              storageType: StorageType.HDD,
+            });
+          }).toThrow(
+            'storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput'
+          );
+        }
+      );
     });
 
     describe('automaticBackupRetention', () => {
@@ -931,7 +936,9 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrow('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
+        }).toThrow(
+          'automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set'
+        );
       });
 
       test('dailyAutomaticBackupStartTime with automaticBackupRetention 0 day throws error', () => {
@@ -948,49 +955,52 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrow('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
+        }).toThrow(
+          'automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set'
+        );
       });
+
+      test.each([LustreDeploymentType.PERSISTENT_2, LustreDeploymentType.SCRATCH_1, LustreDeploymentType.SCRATCH_2])(
+        'HDD storage type is not supported for %s',
+        (deploymentType: LustreDeploymentType) => {
+          lustreConfiguration = {
+            deploymentType,
+          };
+
+          expect(() => {
+            new LustreFileSystem(stack, 'FsxFileSystem', {
+              lustreConfiguration,
+              storageCapacityGiB: storageCapacity,
+              vpc,
+              vpcSubnet,
+              storageType: StorageType.HDD,
+            });
+          }).toThrow(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
+        }
+      );
 
       test.each([
-        LustreDeploymentType.PERSISTENT_2,
-        LustreDeploymentType.SCRATCH_1,
-        LustreDeploymentType.SCRATCH_2,
-      ])('HDD storage type is not supported for %s', (deploymentType: LustreDeploymentType) => {
-        lustreConfiguration = {
-          deploymentType,
-        };
-
-        expect(() => {
-          new LustreFileSystem(stack, 'FsxFileSystem', {
-            lustreConfiguration,
-            storageCapacityGiB: storageCapacity,
-            vpc,
-            vpcSubnet,
-            storageType: StorageType.HDD,
-          });
-        }).toThrow(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
-      });
-
-      test.each([{
-        deploymentType: LustreDeploymentType.PERSISTENT_1,
-        storageType: StorageType.SSD,
-        driveCacheType: DriveCacheType.READ,
-      },
-      {
-        deploymentType: LustreDeploymentType.PERSISTENT_1,
-        storageType: StorageType.SSD,
-        driveCacheType: DriveCacheType.NONE,
-      },
-      {
-        deploymentType: LustreDeploymentType.PERSISTENT_2,
-        storageType: StorageType.SSD,
-        driveCacheType: DriveCacheType.READ,
-      },
-      {
-        deploymentType: LustreDeploymentType.PERSISTENT_2,
-        storageType: StorageType.SSD,
-        driveCacheType: DriveCacheType.NONE,
-      }])('throw error for invalid drive cache type', (props) => {
+        {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          storageType: StorageType.SSD,
+          driveCacheType: DriveCacheType.READ,
+        },
+        {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          storageType: StorageType.SSD,
+          driveCacheType: DriveCacheType.NONE,
+        },
+        {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          storageType: StorageType.SSD,
+          driveCacheType: DriveCacheType.READ,
+        },
+        {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          storageType: StorageType.SSD,
+          driveCacheType: DriveCacheType.NONE,
+        },
+      ])('throw error for invalid drive cache type', (props) => {
         lustreConfiguration = {
           deploymentType: props.deploymentType,
           driveCacheType: props.driveCacheType,
@@ -1004,7 +1014,9 @@ describe('FSx for Lustre File System', () => {
             vpcSubnet,
             storageType: props.storageType,
           });
-        }).toThrow(`driveCacheType can only be set for PERSISTENT_1 HDD storage type, got: ${props.deploymentType} and ${props.storageType}`);
+        }).toThrow(
+          `driveCacheType can only be set for PERSISTENT_1 HDD storage type, got: ${props.deploymentType} and ${props.storageType}`
+        );
       });
     });
   });
@@ -1025,7 +1037,7 @@ describe('FSx for Lustre File System', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
       LustreConfiguration: {
         DeploymentType: LustreDeploymentType.PERSISTENT_1,
-        ...( storageType === StorageType.HDD ? { DriveCacheType: 'NONE' } : undefined ),
+        ...(storageType === StorageType.HDD ? { DriveCacheType: 'NONE' } : undefined),
       },
       StorageType: storageType,
     });

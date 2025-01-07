@@ -16,13 +16,15 @@ beforeEach(() => {
   stack = new Stack();
   vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Capacity', {
-    autoScalingGroup: new autoscaling.AutoScalingGroup(stack, 'ASG', {
-      vpc,
-      instanceType: new ec2.InstanceType('t3.medium'),
-      machineImage: ec2.MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new ecs.AsgCapacityProvider(stack, 'Capacity', {
+      autoScalingGroup: new autoscaling.AutoScalingGroup(stack, 'ASG', {
+        vpc,
+        instanceType: new ec2.InstanceType('t3.medium'),
+        machineImage: ec2.MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 });
 
 describeDeprecated('ecs-tasks', () => {
@@ -37,7 +39,9 @@ describeDeprecated('ecs-tasks', () => {
       memoryLimitMiB: 256,
     });
 
-    expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrow(/not configured for compatibility with Fargate/);
+    expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrow(
+      /not configured for compatibility with Fargate/
+    );
   });
 
   test('Cannot create a Fargate task without a default container', () => {
@@ -46,7 +50,9 @@ describeDeprecated('ecs-tasks', () => {
       cpu: '256',
       compatibility: ecs.Compatibility.FARGATE,
     });
-    expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrow(/must have at least one essential container/);
+    expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition })).toThrow(
+      /must have at least one essential container/
+    );
   });
 
   test('Running a Fargate Task', () => {
@@ -69,9 +75,7 @@ describeDeprecated('ecs-tasks', () => {
         containerOverrides: [
           {
             containerDefinition,
-            environment: [
-              { name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') },
-            ],
+            environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
           },
         ],
       }),
@@ -99,7 +103,7 @@ describeDeprecated('ecs-tasks', () => {
             {
               Environment: [
                 {
-                  'Name': 'SOME_KEY',
+                  Name: 'SOME_KEY',
                   'Value.$': '$.SomeKey',
                 },
               ],
@@ -182,9 +186,7 @@ describeDeprecated('ecs-tasks', () => {
         containerOverrides: [
           {
             containerDefinition,
-            environment: [
-              { name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') },
-            ],
+            environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
           },
         ],
       }),
@@ -206,7 +208,7 @@ describeDeprecated('ecs-tasks', () => {
             {
               Environment: [
                 {
-                  'Name': 'SOME_KEY',
+                  Name: 'SOME_KEY',
                   'Value.$': '$.SomeKey',
                 },
               ],
@@ -284,7 +286,11 @@ describeDeprecated('ecs-tasks', () => {
       integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
       cluster,
       taskDefinition,
-      placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
+      placementStrategies: [
+        ecs.PlacementStrategy.spreadAcrossInstances(),
+        ecs.PlacementStrategy.packedByCpu(),
+        ecs.PlacementStrategy.randomly(),
+      ],
       placementConstraints: [ecs.PlacementConstraint.memberOf('blieptuut')],
     });
 
@@ -303,7 +309,11 @@ describeDeprecated('ecs-tasks', () => {
         LaunchType: 'EC2',
         TaskDefinition: { Ref: 'TD49C78F36' },
         PlacementConstraints: [{ Type: 'memberOf', Expression: 'blieptuut' }],
-        PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
+        PlacementStrategy: [
+          { Field: 'instanceId', Type: 'spread' },
+          { Field: 'CPU', Type: 'binpack' },
+          { Type: 'random' },
+        ],
       },
       Resource: {
         'Fn::Join': [
@@ -358,9 +368,9 @@ describeDeprecated('ecs-tasks', () => {
           ContainerOverrides: [
             {
               'Command.$': '$.TheCommand',
-              'Cpu': 5,
+              Cpu: 5,
               'Memory.$': '$.MemoryLimit',
-              'Name': 'TheContainer',
+              Name: 'TheContainer',
             },
           ],
         },
@@ -390,23 +400,24 @@ describeDeprecated('ecs-tasks', () => {
       image: ecs.ContainerImage.fromRegistry('foo/bar'),
     });
 
-    expect(() =>
-      new tasks.RunEcsEc2Task({
-        cluster,
-        containerOverrides: [
-          {
-            containerDefinition,
-            environment: [
-              {
-                name: 'Foo',
-                value: 'Bar',
-              },
-            ],
-          },
-        ],
-        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-        taskDefinition,
-      }),
+    expect(
+      () =>
+        new tasks.RunEcsEc2Task({
+          cluster,
+          containerOverrides: [
+            {
+              containerDefinition,
+              environment: [
+                {
+                  name: 'Foo',
+                  value: 'Bar',
+                },
+              ],
+            },
+          ],
+          integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+          taskDefinition,
+        })
     ).toThrow(/Task Token is required in at least one `containerOverrides.environment`/);
   });
 
@@ -425,30 +436,33 @@ describeDeprecated('ecs-tasks', () => {
       essential: false,
     });
 
-    expect(() => new tasks.RunEcsEc2Task({
-      cluster,
-      containerOverrides: [
-        {
-          containerDefinition: primaryContainerDef,
-          environment: [
+    expect(
+      () =>
+        new tasks.RunEcsEc2Task({
+          cluster,
+          containerOverrides: [
             {
-              name: 'Foo',
-              value: 'Bar',
+              containerDefinition: primaryContainerDef,
+              environment: [
+                {
+                  name: 'Foo',
+                  value: 'Bar',
+                },
+              ],
+            },
+            {
+              containerDefinition: sidecarContainerDef,
+              environment: [
+                {
+                  name: 'TaskToken.$',
+                  value: sfn.JsonPath.taskToken,
+                },
+              ],
             },
           ],
-        },
-        {
-          containerDefinition: sidecarContainerDef,
-          environment: [
-            {
-              name: 'TaskToken.$',
-              value: sfn.JsonPath.taskToken,
-            },
-          ],
-        },
-      ],
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      taskDefinition,
-    })).not.toThrow();
+          integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+          taskDefinition,
+        })
+    ).not.toThrow();
   });
 });

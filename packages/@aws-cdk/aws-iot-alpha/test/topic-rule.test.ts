@@ -155,10 +155,7 @@ test('can set actions', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        { Http: { Url: 'http://example.com' } },
-        { Lambda: { FunctionArn: 'test-functionArn' } },
-      ],
+      Actions: [{ Http: { Url: 'http://example.com' } }, { Lambda: { FunctionArn: 'test-functionArn' } }],
       Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     },
   });
@@ -187,10 +184,7 @@ test('can add an action', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        { Http: { Url: 'http://example.com' } },
-        { Lambda: { FunctionArn: 'test-functionArn' } },
-      ],
+      Actions: [{ Http: { Url: 'http://example.com' } }, { Lambda: { FunctionArn: 'test-functionArn' } }],
       Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     },
   });

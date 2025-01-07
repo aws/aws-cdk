@@ -4,13 +4,20 @@ import { external } from '../../lib/aws-iam/oidc-handler/external';
 import * as handler from '../../lib/aws-iam/oidc-handler/index';
 
 describe('custom resource provider handler', () => {
-  external.log = () => { return; }; // disable verbosity for tests
-  const downloadThumbprint = external.downloadThumbprint = sinon.fake.returns('FAKE-THUMBPRINT');
-  const createOpenIDConnectProvider = external.createOpenIDConnectProvider = sinon.fake.resolves({ OpenIDConnectProviderArn: 'FAKE-ARN' });
-  const deleteOpenIDConnectProvider = external.deleteOpenIDConnectProvider = sinon.fake.resolves({ });
-  const updateOpenIDConnectProviderThumbprint = external.updateOpenIDConnectProviderThumbprint = sinon.fake.resolves({ });
-  const addClientIDToOpenIDConnectProvider = external.addClientIDToOpenIDConnectProvider = sinon.fake.resolves({ });
-  const removeClientIDFromOpenIDConnectProvider = external.removeClientIDFromOpenIDConnectProvider = sinon.fake.resolves({ });
+  external.log = () => {
+    return;
+  }; // disable verbosity for tests
+  const downloadThumbprint = (external.downloadThumbprint = sinon.fake.returns('FAKE-THUMBPRINT'));
+  const createOpenIDConnectProvider = (external.createOpenIDConnectProvider = sinon.fake.resolves({
+    OpenIDConnectProviderArn: 'FAKE-ARN',
+  }));
+  const deleteOpenIDConnectProvider = (external.deleteOpenIDConnectProvider = sinon.fake.resolves({}));
+  const updateOpenIDConnectProviderThumbprint = (external.updateOpenIDConnectProviderThumbprint = sinon.fake.resolves(
+    {}
+  ));
+  const addClientIDToOpenIDConnectProvider = (external.addClientIDToOpenIDConnectProvider = sinon.fake.resolves({}));
+  const removeClientIDFromOpenIDConnectProvider = (external.removeClientIDFromOpenIDConnectProvider =
+    sinon.fake.resolves({}));
 
   beforeEach(() => sinon.reset());
 
@@ -187,13 +194,16 @@ describe('custom resource provider handler', () => {
     sinon.assert.notCalled(deleteOpenIDConnectProvider);
     sinon.assert.calledTwice(addClientIDToOpenIDConnectProvider);
     sinon.assert.calledWithExactly(addClientIDToOpenIDConnectProvider, {
-      OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId', ClientID: 'B',
+      OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId',
+      ClientID: 'B',
     });
     sinon.assert.calledWithExactly(addClientIDToOpenIDConnectProvider, {
-      OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId', ClientID: 'C',
+      OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId',
+      ClientID: 'C',
     });
     sinon.assert.calledOnceWithExactly(removeClientIDFromOpenIDConnectProvider, {
-      OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId', ClientID: 'D',
+      OpenIDConnectProviderArn: 'FAKE-PhysicalResourceId',
+      ClientID: 'D',
     });
   });
 
@@ -259,7 +269,6 @@ describe('custom resource provider handler', () => {
       Url: 'https://new-url',
     });
   });
-
 });
 
 describe('arrayDiff', () => {

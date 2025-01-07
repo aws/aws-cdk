@@ -53,9 +53,7 @@ export class Guardrail {
 
       const guardrailPattern = /^[a-z0-9]+$/;
       if (!guardrailPattern.test(gurdrailId)) {
-        throw new Error(
-          `The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`
-        );
+        throw new Error(`The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`);
       }
 
       if (guardrailIdentifier.length > 2048) {

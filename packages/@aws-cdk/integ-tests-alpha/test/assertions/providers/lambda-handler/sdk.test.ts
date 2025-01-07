@@ -14,7 +14,9 @@ function sdkHandler() {
 }
 beforeAll(() => {
   jest.useFakeTimers();
-  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  jest.spyOn(console, 'log').mockImplementation(() => {
+    return true;
+  });
 });
 afterAll(() => {
   jest.useRealTimers();
@@ -136,7 +138,10 @@ describe('SdkHandler', () => {
       await handler.processEvent(request);
 
       // THEN
-      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { NextToken: 'TOKEN', InstanceIds: ['foo', 'bar'] });
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, {
+        NextToken: 'TOKEN',
+        InstanceIds: ['foo', 'bar'],
+      });
     });
 
     test('unparsable values are unchanged', async () => {
@@ -160,7 +165,7 @@ describe('SdkHandler', () => {
 
     test('byte array coercion', async () => {
       // GIVEN
-      s3Mock.on(PutObjectCommand).resolves({ });
+      s3Mock.on(PutObjectCommand).resolves({});
       const handler = sdkHandler() as any;
       const request: AwsApiCallRequest = {
         service: 'S3',

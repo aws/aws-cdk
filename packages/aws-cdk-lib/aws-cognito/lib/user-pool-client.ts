@@ -4,11 +4,7 @@ import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
-import {
-  AwsCustomResource,
-  AwsCustomResourcePolicy,
-  PhysicalResourceId,
-} from '../../custom-resources';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 
 /**
  * Types of authentication flow
@@ -382,11 +378,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   /**
    * Import a user pool client given its id.
    */
-  public static fromUserPoolClientId(
-    scope: Construct,
-    id: string,
-    userPoolClientId: string
-  ): IUserPoolClient {
+  public static fromUserPoolClientId(scope: Construct, id: string, userPoolClientId: string): IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
       get userPoolClientSecret(): SecretValue {
@@ -434,9 +426,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       if (callbackUrls === undefined) {
         callbackUrls = ['https://example.com'];
       } else if (callbackUrls.length === 0) {
-        throw new Error(
-          'callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.'
-        );
+        throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
       }
     }
 
@@ -470,13 +460,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
       defaultRedirectUri: props.oAuth?.defaultRedirectUri,
-      callbackUrLs:
-        callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
+      callbackUrLs: callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
       logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
-      preventUserExistenceErrors: this.configurePreventUserExistenceErrors(
-        props.preventUserExistenceErrors
-      ),
+      preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
@@ -496,9 +483,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
    */
   public get userPoolClientName(): string {
     if (this._userPoolClientName === undefined) {
-      throw new Error(
-        'userPoolClientName is available only if specified on the UserPoolClient during initialization'
-      );
+      throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
     }
     return this._userPoolClientName;
   }
@@ -567,9 +552,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) &&
       this.oAuthFlows.clientCredentials
     ) {
-      throw new Error(
-        'clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.'
-      );
+      throw new Error('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.');
     }
     const oAuthFlows: string[] = [];
     if (this.oAuthFlows.clientCredentials) {
@@ -627,30 +610,13 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureAuthSessionValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
-    this.validateDuration(
-      'authSessionValidity',
-      Duration.minutes(3),
-      Duration.minutes(15),
-      props.authSessionValidity
-    );
-    resource.authSessionValidity = props.authSessionValidity
-      ? props.authSessionValidity.toMinutes()
-      : undefined;
+    this.validateDuration('authSessionValidity', Duration.minutes(3), Duration.minutes(15), props.authSessionValidity);
+    resource.authSessionValidity = props.authSessionValidity ? props.authSessionValidity.toMinutes() : undefined;
   }
 
   private configureTokenValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
-    this.validateDuration(
-      'idTokenValidity',
-      Duration.minutes(5),
-      Duration.days(1),
-      props.idTokenValidity
-    );
-    this.validateDuration(
-      'accessTokenValidity',
-      Duration.minutes(5),
-      Duration.days(1),
-      props.accessTokenValidity
-    );
+    this.validateDuration('idTokenValidity', Duration.minutes(5), Duration.days(1), props.idTokenValidity);
+    this.validateDuration('accessTokenValidity', Duration.minutes(5), Duration.days(1), props.accessTokenValidity);
     this.validateDuration(
       'refreshTokenValidity',
       Duration.minutes(60),
@@ -658,12 +624,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       props.refreshTokenValidity
     );
     if (props.refreshTokenValidity) {
-      this.validateDuration(
-        'idTokenValidity',
-        Duration.minutes(5),
-        props.refreshTokenValidity,
-        props.idTokenValidity
-      );
+      this.validateDuration('idTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.idTokenValidity);
       this.validateDuration(
         'accessTokenValidity',
         Duration.minutes(5),
@@ -680,25 +641,16 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       };
     }
 
-    resource.idTokenValidity = props.idTokenValidity
-      ? props.idTokenValidity.toMinutes()
-      : undefined;
-    resource.refreshTokenValidity = props.refreshTokenValidity
-      ? props.refreshTokenValidity.toMinutes()
-      : undefined;
-    resource.accessTokenValidity = props.accessTokenValidity
-      ? props.accessTokenValidity.toMinutes()
-      : undefined;
+    resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
+    resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;
+    resource.accessTokenValidity = props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined;
   }
 
   private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
     if (value === undefined) {
       return;
     }
-    if (
-      value.toMilliseconds() < min.toMilliseconds() ||
-      value.toMilliseconds() > max.toMilliseconds()
-    ) {
+    if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
       throw new Error(
         `${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`
       );

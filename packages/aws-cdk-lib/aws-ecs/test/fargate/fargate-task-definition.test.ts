@@ -18,7 +18,6 @@ describe('fargate task definition', () => {
         Cpu: '256',
         Memory: '512',
       });
-
     });
 
     test('support lazy cpu and memory values', () => {
@@ -35,7 +34,6 @@ describe('fargate task definition', () => {
         Cpu: '128',
         Memory: '1024',
       });
-
     });
 
     test('with all properties set', () => {
@@ -47,7 +45,7 @@ describe('fargate task definition', () => {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
             new iam.ServicePrincipal('ecs.amazonaws.com'),
-            new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+            new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
           ),
         }),
         family: 'myApp',
@@ -74,10 +72,7 @@ describe('fargate task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Cpu: '128',
         ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'ExecutionRole605A040B',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'],
         },
         EphemeralStorage: {
           SizeInGiB: 21,
@@ -86,18 +81,13 @@ describe('fargate task definition', () => {
         Memory: '1024',
         NetworkMode: 'awsvpc',
         PidMode: 'task',
-        RequiresCompatibilities: [
-          ecs.LaunchType.FARGATE,
-        ],
+        RequiresCompatibilities: [ecs.LaunchType.FARGATE],
         RuntimePlatform: {
           CpuArchitecture: 'X86_64',
           OperatingSystemFamily: 'LINUX',
         },
         TaskRoleArn: {
-          'Fn::GetAtt': [
-            'TaskRole30FC0FBB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'],
         },
         Volumes: [
           {
@@ -108,7 +98,6 @@ describe('fargate task definition', () => {
           },
         ],
       });
-
     });
 
     test('throws when adding placement constraint', () => {
@@ -120,7 +109,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
       }).toThrow(/Cannot set placement constraints on tasks that run on Fargate/);
-
     });
 
     test('throws when adding inference accelerators', () => {
@@ -137,7 +125,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addInferenceAccelerator(inferenceAccelerator);
       }).toThrow(/Cannot use inference accelerators on tasks that run on Fargate/);
-
     });
 
     test('throws when ephemeral storage request is too high', () => {
@@ -217,14 +204,14 @@ describe('fargate task definition', () => {
       }).toThrow(/'pidMode' can only be set to 'task' for Linux Fargate containers, got: 'host'./);
     });
   });
-  describe('When configuredAtLaunch in the Volume', ()=> {
+  describe('When configuredAtLaunch in the Volume', () => {
     test('do not throw when configuredAtLaunch is false', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
       // THEN
       expect(() => {
-        const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
         taskDefinition.addVolume({
           name: 'nginx-vol',
           efsVolumeConfiguration: {
@@ -245,7 +232,7 @@ describe('fargate task definition', () => {
 
       // THEN
       expect(() => {
-        const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
         taskDefinition.addVolume({
           name: 'nginx-vol',
           configuredAtLaunch: true,
@@ -253,7 +240,9 @@ describe('fargate task definition', () => {
             fileSystemId: 'fs-1234',
           },
         });
-      }).toThrow(/Volume Configurations must not be specified for 'nginx-vol' when 'configuredAtLaunch' is set to true/);
+      }).toThrow(
+        /Volume Configurations must not be specified for 'nginx-vol' when 'configuredAtLaunch' is set to true/
+      );
     });
   });
 
@@ -264,11 +253,14 @@ describe('fargate task definition', () => {
       const expectTaskDefinitionArn = 'TD_ARN';
 
       // WHEN
-      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'FARGATE_TD_ID', expectTaskDefinitionArn);
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'FARGATE_TD_ID',
+        expectTaskDefinitionArn
+      );
 
       // THEN
       expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
-
     });
 
     test('can succeed using attributes', () => {
@@ -299,7 +291,6 @@ describe('fargate task definition', () => {
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
       expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
-
     });
 
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its networkMode but its networkMode is undefined', () => {
@@ -319,9 +310,10 @@ describe('fargate task definition', () => {
       // THEN
       expect(() => {
         taskDefinition.networkMode;
-      }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
-        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
+      }).toThrow(
+        'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+          "Add the 'networkMode' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+      );
     });
 
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its taskRole but its taskRole is undefined', () => {
@@ -339,8 +331,10 @@ describe('fargate task definition', () => {
       // THEN
       expect(() => {
         taskDefinition.taskRole;
-      }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+      }).toThrow(
+        'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+          "Add the 'taskRole' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+      );
     });
 
     test('Passing in token for ephemeral storage will not throw error', () => {
@@ -381,18 +375,13 @@ describe('fargate task definition', () => {
         Family: 'FargateTaskDef',
         Memory: '2048',
         NetworkMode: 'awsvpc',
-        RequiresCompatibilities: [
-          ecs.LaunchType.FARGATE,
-        ],
+        RequiresCompatibilities: [ecs.LaunchType.FARGATE],
         RuntimePlatform: {
           CpuArchitecture: 'X86_64',
           OperatingSystemFamily: 'WINDOWS_SERVER_2019_CORE',
         },
         TaskRoleArn: {
-          'Fn::GetAtt': [
-            'FargateTaskDefTaskRole0B257552',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['FargateTaskDefTaskRole0B257552', 'Arn'],
         },
       });
     });
@@ -415,18 +404,13 @@ describe('fargate task definition', () => {
         Family: 'FargateTaskDef',
         Memory: '2048',
         NetworkMode: 'awsvpc',
-        RequiresCompatibilities: [
-          ecs.LaunchType.FARGATE,
-        ],
+        RequiresCompatibilities: [ecs.LaunchType.FARGATE],
         RuntimePlatform: {
           CpuArchitecture: 'ARM64',
           OperatingSystemFamily: 'LINUX',
         },
         TaskRoleArn: {
-          'Fn::GetAtt': [
-            'FargateTaskDefTaskRole0B257552',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['FargateTaskDefTaskRole0B257552', 'Arn'],
         },
       });
     });
@@ -445,7 +429,9 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrow(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
+      }).toThrow(
+        `If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`
+      );
 
       // Memory is not in 1 GB increments.
       expect(() => {
@@ -457,7 +443,9 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrow('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
+      }).toThrow(
+        'If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.'
+      );
 
       // Check runtimePlatform was been defined ,but not undefined cpu and memoryLimitMiB.
       expect(() => {
@@ -467,9 +455,9 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
           },
         });
-      }).toThrow('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
-
+      }).toThrow(
+        'If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256'
+      );
     });
-
   });
 });

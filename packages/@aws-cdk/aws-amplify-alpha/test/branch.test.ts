@@ -24,10 +24,7 @@ test('create a branch', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
     AppId: {
-      'Fn::GetAtt': [
-        'AppF1B96344',
-        'AppId',
-      ],
+      'Fn::GetAtt': ['AppF1B96344', 'AppId'],
     },
     BranchName: 'dev',
     EnableAutoBuild: true,
@@ -118,10 +115,7 @@ test('with asset deployment', () => {
       ],
     },
     AppId: {
-      'Fn::GetAtt': [
-        'AppF1B96344',
-        'AppId',
-      ],
+      'Fn::GetAtt': ['AppF1B96344', 'AppId'],
     },
     BranchName: 'dev',
     S3ObjectKey: '8c89eadc6be22019c81ed6b9c7d9929ae10de55679fd8e0e9fd4c00f8edc1cda.zip',

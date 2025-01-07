@@ -69,25 +69,16 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     super(scope, id, props);
 
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(
-      this.integrationPattern,
-      StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (
       this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN &&
       !sfn.FieldUtils.containsTaskToken(props.input)
     ) {
-      throw new Error(
-        'Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.'
-      );
+      throw new Error('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.');
     }
 
-    if (
-      this.props.associateWithParent &&
-      props.input &&
-      props.input.type !== sfn.InputType.OBJECT
-    ) {
+    if (this.props.associateWithParent && props.input && props.input.type !== sfn.InputType.OBJECT) {
       throw new Error(
         'Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.'
       );
@@ -109,9 +100,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
       const associateWithParentEntry = {
         AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID: sfn.JsonPath.stringAt('$$.Execution.Id'),
       };
-      input = this.props.input
-        ? { ...this.props.input.value, ...associateWithParentEntry }
-        : associateWithParentEntry;
+      input = this.props.input ? { ...this.props.input.value, ...associateWithParentEntry } : associateWithParentEntry;
     } else {
       input = this.props.input ? this.props.input.value : sfn.TaskInput.fromJsonPathAt('$').value;
     }

@@ -18,15 +18,11 @@ describe('api definition', () => {
     });
 
     test('fails if Json definition is empty', () => {
-      expect(
-        () => defineRestApi(apigw.ApiDefinition.fromInline({})))
-        .toThrow(/cannot be empty/);
+      expect(() => defineRestApi(apigw.ApiDefinition.fromInline({}))).toThrow(/cannot be empty/);
     });
 
     test('fails if definition is not an object', () => {
-      expect(
-        () => defineRestApi(apigw.ApiDefinition.fromInline('not-json')))
-        .toThrow(/should be of type object/);
+      expect(() => defineRestApi(apigw.ApiDefinition.fromInline('not-json'))).toThrow(/should be of type object/);
     });
   });
 
@@ -48,7 +44,6 @@ describe('api definition', () => {
 
       // THEN
       expect(() => defineRestApi(fileAsset)).toThrow(/Asset cannot be a \.zip file or a directory/);
-
     });
 
     test('only one Asset object gets created even if multiple functions use the same AssetApiDefinition', () => {
@@ -88,7 +83,6 @@ describe('api definition', () => {
           'aws:asset:property': 'BodyS3Location',
         },
       });
-
     });
   });
 
@@ -103,7 +97,6 @@ describe('api definition', () => {
         Ref: 'mybucket15D133BF',
       });
       expect(config.s3Location!.key).toEqual('my-key');
-
     });
   });
 });

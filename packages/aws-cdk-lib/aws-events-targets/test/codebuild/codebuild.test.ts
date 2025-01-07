@@ -78,7 +78,7 @@ describe('CodeBuild event target', () => {
     rule.addTarget(
       new targets.CodeBuildProject(project, {
         event: events.RuleTargetInput.fromObject(eventInput),
-      }),
+      })
     );
 
     // THEN
@@ -138,7 +138,7 @@ describe('CodeBuild event target', () => {
         event: events.RuleTargetInput.fromObject(eventInput),
         retryAttempts: 2,
         maxEventAge: Duration.hours(2),
-      }),
+      })
     );
 
     // THEN
@@ -148,10 +148,7 @@ describe('CodeBuild event target', () => {
       Targets: [
         {
           Arn: {
-            'Fn::GetAtt': [
-              'MyProject39F7B0AE',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyProject39F7B0AE', 'Arn'],
           },
           Id: 'Target0',
           Input: '{"buildspecOverride":"buildspecs/hourly.yml"}',
@@ -160,10 +157,7 @@ describe('CodeBuild event target', () => {
             MaximumRetryAttempts: 2,
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'MyProjectEventsRole5B7D93F5',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyProjectEventsRole5B7D93F5', 'Arn'],
           },
         },
       ],
@@ -185,7 +179,7 @@ describe('CodeBuild event target', () => {
       new targets.CodeBuildProject(project, {
         event: events.RuleTargetInput.fromObject(eventInput),
         retryAttempts: 0,
-      }),
+      })
     );
 
     // THEN
@@ -195,10 +189,7 @@ describe('CodeBuild event target', () => {
       Targets: [
         {
           Arn: {
-            'Fn::GetAtt': [
-              'MyProject39F7B0AE',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyProject39F7B0AE', 'Arn'],
           },
           Id: 'Target0',
           Input: '{"buildspecOverride":"buildspecs/hourly.yml"}',
@@ -206,10 +197,7 @@ describe('CodeBuild event target', () => {
             MaximumRetryAttempts: 0,
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'MyProjectEventsRole5B7D93F5',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyProjectEventsRole5B7D93F5', 'Arn'],
           },
         },
       ],
@@ -233,7 +221,7 @@ describe('CodeBuild event target', () => {
       new targets.CodeBuildProject(project, {
         event: events.RuleTargetInput.fromObject(eventInput),
         deadLetterQueue: queue,
-      }),
+      })
     );
 
     // THEN
@@ -244,10 +232,7 @@ describe('CodeBuild event target', () => {
           Id: 'Target0',
           DeadLetterConfig: {
             Arn: {
-              'Fn::GetAtt': [
-                'Queue4A7E3555',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
             },
           },
           Input: JSON.stringify(eventInput),
@@ -266,10 +251,7 @@ describe('CodeBuild event target', () => {
             Condition: {
               ArnEquals: {
                 'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'Rule4C995B7F',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['Rule4C995B7F', 'Arn'],
                 },
               },
             },
@@ -278,10 +260,7 @@ describe('CodeBuild event target', () => {
               Service: 'events.amazonaws.com',
             },
             Resource: {
-              'Fn::GetAtt': [
-                'Queue4A7E3555',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
             },
             Sid: 'AllowEventRuleRule',
           },

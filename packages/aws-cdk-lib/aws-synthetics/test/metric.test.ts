@@ -19,26 +19,32 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
   const metricDuration = canary.metricDuration();
 
   // THEN
-  expect(metricSuccess).toEqual(expect.objectContaining({
-    dimensions: { CanaryName: canary.canaryName },
-    namespace: 'CloudWatchSynthetics',
-    metricName: 'SuccessPercent',
-    statistic: 'Average',
-  }));
+  expect(metricSuccess).toEqual(
+    expect.objectContaining({
+      dimensions: { CanaryName: canary.canaryName },
+      namespace: 'CloudWatchSynthetics',
+      metricName: 'SuccessPercent',
+      statistic: 'Average',
+    })
+  );
 
-  expect(metricFailed).toEqual(expect.objectContaining({
-    dimensions: { CanaryName: canary.canaryName },
-    namespace: 'CloudWatchSynthetics',
-    metricName: 'Failed',
-    statistic: 'Sum',
-  }));
+  expect(metricFailed).toEqual(
+    expect.objectContaining({
+      dimensions: { CanaryName: canary.canaryName },
+      namespace: 'CloudWatchSynthetics',
+      metricName: 'Failed',
+      statistic: 'Sum',
+    })
+  );
 
-  expect(metricDuration).toEqual(expect.objectContaining({
-    dimensions: { CanaryName: canary.canaryName },
-    namespace: 'CloudWatchSynthetics',
-    metricName: 'Duration',
-    statistic: 'Average',
-  }));
+  expect(metricDuration).toEqual(
+    expect.objectContaining({
+      dimensions: { CanaryName: canary.canaryName },
+      namespace: 'CloudWatchSynthetics',
+      metricName: 'Duration',
+      statistic: 'Average',
+    })
+  );
 });
 
 test('Metric can specify statistic', () => {
@@ -57,10 +63,12 @@ test('Metric can specify statistic', () => {
   const metric = canary.metricFailed({ statistic: 'Sum' });
 
   // THEN
-  expect(metric).toEqual(expect.objectContaining({
-    dimensions: { CanaryName: canary.canaryName },
-    namespace: 'CloudWatchSynthetics',
-    metricName: 'Failed',
-    statistic: 'Sum',
-  }));
+  expect(metric).toEqual(
+    expect.objectContaining({
+      dimensions: { CanaryName: canary.canaryName },
+      namespace: 'CloudWatchSynthetics',
+      metricName: 'Failed',
+      statistic: 'Sum',
+    })
+  );
 });

@@ -1,4 +1,9 @@
-import { DeliveryStream, DestinationBindOptions, DestinationConfig, IDestination } from '@aws-cdk/aws-kinesisfirehose-alpha';
+import {
+  DeliveryStream,
+  DestinationBindOptions,
+  DestinationConfig,
+  IDestination,
+} from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -6,7 +11,15 @@ import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { TestSource, TestTarget } from './test-classes';
-import { CloudwatchLogsLogDestination, FirehoseLogDestination, IncludeExecutionData, LogLevel, Pipe, S3LogDestination, S3OutputFormat } from '../lib';
+import {
+  CloudwatchLogsLogDestination,
+  FirehoseLogDestination,
+  IncludeExecutionData,
+  LogLevel,
+  Pipe,
+  S3LogDestination,
+  S3OutputFormat,
+} from '../lib';
 
 describe('Pipe', () => {
   let stack: Stack;
@@ -69,19 +82,20 @@ describe('Pipe', () => {
       // ASSERT
       template.hasResource('AWS::IAM::Policy', {
         Properties: {
-          Roles: [{
-            Ref: 'TestPipeRole0FD00B2B',
-          }],
+          Roles: [
+            {
+              Ref: 'TestPipeRole0FD00B2B',
+            },
+          ],
           PolicyDocument: {
-            Statement: [{
-              Action: [
-                'logs:CreateLogStream',
-                'logs:PutLogEvents',
-              ],
-              Resource: {
-                'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
+            Statement: [
+              {
+                Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+                Resource: {
+                  'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -220,23 +234,27 @@ describe('Pipe', () => {
       // ASSERT
       template.hasResource('AWS::IAM::Policy', {
         Properties: {
-          Roles: [{
-            Ref: 'TestPipeRole0FD00B2B',
-          }],
+          Roles: [
+            {
+              Ref: 'TestPipeRole0FD00B2B',
+            },
+          ],
           PolicyDocument: {
-            Statement: [{
-              Action: [
-                's3:PutObject',
-                's3:PutObjectLegalHold',
-                's3:PutObjectRetention',
-                's3:PutObjectTagging',
-                's3:PutObjectVersionTagging',
-                's3:Abort*',
-              ],
-              Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['LogBucketCC3B17E8', 'Arn'] }, '/*']],
+            Statement: [
+              {
+                Action: [
+                  's3:PutObject',
+                  's3:PutObjectLegalHold',
+                  's3:PutObjectRetention',
+                  's3:PutObjectTagging',
+                  's3:PutObjectVersionTagging',
+                  's3:Abort*',
+                ],
+                Resource: {
+                  'Fn::Join': ['', [{ 'Fn::GetAtt': ['LogBucketCC3B17E8', 'Arn'] }, '/*']],
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -331,19 +349,20 @@ describe('Pipe', () => {
       // THEN
       template.hasResource('AWS::IAM::Policy', {
         Properties: {
-          Roles: [{
-            Ref: 'TestPipeRole0FD00B2B',
-          }],
+          Roles: [
+            {
+              Ref: 'TestPipeRole0FD00B2B',
+            },
+          ],
           PolicyDocument: {
-            Statement: [{
-              Action: [
-                'firehose:PutRecord',
-                'firehose:PutRecordBatch',
-              ],
-              Resource: {
-                'Fn::GetAtt': ['DeliveryStreamNoSourceOrEncryptionKey0E4AAB82', 'Arn'],
+            Statement: [
+              {
+                Action: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
+                Resource: {
+                  'Fn::GetAtt': ['DeliveryStreamNoSourceOrEncryptionKey0E4AAB82', 'Arn'],
+                },
               },
-            }],
+            ],
           },
         },
       });

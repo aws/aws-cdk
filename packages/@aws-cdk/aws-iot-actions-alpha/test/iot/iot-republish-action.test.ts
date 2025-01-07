@@ -5,7 +5,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 let stack: cdk.Stack;
-let topicRule:iot.TopicRule;
+let topicRule: iot.TopicRule;
 beforeEach(() => {
   stack = new cdk.Stack();
   topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
@@ -15,9 +15,7 @@ beforeEach(() => {
 
 test('Default IoT republish action', () => {
   // WHEN
-  topicRule.addAction(
-    new actions.IotRepublishMqttAction('test-topic'),
-  );
+  topicRule.addAction(new actions.IotRepublishMqttAction('test-topic'));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -62,24 +60,20 @@ test('Default IoT republish action', () => {
       Version: '2012-10-17',
     },
     PolicyName: 'MyTopicRuleTopicRuleActionRoleDefaultPolicy54A701F7',
-    Roles: [
-      { Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' },
-    ],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
 test('can set qualityOfService', () => {
   // WHEN
   topicRule.addAction(
-    new actions.IotRepublishMqttAction('test-topic', { qualityOfService: actions.MqttQualityOfService.AT_LEAST_ONCE }),
+    new actions.IotRepublishMqttAction('test-topic', { qualityOfService: actions.MqttQualityOfService.AT_LEAST_ONCE })
   );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ Republish: { Qos: 1 } }),
-      ],
+      Actions: [Match.objectLike({ Republish: { Qos: 1 } })],
     },
   });
 });
@@ -87,16 +81,12 @@ test('can set qualityOfService', () => {
 test('can set role', () => {
   // WHEN
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
-  topicRule.addAction(
-    new actions.IotRepublishMqttAction('test-topic', { role }),
-  );
+  topicRule.addAction(new actions.IotRepublishMqttAction('test-topic', { role }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ Republish: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
-      ],
+      Actions: [Match.objectLike({ Republish: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } })],
     },
   });
 

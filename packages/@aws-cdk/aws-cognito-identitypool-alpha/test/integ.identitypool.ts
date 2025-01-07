@@ -44,11 +44,7 @@ new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
 const client = userPool.addClient('testClient');
 const userPoolToImport = new UserPool(stack, 'UserPoolToImport');
 const clientToImport = userPoolToImport.addClient('clientToImport');
-const importedUserPool = UserPool.fromUserPoolArn(
-  stack,
-  'ImportedUserPool',
-  userPoolToImport.userPoolArn
-);
+const importedUserPool = UserPool.fromUserPoolArn(stack, 'ImportedUserPool', userPoolToImport.userPoolArn);
 const importedUserPoolClient = UserPoolClient.fromUserPoolClientId(
   stack,
   'ImportedUserPoolClient',

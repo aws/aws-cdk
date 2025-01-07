@@ -17,10 +17,7 @@ describe('StepFunctionsIntegration', () => {
       //THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         ResourceId: {
-          'Fn::GetAtt': [
-            'myrestapiBAC2BF45',
-            'RootResourceId',
-          ],
+          'Fn::GetAtt': ['myrestapiBAC2BF45', 'RootResourceId'],
         },
         RestApiId: {
           Ref: 'myrestapiBAC2BF45',
@@ -52,11 +49,11 @@ describe('StepFunctionsIntegration', () => {
               'Fn::Join': [
                 '',
                 [
-                  "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($includeAuthorizer = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                  '## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## "@@" is used here as a placeholder for \'"\' to avoid using escape characters.\n\n#set($inputString = \'\')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($includeAuthorizer = false)\n#set($allParams = $input.params())\n{\n    "stateMachineArn": "',
                   {
                     Ref: 'StateMachine2E01A3A5',
                   },
-                  "\",\n\n    #set($inputString = \"$inputString,@@body@@: $input.body\")\n\n    #if ($includeHeaders)\n        #set($inputString = \"$inputString, @@header@@:{\")\n        #foreach($paramName in $allParams.header.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n        \n    #end\n\n    #if ($includeQueryString)\n        #set($inputString = \"$inputString, @@querystring@@:{\")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #if ($includePath)\n        #set($inputString = \"$inputString, @@path@@:{\")\n        #foreach($paramName in $allParams.path.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.path.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n    \n    #if ($includeAuthorizer)\n        #set($inputString = \"$inputString, @@authorizer@@:{\")\n        #foreach($paramName in $context.authorizer.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #set($requestContext = \"\")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = \"$inputString,\")\n        #set($inputString = \"$inputString @@requestContext@@: $requestContext\")\n    #end\n\n    #set($inputString = \"$inputString}\")\n    #set($inputString = $inputString.replaceAll(\"@@\",'\"'))\n    #set($len = $inputString.length() - 1)\n    \"input\": \"{$util.escapeJavaScript($inputString.substring(1,$len)).replaceAll(\"\\\\'\",\"'\")}\"\n}\n",
+                  '",\n\n    #set($inputString = "$inputString,@@body@@: $input.body")\n\n    #if ($includeHeaders)\n        #set($inputString = "$inputString, @@header@@:{")\n        #foreach($paramName in $allParams.header.keySet())\n            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@")\n            #if($foreach.hasNext)\n                #set($inputString = "$inputString,")\n            #end\n        #end\n        #set($inputString = "$inputString }")\n        \n    #end\n\n    #if ($includeQueryString)\n        #set($inputString = "$inputString, @@querystring@@:{")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@")\n            #if($foreach.hasNext)\n                #set($inputString = "$inputString,")\n            #end\n        #end\n        #set($inputString = "$inputString }")\n    #end\n\n    #if ($includePath)\n        #set($inputString = "$inputString, @@path@@:{")\n        #foreach($paramName in $allParams.path.keySet())\n            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.path.get($paramName))@@")\n            #if($foreach.hasNext)\n                #set($inputString = "$inputString,")\n            #end\n        #end\n        #set($inputString = "$inputString }")\n    #end\n    \n    #if ($includeAuthorizer)\n        #set($inputString = "$inputString, @@authorizer@@:{")\n        #foreach($paramName in $context.authorizer.keySet())\n            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@")\n            #if($foreach.hasNext)\n                #set($inputString = "$inputString,")\n            #end\n        #end\n        #set($inputString = "$inputString }")\n    #end\n\n    #set($requestContext = "")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = "$inputString,")\n        #set($inputString = "$inputString @@requestContext@@: $requestContext")\n    #end\n\n    #set($inputString = "$inputString}")\n    #set($inputString = $inputString.replaceAll("@@",\'"\'))\n    #set($len = $inputString.length() - 1)\n    "input": "{$util.escapeJavaScript($inputString.substring(1,$len)).replaceAll("\\\\\'","\'")}"\n}\n',
                 ],
               ],
             },
@@ -79,11 +76,7 @@ describe('StepFunctionsIntegration', () => {
             'application/json': {
               'Fn::Join': [
                 '',
-                [
-                  Match.stringLikeRegexp('includeHeaders = false'),
-                  { Ref: 'StateMachine2E01A3A5' },
-                  Match.anyValue(),
-                ],
+                [Match.stringLikeRegexp('includeHeaders = false'), { Ref: 'StateMachine2E01A3A5' }, Match.anyValue()],
               ],
             },
           },
@@ -255,7 +248,9 @@ describe('StepFunctionsIntegration', () => {
                 [
                   Match.anyValue(),
                   { Ref: 'StateMachine2E01A3A5' },
-                  Match.stringLikeRegexp('#set\\(\\$requestContext = \"{@@accountId@@:@@\\$context.identity.accountId@@}\"'),
+                  Match.stringLikeRegexp(
+                    '#set\\(\\$requestContext = \"{@@accountId@@:@@\\$context.identity.accountId@@}\"'
+                  ),
                 ],
               ],
             },
@@ -345,7 +340,11 @@ describe('StepFunctionsIntegration', () => {
       const stack = new cdk.Stack();
       const restapi = new apigw.RestApi(stack, 'RestApi');
       const method = restapi.root.addMethod('ANY');
-      const stateMachine: sfn.IStateMachine = StateMachine.fromStateMachineArn(stack, 'MyStateMachine', 'arn:aws:states:region:account:stateMachine:MyStateMachine');
+      const stateMachine: sfn.IStateMachine = StateMachine.fromStateMachineArn(
+        stack,
+        'MyStateMachine',
+        'arn:aws:states:region:account:stateMachine:MyStateMachine'
+      );
       const integration = apigw.StepFunctionsIntegration.startExecution(stateMachine, {});
 
       // WHEN
@@ -353,7 +352,9 @@ describe('StepFunctionsIntegration', () => {
 
       // the deployment token should be defined since the function name
       // should be a literal string.
-      expect(bindResult?.deploymentToken).toEqual('{"stateMachineName":"StateMachine-c8adc83b19e793491b1c6ea0fd8b46cd9f32e592fc"}');
+      expect(bindResult?.deploymentToken).toEqual(
+        '{"stateMachineName":"StateMachine-c8adc83b19e793491b1c6ea0fd8b46cd9f32e592fc"}'
+      );
     });
 
     test('fails integration if State Machine is not of type EXPRESS', () => {
@@ -368,8 +369,9 @@ describe('StepFunctionsIntegration', () => {
       const integration = apigw.StepFunctionsIntegration.startExecution(stateMachine);
 
       //WHEN + THEN
-      expect(() => integration.bind(method))
-        .toThrow(/State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType/);
+      expect(() => integration.bind(method)).toThrow(
+        /State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType/
+      );
     });
   });
 
@@ -568,7 +570,7 @@ function getIntegrationResponse() {
       StatusCode: '200',
       ResponseTemplates: {
         'application/json': [
-          '#set($inputRoot = $input.path(\'$\'))',
+          "#set($inputRoot = $input.path('$'))",
           '#if($input.path(\'$.status\').toString().equals("FAILED"))',
           '#set($context.responseOverride.status = 500)',
           '{',
@@ -576,7 +578,7 @@ function getIntegrationResponse() {
           '"cause": "$input.path(\'$.cause\')"',
           '}',
           '#else',
-          '$input.path(\'$.output\')',
+          "$input.path('$.output')",
           '#end',
         ].join('\n'),
       },

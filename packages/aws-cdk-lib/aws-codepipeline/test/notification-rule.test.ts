@@ -47,16 +47,19 @@ describe('pipeline with codestar notification integration', () => {
         'codepipeline-pipeline-pipeline-execution-superseded',
       ],
       Resource: {
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':codepipeline:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':',
-          { Ref: 'PipelineC660917D' },
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':codepipeline:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'PipelineC660917D' },
+          ],
+        ],
       },
       Targets: [
         {
@@ -88,16 +91,19 @@ describe('pipeline with codestar notification integration', () => {
         'codepipeline-pipeline-stage-execution-succeeded',
       ],
       Resource: {
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':codepipeline:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':',
-          { Ref: 'PipelineC660917D' },
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':codepipeline:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'PipelineC660917D' },
+          ],
+        ],
       },
       Targets: [
         {
@@ -128,16 +134,19 @@ describe('pipeline with codestar notification integration', () => {
         'codepipeline-pipeline-action-execution-succeeded',
       ],
       Resource: {
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':codepipeline:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':',
-          { Ref: 'PipelineC660917D' },
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':codepipeline:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'PipelineC660917D' },
+          ],
+        ],
       },
       Targets: [
         {
@@ -167,16 +176,19 @@ describe('pipeline with codestar notification integration', () => {
         'codepipeline-pipeline-manual-approval-succeeded',
       ],
       Resource: {
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':codepipeline:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':',
-          { Ref: 'PipelineC660917D' },
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':codepipeline:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'PipelineC660917D' },
+          ],
+        ],
       },
       Targets: [
         {

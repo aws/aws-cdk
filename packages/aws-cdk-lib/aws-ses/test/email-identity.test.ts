@@ -42,10 +42,7 @@ test('email identity from a hosted zone with easy dkim', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: {
-      'Fn::GetAtt': [
-        'Identity2D60E2CC',
-        'DkimDNSTokenName1',
-      ],
+      'Fn::GetAtt': ['Identity2D60E2CC', 'DkimDNSTokenName1'],
     },
     Type: 'CNAME',
     HostedZoneId: {
@@ -53,20 +50,14 @@ test('email identity from a hosted zone with easy dkim', () => {
     },
     ResourceRecords: [
       {
-        'Fn::GetAtt': [
-          'Identity2D60E2CC',
-          'DkimDNSTokenValue1',
-        ],
+        'Fn::GetAtt': ['Identity2D60E2CC', 'DkimDNSTokenValue1'],
       },
     ],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: {
-      'Fn::GetAtt': [
-        'Identity2D60E2CC',
-        'DkimDNSTokenName2',
-      ],
+      'Fn::GetAtt': ['Identity2D60E2CC', 'DkimDNSTokenName2'],
     },
     Type: 'CNAME',
     HostedZoneId: {
@@ -74,20 +65,14 @@ test('email identity from a hosted zone with easy dkim', () => {
     },
     ResourceRecords: [
       {
-        'Fn::GetAtt': [
-          'Identity2D60E2CC',
-          'DkimDNSTokenValue2',
-        ],
+        'Fn::GetAtt': ['Identity2D60E2CC', 'DkimDNSTokenValue2'],
       },
     ],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: {
-      'Fn::GetAtt': [
-        'Identity2D60E2CC',
-        'DkimDNSTokenName3',
-      ],
+      'Fn::GetAtt': ['Identity2D60E2CC', 'DkimDNSTokenName3'],
     },
     Type: 'CNAME',
     HostedZoneId: {
@@ -95,10 +80,7 @@ test('email identity from a hosted zone with easy dkim', () => {
     },
     ResourceRecords: [
       {
-        'Fn::GetAtt': [
-          'Identity2D60E2CC',
-          'DkimDNSTokenValue3',
-        ],
+        'Fn::GetAtt': ['Identity2D60E2CC', 'DkimDNSTokenValue3'],
       },
     ],
   });
@@ -134,9 +116,7 @@ test('email identity from a hosted zone with BYO dkim', () => {
     HostedZoneId: {
       Ref: 'HostedZoneDB99F866',
     },
-    ResourceRecords: [
-      '"p=public-key"',
-    ],
+    ResourceRecords: ['"p=public-key"'],
   });
 });
 
@@ -186,9 +166,7 @@ test('with mail from and hosted zone', () => {
     HostedZoneId: {
       Ref: 'HostedZoneDB99F866',
     },
-    ResourceRecords: [
-      '"v=spf1 include:amazonses.com ~all"',
-    ],
+    ResourceRecords: ['"v=spf1 include:amazonses.com ~all"'],
   });
 });
 
@@ -239,11 +217,7 @@ describe('grants', () => {
     // GIVEN
     stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
     const user = new User(stack, 'User');
-    const emailIdentity = EmailIdentity.fromEmailIdentityName(
-      stack,
-      'Identity',
-      'cdk.dev',
-    );
+    const emailIdentity = EmailIdentity.fromEmailIdentityName(stack, 'Identity', 'cdk.dev');
 
     // WHEN
     emailIdentity.grant(user, 'ses:action1', 'ses:action2');
@@ -253,20 +227,10 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'ses:action1',
-              'ses:action2',
-            ],
+            Action: ['ses:action1', 'ses:action2'],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':ses:us-west-2:123456789012:identity/cdk.dev',
-                ],
-              ],
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ses:us-west-2:123456789012:identity/cdk.dev']],
             },
           },
         ],
@@ -285,11 +249,7 @@ describe('grants', () => {
     // GIVEN
     stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
     const user = new User(stack, 'User');
-    const emailIdentity = EmailIdentity.fromEmailIdentityName(
-      stack,
-      'Identity',
-      'cdk.dev',
-    );
+    const emailIdentity = EmailIdentity.fromEmailIdentityName(stack, 'Identity', 'cdk.dev');
 
     // WHEN
     emailIdentity.grantSendEmail(user);
@@ -299,20 +259,10 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'ses:SendEmail',
-              'ses:SendRawEmail',
-            ],
+            Action: ['ses:SendEmail', 'ses:SendRawEmail'],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':ses:us-west-2:123456789012:identity/cdk.dev',
-                ],
-              ],
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ses:us-west-2:123456789012:identity/cdk.dev']],
             },
           },
         ],

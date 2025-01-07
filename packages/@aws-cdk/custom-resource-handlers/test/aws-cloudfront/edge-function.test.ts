@@ -29,7 +29,9 @@ jest.mock('@aws-sdk/client-ssm', () => {
   };
 });
 
-afterAll(() => { jest.resetAllMocks(); });
+afterAll(() => {
+  jest.resetAllMocks();
+});
 
 describe('handler', () => {
   afterEach(() => {

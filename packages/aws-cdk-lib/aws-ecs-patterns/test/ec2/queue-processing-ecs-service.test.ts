@@ -16,13 +16,15 @@ test('test ECS queue worker service construct - with only required props', () =>
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
@@ -39,10 +41,7 @@ test('test ECS queue worker service construct - with only required props', () =>
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     RedrivePolicy: {
       deadLetterTargetArn: {
-        'Fn::GetAtt': [
-          'ServiceEcsProcessingDeadLetterQueue4A89196E',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ServiceEcsProcessingDeadLetterQueue4A89196E', 'Arn'],
       },
       maxReceiveCount: 3,
     },
@@ -59,10 +58,7 @@ test('test ECS queue worker service construct - with only required props', () =>
           {
             Name: 'QUEUE_NAME',
             Value: {
-              'Fn::GetAtt': [
-                'ServiceEcsProcessingQueueC266885C',
-                'QueueName',
-              ],
+              'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'QueueName'],
             },
           },
         ],
@@ -92,13 +88,15 @@ test('test ECS queue worker service construct - with optional props for queues',
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
@@ -118,10 +116,7 @@ test('test ECS queue worker service construct - with optional props for queues',
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     RedrivePolicy: {
       deadLetterTargetArn: {
-        'Fn::GetAtt': [
-          'ServiceEcsProcessingDeadLetterQueue4A89196E',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ServiceEcsProcessingDeadLetterQueue4A89196E', 'Arn'],
       },
       maxReceiveCount: 42,
     },
@@ -139,10 +134,7 @@ test('test ECS queue worker service construct - with optional props for queues',
           {
             Name: 'QUEUE_NAME',
             Value: {
-              'Fn::GetAtt': [
-                'ServiceEcsProcessingQueueC266885C',
-                'QueueName',
-              ],
+              'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'QueueName'],
             },
           },
         ],
@@ -172,13 +164,15 @@ test('test ECS queue worker service construct - with ECS Exec', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   // WHEN
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
@@ -213,11 +207,7 @@ test('test ECS queue worker service construct - with ECS Exec', () => {
           Resource: '*',
         },
         {
-          Action: [
-            'logs:CreateLogStream',
-            'logs:DescribeLogStreams',
-            'logs:PutLogEvents',
-          ],
+          Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
           Effect: 'Allow',
           Resource: '*',
         },
@@ -231,10 +221,7 @@ test('test ECS queue worker service construct - with ECS Exec', () => {
           ],
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'ServiceEcsProcessingQueueC266885C',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'Arn'],
           },
         },
       ],
@@ -254,13 +241,15 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
   const queue = new sqs.Queue(stack, 'ecs-test-queue', {
     queueName: 'ecs-test-sqs-queue',
   });
@@ -284,7 +273,11 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     family: 'ecs-task-family',
     circuitBreaker: { rollback: true },
     gpuCount: 256,
-    placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
+    placementStrategies: [
+      ecs.PlacementStrategy.spreadAcrossInstances(),
+      ecs.PlacementStrategy.packedByCpu(),
+      ecs.PlacementStrategy.randomly(),
+    ],
     placementConstraints: [ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
   });
 
@@ -304,7 +297,11 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
       Type: 'ECS',
     },
     PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
-    PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
+    PlacementStrategies: [
+      { Field: 'instanceId', Type: 'spread' },
+      { Field: 'CPU', Type: 'binpack' },
+      { Type: 'random' },
+    ],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
@@ -314,11 +311,7 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       Match.objectLike({
-        Command: [
-          '-c',
-          '4',
-          'amazon.com',
-        ],
+        Command: ['-c', '4', 'amazon.com'],
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -331,10 +324,7 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
           {
             Name: 'QUEUE_NAME',
             Value: {
-              'Fn::GetAtt': [
-                'ecstestqueueD1FDA34B',
-                'QueueName',
-              ],
+              'Fn::GetAtt': ['ecstestqueueD1FDA34B', 'QueueName'],
             },
           },
         ],
@@ -357,22 +347,25 @@ testDeprecated('throws if desiredTaskCount and maxScalingCapacity are 0', () => 
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   // THEN
-  expect(() =>
-    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
-      cluster,
-      desiredTaskCount: 0,
-      memoryLimitMiB: 512,
-      image: ecs.ContainerImage.fromRegistry('test'),
-    }),
+  expect(
+    () =>
+      new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+        cluster,
+        desiredTaskCount: 0,
+        memoryLimitMiB: 512,
+        image: ecs.ContainerImage.fromRegistry('test'),
+      })
   ).toThrow(/maxScalingCapacity must be set and greater than 0 if desiredCount is 0/);
 });
 
@@ -381,13 +374,15 @@ test('can set custom containerName', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
@@ -452,13 +447,15 @@ it('can set queue props by queue construct', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
   const queue = new Queue(stack, 'Queue', {
     queueName: 'custom-queue',
     visibilityTimeout: cdk.Duration.seconds(200),
@@ -499,13 +496,15 @@ it('can set queue props by QueueProcessingServiceBaseProps', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
@@ -538,13 +537,15 @@ it('throws validation errors of the specific queue prop, when setting queue and 
   const queue = new Queue(stack, 'Queue');
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   // Setting all retentionPeriod, visibilityTimeout and maxReceiveCount
   expect(() => {
@@ -557,7 +558,11 @@ it('throws validation errors of the specific queue prop, when setting queue and 
       visibilityTimeout: cdk.Duration.seconds(200),
       maxReceiveCount: 10,
     });
-  }).toThrow(new Error('retentionPeriod, visibilityTimeout, maxReceiveCount can be set only when queue is not set. Specify them in the QueueProps of the queue'));
+  }).toThrow(
+    new Error(
+      'retentionPeriod, visibilityTimeout, maxReceiveCount can be set only when queue is not set. Specify them in the QueueProps of the queue'
+    )
+  );
 
   // Setting only visibilityTimeout
   expect(() => {
@@ -566,7 +571,9 @@ it('throws validation errors of the specific queue prop, when setting queue and 
       queue: queue,
       visibilityTimeout: cdk.Duration.seconds(200),
     });
-  }).toThrow(new Error('visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue'));
+  }).toThrow(
+    new Error('visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue')
+  );
 });
 
 test('throws if image is undefined', () => {

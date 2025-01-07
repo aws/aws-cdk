@@ -99,8 +99,7 @@ export class NetworkListenerAction implements IListenerAction {
    * Render the listener rule actions in this chain
    */
   public renderRuleActions(): CfnListenerRule.ActionProperty[] {
-    const actionJson =
-      this._actionJson ?? (this.defaultActionJson as CfnListenerRule.ActionProperty);
+    const actionJson = this._actionJson ?? (this.defaultActionJson as CfnListenerRule.ActionProperty);
     return this._renumber([actionJson, ...(this.next?.renderRuleActions() ?? [])]);
   }
 
@@ -121,9 +120,7 @@ export class NetworkListenerAction implements IListenerAction {
   }
 
   private _renumber<
-    ActionProperty extends
-      | CfnListener.ActionProperty
-      | CfnListenerRule.ActionProperty = CfnListener.ActionProperty,
+    ActionProperty extends CfnListener.ActionProperty | CfnListenerRule.ActionProperty = CfnListener.ActionProperty,
   >(actions: ActionProperty[]): ActionProperty[] {
     if (actions.length < 2) {
       return actions;

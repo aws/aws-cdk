@@ -3,12 +3,7 @@ import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
-import {
-  ContainerDefinition,
-  ContainerDefinitionOptions,
-  PortMapping,
-  Protocol,
-} from '../container-definition';
+import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import {
   FirelensLogRouter,
@@ -325,11 +320,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    *
    * The task will have a compatibility of EC2+Fargate.
    */
-  public static fromTaskDefinitionArn(
-    scope: Construct,
-    id: string,
-    taskDefinitionArn: string
-  ): ITaskDefinition {
+  public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
     return new ImportedTaskDefinition(scope, id, { taskDefinitionArn: taskDefinitionArn });
   }
 
@@ -417,8 +408,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Placement constraints for task instances
    */
-  private readonly placementConstraints =
-    new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
+  private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
   /**
    * Inference accelerators for task instances
@@ -448,21 +438,14 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.volumes.forEach((v) => this.addVolume(v));
     }
 
-    this.networkMode =
-      props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
+    this.networkMode = props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
     if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
-      throw new Error(
-        `ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`
-      );
+      throw new Error(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`);
     }
-    if (
-      props.placementConstraints &&
-      props.placementConstraints.length > 0 &&
-      this.isFargateCompatible
-    ) {
+    if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
 
@@ -472,11 +455,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       );
     }
 
-    if (
-      props.inferenceAccelerators &&
-      props.inferenceAccelerators.length > 0 &&
-      this.isFargateCompatible
-    ) {
+    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
@@ -484,9 +463,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       this.isExternalCompatible &&
       ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)
     ) {
-      throw new Error(
-        `External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`
-      );
+      throw new Error(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`);
     }
 
     if (!this.isFargateCompatible && props.runtimePlatform) {
@@ -520,10 +497,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this._memory = props.memoryMiB;
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
-      containerDefinitions: Lazy.any(
-        { produce: () => this.renderContainers() },
-        { omitEmptyArray: true }
-      ),
+      containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.string({
         produce: () => this.executionRole && this.executionRole.roleArn,
@@ -538,24 +512,18 @@ export class TaskDefinition extends TaskDefinitionBase {
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.any(
         {
-          produce: () =>
-            !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
+          produce: () => (!isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined),
         },
         { omitEmptyArray: true }
       ),
-      proxyConfiguration: props.proxyConfiguration
-        ? props.proxyConfiguration.bind(this.stack, this)
-        : undefined,
+      proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
       pidMode: this.pidMode,
       inferenceAccelerators: Lazy.any(
         {
-          produce: () =>
-            !isFargateCompatible(this.compatibility)
-              ? this.renderInferenceAccelerators()
-              : undefined,
+          produce: () => (!isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined),
         },
         { omitEmptyArray: true }
       ),
@@ -568,8 +536,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         this.isFargateCompatible && this.runtimePlatform
           ? {
               cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
-              operatingSystemFamily:
-                this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
+              operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
             }
           : undefined,
     });
@@ -640,9 +607,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   public _validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget {
     const targetContainer = this.findContainer(options.containerName);
     if (targetContainer === undefined) {
-      throw new Error(
-        `No container named '${options.containerName}'. Did you call "addContainer()"?`
-      );
+      throw new Error(`No container named '${options.containerName}'. Did you call "addContainer()"?`);
     }
     const targetProtocol = options.protocol || Protocol.TCP;
     const targetContainerPort = options.containerPort || targetContainer.containerPort;
@@ -678,9 +643,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         ? ec2.Port.udp(portMapping.containerPort)
         : ec2.Port.tcp(portMapping.containerPort);
     }
-    const [startPort, endPort] = portMapping
-      .containerPortRange!.split('-', 2)
-      .map((v) => Number(v));
+    const [startPort, endPort] = portMapping.containerPortRange!.split('-', 2).map((v) => Number(v));
     return portMapping.protocol === Protocol.UDP
       ? ec2.Port.udpRange(startPort, endPort)
       : ec2.Port.tcpRange(startPort, endPort);
@@ -731,9 +694,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         .filter((cpu): cpu is number => typeof cpu === 'number')
         .reduce((a, c) => a + c, 0);
       if (taskCpu < sumOfContainerCpu) {
-        throw new Error(
-          'The sum of all container cpu values cannot be greater than the value of the task cpu'
-        );
+        throw new Error('The sum of all container cpu values cannot be greater than the value of the task cpu');
       }
     }
 
@@ -930,9 +891,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       this._passRoleStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['iam:PassRole'],
-        resources: this.executionRole
-          ? [this.taskRole.roleArn, this.executionRole.roleArn]
-          : [this.taskRole.roleArn],
+        resources: this.executionRole ? [this.taskRole.roleArn, this.executionRole.roleArn] : [this.taskRole.roleArn],
         conditions: {
           StringLike: { 'iam:PassedToService': 'ecs-tasks.amazonaws.com' },
         },
@@ -971,11 +930,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     return this.containers.map((x) => x.renderContainerDefinition());
   }
 
-  private checkFargateWindowsBasedTasksSize(
-    cpu: string,
-    memory: string,
-    runtimePlatform: RuntimePlatform
-  ) {
+  private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
     if (Number(cpu) === 1024) {
       if (Number(memory) < 1024 || Number(memory) > 8192 || Number(memory) % 1024 !== 0) {
         throw new Error(
@@ -1406,9 +1361,7 @@ export class TaskDefinitionRevision {
    */
   public static of(revision: number) {
     if (revision < 1) {
-      throw new Error(
-        `A task definition revision must be 'latest' or a positive number, got ${revision}`
-      );
+      throw new Error(`A task definition revision must be 'latest' or a positive number, got ${revision}`);
     }
     return new TaskDefinitionRevision(revision.toString());
   }

@@ -17,10 +17,12 @@ describe('cors', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       CorsConfiguration: {
-        CorsRules: [{
-          AllowedMethods: ['GET', 'HEAD'],
-          AllowedOrigins: ['https://example.com'],
-        }],
+        CorsRules: [
+          {
+            AllowedMethods: ['GET', 'HEAD'],
+            AllowedOrigins: ['https://example.com'],
+          },
+        ],
       },
     });
   });
@@ -33,37 +35,18 @@ describe('cors', () => {
     new Bucket(stack, 'Bucket', {
       cors: [
         {
-          allowedHeaders: [
-            '*',
-          ],
-          allowedMethods: [
-            HttpMethods.GET,
-          ],
-          allowedOrigins: [
-            '*',
-          ],
-          exposedHeaders: [
-            'Date',
-          ],
+          allowedHeaders: ['*'],
+          allowedMethods: [HttpMethods.GET],
+          allowedOrigins: ['*'],
+          exposedHeaders: ['Date'],
           id: 'myCORSRuleId1',
           maxAge: 3600,
         },
         {
-          allowedHeaders: [
-            'x-amz-*',
-          ],
-          allowedMethods: [
-            HttpMethods.DELETE,
-          ],
-          allowedOrigins: [
-            'http://www.example1.com',
-            'http://www.example2.com',
-          ],
-          exposedHeaders: [
-            'Connection',
-            'Server',
-            'Date',
-          ],
+          allowedHeaders: ['x-amz-*'],
+          allowedMethods: [HttpMethods.DELETE],
+          allowedOrigins: ['http://www.example1.com', 'http://www.example2.com'],
+          exposedHeaders: ['Connection', 'Server', 'Date'],
           id: 'myCORSRuleId2',
           maxAge: 1800,
         },
@@ -75,37 +58,18 @@ describe('cors', () => {
       CorsConfiguration: {
         CorsRules: [
           {
-            AllowedHeaders: [
-              '*',
-            ],
-            AllowedMethods: [
-              'GET',
-            ],
-            AllowedOrigins: [
-              '*',
-            ],
-            ExposedHeaders: [
-              'Date',
-            ],
+            AllowedHeaders: ['*'],
+            AllowedMethods: ['GET'],
+            AllowedOrigins: ['*'],
+            ExposedHeaders: ['Date'],
             Id: 'myCORSRuleId1',
             MaxAge: 3600,
           },
           {
-            AllowedHeaders: [
-              'x-amz-*',
-            ],
-            AllowedMethods: [
-              'DELETE',
-            ],
-            AllowedOrigins: [
-              'http://www.example1.com',
-              'http://www.example2.com',
-            ],
-            ExposedHeaders: [
-              'Connection',
-              'Server',
-              'Date',
-            ],
+            AllowedHeaders: ['x-amz-*'],
+            AllowedMethods: ['DELETE'],
+            AllowedOrigins: ['http://www.example1.com', 'http://www.example2.com'],
+            ExposedHeaders: ['Connection', 'Server', 'Date'],
             Id: 'myCORSRuleId2',
             MaxAge: 1800,
           },

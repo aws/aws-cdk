@@ -137,11 +137,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   /**
    * Import an existing subnet to the VPC
    */
-  public static fromSubnetV2Attributes(
-    scope: Construct,
-    id: string,
-    attrs: SubnetV2Attributes
-  ): ISubnetV2 {
+  public static fromSubnetV2Attributes(scope: Construct, id: string, attrs: SubnetV2Attributes): ISubnetV2 {
     /**
      * Class to define an import for an existing subnet
      * @resource AWS::EC2::Subnet
@@ -255,8 +251,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       physicalName:
         props.subnetName ??
         Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
         }),
     });
 
@@ -418,11 +413,9 @@ export interface SubnetV2Attributes {
 }
 
 const subnetTypeMap = {
-  [SubnetType.PRIVATE_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) =>
-    vpc.isolatedSubnets.push(subnet),
+  [SubnetType.PRIVATE_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
   [SubnetType.PUBLIC]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.publicSubnets.push(subnet),
-  [SubnetType.PRIVATE_WITH_EGRESS]: (vpc: IVpcV2, subnet: SubnetV2) =>
-    vpc.privateSubnets.push(subnet),
+  [SubnetType.PRIVATE_WITH_EGRESS]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
   [SubnetType.ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
   [SubnetType.PRIVATE]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
   [SubnetType.PRIVATE_WITH_NAT]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
@@ -468,8 +461,7 @@ function validateSupportIpv6(vpc: IVpcV2) {
     if (
       vpc.secondaryCidrBlock.some(
         (secondaryAddress) =>
-          secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-          secondaryAddress.ipv6IpamPoolId != undefined
+          secondaryAddress.amazonProvidedIpv6CidrBlock === true || secondaryAddress.ipv6IpamPoolId != undefined
       )
     ) {
       return true;

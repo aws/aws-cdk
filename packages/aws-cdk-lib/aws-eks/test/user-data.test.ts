@@ -102,14 +102,14 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      useMaxPods: true,
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        useMaxPods: true,
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual({
+    expect(userData[1]).toEqual({
       'Fn::Join': [
         '',
         [
@@ -132,31 +132,29 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      useMaxPods: false,
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        useMaxPods: false,
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods false",
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods false",
         ],
-      },
-    );
+      ],
+    });
   });
 
   test('--aws-api-retry-attempts', () => {
@@ -164,31 +162,29 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      awsApiRetryAttempts: 123,
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        awsApiRetryAttempts: 123,
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods true --aws-api-retry-attempts 123",
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true --aws-api-retry-attempts 123",
         ],
-      },
-    );
+      ],
+    });
   });
 
   test('--dns-cluster-ip', () => {
@@ -196,31 +192,29 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      dnsClusterIp: '192.0.2.53',
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        dnsClusterIp: '192.0.2.53',
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods true --dns-cluster-ip 192.0.2.53",
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true --dns-cluster-ip 192.0.2.53",
         ],
-      },
-    );
+      ],
+    });
   });
 
   test('--docker-config-json', () => {
@@ -228,31 +222,29 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      dockerConfigJson: '{"docker":123}',
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        dockerConfigJson: '{"docker":123}',
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            '\' --use-max-pods true --docker-config-json \'{"docker":123}\'',
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true --docker-config-json '{\"docker\":123}'",
         ],
-      },
-    );
+      ],
+    });
   });
 
   test('--enable-docker-bridge=true', () => {
@@ -260,31 +252,29 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      enableDockerBridge: true,
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        enableDockerBridge: true,
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods true --enable-docker-bridge true",
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true --enable-docker-bridge true",
         ],
-      },
-    );
+      ],
+    });
   });
 
   test('--enable-docker-bridge=false', () => {
@@ -292,31 +282,29 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      enableDockerBridge: false,
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        enableDockerBridge: false,
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods true",
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true",
         ],
-      },
-    );
+      ],
+    });
   });
 
   test('--kubelet-extra-args', () => {
@@ -324,31 +312,29 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      kubeletExtraArgs: '--extra-args-for --kubelet',
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        kubeletExtraArgs: '--extra-args-for --kubelet',
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --extra-args-for --kubelet" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods true",
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --extra-args-for --kubelet" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true",
         ],
-      },
-    );
+      ],
+    });
   });
 
   test('arbitrary additional bootstrap arguments can be passed through "additionalArgs"', () => {
@@ -356,32 +342,30 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures();
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      additionalArgs: '--apiserver-endpoint 1111 --foo-bar',
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        additionalArgs: '--apiserver-endpoint 1111 --foo-bar',
+      })
+    );
 
     // THEN
     // NB: duplicated --apiserver-endpoint is fine.  Last wins.
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods true --apiserver-endpoint 1111 --foo-bar",
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true --apiserver-endpoint 1111 --foo-bar",
         ],
-      },
-    );
+      ],
+    });
   });
 
   test('if asg has spot instances, the correct label and taint is used', () => {
@@ -389,31 +373,29 @@ describe('user data', () => {
     const { asg, stack, cluster } = newFixtures(true);
 
     // WHEN
-    const userData = stack.resolve(renderAmazonLinuxUserData(cluster, asg, {
-      kubeletExtraArgs: '--node-labels X=y',
-    }));
+    const userData = stack.resolve(
+      renderAmazonLinuxUserData(cluster, asg, {
+        kubeletExtraArgs: '--node-labels X=y',
+      })
+    );
 
     // THEN
-    expect(
-      userData[1],
-    ).toEqual(
-      {
-        'Fn::Join': [
-          '',
-          [
-            '/etc/eks/bootstrap.sh ',
-            { Ref: 'Cluster9EE0221C' },
-            ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels X=y" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
-            "' --b64-cluster-ca '",
-            {
-              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
-            },
-            "' --use-max-pods true",
-          ],
+    expect(userData[1]).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/etc/eks/bootstrap.sh ',
+          { Ref: 'Cluster9EE0221C' },
+          ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels X=y" --apiserver-endpoint \'',
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
+          "' --b64-cluster-ca '",
+          {
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
+          },
+          "' --use-max-pods true",
         ],
-      },
-    );
+      ],
+    });
   });
 });
 

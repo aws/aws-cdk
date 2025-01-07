@@ -73,10 +73,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     return;
   }
 
-  if (
-    event.RequestType === 'Update' &&
-    event.ResourceProperties.ExecuteOnHandlerChange === 'false'
-  ) {
+  if (event.RequestType === 'Update' && event.ResourceProperties.ExecuteOnHandlerChange === 'false') {
     console.log('not calling trigger because ExecuteOnHandlerChange is false');
     return;
   }

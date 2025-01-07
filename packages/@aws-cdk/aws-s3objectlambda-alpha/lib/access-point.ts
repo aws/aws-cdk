@@ -112,10 +112,7 @@ abstract class AccessPointBase extends core.Resource implements IAccessPoint {
   }
 
   /** Implement the `IAccessPoint.virtualHostedUrlForObject` method. */
-  public virtualHostedUrlForObject(
-    key?: string,
-    options?: s3.VirtualHostedStyleUrlOptions
-  ): string {
+  public virtualHostedUrlForObject(key?: string, options?: s3.VirtualHostedStyleUrlOptions): string {
     const domainName = (options?.regional ?? true) ? this.regionalDomainName : this.domainName;
     const prefix = `https://${domainName}`;
     if (!key) {
@@ -175,11 +172,7 @@ export class AccessPoint extends AccessPointBase {
   /**
    * Reference an existing AccessPoint defined outside of the CDK code.
    */
-  public static fromAccessPointAttributes(
-    scope: Construct,
-    id: string,
-    attrs: AccessPointAttributes
-  ): IAccessPoint {
+  public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     const arn = core.Arn.split(attrs.accessPointArn, core.ArnFormat.SLASH_RESOURCE_NAME);
     if (!arn.resourceName) {
       throw new Error('Unable to parse acess point name');

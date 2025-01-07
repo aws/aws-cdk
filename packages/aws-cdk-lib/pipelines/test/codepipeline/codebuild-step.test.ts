@@ -36,15 +36,17 @@ test('additionalinputs creates the right commands', () => {
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: [
-              '[ ! -d "some/deep/directory" ] || { echo \'additionalInputs: "some/deep/directory" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && mkdir -p -- "some/deep" && ln -s -- "$CODEBUILD_SRC_DIR_test2_test2_Source" "some/deep/directory"',
-            ],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: [
+                '[ ! -d "some/deep/directory" ] || { echo \'additionalInputs: "some/deep/directory" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && mkdir -p -- "some/deep" && ln -s -- "$CODEBUILD_SRC_DIR_test2_test2_Source" "some/deep/directory"',
+              ],
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
@@ -58,12 +60,9 @@ test('CodeBuild projects have a description', () => {
   });
 
   // THEN
-  Template.fromStack(pipelineStack).hasResourceProperties(
-    'AWS::CodeBuild::Project',
-    {
-      Description: 'Pipeline step PipelineStack/Pipeline/Build/Synth',
-    },
-  );
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Description: 'Pipeline step PipelineStack/Pipeline/Build/Synth',
+  });
 });
 
 test('long duration steps are supported', () => {
@@ -139,12 +138,14 @@ test('fileSystemLocations can be configured as part of defaults', () => {
       },
     }),
     codeBuildDefaults: {
-      fileSystemLocations: [codebuild.FileSystemLocation.efs({
-        identifier: 'myidentifier2',
-        location: 'myclodation.mydnsroot.com:/loc',
-        mountPoint: '/media',
-        mountOptions: 'opts',
-      })],
+      fileSystemLocations: [
+        codebuild.FileSystemLocation.efs({
+          identifier: 'myidentifier2',
+          location: 'myclodation.mydnsroot.com:/loc',
+          mountPoint: '/media',
+          mountOptions: 'opts',
+        }),
+      ],
       vpc: new ec2.Vpc(pipelineStack, 'MyVpc'),
       buildEnvironment: {
         privileged: true,
@@ -188,22 +189,14 @@ test('envFromOutputs works even with very long stage and stack names', () => {
 });
 
 test('role passed it used for project and code build action', () => {
-  const projectRole = new iam.Role(
-    pipelineStack,
-    'ProjectRole',
-    {
-      roleName: 'ProjectRole',
-      assumedBy: new iam.ServicePrincipal('codebuild.amazon.com'),
-    },
-  );
-  const buildRole = new iam.Role(
-    pipelineStack,
-    'BuildRole',
-    {
-      roleName: 'BuildRole',
-      assumedBy: new iam.ServicePrincipal('codebuild.amazon.com'),
-    },
-  );
+  const projectRole = new iam.Role(pipelineStack, 'ProjectRole', {
+    roleName: 'ProjectRole',
+    assumedBy: new iam.ServicePrincipal('codebuild.amazon.com'),
+  });
+  const buildRole = new iam.Role(pipelineStack, 'BuildRole', {
+    roleName: 'BuildRole',
+    assumedBy: new iam.ServicePrincipal('codebuild.amazon.com'),
+  });
   // WHEN
   new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
     synth: new cdkp.CodeBuildStep('Synth', {
@@ -218,10 +211,7 @@ test('role passed it used for project and code build action', () => {
   const tpl = Template.fromStack(pipelineStack);
   tpl.hasResourceProperties('AWS::CodeBuild::Project', {
     ServiceRole: {
-      'Fn::GetAtt': [
-        'ProjectRole5B707505',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['ProjectRole5B707505', 'Arn'],
     },
   });
 
@@ -239,10 +229,7 @@ test('role passed it used for project and code build action', () => {
               Provider: 'CodeBuild',
             },
             RoleArn: {
-              'Fn::GetAtt': [
-                'BuildRole41B77417',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['BuildRole41B77417', 'Arn'],
             },
           },
         ],
@@ -264,9 +251,7 @@ test('exportedVariables', () => {
     env: {
       THE_VAR: producer.exportedVariable('MY_VAR'),
     },
-    commands: [
-      'echo "The variable was: $THE_VAR"',
-    ],
+    commands: ['echo "The variable was: $THE_VAR"'],
   });
 
   // WHEN
@@ -293,13 +278,15 @@ test('exportedVariables', () => {
             Name: 'Consume',
             RunOrder: 2,
             Configuration: Match.objectLike({
-              EnvironmentVariables: Match.serializedJson(Match.arrayWith([
-                {
-                  name: 'THE_VAR',
-                  type: 'PLAINTEXT',
-                  value: '#{MyWave@Produce.MY_VAR}',
-                },
-              ])),
+              EnvironmentVariables: Match.serializedJson(
+                Match.arrayWith([
+                  {
+                    name: 'THE_VAR',
+                    type: 'PLAINTEXT',
+                    value: '#{MyWave@Produce.MY_VAR}',
+                  },
+                ])
+              ),
             }),
           }),
         ],
@@ -309,11 +296,13 @@ test('exportedVariables', () => {
 
   template.hasResourceProperties('AWS::CodeBuild::Project', {
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        env: {
-          'exported-variables': ['MY_VAR'],
-        },
-      })),
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          env: {
+            'exported-variables': ['MY_VAR'],
+          },
+        })
+      ),
     },
   });
 });
@@ -380,21 +369,18 @@ test('CodeBuild projects have logs config - cloudwatch and s3', () => {
   });
 
   // THEN
-  Template.fromStack(pipelineStack).hasResourceProperties(
-    'AWS::CodeBuild::Project',
-    {
-      LogsConfig: Match.objectLike({
-        CloudWatchLogs: {
-          GroupName: 'loggroupname',
-          Status: 'ENABLED',
-        },
-        S3Logs: {
-          Location: 'bucketname',
-          Status: 'ENABLED',
-        },
-      }),
-    },
-  );
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    LogsConfig: Match.objectLike({
+      CloudWatchLogs: {
+        GroupName: 'loggroupname',
+        Status: 'ENABLED',
+      },
+      S3Logs: {
+        Location: 'bucketname',
+        Status: 'ENABLED',
+      },
+    }),
+  });
 });
 
 test('CodeBuild project have logs config - s3', () => {
@@ -418,17 +404,14 @@ test('CodeBuild project have logs config - s3', () => {
   });
 
   // THEN
-  Template.fromStack(pipelineStack).hasResourceProperties(
-    'AWS::CodeBuild::Project',
-    {
-      LogsConfig: Match.objectLike({
-        S3Logs: {
-          Location: 'bucketname',
-          Status: 'ENABLED',
-        },
-      }),
-    },
-  );
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    LogsConfig: Match.objectLike({
+      S3Logs: {
+        Location: 'bucketname',
+        Status: 'ENABLED',
+      },
+    }),
+  });
 });
 
 test('CodeBuild project have logs config - cloudwatch', () => {
@@ -452,15 +435,12 @@ test('CodeBuild project have logs config - cloudwatch', () => {
   });
 
   // THEN
-  Template.fromStack(pipelineStack).hasResourceProperties(
-    'AWS::CodeBuild::Project',
-    {
-      LogsConfig: Match.objectLike({
-        CloudWatchLogs: {
-          GroupName: 'loggroupname',
-          Status: 'ENABLED',
-        },
-      }),
-    },
-  );
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    LogsConfig: Match.objectLike({
+      CloudWatchLogs: {
+        GroupName: 'loggroupname',
+        Status: 'ENABLED',
+      },
+    }),
+  });
 });

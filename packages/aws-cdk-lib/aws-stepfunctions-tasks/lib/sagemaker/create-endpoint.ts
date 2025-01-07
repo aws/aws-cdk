@@ -46,10 +46,7 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
   ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(
-      this.integrationPattern,
-      SageMakerCreateEndpoint.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, SageMakerCreateEndpoint.SUPPORTED_INTEGRATION_PATTERNS);
     this.taskPolicies = this.makePolicyStatements();
   }
 

@@ -135,10 +135,7 @@ export class Signing {
    * Sign only if the viewer request doesn't contain the Authorization header
    * using the AWS Signature Version 4 signing protocol.
    */
-  public static readonly SIGV4_NO_OVERRIDE = new Signing(
-    SigningProtocol.SIGV4,
-    SigningBehavior.NO_OVERRIDE
-  );
+  public static readonly SIGV4_NO_OVERRIDE = new Signing(SigningProtocol.SIGV4, SigningBehavior.NO_OVERRIDE);
 
   /**
    * Do not sign any origin requests.

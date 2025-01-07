@@ -102,11 +102,9 @@ const message = putMessageOnQueue.next(logEvents);
 
 // Check that the Lambda was invoked successfully from API GW
 // Payload from SQS is in the third log line
-message
-  .assertAtPath('events.2.message', ExpectedResult.stringLikeRegexp(payload))
-  .waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(1),
-    interval: cdk.Duration.seconds(15),
-  });
+message.assertAtPath('events.2.message', ExpectedResult.stringLikeRegexp(payload)).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(1),
+  interval: cdk.Duration.seconds(15),
+});
 
 app.synth();

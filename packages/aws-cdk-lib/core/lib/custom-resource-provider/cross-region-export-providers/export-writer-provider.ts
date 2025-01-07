@@ -36,8 +36,7 @@ class CRProvider extends CrossRegionSsmWriterProvider {
   ): CRProvider {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
-    const provider =
-      (stack.node.tryFindChild(id) as CRProvider) ?? new CRProvider(stack, id, props);
+    const provider = (stack.node.tryFindChild(id) as CRProvider) ?? new CRProvider(stack, id, props);
     return provider;
   }
 
@@ -47,12 +46,7 @@ class CRProvider extends CrossRegionSsmWriterProvider {
     this.addToRolePolicy({
       Effect: 'Allow',
       Resource: Lazy.list({ produce: () => Array.from(this.resourceArns) }),
-      Action: [
-        'ssm:DeleteParameters',
-        'ssm:ListTagsForResource',
-        'ssm:GetParameters',
-        'ssm:PutParameter',
-      ],
+      Action: ['ssm:DeleteParameters', 'ssm:ListTagsForResource', 'ssm:GetParameters', 'ssm:PutParameter'],
     });
   }
 
@@ -85,11 +79,7 @@ class CRProvider extends CrossRegionSsmWriterProvider {
  * @internal - this is intentionally not exported from core
  */
 export class ExportWriter extends Construct {
-  public static getOrCreate(
-    scope: Construct,
-    uniqueId: string,
-    props: ExportWriterProps
-  ): ExportWriter {
+  public static getOrCreate(scope: Construct, uniqueId: string, props: ExportWriterProps): ExportWriter {
     const stack = Stack.of(scope);
     const existing = stack.node.tryFindChild(uniqueId);
     return existing
@@ -167,16 +157,9 @@ export class ExportWriter extends Construct {
   /**
    * Add the export to the export reader which is created in the importing stack
    */
-  private addToExportReader(
-    exportName: string,
-    exportValueRef: Intrinsic,
-    importStack: Stack
-  ): Intrinsic {
+  private addToExportReader(exportName: string, exportValueRef: Intrinsic, importStack: Stack): Intrinsic {
     const readerConstructName = makeUniqueId(['ExportsReader']);
-    const exportReader = ExportReader.getOrCreate(
-      importStack.nestedStackParent ?? importStack,
-      readerConstructName
-    );
+    const exportReader = ExportReader.getOrCreate(importStack.nestedStackParent ?? importStack, readerConstructName);
     this.addRegionToPolicy(importStack.region);
 
     return exportReader.importValue(exportName, exportValueRef);

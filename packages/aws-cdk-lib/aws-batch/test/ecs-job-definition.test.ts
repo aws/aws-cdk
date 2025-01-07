@@ -3,7 +3,14 @@ import { Template } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import * as iam from '../../aws-iam';
-import { Compatibility, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
+import {
+  Compatibility,
+  EcsEc2ContainerDefinition,
+  EcsFargateContainerDefinition,
+  EcsJobDefinition,
+  JobQueue,
+  ManagedEc2EcsComputeEnvironment,
+} from '../lib';
 
 test('EcsJobDefinition respects propagateTags', () => {
   // GIVEN
@@ -89,8 +96,11 @@ test('can be imported from ARN', () => {
   const stack = new Stack();
 
   // WHEN
-  const importedJob = EcsJobDefinition.fromJobDefinitionArn(stack, 'importedJobDefinition',
-    'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+  const importedJob = EcsJobDefinition.fromJobDefinitionArn(
+    stack,
+    'importedJobDefinition',
+    'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1'
+  );
 
   // THEN
   expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
@@ -111,10 +121,12 @@ test('JobDefinitionName is parsed from arn', () => {
   });
 
   // THEN
-  expect(Tokenization.resolve(jobDefinition.jobDefinitionName, {
-    scope: stack,
-    resolver: new DefaultTokenResolver(new StringConcat()),
-  })).toEqual({
+  expect(
+    Tokenization.resolve(jobDefinition.jobDefinitionName, {
+      scope: stack,
+      resolver: new DefaultTokenResolver(new StringConcat()),
+    })
+  ).toEqual({
     'Fn::Select': [
       1,
       {
@@ -144,8 +156,11 @@ test('JobDefinitionName is parsed from arn in imported job', () => {
   const stack = new Stack();
 
   // WHEN
-  const importedJob = EcsJobDefinition.fromJobDefinitionArn(stack, 'importedJobDefinition',
-    'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+  const importedJob = EcsJobDefinition.fromJobDefinitionArn(
+    stack,
+    'importedJobDefinition',
+    'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1'
+  );
 
   // THEN
   expect(importedJob.jobDefinitionName).toEqual('job-def-name');
@@ -167,7 +182,7 @@ test('grantSubmitJob() grants the job role the correct actions', () => {
     new ManagedEc2EcsComputeEnvironment(stack, 'env', {
       vpc: new Vpc(stack, 'VPC'),
     }),
-    1,
+    1
   );
 
   const user = new iam.User(stack, 'MyUser');
@@ -178,14 +193,13 @@ test('grantSubmitJob() grants the job role the correct actions', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
-        Action: 'batch:SubmitJob',
-        Effect: 'Allow',
-        Resource: [
-          { Ref: 'ECSJobFFFEA569' },
-          { 'Fn::GetAtt': ['queue276F7297', 'JobQueueArn'] },
-        ],
-      }],
+      Statement: [
+        {
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: [{ Ref: 'ECSJobFFFEA569' }, { 'Fn::GetAtt': ['queue276F7297', 'JobQueueArn'] }],
+        },
+      ],
       Version: '2012-10-17',
     },
     PolicyName: 'MyUserDefaultPolicy7B897426',

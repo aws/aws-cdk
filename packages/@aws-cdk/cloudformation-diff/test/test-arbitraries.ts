@@ -33,9 +33,7 @@ const arbitraryPrincipal = fc.oneof<any>(
   fc.constant('*'),
   fc.record({ AWS: fc.oneof(fc.string(), fc.constant('*')) }),
   fc.record({ Service: fc.string() }),
-  fc
-    .string({ minLength: 1 })
-    .map((svcName) => ({ Service: { 'Fn::Join': ['', [svcName, '.amazonaws.com']] } })),
+  fc.string({ minLength: 1 }).map((svcName) => ({ Service: { 'Fn::Join': ['', [svcName, '.amazonaws.com']] } })),
   fc.record({ Federated: fc.string() })
 );
 const arbitraryCondition = fc.oneof(
@@ -224,12 +222,8 @@ const arbitraryEgress = fc.record({
 });
 
 const arbitrarySecurityGroup = fc.record({
-  SecurityGroupIngress: maybe(
-    maybeIntrinsic(fc.array(maybeIntrinsic(arbitraryIngress), { maxLength: 5 }))
-  ),
-  SecurityGroupEgress: maybe(
-    maybeIntrinsic(fc.array(maybeIntrinsic(arbitraryEgress), { maxLength: 5 }))
-  ),
+  SecurityGroupIngress: maybe(maybeIntrinsic(fc.array(maybeIntrinsic(arbitraryIngress), { maxLength: 5 }))),
+  SecurityGroupEgress: maybe(maybeIntrinsic(fc.array(maybeIntrinsic(arbitraryEgress), { maxLength: 5 }))),
 });
 
 export const arbitraryTemplate = fc

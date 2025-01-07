@@ -1,10 +1,5 @@
 import * as fs from 'fs';
-import {
-  InitBindOptions,
-  InitElementConfig,
-  InitElementType,
-  InitPlatform,
-} from './private/cfn-init-internal';
+import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
@@ -247,13 +242,8 @@ export class InitCommand extends InitElement {
   public _bind(options: InitBindOptions): InitElementConfig {
     const commandKey = this.options.key || `${options.index}`.padStart(3, '0'); // 001, 005, etc.
 
-    if (
-      options.platform !== InitPlatform.WINDOWS &&
-      this.options.waitAfterCompletion !== undefined
-    ) {
-      throw new Error(
-        `Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`
-      );
+    if (options.platform !== InitPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
+      throw new Error(`Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`);
     }
 
     for (const handle of this.options.serviceRestartHandles ?? []) {
@@ -339,11 +329,7 @@ export abstract class InitFile extends InitElement {
   /**
    * Use a literal string as the file content
    */
-  public static fromString(
-    fileName: string,
-    content: string,
-    options: InitFileOptions = {}
-  ): InitFile {
+  public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
     if (!content) {
       throw new Error(
         `InitFile ${fileName}: cannot create empty file. Please supply at least one character of content.`
@@ -377,11 +363,7 @@ export abstract class InitFile extends InitElement {
    *
    * May contain tokens.
    */
-  public static fromObject(
-    fileName: string,
-    obj: Record<string, any>,
-    options: InitFileOptions = {}
-  ): InitFile {
+  public static fromObject(fileName: string, obj: Record<string, any>, options: InitFileOptions = {}): InitFile {
     return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         return {
@@ -453,11 +435,7 @@ export abstract class InitFile extends InitElement {
    *
    * This is appropriate for files that are too large to embed into the template.
    */
-  public static fromAsset(
-    targetFileName: string,
-    path: string,
-    options: InitFileAssetOptions = {}
-  ): InitFile {
+  public static fromAsset(targetFileName: string, path: string, options: InitFileAssetOptions = {}): InitFile {
     return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         // md5 hash uses bindOptions.scope.node.children to get a unique value for each InitFile
@@ -723,48 +701,28 @@ export class InitPackage extends InitElement {
    * Install a package using Yum
    */
   public static yum(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage(
-      'yum',
-      options.version ?? [],
-      packageName,
-      options.serviceRestartHandles
-    );
+    return new InitPackage('yum', options.version ?? [], packageName, options.serviceRestartHandles);
   }
 
   /**
    * Install a package from RubyGems
    */
   public static rubyGem(gemName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage(
-      'rubygems',
-      options.version ?? [],
-      gemName,
-      options.serviceRestartHandles
-    );
+    return new InitPackage('rubygems', options.version ?? [], gemName, options.serviceRestartHandles);
   }
 
   /**
    * Install a package from PyPI
    */
   public static python(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage(
-      'python',
-      options.version ?? [],
-      packageName,
-      options.serviceRestartHandles
-    );
+    return new InitPackage('python', options.version ?? [], packageName, options.serviceRestartHandles);
   }
 
   /**
    * Install a package using APT
    */
   public static apt(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage(
-      'apt',
-      options.version ?? [],
-      packageName,
-      options.serviceRestartHandles
-    );
+    return new InitPackage('apt', options.version ?? [], packageName, options.serviceRestartHandles);
   }
 
   /**
@@ -906,10 +864,7 @@ export class InitService extends InitElement {
    * can use `InitFile` to create exactly the configuration file you need
    * at `/etc/systemd/system/${serviceName}.service`.
    */
-  public static systemdConfigFile(
-    serviceName: string,
-    options: SystemdConfigFileOptions
-  ): InitFile {
+  public static systemdConfigFile(serviceName: string, options: SystemdConfigFileOptions): InitFile {
     if (!options.command.startsWith('/')) {
       throw new Error(`SystemD executables must use an absolute path, got '${options.command}'`);
     }
@@ -928,13 +883,9 @@ export class InitService extends InitElement {
       ...(options.user ? [`User=${options.user}`] : []),
       ...(options.group ? [`Group=${options.user}`] : []),
       ...((options.keepRunning ?? true) ? ['Restart=always'] : []),
-      ...(options.environmentFiles
-        ? options.environmentFiles.map((file) => `EnvironmentFile=${file}`)
-        : []),
+      ...(options.environmentFiles ? options.environmentFiles.map((file) => `EnvironmentFile=${file}`) : []),
       ...(options.environmentVariables
-        ? Object.entries(options.environmentVariables).map(
-            ([key, value]) => `Environment="${key}=${value}"`
-          )
+        ? Object.entries(options.environmentVariables).map(([key, value]) => `Environment="${key}=${value}"`)
         : []),
       '[Install]',
       'WantedBy=multi-user.target',
@@ -996,11 +947,7 @@ export abstract class InitSource extends InitElement {
   /**
    * Retrieve a URL and extract it into the given directory
    */
-  public static fromUrl(
-    targetDirectory: string,
-    url: string,
-    options: InitSourceOptions = {}
-  ): InitSource {
+  public static fromUrl(targetDirectory: string, url: string, options: InitSourceOptions = {}): InitSource {
     return new (class extends InitSource {
       protected _doBind() {
         return {
@@ -1051,11 +998,7 @@ export abstract class InitSource extends InitElement {
   /**
    * Create an InitSource from an asset created from the given path.
    */
-  public static fromAsset(
-    targetDirectory: string,
-    path: string,
-    options: InitSourceAssetOptions = {}
-  ): InitSource {
+  public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
     return new (class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
         // md5 hash uses bindOptions.scope.node.children to get a unique value for each InitFile

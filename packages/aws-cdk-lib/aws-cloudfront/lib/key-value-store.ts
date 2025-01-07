@@ -225,11 +225,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
   /**
    * Import a Key Value Store using its ARN.
    */
-  public static fromKeyValueStoreArn(
-    scope: Construct,
-    id: string,
-    keyValueStoreArn: string
-  ): IKeyValueStore {
+  public static fromKeyValueStoreArn(scope: Construct, id: string, keyValueStoreArn: string): IKeyValueStore {
     const storeId = Arn.split(keyValueStoreArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!storeId) {
       throw new Error(`Invalid Key Value Store Arn: '${keyValueStoreArn}'`);

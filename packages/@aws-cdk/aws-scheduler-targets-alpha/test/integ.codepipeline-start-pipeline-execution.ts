@@ -90,14 +90,10 @@ new scheduler.Schedule(stack, 'Schedule', {
   target: new CodePipelineStartPipelineExecution(pipeline),
 });
 
-const integrationTest = new IntegTest(
-  app,
-  'integrationtest-codepipeline-start-pipeline-execution',
-  {
-    testCases: [stack],
-    stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
-  }
-);
+const integrationTest = new IntegTest(app, 'integrationtest-codepipeline-start-pipeline-execution', {
+  testCases: [stack],
+  stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
+});
 
 const getParameter = integrationTest.assertions.awsApiCall('SSM', 'getParameter', {
   Name: payload.Name,

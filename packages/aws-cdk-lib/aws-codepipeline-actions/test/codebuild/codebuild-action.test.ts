@@ -34,11 +34,13 @@ describe('CodeBuild Action', () => {
           stages: [
             {
               stageName: 'Source',
-              actions: [new cpactions.CodeCommitSourceAction({
-                actionName: 'CodeCommit',
-                repository: codecommit.Repository.fromRepositoryName(pipelineStack, 'Repo', 'repo-name'),
-                output: sourceOutput,
-              })],
+              actions: [
+                new cpactions.CodeCommitSourceAction({
+                  actionName: 'CodeCommit',
+                  repository: codecommit.Repository.fromRepositoryName(pipelineStack, 'Repo', 'repo-name'),
+                  output: sourceOutput,
+                }),
+              ],
             },
           ],
         });
@@ -47,11 +49,13 @@ describe('CodeBuild Action', () => {
         });
 
         // this works fine - no outputs!
-        buildStage.addAction(new cpactions.CodeBuildAction({
-          actionName: 'Build1',
-          input: sourceOutput,
-          project,
-        }));
+        buildStage.addAction(
+          new cpactions.CodeBuildAction({
+            actionName: 'Build1',
+            input: sourceOutput,
+            project,
+          })
+        );
 
         const buildAction2 = new cpactions.CodeBuildAction({
           actionName: 'Build2',
@@ -63,15 +67,17 @@ describe('CodeBuild Action', () => {
         expect(() => {
           buildStage.addAction(buildAction2);
         }).toThrow(/https:\/\/github\.com\/aws\/aws-cdk\/issues\/4169/);
-
       });
     });
 
     test('can be backed by an imported project', () => {
       const stack = new Stack();
 
-      const codeBuildProject = codebuild.PipelineProject.fromProjectName(stack, 'CodeBuild',
-        'codeBuildProjectNameInAnotherAccount');
+      const codeBuildProject = codebuild.PipelineProject.fromProjectName(
+        stack,
+        'CodeBuild',
+        'codeBuildProjectNameInAnotherAccount'
+      );
 
       const sourceOutput = new codepipeline.Artifact();
       new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -101,24 +107,23 @@ describe('CodeBuild Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
+            Name: 'Source',
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'CodeBuild',
-                'Configuration': {
-                  'ProjectName': 'codeBuildProjectNameInAnotherAccount',
+                Name: 'CodeBuild',
+                Configuration: {
+                  ProjectName: 'codeBuildProjectNameInAnotherAccount',
                 },
               },
             ],
           },
         ],
       });
-
     });
 
     test('exposes variables for other actions to consume', () => {
@@ -132,15 +137,11 @@ describe('CodeBuild Action', () => {
           buildSpec: codebuild.BuildSpec.fromObject({
             version: '0.2',
             env: {
-              'exported-variables': [
-                'SomeVar',
-              ],
+              'exported-variables': ['SomeVar'],
             },
             phases: {
               build: {
-                commands: [
-                  'export SomeVar="Some Value"',
-                ],
+                commands: ['export SomeVar="Some Value"'],
               },
             },
           }),
@@ -175,28 +176,27 @@ describe('CodeBuild Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
+            Name: 'Source',
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'CodeBuild',
-                'Namespace': 'Build_CodeBuild_NS',
+                Name: 'CodeBuild',
+                Namespace: 'Build_CodeBuild_NS',
               },
               {
-                'Name': 'Approve',
-                'Configuration': {
-                  'CustomData': '#{Build_CodeBuild_NS.SomeVar}',
+                Name: 'Approve',
+                Configuration: {
+                  CustomData: '#{Build_CodeBuild_NS.SomeVar}',
                 },
               },
             ],
           },
         ],
       });
-
     });
 
     test('sets the BatchEnabled configuration', () => {
@@ -233,24 +233,23 @@ describe('CodeBuild Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
+            Name: 'Source',
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'CodeBuild',
-                'Configuration': {
-                  'BatchEnabled': 'true',
+                Name: 'CodeBuild',
+                Configuration: {
+                  BatchEnabled: 'true',
                 },
               },
             ],
           },
         ],
       });
-
     });
 
     test('sets the CombineArtifacts configuration', () => {
@@ -288,25 +287,24 @@ describe('CodeBuild Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
+            Name: 'Source',
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'CodeBuild',
-                'Configuration': {
-                  'BatchEnabled': 'true',
-                  'CombineArtifacts': 'true',
+                Name: 'CodeBuild',
+                Configuration: {
+                  BatchEnabled: 'true',
+                  CombineArtifacts: 'true',
                 },
               },
             ],
           },
         ],
       });
-
     });
 
     describe('environment variables', () => {
@@ -318,13 +316,15 @@ describe('CodeBuild Action', () => {
           stages: [
             {
               stageName: 'Source',
-              actions: [new cpactions.CodeCommitSourceAction({
-                actionName: 'source',
-                repository: new codecommit.Repository(stack, 'CodeCommitRepo', {
-                  repositoryName: 'my-repo',
+              actions: [
+                new cpactions.CodeCommitSourceAction({
+                  actionName: 'source',
+                  repository: new codecommit.Repository(stack, 'CodeCommitRepo', {
+                    repositoryName: 'my-repo',
+                  }),
+                  output: sourceOutput,
                 }),
-                output: sourceOutput,
-              })],
+              ],
             },
           ],
         });
@@ -338,7 +338,7 @@ describe('CodeBuild Action', () => {
           project: codeBuildProject,
           input: sourceOutput,
           environmentVariables: {
-            'X': {
+            X: {
               value: SecretValue.secretsManager('my-secret'),
             },
           },
@@ -347,7 +347,6 @@ describe('CodeBuild Action', () => {
         expect(() => {
           buildStage.addAction(buildAction);
         }).toThrow(/Plaintext environment variable 'X' contains a secret value!/);
-
       });
 
       test("should allow opting out of the 'secret value in a plaintext variable' validation", () => {
@@ -358,31 +357,34 @@ describe('CodeBuild Action', () => {
           stages: [
             {
               stageName: 'Source',
-              actions: [new cpactions.CodeCommitSourceAction({
-                actionName: 'source',
-                repository: new codecommit.Repository(stack, 'CodeCommitRepo', {
-                  repositoryName: 'my-repo',
+              actions: [
+                new cpactions.CodeCommitSourceAction({
+                  actionName: 'source',
+                  repository: new codecommit.Repository(stack, 'CodeCommitRepo', {
+                    repositoryName: 'my-repo',
+                  }),
+                  output: sourceOutput,
                 }),
-                output: sourceOutput,
-              })],
+              ],
             },
             {
               stageName: 'Build',
-              actions: [new cpactions.CodeBuildAction({
-                actionName: 'build',
-                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
-                input: sourceOutput,
-                environmentVariables: {
-                  'X': {
-                    value: SecretValue.secretsManager('my-secret'),
+              actions: [
+                new cpactions.CodeBuildAction({
+                  actionName: 'build',
+                  project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                  input: sourceOutput,
+                  environmentVariables: {
+                    X: {
+                      value: SecretValue.secretsManager('my-secret'),
+                    },
                   },
-                },
-                checkSecretsInPlainTextEnvVariables: false,
-              })],
+                  checkSecretsInPlainTextEnvVariables: false,
+                }),
+              ],
             },
           ],
         });
-
       });
     });
   });

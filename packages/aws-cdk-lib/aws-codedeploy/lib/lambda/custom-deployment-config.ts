@@ -1,11 +1,7 @@
 import { Construct } from 'constructs';
 import { ILambdaDeploymentConfig } from './deployment-config';
 import { Duration, Names, Resource } from '../../../core';
-import {
-  AwsCustomResource,
-  AwsCustomResourcePolicy,
-  PhysicalResourceId,
-} from '../../../custom-resources';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
 import { arnForDeploymentConfig, validateName } from '../private/utils';
 
 /**

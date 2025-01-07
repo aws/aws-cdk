@@ -31,9 +31,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
       TableName: tableName,
     });
     console.log('Describe table: %j', describeTableResult);
-    const replicaExists = describeTableResult.Table?.Replicas?.some(
-      (replica) => replica.RegionName === region
-    );
+    const replicaExists = describeTableResult.Table?.Replicas?.some((replica) => replica.RegionName === region);
     updateTableAction = replicaExists ? undefined : 'Create';
   }
 
@@ -72,8 +70,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
   const replicas = data.Table?.Replicas ?? [];
   const regionReplica = replicas.find((r) => r.RegionName === event.ResourceProperties.Region);
   const replicaActive = regionReplica?.ReplicaStatus === 'ACTIVE';
-  const skipReplicationCompletedWait =
-    event.ResourceProperties.SkipReplicationCompletedWait === 'true';
+  const skipReplicationCompletedWait = event.ResourceProperties.SkipReplicationCompletedWait === 'true';
 
   switch (event.RequestType) {
     case 'Create':

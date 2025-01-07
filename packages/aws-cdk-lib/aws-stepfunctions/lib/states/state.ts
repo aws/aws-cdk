@@ -3,15 +3,7 @@ import { Token } from '../../../core';
 import { Condition } from '../condition';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import {
-  CatchProps,
-  Errors,
-  IChainable,
-  INextable,
-  ProcessorConfig,
-  ProcessorMode,
-  RetryProps,
-} from '../types';
+import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
 
 /**
  * Properties shared by all states
@@ -456,9 +448,7 @@ export abstract class State extends Construct implements IChainable {
   protected renderRetryCatch(): any {
     return {
       Retry: renderList(this.retries, renderRetry, (a, b) => compareErrors(a.errors, b.errors)),
-      Catch: renderList(this.catches, renderCatch, (a, b) =>
-        compareErrors(a.props.errors, b.props.errors)
-      ),
+      Catch: renderList(this.catches, renderCatch, (a, b) => compareErrors(a.props.errors, b.props.errors)),
     };
   }
 

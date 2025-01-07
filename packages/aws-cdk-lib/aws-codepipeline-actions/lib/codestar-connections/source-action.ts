@@ -148,10 +148,7 @@ export class CodeStarConnectionsSourceAction extends Action {
     // save the connectionArn in the Artifact instance
     // to be read by the CodeBuildAction later
     if (this.props.codeBuildCloneOutput === true) {
-      this.props.output.setMetadata(
-        CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY,
-        this.props.connectionArn
-      );
+      this.props.output.setMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY, this.props.connectionArn);
     }
 
     return {
@@ -159,8 +156,7 @@ export class CodeStarConnectionsSourceAction extends Action {
         ConnectionArn: this.props.connectionArn,
         FullRepositoryId: `${this.props.owner}/${this.props.repo}`,
         BranchName: this.props.branch ?? 'master',
-        OutputArtifactFormat:
-          this.props.codeBuildCloneOutput === true ? 'CODEBUILD_CLONE_REF' : undefined,
+        OutputArtifactFormat: this.props.codeBuildCloneOutput === true ? 'CODEBUILD_CLONE_REF' : undefined,
         DetectChanges: this.props.triggerOnPush,
       },
     };

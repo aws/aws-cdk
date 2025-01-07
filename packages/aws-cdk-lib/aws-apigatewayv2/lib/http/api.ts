@@ -357,11 +357,7 @@ export class HttpApi extends HttpApiBase {
   /**
    * Import an existing HTTP API into this CDK app.
    */
-  public static fromHttpApiAttributes(
-    scope: Construct,
-    id: string,
-    attrs: HttpApiAttributes
-  ): IHttpApi {
+  public static fromHttpApiAttributes(scope: Construct, id: string, attrs: HttpApiAttributes): IHttpApi {
     class Import extends HttpApiBase {
       public readonly apiId = attrs.httpApiId;
       public readonly httpApiId = attrs.httpApiId;
@@ -422,12 +418,9 @@ export class HttpApi extends HttpApiBase {
     if (props?.corsPreflight) {
       const cors = props.corsPreflight;
       if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
-        throw new Error(
-          "CORS preflight - allowCredentials is not supported when allowOrigin is '*'"
-        );
+        throw new Error("CORS preflight - allowCredentials is not supported when allowOrigin is '*'");
       }
-      const { allowCredentials, allowHeaders, allowMethods, allowOrigins, exposeHeaders, maxAge } =
-        props.corsPreflight;
+      const { allowCredentials, allowHeaders, allowMethods, allowOrigins, exposeHeaders, maxAge } = props.corsPreflight;
       corsConfiguration = {
         allowCredentials,
         allowHeaders,
@@ -444,9 +437,7 @@ export class HttpApi extends HttpApiBase {
       corsConfiguration,
       description: props?.description,
       disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
-      routeSelectionExpression: props?.routeSelectionExpression
-        ? '${request.method} ${request.path}'
-        : undefined,
+      routeSelectionExpression: props?.routeSelectionExpression ? '${request.method} ${request.path}' : undefined,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
@@ -489,9 +480,7 @@ export class HttpApi extends HttpApiBase {
    */
   public get apiEndpoint(): string {
     if (this.disableExecuteApiEndpoint) {
-      throw new Error(
-        'apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.'
-      );
+      throw new Error('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.');
     }
     return this._apiEndpoint;
   }

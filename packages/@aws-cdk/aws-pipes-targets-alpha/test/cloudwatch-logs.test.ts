@@ -1,4 +1,3 @@
-
 import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { App, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -25,10 +24,7 @@ describe('CloudWatch Logs', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyLogGroup5C0DAD85',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
       },
       TargetParameters: {},
     });
@@ -162,10 +158,7 @@ describe('CloudWatch Logs source parameters validation', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyLogGroup5C0DAD85',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
       },
       TargetParameters: {
         CloudWatchLogsParameters: {
@@ -222,10 +215,7 @@ describe('CloudWatch Logs source parameters validation', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyLogGroup5C0DAD85',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
       },
       TargetParameters: {
         CloudWatchLogsParameters: {

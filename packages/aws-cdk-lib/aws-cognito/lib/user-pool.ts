@@ -9,28 +9,10 @@ import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
 import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
-import {
-  Grant,
-  IGrantable,
-  IRole,
-  PolicyDocument,
-  PolicyStatement,
-  Role,
-  ServicePrincipal,
-} from '../../aws-iam';
+import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import {
-  ArnFormat,
-  Duration,
-  IResource,
-  Lazy,
-  Names,
-  RemovalPolicy,
-  Resource,
-  Stack,
-  Token,
-} from '../../core';
+import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -261,9 +243,7 @@ export class UserPoolOperation {
    * Add or remove attributes in Id tokens
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
    */
-  public static readonly PRE_TOKEN_GENERATION_CONFIG = new UserPoolOperation(
-    'preTokenGenerationConfig'
-  );
+  public static readonly PRE_TOKEN_GENERATION_CONFIG = new UserPoolOperation('preTokenGenerationConfig');
 
   /**
    * Migrate a user from an existing user directory to user pools
@@ -275,9 +255,7 @@ export class UserPoolOperation {
    * Determines if a response is correct in a custom auth flow
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    */
-  public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new UserPoolOperation(
-    'verifyAuthChallengeResponse'
-  );
+  public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new UserPoolOperation('verifyAuthChallengeResponse');
 
   /**
    * Amazon Cognito invokes this trigger to send email notifications to users.
@@ -892,10 +870,7 @@ abstract class UserPoolBase extends Resource implements IUserPool {
     });
   }
 
-  public addResourceServer(
-    id: string,
-    options: UserPoolResourceServerOptions
-  ): UserPoolResourceServer {
+  public addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer {
     return new UserPoolResourceServer(this, id, {
       userPool: this,
       ...options,
@@ -1012,9 +987,7 @@ export class UserPool extends UserPoolBase {
           case 'customSmsSender':
           case 'customEmailSender':
             if (!this.triggers.kmsKeyId) {
-              throw new Error(
-                'you must specify a KMS key if you are using customSmsSender or customEmailSender.'
-              );
+              throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
             }
             trigger = props.lambdaTriggers[t];
             const version = 'V1_0';
@@ -1075,9 +1048,7 @@ export class UserPool extends UserPoolBase {
       props.advancedSecurityMode &&
       props.advancedSecurityMode !== AdvancedSecurityMode.OFF
     ) {
-      throw new Error(
-        'you cannot enable Advanced Security Mode when feature plan is Essentials or higher.'
-      );
+      throw new Error('you cannot enable Advanced Security Mode when feature plan is Essentials or higher.');
     }
 
     const userPool = new CfnUserPool(this, 'Resource', {
@@ -1123,21 +1094,12 @@ export class UserPool extends UserPoolBase {
    * Add a lambda trigger to a user pool operation
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    */
-  public addTrigger(
-    operation: UserPoolOperation,
-    fn: lambda.IFunction,
-    lambdaVersion?: LambdaVersion
-  ): void {
+  public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction, lambdaVersion?: LambdaVersion): void {
     if (operation.operationName in this.triggers) {
       throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
     }
-    if (
-      operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG &&
-      lambdaVersion === LambdaVersion.V2_0
-    ) {
-      throw new Error(
-        'Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version.'
-      );
+    if (operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG && lambdaVersion === LambdaVersion.V2_0) {
+      throw new Error('Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version.');
     }
 
     this.addLambdaPermission(fn, operation.operationName);
@@ -1145,9 +1107,7 @@ export class UserPool extends UserPoolBase {
       case 'customEmailSender':
       case 'customSmsSender':
         if (!this.triggers.kmsKeyId) {
-          throw new Error(
-            'you must specify a KMS key if you are using customSmsSender or customEmailSender.'
-          );
+          throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
         }
         (this.triggers as any)[operation.operationName] = {
           lambdaArn: fn.functionArn,
@@ -1185,18 +1145,14 @@ export class UserPool extends UserPoolBase {
       }
 
       if (message.length > MAX_LENGTH) {
-        throw new Error(
-          `MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`
-        );
+        throw new Error(`MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`);
       }
     }
 
     return message;
   }
 
-  private verificationMessageConfiguration(
-    props: UserPoolProps
-  ): CfnUserPool.VerificationMessageTemplateProperty {
+  private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
     const CODE_TEMPLATE = '{####}';
     const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
     /**
@@ -1208,17 +1164,13 @@ export class UserPool extends UserPoolBase {
     const emailStyle = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
     const emailSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
     const smsMessage =
-      props.userVerification?.smsMessage ??
-      `The verification code to your new account is ${CODE_TEMPLATE}`;
+      props.userVerification?.smsMessage ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
 
     if (emailStyle === VerificationEmailStyle.CODE) {
       const emailMessage =
-        props.userVerification?.emailBody ??
-        `The verification code to your new account is ${CODE_TEMPLATE}`;
+        props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
       if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(CODE_TEMPLATE) < 0) {
-        throw new Error(
-          `Verification email body must contain the template string '${CODE_TEMPLATE}'`
-        );
+        throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
       }
       if (!Token.isUnresolved(smsMessage) && smsMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`SMS message must contain the template string '${CODE_TEMPLATE}'`);
@@ -1231,12 +1183,9 @@ export class UserPool extends UserPoolBase {
       };
     } else {
       const emailMessage =
-        props.userVerification?.emailBody ??
-        `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
+        props.userVerification?.emailBody ?? `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
       if (!Token.isUnresolved(emailMessage) && !VERIFY_EMAIL_REGEX.test(emailMessage)) {
-        throw new Error(
-          `Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`
-        );
+        throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
       return {
         defaultEmailOption: VerificationEmailStyle.LINK,
@@ -1321,8 +1270,7 @@ export class UserPool extends UserPoolBase {
     }
 
     const mfaConfiguration = this.mfaConfiguration(props);
-    const phoneVerification =
-      props.signInAliases?.phone === true || props.autoVerify?.phone === true;
+    const phoneVerification = props.signInAliases?.phone === true || props.autoVerify?.phone === true;
     const roleRequired = mfaConfiguration?.includes('SMS_MFA') || phoneVerification;
     if (!roleRequired && props.enableSmsRole === undefined) {
       return undefined;
@@ -1364,10 +1312,7 @@ export class UserPool extends UserPoolBase {
     if (props.mfa === undefined || props.mfa === Mfa.OFF) {
       // since default is OFF, treat undefined and OFF the same way
       return undefined;
-    } else if (
-      props.mfaSecondFactor === undefined &&
-      (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)
-    ) {
+    } else if (props.mfaSecondFactor === undefined && (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
       return ['SMS_MFA'];
     } else {
       const enabledMfas = [];
@@ -1385,14 +1330,9 @@ export class UserPool extends UserPoolBase {
     }
   }
 
-  private configurePasswordPolicy(
-    props: UserPoolProps
-  ): CfnUserPool.PasswordPolicyProperty | undefined {
+  private configurePasswordPolicy(props: UserPoolProps): CfnUserPool.PasswordPolicyProperty | undefined {
     const tempPasswordValidity = props.passwordPolicy?.tempPasswordValidity;
-    if (
-      tempPasswordValidity !== undefined &&
-      tempPasswordValidity.toDays() > Duration.days(365).toDays()
-    ) {
+    if (tempPasswordValidity !== undefined && tempPasswordValidity.toDays() > Duration.days(365).toDays()) {
       throw new Error(
         `tempPasswordValidity cannot be greater than 365 days (received: ${tempPasswordValidity.toDays()})`
       );
@@ -1411,16 +1351,12 @@ export class UserPool extends UserPoolBase {
     });
   }
 
-  private schemaConfiguration(
-    props: UserPoolProps
-  ): CfnUserPool.SchemaAttributeProperty[] | undefined {
+  private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
     if (props.standardAttributes) {
       const stdAttributes = (
-        Object.entries(props.standardAttributes) as Array<
-          [keyof StandardAttributes, StandardAttribute]
-        >
+        Object.entries(props.standardAttributes) as Array<[keyof StandardAttributes, StandardAttribute]>
       )
         .filter(([, attr]) => !!attr)
         .map(([attrName, attr]) => ({
@@ -1461,9 +1397,7 @@ export class UserPool extends UserPoolBase {
     return schema;
   }
 
-  private accountRecovery(
-    props: UserPoolProps
-  ): undefined | CfnUserPool.AccountRecoverySettingProperty {
+  private accountRecovery(props: UserPoolProps): undefined | CfnUserPool.AccountRecoverySettingProperty {
     const accountRecovery = props.accountRecovery ?? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL;
     switch (accountRecovery) {
       case AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA:
@@ -1523,9 +1457,7 @@ export class UserPool extends UserPoolBase {
 
   private validateEmailMfa(props: UserPoolProps) {
     if (props.email === undefined || this.emailConfiguration?.emailSendingAccount !== 'DEVELOPER') {
-      throw new Error(
-        'To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.'
-      );
+      throw new Error('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
     }
 
     if (
@@ -1547,9 +1479,7 @@ function encodePuny(input: string | undefined): string | undefined {
   return input !== undefined ? punycodeEncode(input) : input;
 }
 
-function defaultDeletionProtection(
-  deletionProtection?: boolean
-): 'ACTIVE' | 'INACTIVE' | undefined {
+function defaultDeletionProtection(deletionProtection?: boolean): 'ACTIVE' | 'INACTIVE' | undefined {
   if (deletionProtection === true) {
     return 'ACTIVE';
   }

@@ -106,9 +106,7 @@ export class Intrinsic implements IResolvable {
    * @param message Error message
    */
   protected newError(message: string): any {
-    return new Error(
-      `${message}\nToken created:\n    at ${this.creationStack.join('\n    at ')}\nError thrown:`
-    );
+    return new Error(`${message}\nToken created:\n    at ${this.creationStack.join('\n    at ')}\nError thrown:`);
   }
 }
 

@@ -132,9 +132,7 @@ test('does nothing on update event when the old resource properties are absent',
 test('deletes all objects when the name changes on update event', async () => {
   // GIVEN
   mockECRClient.describeRepositories.mockReturnValue({
-    repositories: [
-      { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
-    ],
+    repositories: [{ repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' }],
   });
 
   mockECRClient.listImages.mockReturnValue({
@@ -188,7 +186,8 @@ test('deletes no images on delete event when repository has no images', async ()
 });
 
 test('deletes all images on delete event', async () => {
-  mockECRClient.listImages.mockResolvedValue({ // listedImages() call
+  mockECRClient.listImages.mockResolvedValue({
+    // listedImages() call
     imageIds: [
       {
         imageTag: 'tag1',
@@ -233,7 +232,8 @@ test('deletes all images on delete event', async () => {
 test('does not empty repository if it is not tagged', async () => {
   // GIVEN
   givenNotTaggedForDeletion();
-  mockECRClient.listImages.mockResolvedValue({ // listedImages() call
+  mockECRClient.listImages.mockResolvedValue({
+    // listedImages() call
     imageIds: [
       {
         imageTag: 'tag1',
@@ -263,9 +263,7 @@ test('does not empty repository if it is not tagged', async () => {
 test('delete event where repo has many images does recurse appropriately', async () => {
   // GIVEN
   mockECRClient.describeRepositories.mockReturnValue({
-    repositories: [
-      { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
-    ],
+    repositories: [{ repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' }],
   });
 
   mockECRClient.listImages // listedImages() call
@@ -283,7 +281,8 @@ test('delete event where repo has many images does recurse appropriately', async
       nextToken: 'token1',
     });
   mockECRClient.batchDeleteImage.mockResolvedValueOnce(undefined); // batchDeleteImage() call
-  mockECRClient.listImages.mockResolvedValueOnce({ // listedImages() call
+  mockECRClient.listImages.mockResolvedValueOnce({
+    // listedImages() call
     imageIds: [
       {
         imageTag: 'tag3',
@@ -347,9 +346,7 @@ test('does nothing when the repository does not exist', async () => {
   });
 
   mockECRClient.describeRepositories.mockReturnValue({
-    repositories: [
-      { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
-    ],
+    repositories: [{ repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' }],
   });
 
   // WHEN
@@ -368,9 +365,7 @@ test('does nothing when the repository does not exist', async () => {
 test('delete event where repo has tagged images and untagged images', async () => {
   // GIVEN
   mockECRClient.describeRepositories.mockReturnValue({
-    repositories: [
-      { repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' },
-    ],
+    repositories: [{ repositoryArn: 'RepositoryArn', respositoryName: 'MyRepo' }],
   });
 
   mockECRClient.listImages // listedImages() call

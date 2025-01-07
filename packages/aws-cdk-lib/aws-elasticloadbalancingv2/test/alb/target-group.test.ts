@@ -85,7 +85,8 @@ describe('tests', () => {
 
     // WHEN
     const tg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
-      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
+      targetGroupArn:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
     });
     tg.addTarget(new FakeSelfRegisteringTarget(stack, 'Target', vpc));
   });
@@ -95,7 +96,8 @@ describe('tests', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const tg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
-      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
+      targetGroupArn:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
     });
 
     // WHEN
@@ -147,22 +149,22 @@ describe('tests', () => {
     });
   });
 
-  test.each([
-    elbv2.TargetGroupIpAddressType.IPV4,
-    elbv2.TargetGroupIpAddressType.IPV6,
-  ])('configure IP address type %s', (ipAddressType) => {
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
+  test.each([elbv2.TargetGroupIpAddressType.IPV4, elbv2.TargetGroupIpAddressType.IPV6])(
+    'configure IP address type %s',
+    (ipAddressType) => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    new elbv2.ApplicationTargetGroup(stack, 'Group', {
-      vpc,
-      ipAddressType,
-    });
+      new elbv2.ApplicationTargetGroup(stack, 'Group', {
+        vpc,
+        ipAddressType,
+      });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      IpAddressType: ipAddressType,
-    });
-  });
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        IpAddressType: ipAddressType,
+      });
+    }
+  );
 
   test('Load balancer duration cookie stickiness', () => {
     // GIVEN
@@ -299,7 +301,8 @@ describe('tests', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
-    const errMessage = 'App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer';
+    const errMessage =
+      "App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer";
 
     // THEN
     ['AWSALBCookieName', 'AWSALBstickinessCookieName', 'AWSALBTGCookieName'].forEach((badCookieName, i) => {
@@ -407,7 +410,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS]`);
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
     'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s',
@@ -429,7 +433,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS]`);
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
     'Does not throw validation error, when `healthCheck` has `protocol` set to %s',
@@ -451,7 +456,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).not.toThrow();
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
     'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s',
@@ -473,7 +479,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).not.toThrow();
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
     'Throws validation error, when `healthCheck` has `protocol` set to %s and `interval` is equal to `timeout`',
@@ -497,7 +504,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 1 minute');
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
     'Throws validation error, when `healthCheck` has `protocol` set to %s and `interval` is smaller than `timeout`',
@@ -521,7 +529,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minutes');
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
     'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is equal to `timeout`',
@@ -545,7 +554,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 1 minute');
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
     'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is smaller than `timeout`',
@@ -569,7 +579,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minutes');
-    });
+    }
+  );
 
   test('Throws validation error, when `configureHealthCheck()`protocol is undefined and `interval` is smaller than `timeout`', () => {
     // GIVEN
@@ -638,7 +649,8 @@ describe('tests', () => {
 
     // WHEN
     const importedTg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
-      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
+      targetGroupArn:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
     });
 
     // THEN
@@ -699,8 +711,10 @@ describe('tests', () => {
 
     // WHEN
     const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
-      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
-      loadBalancerArns: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/73e2d6bc24d8a067',
+      targetGroupArn:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+      loadBalancerArns:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/73e2d6bc24d8a067',
     });
 
     const metric = targetGroup.metrics.custom('MetricName');
@@ -720,7 +734,8 @@ describe('tests', () => {
 
     // WHEN
     const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
-      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+      targetGroupArn:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
     });
 
     expect(() => targetGroup.metrics.custom('MetricName')).toThrow();
@@ -798,11 +813,13 @@ describe('tests', () => {
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
-      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
-        slowStart: cdk.Duration.seconds(60),
-        vpc,
-      }),
+      expect(
+        () =>
+          new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+            loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+            slowStart: cdk.Duration.seconds(60),
+            vpc,
+          })
       ).toThrow('The weighted random routing algorithm can not be used with slow start mode.');
     });
 
@@ -813,12 +830,16 @@ describe('tests', () => {
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
-      expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN,
-        enableAnomalyMitigation: true,
-        vpc,
-      }),
-      ).toThrow('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
+      expect(
+        () =>
+          new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+            loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN,
+            enableAnomalyMitigation: true,
+            vpc,
+          })
+      ).toThrow(
+        'Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.'
+      );
     });
   });
 

@@ -1,10 +1,4 @@
-import {
-  CfnVPC,
-  CfnVPCCidrBlock,
-  DefaultInstanceTenancy,
-  ISubnet,
-  SubnetType,
-} from 'aws-cdk-lib/aws-ec2';
+import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Arn, CfnResource, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
@@ -335,40 +329,23 @@ export class VpcV2 extends VpcV2Base {
               subnet.subnetType === SubnetType.PRIVATE
             ) {
               this.privateSubnets.push(
-                SubnetV2.fromSubnetV2Attributes(
-                  scope,
-                  subnet.subnetName ?? 'ImportedPrivateSubnet',
-                  subnet
-                )
+                SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName ?? 'ImportedPrivateSubnet', subnet)
               );
             } else if (subnet.subnetType === SubnetType.PUBLIC) {
               this.publicSubnets.push(
-                SubnetV2.fromSubnetV2Attributes(
-                  scope,
-                  subnet.subnetName ?? 'ImportedPublicSubnet',
-                  subnet
-                )
+                SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName ?? 'ImportedPublicSubnet', subnet)
               );
-            } else if (
-              subnet.subnetType === SubnetType.ISOLATED ||
-              subnet.subnetType === SubnetType.PRIVATE_ISOLATED
-            ) {
+            } else if (subnet.subnetType === SubnetType.ISOLATED || subnet.subnetType === SubnetType.PRIVATE_ISOLATED) {
               this.isolatedSubnets.push(
-                SubnetV2.fromSubnetV2Attributes(
-                  scope,
-                  subnet.subnetName ?? 'ImportedIsolatedSubnet',
-                  subnet
-                )
+                SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName ?? 'ImportedIsolatedSubnet', subnet)
               );
             }
           }
         }
         this.secondaryCidrBlock = props.secondaryCidrBlocks?.map((cidrBlock) =>
-          VPCCidrBlock.fromVPCCidrBlockattributes(
-            scope,
-            cidrBlock.cidrBlockName ?? 'ImportedSecondaryCidrBlock',
-            { ...cidrBlock }
-          )
+          VPCCidrBlock.fromVPCCidrBlockattributes(scope, cidrBlock.cidrBlockName ?? 'ImportedSecondaryCidrBlock', {
+            ...cidrBlock,
+          })
         );
         if (props.secondaryCidrBlocks) {
           for (const cidrBlock of props.secondaryCidrBlocks) {
@@ -487,8 +464,7 @@ export class VpcV2 extends VpcV2Base {
       physicalName:
         props.vpcName ??
         Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
         }),
     });
     this.vpcName = props.vpcName;
@@ -540,10 +516,7 @@ export class VpcV2 extends VpcV2Base {
         }
         //validate CIDR ranges per RFC 1918
         if (secondaryVpcOptions.ipv4CidrBlock!) {
-          const ret = validateIpv4address(
-            secondaryVpcOptions.ipv4CidrBlock,
-            this.resource.cidrBlock
-          );
+          const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
           if (ret === false) {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
@@ -775,11 +748,7 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
   /**
    * Import an existing VPC CIDR Block
    */
-  public static fromVPCCidrBlockattributes(
-    scope: Construct,
-    id: string,
-    props: VPCCidrBlockattributes
-  ): IVPCCidrBlock {
+  public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockattributes): IVPCCidrBlock {
     class Import extends Resource implements IVPCCidrBlock {
       public readonly cidrBlock = props.cidrBlock;
       public readonly amazonProvidedIpv6CidrBlock?: boolean = props.amazonProvidedIpv6CidrBlock;

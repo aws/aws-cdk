@@ -6,13 +6,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'integ-apprunner-observability-configuration');
 
-const observabilityConfiguration = new ObservabilityConfiguration(
-  stack,
-  'ObservabilityConfiguration',
-  {
-    traceConfigurationVendor: TraceConfigurationVendor.AWSXRAY,
-  }
-);
+const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
+  traceConfigurationVendor: TraceConfigurationVendor.AWSXRAY,
+});
 
 const service = new Service(stack, 'Service', {
   serviceName: 'service',

@@ -31,34 +31,22 @@ test('create a domain', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     AppId: {
-      'Fn::GetAtt': [
-        'AppF1B96344',
-        'AppId',
-      ],
+      'Fn::GetAtt': ['AppF1B96344', 'AppId'],
     },
     DomainName: 'amazon.com',
     SubDomainSettings: [
       {
         BranchName: {
-          'Fn::GetAtt': [
-            'AppmainF505BAED',
-            'BranchName',
-          ],
+          'Fn::GetAtt': ['AppmainF505BAED', 'BranchName'],
         },
         Prefix: 'prod',
       },
       {
         BranchName: {
-          'Fn::GetAtt': [
-            'AppdevB328DAFC',
-            'BranchName',
-          ],
+          'Fn::GetAtt': ['AppdevB328DAFC', 'BranchName'],
         },
         Prefix: {
-          'Fn::GetAtt': [
-            'AppdevB328DAFC',
-            'BranchName',
-          ],
+          'Fn::GetAtt': ['AppdevB328DAFC', 'BranchName'],
         },
       },
     ],
@@ -97,10 +85,7 @@ test('create a domain with custom certificate', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     AppId: {
-      'Fn::GetAtt': [
-        'AppF1B96344',
-        'AppId',
-      ],
+      'Fn::GetAtt': ['AppF1B96344', 'AppId'],
     },
     DomainName: 'example.com',
     CertificateSettings: {
@@ -112,25 +97,16 @@ test('create a domain with custom certificate', () => {
     SubDomainSettings: [
       {
         BranchName: {
-          'Fn::GetAtt': [
-            'AppmainF505BAED',
-            'BranchName',
-          ],
+          'Fn::GetAtt': ['AppmainF505BAED', 'BranchName'],
         },
         Prefix: 'prod',
       },
       {
         BranchName: {
-          'Fn::GetAtt': [
-            'AppdevB328DAFC',
-            'BranchName',
-          ],
+          'Fn::GetAtt': ['AppdevB328DAFC', 'BranchName'],
         },
         Prefix: {
-          'Fn::GetAtt': [
-            'AppdevB328DAFC',
-            'BranchName',
-          ],
+          'Fn::GetAtt': ['AppdevB328DAFC', 'BranchName'],
         },
       },
     ],
@@ -156,19 +132,13 @@ test('map a branch to the domain root', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     AppId: {
-      'Fn::GetAtt': [
-        'AppF1B96344',
-        'AppId',
-      ],
+      'Fn::GetAtt': ['AppF1B96344', 'AppId'],
     },
     DomainName: 'amazon.com',
     SubDomainSettings: [
       {
         BranchName: {
-          'Fn::GetAtt': [
-            'AppmainF505BAED',
-            'BranchName',
-          ],
+          'Fn::GetAtt': ['AppmainF505BAED', 'BranchName'],
         },
         Prefix: '',
       },
@@ -187,43 +157,45 @@ test('throw error for invalid domain name length', () => {
   });
   const prodBranch = app.addBranch('main');
 
-  expect(() => app.addDomain('Domain', {
-    subDomains: [
-      {
-        branch: prodBranch,
-        prefix: 'prod',
-      },
-    ],
-    domainName: 'a'.repeat(256),
-  })).toThrow('Domain name must be 255 characters or less, got: 256 characters.');
+  expect(() =>
+    app.addDomain('Domain', {
+      subDomains: [
+        {
+          branch: prodBranch,
+          prefix: 'prod',
+        },
+      ],
+      domainName: 'a'.repeat(256),
+    })
+  ).toThrow('Domain name must be 255 characters or less, got: 256 characters.');
 });
 
-test.each([
-  '-example.com',
-  'example..com',
-  'example.com-',
-  'ex@mple.com',
-])('throw error for invalid domain name', (domainName) => {
-  const stack = new Stack();
-  const app = new amplify.App(stack, 'App', {
-    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
-      owner: 'aws',
-      repository: 'aws-cdk',
-      oauthToken: SecretValue.unsafePlainText('secret'),
-    }),
-  });
-  const prodBranch = app.addBranch('main');
+test.each(['-example.com', 'example..com', 'example.com-', 'ex@mple.com'])(
+  'throw error for invalid domain name',
+  (domainName) => {
+    const stack = new Stack();
+    const app = new amplify.App(stack, 'App', {
+      sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+        owner: 'aws',
+        repository: 'aws-cdk',
+        oauthToken: SecretValue.unsafePlainText('secret'),
+      }),
+    });
+    const prodBranch = app.addBranch('main');
 
-  expect(() => app.addDomain('Domain', {
-    subDomains: [
-      {
-        branch: prodBranch,
-        prefix: 'prod',
-      },
-    ],
-    domainName,
-  })).toThrow(`Domain name must be a valid hostname, got: ${domainName}.`);
-});
+    expect(() =>
+      app.addDomain('Domain', {
+        subDomains: [
+          {
+            branch: prodBranch,
+            prefix: 'prod',
+          },
+        ],
+        domainName,
+      })
+    ).toThrow(`Domain name must be a valid hostname, got: ${domainName}.`);
+  }
+);
 
 test('throws at synthesis without subdomains', () => {
   // GIVEN
@@ -265,15 +237,9 @@ test('auto subdomain all branches', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
-    AutoSubDomainCreationPatterns: [
-      '*',
-      'pr*',
-    ],
+    AutoSubDomainCreationPatterns: ['*', 'pr*'],
     AutoSubDomainIAMRole: {
-      'Fn::GetAtt': [
-        'AppRole1AF9B530',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AppRole1AF9B530', 'Arn'],
     },
   });
 });
@@ -302,10 +268,7 @@ test('auto subdomain some branches', () => {
     EnableAutoSubDomain: true,
     AutoSubDomainCreationPatterns: ['features/**'],
     AutoSubDomainIAMRole: {
-      'Fn::GetAtt': [
-        'AppRole1AF9B530',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AppRole1AF9B530', 'Arn'],
     },
   });
 });
@@ -319,12 +282,9 @@ test('auto subdomain with IAM role', () => {
       repository: 'aws-cdk',
       oauthToken: SecretValue.unsafePlainText('secret'),
     }),
-    role: iam.Role.fromRoleArn(
-      stack,
-      'AmplifyRole',
-      `arn:aws:iam::${Stack.of(stack).account}:role/AmplifyRole`,
-      { mutable: false },
-    ),
+    role: iam.Role.fromRoleArn(stack, 'AmplifyRole', `arn:aws:iam::${Stack.of(stack).account}:role/AmplifyRole`, {
+      mutable: false,
+    }),
   });
   const prodBranch = app.addBranch('main');
 

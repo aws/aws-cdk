@@ -100,9 +100,7 @@ export class ApiCall {
       /* eslint-disable-next-line @typescript-eslint/no-require-imports */ // esbuild-disable unsupported-require-call
       this.v3Package = require(this.v3PackageName);
     } catch (e) {
-      throw Error(
-        `Service ${this.service} client package with name '${this.v3PackageName}' does not exist.`
-      );
+      throw Error(`Service ${this.service} client package with name '${this.v3PackageName}' does not exist.`);
     }
   }
 
@@ -180,11 +178,7 @@ export function flatten(root: unknown): { [key: string]: any } {
 const decoder = new TextDecoder();
 
 export async function coerceSdkv3Response(value: unknown): Promise<unknown> {
-  if (
-    value &&
-    typeof value === 'object' &&
-    typeof (value as any).transformToString === 'function'
-  ) {
+  if (value && typeof value === 'object' && typeof (value as any).transformToString === 'function') {
     // in sdk v3 some return types are now adapters that we need to explicitly
     // convert to strings. see example: https://github.com/aws/aws-sdk-js-v3/blob/main/UPGRADING.md?plain=1#L573-L576
     // note we don't use 'instanceof Unit8Array' because observations show this won't always return true, even though

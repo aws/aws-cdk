@@ -5,10 +5,10 @@ import * as lambda from '../lib';
 
 let app: cdk.App;
 let stack: cdk.Stack;
-beforeEach( () => {
-  app = new cdk.App( {} );
-  stack = new cdk.Stack( app );
-} );
+beforeEach(() => {
+  app = new cdk.App({});
+  stack = new cdk.Stack(app);
+});
 
 describe('code signing config', () => {
   test('default', () => {
@@ -20,12 +20,11 @@ describe('code signing config', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CodeSigningConfig', {
       AllowedPublishers: {
-        SigningProfileVersionArns: [{
-          'Fn::GetAtt': [
-            'SigningProfile2139A0F9',
-            'ProfileVersionArn',
-          ],
-        }],
+        SigningProfileVersionArns: [
+          {
+            'Fn::GetAtt': ['SigningProfile2139A0F9', 'ProfileVersionArn'],
+          },
+        ],
       },
       CodeSigningPolicies: {
         UntrustedArtifactOnDeployment: 'Warn',
@@ -34,9 +33,15 @@ describe('code signing config', () => {
   });
 
   test('with multiple signing profiles', () => {
-    const signingProfile1 = new signer.SigningProfile(stack, 'SigningProfile1', { platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA });
-    const signingProfile2 = new signer.SigningProfile(stack, 'SigningProfile2', { platform: signer.Platform.AMAZON_FREE_RTOS_DEFAULT });
-    const signingProfile3 = new signer.SigningProfile(stack, 'SigningProfile3', { platform: signer.Platform.AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA });
+    const signingProfile1 = new signer.SigningProfile(stack, 'SigningProfile1', {
+      platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
+    });
+    const signingProfile2 = new signer.SigningProfile(stack, 'SigningProfile2', {
+      platform: signer.Platform.AMAZON_FREE_RTOS_DEFAULT,
+    });
+    const signingProfile3 = new signer.SigningProfile(stack, 'SigningProfile3', {
+      platform: signer.Platform.AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA,
+    });
     new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
       signingProfiles: [signingProfile1, signingProfile2, signingProfile3],
     });
@@ -45,22 +50,13 @@ describe('code signing config', () => {
       AllowedPublishers: {
         SigningProfileVersionArns: [
           {
-            'Fn::GetAtt': [
-              'SigningProfile1D4191686',
-              'ProfileVersionArn',
-            ],
+            'Fn::GetAtt': ['SigningProfile1D4191686', 'ProfileVersionArn'],
           },
           {
-            'Fn::GetAtt': [
-              'SigningProfile2E013C934',
-              'ProfileVersionArn',
-            ],
+            'Fn::GetAtt': ['SigningProfile2E013C934', 'ProfileVersionArn'],
           },
           {
-            'Fn::GetAtt': [
-              'SigningProfile3A38DE231',
-              'ProfileVersionArn',
-            ],
+            'Fn::GetAtt': ['SigningProfile3A38DE231', 'ProfileVersionArn'],
           },
         ],
       },
@@ -87,7 +83,11 @@ describe('code signing config', () => {
   test('import does not create any resources', () => {
     const codeSigningConfigId = 'aaa-xxxxxxxxxx';
     const codeSigningConfigArn = `arn:aws:lambda:::code-signing-config:${codeSigningConfigId}`;
-    const codeSigningConfig = lambda.CodeSigningConfig.fromCodeSigningConfigArn(stack, 'Imported', codeSigningConfigArn );
+    const codeSigningConfig = lambda.CodeSigningConfig.fromCodeSigningConfigArn(
+      stack,
+      'Imported',
+      codeSigningConfigArn
+    );
 
     expect(codeSigningConfig.codeSigningConfigArn).toBe(codeSigningConfigArn);
     expect(codeSigningConfig.codeSigningConfigId).toBe(codeSigningConfigId);
@@ -97,6 +97,8 @@ describe('code signing config', () => {
   test('fail import with malformed code signing config arn', () => {
     const codeSigningConfigArn = 'arn:aws:lambda:::code-signing-config';
 
-    expect(() => lambda.CodeSigningConfig.fromCodeSigningConfigArn(stack, 'Imported', codeSigningConfigArn ) ).toThrow(/ARN must be in the format/);
+    expect(() => lambda.CodeSigningConfig.fromCodeSigningConfigArn(stack, 'Imported', codeSigningConfigArn)).toThrow(
+      /ARN must be in the format/
+    );
   });
 });

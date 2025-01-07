@@ -94,10 +94,7 @@ abstract class AliasBase extends Resource implements IAlias {
     return this.aliasTargetKey.addAlias(alias);
   }
 
-  public addToResourcePolicy(
-    statement: iam.PolicyStatement,
-    allowNoOp?: boolean
-  ): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult {
     return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
@@ -199,17 +196,12 @@ export class Alias extends AliasBase {
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
       public get aliasTargetKey(): IKey {
-        throw new Error(
-          'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().'
-        );
+        throw new Error('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
       }
       public addAlias(_alias: string): Alias {
         throw new Error('Cannot call addAlias on an Alias imported by Alias.fromAliasName().');
       }
-      public addToResourcePolicy(
-        _statement: iam.PolicyStatement,
-        _allowNoOp?: boolean
-      ): iam.AddToResourcePolicyResult {
+      public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
       }
       public grant(grantee: iam.IGrantable, ..._actions: string[]): iam.Grant {
@@ -256,9 +248,7 @@ export class Alias extends AliasBase {
       }
 
       if (aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new Error(
-          `Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`
-        );
+        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`);
       }
 
       if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {

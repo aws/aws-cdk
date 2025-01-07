@@ -112,9 +112,7 @@ export class LogQueryWidget extends ConcreteWidget {
 
   public toJson(): any[] {
     const sources = this.props.logGroupNames.map((l) => `SOURCE '${l}'`).join(' | ');
-    const query = this.props.queryLines
-      ? this.props.queryLines.join('\n| ')
-      : this.props.queryString;
+    const query = this.props.queryLines ? this.props.queryLines.join('\n| ') : this.props.queryString;
 
     const properties: any = {
       view: this.props.view ? this.props.view : LogQueryVisualizationType.TABLE,
@@ -130,8 +128,7 @@ export class LogQueryWidget extends ConcreteWidget {
     ) {
       // assign the right native view value. both types share the same value
       (properties.view = 'timeSeries'),
-        (properties.stacked =
-          this.props.view === LogQueryVisualizationType.STACKEDAREA ? true : false);
+        (properties.stacked = this.props.view === LogQueryVisualizationType.STACKEDAREA ? true : false);
     }
 
     return [

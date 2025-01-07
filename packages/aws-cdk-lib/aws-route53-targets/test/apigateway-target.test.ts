@@ -32,16 +32,10 @@ test('targets.ApiGateway can be used to the default domain of an APIGW', () => {
     Type: 'A',
     AliasTarget: {
       DNSName: {
-        'Fn::GetAtt': [
-          'apiCustomDomain64773C4F',
-          'RegionalDomainName',
-        ],
+        'Fn::GetAtt': ['apiCustomDomain64773C4F', 'RegionalDomainName'],
       },
       HostedZoneId: {
-        'Fn::GetAtt': [
-          'apiCustomDomain64773C4F',
-          'RegionalHostedZoneId',
-        ],
+        'Fn::GetAtt': ['apiCustomDomain64773C4F', 'RegionalHostedZoneId'],
       },
     },
     HostedZoneId: {
@@ -71,16 +65,10 @@ test('targets.ApiGatewayDomain can be used to directly reference a domain', () =
     Type: 'A',
     AliasTarget: {
       DNSName: {
-        'Fn::GetAtt': [
-          'domainFBFFA2F6',
-          'RegionalDomainName',
-        ],
+        'Fn::GetAtt': ['domainFBFFA2F6', 'RegionalDomainName'],
       },
       HostedZoneId: {
-        'Fn::GetAtt': [
-          'domainFBFFA2F6',
-          'RegionalHostedZoneId',
-        ],
+        'Fn::GetAtt': ['domainFBFFA2F6', 'RegionalHostedZoneId'],
       },
     },
     HostedZoneId: {
@@ -137,16 +125,10 @@ test('targets.ApiGateway accepts a SpecRestApi', () => {
     Type: 'A',
     AliasTarget: {
       DNSName: {
-        'Fn::GetAtt': [
-          'apiCustomDomain64773C4F',
-          'RegionalDomainName',
-        ],
+        'Fn::GetAtt': ['apiCustomDomain64773C4F', 'RegionalDomainName'],
       },
       HostedZoneId: {
-        'Fn::GetAtt': [
-          'apiCustomDomain64773C4F',
-          'RegionalHostedZoneId',
-        ],
+        'Fn::GetAtt': ['apiCustomDomain64773C4F', 'RegionalHostedZoneId'],
       },
     },
     HostedZoneId: {

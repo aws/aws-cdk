@@ -7,7 +7,7 @@ const FIXTURES = path.join(__dirname, 'fixtures');
 test('empty assembly', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'empty'));
   expect(assembly.artifacts).toEqual([]);
-  expect(assembly.runtime).toEqual({ libraries: { } });
+  expect(assembly.runtime).toEqual({ libraries: {} });
   expect(assembly.stacks).toEqual([]);
   expect(assembly.version).toEqual('0.0.0');
   expect(assembly.manifest).toMatchSnapshot();
@@ -19,7 +19,7 @@ test('assembly with a single cloudformation stack and tree metadata', () => {
   expect(assembly.artifacts).toHaveLength(2);
   expect(assembly.stacks).toHaveLength(1);
   expect(assembly.manifest.missing).toBeUndefined();
-  expect(assembly.runtime).toEqual({ libraries: { } });
+  expect(assembly.runtime).toEqual({ libraries: {} });
 
   const stack = assembly.stacks[0];
   expect(stack.manifest).toMatchSnapshot();
@@ -49,7 +49,9 @@ test('assembly with tree metadata having no file property specified', () => {
 });
 
 test('assembly with cloudformation artifact having no environment property specified', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-manifest-type-cloudformation'))).toThrow(/Invalid CloudFormation stack artifact/);
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-manifest-type-cloudformation'))).toThrow(
+    /Invalid CloudFormation stack artifact/
+  );
 });
 
 test('assembly with missing context', () => {
@@ -64,13 +66,15 @@ test('assembly with multiple stacks', () => {
 });
 
 test('fails for invalid environment format', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-env-format')))
-    .toThrow('Unable to parse environment specification');
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-env-format'))).toThrow(
+    'Unable to parse environment specification'
+  );
 });
 
 test('fails if stack artifact does not have properties', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'stack-without-params')))
-    .toThrow('Invalid CloudFormation stack artifact. Missing \"templateFile\" property in cloud assembly manifest');
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'stack-without-params'))).toThrow(
+    'Invalid CloudFormation stack artifact. Missing \"templateFile\" property in cloud assembly manifest'
+  );
 });
 
 test('messages', () => {
@@ -95,15 +99,17 @@ test('dependencies', () => {
   expect(assembly.stacks).toHaveLength(4);
 
   // expect stacks to be listed in topological order
-  expect(assembly.stacks.map(s => s.id)).toEqual(['StackA', 'StackD', 'StackC', 'StackB']);
+  expect(assembly.stacks.map((s) => s.id)).toEqual(['StackA', 'StackD', 'StackC', 'StackB']);
   expect(assembly.stacks[0].dependencies).toEqual([]);
   expect(assembly.stacks[1].dependencies).toEqual([]);
-  expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual(['StackD']);
-  expect(assembly.stacks[3].dependencies.map(x => x.id)).toEqual(['StackC', 'StackD']);
+  expect(assembly.stacks[2].dependencies.map((x) => x.id)).toEqual(['StackD']);
+  expect(assembly.stacks[3].dependencies.map((x) => x.id)).toEqual(['StackC', 'StackD']);
 });
 
 test('fails for invalid dependencies', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-depends'))).toThrow('Artifact StackC depends on non-existing artifact StackX');
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-depends'))).toThrow(
+    'Artifact StackC depends on non-existing artifact StackX'
+  );
 });
 
 testDeprecated('stack artifacts can specify an explicit stack name that is different from the artifact id', () => {
@@ -120,7 +126,9 @@ testDeprecated('stack artifacts can specify an explicit stack name that is diffe
 test('getStackByName fails if there are multiple stacks with the same name', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'multiple-stacks-same-name'));
   // eslint-disable-next-line max-len
-  expect(() => assembly.getStackByName('the-physical-name-of-the-stack')).toThrow(/There are multiple stacks with the stack name \"the-physical-name-of-the-stack\" \(stack1\,stack2\)\. Use \"getStackArtifact\(id\)\" instead/);
+  expect(() => assembly.getStackByName('the-physical-name-of-the-stack')).toThrow(
+    /There are multiple stacks with the stack name \"the-physical-name-of-the-stack\" \(stack1\,stack2\)\. Use \"getStackArtifact\(id\)\" instead/
+  );
 });
 
 test('getStackArtifact retrieves a stack by artifact id', () => {

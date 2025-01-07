@@ -487,10 +487,7 @@ test('custom environment secrets can be added with .addSecret() without first de
     },
     InstanceConfiguration: {
       InstanceRoleArn: {
-        'Fn::GetAtt': [
-          'DemoServiceInstanceRoleFCED1725',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['DemoServiceInstanceRoleFCED1725', 'Arn'],
       },
     },
   });
@@ -535,54 +532,51 @@ test('create a service from existing ECR repository(image repository type: ECR)'
         },
         {
           Effect: 'Allow',
-          Action: [
-            'ecr:BatchCheckLayerAvailability',
-            'ecr:GetDownloadUrlForLayer',
-            'ecr:BatchGetImage',
-          ],
+          Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
           Resource: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':ecr:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':repository/nginx',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':ecr:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':repository/nginx',
+              ],
+            ],
           },
         },
         {
           Effect: 'Allow',
           Action: 'ecr:DescribeImages',
           Resource: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':ecr:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':repository/nginx',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':ecr:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':repository/nginx',
+              ],
+            ],
           },
         },
       ],
     },
     PolicyName: 'ServiceAccessRoleDefaultPolicy9C214812',
-    Roles: [
-      { Ref: 'ServiceAccessRole4763579D' },
-    ],
+    Roles: [{ Ref: 'ServiceAccessRole4763579D' }],
   });
   // we should have the service
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {
         AccessRoleArn: {
-          'Fn::GetAtt': [
-            'ServiceAccessRole4763579D',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ServiceAccessRole4763579D', 'Arn'],
         },
       },
       ImageRepository: {
@@ -655,10 +649,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
     SourceConfiguration: {
       AuthenticationConfiguration: {
         AccessRoleArn: {
-          'Fn::GetAtt': [
-            'DemoServiceAccessRoleE7F08742',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['DemoServiceAccessRoleE7F08742', 'Arn'],
         },
       },
       ImageRepository: {
@@ -666,7 +657,8 @@ test('create a service with local assets(image repository type: ECR)', () => {
           Port: '8000',
         },
         ImageIdentifier: {
-          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967',
+          'Fn::Sub':
+            '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967',
         },
         ImageRepositoryType: 'ECR',
       },
@@ -938,10 +930,7 @@ test('custom IAM access role and instance role are allowed', () => {
     SourceConfiguration: {
       AuthenticationConfiguration: {
         AccessRoleArn: {
-          'Fn::GetAtt': [
-            'AccessRoleEC309AE6',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['AccessRoleEC309AE6', 'Arn'],
         },
       },
       ImageRepository: {
@@ -949,17 +938,15 @@ test('custom IAM access role and instance role are allowed', () => {
           Port: '8000',
         },
         ImageIdentifier: {
-          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967',
+          'Fn::Sub':
+            '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:77284835684772d19c95f4f5a37e7618d5f9efc40db9321d44ac039db457b967',
         },
         ImageRepositoryType: 'ECR',
       },
     },
     InstanceConfiguration: {
       InstanceRoleArn: {
-        'Fn::GetAtt': [
-          'InstanceRole3CCE2F1D',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['InstanceRole3CCE2F1D', 'Arn'],
       },
     },
     NetworkConfiguration: {
@@ -1192,10 +1179,7 @@ test('specifying a vpcConnector should assign the service to it and set the egre
       EgressConfiguration: {
         EgressType: 'VPC',
         VpcConnectorArn: {
-          'Fn::GetAtt': [
-            'VpcConnectorE3A78531',
-            'VpcConnectorArn',
-          ],
+          'Fn::GetAtt': ['VpcConnectorE3A78531', 'VpcConnectorArn'],
         },
       },
     },
@@ -1212,10 +1196,7 @@ test('specifying a vpcConnector should assign the service to it and set the egre
     ],
     SecurityGroups: [
       {
-        'Fn::GetAtt': [
-          'SecurityGroupDD263621',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
       },
     ],
     VpcConnectorName: 'MyVpcConnector',
@@ -1349,22 +1330,13 @@ test('Service is grantable', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            's3:GetObject*',
-            's3:GetBucket*',
-            's3:List*',
-          ],
-          Resource: [
-            'arn:aws:s3:::my-bucket',
-            'arn:aws:s3:::my-bucket/*',
-          ],
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          Resource: ['arn:aws:s3:::my-bucket', 'arn:aws:s3:::my-bucket/*'],
         },
       ],
     },
     PolicyName: 'InstanceRoleDefaultPolicy1531605C',
-    Roles: [
-      { Ref: 'InstanceRole3CCE2F1D' },
-    ],
+    Roles: [{ Ref: 'InstanceRole3CCE2F1D' }],
   });
 });
 
@@ -1380,11 +1352,13 @@ test('addToRolePolicy', () => {
     }),
   });
 
-  service.addToRolePolicy(new iam.PolicyStatement({
-    effect: iam.Effect.ALLOW,
-    actions: ['s3:GetObject'],
-    resources: [bucket.bucketArn],
-  }));
+  service.addToRolePolicy(
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['s3:GetObject'],
+      resources: [bucket.bucketArn],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1397,9 +1371,7 @@ test('addToRolePolicy', () => {
       ],
     },
     PolicyName: 'DemoServiceInstanceRoleDefaultPolicy9600BEA1',
-    Roles: [
-      { Ref: 'DemoServiceInstanceRoleFCED1725' },
-    ],
+    Roles: [{ Ref: 'DemoServiceInstanceRoleFCED1725' }],
   });
 });
 
@@ -1656,27 +1628,30 @@ test('create a service with a customer managed key)', () => {
   });
 });
 
-test.each([apprunner.IpAddressType.IPV4, apprunner.IpAddressType.DUAL_STACK])('ipAddressType is set %s', (ipAddressType: apprunner.IpAddressType) => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
+test.each([apprunner.IpAddressType.IPV4, apprunner.IpAddressType.DUAL_STACK])(
+  'ipAddressType is set %s',
+  (ipAddressType: apprunner.IpAddressType) => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'demo-stack');
 
-  // WHEN
-  new apprunner.Service(stack, 'DemoService', {
-    source: apprunner.Source.fromEcrPublic({
-      imageConfiguration: { port: 8000 },
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    ipAddressType,
-  });
+    // WHEN
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageConfiguration: { port: 8000 },
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      ipAddressType,
+    });
 
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    NetworkConfiguration: {
-      IpAddressType: ipAddressType,
-    },
-  });
-});
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+      NetworkConfiguration: {
+        IpAddressType: ipAddressType,
+      },
+    });
+  }
+);
 
 test('create a service with an AutoScalingConfiguration', () => {
   // GIVEN
@@ -1782,41 +1757,42 @@ test.each([true, false])('isPubliclyAccessible is set %s', (isPubliclyAccessible
   });
 });
 
-test.each([
-  ['tes'],
-  ['test-service-name-over-limitation-apprunner'],
-])('serviceName length is invalid (name: %s)', (serviceName: string) => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
+test.each([['tes'], ['test-service-name-over-limitation-apprunner']])(
+  'serviceName length is invalid (name: %s)',
+  (serviceName: string) => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'demo-stack');
 
-  expect(() => {
-    new apprunner.Service(stack, 'DemoService', {
-      source: apprunner.Source.fromEcrPublic({
-        imageConfiguration: { port: 8000 },
-        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-      }),
-      serviceName,
-    });
-  }).toThrow(`\`serviceName\` must be between 4 and 40 characters, got: ${serviceName.length} characters.`);
-});
+    expect(() => {
+      new apprunner.Service(stack, 'DemoService', {
+        source: apprunner.Source.fromEcrPublic({
+          imageConfiguration: { port: 8000 },
+          imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        }),
+        serviceName,
+      });
+    }).toThrow(`\`serviceName\` must be between 4 and 40 characters, got: ${serviceName.length} characters.`);
+  }
+);
 
-test.each([
-  ['-test'],
-  ['test-?'],
-  ['test-\\'],
-])('serviceName includes invalid characters (name: %s)', (serviceName: string) => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
+test.each([['-test'], ['test-?'], ['test-\\']])(
+  'serviceName includes invalid characters (name: %s)',
+  (serviceName: string) => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'demo-stack');
 
-  expect(() => {
-    new apprunner.Service(stack, 'DemoService', {
-      source: apprunner.Source.fromEcrPublic({
-        imageConfiguration: { port: 8000 },
-        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-      }),
-      serviceName,
-    });
-  }).toThrow(`\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${serviceName}.`);
-});
+    expect(() => {
+      new apprunner.Service(stack, 'DemoService', {
+        source: apprunner.Source.fromEcrPublic({
+          imageConfiguration: { port: 8000 },
+          imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        }),
+        serviceName,
+      });
+    }).toThrow(
+      `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${serviceName}.`
+    );
+  }
+);

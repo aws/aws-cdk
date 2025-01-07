@@ -260,42 +260,27 @@ export class DeliveryStream extends DeliveryStreamBase {
   /**
    * Import an existing delivery stream from its name.
    */
-  static fromDeliveryStreamName(
-    scope: Construct,
-    id: string,
-    deliveryStreamName: string
-  ): IDeliveryStream {
+  static fromDeliveryStreamName(scope: Construct, id: string, deliveryStreamName: string): IDeliveryStream {
     return this.fromDeliveryStreamAttributes(scope, id, { deliveryStreamName });
   }
 
   /**
    * Import an existing delivery stream from its ARN.
    */
-  static fromDeliveryStreamArn(
-    scope: Construct,
-    id: string,
-    deliveryStreamArn: string
-  ): IDeliveryStream {
+  static fromDeliveryStreamArn(scope: Construct, id: string, deliveryStreamArn: string): IDeliveryStream {
     return this.fromDeliveryStreamAttributes(scope, id, { deliveryStreamArn });
   }
 
   /**
    * Import an existing delivery stream from its attributes.
    */
-  static fromDeliveryStreamAttributes(
-    scope: Construct,
-    id: string,
-    attrs: DeliveryStreamAttributes
-  ): IDeliveryStream {
+  static fromDeliveryStreamAttributes(scope: Construct, id: string, attrs: DeliveryStreamAttributes): IDeliveryStream {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
-      throw new Error(
-        'Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes'
-      );
+      throw new Error('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
     }
     const deliveryStreamName =
       attrs.deliveryStreamName ??
-      cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-        .resourceName;
+      cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!deliveryStreamName) {
       throw new Error(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`);
@@ -358,9 +343,7 @@ export class DeliveryStream extends DeliveryStreamBase {
     }
     const encryptionKey =
       props.encryption?.encryptionKey ??
-      (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED
-        ? new kms.Key(this, 'Key')
-        : undefined);
+      (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
     const encryptionConfig =
       encryptionKey || props.encryption?.type === StreamEncryptionType.AWS_OWNED
         ? {

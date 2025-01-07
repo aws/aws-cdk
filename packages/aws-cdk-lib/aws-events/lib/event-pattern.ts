@@ -122,9 +122,7 @@ export class Match implements IResolvable {
     const allStrings = values.every((v) => typeof v === 'string');
 
     if (!(allNumbers || allStrings)) {
-      throw new Error(
-        'anythingBut matchers must be lists that contain only strings or only numbers.'
-      );
+      throw new Error('anythingBut matchers must be lists that contain only strings or only numbers.');
     }
 
     return this.fromObjects([{ 'anything-but': values }]);

@@ -158,11 +158,7 @@ export interface FunctionProps {
  */
 export class Function extends Resource implements IFunction {
   /** Imports a function by its name and ARN */
-  public static fromFunctionAttributes(
-    scope: Construct,
-    id: string,
-    attrs: FunctionAttributes
-  ): IFunction {
+  public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
     return new (class extends Resource implements IFunction {
       public readonly functionName = attrs.functionName;
       public readonly functionArn = attrs.functionArn;
@@ -196,15 +192,11 @@ export class Function extends Resource implements IFunction {
 
     this.functionName = props.functionName ?? this.generateName();
 
-    const defaultFunctionRuntime = props.keyValueStore
-      ? FunctionRuntime.JS_2_0.value
-      : FunctionRuntime.JS_1_0.value;
+    const defaultFunctionRuntime = props.keyValueStore ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value;
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
     if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
-      throw new Error(
-        `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`
-      );
+      throw new Error(`Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`);
     }
 
     const resource = new CfnFunction(this, 'Resource', {
@@ -236,8 +228,7 @@ export class Function extends Resource implements IFunction {
     return (
       Stack.of(this).region +
       Lazy.string({
-        produce: () =>
-          Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
+        produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
       })
     );
   }

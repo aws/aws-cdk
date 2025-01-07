@@ -19,8 +19,7 @@ export class Annotations {
 
   private constructor(private readonly scope: IConstruct) {
     const disableTrace =
-      scope.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
-      process.env.CDK_DISABLE_STACK_TRACE;
+      scope.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) || process.env.CDK_DISABLE_STACK_TRACE;
 
     this.stackTraces = !disableTrace;
   }
@@ -252,10 +251,7 @@ function removeWarning(construct: IConstruct, id: string) {
   let i = 0;
   while (i < meta.length) {
     const m = meta[i];
-    if (
-      m.type === cxschema.ArtifactMetadataEntryType.WARN &&
-      (m.data as string).includes(ackTag(id))
-    ) {
+    if (m.type === cxschema.ArtifactMetadataEntryType.WARN && (m.data as string).includes(ackTag(id))) {
       meta.splice(i, 1);
     } else {
       i += 1;

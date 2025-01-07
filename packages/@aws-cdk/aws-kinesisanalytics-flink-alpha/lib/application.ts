@@ -1,10 +1,7 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import {
-  CfnApplicationCloudWatchLoggingOptionV2,
-  CfnApplicationV2,
-} from 'aws-cdk-lib/aws-kinesisanalytics';
+import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from 'aws-cdk-lib/aws-kinesisanalytics';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
@@ -910,11 +907,7 @@ class Import extends ApplicationBase {
   public readonly applicationName: string;
   public readonly applicationArn: string;
 
-  constructor(
-    scope: Construct,
-    id: string,
-    attrs: { applicationArn: string; securityGroups?: ec2.ISecurityGroup[] }
-  ) {
+  constructor(scope: Construct, id: string, attrs: { applicationArn: string; securityGroups?: ec2.ISecurityGroup[] }) {
     super(scope, id);
 
     // Imported applications have no associated role or grantPrincipal
@@ -927,9 +920,7 @@ class Import extends ApplicationBase {
       core.ArnFormat.SLASH_RESOURCE_NAME
     ).resourceName;
     if (!applicationName) {
-      throw new Error(
-        `applicationArn for fromApplicationArn (${attrs.applicationArn}) must include resource name`
-      );
+      throw new Error(`applicationArn for fromApplicationArn (${attrs.applicationArn}) must include resource name`);
     }
     this.applicationName = applicationName;
 
@@ -951,14 +942,8 @@ export class Application extends ApplicationBase {
    * Import an existing Flink application defined outside of CDK code by
    * applicationName.
    */
-  public static fromApplicationName(
-    scope: Construct,
-    id: string,
-    applicationName: string
-  ): IApplication {
-    const applicationArn = core.Stack.of(scope).formatArn(
-      applicationArnComponents(applicationName)
-    );
+  public static fromApplicationName(scope: Construct, id: string, applicationName: string): IApplication {
+    const applicationArn = core.Stack.of(scope).formatArn(applicationArnComponents(applicationName));
 
     return new Import(scope, id, { applicationArn });
   }
@@ -967,22 +952,14 @@ export class Application extends ApplicationBase {
    * Import an existing application defined outside of CDK code by
    * applicationArn.
    */
-  public static fromApplicationArn(
-    scope: Construct,
-    id: string,
-    applicationArn: string
-  ): IApplication {
+  public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
     return new Import(scope, id, { applicationArn });
   }
 
   /**
    * Import an existing application defined outside of CDK code.
    */
-  public static fromApplicationAttributes(
-    scope: Construct,
-    id: string,
-    attrs: ApplicationAttributes
-  ): IApplication {
+  public static fromApplicationAttributes(scope: Construct, id: string, attrs: ApplicationAttributes): IApplication {
     return new Import(scope, id, {
       applicationArn: attrs.applicationArn,
       securityGroups: attrs.securityGroups,

@@ -16,10 +16,10 @@ describe('Test Reports Groups', () => {
     new codebuild.ReportGroup(stack, 'ReportGroup');
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
-      "Type": "TEST",
-      "ExportConfig": {
-        "ExportConfigType": "NO_EXPORT",
-        "S3Destination": Match.absent(),
+      Type: 'TEST',
+      ExportConfig: {
+        ExportConfigType: 'NO_EXPORT',
+        S3Destination: Match.absent(),
       },
     });
   });
@@ -32,40 +32,44 @@ describe('Test Reports Groups', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
-      "Name": 'my-report-group',
+      Name: 'my-report-group',
     });
   });
 
   test('can be imported by name', () => {
     const stack = new cdk.Stack();
 
-    const reportGroup = codebuild.ReportGroup.fromReportGroupName(stack,
-      'ReportGroup', 'my-report-group');
+    const reportGroup = codebuild.ReportGroup.fromReportGroupName(stack, 'ReportGroup', 'my-report-group');
 
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.AnyPrincipal(),
     });
-    role.addToPolicy(new iam.PolicyStatement({
-      actions: ['codebuild:*'],
-      resources: [reportGroup.reportGroupArn],
-    }));
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['codebuild:*'],
+        resources: [reportGroup.reportGroupArn],
+      })
+    );
 
     expect(reportGroup.reportGroupName).toEqual('my-report-group');
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      PolicyDocument: {
+        Statement: [
           {
-            "Action": "codebuild:*",
-            "Resource": {
-              "Fn::Join": ["", [
-                "arn:",
-                { "Ref": "AWS::Partition" },
-                ":codebuild:",
-                { "Ref": "AWS::Region" },
-                ":",
-                { "Ref": "AWS::AccountId" },
-                ":report-group/my-report-group",
-              ]],
+            Action: 'codebuild:*',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':codebuild:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':report-group/my-report-group',
+                ],
+              ],
             },
           },
         ],
@@ -81,14 +85,14 @@ describe('Test Reports Groups', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
-      "Type": "TEST",
-      "ExportConfig": {
-        "ExportConfigType": "S3",
-        "S3Destination": {
-          "Bucket": "my-bucket",
-          "EncryptionKey": Match.absent(),
-          "EncryptionDisabled": Match.absent(),
-          "Packaging": Match.absent(),
+      Type: 'TEST',
+      ExportConfig: {
+        ExportConfigType: 'S3',
+        S3Destination: {
+          Bucket: 'my-bucket',
+          EncryptionKey: Match.absent(),
+          EncryptionDisabled: Match.absent(),
+          Packaging: Match.absent(),
         },
       },
     });
@@ -100,21 +104,20 @@ describe('Test Reports Groups', () => {
     new codebuild.ReportGroup(stack, 'ReportGroup', {
       exportBucket: s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
         bucketName: 'my-bucket',
-        encryptionKey: kms.Key.fromKeyArn(stack, 'Key',
-          'arn:aws:kms:us-east-1:123456789012:key/my-key'),
+        encryptionKey: kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:123456789012:key/my-key'),
       }),
       zipExport: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
-      "Type": "TEST",
-      "ExportConfig": {
-        "ExportConfigType": "S3",
-        "S3Destination": {
-          "Bucket": "my-bucket",
-          "EncryptionDisabled": false,
-          "EncryptionKey": "arn:aws:kms:us-east-1:123456789012:key/my-key",
-          "Packaging": "ZIP",
+      Type: 'TEST',
+      ExportConfig: {
+        ExportConfigType: 'S3',
+        S3Destination: {
+          Bucket: 'my-bucket',
+          EncryptionDisabled: false,
+          EncryptionKey: 'arn:aws:kms:us-east-1:123456789012:key/my-key',
+          Packaging: 'ZIP',
         },
       },
     });
@@ -126,8 +129,8 @@ describe('Test Reports Groups', () => {
     new codebuild.ReportGroup(stack, 'ReportGroup');
 
     Template.fromStack(stack).hasResource('AWS::CodeBuild::ReportGroup', {
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain",
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
     });
   });
 
@@ -139,8 +142,8 @@ describe('Test Reports Groups', () => {
     });
 
     Template.fromStack(stack).hasResource('AWS::CodeBuild::ReportGroup', {
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete",
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
     });
   });
 
@@ -152,7 +155,7 @@ describe('Test Reports Groups', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
-      "Type": "CODE_COVERAGE",
+      Type: 'CODE_COVERAGE',
     });
   });
 
@@ -162,7 +165,7 @@ describe('Test Reports Groups', () => {
     new codebuild.ReportGroup(stack, 'ReportGroup', {});
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
-      "Type": "TEST",
+      Type: 'TEST',
     });
   });
 
@@ -188,21 +191,14 @@ describe('Test Reports Groups', () => {
       PolicyDocument: {
         Statement: Match.arrayWith([
           {
-            Action: [
-              "codebuild:CreateReport",
-              "codebuild:UpdateReport",
-              policyStatement,
-            ],
-            Effect: "Allow",
+            Action: ['codebuild:CreateReport', 'codebuild:UpdateReport', policyStatement],
+            Effect: 'Allow',
             Resource: {
-              "Fn::GetAtt": [
-                "ReportGroup8A84C76D",
-                "Arn",
-              ],
+              'Fn::GetAtt': ['ReportGroup8A84C76D', 'Arn'],
             },
           },
         ]),
-        Version: "2012-10-17",
+        Version: '2012-10-17',
       },
     });
   });
@@ -224,21 +220,14 @@ describe('Test Reports Groups', () => {
       PolicyDocument: {
         Statement: Match.arrayWith([
           {
-            Action: [
-              "codebuild:CreateReport",
-              "codebuild:UpdateReport",
-              "codebuild:BatchPutTestCases",
-            ],
-            Effect: "Allow",
+            Action: ['codebuild:CreateReport', 'codebuild:UpdateReport', 'codebuild:BatchPutTestCases'],
+            Effect: 'Allow',
             Resource: {
-              "Fn::GetAtt": [
-                "ReportGroup8A84C76D",
-                "Arn",
-              ],
+              'Fn::GetAtt': ['ReportGroup8A84C76D', 'Arn'],
             },
           },
         ]),
-        Version: "2012-10-17",
+        Version: '2012-10-17',
       },
     });
   });
@@ -252,19 +241,17 @@ describe('Test Reports Groups', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
-      "DeleteReports": true,
+      DeleteReports: true,
     });
   });
 
-  test('deleteReports requires \'RemovalPolicy.DESTROY\'', () => {
+  test("deleteReports requires 'RemovalPolicy.DESTROY'", () => {
     const stack = new cdk.Stack();
 
     expect(() => {
       new codebuild.ReportGroup(stack, 'ReportGroup', {
         deleteReports: true,
       });
-    },
-    ).toThrow('Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.');
+    }).toThrow("Cannot use 'deleteReports' property on a report group without setting removal policy to 'DESTROY'.");
   });
-
 });

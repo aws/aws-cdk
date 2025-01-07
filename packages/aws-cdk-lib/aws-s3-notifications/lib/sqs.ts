@@ -31,10 +31,7 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
         actions: ['kms:GenerateDataKey*', 'kms:Decrypt'],
         resources: ['*'],
       });
-      const addResult = this.queue.encryptionMasterKey.addToResourcePolicy(
-        statement,
-        /* allowNoOp */ true
-      );
+      const addResult = this.queue.encryptionMasterKey.addToResourcePolicy(statement, /* allowNoOp */ true);
       if (!addResult.statementAdded) {
         Annotations.of(this.queue.encryptionMasterKey).addWarningV2(
           '@aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded',

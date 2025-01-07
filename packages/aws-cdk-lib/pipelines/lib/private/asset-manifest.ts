@@ -46,9 +46,7 @@ export class AssetManifestReader {
       throw new Error(`Cannot read asset manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
-      return AssetManifestReader.fromFile(
-        path.join(filePath, AssetManifestReader.DEFAULT_FILENAME)
-      );
+      return AssetManifestReader.fromFile(path.join(filePath, AssetManifestReader.DEFAULT_FILENAME));
     }
     return AssetManifestReader.fromFile(filePath);
   }
@@ -110,10 +108,7 @@ export class AssetManifestReader {
       ...describeAssets('docker-image', this.manifest.dockerImages || {}),
     ];
 
-    function describeAssets(
-      type: string,
-      assets: Record<string, { source: any; destinations: Record<string, any> }>
-    ) {
+    function describeAssets(type: string, assets: Record<string, { source: any; destinations: Record<string, any> }>) {
       const ret = new Array<string>();
       for (const [assetId, asset] of Object.entries(assets || {})) {
         ret.push(`${assetId} ${type} ${JSON.stringify(asset.source)}`);
@@ -245,10 +240,7 @@ export class DestinationIdentifier {
   }
 }
 
-function filterDict<A>(
-  xs: Record<string, A>,
-  pred: (x: A, key: string) => boolean
-): Record<string, A> {
+function filterDict<A>(xs: Record<string, A>, pred: (x: A, key: string) => boolean): Record<string, A> {
   const ret: Record<string, A> = {};
   for (const [key, value] of Object.entries(xs)) {
     if (pred(value, key)) {

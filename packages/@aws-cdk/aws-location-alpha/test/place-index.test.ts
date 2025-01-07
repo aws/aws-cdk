@@ -41,9 +41,12 @@ test('creates a place index with empty description', () => {
 });
 
 test('throws with invalid description', () => {
-  expect(() => new PlaceIndex(stack, 'PlaceIndex', {
-    description: 'a'.repeat(1001),
-  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+  expect(
+    () =>
+      new PlaceIndex(stack, 'PlaceIndex', {
+        description: 'a'.repeat(1001),
+      })
+  ).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
 test('create a place index with name', () => {
@@ -58,15 +61,23 @@ test('create a place index with name', () => {
 });
 
 test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (placeIndexName) => {
-  expect(() => new PlaceIndex(stack, 'PlaceIndex', {
-    placeIndexName,
-  })).toThrow(`\`placeIndexName\` must be between 1 and 100 characters, got: ${placeIndexName.length} characters.`);
+  expect(
+    () =>
+      new PlaceIndex(stack, 'PlaceIndex', {
+        placeIndexName,
+      })
+  ).toThrow(`\`placeIndexName\` must be between 1 and 100 characters, got: ${placeIndexName.length} characters.`);
 });
 
 test('throws with invalid name', () => {
-  expect(() => new PlaceIndex(stack, 'PlaceIndex', {
-    placeIndexName: 'inv@lid',
-  })).toThrow('`placeIndexName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
+  expect(
+    () =>
+      new PlaceIndex(stack, 'PlaceIndex', {
+        placeIndexName: 'inv@lid',
+      })
+  ).toThrow(
+    '`placeIndexName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.'
+  );
 });
 
 test('grant search actions', () => {
@@ -81,26 +92,26 @@ test('grant search actions', () => {
 
   placeIndex.grantSearch(role);
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
-    PolicyDocument: Match.objectLike({
-      Statement: [
-        {
-          Action: [
-            'geo:SearchPlaceIndexForPosition',
-            'geo:SearchPlaceIndexForSuggestions',
-            'geo:SearchPlaceIndexForText',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'PlaceIndex21B3574E',
-              'Arn',
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::IAM::Policy',
+    Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: [
+              'geo:SearchPlaceIndexForPosition',
+              'geo:SearchPlaceIndexForSuggestions',
+              'geo:SearchPlaceIndexForText',
             ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['PlaceIndex21B3574E', 'Arn'],
+            },
           },
-        },
-      ],
-    }),
-  }));
+        ],
+      }),
+    })
+  );
 });
 
 test('import from arn', () => {
@@ -123,9 +134,11 @@ test('import from name', () => {
 
   // THEN
   expect(placeIndex.placeIndexName).toEqual(placeIndexName);
-  expect(placeIndex.placeIndexArn).toEqual(stack.formatArn({
-    service: 'geo',
-    resource: 'place-index',
-    resourceName: 'MyPlaceIndex',
-  }));
+  expect(placeIndex.placeIndexArn).toEqual(
+    stack.formatArn({
+      service: 'geo',
+      resource: 'place-index',
+      resourceName: 'MyPlaceIndex',
+    })
+  );
 });

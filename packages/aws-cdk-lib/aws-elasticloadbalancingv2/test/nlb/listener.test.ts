@@ -75,9 +75,7 @@ describe('tests', () => {
       VpcId: { Ref: 'Stack8A423254' },
       Port: 80,
       Protocol: 'TCP',
-      Targets: [
-        { Id: 'i-12345' },
-      ],
+      Targets: [{ Id: 'i-12345' }],
     });
   });
 
@@ -107,9 +105,7 @@ describe('tests', () => {
       VpcId: { Ref: 'Stack8A423254' },
       Port: 9700,
       Protocol: 'TCP_UDP',
-      Targets: [
-        { Id: 'i-12345' },
-      ],
+      Targets: [{ Id: 'i-12345' }],
     });
   });
 
@@ -141,9 +137,7 @@ describe('tests', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'TLS',
       Port: 443,
-      Certificates: [
-        { CertificateArn: { Ref: 'Certificate4E7ABB08' } },
-      ],
+      Certificates: [{ CertificateArn: { Ref: 'Certificate4E7ABB08' } }],
       SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01',
       DefaultActions: [
         {
@@ -156,9 +150,7 @@ describe('tests', () => {
       VpcId: { Ref: 'Stack8A423254' },
       Port: 80,
       Protocol: 'TCP',
-      Targets: [
-        { Id: 'i-12345' },
-      ],
+      Targets: [{ Id: 'i-12345' }],
     });
   });
 
@@ -184,7 +176,7 @@ describe('tests', () => {
     });
   });
 
-  test('Enable taking a dependency on an NLB target group\'s load balancer', () => {
+  test("Enable taking a dependency on an NLB target group's load balancer", () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -199,19 +191,21 @@ describe('tests', () => {
     new ResourceWithLBDependency(stack, 'MyResource', group);
 
     // THEN
-    Template.fromStack(stack).templateMatches(Match.objectLike({
-      Resources: {
-        MyResource: {
-          Type: 'Test::Resource',
-          DependsOn: [
-            // 2nd dependency is there because of the structure of the construct tree.
-            // It does not harm.
-            'LBListenerGroupGroup79B304FF',
-            'LBListener49E825B4',
-          ],
+    Template.fromStack(stack).templateMatches(
+      Match.objectLike({
+        Resources: {
+          MyResource: {
+            Type: 'Test::Resource',
+            DependsOn: [
+              // 2nd dependency is there because of the structure of the construct tree.
+              // It does not harm.
+              'LBListenerGroupGroup79B304FF',
+              'LBListener49E825B4',
+            ],
+          },
         },
-      },
-    }));
+      })
+    );
   });
 
   test('Trivial add TLS listener', () => {
@@ -236,9 +230,7 @@ describe('tests', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'TLS',
       Port: 443,
-      Certificates: [
-        { CertificateArn: { Ref: 'Certificate4E7ABB08' } },
-      ],
+      Certificates: [{ CertificateArn: { Ref: 'Certificate4E7ABB08' } }],
       SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01',
     });
   });
@@ -259,9 +251,7 @@ describe('tests', () => {
       alpnPolicy: elbv2.AlpnPolicy.HTTP2_ONLY,
       certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
       sslPolicy: elbv2.SslPolicy.TLS12,
-      defaultTargetGroups: [
-        new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 }),
-      ],
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
     // THEN
@@ -279,12 +269,14 @@ describe('tests', () => {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
-    expect(() => lb.addListener('Listener', {
-      port: 443,
-      protocol: elbv2.Protocol.TCP,
-      alpnPolicy: elbv2.AlpnPolicy.HTTP2_OPTIONAL,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
-    })).toThrow(/Protocol must be TLS when alpnPolicy have been specified/);
+    expect(() =>
+      lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.TCP,
+        alpnPolicy: elbv2.AlpnPolicy.HTTP2_OPTIONAL,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      })
+    ).toThrow(/Protocol must be TLS when alpnPolicy have been specified/);
   });
 
   test('Invalid Protocol listener', () => {
@@ -292,11 +284,13 @@ describe('tests', () => {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
-    expect(() => lb.addListener('Listener', {
-      port: 443,
-      protocol: elbv2.Protocol.HTTP,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
-    })).toThrow(/The protocol must be one of TCP, TLS, UDP, TCP_UDP\. Found HTTP/);
+    expect(() =>
+      lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.HTTP,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      })
+    ).toThrow(/The protocol must be one of TCP, TLS, UDP, TCP_UDP\. Found HTTP/);
   });
 
   test('Invalid Listener Target Healthcheck Interval', () => {
@@ -312,7 +306,9 @@ describe('tests', () => {
     });
 
     const validationErrors: string[] = targetGroup.node.validate();
-    const intervalError = validationErrors.find((err) => /Health check interval '350' not supported. Must be between/.test(err));
+    const intervalError = validationErrors.find((err) =>
+      /Health check interval '350' not supported. Must be between/.test(err)
+    );
     expect(intervalError).toBeDefined();
   });
 
@@ -335,7 +331,9 @@ describe('tests', () => {
 
     // THEN
     const validationErrors: string[] = targetGroup.node.validate();
-    expect(validationErrors).toEqual(["Health check protocol 'UDP' is not supported. Must be one of [HTTP, HTTPS, TCP]"]);
+    expect(validationErrors).toEqual([
+      "Health check protocol 'UDP' is not supported. Must be one of [HTTP, HTTPS, TCP]",
+    ]);
   });
 
   test('validation error if invalid path health check protocol', () => {
@@ -383,7 +381,9 @@ describe('tests', () => {
 
     // THEN
     const validationErrors: string[] = targetGroup.node.validate();
-    const timeoutError = validationErrors.find((err) => /Health check timeout '130' not supported. Must be a number between/.test(err));
+    const timeoutError = validationErrors.find((err) =>
+      /Health check timeout '130' not supported. Must be a number between/.test(err)
+    );
     expect(timeoutError).toBeDefined();
   });
 
@@ -417,11 +417,13 @@ describe('tests', () => {
     const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
-    expect(() => lb.addListener('Listener', {
-      port: 443,
-      protocol: elbv2.Protocol.TLS,
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
-    })).toThrow(/When the protocol is set to TLS, you must specify certificates/);
+    expect(() =>
+      lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.TLS,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      })
+    ).toThrow(/When the protocol is set to TLS, you must specify certificates/);
   });
 
   test('TLS and certs specified listener', () => {
@@ -432,12 +434,14 @@ describe('tests', () => {
       domainName: 'example.com',
     });
 
-    expect(() => lb.addListener('Listener', {
-      port: 443,
-      protocol: elbv2.Protocol.TCP,
-      certificates: [{ certificateArn: cert.certificateArn }],
-      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
-    })).toThrow(/Protocol must be TLS when certificates have been specified/);
+    expect(() =>
+      lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.TCP,
+        certificates: [{ certificateArn: cert.certificateArn }],
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      })
+    ).toThrow(/Protocol must be TLS when certificates have been specified/);
   });
 
   test('Can pass multiple certificates to network listener constructor', () => {
@@ -449,10 +453,7 @@ describe('tests', () => {
     // WHEN
     lb.addListener('Listener', {
       port: 443,
-      certificates: [
-        importedCertificate(stack, 'cert1'),
-        importedCertificate(stack, 'cert2'),
-      ],
+      certificates: [importedCertificate(stack, 'cert1'), importedCertificate(stack, 'cert2')],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
@@ -475,15 +476,11 @@ describe('tests', () => {
     // WHEN
     const listener = lb.addListener('Listener', {
       port: 443,
-      certificates: [
-        importedCertificate(stack, 'cert1'),
-      ],
+      certificates: [importedCertificate(stack, 'cert1')],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
-    listener.addCertificates('extra', [
-      importedCertificate(stack, 'cert2'),
-    ]);
+    listener.addCertificates('extra', [importedCertificate(stack, 'cert2')]);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
@@ -531,7 +528,9 @@ describe('tests', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 0);
-    expect(listener.listenerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/network/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2');
+    expect(listener.listenerArn).toEqual(
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/network/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2'
+    );
   });
 
   test('Create Listener with TCP idle timeout', () => {
@@ -647,7 +646,9 @@ class ResourceWithLBDependency extends cdk.CfnResource {
   }
 }
 
-function importedCertificate(stack: cdk.Stack,
-  certificateArn = 'arn:aws:certificatemanager:123456789012:testregion:certificate/fd0b8392-3c0e-4704-81b6-8edf8612c852') {
+function importedCertificate(
+  stack: cdk.Stack,
+  certificateArn = 'arn:aws:certificatemanager:123456789012:testregion:certificate/fd0b8392-3c0e-4704-81b6-8edf8612c852'
+) {
   return acm.Certificate.fromCertificateArn(stack, certificateArn, certificateArn);
 }

@@ -2,11 +2,7 @@ import { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
 
 import { CfnResource } from '../../core';
-import {
-  AwsCustomResource,
-  AwsCustomResourcePolicy,
-  PhysicalResourceId,
-} from '../../custom-resources';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import { EndpointGroup } from '../lib';
 
 /**
@@ -61,14 +57,10 @@ export class AcceleratorSecurityGroupPeer implements ec2.IPeer {
     // We add a dependency on the endpoint group, guaranteeing that CloudFormation won't
     // try and look up the SG before AGA creates it. The SG is created when a VPC resource
     // is associated with an AGA
-    lookupAcceleratorSGCustomResource.node.addDependency(
-      endpointGroup.node.defaultChild as CfnResource
-    );
+    lookupAcceleratorSGCustomResource.node.addDependency(endpointGroup.node.defaultChild as CfnResource);
 
     // Look up the security group ID
-    return new AcceleratorSecurityGroupPeer(
-      lookupAcceleratorSGCustomResource.getResponseField(ec2ResponseSGIdField)
-    );
+    return new AcceleratorSecurityGroupPeer(lookupAcceleratorSGCustomResource.getResponseField(ec2ResponseSGIdField));
   }
 
   public readonly canInlineRule = false;

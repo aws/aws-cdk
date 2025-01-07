@@ -2,7 +2,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, DefaultStackSynthesizer, DockerBuildSecret, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '../../core';
+import {
+  App,
+  DefaultStackSynthesizer,
+  DockerBuildSecret,
+  IgnoreMode,
+  Lazy,
+  LegacyStackSynthesizer,
+  Stack,
+  Stage,
+} from '../../core';
 import * as cxapi from '../../cx-api';
 import { DockerImageAsset } from '../lib';
 
@@ -17,7 +26,6 @@ describe('image asset', () => {
         directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`,
       });
     }).toThrow(/Cannot find image directory at/);
-
   });
 
   test('fails if the directory does not contain a Dockerfile', () => {
@@ -28,7 +36,6 @@ describe('image asset', () => {
         directory: __dirname,
       });
     }).toThrow(/Cannot find file at/);
-
   });
 
   test('fails if the file does not exist', () => {
@@ -40,7 +47,6 @@ describe('image asset', () => {
         file: 'doesnt-exist',
       });
     }).toThrow(/Cannot find file at/);
-
   });
 
   test('docker directory is staged if asset staging is enabled', () => {
@@ -54,7 +60,6 @@ describe('image asset', () => {
 
     expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'Dockerfile'))).toBe(true);
     expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBe(true);
-
   });
 
   describeDeprecated('docker ignore option', () => {
@@ -90,11 +95,17 @@ describe('image asset', () => {
     expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBe(true);
     expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'foobar.txt'))).toBe(true);
     expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory'))).toBe(true);
-    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(true);
+    expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(
+      true
+    );
     expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules'))).toBe(true);
     expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'one'))).toBe(true);
-    expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep'))).toBe(true);
-    expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep', 'file'))).toBe(true);
+    expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep'))).toBe(
+      true
+    );
+    expect(
+      !fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep', 'file'))
+    ).toBe(true);
   });
 
   test('docker directory is staged without files specified in exclude option', () => {
@@ -114,15 +125,21 @@ describe('image asset', () => {
     const expected = /Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment/;
 
     // THEN
-    expect(() => new DockerImageAsset(stack, 'MyAsset1', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: { [token]: 'value' },
-    })).toThrow(expected);
+    expect(
+      () =>
+        new DockerImageAsset(stack, 'MyAsset1', {
+          directory: path.join(__dirname, 'demo-image'),
+          buildArgs: { [token]: 'value' },
+        })
+    ).toThrow(expected);
 
-    expect(() => new DockerImageAsset(stack, 'MyAsset2', {
-      directory: path.join(__dirname, 'demo-image'),
-      buildArgs: { key: token },
-    })).toThrow(expected);
+    expect(
+      () =>
+        new DockerImageAsset(stack, 'MyAsset2', {
+          directory: path.join(__dirname, 'demo-image'),
+          buildArgs: { key: token },
+        })
+    ).toThrow(expected);
   });
 
   testDeprecated('fails if using token as repositoryName', () => {
@@ -131,10 +148,13 @@ describe('image asset', () => {
     const token = Lazy.string({ produce: () => 'foo' });
 
     // THEN
-    expect(() => new DockerImageAsset(stack, 'MyAsset1', {
-      directory: path.join(__dirname, 'demo-image'),
-      repositoryName: token,
-    })).toThrow(/Cannot use Token as value of 'repositoryName'/);
+    expect(
+      () =>
+        new DockerImageAsset(stack, 'MyAsset1', {
+          directory: path.join(__dirname, 'demo-image'),
+          repositoryName: token,
+        })
+    ).toThrow(/Cannot use Token as value of 'repositoryName'/);
   });
 
   test('docker build options are included in the asset id', () => {
@@ -147,10 +167,17 @@ describe('image asset', () => {
     const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, file: 'Dockerfile.Custom' });
     const asset3 = new DockerImageAsset(stack, 'Asset3', { directory, target: 'NonDefaultTarget' });
     const asset4 = new DockerImageAsset(stack, 'Asset4', { directory, buildArgs: { opt1: '123', opt2: 'boom' } });
-    const asset5 = new DockerImageAsset(stack, 'Asset5', { directory, file: 'Dockerfile.Custom', target: 'NonDefaultTarget' });
+    const asset5 = new DockerImageAsset(stack, 'Asset5', {
+      directory,
+      file: 'Dockerfile.Custom',
+      target: 'NonDefaultTarget',
+    });
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
     const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, outputs: ['123'] });
-    const asset8 = new DockerImageAsset(stack, 'Asset8', { directory, buildSecrets: { mySecret: DockerBuildSecret.fromSrc('abc.txt') } });
+    const asset8 = new DockerImageAsset(stack, 'Asset8', {
+      directory,
+      buildSecrets: { mySecret: DockerBuildSecret.fromSrc('abc.txt') },
+    });
     const asset9 = new DockerImageAsset(stack, 'Asset9', { directory, buildSsh: 'default' });
 
     expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
@@ -233,7 +260,9 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app: Ap
   expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBe(true);
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'foobar.txt'))).toBe(true);
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory'))).toBe(true);
-  expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(true);
+  expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBe(
+    true
+  );
 }
 
 test('nested assemblies share assets: legacy synth edition', () => {
@@ -258,7 +287,7 @@ test('nested assemblies share assets: legacy synth edition', () => {
         data: expect.objectContaining({
           path: `../asset.${DEMO_IMAGE_ASSET_HASH}`,
         }),
-      }),
+      })
     );
   }
 });
@@ -278,7 +307,9 @@ test('nested assemblies share assets: default synth edition', () => {
 
   // Read the asset manifests to verify the file paths
   for (const stageName of ['Stage1', 'Stage2']) {
-    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
+    const manifestArtifact = assembly
+      .getNestedAssembly(`assembly-${stageName}`)
+      .artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
     const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 
     expect(manifest.dockerImages[DEMO_IMAGE_ASSET_HASH].source).toEqual({

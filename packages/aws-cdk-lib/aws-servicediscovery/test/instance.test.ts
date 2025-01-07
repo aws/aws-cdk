@@ -31,14 +31,10 @@ describe('instance', () => {
         AWS_INSTANCE_PORT: '443',
       },
       ServiceId: {
-        'Fn::GetAtt': [
-          'MyNamespaceMyService365E2470',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
       },
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     });
-
   });
 
   test('IpInstance for service in PublicDnsNamespace', () => {
@@ -68,14 +64,10 @@ describe('instance', () => {
         AWS_INSTANCE_PORT: '443',
       },
       ServiceId: {
-        'Fn::GetAtt': [
-          'MyNamespaceMyService365E2470',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
       },
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     });
-
   });
 
   test('IpInstance for service in PrivateDnsNamespace', () => {
@@ -107,14 +99,10 @@ describe('instance', () => {
         AWS_INSTANCE_PORT: '443',
       },
       ServiceId: {
-        'Fn::GetAtt': [
-          'MyNamespaceMyService365E2470',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
       },
       InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2',
     });
-
   });
 
   test('Registering IpInstance throws when omitting port for a service using SRV', () => {
@@ -136,7 +124,6 @@ describe('instance', () => {
         instanceId: 'id',
       });
     }).toThrow(/A `port` must be specified for a service using a `SRV` record./);
-
   });
 
   test('Registering IpInstance throws when omitting ipv4 and ipv6 for a service using SRV', () => {
@@ -158,7 +145,6 @@ describe('instance', () => {
         port: 3306,
       });
     }).toThrow(/At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
-
   });
 
   test('Registering IpInstance throws when omitting ipv4 for a service using A records', () => {
@@ -180,7 +166,6 @@ describe('instance', () => {
         port: 3306,
       });
     }).toThrow(/An `ipv4` must be specified for a service using a `A` record./);
-
   });
 
   test('Registering IpInstance throws when omitting ipv6 for a service using AAAA records', () => {
@@ -202,7 +187,6 @@ describe('instance', () => {
         port: 3306,
       });
     }).toThrow(/An `ipv6` must be specified for a service using a `AAAA` record./);
-
   });
 
   test('Registering IpInstance throws with wrong DNS record type', () => {
@@ -224,7 +208,6 @@ describe('instance', () => {
         port: 3306,
       });
     }).toThrow(/Service must support `A`, `AAAA` or `SRV` records to register this instance type./);
-
   });
 
   test('Registering AliasTargetInstance', () => {
@@ -251,22 +234,15 @@ describe('instance', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_ALIAS_DNS_NAME: {
-          'Fn::GetAtt': [
-            'MyALB911A8556',
-            'DNSName',
-          ],
+          'Fn::GetAtt': ['MyALB911A8556', 'DNSName'],
         },
         foo: 'bar',
       },
       ServiceId: {
-        'Fn::GetAtt': [
-          'MyNamespaceMyService365E2470',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
       },
       InstanceId: 'MyNamespaceMyServiceLoadbalancerD1112A76',
     });
-
   });
 
   test('Throws when registering AliasTargetInstance with Http Namespace', () => {
@@ -288,7 +264,6 @@ describe('instance', () => {
     expect(() => {
       service.registerLoadBalancer('Loadbalancer', alb);
     }).toThrow(/Namespace associated with Service must be a DNS Namespace./);
-
   });
 
   // TODO shouldn't be allowed to do this if loadbalancer on ServiceProps is not set to true.
@@ -311,7 +286,6 @@ describe('instance', () => {
     expect(() => {
       service.registerLoadBalancer('Loadbalancer', alb);
     }).toThrow(/Service must use `WEIGHTED` routing policy./);
-
   });
 
   test('Register CnameInstance', () => {
@@ -338,14 +312,10 @@ describe('instance', () => {
         dogs: 'good',
       },
       ServiceId: {
-        'Fn::GetAtt': [
-          'MyNamespaceMyService365E2470',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
       },
       InstanceId: 'MyNamespaceMyServiceCnameInstance0EB1C98D',
     });
-
   });
 
   test('Throws when registering CnameInstance for an HTTP namespace', () => {
@@ -366,7 +336,6 @@ describe('instance', () => {
         instanceCname: 'foo.com',
       });
     }).toThrow(/Namespace associated with Service must be a DNS Namespace/);
-
   });
 
   test('Register NonIpInstance', () => {
@@ -389,47 +358,36 @@ describe('instance', () => {
         dogs: 'good',
       },
       ServiceId: {
-        'Fn::GetAtt': [
-          'MyNamespaceMyService365E2470',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
       },
       InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A',
     });
-
   });
 
   test('Register NonIpInstance, DNS Namespace, API Only service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.PublicDnsNamespace(
-      stack,
-      'MyNamespace',
-      {
-        name: 'http',
-      },
-    );
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'http',
+    });
 
-    const service = namespace.createService('MyService', { discoveryType: servicediscovery.DiscoveryType.API } );
+    const service = namespace.createService('MyService', { discoveryType: servicediscovery.DiscoveryType.API });
 
     service.registerNonIpInstance('NonIpInstance', {
       customAttributes: { dogs: 'good' },
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::ServiceDiscovery::Instance',
-      {
-        InstanceAttributes: {
-          dogs: 'good',
-        },
-        ServiceId: {
-          'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
-        },
-        InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A',
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
+      InstanceAttributes: {
+        dogs: 'good',
       },
-    );
+      ServiceId: {
+        'Fn::GetAtt': ['MyNamespaceMyService365E2470', 'Id'],
+      },
+      InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A',
+    });
   });
 
   test('Throws when registering NonIpInstance for an DNS discoverable service', () => {
@@ -448,7 +406,6 @@ describe('instance', () => {
         instanceId: 'nonIp',
       });
     }).toThrow(/This type of instance can only be registered for HTTP namespaces./);
-
   });
 
   test('Throws when no custom attribues specified for NonIpInstance', () => {
@@ -467,7 +424,6 @@ describe('instance', () => {
         instanceId: 'nonIp',
       });
     }).toThrow(/You must specify at least one custom attribute for this instance type./);
-
   });
 
   test('Throws when custom attribues are emptyfor NonIpInstance', () => {
@@ -487,7 +443,6 @@ describe('instance', () => {
         customAttributes: {},
       });
     }).toThrow(/You must specify at least one custom attribute for this instance type./);
-
   });
 
   test('Register multiple instances on the same service', () => {
@@ -511,6 +466,5 @@ describe('instance', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::ServiceDiscovery::Instance', 2);
-
   });
 });

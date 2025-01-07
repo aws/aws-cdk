@@ -188,10 +188,7 @@ export class TokenMap {
 
   private registerStringKey(token: IResolvable, displayHint?: string): string {
     const counter = this.tokenCounter++;
-    const representation = (displayHint || 'TOKEN').replace(
-      new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'),
-      '.'
-    );
+    const representation = (displayHint || 'TOKEN').replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
     const key = `${representation}.${counter}`;
     this.stringTokenMap.set(key, token);
     return key;

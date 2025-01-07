@@ -5,67 +5,99 @@ import * as cb from '../../../aws-codebuild';
 import * as ec2 from '../../../aws-ec2';
 import { Stack, Stage } from '../../../core';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, MegaAssetsApp, TwoFileAssetsApp, DockerAssetApp, PlainStackApp, stringLike } from '../testhelpers';
+import {
+  PIPELINE_ENV,
+  TestApp,
+  ModernTestGitHubNpmPipeline,
+  FileAssetApp,
+  MegaAssetsApp,
+  TwoFileAssetsApp,
+  DockerAssetApp,
+  PlainStackApp,
+  stringLike,
+} from '../testhelpers';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
 const FILE_ASSET_SOURCE_HASH2 = 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e';
 
-const FILE_PUBLISHING_ROLE = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
-const IMAGE_PUBLISHING_ROLE = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}';
+const FILE_PUBLISHING_ROLE =
+  'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
+const IMAGE_PUBLISHING_ROLE =
+  'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
 let app: TestApp;
 let pipelineStack: Stack;
 
 function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedRole: string) {
-  if (typeof assumeRolePattern === 'string') { assumeRolePattern = [assumeRolePattern]; }
+  if (typeof assumeRolePattern === 'string') {
+    assumeRolePattern = [assumeRolePattern];
+  }
 
   return {
     PolicyDocument: {
-      Statement: [{
-        Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': ['', [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            `:logs:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:log-group:/aws/codebuild/*`,
-          ]],
+      Statement: [
+        {
+          Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                `:logs:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:log-group:/aws/codebuild/*`,
+              ],
+            ],
+          },
         },
-      },
-      {
-        Action: ['codebuild:CreateReportGroup', 'codebuild:CreateReport', 'codebuild:UpdateReport', 'codebuild:BatchPutTestCases', 'codebuild:BatchPutCodeCoverages'],
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': ['', [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            `:codebuild:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:report-group/*`,
-          ]],
+        {
+          Action: [
+            'codebuild:CreateReportGroup',
+            'codebuild:CreateReport',
+            'codebuild:UpdateReport',
+            'codebuild:BatchPutTestCases',
+            'codebuild:BatchPutCodeCoverages',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                `:codebuild:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:report-group/*`,
+              ],
+            ],
+          },
         },
-      },
-      {
-        Action: ['codebuild:BatchGetBuilds', 'codebuild:StartBuild', 'codebuild:StopBuild'],
-        Effect: 'Allow',
-        Resource: '*',
-      },
-      {
-        Action: 'sts:AssumeRole',
-        Effect: 'Allow',
-        Resource: unsingleton(assumeRolePattern.map(arn => { return { 'Fn::Sub': arn }; })),
-      },
-      {
-        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-        Effect: 'Allow',
-        Resource: [
-          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] },
-          { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] }, '/*']] },
-        ],
-      },
-      {
-        Action: ['kms:Decrypt', 'kms:DescribeKey'],
-        Effect: 'Allow',
-        Resource: { 'Fn::GetAtt': ['CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn'] },
-      }],
+        {
+          Action: ['codebuild:BatchGetBuilds', 'codebuild:StartBuild', 'codebuild:StopBuild'],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Resource: unsingleton(
+            assumeRolePattern.map((arn) => {
+              return { 'Fn::Sub': arn };
+            })
+          ),
+        },
+        {
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          Effect: 'Allow',
+          Resource: [
+            { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] }, '/*']] },
+          ],
+        },
+        {
+          Action: ['kms:Decrypt', 'kms:DescribeKey'],
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn'] },
+        },
+      ],
     },
     Roles: [{ Ref: attachedRole }],
   };
@@ -87,9 +119,13 @@ describe('basic pipeline', () => {
 
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.not(Match.arrayWith([Match.objectLike({
-        Name: 'Assets',
-      })])),
+      Stages: Match.not(
+        Match.arrayWith([
+          Match.objectLike({
+            Name: 'Assets',
+          }),
+        ])
+      ),
     });
   });
 
@@ -139,8 +175,7 @@ describe('basic pipeline', () => {
           Match.objectLike({ Name: 'App' }),
         ],
       });
-    },
-    );
+    });
 
     test('101 assets triggers a third stage', () => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -157,8 +192,7 @@ describe('basic pipeline', () => {
           Match.objectLike({ Name: 'App' }),
         ],
       });
-    },
-    );
+    });
   });
 
   test('command line properly locates assets in subassembly', () => {
@@ -170,13 +204,17 @@ describe('basic pipeline', () => {
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            build: {
-              commands: Match.arrayWith([`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`]),
+        BuildSpec: Match.serializedJson(
+          Match.objectLike({
+            phases: {
+              build: {
+                commands: Match.arrayWith([
+                  `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`,
+                ]),
+              },
             },
-          },
-        })),
+          })
+        ),
       },
     });
   });
@@ -186,13 +224,12 @@ describe('basic pipeline', () => {
     pipeline.addStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Name: 'Assets',
-        Actions: [
-          Match.objectLike({ RunOrder: 1 }),
-          Match.objectLike({ RunOrder: 1 }),
-        ],
-      }]),
+      Stages: Match.arrayWith([
+        {
+          Name: 'Assets',
+          Actions: [Match.objectLike({ RunOrder: 1 }), Match.objectLike({ RunOrder: 1 })],
+        },
+      ]),
     });
   });
 
@@ -203,13 +240,15 @@ describe('basic pipeline', () => {
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            build: {
-              commands: Match.arrayWith([stringLike('cdk-assets *')]),
+        BuildSpec: Match.serializedJson(
+          Match.objectLike({
+            phases: {
+              build: {
+                commands: Match.arrayWith([stringLike('cdk-assets *')]),
+              },
             },
-          },
-        })),
+          })
+        ),
       },
       Environment: Match.objectLike({
         PrivilegedMode: false,
@@ -224,13 +263,15 @@ describe('basic pipeline', () => {
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            build: {
-              commands: Match.arrayWith([stringLike('cdk-assets *')]),
+        BuildSpec: Match.serializedJson(
+          Match.objectLike({
+            phases: {
+              build: {
+                commands: Match.arrayWith([stringLike('cdk-assets *')]),
+              },
             },
-          },
-        })),
+          })
+        ),
       },
       Environment: Match.objectLike({
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
@@ -250,13 +291,15 @@ describe('basic pipeline', () => {
         Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
       },
       Source: {
-        BuildSpec: Match.serializedJson(Match.objectLike({
-          phases: {
-            install: {
-              commands: ['npm install -g aws-cdk@1.2.3'],
+        BuildSpec: Match.serializedJson(
+          Match.objectLike({
+            phases: {
+              install: {
+                commands: ['npm install -g aws-cdk@1.2.3'],
+              },
             },
-          },
-        })),
+          })
+        ),
       },
     });
   });
@@ -282,10 +325,11 @@ describe('basic pipeline', () => {
           ],
         },
       });
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
-    },
-    );
+      Template.fromStack(pipelineStack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07')
+      );
+    });
 
     test('publishing assets role may assume roles from multiple environments', () => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -294,18 +338,26 @@ describe('basic pipeline', () => {
       });
 
       pipeline.addStage(new FileAssetApp(app, 'App1'));
-      pipeline.addStage(new FileAssetApp(app, 'App2', {
-        env: {
-          account: '0123456789012',
-          region: 'eu-west-1',
-        },
-      }));
+      pipeline.addStage(
+        new FileAssetApp(app, 'App2', {
+          env: {
+            account: '0123456789012',
+            region: 'eu-west-1',
+          },
+        })
+      );
 
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-        expectedAssetRolePolicy([FILE_PUBLISHING_ROLE, 'arn:${AWS::Partition}:iam::0123456789012:role/cdk-hnb659fds-file-publishing-role-0123456789012-eu-west-1'],
-          'CdkAssetsFileRole6BE17A07'));
-    },
-    );
+      Template.fromStack(pipelineStack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        expectedAssetRolePolicy(
+          [
+            FILE_PUBLISHING_ROLE,
+            'arn:${AWS::Partition}:iam::0123456789012:role/cdk-hnb659fds-file-publishing-role-0123456789012-eu-west-1',
+          ],
+          'CdkAssetsFileRole6BE17A07'
+        )
+      );
+    });
 
     test('publishing assets role de-dupes assumed roles', () => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -316,10 +368,11 @@ describe('basic pipeline', () => {
       pipeline.addStage(new FileAssetApp(app, 'App2'));
       pipeline.addStage(new FileAssetApp(app, 'App3'));
 
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
-    },
-    );
+      Template.fromStack(pipelineStack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07')
+      );
+    });
 
     test('includes image publishing assets role for apps with Docker assets', () => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -341,10 +394,11 @@ describe('basic pipeline', () => {
           ],
         },
       });
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-        expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3'));
-    },
-    );
+      Template.fromStack(pipelineStack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3')
+      );
+    });
 
     test('includes both roles for apps with both file and Docker assets', () => {
       const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -354,12 +408,15 @@ describe('basic pipeline', () => {
       pipeline.addStage(new FileAssetApp(app, 'App1'));
       pipeline.addStage(new DockerAssetApp(app, 'App2'));
 
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07'));
-      Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-        expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3'));
-    },
-    );
+      Template.fromStack(pipelineStack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        expectedAssetRolePolicy(FILE_PUBLISHING_ROLE, 'CdkAssetsFileRole6BE17A07')
+      );
+      Template.fromStack(pipelineStack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        expectedAssetRolePolicy(IMAGE_PUBLISHING_ROLE, 'CdkAssetsDockerRole484B6DD3')
+      );
+    });
   });
 });
 
@@ -370,9 +427,7 @@ test('can supply pre-install scripts to asset upload', () => {
         version: '0.2',
         phases: {
           install: {
-            commands: [
-              'npm config set registry https://registry.com',
-            ],
+            commands: ['npm config set registry https://registry.com'],
           },
         },
       }),
@@ -385,13 +440,15 @@ test('can supply pre-install scripts to asset upload', () => {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets@latest'],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets@latest'],
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
@@ -411,9 +468,7 @@ describe('pipeline with VPC', () => {
     // THEN
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       VpcConfig: Match.objectLike({
-        SecurityGroupIds: [
-          { 'Fn::GetAtt': ['CdkAssetsDockerAsset1SecurityGroup078F5C66', 'GroupId'] },
-        ],
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['CdkAssetsDockerAsset1SecurityGroup078F5C66', 'GroupId'] }],
         Subnets: [
           { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
           { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
@@ -431,15 +486,15 @@ describe('pipeline with VPC', () => {
     pipeline.addStage(new DockerAssetApp(app, 'DockerAssetApp'));
     // Assets Project
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-      Roles: [
-        { Ref: 'CdkAssetsDockerRole484B6DD3' },
-      ],
+      Roles: [{ Ref: 'CdkAssetsDockerRole484B6DD3' }],
       PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
-          Effect: 'Allow',
-          Resource: '*',
-        }]),
+        Statement: Match.arrayWith([
+          {
+            Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ]),
       },
     });
   });
@@ -473,9 +528,7 @@ describe('pipeline with VPC', () => {
       Properties: {
         ServiceRole: { 'Fn::GetAtt': ['CdkAssetsDockerRole484B6DD3', 'Arn'] },
       },
-      DependsOn: [
-        'CdkAssetsDockerAsset1PolicyDocument8DA96A22',
-      ],
+      DependsOn: ['CdkAssetsDockerAsset1PolicyDocument8DA96A22'],
     });
   });
 });
@@ -502,11 +555,10 @@ test('adding environment variable to assets job adds SecretsManager permissions'
           Action: 'secretsmanager:GetSecretValue',
           Effect: 'Allow',
           Resource: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
-            ]],
+            'Fn::Join': [
+              '',
+              ['arn:', { Ref: 'AWS::Partition' }, ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????'],
+            ],
           },
         }),
       ]),
@@ -560,24 +612,24 @@ describe('pipeline with single asset publisher', () => {
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: 'secretsmanager:GetSecretValue',
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+        Statement: Match.arrayWith([
+          {
+            Action: 'secretsmanager:GetSecretValue',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+                ],
               ],
-            ],
+            },
           },
-        }]),
+        ]),
       },
-      Roles: [
-        { Ref: 'PipelineAssetsFileRole59943A77' },
-      ],
+      Roles: [{ Ref: 'PipelineAssetsFileRole59943A77' }],
     });
   });
 
@@ -590,13 +642,15 @@ describe('pipeline with single asset publisher', () => {
     // THEN
     const buildSpecName = new Capture(stringLike('buildspec-*.yaml'));
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Name: 'Assets',
-        Actions: [
-          // Only one file asset action
-          Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
-        ],
-      }]),
+      Stages: Match.arrayWith([
+        {
+          Name: 'Assets',
+          Actions: [
+            // Only one file asset action
+            Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
+          ],
+        },
+      ]),
     });
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
@@ -611,8 +665,12 @@ describe('pipeline with single asset publisher', () => {
     const actualFileName = buildSpecName.asString();
 
     const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, actualFileName), { encoding: 'utf-8' }));
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(
+      `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`
+    );
+    expect(buildSpec.phases.build.commands).toContain(
+      `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`
+    );
   });
 });
 
@@ -639,13 +697,15 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
     const buildSpecName = new Capture(stringLike('buildspec-*'));
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Name: 'Assets',
-        Actions: [
-          // Only one file asset action
-          Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
-        ],
-      }]),
+      Stages: Match.arrayWith([
+        {
+          Name: 'Assets',
+          Actions: [
+            // Only one file asset action
+            Match.objectLike({ RunOrder: 1, Name: 'FileAsset' }),
+          ],
+        },
+      ]),
     });
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
@@ -658,8 +718,12 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
 
     const assembly = synthesize(pipelineStack);
     const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, buildSpecName.asString())).toString());
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(
+      `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`
+    );
+    expect(buildSpec.phases.build.commands).toContain(
+      `cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`
+    );
     expect(buildSpec.phases.pre_install.commands).toContain('preinstall');
     expect(buildSpec.cache.paths).toContain('node_modules');
   });

@@ -107,9 +107,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
 
     this.restApiId = restApi.restApiId;
 
-    const addToLogicalId = FeatureFlags.of(this).isEnabled(
-      APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID
-    );
+    const addToLogicalId = FeatureFlags.of(this).isEnabled(APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID);
 
     const deployment = restApi.latestDeployment;
     if (deployment && addToLogicalId) {

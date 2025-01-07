@@ -55,11 +55,7 @@ export class StateMachineInput {
    */
   public readonly input: any;
 
-  private constructor(
-    input: any,
-    inputArtifact: codepipeline.Artifact | undefined,
-    inputType: string
-  ) {
+  private constructor(input: any, inputArtifact: codepipeline.Artifact | undefined, inputType: string) {
     this.input = input;
     this.inputArtifact = inputArtifact;
     this.inputType = inputType;
@@ -121,9 +117,7 @@ export class StepFunctionInvokeAction extends Action {
         maxOutputs: 1,
       },
       inputs:
-        props.stateMachineInput && props.stateMachineInput.inputArtifact
-          ? [props.stateMachineInput.inputArtifact]
-          : [],
+        props.stateMachineInput && props.stateMachineInput.inputArtifact ? [props.stateMachineInput.inputArtifact] : [],
       outputs: props.output ? [props.output] : [],
     });
     this.props = props;
@@ -143,9 +137,10 @@ export class StepFunctionInvokeAction extends Action {
     );
 
     // allow state machine executions to be inspected
-    const { account, region, partition, resourceName } = cdk.Stack.of(
-      this.props.stateMachine
-    ).splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
+    const { account, region, partition, resourceName } = cdk.Stack.of(this.props.stateMachine).splitArn(
+      this.props.stateMachine.stateMachineArn,
+      cdk.ArnFormat.COLON_RESOURCE_NAME
+    );
     options.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         actions: ['states:DescribeExecution'],

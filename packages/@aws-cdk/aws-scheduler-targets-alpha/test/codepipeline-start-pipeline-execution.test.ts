@@ -155,50 +155,58 @@ describe('codepipeline start execution', () => {
 
     const template = Template.fromStack(stack);
 
-    template.resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'codepipeline:StartPipelineExecution',
-            Effect: 'Allow',
-            Resource: pipelineArn,
-          },
-        ],
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'codepipeline:StartPipelineExecution',
+              Effect: 'Allow',
+              Resource: pipelineArn,
+            },
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
@@ -220,68 +228,73 @@ describe('codepipeline start execution', () => {
 
     const template = Template.fromStack(stack);
 
-    template.resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'GroupC77FDACD',
-                    'Arn',
-                  ],
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::GetAtt': ['GroupC77FDACD', 'Arn'],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'codepipeline:StartPipelineExecution',
-            Effect: 'Allow',
-            Resource: pipelineArn,
-          },
-        ],
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'codepipeline:StartPipelineExecution',
+              Effect: 'Allow',
+              Resource: pipelineArn,
+            },
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM policy for imported pipeline in the same account', () => {
@@ -494,11 +507,13 @@ describe('codepipeline start execution', () => {
       maxEventAge: Duration.days(3),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Maximum event age is 1 day/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: codepipelineTarget,
+        })
+    ).toThrow(/Maximum event age is 1 day/);
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
@@ -506,11 +521,13 @@ describe('codepipeline start execution', () => {
       maxEventAge: Duration.seconds(59),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Minimum event age is 1 minute/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: codepipelineTarget,
+        })
+    ).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
@@ -518,11 +535,13 @@ describe('codepipeline start execution', () => {
       retryAttempts: 200,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: codepipelineTarget,
-      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: codepipelineTarget,
+        })
+    ).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 });
 

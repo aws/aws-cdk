@@ -11,7 +11,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
@@ -36,7 +40,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
@@ -60,7 +68,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
@@ -84,7 +96,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
@@ -108,7 +124,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
@@ -132,7 +152,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
@@ -156,7 +180,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
@@ -180,7 +208,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
     const stage = new apigw.Stage(stack, 'MyStage', {
@@ -210,7 +242,11 @@ describe('BasePathMapping', () => {
     api.root.addMethod('GET'); // api must have at least one method.
     const domain = new apigw.DomainName(stack, 'MyDomain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(
+        stack,
+        'cert',
+        'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'
+      ),
       endpointType: apigw.EndpointType.REGIONAL,
     });
 

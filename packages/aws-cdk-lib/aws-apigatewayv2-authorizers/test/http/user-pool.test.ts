@@ -29,12 +29,7 @@ describe('HttpUserPoolAuthorizer', () => {
         Issuer: {
           'Fn::Join': [
             '',
-            [
-              'https://cognito-idp.',
-              { Ref: 'AWS::Region' },
-              '.amazonaws.com/',
-              stack.resolve(userPool.userPoolId),
-            ],
+            ['https://cognito-idp.', { Ref: 'AWS::Region' }, '.amazonaws.com/', stack.resolve(userPool.userPoolId)],
           ],
         },
       },
@@ -92,12 +87,7 @@ describe('HttpUserPoolAuthorizer', () => {
         Issuer: {
           'Fn::Join': [
             '',
-            [
-              'https://cognito-idp.',
-              { Ref: 'AWS::Region' },
-              '.amazonaws.com/',
-              stack.resolve(userPool.userPoolId),
-            ],
+            ['https://cognito-idp.', { Ref: 'AWS::Region' }, '.amazonaws.com/', stack.resolve(userPool.userPoolId)],
           ],
         },
       },

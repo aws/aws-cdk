@@ -3,12 +3,20 @@ import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { ContextAttribute, IScheduleTarget, ScheduleExpression, ScheduleTargetConfig, ScheduleTargetInput } from '../lib';
+import {
+  ContextAttribute,
+  IScheduleTarget,
+  ScheduleExpression,
+  ScheduleTargetConfig,
+  ScheduleTargetInput,
+} from '../lib';
 import { Schedule } from '../lib/schedule';
 
 class SomeLambdaTarget implements IScheduleTarget {
-  public constructor(private readonly fn: lambda.IFunction, private readonly input: ScheduleTargetInput) {
-  }
+  public constructor(
+    private readonly fn: lambda.IFunction,
+    private readonly input: ScheduleTargetInput
+  ) {}
 
   public bind(): ScheduleTargetConfig {
     return {
@@ -110,11 +118,7 @@ describe('schedule target input', () => {
       Properties: {
         Target: {
           Input: {
-            'Fn::Join': ['', [
-              '{"test":"',
-              { Ref: 'AWS::AccountId' },
-              '"}',
-            ]],
+            'Fn::Join': ['', ['{"test":"', { Ref: 'AWS::AccountId' }, '"}']],
           },
         },
       },
@@ -153,7 +157,8 @@ describe('schedule target input', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Input: '{"arn":"<aws.scheduler.schedule-arn>",' +
+          Input:
+            '{"arn":"<aws.scheduler.schedule-arn>",' +
             '"att":"<aws.scheduler.attempt-number>",' +
             '"xid":"<aws.scheduler.execution-id>",' +
             '"tim":"<aws.scheduler.scheduled-time>",' +

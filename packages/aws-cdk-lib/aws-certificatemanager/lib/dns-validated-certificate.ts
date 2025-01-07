@@ -67,10 +67,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * @resource AWS::CertificateManager::Certificate
  * @deprecated use {@link Certificate} instead
  */
-export class DnsValidatedCertificate
-  extends CertificateBase
-  implements ICertificate, cdk.ITaggable
-{
+export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
   public readonly certificateArn: string;
 
   /**
@@ -104,10 +101,7 @@ export class DnsValidatedCertificate
     this.normalizedZoneName = props.hostedZone.zoneName;
     // Remove trailing `.` from zone name
     if (this.normalizedZoneName.endsWith('.')) {
-      this.normalizedZoneName = this.normalizedZoneName.substring(
-        0,
-        this.normalizedZoneName.length - 1
-      );
+      this.normalizedZoneName = this.normalizedZoneName.substring(0, this.normalizedZoneName.length - 1);
     }
     // Remove any `/hostedzone/` prefix from the Hosted Zone ID
     this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
@@ -115,19 +109,13 @@ export class DnsValidatedCertificate
 
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
-      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled
-        ? 'ENABLED'
-        : 'DISABLED';
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
     }
 
-    const requestorFunction = new CertificateRequestCertificateRequestFunction(
-      this,
-      'CertificateRequestorFunction',
-      {
-        timeout: cdk.Duration.minutes(15),
-        role: props.customResourceRole,
-      }
-    );
+    const requestorFunction = new CertificateRequestCertificateRequestFunction(this, 'CertificateRequestorFunction', {
+      timeout: cdk.Duration.minutes(15),
+      role: props.customResourceRole,
+    });
     requestorFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: [
@@ -148,15 +136,11 @@ export class DnsValidatedCertificate
     requestorFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['route53:changeResourceRecordSets'],
-        resources: [
-          `arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`,
-        ],
+        resources: [`arn:${cdk.Stack.of(requestorFunction).partition}:route53:::hostedzone/${this.hostedZoneId}`],
         conditions: {
           'ForAllValues:StringEquals': {
             'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
-            'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records
-              ? ['UPSERT', 'DELETE']
-              : ['UPSERT'],
+            'route53:ChangeResourceRecordSetsActions': props.cleanupRoute53Records ? ['UPSERT', 'DELETE'] : ['UPSERT'],
           },
           'ForAllValues:StringLike': {
             'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
@@ -172,10 +156,7 @@ export class DnsValidatedCertificate
       serviceToken: requestorFunction.functionArn,
       properties: {
         DomainName: props.domainName,
-        SubjectAlternativeNames: cdk.Lazy.list(
-          { produce: () => props.subjectAlternativeNames },
-          { omitEmpty: true }
-        ),
+        SubjectAlternativeNames: cdk.Lazy.list({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
         CertificateTransparencyLoggingPreference: certificateTransparencyLoggingPreference,
         HostedZoneId: this.hostedZoneId,
         Region: props.region,

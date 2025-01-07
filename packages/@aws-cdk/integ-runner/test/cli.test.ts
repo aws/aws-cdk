@@ -6,8 +6,12 @@ import { main, parseCliArgs } from '../lib/cli';
 let stdoutMock: jest.SpyInstance;
 let stderrMock: jest.SpyInstance;
 beforeEach(() => {
-  stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {
+    return true;
+  });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+    return true;
+  });
 });
 afterEach(() => {
   stdoutMock.mockReset();
@@ -35,15 +39,14 @@ describe('Test discovery', () => {
   });
 
   test('find by custom pattern', async () => {
-    await main(['--list', '--directory=test/test-data', '--language=javascript', '--test-regex="^xxxxx\.integ-test[12]\.js$"']);
+    await main([
+      '--list',
+      '--directory=test/test-data',
+      '--language=javascript',
+      '--test-regex="^xxxxx\.integ-test[12]\.js$"',
+    ]);
 
-    expect(stdoutMock.mock.calls).toEqual([[
-      [
-        'xxxxx.integ-test1.js',
-        'xxxxx.integ-test2.js',
-        '',
-      ].join('\n'),
-    ]]);
+    expect(stdoutMock.mock.calls).toEqual([[['xxxxx.integ-test1.js', 'xxxxx.integ-test2.js', ''].join('\n')]]);
   });
 
   test('list only shows explicitly provided tests', async () => {
@@ -56,21 +59,13 @@ describe('Test discovery', () => {
       '--test-regex="^xxxxx\..*\.js$"',
     ]);
 
-    expect(stdoutMock.mock.calls).toEqual([[
-      [
-        'xxxxx.integ-test1.js',
-        'xxxxx.integ-test2.js',
-        '',
-      ].join('\n'),
-    ]]);
+    expect(stdoutMock.mock.calls).toEqual([[['xxxxx.integ-test1.js', 'xxxxx.integ-test2.js', ''].join('\n')]]);
   });
 
   test('find only TypeScript files', async () => {
     await main(['--list', '--language', 'typescript', '--directory=test']);
 
-    expect(stdoutMock.mock.calls).toEqual([[
-      'language-tests/integ.typescript-test.ts\n',
-    ]]);
+    expect(stdoutMock.mock.calls).toEqual([['language-tests/integ.typescript-test.ts\n']]);
   });
 
   test('can run with no tests detected', async () => {
@@ -87,33 +82,35 @@ describe('Test discovery', () => {
       '--test-regex="^xxxxx\.integ-test[12]\.js$"',
     ]);
 
-    expect(stdoutMock.mock.calls).toEqual([[
-      [
-        'xxxxx.integ-test1.js',
-        'xxxxx.integ-test2.js',
-        '',
-      ].join('\n'),
-    ]]);
+    expect(stdoutMock.mock.calls).toEqual([[['xxxxx.integ-test1.js', 'xxxxx.integ-test2.js', ''].join('\n')]]);
   });
 
   test('cannot use --test-regex by itself with more than one language preset', async () => {
-    await expect(() => main([
-      '--list',
-      '--directory=test/test-data',
-      '--language=javascript',
-      '--language=typescript',
-      '--test-regex="^xxxxx\.integ-test[12]\.js$"',
-    ])).rejects.toThrow('Only a single "--language" can be used with "--test-regex". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.');
+    await expect(() =>
+      main([
+        '--list',
+        '--directory=test/test-data',
+        '--language=javascript',
+        '--language=typescript',
+        '--test-regex="^xxxxx\.integ-test[12]\.js$"',
+      ])
+    ).rejects.toThrow(
+      'Only a single "--language" can be used with "--test-regex". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.'
+    );
   });
 
   test('cannot use --app by itself with more than one language preset', async () => {
-    await expect(() => main([
-      '--list',
-      '--directory=test/test-data',
-      '--language=javascript',
-      '--language=typescript',
-      '--app="node --prof {filePath}"',
-    ])).rejects.toThrow('Only a single "--language" can be used with "--app". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.');
+    await expect(() =>
+      main([
+        '--list',
+        '--directory=test/test-data',
+        '--language=javascript',
+        '--language=typescript',
+        '--app="node --prof {filePath}"',
+      ])
+    ).rejects.toThrow(
+      'Only a single "--language" can be used with "--app". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.'
+    );
   });
 });
 
@@ -136,20 +133,14 @@ describe('CLI config file', () => {
     withConfig({
       list: true,
       maxWorkers: 3,
-      parallelRegions: [
-        'eu-west-1',
-        'ap-southeast-2',
-      ],
+      parallelRegions: ['eu-west-1', 'ap-southeast-2'],
     });
     const options = parseCliArgs();
 
     // THEN
     expect(options.list).toBe(true);
     expect(options.maxWorkers).toBe(3);
-    expect(options.testRegions).toEqual([
-      'eu-west-1',
-      'ap-southeast-2',
-    ]);
+    expect(options.testRegions).toEqual(['eu-west-1', 'ap-southeast-2']);
   });
 
   test('cli options take precedent', async () => {

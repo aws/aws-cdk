@@ -9,7 +9,6 @@ import * as cdk from 'aws-cdk-lib';
 import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
 
 describe('DatabaseCluster', () => {
-
   test('check that instantiation works', () => {
     // GIVEN
     const stack = testStack();
@@ -121,7 +120,9 @@ describe('DatabaseCluster', () => {
   });
 
   test.each([
-    ['1.1.1.0', EngineVersion.V1_1_1_0], ['1.2.0.0', EngineVersion.V1_2_0_0], ['1.3.0.0', EngineVersion.V1_3_0_0],
+    ['1.1.1.0', EngineVersion.V1_1_1_0],
+    ['1.2.0.0', EngineVersion.V1_2_0_0],
+    ['1.3.0.0', EngineVersion.V1_3_0_0],
   ])('can create a cluster for engine version %s', (expected, version) => {
     // GIVEN
     const stack = testStack();
@@ -211,10 +212,7 @@ describe('DatabaseCluster', () => {
       AssociatedRoles: [
         {
           RoleArn: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
           },
         },
       ],
@@ -274,10 +272,7 @@ describe('DatabaseCluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       KmsKeyId: {
-        'Fn::GetAtt': [
-          'Key961B73FD',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Key961B73FD', 'Arn'],
       },
       StorageEncrypted: true,
     });
@@ -513,35 +508,36 @@ describe('DatabaseCluster', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Effect: 'Allow',
-          Action: 'neptune-db:*',
-          Resource: {
-            'Fn::Join': [
-              '', [
-                'arn:', {
-                  Ref: 'AWS::Partition',
-                },
-                ':neptune-db:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':',
-                {
-                  'Fn::GetAtt': [
-                    'ClusterEB0386A7',
-                    'ClusterResourceId',
-                  ],
-                },
-                '/*',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'neptune-db:*',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':neptune-db:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':',
+                  {
+                    'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterResourceId'],
+                  },
+                  '/*',
+                ],
               ],
-            ],
+            },
           },
-        }],
+        ],
         Version: '2012-10-17',
       },
     });
@@ -563,7 +559,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant permissions when IAM authentication is disabled/);
+    expect(() => {
+      cluster.grantConnect(role);
+    }).toThrow(/Cannot grant permissions when IAM authentication is disabled/);
   });
 
   test('grant - enables IAM auth and grants specified actions to the grantee', () => {
@@ -587,35 +585,36 @@ describe('DatabaseCluster', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Effect: 'Allow',
-          Action: ['neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery'],
-          Resource: {
-            'Fn::Join': [
-              '', [
-                'arn:', {
-                  Ref: 'AWS::Partition',
-                },
-                ':neptune-db:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':',
-                {
-                  'Fn::GetAtt': [
-                    'ClusterEB0386A7',
-                    'ClusterResourceId',
-                  ],
-                },
-                '/*',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: ['neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery'],
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':neptune-db:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':',
+                  {
+                    'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterResourceId'],
+                  },
+                  '/*',
+                ],
               ],
-            ],
+            },
           },
-        }],
+        ],
         Version: '2012-10-17',
       },
     });
@@ -637,11 +636,12 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(() => { cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery'); }).toThrow(/Cannot grant permissions when IAM authentication is disabled/);
+    expect(() => {
+      cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:WriteDataViaQuery');
+    }).toThrow(/Cannot grant permissions when IAM authentication is disabled/);
   });
 
   test('autoMinorVersionUpgrade is enabled when configured', () => {
-
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -657,11 +657,9 @@ describe('DatabaseCluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
       AutoMinorVersionUpgrade: true,
     });
-
   });
 
   test('autoMinorVersionUpgrade is not enabled when not configured', () => {
-
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -676,7 +674,6 @@ describe('DatabaseCluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
       AutoMinorVersionUpgrade: false,
     });
-
   });
 
   test('cloudwatchLogsExports is enabled when configured', () => {
@@ -751,13 +748,15 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(metric).toEqual(new cloudwatch.Metric({
-      namespace: 'AWS/Neptune',
-      dimensionsMap: {
-        DBClusterIdentifier: cluster.clusterIdentifier,
-      },
-      metricName: 'SparqlRequestsPerSec',
-    }));
+    expect(metric).toEqual(
+      new cloudwatch.Metric({
+        namespace: 'AWS/Neptune',
+        dimensionsMap: {
+          DBClusterIdentifier: cluster.clusterIdentifier,
+        },
+        metricName: 'SparqlRequestsPerSec',
+      })
+    );
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Neptune',
       MetricName: 'SparqlRequestsPerSec',
@@ -846,7 +845,9 @@ describe('DatabaseCluster', () => {
           maxCapacity: 5,
         },
       });
-    }).toThrow(/ServerlessScalingConfiguration minCapacity 10 must be less than serverlessScalingConfiguration maxCapacity 5/);
+    }).toThrow(
+      /ServerlessScalingConfiguration minCapacity 10 must be less than serverlessScalingConfiguration maxCapacity 5/
+    );
   });
 
   test('cloudwatchLogsExports log retention is enabled when configured for multiple logs exports', () => {

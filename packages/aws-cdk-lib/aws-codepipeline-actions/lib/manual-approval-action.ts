@@ -82,20 +82,14 @@ export class ManualApprovalAction extends Action {
     );
     grantable.grantPrincipal.addToPrincipalPolicy(
       new iam.PolicyStatement({
-        actions: [
-          'codepipeline:GetPipeline',
-          'codepipeline:GetPipelineState',
-          'codepipeline:GetPipelineExecution',
-        ],
+        actions: ['codepipeline:GetPipeline', 'codepipeline:GetPipelineState', 'codepipeline:GetPipelineExecution'],
         resources: [this.stage.pipeline.pipelineArn],
       })
     );
     grantable.grantPrincipal.addToPrincipalPolicy(
       new iam.PolicyStatement({
         actions: ['codepipeline:PutApprovalResult'],
-        resources: [
-          `${this.stage.pipeline.pipelineArn}/${this.stage.stageName}/${this.props.actionName}`,
-        ],
+        resources: [`${this.stage.pipeline.pipelineArn}/${this.stage.stageName}/${this.props.actionName}`],
       })
     );
   }

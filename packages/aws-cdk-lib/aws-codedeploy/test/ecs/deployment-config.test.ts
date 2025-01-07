@@ -17,9 +17,9 @@ test('can create default config', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
-    'ComputePlatform': 'ECS',
-    'TrafficRoutingConfig': {
-      'Type': 'AllAtOnce',
+    ComputePlatform: 'ECS',
+    TrafficRoutingConfig: {
+      Type: 'AllAtOnce',
     },
   });
 });
@@ -32,9 +32,9 @@ test('can create all-at-once config', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
-    'ComputePlatform': 'ECS',
-    'TrafficRoutingConfig': {
-      'Type': 'AllAtOnce',
+    ComputePlatform: 'ECS',
+    TrafficRoutingConfig: {
+      Type: 'AllAtOnce',
     },
   });
 });
@@ -50,13 +50,13 @@ test('can create linear config', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
-    'ComputePlatform': 'ECS',
-    'TrafficRoutingConfig': {
-      'TimeBasedLinear': {
-        'LinearInterval': 1,
-        'LinearPercentage': 5,
+    ComputePlatform: 'ECS',
+    TrafficRoutingConfig: {
+      TimeBasedLinear: {
+        LinearInterval: 1,
+        LinearPercentage: 5,
       },
-      'Type': 'TimeBasedLinear',
+      Type: 'TimeBasedLinear',
     },
   });
 });
@@ -72,13 +72,13 @@ test('can create canary config', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
-    'ComputePlatform': 'ECS',
-    'TrafficRoutingConfig': {
-      'TimeBasedCanary': {
-        'CanaryInterval': 1,
-        'CanaryPercentage': 5,
+    ComputePlatform: 'ECS',
+    TrafficRoutingConfig: {
+      TimeBasedCanary: {
+        CanaryInterval: 1,
+        CanaryPercentage: 5,
       },
-      'Type': 'TimeBasedCanary',
+      Type: 'TimeBasedCanary',
     },
   });
 });
@@ -95,14 +95,14 @@ test('can create a config with a specific name', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
-    'ComputePlatform': 'ECS',
-    'DeploymentConfigName': 'MyCanaryConfig',
-    'TrafficRoutingConfig': {
-      'TimeBasedCanary': {
-        'CanaryInterval': 1,
-        'CanaryPercentage': 5,
+    ComputePlatform: 'ECS',
+    DeploymentConfigName: 'MyCanaryConfig',
+    TrafficRoutingConfig: {
+      TimeBasedCanary: {
+        CanaryInterval: 1,
+        CanaryPercentage: 5,
       },
-      'Type': 'TimeBasedCanary',
+      Type: 'TimeBasedCanary',
     },
   });
 });
@@ -138,5 +138,7 @@ test('fail with unallowed characters in name', () => {
     deploymentConfigName: 'my name',
   });
 
-  expect(() => app.synth()).toThrow('Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
+  expect(() => app.synth()).toThrow(
+    'Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).'
+  );
 });

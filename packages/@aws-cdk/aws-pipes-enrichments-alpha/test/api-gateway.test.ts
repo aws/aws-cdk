@@ -16,7 +16,6 @@ describe('api-destination', () => {
 
     restApi = new RestApi(stack, 'RestApi');
     restApi.root.addResource('test').addMethod('GET');
-
   });
 
   it('should have only enrichment arn', () => {
@@ -127,9 +126,7 @@ describe('api-destination', () => {
           HeaderParameters: {
             headerParam: 'headerParam',
           },
-          PathParameterValues: [
-            'pathParam',
-          ],
+          PathParameterValues: ['pathParam'],
           QueryStringParameters: {
             param: 'queryParam',
           },
@@ -156,4 +153,3 @@ describe('api-destination', () => {
     expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
   });
 });
-

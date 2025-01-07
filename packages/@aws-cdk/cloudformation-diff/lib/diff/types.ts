@@ -1,9 +1,5 @@
 import { AssertionError } from 'assert';
-import {
-  PropertyScrutinyType,
-  ResourceScrutinyType,
-  Resource as ResourceModel,
-} from '@aws-cdk/service-spec-types';
+import { PropertyScrutinyType, ResourceScrutinyType, Resource as ResourceModel } from '@aws-cdk/service-spec-types';
 import { deepEqual, loadResourceModel } from './util';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';
@@ -87,18 +83,10 @@ export class TemplateDiff implements ITemplateDiff {
     });
 
     this.securityGroupChanges = new SecurityGroupChanges({
-      egressRulePropertyChanges: this.scrutinizablePropertyChanges([
-        PropertyScrutinyType.EgressRules,
-      ]),
-      ingressRulePropertyChanges: this.scrutinizablePropertyChanges([
-        PropertyScrutinyType.IngressRules,
-      ]),
-      egressRuleResourceChanges: this.scrutinizableResourceChanges([
-        ResourceScrutinyType.EgressRuleResource,
-      ]),
-      ingressRuleResourceChanges: this.scrutinizableResourceChanges([
-        ResourceScrutinyType.IngressRuleResource,
-      ]),
+      egressRulePropertyChanges: this.scrutinizablePropertyChanges([PropertyScrutinyType.EgressRules]),
+      ingressRulePropertyChanges: this.scrutinizablePropertyChanges([PropertyScrutinyType.IngressRules]),
+      egressRuleResourceChanges: this.scrutinizableResourceChanges([ResourceScrutinyType.EgressRuleResource]),
+      ingressRuleResourceChanges: this.scrutinizableResourceChanges([ResourceScrutinyType.IngressRuleResource]),
     });
   }
 
@@ -249,10 +237,7 @@ export class TemplateDiff implements ITemplateDiff {
     return ret;
   }
 
-  private resourceIsScrutinizable(
-    res: ResourceModel,
-    scrutinyTypes: Array<ResourceScrutinyType>
-  ): boolean {
+  private resourceIsScrutinizable(res: ResourceModel, scrutinyTypes: Array<ResourceScrutinyType>): boolean {
     return scrutinyTypes.includes(res.scrutinizable || ResourceScrutinyType.None);
   }
 }
@@ -719,9 +704,7 @@ export class ResourceDifference implements IDifference<Resource> {
         return ResourceImpact.WILL_CREATE;
       }
       if (this.resourceTypes.newType === undefined) {
-        return this.oldValue!.DeletionPolicy === 'Retain'
-          ? ResourceImpact.WILL_ORPHAN
-          : ResourceImpact.WILL_DESTROY;
+        return this.oldValue!.DeletionPolicy === 'Retain' ? ResourceImpact.WILL_ORPHAN : ResourceImpact.WILL_DESTROY;
       }
       return ResourceImpact.WILL_REPLACE;
     }
@@ -729,9 +712,7 @@ export class ResourceDifference implements IDifference<Resource> {
     // Base impact (before we mix in the worst of the property impacts);
     // WILL_UPDATE if we have "other" changes, NO_CHANGE if there are no "other" changes.
     const baseImpact =
-      Object.keys(this.otherChanges).length > 0
-        ? ResourceImpact.WILL_UPDATE
-        : ResourceImpact.NO_CHANGE;
+      Object.keys(this.otherChanges).length > 0 ? ResourceImpact.WILL_UPDATE : ResourceImpact.NO_CHANGE;
 
     return Object.values(this.propertyDiffs)
       .map((elt) => elt.changeImpact)
@@ -749,11 +730,7 @@ export class ResourceDifference implements IDifference<Resource> {
    * Invoke a callback for each actual difference
    */
   public forEachDifference(
-    cb: (
-      type: 'Property' | 'Other',
-      name: string,
-      value: Difference<any> | PropertyDifference<any>
-    ) => any
+    cb: (type: 'Property' | 'Other', name: string, value: Difference<any> | PropertyDifference<any>) => any
   ) {
     for (const key of Object.keys(this.propertyUpdates).sort()) {
       cb('Property', key, this.propertyUpdates[key]);

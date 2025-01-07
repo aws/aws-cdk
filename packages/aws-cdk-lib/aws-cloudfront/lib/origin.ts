@@ -175,9 +175,7 @@ export abstract class OriginBase implements IOrigin {
     const customOriginConfig = this.renderCustomOriginConfig();
 
     if (!s3OriginConfig && !customOriginConfig) {
-      throw new Error(
-        'Subclass must override and provide either s3OriginConfig or customOriginConfig'
-      );
+      throw new Error('Subclass must override and provide either s3OriginConfig or customOriginConfig');
     }
 
     return {
@@ -265,9 +263,7 @@ function validateIntInRangeOrUndefined(
   }
   if (!Number.isInteger(value) || value < min || value > max) {
     const seconds = isDuration ? ' seconds' : '';
-    throw new Error(
-      `${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`
-    );
+    throw new Error(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
   }
 }
 
@@ -307,9 +303,7 @@ function validateCustomHeaders(customHeaders?: Record<string, string>) {
   const prohibitedHeaderKeyPrefixes = ['X-Amz-', 'X-Edge-'];
 
   const prohibitedHeadersKeysMatches = customHeaderKeys.filter((customKey) => {
-    return prohibitedHeaderKeys
-      .map((prohibitedKey) => prohibitedKey.toLowerCase())
-      .includes(customKey.toLowerCase());
+    return prohibitedHeaderKeys.map((prohibitedKey) => prohibitedKey.toLowerCase()).includes(customKey.toLowerCase());
   });
   const prohibitedHeaderPrefixMatches = customHeaderKeys.filter((customKey) => {
     return prohibitedHeaderKeyPrefixes.some((prohibitedKeyPrefix) =>

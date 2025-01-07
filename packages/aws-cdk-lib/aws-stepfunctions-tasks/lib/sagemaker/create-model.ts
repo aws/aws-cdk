@@ -69,10 +69,7 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
-export class SageMakerCreateModel
-  extends sfn.TaskStateBase
-  implements iam.IGrantable, ec2.IConnectable
-{
+export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -100,10 +97,7 @@ export class SageMakerCreateModel
   ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(
-      this.integrationPattern,
-      SageMakerCreateModel.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, SageMakerCreateModel.SUPPORTED_INTEGRATION_PATTERNS);
 
     // add the security groups to the connections object
     if (props.vpc) {

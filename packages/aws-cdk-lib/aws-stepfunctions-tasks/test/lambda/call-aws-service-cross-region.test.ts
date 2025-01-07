@@ -32,15 +32,12 @@ test('CallAwsServiceCrossRegion task', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      'Fn::GetAtt': [
-        'CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F', 'Arn'],
     },
     End: true,
     Parameters: {
       parameters: {
-        'Bucket': 'my-bucket',
+        Bucket: 'my-bucket',
         'Key.$': '$.key',
       },
       action: 'getObject',
@@ -98,15 +95,12 @@ test('with retryOnServiceExceptions disabled', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      'Fn::GetAtt': [
-        'CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F', 'Arn'],
     },
     End: true,
     Parameters: {
       parameters: {
-        'Bucket': 'my-bucket',
+        Bucket: 'my-bucket',
         'Key.$': '$.key',
       },
       action: 'getObject',
@@ -135,10 +129,7 @@ test('with custom IAM action', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      'Fn::GetAtt': [
-        'CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F', 'Arn'],
     },
     End: true,
     Parameters: {
@@ -179,10 +170,7 @@ test('parameters with camelCase', () => {
   expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: {
-      'Fn::GetAtt': [
-        'CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F', 'Arn'],
     },
     End: true,
     Parameters: {
@@ -197,30 +185,36 @@ test('parameters with camelCase', () => {
 });
 
 test('throws with invalid integration pattern', () => {
-  expect(() => new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
-    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-    service: 's3',
-    action: 'getObject',
-    parameters: {
-      Bucket: 'my-bucket',
-      Key: sfn.JsonPath.stringAt('$.key'),
-    },
-    region: 'us-east-1',
-    iamResources: ['*'],
-  })).toThrow(/The RUN_JOB integration pattern is not supported for CallAwsService/);
+  expect(
+    () =>
+      new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+        integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+        service: 's3',
+        action: 'getObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: sfn.JsonPath.stringAt('$.key'),
+        },
+        region: 'us-east-1',
+        iamResources: ['*'],
+      })
+  ).toThrow(/The RUN_JOB integration pattern is not supported for CallAwsService/);
 });
 
 test('throws if action is not camelCase', () => {
-  expect(() => new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
-    service: 's3',
-    action: 'GetObject',
-    parameters: {
-      Bucket: 'my-bucket',
-      Key: sfn.JsonPath.stringAt('$.key'),
-    },
-    region: 'us-east-1',
-    iamResources: ['*'],
-  })).toThrow(/action must be camelCase, got: GetObject/);
+  expect(
+    () =>
+      new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+        service: 's3',
+        action: 'GetObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: sfn.JsonPath.stringAt('$.key'),
+        },
+        region: 'us-east-1',
+        iamResources: ['*'],
+      })
+  ).toThrow(/action must be camelCase, got: GetObject/);
 });
 
 test('can pass additional IAM statements', () => {

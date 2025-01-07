@@ -232,11 +232,7 @@ export class EventBus extends EventBusBase {
    * @param id Construct ID
    * @param attrs Imported event bus properties
    */
-  public static fromEventBusAttributes(
-    scope: Construct,
-    id: string,
-    attrs: EventBusAttributes
-  ): IEventBus {
+  public static fromEventBusAttributes(scope: Construct, id: string, attrs: EventBusAttributes): IEventBus {
     return new ImportedEventBus(scope, id, attrs);
   }
 
@@ -337,14 +333,8 @@ export class EventBus extends EventBusBase {
 
     super(scope, id, { physicalName: eventBusName });
 
-    if (
-      props?.description &&
-      !Token.isUnresolved(props.description) &&
-      props.description.length > 512
-    ) {
-      throw new Error(
-        `description must be less than or equal to 512 characters, got ${props.description.length}`
-      );
+    if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
+      throw new Error(`description must be less than or equal to 512 characters, got ${props.description.length}`);
     }
 
     const eventBus = new CfnEventBus(this, 'Resource', {

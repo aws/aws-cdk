@@ -1,8 +1,6 @@
 import { Template } from '../../../assertions';
 import { Stack } from '../../../core';
-import {
-  WebSocketApi, WebSocketAuthorizer, WebSocketAuthorizerType,
-} from '../../lib';
+import { WebSocketApi, WebSocketAuthorizer, WebSocketAuthorizerType } from '../../lib';
 
 describe('WebSocketAuthorizer', () => {
   describe('lambda', () => {

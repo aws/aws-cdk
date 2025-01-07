@@ -79,9 +79,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.role = props.assumeRole;
 
     if (props.resultsCacheTtl && props.resultsCacheTtl?.toSeconds() > 3600) {
-      throw new Error(
-        "Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)"
-      );
+      throw new Error("Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)");
     }
   }
 
@@ -97,9 +95,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.restApiId = restApi.restApiId;
 
     const deployment = restApi.latestDeployment;
-    const addToLogicalId = FeatureFlags.of(this).isEnabled(
-      APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID
-    );
+    const addToLogicalId = FeatureFlags.of(this).isEnabled(APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID);
 
     if (deployment && addToLogicalId) {
       let functionName;
@@ -221,8 +217,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       type: 'TOKEN',
       authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds:
-        props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
       identitySource: props.identitySource || IdentitySource.header('Authorization'),
       identityValidationExpression: props.validationRegex,
     };
@@ -295,8 +290,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       type: 'REQUEST',
       authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds:
-        props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
       identitySource: props.identitySources.map((is) => is.toString()).join(','),
     };
 

@@ -22,20 +22,12 @@ export class SecurityGroupChanges {
   constructor(props: SecurityGroupChangesProps) {
     // Group rules
     for (const ingressProp of props.ingressRulePropertyChanges) {
-      this.ingress.addOld(
-        ...this.readInlineRules(ingressProp.oldValue, ingressProp.resourceLogicalId)
-      );
-      this.ingress.addNew(
-        ...this.readInlineRules(ingressProp.newValue, ingressProp.resourceLogicalId)
-      );
+      this.ingress.addOld(...this.readInlineRules(ingressProp.oldValue, ingressProp.resourceLogicalId));
+      this.ingress.addNew(...this.readInlineRules(ingressProp.newValue, ingressProp.resourceLogicalId));
     }
     for (const egressProp of props.egressRulePropertyChanges) {
-      this.egress.addOld(
-        ...this.readInlineRules(egressProp.oldValue, egressProp.resourceLogicalId)
-      );
-      this.egress.addNew(
-        ...this.readInlineRules(egressProp.newValue, egressProp.resourceLogicalId)
-      );
+      this.egress.addOld(...this.readInlineRules(egressProp.oldValue, egressProp.resourceLogicalId));
+      this.egress.addNew(...this.readInlineRules(egressProp.newValue, egressProp.resourceLogicalId));
     }
 
     // Rule resources

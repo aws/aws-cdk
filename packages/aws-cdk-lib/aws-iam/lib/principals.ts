@@ -342,10 +342,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     return this.appendDedupe(JSON.stringify(this.conditions));
   }
 
-  private mergeConditions(
-    principalConditions: Conditions,
-    additionalConditions: Conditions
-  ): Conditions {
+  private mergeConditions(principalConditions: Conditions, additionalConditions: Conditions): Conditions {
     const mergedConditions: Conditions = {};
     Object.entries(principalConditions).forEach(([operator, condition]) => {
       mergedConditions[operator] = condition;
@@ -492,9 +489,7 @@ export class AccountPrincipal extends ArnPrincipal {
    * @param accountId AWS account ID (i.e. '123456789012')
    */
   constructor(public readonly accountId: any) {
-    super(
-      new StackDependentToken((stack) => `arn:${stack.partition}:iam::${accountId}:root`).toString()
-    );
+    super(new StackDependentToken((stack) => `arn:${stack.partition}:iam::${accountId}:root`).toString());
     if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
       throw new Error('accountId should be of type string');
     }
@@ -640,10 +635,7 @@ export class OrganizationPrincipal extends PrincipalBase {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment(
-      { AWS: ['*'] },
-      { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } }
-    );
+    return new PrincipalPolicyFragment({ AWS: ['*'] }, { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } });
   }
 
   public toString() {
@@ -808,9 +800,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud':
-          RegionInfo.get(samlProvider.stack.region).samlSignOnUrl ??
-          'https://signin.aws.amazon.com/saml',
+        'SAML:aud': RegionInfo.get(samlProvider.stack.region).samlSignOnUrl ?? 'https://signin.aws.amazon.com/saml',
       },
     });
   }
@@ -894,9 +884,7 @@ export class CompositePrincipal extends PrincipalBase {
   constructor(...principals: IPrincipal[]) {
     super();
     if (principals.length === 0) {
-      throw new Error(
-        'CompositePrincipals must be constructed with at least 1 Principal but none were passed.'
-      );
+      throw new Error('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
     }
     this.assumeRoleAction = principals[0].assumeRoleAction;
     this.addPrincipals(...principals);

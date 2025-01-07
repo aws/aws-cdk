@@ -32,11 +32,7 @@ class StringLike extends Matcher {
 
     const result = new MatchResult(actual);
     if (!re.test(actual)) {
-      result.push(
-        this,
-        [],
-        `Looking for string with pattern "${this.pattern}" but found "${actual}"`
-      );
+      result.push(this, [], `Looking for string with pattern "${this.pattern}" but found "${actual}"`);
     }
     return result;
 
@@ -85,11 +81,7 @@ class StringLengthMatcher extends Matcher {
     }
 
     if (actual.length > this.length) {
-      result.push(
-        this,
-        [],
-        `String is ${actual.length} characters long. Expected at most ${this.length} characters`
-      );
+      result.push(this, [], `String is ${actual.length} characters long. Expected at most ${this.length} characters`);
     }
 
     return result;

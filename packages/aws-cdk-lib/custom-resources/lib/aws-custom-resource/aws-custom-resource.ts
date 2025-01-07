@@ -452,9 +452,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
     for (const call of sdkCalls) {
       if (call?.ignoreErrorCodesMatching) {
-        throw new Error(
-          `\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.'
-        );
+        throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
       }
     }
   }
@@ -482,9 +480,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     }
 
     if (!props.onCreate && props.onUpdate && !props.onUpdate.physicalResourceId) {
-      throw new Error(
-        "'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted."
-      );
+      throw new Error("'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted.");
     }
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
@@ -494,9 +490,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     }
 
     if (includesPhysicalResourceIdRef(props.onCreate?.parameters)) {
-      throw new Error(
-        '`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.'
-      );
+      throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
     }
 
     this.props = props;
@@ -524,9 +518,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     this.grantPrincipal = provider.grantPrincipal;
 
     const installLatestAwsSdk =
-      props.installLatestAwsSdk ??
-      this.node.tryGetContext(cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT) ??
-      true;
+      props.installLatestAwsSdk ?? this.node.tryGetContext(cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT) ?? true;
 
     if (installLatestAwsSdk && props.installLatestAwsSdk === undefined) {
       // This is dangerous. Add a warning.
@@ -609,10 +601,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getResponseFieldReference(dataPath: string) {
-    AwsCustomResource.breakIgnoreErrorsCircuit(
-      [this.props.onCreate, this.props.onUpdate],
-      'getData'
-    );
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getData');
     return this.customResource.getAtt(dataPath);
   }
 
@@ -628,10 +617,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getResponseField(dataPath: string): string {
-    AwsCustomResource.breakIgnoreErrorsCircuit(
-      [this.props.onCreate, this.props.onUpdate],
-      'getDataString'
-    );
+    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getDataString');
     return this.customResource.getAttString(dataPath);
   }
 

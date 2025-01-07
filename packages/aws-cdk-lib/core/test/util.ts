@@ -4,9 +4,7 @@ import { CDK_DEBUG } from '../lib/debug';
 import { synthesize } from '../lib/private/synthesis';
 
 export function toCloudFormation(stack: Stack): any {
-  const synthesizedTemplate = synthesize(stack, { skipValidation: true }).getStackByName(
-    stack.stackName
-  ).template;
+  const synthesizedTemplate = synthesize(stack, { skipValidation: true }).getStackByName(stack.stackName).template;
 
   // if new-style synthesis is not explicitly set, remove the extra generated Rule and Parameter from the synthesized template,
   // to avoid changing many tests that rely on the template being exactly what it is

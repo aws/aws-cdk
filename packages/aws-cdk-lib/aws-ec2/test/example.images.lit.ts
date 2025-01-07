@@ -12,9 +12,7 @@ const amznLinux = ec2.MachineImage.latestAmazonLinux({
 });
 
 // Pick a Windows edition to use
-const windows = ec2.MachineImage.latestWindows(
-  ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE
-);
+const windows = ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE);
 
 // Read AMI id from SSM parameter store
 const ssm = ec2.MachineImage.fromSsmParameter('/my/ami', { os: ec2.OperatingSystemType.LINUX });

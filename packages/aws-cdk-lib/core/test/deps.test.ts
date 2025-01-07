@@ -15,9 +15,7 @@ describe('deps', () => {
       expect(app.synth().getStackByName(stack.stackName).template.Resources).toEqual({
         Resource1: {
           Type: 'Test::Resource::Fake1',
-          DependsOn: [
-            'Resource2',
-          ],
+          DependsOn: ['Resource2'],
         },
         Resource2: {
           Type: 'Test::Resource::Fake2',
@@ -62,7 +60,7 @@ describe('deps', () => {
       expect(stack1.dependencies.length).toEqual(1);
       expect(stack1.dependencies[0].node.id).toEqual(stack2.node.id);
       // obtainDependencies should assemble and flatten resource-to-resource dependencies even across stacks
-      expect(obtainDependencies(resource1).map(x => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
+      expect(obtainDependencies(resource1).map((x) => x.node.path)).toEqual([resource3.node.path, resource2.node.path]);
 
       removeDependency(resource1, resource2);
       // For symmetry, removing a dependency that doesn't exist should be a no-op

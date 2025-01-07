@@ -23,10 +23,7 @@ describe('SlackChannelConfiguration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'MySlackChannelConfigurationRole1D3F23AE',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MySlackChannelConfigurationRole1D3F23AE', 'Arn'],
       },
       SlackChannelId: 'DEF456',
       SlackWorkspaceId: 'ABC123',
@@ -59,10 +56,7 @@ describe('SlackChannelConfiguration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'MySlackChannelConfigurationRole1D3F23AE',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MySlackChannelConfigurationRole1D3F23AE', 'Arn'],
       },
       SlackChannelId: 'DEF456',
       SlackWorkspaceId: 'ABC123',
@@ -83,10 +77,7 @@ describe('SlackChannelConfiguration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'MySlackChannelConfigurationRole1D3F23AE',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MySlackChannelConfigurationRole1D3F23AE', 'Arn'],
       },
       SlackChannelId: 'DEF456',
       SlackWorkspaceId: 'ABC123',
@@ -138,13 +129,13 @@ describe('SlackChannelConfiguration', () => {
       slackChannelConfigurationName: 'Test',
     });
 
-    slackChannel.addToRolePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: [
-        's3:GetObject',
-      ],
-      resources: ['arn:aws:s3:::abc/xyz/123.txt'],
-    }));
+    slackChannel.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['s3:GetObject'],
+        resources: ['arn:aws:s3:::abc/xyz/123.txt'],
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -203,14 +194,16 @@ describe('SlackChannelConfiguration', () => {
       metric: metric,
     });
 
-    expect(metric).toEqual(new cloudwatch.Metric({
-      namespace: 'AWS/Chatbot',
-      region: 'us-east-1',
-      dimensionsMap: {
-        ConfigurationName: 'ConfigurationName',
-      },
-      metricName: 'MetricName',
-    }));
+    expect(metric).toEqual(
+      new cloudwatch.Metric({
+        namespace: 'AWS/Chatbot',
+        region: 'us-east-1',
+        dimensionsMap: {
+          ConfigurationName: 'ConfigurationName',
+        },
+        metricName: 'MetricName',
+      })
+    );
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Chatbot',
       MetricName: 'MetricName',
@@ -235,11 +228,13 @@ describe('SlackChannelConfiguration', () => {
       metric: metric,
     });
 
-    expect(metric).toEqual(new cloudwatch.Metric({
-      namespace: 'AWS/Chatbot',
-      region: 'us-east-1',
-      metricName: 'MetricName',
-    }));
+    expect(metric).toEqual(
+      new cloudwatch.Metric({
+        namespace: 'AWS/Chatbot',
+        region: 'us-east-1',
+        metricName: 'MetricName',
+      })
+    );
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Chatbot',
       MetricName: 'MetricName',
@@ -251,45 +246,78 @@ describe('SlackChannelConfiguration', () => {
   });
 
   test('added a iam policy to a from slack channel configuration ARN will nothing to do', () => {
-    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(
+      stack,
+      'MySlackChannel',
+      'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack'
+    );
 
-    (imported as chatbot.SlackChannelConfiguration).addToRolePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: [
-        's3:GetObject',
-      ],
-      resources: ['arn:aws:s3:::abc/xyz/123.txt'],
-    }));
+    (imported as chatbot.SlackChannelConfiguration).addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['s3:GetObject'],
+        resources: ['arn:aws:s3:::abc/xyz/123.txt'],
+      })
+    );
 
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
   });
 
   test('should throw error if ARN invalid', () => {
-    expect(() => chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/my-slack')).toThrow(
-      /The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration\/slack-channel\/<slackChannelName>/,
+    expect(() =>
+      chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(
+        stack,
+        'MySlackChannel',
+        'arn:aws:chatbot::1234567890:chat-configuration/my-slack'
+      )
+    ).toThrow(
+      /The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration\/slack-channel\/<slackChannelName>/
     );
   });
 
   test('from slack channel configuration ARN', () => {
-    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(
+      stack,
+      'MySlackChannel',
+      'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack'
+    );
 
     expect(imported.slackChannelConfigurationName).toEqual('my-slack');
-    expect(imported.slackChannelConfigurationArn).toEqual('arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+    expect(imported.slackChannelConfigurationArn).toEqual(
+      'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack'
+    );
   });
 
   test('skip validation for tokenized values', () => {
     // invalid ARN because of underscores, no error because tokenized value
-    expect(() => chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel',
-      cdk.Lazy.string({ produce: () => 'arn:aws:chatbot::1234567890:chat-configuration/slack_channel/my_slack' }))).not.toThrow();
+    expect(() =>
+      chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(
+        stack,
+        'MySlackChannel',
+        cdk.Lazy.string({ produce: () => 'arn:aws:chatbot::1234567890:chat-configuration/slack_channel/my_slack' })
+      )
+    ).not.toThrow();
   });
 
   test('test name and ARN from slack channel configuration ARN', () => {
-    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', cdk.Token.asString({ Ref: 'ARN' }));
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(
+      stack,
+      'MySlackChannel',
+      cdk.Token.asString({ Ref: 'ARN' })
+    );
 
     // THEN
     expect(stack.resolve(imported.slackChannelConfigurationName)).toStrictEqual({
-      'Fn::Select': [1, { 'Fn::Split': ['slack-channel/', { 'Fn::Select': [1, { 'Fn::Split': [':chat-configuration/', { Ref: 'ARN' }] }] }] }],
+      'Fn::Select': [
+        1,
+        {
+          'Fn::Split': [
+            'slack-channel/',
+            { 'Fn::Select': [1, { 'Fn::Split': [':chat-configuration/', { Ref: 'ARN' }] }] },
+          ],
+        },
+      ],
     });
     expect(stack.resolve(imported.slackChannelConfigurationArn)).toStrictEqual({
       Ref: 'ARN',

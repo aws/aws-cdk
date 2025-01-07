@@ -303,22 +303,14 @@ export class GameSessionQueue extends GameSessionQueueBase {
   /**
    * Import an existing gameSessionQueue from its name.
    */
-  static fromGameSessionQueueName(
-    scope: Construct,
-    id: string,
-    gameSessionQueueName: string
-  ): IGameSessionQueue {
+  static fromGameSessionQueueName(scope: Construct, id: string, gameSessionQueueName: string): IGameSessionQueue {
     return this.fromGameSessionQueueAttributes(scope, id, { gameSessionQueueName });
   }
 
   /**
    * Import an existing gameSessionQueue from its ARN.
    */
-  static fromGameSessionQueueArn(
-    scope: Construct,
-    id: string,
-    gameSessionQueueArn: string
-  ): IGameSessionQueue {
+  static fromGameSessionQueueArn(scope: Construct, id: string, gameSessionQueueArn: string): IGameSessionQueue {
     return this.fromGameSessionQueueAttributes(scope, id, { gameSessionQueueArn });
   }
 
@@ -337,8 +329,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
     }
     const gameSessionQueueName =
       attrs.gameSessionQueueName ??
-      cdk.Stack.of(scope).splitArn(attrs.gameSessionQueueArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-        .resourceName;
+      cdk.Stack.of(scope).splitArn(attrs.gameSessionQueueArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!gameSessionQueueName) {
       throw new Error(`No gameSessionQueue name found in ARN: '${attrs.gameSessionQueueArn}'`);
@@ -478,10 +469,8 @@ export class GameSessionQueue extends GameSessionQueueBase {
       playerLatencyPolicy: PlayerLatencyPolicy
     ): CfnGameSessionQueue.PlayerLatencyPolicyProperty {
       return {
-        maximumIndividualPlayerLatencyMilliseconds:
-          playerLatencyPolicy.maximumIndividualPlayerLatency.toMilliseconds(),
-        policyDurationSeconds:
-          playerLatencyPolicy.policyDuration && playerLatencyPolicy.policyDuration.toSeconds(),
+        maximumIndividualPlayerLatencyMilliseconds: playerLatencyPolicy.maximumIndividualPlayerLatency.toMilliseconds(),
+        policyDurationSeconds: playerLatencyPolicy.policyDuration && playerLatencyPolicy.policyDuration.toSeconds(),
       };
     }
   }
@@ -505,9 +494,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
 
     return this.destinations.map(parseDestination);
 
-    function parseDestination(
-      destination: IGameSessionQueueDestination
-    ): CfnGameSessionQueue.DestinationProperty {
+    function parseDestination(destination: IGameSessionQueueDestination): CfnGameSessionQueue.DestinationProperty {
       return {
         destinationArn: destination.resourceArnForDestination,
       };

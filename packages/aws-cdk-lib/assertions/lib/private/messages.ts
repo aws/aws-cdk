@@ -53,10 +53,7 @@ function redactTraces(match: any, redact: boolean = true): void {
   }
 }
 
-function filterPath(
-  section: { [key: string]: SynthesisMessage },
-  path: string
-): { [key: string]: SynthesisMessage } {
+function filterPath(section: { [key: string]: SynthesisMessage }, path: string): { [key: string]: SynthesisMessage } {
   // default signal for all paths is '*'
   if (path === '*') return section;
 

@@ -14,11 +14,7 @@ import {
 } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
-import {
-  parseLoadBalancerFullName,
-  parseTargetGroupFullName,
-  validateNetworkProtocol,
-} from '../shared/util';
+import { parseLoadBalancerFullName, parseTargetGroupFullName, validateNetworkProtocol } from '../shared/util';
 
 /**
  * Properties for a new Network Target Group
@@ -159,11 +155,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    *
    * @deprecated Use `fromTargetGroupAttributes` instead
    */
-  public static import(
-    scope: Construct,
-    id: string,
-    props: TargetGroupImportProps
-  ): INetworkTargetGroup {
+  public static import(scope: Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
     return NetworkTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
@@ -199,11 +191,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
   public get metrics(): INetworkTargetGroupMetrics {
     if (!this._metrics) {
-      this._metrics = new NetworkTargetGroupMetrics(
-        this,
-        this.targetGroupFullName,
-        this.firstLoadBalancerFullName
-      );
+      this._metrics = new NetworkTargetGroupMetrics(this, this.targetGroupFullName, this.firstLoadBalancerFullName);
     }
     return this._metrics;
   }
@@ -253,9 +241,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    */
   public get firstLoadBalancerFullName(): string {
     if (this.listeners.length === 0) {
-      throw new Error(
-        'The TargetGroup needs to be attached to a LoadBalancer before you can call this method'
-      );
+      throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
@@ -269,10 +255,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     const highHealthCheckInterval = 300;
     if (healthCheck.interval) {
       const seconds = healthCheck.interval.toSeconds();
-      if (
-        !cdk.Token.isUnresolved(seconds) &&
-        (seconds < lowHealthCheckInterval || seconds > highHealthCheckInterval)
-      ) {
+      if (!cdk.Token.isUnresolved(seconds) && (seconds < lowHealthCheckInterval || seconds > highHealthCheckInterval)) {
         ret.push(
           `Health check interval '${seconds}' not supported. Must be between ${lowHealthCheckInterval} and ${highHealthCheckInterval}.`
         );
@@ -282,18 +265,14 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     if (healthCheck.healthyThresholdCount) {
       const thresholdCount = healthCheck.healthyThresholdCount;
       if (thresholdCount < 2 || thresholdCount > 10) {
-        ret.push(
-          `Healthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`
-        );
+        ret.push(`Healthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`);
       }
     }
 
     if (healthCheck.unhealthyThresholdCount) {
       const thresholdCount = healthCheck.unhealthyThresholdCount;
       if (thresholdCount < 2 || thresholdCount > 10) {
-        ret.push(
-          `Unhealthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`
-        );
+        ret.push(`Unhealthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`);
       }
     }
 
@@ -363,11 +342,7 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
     if (this.loadBalancerArns != cdk.Aws.NO_VALUE) {
       const targetGroupFullName = parseTargetGroupFullName(this.targetGroupArn);
       const firstLoadBalancerFullName = parseLoadBalancerFullName(this.loadBalancerArns);
-      this._metrics = new NetworkTargetGroupMetrics(
-        this,
-        targetGroupFullName,
-        firstLoadBalancerFullName
-      );
+      this._metrics = new NetworkTargetGroupMetrics(this, targetGroupFullName, firstLoadBalancerFullName);
     }
   }
 

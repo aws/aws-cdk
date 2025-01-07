@@ -1,7 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
-import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import {
+  CfnEIP,
+  GatewayVpcEndpoint,
+  GatewayVpcEndpointAwsService,
+  SubnetType,
+  VpnConnectionType,
+} from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
 import { Template } from 'aws-cdk-lib/assertions';
 
@@ -20,9 +26,11 @@ describe('EC2 Routing', () => {
     stack = new cdk.Stack(app);
     myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({
-        cidrBlockName: 'AmazonIpv6',
-      })],
+      secondaryAddressBlocks: [
+        vpc.IpAddresses.amazonProvidedIpv6({
+          cidrBlockName: 'AmazonIpv6',
+        }),
+      ],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     });
@@ -49,23 +57,17 @@ describe('EC2 Routing', () => {
     // EIGW should be in stack
     template.hasResourceProperties('AWS::EC2::EgressOnlyInternetGateway', {
       VpcId: {
-        'Fn::GetAtt': [
-          'TestVpcE77CE678', 'VpcId',
-        ],
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
       },
     });
     // Route linking IP to EIGW should be in stack
     template.hasResourceProperties('AWS::EC2::Route', {
       DestinationIpv6CidrBlock: '::/0',
       EgressOnlyInternetGatewayId: {
-        'Fn::GetAtt': [
-          'TestEIGW4E4CDA8D', 'Id',
-        ],
+        'Fn::GetAtt': ['TestEIGW4E4CDA8D', 'Id'],
       },
       RouteTableId: {
-        'Fn::GetAtt': [
-          'TestRouteTableC34C2E1C', 'RouteTableId',
-        ],
+        'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
       },
     });
   });
@@ -85,80 +87,62 @@ describe('EC2 Routing', () => {
     template.hasResourceProperties('AWS::EC2::Route', {
       DestinationCidrBlock: '0.0.0.0/0',
       GatewayId: {
-        'Fn::GetAtt': [
-          'TestVpnGwIGW11AF5344', 'VPNGatewayId',
-        ],
+        'Fn::GetAtt': ['TestVpnGwIGW11AF5344', 'VPNGatewayId'],
       },
       RouteTableId: {
-        'Fn::GetAtt': [
-          'TestRouteTableC34C2E1C', 'RouteTableId',
-        ],
+        'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
       },
     });
     // Route Gateway attachment should be in stack
     template.hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
       VpcId: {
-        'Fn::GetAtt': [
-          'TestVpcE77CE678', 'VpcId',
-        ],
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
       },
       VpnGatewayId: {
-        'Fn::GetAtt': [
-          'TestVpnGwIGW11AF5344', 'VPNGatewayId',
-        ],
+        'Fn::GetAtt': ['TestVpnGwIGW11AF5344', 'VPNGatewayId'],
       },
     });
   }),
-
-  test('Route to VPN Gateway with optional properties', () => {
-    new route.VPNGatewayV2(stack, 'TestVpnGw', {
-      type: VpnConnectionType.IPSEC_1,
-      vpc: myVpc,
-      amazonSideAsn: 12345678,
+    test('Route to VPN Gateway with optional properties', () => {
+      new route.VPNGatewayV2(stack, 'TestVpnGw', {
+        type: VpnConnectionType.IPSEC_1,
+        vpc: myVpc,
+        amazonSideAsn: 12345678,
+      });
+      // VPN Gateway should be in stack
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNGateway', {
+        AmazonSideAsn: 12345678,
+        Type: 'ipsec.1',
+      });
+    }),
+    test('Route to Internet Gateway', () => {
+      const igw = new route.InternetGateway(stack, 'TestIGW', {
+        vpc: myVpc,
+      });
+      routeTable.addRoute('Route', '0.0.0.0/0', { gateway: igw });
+      const template = Template.fromStack(stack);
+      // Internet Gateway should be in stack
+      template.hasResource('AWS::EC2::InternetGateway', {});
+      // Route linking IP to IGW should be in stack
+      template.hasResourceProperties('AWS::EC2::Route', {
+        DestinationCidrBlock: '0.0.0.0/0',
+        GatewayId: {
+          'Fn::GetAtt': ['TestIGW1B4DB37D', 'InternetGatewayId'],
+        },
+        RouteTableId: {
+          'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
+        },
+      });
+      // Route Gateway attachment should be in stack
+      template.hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
+        VpcId: {
+          'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
+        },
+        InternetGatewayId: {
+          'Fn::GetAtt': ['TestIGW1B4DB37D', 'InternetGatewayId'],
+        },
+      });
     });
-    // VPN Gateway should be in stack
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNGateway', {
-      AmazonSideAsn: 12345678,
-      Type: 'ipsec.1',
-    });
-  }),
-
-  test('Route to Internet Gateway', () => {
-    const igw = new route.InternetGateway(stack, 'TestIGW', {
-      vpc: myVpc,
-    });
-    routeTable.addRoute('Route', '0.0.0.0/0', { gateway: igw });
-    const template = Template.fromStack(stack);
-    // Internet Gateway should be in stack
-    template.hasResource('AWS::EC2::InternetGateway', {});
-    // Route linking IP to IGW should be in stack
-    template.hasResourceProperties('AWS::EC2::Route', {
-      DestinationCidrBlock: '0.0.0.0/0',
-      GatewayId: {
-        'Fn::GetAtt': [
-          'TestIGW1B4DB37D', 'InternetGatewayId',
-        ],
-      },
-      RouteTableId: {
-        'Fn::GetAtt': [
-          'TestRouteTableC34C2E1C', 'RouteTableId',
-        ],
-      },
-    });
-    // Route Gateway attachment should be in stack
-    template.hasResourceProperties('AWS::EC2::VPCGatewayAttachment', {
-      VpcId: {
-        'Fn::GetAtt': [
-          'TestVpcE77CE678', 'VpcId',
-        ],
-      },
-      InternetGatewayId: {
-        'Fn::GetAtt': [
-          'TestIGW1B4DB37D', 'InternetGatewayId',
-        ],
-      },
-    });
-  });
 
   test('Route to private NAT Gateway', () => {
     const natgw = new route.NatGateway(stack, 'TestNATGW', {
@@ -176,24 +160,16 @@ describe('EC2 Routing', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
     // Route linking private IP to NAT Gateway should be in stack
     template.hasResourceProperties('AWS::EC2::Route', {
       DestinationCidrBlock: '0.0.0.0/0',
       NatGatewayId: {
-        'Fn::GetAtt': [
-          'TestNATGWNATGatewayBE4F6F2D',
-          'NatGatewayId',
-        ],
+        'Fn::GetAtt': ['TestNATGWNATGatewayBE4F6F2D', 'NatGatewayId'],
       },
       RouteTableId: {
-        'Fn::GetAtt': [
-          'TestRouteTableC34C2E1C',
-          'RouteTableId',
-        ],
+        'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
       },
     });
   });
@@ -203,10 +179,7 @@ describe('EC2 Routing', () => {
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
-      secondaryPrivateIpAddresses: [
-        '10.0.1.0/28',
-        '10.0.2.0/28',
-      ],
+      secondaryPrivateIpAddresses: ['10.0.1.0/28', '10.0.2.0/28'],
     });
     routeTable.addRoute('Route', '0.0.0.0/0', { gateway: natgw });
     const template = Template.fromStack(stack);
@@ -215,17 +188,12 @@ describe('EC2 Routing', () => {
       Properties: {
         ConnectivityType: 'private',
         PrivateIpAddress: '10.0.0.42',
-        SecondaryPrivateIpAddresses: [
-          '10.0.1.0/28',
-          '10.0.2.0/28',
-        ],
+        SecondaryPrivateIpAddresses: ['10.0.1.0/28', '10.0.2.0/28'],
         SubnetId: {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
   });
 
@@ -248,24 +216,16 @@ describe('EC2 Routing', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
     // Route linking private IP to NAT Gateway should be in stack
     template.hasResourceProperties('AWS::EC2::Route', {
       DestinationCidrBlock: '0.0.0.0/0',
       NatGatewayId: {
-        'Fn::GetAtt': [
-          'TestNATGWNATGatewayBE4F6F2D',
-          'NatGatewayId',
-        ],
+        'Fn::GetAtt': ['TestNATGWNATGatewayBE4F6F2D', 'NatGatewayId'],
       },
       RouteTableId: {
-        'Fn::GetAtt': [
-          'TestRouteTableC34C2E1C',
-          'RouteTableId',
-        ],
+        'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
       },
     });
   });
@@ -284,31 +244,21 @@ describe('EC2 Routing', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
     // Route linking private IP to NAT Gateway should be in stack
     template.hasResourceProperties('AWS::EC2::Route', {
       DestinationCidrBlock: '0.0.0.0/0',
       NatGatewayId: {
-        'Fn::GetAtt': [
-          'TestNATGWNATGatewayBE4F6F2D',
-          'NatGatewayId',
-        ],
+        'Fn::GetAtt': ['TestNATGWNATGatewayBE4F6F2D', 'NatGatewayId'],
       },
       RouteTableId: {
-        'Fn::GetAtt': [
-          'TestRouteTableC34C2E1C',
-          'RouteTableId',
-        ],
+        'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
       },
     });
     // EIP should be created when not provided
     template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
   });
 
@@ -328,33 +278,22 @@ describe('EC2 Routing', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
     // Route linking private IP to NAT Gateway should be in stack
     template.hasResourceProperties('AWS::EC2::Route', {
       DestinationCidrBlock: '0.0.0.0/0',
       NatGatewayId: {
-        'Fn::GetAtt': [
-          'TestNATGWNATGatewayBE4F6F2D',
-          'NatGatewayId',
-        ],
+        'Fn::GetAtt': ['TestNATGWNATGatewayBE4F6F2D', 'NatGatewayId'],
       },
       RouteTableId: {
-        'Fn::GetAtt': [
-          'TestRouteTableC34C2E1C',
-          'RouteTableId',
-        ],
+        'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
       },
     });
     // EIP should be in stack
     template.hasResourceProperties('AWS::EC2::EIP', {
       Domain: {
-        'Fn::GetAtt': [
-          'TestVpcE77CE678',
-          'VpcId',
-        ],
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
       },
     });
   });
@@ -377,31 +316,21 @@ describe('EC2 Routing', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
     // Route linking private IP to NAT Gateway should be in stack
     template.hasResourceProperties('AWS::EC2::Route', {
       DestinationCidrBlock: '0.0.0.0/0',
       NatGatewayId: {
-        'Fn::GetAtt': [
-          'TestNATGWNATGatewayBE4F6F2D',
-          'NatGatewayId',
-        ],
+        'Fn::GetAtt': ['TestNATGWNATGatewayBE4F6F2D', 'NatGatewayId'],
       },
       RouteTableId: {
-        'Fn::GetAtt': [
-          'TestRouteTableC34C2E1C',
-          'RouteTableId',
-        ],
+        'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
       },
     });
     // EIP should be created when not provided
     template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
   });
 
@@ -415,28 +344,15 @@ describe('EC2 Routing', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
       RouteTableIds: [
         {
-          'Fn::GetAtt': [
-            'TestRouteTableC34C2E1C',
-            'RouteTableId',
-          ],
+          'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
         },
       ],
       ServiceName: {
-        'Fn::Join': [
-          '',
-          [
-            'com.amazonaws.',
-            { Ref: 'AWS::Region' },
-            '.dynamodb',
-          ],
-        ],
+        'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.dynamodb']],
       },
       VpcEndpointType: 'Gateway',
       VpcId: {
-        'Fn::GetAtt': [
-          'TestVpcE77CE678',
-          'VpcId',
-        ],
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
       },
     });
   });
@@ -451,28 +367,15 @@ describe('EC2 Routing', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
       RouteTableIds: [
         {
-          'Fn::GetAtt': [
-            'TestRouteTableC34C2E1C',
-            'RouteTableId',
-          ],
+          'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
         },
       ],
       ServiceName: {
-        'Fn::Join': [
-          '',
-          [
-            'com.amazonaws.',
-            { Ref: 'AWS::Region' },
-            '.s3',
-          ],
-        ],
+        'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.s3']],
       },
       VpcEndpointType: 'Gateway',
       VpcId: {
-        'Fn::GetAtt': [
-          'TestVpcE77CE678',
-          'VpcId',
-        ],
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
       },
     });
   });
@@ -487,35 +390,21 @@ describe('EC2 Routing', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
       RouteTableIds: [
         {
-          'Fn::GetAtt': [
-            'TestRouteTableC34C2E1C',
-            'RouteTableId',
-          ],
+          'Fn::GetAtt': ['TestRouteTableC34C2E1C', 'RouteTableId'],
         },
       ],
       ServiceName: {
-        'Fn::Join': [
-          '',
-          [
-            'com.amazonaws.',
-            { Ref: 'AWS::Region' },
-            '.s3express',
-          ],
-        ],
+        'Fn::Join': ['', ['com.amazonaws.', { Ref: 'AWS::Region' }, '.s3express']],
       },
       VpcEndpointType: 'Gateway',
       VpcId: {
-        'Fn::GetAtt': [
-          'TestVpcE77CE678',
-          'VpcId',
-        ],
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
       },
     });
   });
 });
 
 describe('VPCPeeringConnection', () => {
-
   let stackA: cdk.Stack;
   let stackB: cdk.Stack;
   let stackC: cdk.Stack;
@@ -533,7 +422,10 @@ describe('VPCPeeringConnection', () => {
 
     stackA = new cdk.Stack(app, 'VpcStackA', { env: { account: '234567890123', region: 'us-east-1' } });
     stackB = new cdk.Stack(app, 'VpcStackB', { env: { account: '123456789012', region: 'us-east-1' } });
-    stackC = new cdk.Stack(app, 'VpcStackC', { env: { account: '123456789012', region: 'us-west-2' }, crossRegionReferences: true });
+    stackC = new cdk.Stack(app, 'VpcStackC', {
+      env: { account: '123456789012', region: 'us-west-2' },
+      crossRegionReferences: true,
+    });
 
     vpcA = new vpc.VpcV2(stackA, 'VpcA', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
@@ -545,11 +437,9 @@ describe('VPCPeeringConnection', () => {
     vpcC = new vpc.VpcV2(stackC, 'VpcC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
     });
-
   });
 
   test('Creates a cross account VPC peering connection', () => {
-
     const importedVpcB = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
       vpcId: 'mockVpcBId', //cross account stack references are not supported
       vpcCidrBlock: '10.2.0.0/16',
@@ -575,7 +465,6 @@ describe('VPCPeeringConnection', () => {
   });
 
   test('Creates a cross region VPC peering connection', () => {
-
     const importedVpcC = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
       vpcId: 'mockVpcCId', //cross account stack references are not supported
       vpcCidrBlock: '10.3.0.0/16',

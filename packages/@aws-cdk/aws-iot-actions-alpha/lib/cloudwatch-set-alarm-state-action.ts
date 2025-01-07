@@ -47,9 +47,7 @@ export class CloudWatchSetAlarmStateAction implements iot.IAction {
         cloudwatchAlarm: {
           alarmName: this.alarm.alarmName,
           roleArn: role.roleArn,
-          stateReason:
-            this.props.reason ??
-            `Set state of '${this.alarm.alarmName}' to '${this.props.alarmStateToSet}'`,
+          stateReason: this.props.reason ?? `Set state of '${this.alarm.alarmName}' to '${this.props.alarmStateToSet}'`,
           stateValue: this.props.alarmStateToSet,
         },
       },

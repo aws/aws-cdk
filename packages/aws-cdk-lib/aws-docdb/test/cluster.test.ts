@@ -378,10 +378,7 @@ describe('DatabaseCluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       KmsKeyId: {
-        'Fn::GetAtt': [
-          'Key961B73FD',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Key961B73FD', 'Arn'],
       },
       StorageEncrypted: true,
     });
@@ -710,20 +707,14 @@ describe('DatabaseCluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       ServiceToken: {
-        'Fn::GetAtt': [
-          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
       },
       LogGroupName: { 'Fn::Join': ['', ['/aws/docdb/', { Ref: 'DatabaseB269D8BB' }, '/audit']] },
       RetentionInDays: 90,
     });
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       ServiceToken: {
-        'Fn::GetAtt': [
-          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
       },
       LogGroupName: { 'Fn::Join': ['', ['/aws/docdb/', { Ref: 'DatabaseB269D8BB' }, '/profiler']] },
       RetentionInDays: 90,
@@ -771,18 +762,20 @@ describe('DatabaseCluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Location: {
-        ApplicationId: { 'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'applicationId'] },
-        SemanticVersion: { 'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'semanticVersion'] },
+        ApplicationId: {
+          'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'applicationId'],
+        },
+        SemanticVersion: {
+          'Fn::FindInMap': [
+            'DatabaseRotationSingleUserSARMapping9AEB3E55',
+            { Ref: 'AWS::Partition' },
+            'semanticVersion',
+          ],
+        },
       },
       Parameters: {
         endpoint: {
-          'Fn::Join': [
-            '',
-            [
-              'https://secretsmanager.us-test-1.',
-              { Ref: 'AWS::URLSuffix' },
-            ],
-          ],
+          'Fn::Join': ['', ['https://secretsmanager.us-test-1.', { Ref: 'AWS::URLSuffix' }]],
         },
         functionName: 'DatabaseRotationSingleUser458A45BE',
         excludeCharacters: '\"@/',
@@ -884,18 +877,16 @@ describe('DatabaseCluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Location: {
-        ApplicationId: { 'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'applicationId'] },
-        SemanticVersion: { 'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'semanticVersion'] },
+        ApplicationId: {
+          'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'applicationId'],
+        },
+        SemanticVersion: {
+          'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'semanticVersion'],
+        },
       },
       Parameters: {
         endpoint: {
-          'Fn::Join': [
-            '',
-            [
-              'https://secretsmanager.us-test-1.',
-              { Ref: 'AWS::URLSuffix' },
-            ],
-          ],
+          'Fn::Join': ['', ['https://secretsmanager.us-test-1.', { Ref: 'AWS::URLSuffix' }]],
         },
         functionName: 'DatabaseRotation0D47EBD2',
         excludeCharacters: '\"@/',
@@ -1181,25 +1172,28 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test.each(['1.0.0.1', '01.1.0', '1.0', '-1', '-0.1', 'abc', '1.0.a', 'a.b.c'])('throw error for invalid engine version %s', (engineVersion: string) => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
+  test.each(['1.0.0.1', '01.1.0', '1.0', '-1', '-0.1', 'abc', '1.0.a', 'a.b.c'])(
+    'throw error for invalid engine version %s',
+    (engineVersion: string) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
 
-    // THEN
-    expect(() => {
-      new DatabaseCluster(stack, 'Database', {
-        instances: 1,
-        masterUser: {
-          username: 'admin',
-          password: cdk.SecretValue.unsafePlainText('tooshort'),
-        },
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-        vpc,
-        engineVersion,
-      });
-    }).toThrow(`Invalid engine version: '${engineVersion}'. Engine version must be in the format x.y.z`);
-  });
+      // THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          instances: 1,
+          masterUser: {
+            username: 'admin',
+            password: cdk.SecretValue.unsafePlainText('tooshort'),
+          },
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+          vpc,
+          engineVersion,
+        });
+      }).toThrow(`Invalid engine version: '${engineVersion}'. Engine version must be in the format x.y.z`);
+    }
+  );
 
   describe('storage type', () => {
     test('specify storage type', () => {

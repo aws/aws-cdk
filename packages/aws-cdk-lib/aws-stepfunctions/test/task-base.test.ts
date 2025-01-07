@@ -123,7 +123,7 @@ describe('Task base', () => {
           Resource: 'my-resource',
           Parameters: { MyParameter: 'myParameter' },
           ResultSelector: {
-            'buz': 'buz',
+            buz: 'buz',
             'baz.$': '$.baz',
           },
         },
@@ -147,15 +147,17 @@ describe('Task base', () => {
       States: {
         'my-task': {
           End: true,
-          Catch: [{
-            ErrorEquals: ['States.ALL'],
-            Next: 'failed',
-          }],
+          Catch: [
+            {
+              ErrorEquals: ['States.ALL'],
+              Next: 'failed',
+            },
+          ],
           Type: 'Task',
           Resource: 'my-resource',
           Parameters: { MyParameter: 'myParameter' },
         },
-        'failed': {
+        failed: {
           Type: 'Fail',
           Error: 'DidNotWork',
           Cause: 'We got stuck',
@@ -180,10 +182,10 @@ describe('Task base', () => {
     expect(renderGraph(task)).toEqual({
       StartAt: 'my-task',
       States: {
-        'all': {
+        all: {
           Type: 'Fail',
         },
-        'http': {
+        http: {
           Error: 'HTTP',
           Type: 'Fail',
         },
@@ -207,7 +209,7 @@ describe('Task base', () => {
           Resource: 'my-resource',
           Parameters: { MyParameter: 'myParameter' },
         },
-        'other': {
+        other: {
           Error: 'Other',
           Type: 'Fail',
         },
@@ -222,19 +224,23 @@ describe('Task base', () => {
       cause: 'We got stuck',
     });
 
-    expect(() => task.addCatch(failure, {
-      errors: ['States.ALL', 'HTTPError'],
-    })).toThrow(/must appear alone/);
+    expect(() =>
+      task.addCatch(failure, {
+        errors: ['States.ALL', 'HTTPError'],
+      })
+    ).toThrow(/must appear alone/);
   });
 
   test('add retry configuration', () => {
     // WHEN
-    task.addRetry({
-      errors: ['HTTPError'],
-      maxAttempts: 2,
-      maxDelay: cdk.Duration.seconds(10),
-      jitterStrategy: sfn.JitterType.FULL,
-    }).addRetry();
+    task
+      .addRetry({
+        errors: ['HTTPError'],
+        maxAttempts: 2,
+        maxDelay: cdk.Duration.seconds(10),
+        jitterStrategy: sfn.JitterType.FULL,
+      })
+      .addRetry();
 
     // THEN
     expect(renderGraph(task)).toEqual({
@@ -294,9 +300,11 @@ describe('Task base', () => {
   });
 
   test('addRetry throws when errors are combined with States.ALL', () => {
-    expect(() => task.addRetry({
-      errors: ['States.ALL', 'HTTPError'],
-    })).toThrow(/must appear alone/);
+    expect(() =>
+      task.addRetry({
+        errors: ['States.ALL', 'HTTPError'],
+      })
+    ).toThrow(/must appear alone/);
   });
 
   test('add a next state to the task in the chain', () => {
@@ -313,7 +321,7 @@ describe('Task base', () => {
           Resource: 'my-resource',
           Parameters: { MyParameter: 'myParameter' },
         },
-        'passState': { Type: 'Pass', End: true },
+        passState: { Type: 'Pass', End: true },
       },
     });
   });
@@ -326,14 +334,16 @@ describe('Task base', () => {
     });
 
     // THEN
-    expect(renderGraph(task)).toEqual(expect.objectContaining({
-      States: {
-        'my-exciting-task': expect.objectContaining({
-          HeartbeatSecondsPath: '$.heartbeat',
-          TimeoutSecondsPath: '$.timeout',
-        }),
-      },
-    }));
+    expect(renderGraph(task)).toEqual(
+      expect.objectContaining({
+        States: {
+          'my-exciting-task': expect.objectContaining({
+            HeartbeatSecondsPath: '$.heartbeat',
+            TimeoutSecondsPath: '$.timeout',
+          }),
+        },
+      })
+    );
   });
 
   testDeprecated('deprecated props timeout and heartbeat still work', () => {
@@ -344,14 +354,16 @@ describe('Task base', () => {
     });
 
     // THEN
-    expect(renderGraph(task)).toEqual(expect.objectContaining({
-      States: {
-        'my-exciting-task': expect.objectContaining({
-          HeartbeatSeconds: 10,
-          TimeoutSeconds: 600,
-        }),
-      },
-    }));
+    expect(renderGraph(task)).toEqual(
+      expect.objectContaining({
+        States: {
+          'my-exciting-task': expect.objectContaining({
+            HeartbeatSeconds: 10,
+            TimeoutSeconds: 600,
+          }),
+        },
+      })
+    );
   });
 
   test('get named metric for this task', () => {
@@ -441,64 +453,48 @@ describe('Task base', () => {
     // THEN
     expect(() => {
       task.metricFailed();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
 
     expect(() => {
       task.metricHeartbeatTimedOut();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
 
     expect(() => {
       task.metricRunTime();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
 
     expect(() => {
       task.metricScheduleTime();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
 
     expect(() => {
       task.metricScheduled();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
 
     expect(() => {
       task.metricStarted();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
 
     expect(() => {
       task.metricSucceeded();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
 
     expect(() => {
       task.metricTime();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
 
     expect(() => {
       task.metricTimedOut();
-    }).toThrow(
-      'Task does not expose metrics. Use the \'metric()\' function to add metrics.',
-    );
+    }).toThrow("Task does not expose metrics. Use the 'metric()' function to add metrics.");
   });
 });
 
 function verifyMetric(metric: Metric, metricName: string, statistic: string) {
-  expect(metric).toEqual(expect.objectContaining({
-    namespace: 'AWS/States',
-    metricName,
-    statistic,
-  }));
+  expect(metric).toEqual(
+    expect.objectContaining({
+      namespace: 'AWS/States',
+      metricName,
+      statistic,
+    })
+  );
 }

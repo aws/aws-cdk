@@ -37,14 +37,14 @@ describe('construct', () => {
     new Construct(root, 'ValiD');
     new Construct(root, 'Va123lid');
     new Construct(root, 'v');
-    new Construct(root, '  invalid' );
-    new Construct(root, 'invalid   ' );
-    new Construct(root, '123invalid' );
-    new Construct(root, 'in valid' );
-    new Construct(root, 'in_Valid' );
-    new Construct(root, 'in-Valid' );
-    new Construct(root, 'in\\Valid' );
-    new Construct(root, 'in.Valid' );
+    new Construct(root, '  invalid');
+    new Construct(root, 'invalid   ');
+    new Construct(root, '123invalid');
+    new Construct(root, 'in valid');
+    new Construct(root, 'in_Valid');
+    new Construct(root, 'in-Valid');
+    new Construct(root, 'in\\Valid');
+    new Construct(root, 'in.Valid');
   });
 
   test('if construct id contains path seperators, they will be replaced by double-dash', () => {
@@ -121,7 +121,9 @@ describe('construct', () => {
     expect(t.root.toString()).toEqual('<root>');
     expect(t.child1_1_1.toString()).toEqual('HighChild/Child1/Child11/Child111');
     expect(t.child2.toString()).toEqual('HighChild/Child2');
-    expect(toTreeString(t.root)).toEqual('Root\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n');
+    expect(toTreeString(t.root)).toEqual(
+      'Root\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n'
+    );
   });
 
   test('construct.getContext(key) can be used to read a value from context defined at the root level', () => {
@@ -236,7 +238,7 @@ describe('construct', () => {
     con.node.addMetadata('False', false);
     con.node.addMetadata('Empty', '');
 
-    const exists = (key: string) => con.node.metadata.find(x => x.type === key);
+    const exists = (key: string) => con.node.metadata.find((x) => x.type === key);
 
     expect(exists('Null')).toBeUndefined();
     expect(exists('Undefined')).toBeUndefined();
@@ -254,7 +256,9 @@ describe('construct', () => {
     root.synth();
 
     expect(con.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(con.node.metadata[0].data).toEqual('This construct is deprecated, use the other one instead [ack: WARNING1]');
+    expect(con.node.metadata[0].data).toEqual(
+      'This construct is deprecated, use the other one instead [ack: WARNING1]'
+    );
     expect(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0).toEqual(true);
   });
 
@@ -382,14 +386,16 @@ describe('construct', () => {
     new Construct(c2, '5');
 
     // THEN
-    expect(c1.node.findAll().map(x => x.node.id)).toEqual(c1.node.findAll(ConstructOrder.PREORDER).map(x => x.node.id)); // default is PreOrder
-    expect(c1.node.findAll(ConstructOrder.PREORDER).map(x => x.node.id)).toEqual(['1', '2', '4', '5', '3']);
-    expect(c1.node.findAll(ConstructOrder.POSTORDER).map(x => x.node.id)).toEqual(['4', '5', '2', '3', '1']);
+    expect(c1.node.findAll().map((x) => x.node.id)).toEqual(
+      c1.node.findAll(ConstructOrder.PREORDER).map((x) => x.node.id)
+    ); // default is PreOrder
+    expect(c1.node.findAll(ConstructOrder.PREORDER).map((x) => x.node.id)).toEqual(['1', '2', '4', '5', '3']);
+    expect(c1.node.findAll(ConstructOrder.POSTORDER).map((x) => x.node.id)).toEqual(['4', '5', '2', '3', '1']);
   });
 
   test('ancestors returns a list of parents up to root', () => {
     const { child1_1_1 } = createTree();
-    expect(child1_1_1.node.scopes.map(x => x.node.id)).toEqual(['', 'HighChild', 'Child1', 'Child11', 'Child111']);
+    expect(child1_1_1.node.scopes.map((x) => x.node.id)).toEqual(['', 'HighChild', 'Child1', 'Child11', 'Child111']);
   });
 
   test('"root" returns the root construct', () => {
@@ -443,7 +449,8 @@ describe('construct', () => {
       new Construct(root, 'Resource');
 
       expect(() => root.node.defaultChild).toThrow(
-        /Cannot determine default child for . There is both a child with id "Resource" and id "Default"/);
+        /Cannot determine default child for . There is both a child with id "Resource" and id "Default"/
+      );
     });
   });
 });
@@ -452,7 +459,7 @@ function createTree(context?: any) {
   const root = new Root();
   const highChild = new Construct(root, 'HighChild');
   if (context) {
-    Object.keys(context).forEach(key => highChild.node.setContext(key, context[key]));
+    Object.keys(context).forEach((key) => highChild.node.setContext(key, context[key]));
   }
 
   const child1 = new Construct(highChild, 'Child1');
@@ -463,7 +470,13 @@ function createTree(context?: any) {
   const child2_1 = new Construct(child2, 'Child21');
 
   return {
-    root, child1, child2, child1_1, child1_2, child1_1_1, child2_1,
+    root,
+    child1,
+    child2,
+    child1_1,
+    child1_2,
+    child1_1_1,
+    child2_1,
   };
 }
 

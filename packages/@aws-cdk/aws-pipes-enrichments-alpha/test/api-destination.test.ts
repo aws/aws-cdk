@@ -51,10 +51,7 @@ describe('api-destination', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Enrichment: {
-        'Fn::GetAtt': [
-          'ApiDestination3AB57A39',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ApiDestination3AB57A39', 'Arn'],
       },
       EnrichmentParameters: {},
     });
@@ -92,9 +89,7 @@ describe('api-destination', () => {
           HeaderParameters: {
             headerParam: 'headerParam',
           },
-          PathParameterValues: [
-            'pathParam',
-          ],
+          PathParameterValues: ['pathParam'],
           QueryStringParameters: {
             param: 'queryParam',
           },
@@ -121,4 +116,3 @@ describe('api-destination', () => {
     expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
   });
 });
-

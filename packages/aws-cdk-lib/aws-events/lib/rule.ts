@@ -166,10 +166,8 @@ export class Rule extends Resource implements IRule {
     if (targetProps.targetResource) {
       const targetStack = Stack.of(targetProps.targetResource);
 
-      const targetAccount =
-        (targetProps.targetResource as IResource).env?.account || targetStack.account;
-      const targetRegion =
-        (targetProps.targetResource as IResource).env?.region || targetStack.region;
+      const targetAccount = (targetProps.targetResource as IResource).env?.account || targetStack.account;
+      const targetRegion = (targetProps.targetResource as IResource).env?.region || targetStack.region;
 
       const sourceStack = Stack.of(this);
       const sourceAccount = sourceStack.account;
@@ -180,10 +178,7 @@ export class Rule extends Resource implements IRule {
       // - forwarding rule in the source stack (target: default event bus of the receiver region)
       // - eventbus permissions policy (creating an extra stack)
       // - receiver rule in the target stack (target: the actual target)
-      if (
-        !this.sameEnvDimension(sourceAccount, targetAccount) ||
-        !this.sameEnvDimension(sourceRegion, targetRegion)
-      ) {
+      if (!this.sameEnvDimension(sourceAccount, targetAccount) || !this.sameEnvDimension(sourceRegion, targetRegion)) {
         // cross-account and/or cross-region event - strap in, this works differently than regular events!
         // based on:
         // https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cross-account.html
@@ -209,9 +204,7 @@ export class Rule extends Resource implements IRule {
         // let's leave it in nonetheless.
         const sourceApp = this.node.root;
         if (!sourceApp || !App.isApp(sourceApp)) {
-          throw new Error(
-            'Event stack which uses cross-account or cross-region targets must be part of a CDK app'
-          );
+          throw new Error('Event stack which uses cross-account or cross-region targets must be part of a CDK app');
         }
         const targetApp = Node.of(targetProps.targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
@@ -238,20 +231,14 @@ export class Rule extends Resource implements IRule {
         // happens in the source env; and activating, which happens in the target env).
         //
         // Don't have time to do that right now.
-        const mirrorRuleScope = this.obtainMirrorRuleScope(
-          targetStack,
-          targetAccount,
-          targetRegion
-        );
+        const mirrorRuleScope = this.obtainMirrorRuleScope(targetStack, targetAccount, targetRegion);
         new MirrorRule(
           mirrorRuleScope,
           `${Names.uniqueId(this)}-${id}`,
           {
             targets: [target],
             eventPattern: this.eventPattern,
-            schedule: this.scheduleExpression
-              ? Schedule.expression(this.scheduleExpression)
-              : undefined,
+            schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
             description: this.description,
           },
           this
@@ -379,12 +366,7 @@ export class Rule extends Resource implements IRule {
    *
    * For cross-account rules, uses a support stack to set up a policy on the target event bus.
    */
-  private ensureXEnvTargetEventBus(
-    targetStack: Stack,
-    targetAccount: string,
-    targetRegion: string,
-    id: string
-  ) {
+  private ensureXEnvTargetEventBus(targetStack: Stack, targetAccount: string, targetRegion: string, id: string) {
     // the _actual_ target is just the event bus of the target's account
     // make sure we only add it once per account per region
     const key = `${targetAccount}:${targetRegion}`;
@@ -464,11 +446,7 @@ export class Rule extends Resource implements IRule {
    * We don't implement the second yet, as I have to think long and hard on whether we
    * can reuse the existing support stack or not, and I don't have time for that right now.
    */
-  private obtainMirrorRuleScope(
-    targetStack: Stack,
-    targetAccount: string,
-    targetRegion: string
-  ): Construct {
+  private obtainMirrorRuleScope(targetStack: Stack, targetAccount: string, targetRegion: string): Construct {
     // for cross-account or cross-region events, we cannot create new components for an imported resource
     // because we don't have the target stack
     if (
@@ -549,10 +527,8 @@ function determineRuleScope(scope: Construct, props: RuleProps): Construct {
   const regionComparison = Token.compareStrings(scopeStack.region, targetStack.region);
   const accountComparison = Token.compareStrings(scopeStack.account, targetStack.account);
   const stacksInSameAccountAndRegion =
-    (regionComparison === TokenComparison.SAME ||
-      regionComparison === TokenComparison.BOTH_UNRESOLVED) &&
-    (accountComparison === TokenComparison.SAME ||
-      accountComparison === TokenComparison.BOTH_UNRESOLVED);
+    (regionComparison === TokenComparison.SAME || regionComparison === TokenComparison.BOTH_UNRESOLVED) &&
+    (accountComparison === TokenComparison.SAME || accountComparison === TokenComparison.BOTH_UNRESOLVED);
   return stacksInSameAccountAndRegion ? props.crossStackScope : scope;
 }
 

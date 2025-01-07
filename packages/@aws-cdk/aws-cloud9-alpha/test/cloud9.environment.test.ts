@@ -82,9 +82,7 @@ test('can use CodeCommit repositories', () => {
   const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
-    clonedRepositories: [
-      cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
-    ],
+    clonedRepositories: [cloud9.CloneRepository.fromCodeCommit(repo, '/src')],
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
   });
   // THEN

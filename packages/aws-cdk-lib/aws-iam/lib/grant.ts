@@ -126,10 +126,7 @@ export class Grant implements IDependable {
     });
 
     const resourceAndPrincipalAccountComparison = options.grantee.grantPrincipal.principalAccount
-      ? cdk.Token.compareStrings(
-          options.resource.env.account,
-          options.grantee.grantPrincipal.principalAccount
-        )
+      ? cdk.Token.compareStrings(options.resource.env.account, options.grantee.grantPrincipal.principalAccount)
       : undefined;
     // if both accounts are tokens, we assume here they are the same
     const equalOrBothUnresolved =
@@ -182,9 +179,7 @@ export class Grant implements IDependable {
     }
 
     if (!addedToPrincipal.policyDependable) {
-      throw new Error(
-        'Contract violation: when Principal returns statementAdded=true, it should return a dependable'
-      );
+      throw new Error('Contract violation: when Principal returns statementAdded=true, it should return a dependable');
     }
 
     return new Grant({
@@ -224,9 +219,7 @@ export class Grant implements IDependable {
       principalStatement: statement,
       resourceStatement: result.resourceStatement,
       options,
-      policyDependable: resourceDependable
-        ? new CompositeDependable(result, resourceDependable)
-        : result,
+      policyDependable: resourceDependable ? new CompositeDependable(result, resourceDependable) : result,
     });
   }
 
@@ -296,9 +289,7 @@ export class Grant implements IDependable {
     const self = this;
     Dependable.implement(this, {
       get dependencyRoots() {
-        return Array.from(
-          new Set(self.dependables.flatMap((d) => Dependable.of(d).dependencyRoots))
-        );
+        return Array.from(new Set(self.dependables.flatMap((d) => Dependable.of(d).dependencyRoots)));
       },
     });
   }
@@ -316,9 +307,7 @@ export class Grant implements IDependable {
   public assertSuccess(): void {
     if (!this.success) {
       // eslint-disable-next-line max-len
-      throw new Error(
-        `${describeGrant(this.options)} could not be added on either identity or resource policy.`
-      );
+      throw new Error(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
     }
   }
 

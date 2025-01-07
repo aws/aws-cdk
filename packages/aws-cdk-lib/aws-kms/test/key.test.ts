@@ -35,7 +35,9 @@ test('default key', () => {
             Action: 'kms:*',
             Effect: 'Allow',
             Principal: {
-              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
             },
             Resource: '*',
           },
@@ -88,7 +90,7 @@ describe('key policies', () => {
     const key = kms.Key.fromKeyArn(
       stack,
       'Key',
-      'arn:aws:kms:eu-north-1:000000000000:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
+      'arn:aws:kms:eu-north-1:000000000000:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287'
     );
 
     const roleStack = new cdk.Stack(app, 'RoleStack', {
@@ -118,7 +120,7 @@ describe('key policies', () => {
     const key = kms.Key.fromKeyArn(
       stack,
       'Key',
-      'arn:aws:kms:eu-north-1:000000000000:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
+      'arn:aws:kms:eu-north-1:000000000000:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287'
     );
 
     const roleStack = new cdk.Stack(app, 'RoleStack', {
@@ -157,7 +159,9 @@ describe('key policies', () => {
             Action: 'kms:*',
             Effect: 'Allow',
             Principal: {
-              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
             },
             Resource: '*',
           },
@@ -192,7 +196,11 @@ describe('key policies', () => {
           {
             Action: 'kms:*',
             Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
             Resource: '*',
           },
         ],
@@ -231,7 +239,11 @@ describe('key policies', () => {
           {
             Action: 'kms:*',
             Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
             Resource: '*',
           },
         ],
@@ -270,7 +282,11 @@ describe('key policies', () => {
           {
             Action: 'kms:*',
             Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
             Resource: '*',
           },
         ],
@@ -309,7 +325,11 @@ describe('key policies', () => {
           {
             Action: 'kms:*',
             Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
             Resource: '*',
           },
         ],
@@ -348,7 +368,11 @@ describe('key policies', () => {
           {
             Action: 'kms:*',
             Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
             Resource: '*',
           },
         ],
@@ -388,11 +412,7 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: {
               'Fn::ImportValue': 'KeyStack:ExportsOutputFnGetAttKey961B73FDArn5A860C43',
@@ -421,13 +441,16 @@ describe('key policies', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           {
-            Action: [
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/MyRolePhysicalName']] } },
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/MyRolePhysicalName'],
+                ],
+              },
+            },
             Resource: '*',
           },
         ]),
@@ -438,11 +461,7 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -467,16 +486,18 @@ describe('key policies', () => {
 
     Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
-        Statement: Match.arrayWith([{
-          Action: [
-            'kms:Encrypt',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-          ],
-          Effect: 'Allow',
-          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:role/MyRolePhysicalName']] } },
-          Resource: '*',
-        }]),
+        Statement: Match.arrayWith([
+          {
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:role/MyRolePhysicalName']],
+              },
+            },
+            Resource: '*',
+          },
+        ]),
         Version: '2012-10-17',
       },
     });
@@ -484,11 +505,7 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -513,22 +530,20 @@ describe('key policies', () => {
 
     Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
-        Statement: Match.arrayWith([{
-          Action: 'kms:*',
-          Effect: 'Allow',
-          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::111111111111:root']] } },
-          Resource: '*',
-        },
-        {
-          Action: [
-            'kms:Encrypt',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-          ],
-          Effect: 'Allow',
-          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:root']] } },
-          Resource: '*',
-        }]),
+        Statement: Match.arrayWith([
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::111111111111:root']] } },
+            Resource: '*',
+          },
+          {
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:root']] } },
+            Resource: '*',
+          },
+        ]),
         Version: '2012-10-17',
       },
     });
@@ -546,7 +561,9 @@ describe('key policies', () => {
             Action: 'kms:*',
             Effect: 'Allow',
             Principal: {
-              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
             },
             Resource: '*',
           },
@@ -579,7 +596,9 @@ describe('key policies', () => {
             Action: 'kms:*',
             Effect: 'Allow',
             Principal: {
-              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
             },
             Resource: '*',
           },
@@ -651,21 +670,24 @@ test('set rotationPeriod without enabling enableKeyRotation', () => {
 
 test('setting pendingWindow value to not in allowed range will throw', () => {
   const stack = new cdk.Stack();
-  expect(() => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, pendingWindow: cdk.Duration.days(6) }))
-    .toThrow('\'pendingWindow\' value must between 7 and 30 days. Received: 6');
+  expect(() => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, pendingWindow: cdk.Duration.days(6) })).toThrow(
+    "'pendingWindow' value must between 7 and 30 days. Received: 6"
+  );
 });
 
 test.each([89, 2561])('throw if rotationPeriod is not in allowed range', (period) => {
   const stack = new cdk.Stack();
-  expect(() => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, rotationPeriod: cdk.Duration.days(period) }))
-    .toThrow(`'rotationPeriod' value must between 90 and 2650 days. Received: ${period}`);
+  expect(
+    () => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, rotationPeriod: cdk.Duration.days(period) })
+  ).toThrow(`'rotationPeriod' value must between 90 and 2650 days. Received: ${period}`);
 });
 
 describeDeprecated('trustAccountIdentities is deprecated', () => {
   test('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', () => {
     const stack = new cdk.Stack();
-    expect(() => new kms.Key(stack, 'MyKey', { trustAccountIdentities: false }))
-      .toThrow('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+    expect(() => new kms.Key(stack, 'MyKey', { trustAccountIdentities: false })).toThrow(
+      '`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set'
+    );
   });
 });
 
@@ -683,10 +705,7 @@ test('addAlias creates an alias', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/xoo',
     TargetKeyId: {
-      'Fn::GetAtt': [
-        'MyKey6AB29FA6',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
     },
   });
 });
@@ -707,19 +726,13 @@ test('can run multiple addAlias', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/alias1',
     TargetKeyId: {
-      'Fn::GetAtt': [
-        'MyKey6AB29FA6',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/alias2',
     TargetKeyId: {
-      'Fn::GetAtt': [
-        'MyKey6AB29FA6',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
     },
   });
 });
@@ -742,10 +755,12 @@ test('fails if key policy has no actions', () => {
   const stack = new cdk.Stack(app);
   const key = new kms.Key(stack, 'MyKey');
 
-  key.addToResourcePolicy(new iam.PolicyStatement({
-    resources: ['*'],
-    principals: [new iam.ArnPrincipal('arn')],
-  }));
+  key.addToResourcePolicy(
+    new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    })
+  );
 
   expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
 });
@@ -755,12 +770,16 @@ test('fails if key policy has no IAM principals', () => {
   const stack = new cdk.Stack(app);
   const key = new kms.Key(stack, 'MyKey');
 
-  key.addToResourcePolicy(new iam.PolicyStatement({
-    resources: ['*'],
-    actions: ['kms:*'],
-  }));
+  key.addToResourcePolicy(
+    new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['kms:*'],
+    })
+  );
 
-  expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+  expect(() => app.synth()).toThrow(
+    /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/
+  );
 });
 
 test('multi-region primary key', () => {
@@ -779,15 +798,19 @@ describe('imported keys', () => {
     const stack = new cdk.Stack();
     expect(() => {
       kms.Key.fromKeyArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:key');
-    }).toThrow(/KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:kms:us-east-1:123456789012:key'/);
-
+    }).toThrow(
+      /KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:kms:us-east-1:123456789012:key'/
+    );
   });
 
   test('can have aliases added to them', () => {
     const app = new cdk.App();
     const stack2 = new cdk.Stack(app, 'Stack2');
-    const myKeyImported = kms.Key.fromKeyArn(stack2, 'MyKeyImported',
-      'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
+    const myKeyImported = kms.Key.fromKeyArn(
+      stack2,
+      'MyKeyImported',
+      'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012'
+    );
 
     // addAlias can be called on imported keys.
     myKeyImported.addAlias('alias/hello');
@@ -822,13 +845,7 @@ describe('fromCfnKey()', () => {
             Action: 'kms:*',
             Effect: 'Allow',
             Principal: {
-              AWS: cdk.Fn.join('', [
-                'arn:',
-                cdk.Aws.PARTITION,
-                ':iam::',
-                cdk.Aws.ACCOUNT_ID,
-                ':root',
-              ]),
+              AWS: cdk.Fn.join('', ['arn:', cdk.Aws.PARTITION, ':iam::', cdk.Aws.ACCOUNT_ID, ':root']),
             },
             Resource: '*',
           },
@@ -860,13 +877,7 @@ describe('fromCfnKey()', () => {
             Effect: 'Allow',
             Principal: {
               AWS: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':iam::',
-                  { Ref: 'AWS::AccountId' },
-                  ':root',
-                ]],
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
               },
             },
             Resource: '*',
@@ -882,11 +893,13 @@ describe('fromCfnKey()', () => {
     let addToResourcePolicyResult: iam.AddToResourcePolicyResult;
 
     beforeEach(() => {
-      addToResourcePolicyResult = key.addToResourcePolicy(new iam.PolicyStatement({
-        actions: ['kms:action'],
-        resources: ['*'],
-        principals: [new iam.AnyPrincipal()],
-      }));
+      addToResourcePolicyResult = key.addToResourcePolicy(
+        new iam.PolicyStatement({
+          actions: ['kms:action'],
+          resources: ['*'],
+          principals: [new iam.AnyPrincipal()],
+        })
+      );
     });
 
     test("the AddToResourcePolicyResult returned has 'statementAdded' set to 'true'", () => {
@@ -902,13 +915,7 @@ describe('fromCfnKey()', () => {
               Effect: 'Allow',
               Principal: {
                 AWS: {
-                  'Fn::Join': ['', [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':iam::',
-                    { Ref: 'AWS::AccountId' },
-                    ':root',
-                  ]],
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
                 },
               },
               Resource: '*',
@@ -964,13 +971,7 @@ describe('fromCfnKey()', () => {
                 Effect: 'Allow',
                 Principal: {
                   AWS: {
-                    'Fn::Join': ['', [
-                      'arn:',
-                      { Ref: 'AWS::Partition' },
-                      ':iam::',
-                      { Ref: 'AWS::AccountId' },
-                      ':root',
-                    ]],
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
                   },
                 },
                 Resource: '*',
@@ -1019,7 +1020,7 @@ describe('fromCfnKey()', () => {
               },
             ],
             Version: '2012-10-17',
-          },
+          }
         ),
       });
     });
@@ -1052,7 +1053,7 @@ describe('fromCfnKey()', () => {
                 Principal: '*',
                 Resource: '*',
               },
-            ],
+            ]
           ),
           Version: '2012-10-17',
         },
@@ -1084,7 +1085,7 @@ describe('fromCfnKey()', () => {
                 Effect: 'Allow',
                 Principal: '*',
                 Resource: '*',
-              },
+              }
             ),
           ],
           Version: '2012-10-17',
@@ -1128,22 +1129,28 @@ describe('addToResourcePolicy allowNoOp and there is no policy', () => {
   // eslint-disable-next-line jest/expect-expect
   test('succeed if set to true (default)', () => {
     const stack = new cdk.Stack();
-    const key = kms.Key.fromKeyArn(stack, 'Imported',
-      'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
+    const key = kms.Key.fromKeyArn(
+      stack,
+      'Imported',
+      'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012'
+    );
 
     key.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }));
-
   });
 
   test('fails if set to false', () => {
     const stack = new cdk.Stack();
-    const key = kms.Key.fromKeyArn(stack, 'Imported',
-      'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');
+    const key = kms.Key.fromKeyArn(
+      stack,
+      'Imported',
+      'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012'
+    );
 
     expect(() => {
       key.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }), /* allowNoOp */ false);
-    }).toThrow('Unable to add statement to IAM resource policy for KMS key: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"');
-
+    }).toThrow(
+      'Unable to add statement to IAM resource policy for KMS key: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"'
+    );
   });
 });
 
@@ -1176,25 +1183,31 @@ describe('key specs and key usages', () => {
     });
   });
 
-  test.each(generateInvalidKeySpecKeyUsageCombinations())('invalid combinations of key specs and key usages (%s)', ({ keySpec, keyUsage }) => {
-    const stack = new cdk.Stack();
+  test.each(generateInvalidKeySpecKeyUsageCombinations())(
+    'invalid combinations of key specs and key usages (%s)',
+    ({ keySpec, keyUsage }) => {
+      const stack = new cdk.Stack();
 
-    expect(() => new kms.Key(stack, 'Key1', { keySpec, keyUsage }))
-      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'${keyUsage.toString()}\'`);
-  });
+      expect(() => new kms.Key(stack, 'Key1', { keySpec, keyUsage })).toThrow(
+        `key spec \'${keySpec}\' is not valid with usage \'${keyUsage.toString()}\'`
+      );
+    }
+  );
 
   test('invalid combinations of default key spec and key usage SIGN_VERIFY', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new kms.Key(stack, 'Key1', { keyUsage: KeyUsage.SIGN_VERIFY }))
-      .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
+    expect(() => new kms.Key(stack, 'Key1', { keyUsage: KeyUsage.SIGN_VERIFY })).toThrow(
+      "key spec 'SYMMETRIC_DEFAULT' is not valid with usage 'SIGN_VERIFY'"
+    );
   });
 
   test('fails if key rotation enabled on asymmetric key', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new kms.Key(stack, 'Key', { enableKeyRotation: true, keySpec: kms.KeySpec.RSA_3072 }))
-      .toThrow('key rotation cannot be enabled on asymmetric keys');
+    expect(() => new kms.Key(stack, 'Key', { enableKeyRotation: true, keySpec: kms.KeySpec.RSA_3072 })).toThrow(
+      'key rotation cannot be enabled on asymmetric keys'
+    );
   });
 });
 
@@ -1212,11 +1225,7 @@ describe('Key.fromKeyArn()', () => {
     let key: kms.IKey;
 
     beforeEach(() => {
-      key = kms.Key.fromKeyArn(
-        stack,
-        'iKey',
-        'arn:aws:kms:key-region:222222222222:key:key-name',
-      );
+      key = kms.Key.fromKeyArn(stack, 'iKey', 'arn:aws:kms:key-region:222222222222:key:key-name');
     });
 
     test("the key's region is taken from the ARN", () => {
@@ -1242,8 +1251,9 @@ describe('HMAC', () => {
     [KeySpec.HMAC_384, 'HMAC_384'],
     [KeySpec.HMAC_512, 'HMAC_512'],
   ])('%s is not valid for default usage', (keySpec: KeySpec) => {
-    expect(() => new kms.Key(stack, 'Key1', { keySpec }))
-      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'ENCRYPT_DECRYPT\'`);
+    expect(() => new kms.Key(stack, 'Key1', { keySpec })).toThrow(
+      `key spec \'${keySpec}\' is not valid with usage \'ENCRYPT_DECRYPT\'`
+    );
   });
 
   test.each([
@@ -1252,11 +1262,14 @@ describe('HMAC', () => {
     [KeySpec.HMAC_384, 'HMAC_384'],
     [KeySpec.HMAC_512, 'HMAC_512'],
   ])('%s can not be used with key rotation', (keySpec: KeySpec) => {
-    expect(() => new kms.Key(stack, 'Key', {
-      keySpec,
-      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
-      enableKeyRotation: true,
-    })).toThrow('key rotation cannot be enabled on HMAC keys');
+    expect(
+      () =>
+        new kms.Key(stack, 'Key', {
+          keySpec,
+          keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+          enableKeyRotation: true,
+        })
+    ).toThrow('key rotation cannot be enabled on HMAC keys');
   });
 
   test.each([
@@ -1290,7 +1303,11 @@ describe('HMAC', () => {
           {
             Action: 'kms:*',
             Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
             Resource: '*',
           },
         ],
@@ -1327,7 +1344,11 @@ describe('HMAC', () => {
           {
             Action: 'kms:*',
             Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+              },
+            },
             Resource: '*',
           },
         ],
@@ -1351,11 +1372,7 @@ describe('HMAC', () => {
 
   test('grant generate mac policy for imported key', () => {
     const keyArn = 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012';
-    const key = kms.Key.fromKeyArn(
-      stack,
-      'Key',
-      keyArn,
-    );
+    const key = kms.Key.fromKeyArn(stack, 'Key', keyArn);
     const user = new iam.User(stack, 'User');
 
     key.grantGenerateMac(user);
@@ -1376,11 +1393,7 @@ describe('HMAC', () => {
 
   test('grant verify mac policy for imported key', () => {
     const keyArn = 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012';
-    const key = kms.Key.fromKeyArn(
-      stack,
-      'Key',
-      keyArn,
-    );
+    const key = kms.Key.fromKeyArn(stack, 'Key', keyArn);
     const user = new iam.User(stack, 'User');
 
     key.grantVerifyMac(user);

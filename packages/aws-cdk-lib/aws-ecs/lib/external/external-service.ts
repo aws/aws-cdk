@@ -79,17 +79,11 @@ export class ExternalService extends BaseService implements IExternalService {
   /**
    * Imports from the specified service ARN.
    */
-  public static fromExternalServiceArn(
-    scope: Construct,
-    id: string,
-    externalServiceArn: string
-  ): IExternalService {
+  public static fromExternalServiceArn(scope: Construct, id: string, externalServiceArn: string): IExternalService {
     class Import extends Resource implements IExternalService {
       public readonly serviceArn = externalServiceArn;
-      public readonly serviceName = Stack.of(scope).splitArn(
-        externalServiceArn,
-        ArnFormat.SLASH_RESOURCE_NAME
-      ).resourceName as string;
+      public readonly serviceName = Stack.of(scope).splitArn(externalServiceArn, ArnFormat.SLASH_RESOURCE_NAME)
+        .resourceName as string;
     }
     return new Import(scope, id);
   }
@@ -118,9 +112,7 @@ export class ExternalService extends BaseService implements IExternalService {
     }
 
     if (props.taskDefinition.compatibility !== Compatibility.EXTERNAL) {
-      throw new Error(
-        'Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster'
-      );
+      throw new Error('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
     }
 
     if (props.cluster.defaultCloudMapNamespace !== undefined) {
@@ -163,16 +155,12 @@ export class ExternalService extends BaseService implements IExternalService {
 
     this.node.addValidation({
       validate: () =>
-        !this.taskDefinition.defaultContainer
-          ? ['A TaskDefinition must have at least one essential container']
-          : [],
+        !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
     });
 
     this.node.addValidation({
       validate: () =>
-        this.networkConfiguration !== undefined
-          ? ['Network configurations not supported for an external service']
-          : [],
+        this.networkConfiguration !== undefined ? ['Network configurations not supported for an external service'] : [],
     });
 
     if (props.minHealthyPercent === undefined) {
@@ -186,9 +174,7 @@ export class ExternalService extends BaseService implements IExternalService {
   /**
    * Overriden method to throw error as `attachToApplicationTargetGroup` is not supported for external service
    */
-  public attachToApplicationTargetGroup(
-    _targetGroup: elbv2.IApplicationTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     throw new Error('Application load balancer cannot be attached to an external service');
   }
 

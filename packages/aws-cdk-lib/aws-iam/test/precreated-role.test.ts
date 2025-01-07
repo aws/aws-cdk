@@ -34,16 +34,16 @@ describe('precreatedRole report created', () => {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
       inlinePolicies: {
         Doc: new PolicyDocument({
-          statements: [new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: ['sns:Publish'],
-            resources: ['*'],
-          })],
+          statements: [
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ['sns:Publish'],
+              resources: ['*'],
+            }),
+          ],
         }),
       },
-      managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'),
-      ],
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess')],
     });
 
     Template.fromStack(otherStack).resourceCountIs('AWS::IAM::Role', 0);
@@ -51,27 +51,31 @@ describe('precreatedRole report created', () => {
     const filePath = path.join(assembly.directory, 'iam-policy-report.json');
     const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
     expect(JSON.parse(file)).toEqual({
-      roles: [{
-        roleConstructPath: 'OtherStack/MyRole',
-        roleName: 'other-role-name',
-        missing: false,
-        assumeRolePolicy: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'sns.amazonaws.com',
-          },
-        }],
-        managedPolicyArns: [
-          'arn:(PARTITION):iam::aws:policy/ReadOnlyAccess',
-        ],
-        managedPolicyStatements: [],
-        identityPolicyStatements: [{
-          Action: 'sns:Publish',
-          Effect: 'Allow',
-          Resource: '*',
-        }],
-      }],
+      roles: [
+        {
+          roleConstructPath: 'OtherStack/MyRole',
+          roleName: 'other-role-name',
+          missing: false,
+          assumeRolePolicy: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'sns.amazonaws.com',
+              },
+            },
+          ],
+          managedPolicyArns: ['arn:(PARTITION):iam::aws:policy/ReadOnlyAccess'],
+          managedPolicyStatements: [],
+          identityPolicyStatements: [
+            {
+              Action: 'sns:Publish',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+        },
+      ],
     });
   });
 
@@ -91,23 +95,25 @@ describe('precreatedRole report created', () => {
     const filePath = path.join(assembly.directory, 'iam-policy-report.json');
     const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
     expect(JSON.parse(file)).toEqual({
-      roles: [{
-        roleConstructPath: 'MyStack/Role',
-        roleName: 'missing role',
-        missing: true,
-        assumeRolePolicy: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'sns.amazonaws.com',
-          },
-        }],
-        managedPolicyArns: [
-          'arn:(PARTITION):iam::aws:policy/ReadOnlyAccess',
-        ],
-        managedPolicyStatements: [],
-        identityPolicyStatements: [],
-      }],
+      roles: [
+        {
+          roleConstructPath: 'MyStack/Role',
+          roleName: 'missing role',
+          missing: true,
+          assumeRolePolicy: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'sns.amazonaws.com',
+              },
+            },
+          ],
+          managedPolicyArns: ['arn:(PARTITION):iam::aws:policy/ReadOnlyAccess'],
+          managedPolicyStatements: [],
+          identityPolicyStatements: [],
+        },
+      ],
     });
   });
 
@@ -119,55 +125,46 @@ describe('precreatedRole report created', () => {
     });
 
     // WHEN
-    role.addToPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['s3:GetObject'],
-      conditions: {
-        StringLike: {
-          's3:prefix': [
-            someResource.getAtt('Arn').toString(),
-            'arn:aws:s3:::someBucket/*',
-          ],
+    role.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['s3:GetObject'],
+        conditions: {
+          StringLike: {
+            's3:prefix': [someResource.getAtt('Arn').toString(), 'arn:aws:s3:::someBucket/*'],
+          },
         },
-      },
-      resources: [
-        someResource.getAtt('Arn').toString(),
-        'arn:aws:s3:::someBucket/*',
-      ],
-    }));
+        resources: [someResource.getAtt('Arn').toString(), 'arn:aws:s3:::someBucket/*'],
+      })
+    );
 
     // THEN
     const assembly = app.synth();
     const filePath = path.join(assembly.directory, 'iam-policy-report.json');
     const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
     expect(JSON.parse(file)).toEqual({
-      roles: [{
-        roleConstructPath: 'MyStack/Role',
-        roleName: 'missing role',
-        missing: true,
-        assumeRolePolicy: [],
-        managedPolicyArns: [],
-        managedPolicyStatements: [],
-        identityPolicyStatements: [
-          {
-            Action: 's3:GetObject',
-            Condition: {
-              StringLike: {
-                's3:prefix': [
-                  '(MyStack/SomeResource.Arn)',
-                  'arn:aws:s3:::someBucket/*',
-                ],
+      roles: [
+        {
+          roleConstructPath: 'MyStack/Role',
+          roleName: 'missing role',
+          missing: true,
+          assumeRolePolicy: [],
+          managedPolicyArns: [],
+          managedPolicyStatements: [],
+          identityPolicyStatements: [
+            {
+              Action: 's3:GetObject',
+              Condition: {
+                StringLike: {
+                  's3:prefix': ['(MyStack/SomeResource.Arn)', 'arn:aws:s3:::someBucket/*'],
+                },
               },
+              Effect: 'Allow',
+              Resource: ['(MyStack/SomeResource.Arn)', 'arn:aws:s3:::someBucket/*'],
             },
-            Effect: 'Allow',
-            Resource: [
-              '(MyStack/SomeResource.Arn)',
-              'arn:aws:s3:::someBucket/*',
-            ],
-          },
-        ],
-      }],
-
+          ],
+        },
+      ],
     });
   });
 
@@ -179,32 +176,40 @@ describe('precreatedRole report created', () => {
     });
 
     // WHEN
-    role.attachInlinePolicy(new Policy(stack, 'Policy', {
-      statements: [new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['sns:Publish'],
-        resources: [`arn:aws:sns:${stack.region}:${stack.account}:${someResource.ref}`],
-      })],
-    }));
+    role.attachInlinePolicy(
+      new Policy(stack, 'Policy', {
+        statements: [
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['sns:Publish'],
+            resources: [`arn:aws:sns:${stack.region}:${stack.account}:${someResource.ref}`],
+          }),
+        ],
+      })
+    );
 
     // THEN
     const assembly = app.synth();
     const filePath = path.join(assembly.directory, 'iam-policy-report.json');
     const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
     expect(JSON.parse(file)).toEqual({
-      roles: [{
-        roleConstructPath: 'MyStack/Role',
-        roleName: 'missing role',
-        missing: true,
-        assumeRolePolicy: [],
-        managedPolicyArns: [],
-        managedPolicyStatements: [],
-        identityPolicyStatements: [{
-          Action: 'sns:Publish',
-          Effect: 'Allow',
-          Resource: 'arn:aws:sns:(REGION):(ACCOUNT):(MyStack/SomeResource.Ref)',
-        }],
-      }],
+      roles: [
+        {
+          roleConstructPath: 'MyStack/Role',
+          roleName: 'missing role',
+          missing: true,
+          assumeRolePolicy: [],
+          managedPolicyArns: [],
+          managedPolicyStatements: [],
+          identityPolicyStatements: [
+            {
+              Action: 'sns:Publish',
+              Effect: 'Allow',
+              Resource: 'arn:aws:sns:(REGION):(ACCOUNT):(MyStack/SomeResource.Ref)',
+            },
+          ],
+        },
+      ],
     });
   });
 
@@ -220,15 +225,17 @@ describe('precreatedRole report created', () => {
     const filePath = path.join(assembly.directory, 'iam-policy-report.json');
     const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
     expect(JSON.parse(file)).toEqual({
-      roles: [{
-        roleConstructPath: 'MyStack/Role',
-        roleName: 'ImportedRole',
-        missing: false,
-        assumeRolePolicy: [],
-        managedPolicyArns: [],
-        managedPolicyStatements: [],
-        identityPolicyStatements: [],
-      }],
+      roles: [
+        {
+          roleConstructPath: 'MyStack/Role',
+          roleName: 'ImportedRole',
+          missing: false,
+          assumeRolePolicy: [],
+          managedPolicyArns: [],
+          managedPolicyStatements: [],
+          identityPolicyStatements: [],
+        },
+      ],
     });
   });
 
@@ -248,29 +255,33 @@ describe('precreatedRole report created', () => {
         ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'),
         ManagedPolicy.fromManagedPolicyName(otherStack, 'CustomReadPolicy', 'CustomReadOnlyAccess'),
         new ManagedPolicy(otherStack, 'CustomPolicy', {
-          statements: [new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: ['sns:Publish', 's3:GetObject'],
-            resources: [someResource.ref],
-          })],
+          statements: [
+            new PolicyStatement({
+              effect: Effect.ALLOW,
+              actions: ['sns:Publish', 's3:GetObject'],
+              resources: [someResource.ref],
+            }),
+          ],
         }),
       ],
     });
 
     new ManagedPolicy(otherStack, 'OtherCustomPolicy', {
       roles: [role],
-      statements: [new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['s3:PutObject'],
-        resources: [someResource.getAtt('Arn').toString()],
-      })],
+      statements: [
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['s3:PutObject'],
+          resources: [someResource.getAtt('Arn').toString()],
+        }),
+      ],
     });
 
     // THEN
     const assembly = otherApp.synth();
     const filePath = path.join(assembly.directory, 'iam-policy-report');
-    const file = fs.readFileSync(filePath+'.txt', { encoding: 'utf-8' });
-    const jsonfile = fs.readFileSync(filePath+'.json', { encoding: 'utf-8' });
+    const file = fs.readFileSync(filePath + '.txt', { encoding: 'utf-8' });
+    const jsonfile = fs.readFileSync(filePath + '.json', { encoding: 'utf-8' });
     expect(jsonfile).toEqual(`{
   \"roles\": [
     {

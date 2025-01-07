@@ -163,9 +163,7 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
  * @internal
  */
 function sameEnvDimension(dim1: string, dim2: string) {
-  return [
-    TokenComparison.SAME,
-    TokenComparison.ONE_UNRESOLVED,
-    TokenComparison.BOTH_UNRESOLVED,
-  ].includes(Token.compareStrings(dim1, dim2));
+  return [TokenComparison.SAME, TokenComparison.ONE_UNRESOLVED, TokenComparison.BOTH_UNRESOLVED].includes(
+    Token.compareStrings(dim1, dim2)
+  );
 }

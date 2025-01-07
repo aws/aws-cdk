@@ -7,15 +7,11 @@ import { EmrModifyInstanceGroupByName } from '../emr-modify-instance-group-by-na
  *
  * @param property
  */
-export function KerberosAttributesPropertyToJson(
-  property: EmrCreateCluster.KerberosAttributesProperty
-) {
+export function KerberosAttributesPropertyToJson(property: EmrCreateCluster.KerberosAttributesProperty) {
   return {
     ADDomainJoinPassword: cdk.stringToCloudFormation(property.adDomainJoinPassword),
     ADDomainJoinUser: cdk.stringToCloudFormation(property.adDomainJoinUser),
-    CrossRealmTrustPrincipalPassword: cdk.stringToCloudFormation(
-      property.crossRealmTrustPrincipalPassword
-    ),
+    CrossRealmTrustPrincipalPassword: cdk.stringToCloudFormation(property.crossRealmTrustPrincipalPassword),
     KdcAdminPassword: cdk.stringToCloudFormation(property.kdcAdminPassword),
     Realm: cdk.stringToCloudFormation(property.realm),
   };
@@ -28,18 +24,12 @@ export function KerberosAttributesPropertyToJson(
  */
 export function InstancesConfigPropertyToJson(property: EmrCreateCluster.InstancesConfigProperty) {
   return {
-    AdditionalMasterSecurityGroups: cdk.listMapper(cdk.stringToCloudFormation)(
-      property.additionalMasterSecurityGroups
-    ),
-    AdditionalSlaveSecurityGroups: cdk.listMapper(cdk.stringToCloudFormation)(
-      property.additionalSlaveSecurityGroups
-    ),
+    AdditionalMasterSecurityGroups: cdk.listMapper(cdk.stringToCloudFormation)(property.additionalMasterSecurityGroups),
+    AdditionalSlaveSecurityGroups: cdk.listMapper(cdk.stringToCloudFormation)(property.additionalSlaveSecurityGroups),
     Ec2KeyName: cdk.stringToCloudFormation(property.ec2KeyName),
     Ec2SubnetId: cdk.stringToCloudFormation(property.ec2SubnetId),
     Ec2SubnetIds: cdk.listMapper(cdk.stringToCloudFormation)(property.ec2SubnetIds),
-    EmrManagedMasterSecurityGroup: cdk.stringToCloudFormation(
-      property.emrManagedMasterSecurityGroup
-    ),
+    EmrManagedMasterSecurityGroup: cdk.stringToCloudFormation(property.emrManagedMasterSecurityGroup),
     EmrManagedSlaveSecurityGroup: cdk.stringToCloudFormation(property.emrManagedSlaveSecurityGroup),
     HadoopVersion: cdk.stringToCloudFormation(property.hadoopVersion),
     InstanceCount: cdk.numberToCloudFormation(property.instanceCount),
@@ -47,10 +37,7 @@ export function InstancesConfigPropertyToJson(property: EmrCreateCluster.Instanc
     InstanceGroups: cdk.listMapper(InstanceGroupConfigPropertyToJson)(property.instanceGroups),
     KeepJobFlowAliveWhenNoSteps: true,
     MasterInstanceType: cdk.stringToCloudFormation(property.masterInstanceType),
-    Placement:
-      property.placement === undefined
-        ? property.placement
-        : PlacementTypePropertyToJson(property.placement),
+    Placement: property.placement === undefined ? property.placement : PlacementTypePropertyToJson(property.placement),
     ServiceAccessSecurityGroup: cdk.stringToCloudFormation(property.serviceAccessSecurityGroup),
     SlaveInstanceType: cdk.stringToCloudFormation(property.slaveInstanceType),
     TerminationProtected: cdk.booleanToCloudFormation(property.terminationProtected),
@@ -62,9 +49,7 @@ export function InstancesConfigPropertyToJson(property: EmrCreateCluster.Instanc
  *
  * @param property
  */
-export function ApplicationConfigPropertyToJson(
-  property: EmrCreateCluster.ApplicationConfigProperty
-) {
+export function ApplicationConfigPropertyToJson(property: EmrCreateCluster.ApplicationConfigProperty) {
   return {
     Name: cdk.stringToCloudFormation(property.name),
     Args: cdk.listMapper(cdk.stringToCloudFormation)(property.args),
@@ -91,9 +76,7 @@ export function ConfigurationPropertyToJson(property: EmrCreateCluster.Configura
  *
  * @param property
  */
-export function EbsBlockDeviceConfigPropertyToJson(
-  property: EmrCreateCluster.EbsBlockDeviceConfigProperty
-) {
+export function EbsBlockDeviceConfigPropertyToJson(property: EmrCreateCluster.EbsBlockDeviceConfigProperty) {
   return {
     VolumeSpecification: {
       Iops: cdk.numberToCloudFormation(property.volumeSpecification.iops),
@@ -109,13 +92,9 @@ export function EbsBlockDeviceConfigPropertyToJson(
  *
  * @param property
  */
-export function EbsConfigurationPropertyToJson(
-  property: EmrCreateCluster.EbsConfigurationProperty
-) {
+export function EbsConfigurationPropertyToJson(property: EmrCreateCluster.EbsConfigurationProperty) {
   return {
-    EbsBlockDeviceConfigs: cdk.listMapper(EbsBlockDeviceConfigPropertyToJson)(
-      property.ebsBlockDeviceConfigs
-    ),
+    EbsBlockDeviceConfigs: cdk.listMapper(EbsBlockDeviceConfigPropertyToJson)(property.ebsBlockDeviceConfigs),
     EbsOptimized: cdk.booleanToCloudFormation(property.ebsOptimized),
   };
 }
@@ -125,18 +104,14 @@ export function EbsConfigurationPropertyToJson(
  *
  * @param property
  */
-export function InstanceTypeConfigPropertyToJson(
-  property: EmrCreateCluster.InstanceTypeConfigProperty
-) {
+export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.InstanceTypeConfigProperty) {
   if (property.bidPrice && property.bidPriceAsPercentageOfOnDemandPrice) {
     throw new Error('Cannot specify both bidPrice and bidPriceAsPercentageOfOnDemandPrice');
   }
 
   return {
     BidPrice: cdk.stringToCloudFormation(property.bidPrice),
-    BidPriceAsPercentageOfOnDemandPrice: cdk.numberToCloudFormation(
-      property.bidPriceAsPercentageOfOnDemandPrice
-    ),
+    BidPriceAsPercentageOfOnDemandPrice: cdk.numberToCloudFormation(property.bidPriceAsPercentageOfOnDemandPrice),
     Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations),
     EbsConfiguration:
       property.ebsConfiguration === undefined
@@ -156,9 +131,7 @@ export function InstanceFleetProvisioningSpecificationsPropertyToJson(
   property: EmrCreateCluster.InstanceFleetProvisioningSpecificationsProperty
 ) {
   return {
-    OnDemandSpecification: OnDemandProvisioningSpecificationPropertyToJson(
-      property.onDemandSpecification
-    ),
+    OnDemandSpecification: OnDemandProvisioningSpecificationPropertyToJson(property.onDemandSpecification),
     SpotSpecification: SpotProvisioningSpecificationPropertyToJson(property.spotSpecification),
   };
 }
@@ -194,11 +167,7 @@ function SpotProvisioningSpecificationPropertyToJson(
     throw new Error('one of timeout and timeoutDurationMinutes must be specified');
   }
   const timeout = property.timeout?.toMinutes() ?? property.timeoutDurationMinutes;
-  if (
-    timeout !== undefined &&
-    !cdk.Token.isUnresolved(timeout) &&
-    (timeout < 5 || timeout > 1440)
-  ) {
+  if (timeout !== undefined && !cdk.Token.isUnresolved(timeout) && (timeout < 5 || timeout > 1440)) {
     throw new Error(`timeout must be between 5 and 1440 minutes, got ${timeout} minutes.`);
   }
 
@@ -217,13 +186,9 @@ function SpotProvisioningSpecificationPropertyToJson(
  *
  * @param property
  */
-export function InstanceFleetConfigPropertyToJson(
-  property: EmrCreateCluster.InstanceFleetConfigProperty
-) {
+export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.InstanceFleetConfigProperty) {
   if (!property.targetSpotCapacity && !property.targetOnDemandCapacity) {
-    throw new Error(
-      'At least one of targetSpotCapacity and targetOnDemandCapacity should be greater than 0'
-    );
+    throw new Error('At least one of targetSpotCapacity and targetOnDemandCapacity should be greater than 0');
   }
   if (property.instanceFleetType === EmrCreateCluster.InstanceRoleType.MASTER) {
     if (property.targetSpotCapacity && property.targetOnDemandCapacity) {
@@ -244,9 +209,7 @@ export function InstanceFleetConfigPropertyToJson(
   }
   return {
     InstanceFleetType: cdk.stringToCloudFormation(property.instanceFleetType?.valueOf()),
-    InstanceTypeConfigs: cdk.listMapper(InstanceTypeConfigPropertyToJson)(
-      property.instanceTypeConfigs
-    ),
+    InstanceTypeConfigs: cdk.listMapper(InstanceTypeConfigPropertyToJson)(property.instanceTypeConfigs),
     LaunchSpecifications:
       property.launchSpecifications === undefined
         ? property.launchSpecifications
@@ -277,21 +240,13 @@ export function MetricDimensionPropertyToJson(property: EmrCreateCluster.MetricD
 export function ScalingTriggerPropertyToJson(property: EmrCreateCluster.ScalingTriggerProperty) {
   return {
     CloudWatchAlarmDefinition: {
-      ComparisonOperator: cdk.stringToCloudFormation(
-        property.cloudWatchAlarmDefinition.comparisonOperator?.valueOf()
-      ),
-      Dimensions: cdk.listMapper(MetricDimensionPropertyToJson)(
-        property.cloudWatchAlarmDefinition.dimensions
-      ),
-      EvaluationPeriods: cdk.numberToCloudFormation(
-        property.cloudWatchAlarmDefinition.evaluationPeriods
-      ),
+      ComparisonOperator: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.comparisonOperator?.valueOf()),
+      Dimensions: cdk.listMapper(MetricDimensionPropertyToJson)(property.cloudWatchAlarmDefinition.dimensions),
+      EvaluationPeriods: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.evaluationPeriods),
       MetricName: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.metricName),
       Namespace: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.namespace),
       Period: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.period.toSeconds()),
-      Statistic: cdk.stringToCloudFormation(
-        property.cloudWatchAlarmDefinition.statistic?.valueOf()
-      ),
+      Statistic: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.statistic?.valueOf()),
       Threshold: cdk.numberToCloudFormation(property.cloudWatchAlarmDefinition.threshold),
       Unit: cdk.stringToCloudFormation(property.cloudWatchAlarmDefinition.unit?.valueOf()),
     },
@@ -307,13 +262,9 @@ export function ScalingActionPropertyToJson(property: EmrCreateCluster.ScalingAc
   return {
     Market: cdk.stringToCloudFormation(property.market?.valueOf()),
     SimpleScalingPolicyConfiguration: {
-      AdjustmentType: cdk.stringToCloudFormation(
-        property.simpleScalingPolicyConfiguration.adjustmentType
-      ),
+      AdjustmentType: cdk.stringToCloudFormation(property.simpleScalingPolicyConfiguration.adjustmentType),
       CoolDown: cdk.numberToCloudFormation(property.simpleScalingPolicyConfiguration.coolDown),
-      ScalingAdjustment: cdk.numberToCloudFormation(
-        property.simpleScalingPolicyConfiguration.scalingAdjustment
-      ),
+      ScalingAdjustment: cdk.numberToCloudFormation(property.simpleScalingPolicyConfiguration.scalingAdjustment),
     },
   };
 }
@@ -337,9 +288,7 @@ export function ScalingRulePropertyToJson(property: EmrCreateCluster.ScalingRule
  *
  * @param property
  */
-export function AutoScalingPolicyPropertyToJson(
-  property: EmrCreateCluster.AutoScalingPolicyProperty
-) {
+export function AutoScalingPolicyPropertyToJson(property: EmrCreateCluster.AutoScalingPolicyProperty) {
   return {
     Constraints: {
       MaxCapacity: cdk.numberToCloudFormation(property.constraints.maxCapacity),
@@ -354,9 +303,7 @@ export function AutoScalingPolicyPropertyToJson(
  *
  * @param property
  */
-export function InstanceGroupConfigPropertyToJson(
-  property: EmrCreateCluster.InstanceGroupConfigProperty
-) {
+export function InstanceGroupConfigPropertyToJson(property: EmrCreateCluster.InstanceGroupConfigProperty) {
   return {
     AutoScalingPolicy:
       property.autoScalingPolicy === undefined
@@ -393,9 +340,7 @@ export function PlacementTypePropertyToJson(property: EmrCreateCluster.Placement
  *
  * @param property
  */
-export function BootstrapActionConfigToJson(
-  property: EmrCreateCluster.BootstrapActionConfigProperty
-) {
+export function BootstrapActionConfigToJson(property: EmrCreateCluster.BootstrapActionConfigProperty) {
   return {
     Name: cdk.stringToCloudFormation(property.name),
     ScriptBootstrapAction: {
@@ -415,14 +360,10 @@ export function InstanceGroupModifyConfigPropertyToJson(
 ) {
   return {
     Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations),
-    EC2InstanceIdsToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(
-      property.eC2InstanceIdsToTerminate
-    ),
+    EC2InstanceIdsToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(property.eC2InstanceIdsToTerminate),
     InstanceCount: cdk.numberToCloudFormation(property.instanceCount),
     ShrinkPolicy:
-      property.shrinkPolicy === undefined
-        ? property.shrinkPolicy
-        : ShrinkPolicyPropertyToJson(property.shrinkPolicy),
+      property.shrinkPolicy === undefined ? property.shrinkPolicy : ShrinkPolicyPropertyToJson(property.shrinkPolicy),
   };
 }
 
@@ -445,14 +386,10 @@ function ShrinkPolicyPropertyToJson(property: EmrModifyInstanceGroupByName.Shrin
  *
  * @param property
  */
-function InstanceResizePolicyPropertyToJson(
-  property: EmrModifyInstanceGroupByName.InstanceResizePolicyProperty
-) {
+function InstanceResizePolicyPropertyToJson(property: EmrModifyInstanceGroupByName.InstanceResizePolicyProperty) {
   return {
     InstancesToProtect: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToProtect),
     InstancesToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToTerminate),
-    InstanceTerminationTimeout: cdk.numberToCloudFormation(
-      property.instanceTerminationTimeout?.toSeconds()
-    ),
+    InstanceTerminationTimeout: cdk.numberToCloudFormation(property.instanceTerminationTimeout?.toSeconds()),
   };
 }

@@ -56,8 +56,9 @@ export interface OriginRequestPolicyProps {
  */
 export class OriginRequestPolicy extends Resource implements IOriginRequestPolicy {
   /** This policy includes only the User-Agent and Referer headers. It doesn’t include any query strings or cookies. */
-  public static readonly USER_AGENT_REFERER_HEADERS =
-    OriginRequestPolicy.fromManagedOriginRequestPolicy('acba4595-bd28-49b8-b9fe-13317c0390fa');
+  public static readonly USER_AGENT_REFERER_HEADERS = OriginRequestPolicy.fromManagedOriginRequestPolicy(
+    'acba4595-bd28-49b8-b9fe-13317c0390fa'
+  );
   /** This policy includes the header that enables cross-origin resource sharing (CORS) requests when the origin is a custom origin. */
   public static readonly CORS_CUSTOM_ORIGIN = OriginRequestPolicy.fromManagedOriginRequestPolicy(
     '59781a5b-3903-41f3-afcb-af62929ccde1'
@@ -71,14 +72,17 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
     '216adef6-5c7f-47e4-b989-5492eafa07d3'
   );
   /** This policy is designed for use with an origin that is an AWS Elemental MediaTailor endpoint. */
-  public static readonly ELEMENTAL_MEDIA_TAILOR =
-    OriginRequestPolicy.fromManagedOriginRequestPolicy('775133bc-15f2-49f9-abea-afb2e0bf67d2');
+  public static readonly ELEMENTAL_MEDIA_TAILOR = OriginRequestPolicy.fromManagedOriginRequestPolicy(
+    '775133bc-15f2-49f9-abea-afb2e0bf67d2'
+  );
   /** This policy includes all values (headers, cookies, and query strings) in the viewer request, and all CloudFront headers that were released through June 2022 (CloudFront headers released after June 2022 are not included). */
-  public static readonly ALL_VIEWER_AND_CLOUDFRONT_2022 =
-    OriginRequestPolicy.fromManagedOriginRequestPolicy('33f36d7e-f396-46d9-90e0-52428a34d9dc');
+  public static readonly ALL_VIEWER_AND_CLOUDFRONT_2022 = OriginRequestPolicy.fromManagedOriginRequestPolicy(
+    '33f36d7e-f396-46d9-90e0-52428a34d9dc'
+  );
   /** This policy includes all values (query strings, and cookies) except the header in the viewer request. */
-  public static readonly ALL_VIEWER_EXCEPT_HOST_HEADER =
-    OriginRequestPolicy.fromManagedOriginRequestPolicy('b689b0a8-53d0-40ab-baf2-68738e2966ac');
+  public static readonly ALL_VIEWER_EXCEPT_HOST_HEADER = OriginRequestPolicy.fromManagedOriginRequestPolicy(
+    'b689b0a8-53d0-40ab-baf2-68738e2966ac'
+  );
 
   /** Imports a Origin Request Policy from its id. */
   public static fromOriginRequestPolicyId(
@@ -92,9 +96,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
   }
 
   /** Use an existing managed origin request policy. */
-  private static fromManagedOriginRequestPolicy(
-    managedOriginRequestPolicyId: string
-  ): IOriginRequestPolicy {
+  private static fromManagedOriginRequestPolicy(managedOriginRequestPolicyId: string): IOriginRequestPolicy {
     return new (class implements IOriginRequestPolicy {
       public readonly originRequestPolicyId = managedOriginRequestPolicyId;
     })();
@@ -108,10 +110,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
     });
 
     const originRequestPolicyName = props.originRequestPolicyName ?? Names.uniqueId(this);
-    if (
-      !Token.isUnresolved(originRequestPolicyName) &&
-      !originRequestPolicyName.match(/^[\w-]+$/i)
-    ) {
+    if (!Token.isUnresolved(originRequestPolicyName) && !originRequestPolicyName.match(/^[\w-]+$/i)) {
       throw new Error(
         `'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`
       );

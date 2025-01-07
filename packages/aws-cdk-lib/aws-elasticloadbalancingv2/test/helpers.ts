@@ -4,10 +4,7 @@ import * as elbv2 from '../lib';
 
 export class FakeSelfRegisteringTarget
   extends Construct
-  implements
-    elbv2.IApplicationLoadBalancerTarget,
-    elbv2.INetworkLoadBalancerTarget,
-    ec2.IConnectable
+  implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, ec2.IConnectable
 {
   public readonly securityGroup: ec2.SecurityGroup;
   public readonly connections: ec2.Connections;
@@ -20,16 +17,12 @@ export class FakeSelfRegisteringTarget
     });
   }
 
-  public attachToApplicationTargetGroup(
-    targetGroup: elbv2.ApplicationTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     targetGroup.registerConnectable(this);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
-  public attachToNetworkTargetGroup(
-    _targetGroup: elbv2.NetworkTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(_targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 }

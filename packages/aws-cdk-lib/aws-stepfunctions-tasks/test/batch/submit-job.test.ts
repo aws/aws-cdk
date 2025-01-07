@@ -16,9 +16,7 @@ beforeEach(() => {
 
   batchJobDefinition = new batch.EcsJobDefinition(stack, 'JobDefinition', {
     container: new batch.EcsEc2ContainerDefinition(stack, 'Container', {
-      image: ecs.ContainerImage.fromAsset(
-        path.join(__dirname, 'batchjob-image'),
-      ),
+      image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'batchjob-image')),
       cpu: 256,
       memory: cdk.Size.mebibytes(2048),
     }),
@@ -64,10 +62,7 @@ test('Task with only the required parameters', () => {
       JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
       JobName: 'JobName',
       JobQueue: {
-        'Fn::GetAtt': [
-          'JobQueueEE3AD499',
-          'JobQueueArn',
-        ],
+        'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
       },
     },
   });
@@ -117,17 +112,18 @@ test('Task with all the parameters', () => {
       JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
       JobName: 'JobName',
       JobQueue: {
-        'Fn::GetAtt': [
-          'JobQueueEE3AD499',
-          'JobQueueArn',
-        ],
+        'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
       },
       ArrayProperties: { Size: 15 },
       ContainerOverrides: {
         Command: ['sudo', 'rm'],
         Environment: [{ Name: 'key', Value: 'value' }],
         InstanceType: 'MULTI',
-        ResourceRequirements: [{ Type: 'GPU', Value: '1' }, { Type: 'MEMORY', Value: '1024' }, { Type: 'VCPU', Value: '10' }],
+        ResourceRequirements: [
+          { Type: 'GPU', Value: '1' },
+          { Type: 'MEMORY', Value: '1024' },
+          { Type: 'VCPU', Value: '10' },
+        ],
       },
       DependsOn: [{ JobId: '1234', Type: 'some_type' }],
       Parameters: { 'foo.$': '$.bar' },
@@ -165,21 +161,18 @@ test('supports tokens', () => {
     },
     End: true,
     Parameters: {
-      'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
+      JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
       'JobName.$': '$.jobName',
-      'JobQueue': {
-        'Fn::GetAtt': [
-          'JobQueueEE3AD499',
-          'JobQueueArn',
-        ],
+      JobQueue: {
+        'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
       },
-      'ArrayProperties': {
+      ArrayProperties: {
         'Size.$': '$.arraySize',
       },
-      'RetryStrategy': {
+      RetryStrategy: {
         'Attempts.$': '$.attempts',
       },
-      'Timeout': {
+      Timeout: {
         'AttemptDurationSeconds.$': '$.timeout',
       },
     },
@@ -206,13 +199,10 @@ test('container overrides are tokens', () => {
       JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
       JobName: 'JobName',
       JobQueue: {
-        'Fn::GetAtt': [
-          'JobQueueEE3AD499',
-          'JobQueueArn',
-        ],
+        'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
       },
       ContainerOverrides: {
-        ResourceRequirements: [{ 'Type': 'MEMORY', 'Value.$': '$.asdf' }],
+        ResourceRequirements: [{ Type: 'MEMORY', 'Value.$': '$.asdf' }],
       },
     },
   });
@@ -244,13 +234,10 @@ test('supports passing task input into payload', () => {
     },
     End: true,
     Parameters: {
-      'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
+      JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
       'JobName.$': '$.jobName',
-      'JobQueue': {
-        'Fn::GetAtt': [
-          'JobQueueEE3AD499',
-          'JobQueueArn',
-        ],
+      JobQueue: {
+        'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
       },
       'Parameters.$': '$.foo',
     },
@@ -266,7 +253,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
   }).toThrow(
-    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/,
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
   );
 });
 
@@ -281,7 +268,7 @@ test('Task throws if environment in containerOverrides contain env with name sta
       },
     });
   }).toThrow(
-    /Invalid environment variable name: AWS_BATCH_MY_NAME. Environment variable names starting with 'AWS_BATCH' are reserved./,
+    /Invalid environment variable name: AWS_BATCH_MY_NAME. Environment variable names starting with 'AWS_BATCH' are reserved./
   );
 });
 
@@ -293,9 +280,7 @@ test('Task throws if arraySize is out of limits 2-10000', () => {
       jobQueueArn: batchJobQueue.jobQueueArn,
       arraySize: 1,
     });
-  }).toThrow(
-    /arraySize must be between 2 and 10,000/,
-  );
+  }).toThrow(/arraySize must be between 2 and 10,000/);
 
   expect(() => {
     new BatchSubmitJob(stack, 'Task2', {
@@ -304,9 +289,7 @@ test('Task throws if arraySize is out of limits 2-10000', () => {
       jobQueueArn: batchJobQueue.jobQueueArn,
       arraySize: 10001,
     });
-  }).toThrow(
-    /arraySize must be between 2 and 10,000/,
-  );
+  }).toThrow(/arraySize must be between 2 and 10,000/);
 });
 
 test('Task throws if dependencies exceeds 20', () => {
@@ -315,14 +298,12 @@ test('Task throws if dependencies exceeds 20', () => {
       jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
       jobName: 'JobName',
       jobQueueArn: batchJobQueue.jobQueueArn,
-      dependsOn: [...Array(21).keys()].map(i => ({
+      dependsOn: [...Array(21).keys()].map((i) => ({
         jobId: `${i}`,
         type: `some_type-${i}`,
       })),
     });
-  }).toThrow(
-    /dependencies must be 20 or less/,
-  );
+  }).toThrow(/dependencies must be 20 or less/);
 });
 
 test('Task throws if attempts is out of limits 1-10', () => {
@@ -333,9 +314,7 @@ test('Task throws if attempts is out of limits 1-10', () => {
       jobQueueArn: batchJobQueue.jobQueueArn,
       attempts: 0,
     });
-  }).toThrow(
-    /attempts must be between 1 and 10/,
-  );
+  }).toThrow(/attempts must be between 1 and 10/);
 
   expect(() => {
     new BatchSubmitJob(stack, 'Task2', {
@@ -344,9 +323,7 @@ test('Task throws if attempts is out of limits 1-10', () => {
       jobQueueArn: batchJobQueue.jobQueueArn,
       attempts: 11,
     });
-  }).toThrow(
-    /attempts must be between 1 and 10/,
-  );
+  }).toThrow(/attempts must be between 1 and 10/);
 });
 
 test('Task throws if attempt duration is less than 60 sec', () => {
@@ -357,9 +334,7 @@ test('Task throws if attempt duration is less than 60 sec', () => {
       jobQueueArn: batchJobQueue.jobQueueArn,
       taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(59)),
     });
-  }).toThrow(
-    /attempt duration must be greater than 60 seconds./,
-  );
+  }).toThrow(/attempt duration must be greater than 60 seconds./);
 });
 
 test('supports passing tags', () => {
@@ -390,15 +365,12 @@ test('supports passing tags', () => {
     },
     End: true,
     Parameters: {
-      'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
+      JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
       'JobName.$': '$.jobName',
-      'JobQueue': {
-        'Fn::GetAtt': [
-          'JobQueueEE3AD499',
-          'JobQueueArn',
-        ],
+      JobQueue: {
+        'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
       },
-      'Tags': {
+      Tags: {
         test: 'this is a tag',
       },
     },
@@ -417,9 +389,7 @@ test('throws if tags has invalid value', () => {
       jobQueueArn: batchJobQueue.jobQueueArn,
       tags,
     });
-  }).toThrow(
-    /Maximum tag number of entries is 50./,
-  );
+  }).toThrow(/Maximum tag number of entries is 50./);
 
   expect(() => {
     const keyTooLong = 'k'.repeat(150);
@@ -431,9 +401,7 @@ test('throws if tags has invalid value', () => {
       jobQueueArn: batchJobQueue.jobQueueArn,
       tags,
     });
-  }).toThrow(
-    /Tag key size must be between 1 and 128/,
-  );
+  }).toThrow(/Tag key size must be between 1 and 128/);
 
   expect(() => {
     const tags = { key: 'k'.repeat(300) };
@@ -443,7 +411,5 @@ test('throws if tags has invalid value', () => {
       jobQueueArn: batchJobQueue.jobQueueArn,
       tags,
     });
-  }).toThrow(
-    /Tag value maximum size is 256/,
-  );
+  }).toThrow(/Tag value maximum size is 256/);
 });

@@ -22,147 +22,140 @@ describe('TagOptions', () => {
 
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 5);
     }),
-
-    test('fails to create tag option with invalid minimum key length', () => {
-      expect(() => {
-        new servicecatalog.TagOptions(stack, 'TagOptions', {
-          allowedValuesForTags: {
-            '': ['value1', 'value2'],
-          },
+      test('fails to create tag option with invalid minimum key length', () => {
+        expect(() => {
+          new servicecatalog.TagOptions(stack, 'TagOptions', {
+            allowedValuesForTags: {
+              '': ['value1', 'value2'],
+            },
+          });
+        }).toThrow(/Invalid TagOption key for resource/);
+      }),
+      test('fails to create tag option with invalid maxium key length', () => {
+        expect(() => {
+          new servicecatalog.TagOptions(stack, 'TagOptions', {
+            allowedValuesForTags: {
+              ['longKey'.repeat(1000)]: ['value1', 'value2'],
+            },
+          });
+        }).toThrow(/Invalid TagOption key for resource/);
+      }),
+      test('fails to create tag option with invalid value length', () => {
+        expect(() => {
+          new servicecatalog.TagOptions(stack, 'TagOptions', {
+            allowedValuesForTags: {
+              key: ['tagOptionValue'.repeat(1000)],
+            },
+          });
+        }).toThrow(/Invalid TagOption value for resource/);
+      }),
+      test('fails to create tag options with no tag keys or values', () => {
+        expect(() => {
+          new servicecatalog.TagOptions(stack, 'TagOptions', {
+            allowedValuesForTags: {},
+          });
+        }).toThrow(/No tag option keys or values were provided/);
+      }),
+      test('fails to create tag options for tag key with no values', () => {
+        expect(() => {
+          new servicecatalog.TagOptions(stack, 'TagOptions', {
+            allowedValuesForTags: {
+              key1: ['value1', 'value2'],
+              key2: [],
+            },
+          });
+        }).toThrow(/No tag option values were provided for tag option key/);
+      }),
+      test('associate tag options', () => {
+        const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+          displayName: 'testPortfolio',
+          providerName: 'testProvider',
         });
-      }).toThrow(/Invalid TagOption key for resource/);
-    }),
 
-    test('fails to create tag option with invalid maxium key length', () => {
-      expect(() => {
-        new servicecatalog.TagOptions(stack, 'TagOptions', {
-          allowedValuesForTags: {
-            ['longKey'.repeat(1000)]: ['value1', 'value2'],
-          },
-        });
-      }).toThrow(/Invalid TagOption key for resource/);
-    }),
-
-    test('fails to create tag option with invalid value length', () => {
-      expect(() => {
-        new servicecatalog.TagOptions(stack, 'TagOptions', {
-          allowedValuesForTags: {
-            key: ['tagOptionValue'.repeat(1000)],
-          },
-        });
-      }).toThrow(/Invalid TagOption value for resource/);
-    }),
-
-    test('fails to create tag options with no tag keys or values', () => {
-      expect(() => {
-        new servicecatalog.TagOptions(stack, 'TagOptions', {
-          allowedValuesForTags: {},
-        });
-      }).toThrow(/No tag option keys or values were provided/);
-    }),
-
-    test('fails to create tag options for tag key with no values', () => {
-      expect(() => {
-        new servicecatalog.TagOptions(stack, 'TagOptions', {
+        const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
           allowedValuesForTags: {
             key1: ['value1', 'value2'],
-            key2: [],
+            key2: ['value1', 'value2', 'value3'],
           },
         });
-      }).toThrow(/No tag option values were provided for tag option key/);
-    }),
+        portfolio.associateTagOptions(tagOptions);
 
-    test('associate tag options', () => {
-      const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
-        displayName: 'testPortfolio',
-        providerName: 'testProvider',
-      });
+        Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOption', 5);
+        Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOptionAssociation', 5);
+      }),
+      test('creating tag options with duplicate values is idempotent', () => {
+        const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+          displayName: 'testPortfolio',
+          providerName: 'testProvider',
+        });
 
-      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        allowedValuesForTags: {
-          key1: ['value1', 'value2'],
-          key2: ['value1', 'value2', 'value3'],
-        },
-      });
-      portfolio.associateTagOptions(tagOptions);
-
-      Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOption', 5);
-      Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOptionAssociation', 5);
-    }),
-
-    test('creating tag options with duplicate values is idempotent', () => {
-      const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
-        displayName: 'testPortfolio',
-        providerName: 'testProvider',
-      });
-
-      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        allowedValuesForTags: {
-          key1: ['value1', 'value2', 'value2'],
-          key2: ['value1', 'value2', 'value3', 'value3'],
-        },
-      });
-      portfolio.associateTagOptions(tagOptions);
-
-      Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOption', 5);
-      Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOptionAssociation', 5);
-    }),
-
-    test('create and associate tag options to different resources', () => {
-      const portfolio1 = new servicecatalog.Portfolio(stack, 'MyPortfolio1', {
-        displayName: 'testPortfolio1',
-        providerName: 'testProvider1',
-      });
-
-      const portfolio2 = new servicecatalog.Portfolio(stack, 'MyPortfolio2', {
-        displayName: 'testPortfolio2',
-        providerName: 'testProvider2',
-      });
-
-      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        allowedValuesForTags: {
-          key1: ['value1', 'value2'],
-          key2: ['value1', 'value2', 'value3'],
-        },
-      });
-
-      portfolio1.associateTagOptions(tagOptions);
-      portfolio2.associateTagOptions(tagOptions);
-
-      Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOption', 5);
-      Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOptionAssociation', 10);
-    }),
-
-    test('adding tag options to portfolio and product creates unique tag options and enumerated associations', () => {
-      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        allowedValuesForTags: {
-          key1: ['value1', 'value2'],
-          key2: ['value1'],
-        },
-      });
-
-      const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
-        displayName: 'testPortfolio',
-        providerName: 'testProvider',
-      });
-
-      const product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
-        productName: 'testProduct',
-        owner: 'testOwner',
-        productVersions: [
-          {
-            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+        const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+          allowedValuesForTags: {
+            key1: ['value1', 'value2', 'value2'],
+            key2: ['value1', 'value2', 'value3', 'value3'],
           },
-        ],
-        tagOptions: tagOptions,
+        });
+        portfolio.associateTagOptions(tagOptions);
+
+        Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOption', 5);
+        Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOptionAssociation', 5);
+      }),
+      test('create and associate tag options to different resources', () => {
+        const portfolio1 = new servicecatalog.Portfolio(stack, 'MyPortfolio1', {
+          displayName: 'testPortfolio1',
+          providerName: 'testProvider1',
+        });
+
+        const portfolio2 = new servicecatalog.Portfolio(stack, 'MyPortfolio2', {
+          displayName: 'testPortfolio2',
+          providerName: 'testProvider2',
+        });
+
+        const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+          allowedValuesForTags: {
+            key1: ['value1', 'value2'],
+            key2: ['value1', 'value2', 'value3'],
+          },
+        });
+
+        portfolio1.associateTagOptions(tagOptions);
+        portfolio2.associateTagOptions(tagOptions);
+
+        Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOption', 5);
+        Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOptionAssociation', 10);
+      }),
+      test('adding tag options to portfolio and product creates unique tag options and enumerated associations', () => {
+        const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+          allowedValuesForTags: {
+            key1: ['value1', 'value2'],
+            key2: ['value1'],
+          },
+        });
+
+        const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+          displayName: 'testPortfolio',
+          providerName: 'testProvider',
+        });
+
+        const product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+          productName: 'testProduct',
+          owner: 'testOwner',
+          productVersions: [
+            {
+              cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
+                'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'
+              ),
+            },
+          ],
+          tagOptions: tagOptions,
+        });
+
+        portfolio.associateTagOptions(tagOptions);
+        product.associateTagOptions(tagOptions);
+
+        Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+        Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 6);
       });
-
-      portfolio.associateTagOptions(tagOptions);
-      product.associateTagOptions(tagOptions);
-
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 6);
-    });
 
     test('create and associate tag options in another stack', () => {
       const tagOptionsStack = new cdk.Stack(app, 'TagOptionsStack');
@@ -180,7 +173,9 @@ describe('TagOptions', () => {
         owner: 'testOwner',
         productVersions: [
           {
-            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
+              'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'
+            ),
           },
         ],
         tagOptions: tagOptions,

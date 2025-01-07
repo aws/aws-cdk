@@ -28,10 +28,7 @@ describe('service account', () => {
             [
               '[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"stackmyserviceaccount58b9529e\",\"namespace\":\"default\",\"labels\":{\"app.kubernetes.io/name\":\"stackmyserviceaccount58b9529e\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"',
               {
-                'Fn::GetAtt': [
-                  'MyServiceAccountRoleB41709FF',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'],
               },
               '\"}}}]',
             ],
@@ -51,10 +48,7 @@ describe('service account', () => {
               },
               Condition: {
                 StringEquals: {
-                  'Fn::GetAtt': [
-                    'MyServiceAccountConditionJson1ED3BC54',
-                    'Value',
-                  ],
+                  'Fn::GetAtt': ['MyServiceAccountConditionJson1ED3BC54', 'Value'],
                 },
               },
             },
@@ -93,10 +87,7 @@ describe('service account', () => {
             [
               '[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"stackmyserviceaccount58b9529e\",\"namespace\":\"default\",\"labels\":{\"app.kubernetes.io/name\":\"stackmyserviceaccount58b9529e\",\"some-label\":\"with-some-value\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"',
               {
-                'Fn::GetAtt': [
-                  'MyServiceAccountRoleB41709FF',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'],
               },
               '\",\"eks.amazonaws.com/sts-regional-endpoints\":\"false\"}}}]',
             ],
@@ -116,10 +107,7 @@ describe('service account', () => {
               },
               Condition: {
                 StringEquals: {
-                  'Fn::GetAtt': [
-                    'MyServiceAccountConditionJson1ED3BC54',
-                    'Value',
-                  ],
+                  'Fn::GetAtt': ['MyServiceAccountConditionJson1ED3BC54', 'Value'],
                 },
               },
             },
@@ -151,10 +139,7 @@ describe('service account', () => {
             [
               '[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"stackclustermyotherserviceaccounta472761a\",\"namespace\":\"default\",\"labels\":{\"app.kubernetes.io/name\":\"stackclustermyotherserviceaccounta472761a\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"',
               {
-                'Fn::GetAtt': [
-                  'ClusterMyOtherServiceAccountRole764583C5',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['ClusterMyOtherServiceAccountRole764583C5', 'Arn'],
               },
               '\"}}}]',
             ],
@@ -201,10 +186,7 @@ describe('service account', () => {
             [
               '[{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"name":"stackclustermyserviceaccount373b933c","namespace":"default","labels":{"aws.cdk.eks/prune-c8d8e1722a4f3ed332f8ac74cb3d962f01fbb62291":"","app.kubernetes.io/name":"stackclustermyserviceaccount373b933c"},"annotations":{"eks.amazonaws.com/role-arn":"',
               {
-                'Fn::GetAtt': [
-                  'ClusterMyServiceAccountRole85337B29',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['ClusterMyServiceAccountRole85337B29', 'Arn'],
               },
               '"}}}]',
             ],
@@ -219,10 +201,7 @@ describe('service account', () => {
               Action: 'sts:AssumeRoleWithWebIdentity',
               Condition: {
                 StringEquals: {
-                  'Fn::GetAtt': [
-                    'ClusterMyServiceAccountConditionJson671C0633',
-                    'Value',
-                  ],
+                  'Fn::GetAtt': ['ClusterMyServiceAccountConditionJson671C0633', 'Value'],
                 },
               },
               Effect: 'Allow',
@@ -245,10 +224,12 @@ describe('service account', () => {
       const { cluster } = testFixtureCluster();
 
       // WHEN
-      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
-        name: 'XXX',
-      }))
-      // THEN
+      expect(() =>
+        cluster.addServiceAccount('InvalidServiceAccount', {
+          name: 'XXX',
+        })
+      )
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -257,10 +238,12 @@ describe('service account', () => {
       const { cluster } = testFixtureCluster();
 
       // WHEN
-      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
-        name: 'test.',
-      }))
-      // THEN
+      expect(() =>
+        cluster.addServiceAccount('InvalidServiceAccount', {
+          name: 'test.',
+        })
+      )
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -283,10 +266,12 @@ describe('service account', () => {
       const { cluster } = testFixtureCluster();
 
       // WHEN
-      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
-        name: 'x'.repeat(255),
-      }))
-      // THEN
+      expect(() =>
+        cluster.addServiceAccount('InvalidServiceAccount', {
+          name: 'x'.repeat(255),
+        })
+      )
+        // THEN
         .toThrow(RangeError);
     });
   });
@@ -297,10 +282,12 @@ describe('service account', () => {
       const { cluster } = testFixtureCluster();
 
       // WHEN
-      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
-        namespace: 'XXX',
-      }))
-      // THEN
+      expect(() =>
+        cluster.addServiceAccount('InvalidServiceAccount', {
+          namespace: 'XXX',
+        })
+      )
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -309,10 +296,12 @@ describe('service account', () => {
       const { cluster } = testFixtureCluster();
 
       // WHEN
-      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
-        namespace: 'test.',
-      }))
-      // THEN
+      expect(() =>
+        cluster.addServiceAccount('InvalidServiceAccount', {
+          namespace: 'test.',
+        })
+      )
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -322,10 +311,12 @@ describe('service account', () => {
       const valueWithDot = 'test.name';
 
       // WHEN
-      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
-        namespace: valueWithDot,
-      }))
-      // THEN
+      expect(() =>
+        cluster.addServiceAccount('InvalidServiceAccount', {
+          namespace: valueWithDot,
+        })
+      )
+        // THEN
         .toThrow(RangeError);
     });
 
@@ -334,10 +325,12 @@ describe('service account', () => {
       const { cluster } = testFixtureCluster();
 
       // WHEN
-      expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
-        namespace: 'x'.repeat(65),
-      }))
-      // THEN
+      expect(() =>
+        cluster.addServiceAccount('InvalidServiceAccount', {
+          namespace: 'x'.repeat(65),
+        })
+      )
+        // THEN
         .toThrow(RangeError);
     });
   });
@@ -360,7 +353,11 @@ describe('service account', () => {
         AssumeRolePolicyDocument: {
           Statement: [
             { Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'pods.eks.amazonaws.com' } },
-            { Action: ['sts:AssumeRole', 'sts:TagSession'], Effect: 'Allow', Principal: { Service: 'pods.eks.amazonaws.com' } },
+            {
+              Action: ['sts:AssumeRole', 'sts:TagSession'],
+              Effect: 'Allow',
+              Principal: { Service: 'pods.eks.amazonaws.com' },
+            },
           ],
         },
       });
@@ -410,9 +407,13 @@ describe('service account', () => {
       // should create an OpenIdConnectProvider
       t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 1);
       // should not have any eks pod identity agent addon
-      t.resourcePropertiesCountIs('AWS::EKS::Addon', {
-        AddonName: 'eks-pod-identity-agent',
-      }, 0);
+      t.resourcePropertiesCountIs(
+        'AWS::EKS::Addon',
+        {
+          AddonName: 'eks-pod-identity-agent',
+        },
+        0
+      );
       // should not have pod identity association
       t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 0);
     });

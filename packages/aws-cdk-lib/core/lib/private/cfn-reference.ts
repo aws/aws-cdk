@@ -176,9 +176,7 @@ export class CfnReference extends Reference {
     }
 
     if (this.hasValueForStack(stack)) {
-      throw new Error(
-        'Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first'
-      );
+      throw new Error('Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
     }
 
     this.replacementTokens.set(stack, value);

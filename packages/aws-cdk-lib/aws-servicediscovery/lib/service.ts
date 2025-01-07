@@ -166,11 +166,7 @@ export interface ServiceAttributes {
  * Define a CloudMap Service
  */
 export class Service extends ServiceBase {
-  public static fromServiceAttributes(
-    scope: Construct,
-    id: string,
-    attrs: ServiceAttributes
-  ): IService {
+  public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
     class Import extends ServiceBase {
       public namespace: INamespace = attrs.namespace;
       public serviceId = attrs.serviceId;
@@ -226,16 +222,12 @@ export class Service extends ServiceBase {
     const discoveryType = props.discoveryType || defaultDiscoveryType(props.namespace);
 
     if (namespaceType == NamespaceType.HTTP && discoveryType == DiscoveryType.DNS_AND_API) {
-      throw new Error(
-        'Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace.'
-      );
+      throw new Error('Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace.');
     }
 
     // Validations
     if (discoveryType === DiscoveryType.API && (props.routingPolicy || props.dnsRecordType)) {
-      throw new Error(
-        'Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.'
-      );
+      throw new Error('Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.');
     }
 
     if (props.healthCheck && props.customHealthCheck) {
@@ -246,10 +238,7 @@ export class Service extends ServiceBase {
       throw new Error('Cannot specify `healthCheckConfig` for a Private DNS namespace.');
     }
 
-    if (
-      props.routingPolicy === RoutingPolicy.MULTIVALUE &&
-      props.dnsRecordType === DnsRecordType.CNAME
-    ) {
+    if (props.routingPolicy === RoutingPolicy.MULTIVALUE && props.dnsRecordType === DnsRecordType.CNAME) {
       throw new Error('Cannot use `CNAME` record when routing policy is `Multivalue`.');
     }
 
@@ -261,11 +250,7 @@ export class Service extends ServiceBase {
       throw new Error('Cannot register loadbalancers when routing policy is `Multivalue`.');
     }
 
-    if (
-      props.healthCheck &&
-      props.healthCheck.type === HealthCheckType.TCP &&
-      props.healthCheck.resourcePath
-    ) {
+    if (props.healthCheck && props.healthCheck.type === HealthCheckType.TCP && props.healthCheck.resourcePath) {
       throw new Error('Cannot specify `resourcePath` when using a `TCP` health check.');
     }
 
@@ -300,8 +285,7 @@ export class Service extends ServiceBase {
     const healthCheckConfigDefaults = {
       type: HealthCheckType.HTTP,
       failureThreshold: 1,
-      resourcePath:
-        props.healthCheck && props.healthCheck.type !== HealthCheckType.TCP ? '/' : undefined,
+      resourcePath: props.healthCheck && props.healthCheck.type !== HealthCheckType.TCP ? '/' : undefined,
     };
 
     const healthCheckConfig = props.healthCheck && {

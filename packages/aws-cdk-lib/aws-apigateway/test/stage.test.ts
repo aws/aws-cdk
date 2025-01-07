@@ -30,10 +30,7 @@ describe('stage', () => {
           Properties: {
             HttpMethod: 'GET',
             ResourceId: {
-              'Fn::GetAtt': [
-                'testapiD6451F70',
-                'RootResourceId',
-              ],
+              'Fn::GetAtt': ['testapiD6451F70', 'RootResourceId'],
             },
             RestApiId: {
               Ref: 'testapiD6451F70',
@@ -51,9 +48,7 @@ describe('stage', () => {
               Ref: 'testapiD6451F70',
             },
           },
-          DependsOn: [
-            'testapiGETD8DE4ED1',
-          ],
+          DependsOn: ['testapiGETD8DE4ED1'],
         },
         mystage7483BE9A: {
           Type: 'AWS::ApiGateway::Stage',
@@ -90,7 +85,9 @@ describe('stage', () => {
   test('SpecRestApi - stage depends on the CloudWatch role when it exists', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.SpecRestApi(stack, 'test-api', { apiDefinition: apigateway.ApiDefinition.fromInline( { foo: 'bar' }) });
+    const api = new apigateway.SpecRestApi(stack, 'test-api', {
+      apiDefinition: apigateway.ApiDefinition.fromInline({ foo: 'bar' }),
+    });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');
 
@@ -250,11 +247,14 @@ describe('stage', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(() => new apigateway.Stage(stack, 'my-stage', {
-      deployment,
-      cacheClusterSize: '0.5',
-      cacheClusterEnabled: false,
-    })).toThrow(/Cannot set "cacheClusterSize" to 0.5 and "cacheClusterEnabled" to "false"/);
+    expect(
+      () =>
+        new apigateway.Stage(stack, 'my-stage', {
+          deployment,
+          cacheClusterSize: '0.5',
+          cacheClusterEnabled: false,
+        })
+    ).toThrow(/Cannot set "cacheClusterSize" to 0.5 and "cacheClusterEnabled" to "false"/);
   });
 
   test('if "cachingEnabled" in method settings, implicitly enable cache cluster', () => {
@@ -294,11 +294,14 @@ describe('stage', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(() => new apigateway.Stage(stack, 'my-stage', {
-      cacheClusterEnabled: false,
-      deployment,
-      cachingEnabled: true,
-    })).toThrow(/Cannot enable caching for method \/\*\/\* since cache cluster is disabled on stage/);
+    expect(
+      () =>
+        new apigateway.Stage(stack, 'my-stage', {
+          cacheClusterEnabled: false,
+          deployment,
+          cachingEnabled: true,
+        })
+    ).toThrow(/Cannot enable caching for method \/\*\/\* since cache cluster is disabled on stage/);
   });
 
   test('if only the custom log destination log group is set', () => {
@@ -319,12 +322,10 @@ describe('stage', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
-          'Fn::GetAtt': [
-            'LogGroupF5B46931',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
         },
-        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
+        Format:
+          '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
       },
       StageName: 'prod',
     });
@@ -350,12 +351,10 @@ describe('stage', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
-          'Fn::GetAtt': [
-            'LogGroupF5B46931',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
         },
-        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}',
+        Format:
+          '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}',
       },
       StageName: 'prod',
     });
@@ -381,12 +380,10 @@ describe('stage', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
-          'Fn::GetAtt': [
-            'MyStream',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyStream', 'Arn'],
         },
-        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
+        Format:
+          '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
       },
       StageName: 'prod',
     });
@@ -414,12 +411,10 @@ describe('stage', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
-          'Fn::GetAtt': [
-            'MyStream',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyStream', 'Arn'],
         },
-        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}',
+        Format:
+          '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}',
       },
       StageName: 'prod',
     });
@@ -438,11 +433,16 @@ describe('stage', () => {
       const testFormat = apigateway.AccessLogFormat.custom('');
 
       // THEN
-      expect(() => new apigateway.Stage(stack, 'my-stage', {
-        deployment,
-        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
-      })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+      expect(
+        () =>
+          new apigateway.Stage(stack, 'my-stage', {
+            deployment,
+            accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+            accessLogFormat: testFormat,
+          })
+      ).toThrow(
+        'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`'
+      );
     });
 
     test('succeeds when access log format contains `contextRequestId()`', () => {
@@ -454,16 +454,21 @@ describe('stage', () => {
 
       // WHEN
       const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
-        requestId: apigateway.AccessLogField.contextRequestId(),
-      }));
+      const testFormat = apigateway.AccessLogFormat.custom(
+        JSON.stringify({
+          requestId: apigateway.AccessLogField.contextRequestId(),
+        })
+      );
 
       // THEN
-      expect(() => new apigateway.Stage(stack, 'my-stage', {
-        deployment,
-        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
-      })).not.toThrow();
+      expect(
+        () =>
+          new apigateway.Stage(stack, 'my-stage', {
+            deployment,
+            accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+            accessLogFormat: testFormat,
+          })
+      ).not.toThrow();
     });
 
     test('succeeds when access log format contains `contextExtendedRequestId()`', () => {
@@ -475,16 +480,21 @@ describe('stage', () => {
 
       // WHEN
       const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
-        extendedRequestId: apigateway.AccessLogField.contextExtendedRequestId(),
-      }));
+      const testFormat = apigateway.AccessLogFormat.custom(
+        JSON.stringify({
+          extendedRequestId: apigateway.AccessLogField.contextExtendedRequestId(),
+        })
+      );
 
       // THEN
-      expect(() => new apigateway.Stage(stack, 'my-stage', {
-        deployment,
-        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
-      })).not.toThrow();
+      expect(
+        () =>
+          new apigateway.Stage(stack, 'my-stage', {
+            deployment,
+            accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+            accessLogFormat: testFormat,
+          })
+      ).not.toThrow();
     });
 
     test('succeeds when access log format contains both `contextRequestId()` and `contextExtendedRequestId`', () => {
@@ -496,17 +506,22 @@ describe('stage', () => {
 
       // WHEN
       const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
-        requestId: apigateway.AccessLogField.contextRequestId(),
-        extendedRequestId: apigateway.AccessLogField.contextExtendedRequestId(),
-      }));
+      const testFormat = apigateway.AccessLogFormat.custom(
+        JSON.stringify({
+          requestId: apigateway.AccessLogField.contextRequestId(),
+          extendedRequestId: apigateway.AccessLogField.contextExtendedRequestId(),
+        })
+      );
 
       // THEN
-      expect(() => new apigateway.Stage(stack, 'my-stage', {
-        deployment,
-        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
-      })).not.toThrow();
+      expect(
+        () =>
+          new apigateway.Stage(stack, 'my-stage', {
+            deployment,
+            accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+            accessLogFormat: testFormat,
+          })
+      ).not.toThrow();
     });
 
     test('fails when access log format contains `contextRequestIdXxx`', () => {
@@ -518,20 +533,27 @@ describe('stage', () => {
 
       // WHEN
       const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-      const testFormat = apigateway.AccessLogFormat.custom(JSON.stringify({
-        requestIdXxx: '$context.requestIdXxx',
-      }));
+      const testFormat = apigateway.AccessLogFormat.custom(
+        JSON.stringify({
+          requestIdXxx: '$context.requestIdXxx',
+        })
+      );
 
       // THEN
-      expect(() => new apigateway.Stage(stack, 'my-stage', {
-        deployment,
-        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
-      })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+      expect(
+        () =>
+          new apigateway.Stage(stack, 'my-stage', {
+            deployment,
+            accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+            accessLogFormat: testFormat,
+          })
+      ).toThrow(
+        'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`'
+      );
     });
 
     test('does not fail when access log format is a token', () => {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
@@ -542,15 +564,18 @@ describe('stage', () => {
       const testFormat = apigateway.AccessLogFormat.custom(cdk.Lazy.string({ produce: () => 'test' }));
 
       // THEN
-      expect(() => new apigateway.Stage(stack, 'my-stage', {
-        deployment,
-        accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
-        accessLogFormat: testFormat,
-      })).not.toThrow();
+      expect(
+        () =>
+          new apigateway.Stage(stack, 'my-stage', {
+            deployment,
+            accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+            accessLogFormat: testFormat,
+          })
+      ).not.toThrow();
     });
 
     test('fails when access log destination is empty', () => {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
       const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
@@ -560,10 +585,13 @@ describe('stage', () => {
       const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
 
       // THEN
-      expect(() => new apigateway.Stage(stack, 'my-stage', {
-        deployment,
-        accessLogFormat: testFormat,
-      })).toThrow(/Access log format is specified without a destination/);
+      expect(
+        () =>
+          new apigateway.Stage(stack, 'my-stage', {
+            deployment,
+            accessLogFormat: testFormat,
+          })
+      ).toThrow(/Access log format is specified without a destination/);
     });
 
     test('fails if firehose delivery stream name does not start with amazon-apigateway-', () => {
@@ -582,7 +610,9 @@ describe('stage', () => {
           deployment,
           accessLogDestination: new apigateway.FirehoseLogDestination(testDeliveryStream),
         });
-      }).toThrow(/Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got 'invalid'/);
+      }).toThrow(
+        /Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got 'invalid'/
+      );
     });
   });
 
@@ -602,13 +632,15 @@ describe('stage', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
-      MethodSettings: [{
-        DataTraceEnabled: false,
-        HttpMethod: '*',
-        ResourcePath: '/*',
-        ThrottlingBurstLimit: 0,
-        ThrottlingRateLimit: 0,
-      }],
+      MethodSettings: [
+        {
+          DataTraceEnabled: false,
+          HttpMethod: '*',
+          ResourcePath: '/*',
+          ThrottlingBurstLimit: 0,
+          ThrottlingRateLimit: 0,
+        },
+      ],
     });
   });
 
@@ -663,7 +695,6 @@ describe('stage', () => {
         },
       ],
     });
-
   });
 
   describe('Metrics', () => {

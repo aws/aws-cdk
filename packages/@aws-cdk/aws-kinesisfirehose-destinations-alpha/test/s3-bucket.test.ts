@@ -40,7 +40,6 @@ describe('S3 destination', () => {
   });
 
   it('creates a role when none is provided', () => {
-
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: new firehosedestinations.S3Bucket(bucket),
     });
@@ -48,10 +47,7 @@ describe('S3 destination', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       ExtendedS3DestinationConfiguration: {
         RoleARN: {
-          'Fn::GetAtt': [
-            'DeliveryStreamS3DestinationRoleD96B8345',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['DeliveryStreamS3DestinationRoleD96B8345', 'Arn'],
         },
       },
     });
@@ -95,10 +91,7 @@ describe('S3 destination', () => {
               's3:Abort*',
             ],
             Effect: 'Allow',
-            Resource: [
-              stack.resolve(bucket.bucketArn),
-              { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] },
-            ],
+            Resource: [stack.resolve(bucket.bucketArn), { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] }],
           },
         ]),
       },
@@ -108,7 +101,8 @@ describe('S3 destination', () => {
   it('bucket and log group grants are depended on by delivery stream', () => {
     const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Log Group', 'evergreen');
     const destination = new firehosedestinations.S3Bucket(bucket, {
-      role: destinationRole, loggingConfig: new firehosedestinations.EnableLogging(logGroup),
+      role: destinationRole,
+      loggingConfig: new firehosedestinations.EnableLogging(logGroup),
     });
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
       destination: destination,
@@ -133,16 +127,10 @@ describe('S3 destination', () => {
               's3:Abort*',
             ],
             Effect: 'Allow',
-            Resource: [
-              stack.resolve(bucket.bucketArn),
-              { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] },
-            ],
+            Resource: [stack.resolve(bucket.bucketArn), { 'Fn::Join': ['', [stack.resolve(bucket.bucketArn), '/*']] }],
           },
           {
-            Action: [
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-            ],
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
             Resource: stack.resolve(logGroup.logGroupArn),
           },
@@ -173,7 +161,9 @@ describe('S3 destination', () => {
 
     it('does not create resources or configuration if disabled', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destination: new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.DisableLogging() }),
+        destination: new firehosedestinations.S3Bucket(bucket, {
+          loggingConfig: new firehosedestinations.DisableLogging(),
+        }),
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
@@ -188,7 +178,9 @@ describe('S3 destination', () => {
       const logGroup = new logs.LogGroup(stack, 'Log Group');
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destination: new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.EnableLogging(logGroup) }),
+        destination: new firehosedestinations.S3Bucket(bucket, {
+          loggingConfig: new firehosedestinations.EnableLogging(logGroup),
+        }),
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
@@ -207,7 +199,8 @@ describe('S3 destination', () => {
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: new firehosedestinations.S3Bucket(bucket, {
-          loggingConfig: new firehosedestinations.EnableLogging(logGroup), role: destinationRole,
+          loggingConfig: new firehosedestinations.EnableLogging(logGroup),
+          role: destinationRole,
         }),
       });
 
@@ -216,10 +209,7 @@ describe('S3 destination', () => {
         PolicyDocument: {
           Statement: Match.arrayWith([
             {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
               Effect: 'Allow',
               Resource: stack.resolve(logGroup.logGroupArn),
             },
@@ -257,19 +247,21 @@ describe('S3 destination', () => {
         ExtendedS3DestinationConfiguration: {
           ProcessingConfiguration: {
             Enabled: true,
-            Processors: [{
-              Type: 'Lambda',
-              Parameters: [
-                {
-                  ParameterName: 'RoleArn',
-                  ParameterValue: stack.resolve(destinationRole.roleArn),
-                },
-                {
-                  ParameterName: 'LambdaArn',
-                  ParameterValue: stack.resolve(lambdaFunction.functionArn),
-                },
-              ],
-            }],
+            Processors: [
+              {
+                Type: 'Lambda',
+                Parameters: [
+                  {
+                    ParameterName: 'RoleArn',
+                    ParameterValue: stack.resolve(destinationRole.roleArn),
+                  },
+                  {
+                    ParameterName: 'LambdaArn',
+                    ParameterValue: stack.resolve(lambdaFunction.functionArn),
+                  },
+                ],
+              },
+            ],
           },
         },
       });
@@ -294,31 +286,33 @@ describe('S3 destination', () => {
         ExtendedS3DestinationConfiguration: {
           ProcessingConfiguration: {
             Enabled: true,
-            Processors: [{
-              Type: 'Lambda',
-              Parameters: [
-                {
-                  ParameterName: 'RoleArn',
-                  ParameterValue: stack.resolve(destinationRole.roleArn),
-                },
-                {
-                  ParameterName: 'LambdaArn',
-                  ParameterValue: stack.resolve(lambdaFunction.functionArn),
-                },
-                {
-                  ParameterName: 'BufferIntervalInSeconds',
-                  ParameterValue: '60',
-                },
-                {
-                  ParameterName: 'BufferSizeInMBs',
-                  ParameterValue: '1',
-                },
-                {
-                  ParameterName: 'NumberOfRetries',
-                  ParameterValue: '5',
-                },
-              ],
-            }],
+            Processors: [
+              {
+                Type: 'Lambda',
+                Parameters: [
+                  {
+                    ParameterName: 'RoleArn',
+                    ParameterValue: stack.resolve(destinationRole.roleArn),
+                  },
+                  {
+                    ParameterName: 'LambdaArn',
+                    ParameterValue: stack.resolve(lambdaFunction.functionArn),
+                  },
+                  {
+                    ParameterName: 'BufferIntervalInSeconds',
+                    ParameterValue: '60',
+                  },
+                  {
+                    ParameterName: 'BufferSizeInMBs',
+                    ParameterValue: '1',
+                  },
+                  {
+                    ParameterName: 'NumberOfRetries',
+                    ParameterValue: '5',
+                  },
+                ],
+              },
+            ],
           },
         },
       });
@@ -403,29 +397,37 @@ describe('S3 destination', () => {
     });
 
     it('validates bufferingInterval', () => {
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destination: new firehosedestinations.S3Bucket(bucket, {
-          bufferingInterval: cdk.Duration.minutes(16),
-          bufferingSize: cdk.Size.mebibytes(1),
-        }),
-      })).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
+      expect(
+        () =>
+          new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+            destination: new firehosedestinations.S3Bucket(bucket, {
+              bufferingInterval: cdk.Duration.minutes(16),
+              bufferingSize: cdk.Size.mebibytes(1),
+            }),
+          })
+      ).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
     });
 
     it('validates bufferingSize', () => {
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destination: new firehosedestinations.S3Bucket(bucket, {
-          bufferingInterval: cdk.Duration.minutes(1),
-          bufferingSize: cdk.Size.mebibytes(0),
+      expect(
+        () =>
+          new firehose.DeliveryStream(stack, 'DeliveryStream', {
+            destination: new firehosedestinations.S3Bucket(bucket, {
+              bufferingInterval: cdk.Duration.minutes(1),
+              bufferingSize: cdk.Size.mebibytes(0),
+            }),
+          })
+      ).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
 
-        }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
-
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destination: new firehosedestinations.S3Bucket(bucket, {
-          bufferingInterval: cdk.Duration.minutes(1),
-          bufferingSize: cdk.Size.mebibytes(256),
-        }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+      expect(
+        () =>
+          new firehose.DeliveryStream(stack, 'DeliveryStream2', {
+            destination: new firehosedestinations.S3Bucket(bucket, {
+              bufferingInterval: cdk.Duration.minutes(1),
+              bufferingSize: cdk.Size.mebibytes(256),
+            }),
+          })
+      ).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
     });
   });
 
@@ -464,16 +466,13 @@ describe('S3 destination', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         Roles: [stack.resolve(destinationRole.roleName)],
         PolicyDocument: {
-          Statement: Match.arrayWith([{
-            Action: [
-              'kms:Decrypt',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            Effect: 'Allow',
-            Resource: stack.resolve(key.keyArn),
-          }]),
+          Statement: Match.arrayWith([
+            {
+              Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+              Effect: 'Allow',
+              Resource: stack.resolve(key.keyArn),
+            },
+          ]),
         },
       });
     });
@@ -531,12 +530,15 @@ describe('S3 destination', () => {
     });
 
     it('throws error if backupMode set to FAILED', () => {
-      expect(() => new firehosedestinations.S3Bucket(bucket, {
-        role: destinationRole,
-        s3Backup: {
-          mode: firehosedestinations.BackupMode.FAILED,
-        },
-      })).toThrow('S3 destinations do not support BackupMode.FAILED');
+      expect(
+        () =>
+          new firehosedestinations.S3Bucket(bucket, {
+            role: destinationRole,
+            s3Backup: {
+              mode: firehosedestinations.BackupMode.FAILED,
+            },
+          })
+      ).toThrow('S3 destinations do not support BackupMode.FAILED');
     });
 
     it('by default does not create resources', () => {

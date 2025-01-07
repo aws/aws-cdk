@@ -13,51 +13,53 @@ describe('StepFunctions Invoke Action', () => {
     minimalPipeline(stack);
 
     // then
-    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
-      Stages: [
-        //  Must have a source stage
-        {
-          Actions: [
-            {
-              ActionTypeId: {
-                Category: 'Source',
-                Owner: 'AWS',
-                Provider: 'S3',
-                Version: '1',
-              },
-              Configuration: {
-                S3Bucket: {
-                  Ref: 'MyBucketF68F3FF0',
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::CodePipeline::Pipeline',
+      Match.objectLike({
+        Stages: [
+          //  Must have a source stage
+          {
+            Actions: [
+              {
+                ActionTypeId: {
+                  Category: 'Source',
+                  Owner: 'AWS',
+                  Provider: 'S3',
+                  Version: '1',
                 },
-                S3ObjectKey: 'some/path/to',
-              },
-            },
-          ],
-        },
-        // Must have stepfunction invoke action configuration
-        {
-          Actions: [
-            {
-              ActionTypeId: {
-                Category: 'Invoke',
-                Owner: 'AWS',
-                Provider: 'StepFunctions',
-                Version: '1',
-              },
-              Configuration: {
-                StateMachineArn: {
-                  Ref: 'SimpleStateMachineE8E2CF40',
+                Configuration: {
+                  S3Bucket: {
+                    Ref: 'MyBucketF68F3FF0',
+                  },
+                  S3ObjectKey: 'some/path/to',
                 },
-                InputType: 'Literal',
-                // JSON Stringified input when the input type is Literal
-                Input: '{\"IsHelloWorldExample\":true}',
               },
-            },
-          ],
-        },
-      ],
-    }));
-
+            ],
+          },
+          // Must have stepfunction invoke action configuration
+          {
+            Actions: [
+              {
+                ActionTypeId: {
+                  Category: 'Invoke',
+                  Owner: 'AWS',
+                  Provider: 'StepFunctions',
+                  Version: '1',
+                },
+                Configuration: {
+                  StateMachineArn: {
+                    Ref: 'SimpleStateMachineE8E2CF40',
+                  },
+                  InputType: 'Literal',
+                  // JSON Stringified input when the input type is Literal
+                  Input: '{\"IsHelloWorldExample\":true}',
+                },
+              },
+            ],
+          },
+        ],
+      })
+    );
   });
 
   test('Allows the pipeline to invoke this stepfunction', () => {
@@ -81,7 +83,6 @@ describe('StepFunctions Invoke Action', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 4);
-
   });
 
   test('Allows the pipeline to describe this stepfunction execution', () => {
@@ -121,7 +122,6 @@ describe('StepFunctions Invoke Action', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 4);
-
   });
 
   test('Allows the pipeline to describe this stepfunction execution (across accounts & regions)', () => {
@@ -130,7 +130,9 @@ describe('StepFunctions Invoke Action', () => {
     minimalPipeline(stack, '999999999999', 'bermuda-triangle-1337');
 
     // The permissions are defined by the cross-account stack here...
-    const cfnStack = Stage.of(stack)?.synth().stacks.find(({ stackName }) => stackName === 'Default-support-999999999999');
+    const cfnStack = Stage.of(stack)
+      ?.synth()
+      .stacks.find(({ stackName }) => stackName === 'Default-support-999999999999');
     expect(cfnStack).toBeDefined();
 
     Template.fromJSON(cfnStack!.template).hasResourceProperties('AWS::IAM::Policy', {
@@ -146,16 +148,20 @@ describe('StepFunctions Invoke Action', () => {
       },
     });
   });
-
 });
 
 function minimalPipeline(stack: Stack, account?: string, region?: string): codepipeline.IStage {
   const sourceOutput = new codepipeline.Artifact();
-  const simpleStateMachine = account || region
-    ? stepfunction.StateMachine.fromStateMachineArn(stack, 'SimpleStateMachine', `arn:aws:states:${region}:${account}:stateMachine:SimpleStateMachine`)
-    : new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
-      definitionBody: stepfunction.DefinitionBody.fromChainable(new stepfunction.Pass(stack, 'StartState')),
-    });
+  const simpleStateMachine =
+    account || region
+      ? stepfunction.StateMachine.fromStateMachineArn(
+          stack,
+          'SimpleStateMachine',
+          `arn:aws:states:${region}:${account}:stateMachine:SimpleStateMachine`
+        )
+      : new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+          definitionBody: stepfunction.DefinitionBody.fromChainable(new stepfunction.Pass(stack, 'StartState')),
+        });
   const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
   const sourceStage = pipeline.addStage({
     stageName: 'Source',

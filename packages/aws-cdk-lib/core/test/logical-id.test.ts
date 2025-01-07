@@ -61,7 +61,7 @@ describe('logical id', () => {
     expect('Renamed' in template.Resources).toEqual(true);
   });
 
-  test('Renames for objects that don\'t exist fail', () => {
+  test("Renames for objects that don't exist fail", () => {
     // GIVEN
     const stack = new Stack();
     new Construct(stack, 'Parent');
@@ -229,8 +229,12 @@ describe('logical id', () => {
   test('customize logical id allocation behavior by overriding `Stack.allocateLogicalId`', () => {
     class MyStack extends Stack {
       protected allocateLogicalId(element: CfnElement): string {
-        if (element.node.id === 'A') { return 'LogicalIdOfA'; }
-        if (element.node.id === 'B') { return 'LogicalIdOfB'; }
+        if (element.node.id === 'A') {
+          return 'LogicalIdOfA';
+        }
+        if (element.node.id === 'B') {
+          return 'LogicalIdOfB';
+        }
         throw new Error('Invalid element ID');
       }
     }

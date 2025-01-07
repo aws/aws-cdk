@@ -1,5 +1,4 @@
 *.d.ts
 *.generated.ts
-*.test.ts
 node_modules/
 dist/

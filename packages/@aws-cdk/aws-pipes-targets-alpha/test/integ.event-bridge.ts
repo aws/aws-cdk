@@ -62,11 +62,9 @@ const message = putMessageOnQueue.next(
   })
 );
 
-message
-  .assertAtPath('Messages.0.Body.detail.body', ExpectedResult.stringLikeRegexp(body))
-  .waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(1),
-    interval: cdk.Duration.seconds(10),
-  });
+message.assertAtPath('Messages.0.Body.detail.body', ExpectedResult.stringLikeRegexp(body)).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(1),
+  interval: cdk.Duration.seconds(10),
+});
 
 app.synth();

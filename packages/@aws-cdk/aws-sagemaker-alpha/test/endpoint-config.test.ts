@@ -9,10 +9,12 @@ describe('When synthesizing a stack containing an EndpointConfig', () => {
     const stack = new cdk.Stack(app);
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
-      instanceProductionVariants: [{
-        variantName: 'variant',
-        model,
-      }],
+      instanceProductionVariants: [
+        {
+          variantName: 'variant',
+          model,
+        },
+      ],
     });
     for (let i = 0; i < 10; i++) {
       endpointConfig.addInstanceProductionVariant({ variantName: `variant-${i}`, model });
@@ -44,7 +46,9 @@ describe('When adding a production variant to an EndpointConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{ variantName: 'variant', model }],
+    });
 
     // WHEN
     const when = () =>
@@ -62,7 +66,9 @@ describe('When adding a production variant to an EndpointConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{ variantName: 'variant', model }],
+    });
 
     // WHEN
     const when = () =>
@@ -80,7 +86,9 @@ describe('When adding a production variant to an EndpointConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{ variantName: 'variant', model }],
+    });
 
     // WHEN
     const when = () => endpointConfig.addInstanceProductionVariant({ variantName: 'variant', model });
@@ -95,7 +103,9 @@ describe('When searching an EndpointConfig for a production variant', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{ variantName: 'variant', model }],
+    });
 
     // WHEN
     const variant = endpointConfig._findInstanceProductionVariant('variant');
@@ -108,7 +118,9 @@ describe('When searching an EndpointConfig for a production variant', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
-    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
+    const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{ variantName: 'variant', model }],
+    });
 
     // WHEN
     const when = () => endpointConfig._findInstanceProductionVariant('missing-variant');
@@ -123,7 +135,11 @@ test('When importing an endpoint configuration by ARN, the name is determined co
   const stack = new cdk.Stack();
 
   // WHEN
-  const endpointConfig = sagemaker.EndpointConfig.fromEndpointConfigArn(stack, 'EndpointConfig', 'arn:aws:sagemaker:us-west-2:123456789012:endpoint-config/my-name');
+  const endpointConfig = sagemaker.EndpointConfig.fromEndpointConfigArn(
+    stack,
+    'EndpointConfig',
+    'arn:aws:sagemaker:us-west-2:123456789012:endpoint-config/my-name'
+  );
 
   // THEN
   expect(endpointConfig.endpointConfigName).toEqual('my-name');
@@ -132,11 +148,10 @@ test('When importing an endpoint configuration by ARN, the name is determined co
 test('When importing an endpoint configuration by name, the ARN is constructed correctly', () => {
   // GIVEN
   const stack = new cdk.Stack(undefined, undefined, {
-    env:
-      {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
+    env: {
+      region: 'us-west-2',
+      account: '123456789012',
+    },
   });
 
   // WHEN
@@ -152,70 +167,76 @@ describe('When sharing a model from an origin stack with a destination stack', (
       // GIVEN
       const app = new cdk.App();
       const originStack = new cdk.Stack(app, 'OriginStack', {
-        env:
-          {
-            region: 'us-west-2',
-            account: '123456789012',
-          },
+        env: {
+          region: 'us-west-2',
+          account: '123456789012',
+        },
       });
       const originStackModel = new sagemaker.Model(originStack, 'MyModel', {
         modelName: 'explicitly-named-model',
-        containers: [{
-          image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
-        }],
+        containers: [
+          {
+            image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+          },
+        ],
       });
       const destinationStack = new cdk.Stack(app, 'DestinationStack', {
-        env:
-          {
-            region: 'us-west-2',
-            account: '234567890123',
-          },
+        env: {
+          region: 'us-west-2',
+          account: '234567890123',
+        },
       });
 
       // WHEN
       const when = () =>
         new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
-          instanceProductionVariants: [{
-            variantName: 'my-variant',
-            model: originStackModel,
-          }],
+          instanceProductionVariants: [
+            {
+              variantName: 'my-variant',
+              model: originStackModel,
+            },
+          ],
         });
 
       // THEN
-      expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
+      expect(when).toThrow(
+        /Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/
+      );
     });
 
     test('across stack region boundaries, synthesis fails', () => {
       // GIVEN
       const app = new cdk.App();
       const originStack = new cdk.Stack(app, 'OriginStack', {
-        env:
-          {
-            region: 'us-west-2',
-            account: '123456789012',
-          },
+        env: {
+          region: 'us-west-2',
+          account: '123456789012',
+        },
       });
       const originStackModel = new sagemaker.Model(originStack, 'MyModel', {
         modelName: 'explicitly-named-model',
-        containers: [{
-          image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
-        }],
+        containers: [
+          {
+            image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+          },
+        ],
       });
       const destinationStack = new cdk.Stack(app, 'DestinationStack', {
-        env:
-          {
-            region: 'us-east-1',
-            account: '123456789012',
-          },
+        env: {
+          region: 'us-east-1',
+          account: '123456789012',
+        },
       });
 
       // WHEN
       const when = () =>
         new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
-          instanceProductionVariants: [{
-            variantName: 'my-variant',
-            model: originStackModel,
-          }],
+          instanceProductionVariants: [
+            {
+              variantName: 'my-variant',
+              model: originStackModel,
+            },
+          ],
         });
 
       // THEN
@@ -229,60 +250,62 @@ describe('When sharing a model from an origin stack with a destination stack', (
         // GIVEN
         const app = new cdk.App();
         const originStack = new cdk.Stack(app, 'OriginStack', {
-          env:
-            {
-              region: 'us-west-2',
-              account: '123456789012',
-            },
+          env: {
+            region: 'us-west-2',
+            account: '123456789012',
+          },
         });
         const originStackModel = sagemaker.Model.fromModelName(originStack, 'MyModel', 'explicitly-named-model');
         const destinationStack = new cdk.Stack(app, 'DestinationStack', {
-          env:
-            {
-              region: 'us-west-2',
-              account: '234567890123',
-            },
+          env: {
+            region: 'us-west-2',
+            account: '234567890123',
+          },
         });
 
         // WHEN
         const when = () =>
           new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
-            instanceProductionVariants: [{
-              variantName: 'my-variant',
-              model: originStackModel,
-            }],
+            instanceProductionVariants: [
+              {
+                variantName: 'my-variant',
+                model: originStackModel,
+              },
+            ],
           });
 
         // THEN
-        expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
+        expect(when).toThrow(
+          /Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/
+        );
       });
 
       test('across stack region boundaries, synthesis fails', () => {
         // GIVEN
         const app = new cdk.App();
         const originStack = new cdk.Stack(app, 'OriginStack', {
-          env:
-            {
-              region: 'us-west-2',
-              account: '123456789012',
-            },
+          env: {
+            region: 'us-west-2',
+            account: '123456789012',
+          },
         });
         const originStackModel = sagemaker.Model.fromModelName(originStack, 'MyModel', 'explicitly-named-model');
         const destinationStack = new cdk.Stack(app, 'DestinationStack', {
-          env:
-            {
-              region: 'us-east-1',
-              account: '123456789012',
-            },
+          env: {
+            region: 'us-east-1',
+            account: '123456789012',
+          },
         });
 
         // WHEN
         const when = () =>
           new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
-            instanceProductionVariants: [{
-              variantName: 'my-variant',
-              model: originStackModel,
-            }],
+            instanceProductionVariants: [
+              {
+                variantName: 'my-variant',
+                model: originStackModel,
+              },
+            ],
           });
 
         // THEN
@@ -295,60 +318,70 @@ describe('When sharing a model from an origin stack with a destination stack', (
         // GIVEN
         const app = new cdk.App();
         const originStack = new cdk.Stack(app, 'OriginStack', {
-          env:
-            {
-              region: 'us-west-2',
-              account: '234567890123',
-            },
+          env: {
+            region: 'us-west-2',
+            account: '234567890123',
+          },
         });
-        const originStackModel = sagemaker.Model.fromModelArn(originStack, 'MyModel', 'arn:aws:sagemaker:us-west-2:123456789012:endpoint-config/explicitly-named-model');
+        const originStackModel = sagemaker.Model.fromModelArn(
+          originStack,
+          'MyModel',
+          'arn:aws:sagemaker:us-west-2:123456789012:endpoint-config/explicitly-named-model'
+        );
         const destinationStack = new cdk.Stack(app, 'DestinationStack', {
-          env:
-            {
-              region: 'us-west-2',
-              account: '234567890123',
-            },
+          env: {
+            region: 'us-west-2',
+            account: '234567890123',
+          },
         });
 
         // WHEN
         const when = () =>
           new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
-            instanceProductionVariants: [{
-              variantName: 'my-variant',
-              model: originStackModel,
-            }],
+            instanceProductionVariants: [
+              {
+                variantName: 'my-variant',
+                model: originStackModel,
+              },
+            ],
           });
 
         // THEN
-        expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
+        expect(when).toThrow(
+          /Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/
+        );
       });
 
       test('in a different region than both stacks, synthesis fails', () => {
         // GIVEN
         const app = new cdk.App();
         const originStack = new cdk.Stack(app, 'OriginStack', {
-          env:
-            {
-              region: 'us-east-1',
-              account: '123456789012',
-            },
+          env: {
+            region: 'us-east-1',
+            account: '123456789012',
+          },
         });
-        const originStackModel = sagemaker.Model.fromModelArn(originStack, 'MyModel', 'arn:aws:sagemaker:us-west-2:123456789012:endpoint-config/explicitly-named-model');
+        const originStackModel = sagemaker.Model.fromModelArn(
+          originStack,
+          'MyModel',
+          'arn:aws:sagemaker:us-west-2:123456789012:endpoint-config/explicitly-named-model'
+        );
         const destinationStack = new cdk.Stack(app, 'DestinationStack', {
-          env:
-            {
-              region: 'us-east-1',
-              account: '123456789012',
-            },
+          env: {
+            region: 'us-east-1',
+            account: '123456789012',
+          },
         });
 
         // WHEN
         const when = () =>
           new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
-            instanceProductionVariants: [{
-              variantName: 'my-variant',
-              model: originStackModel,
-            }],
+            instanceProductionVariants: [
+              {
+                variantName: 'my-variant',
+                model: originStackModel,
+              },
+            ],
           });
 
         // THEN

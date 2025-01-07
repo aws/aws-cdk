@@ -44,10 +44,12 @@ test('create endpoint with tags', () => {
   const task = new tasks.SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {
     endpointName: 'MyEndpoint',
     endpointConfigName: 'MyEndpointConfig',
-    tags: sfn.TaskInput.fromObject([{
-      Key: 'Label',
-      Value: 'ML',
-    }]),
+    tags: sfn.TaskInput.fromObject([
+      {
+        Key: 'Label',
+        Value: 'ML',
+      },
+    ]),
   });
 
   // THEN
@@ -69,9 +71,7 @@ test('create endpoint with tags', () => {
     Parameters: {
       EndpointConfigName: 'MyEndpointConfig',
       EndpointName: 'MyEndpoint',
-      Tags: [
-        { Key: 'Label', Value: 'ML' },
-      ],
+      Tags: [{ Key: 'Label', Value: 'ML' }],
     },
   });
 });
@@ -113,5 +113,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       endpointConfigName: 'MyEndpointConfig',
       endpointName: 'MyEndpoint',
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i
+  );
 });

@@ -15,7 +15,8 @@ describe('feature flags', () => {
       const stack = new Stack();
 
       expect(FeatureFlags.of(stack).isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)).toEqual(
-        cxapi.futureFlagDefault(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT));
+        cxapi.futureFlagDefault(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+      );
     });
 
     test('invalid flag', () => {

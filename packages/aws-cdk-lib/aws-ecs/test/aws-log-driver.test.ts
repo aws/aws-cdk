@@ -11,7 +11,6 @@ describe('aws log driver', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.FargateTaskDefinition(stack, 'TaskDefinition');
-
   });
 
   test('create an aws log driver', () => {
@@ -44,7 +43,7 @@ describe('aws log driver', () => {
               'awslogs-region': { Ref: 'AWS::Region' },
               'awslogs-datetime-format': 'format',
               'awslogs-multiline-pattern': 'pattern',
-              'mode': 'non-blocking',
+              mode: 'non-blocking',
               'max-buffer-size': '26214400b',
             },
           },
@@ -54,13 +53,15 @@ describe('aws log driver', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': ['TaskDefinitionContainerLogGroup4D0A87C1', 'Arn'],
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['TaskDefinitionContainerLogGroup4D0A87C1', 'Arn'],
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -152,12 +153,14 @@ describe('aws log driver', () => {
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
     // THEN
-    expect(() => new ecs.AwsLogDriver({
-      logGroup,
-      logRetention: logs.RetentionDays.FIVE_DAYS,
-      streamPrefix: 'hello',
-    })).toThrow(/`logGroup`.*`logRetentionDays`/);
-
+    expect(
+      () =>
+        new ecs.AwsLogDriver({
+          logGroup,
+          logRetention: logs.RetentionDays.FIVE_DAYS,
+          streamPrefix: 'hello',
+        })
+    ).toThrow(/`logGroup`.*`logRetentionDays`/);
   });
 
   test('throws error when specifying maxBufferSize and blocking mode', () => {
@@ -165,13 +168,15 @@ describe('aws log driver', () => {
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
     // THEN
-    expect(() => new ecs.AwsLogDriver({
-      logGroup,
-      streamPrefix: 'hello',
-      mode: ecs.AwsLogDriverMode.BLOCKING,
-      maxBufferSize: cdk.Size.mebibytes(25),
-    })).toThrow(/.*maxBufferSize.*/);
-
+    expect(
+      () =>
+        new ecs.AwsLogDriver({
+          logGroup,
+          streamPrefix: 'hello',
+          mode: ecs.AwsLogDriverMode.BLOCKING,
+          maxBufferSize: cdk.Size.mebibytes(25),
+        })
+    ).toThrow(/.*maxBufferSize.*/);
   });
 
   test('throws error when specifying maxBufferSize and default settings', () => {
@@ -179,19 +184,24 @@ describe('aws log driver', () => {
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
     // THEN
-    expect(() => new ecs.AwsLogDriver({
-      logGroup,
-      streamPrefix: 'hello',
-      maxBufferSize: cdk.Size.mebibytes(25),
-    })).toThrow(/.*maxBufferSize.*/);
-
+    expect(
+      () =>
+        new ecs.AwsLogDriver({
+          logGroup,
+          streamPrefix: 'hello',
+          maxBufferSize: cdk.Size.mebibytes(25),
+        })
+    ).toThrow(/.*maxBufferSize.*/);
   });
 
   test('allows cross-region log group', () => {
     // GIVEN
     const logGroupRegion = 'asghard';
-    const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'LogGroup',
-      `arn:aws:logs:${logGroupRegion}:1234:log-group:my_log_group`);
+    const logGroup = logs.LogGroup.fromLogGroupArn(
+      stack,
+      'LogGroup',
+      `arn:aws:logs:${logGroupRegion}:1234:log-group:my_log_group`
+    );
 
     // WHEN
     td.addContainer('Container', {

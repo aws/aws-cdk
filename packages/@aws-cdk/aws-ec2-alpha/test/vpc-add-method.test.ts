@@ -19,7 +19,7 @@ describe('Vpc V2 with full control', () => {
     stack = new cdk.Stack(app);
     myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvided' })],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     });
@@ -67,7 +67,7 @@ describe('Vpc V2 with full control', () => {
   test('addEIGW should not associate a route to an incorrect subnet', () => {
     const vpc1 = new vpc.VpcV2(stack, 'TestPrivateVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvided' })],
     });
     new SubnetV2(stack, 'validateIpv6', {
       vpc: vpc1,
@@ -100,9 +100,7 @@ describe('Vpc V2 with full control', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
   });
 
@@ -111,10 +109,7 @@ describe('Vpc V2 with full control', () => {
       subnet: mySubnet,
       connectivityType: route.NatConnectivityType.PRIVATE,
       privateIpAddress: '10.0.0.42',
-      secondaryPrivateIpAddresses: [
-        '10.0.1.0/28',
-        '10.0.2.0/28',
-      ],
+      secondaryPrivateIpAddresses: ['10.0.1.0/28', '10.0.2.0/28'],
     });
     const template = Template.fromStack(stack);
     // NAT Gateway should be in stack
@@ -122,17 +117,12 @@ describe('Vpc V2 with full control', () => {
       Properties: {
         ConnectivityType: 'private',
         PrivateIpAddress: '10.0.0.42',
-        SecondaryPrivateIpAddresses: [
-          '10.0.1.0/28',
-          '10.0.2.0/28',
-        ],
+        SecondaryPrivateIpAddresses: ['10.0.1.0/28', '10.0.2.0/28'],
         SubnetId: {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
   });
 
@@ -154,9 +144,7 @@ describe('Vpc V2 with full control', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
   });
 
@@ -172,15 +160,11 @@ describe('Vpc V2 with full control', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
     // EIP should be created when not provided
     template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
   });
 
@@ -199,17 +183,12 @@ describe('Vpc V2 with full control', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
     // EIP should be in stack
     template.hasResourceProperties('AWS::EC2::EIP', {
       Domain: {
-        'Fn::GetAtt': [
-          'TestVpcE77CE678',
-          'VpcId',
-        ],
+        'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
       },
     });
   });
@@ -231,20 +210,16 @@ describe('Vpc V2 with full control', () => {
           Ref: 'TestSubnet2A4BE4CA',
         },
       },
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
     // EIP should be created when not provided
     template.hasResource('AWS::EC2::EIP', {
-      DependsOn: [
-        'TestSubnetRouteTableAssociationFE267B30',
-      ],
+      DependsOn: ['TestSubnetRouteTableAssociationFE267B30'],
     });
   });
 
   test('addNatGateway fails for public gateway without IGW attached', () => {
-    expect (() => {
+    expect(() => {
       myVpc.addNatGateway({
         subnet: mySubnet,
         connectivityType: route.NatConnectivityType.PUBLIC,
@@ -256,7 +231,7 @@ describe('Vpc V2 with full control', () => {
   test('addinternetGateway defines a new internet gateway with attachment and no route', () => {
     const vpc2 = new vpc.VpcV2(stack, 'TestVpcNoSubnet', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvided' })],
       enableDnsHostnames: true,
       enableDnsSupport: true,
     });

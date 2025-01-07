@@ -197,12 +197,7 @@ export class SubscriptionFilter {
 
     if (numericConditions.betweenStrict) {
       conditions.push({
-        numeric: [
-          '>',
-          numericConditions.betweenStrict.start,
-          '<',
-          numericConditions.betweenStrict.stop,
-        ],
+        numeric: ['>', numericConditions.betweenStrict.start, '<', numericConditions.betweenStrict.stop],
       });
     }
 

@@ -180,10 +180,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     super(scope, id, props);
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
-    validatePatternSupported(
-      this.integrationPattern,
-      BatchSubmitJob.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, BatchSubmitJob.SUPPORTED_INTEGRATION_PATTERNS);
 
     // validate arraySize limits
     withResolved(props.arraySize, (arraySize) => {
@@ -206,18 +203,12 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
     // validate timeout
     (props.timeout !== undefined || props.taskTimeout !== undefined) &&
-      withResolved(
-        props.timeout?.toSeconds(),
-        props.taskTimeout?.seconds,
-        (timeout, taskTimeout) => {
-          const definedTimeout = timeout ?? taskTimeout;
-          if (definedTimeout && definedTimeout < 60) {
-            throw new Error(
-              `attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`
-            );
-          }
+      withResolved(props.timeout?.toSeconds(), props.taskTimeout?.seconds, (timeout, taskTimeout) => {
+        const definedTimeout = timeout ?? taskTimeout;
+        if (definedTimeout && definedTimeout < 60) {
+          throw new Error(`attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`);
         }
-      );
+      });
 
     // This is required since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
@@ -256,8 +247,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
         JobName: this.props.jobName,
         JobQueue: this.props.jobQueueArn,
         Parameters: this.props.payload?.value,
-        ArrayProperties:
-          this.props.arraySize !== undefined ? { Size: this.props.arraySize } : undefined,
+        ArrayProperties: this.props.arraySize !== undefined ? { Size: this.props.arraySize } : undefined,
 
         ContainerOverrides: this.props.containerOverrides
           ? this.configureContainerOverrides(this.props.containerOverrides)
@@ -270,8 +260,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
             }))
           : undefined,
 
-        RetryStrategy:
-          this.props.attempts !== undefined ? { Attempts: this.props.attempts } : undefined,
+        RetryStrategy: this.props.attempts !== undefined ? { Attempts: this.props.attempts } : undefined,
         Tags: this.props.tags,
         Timeout: timeout ? { AttemptDurationSeconds: timeout } : undefined,
       }),

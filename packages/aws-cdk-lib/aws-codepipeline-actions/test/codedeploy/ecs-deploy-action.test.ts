@@ -27,7 +27,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           containerImageInputs,
         });
       }).toThrow(/Action cannot have more than 4 container image inputs, got: 5/);
-
     });
 
     test('throws an exception if both appspec artifact input and file are specified', () => {
@@ -44,8 +43,9 @@ describe('CodeDeploy ECS Deploy Action', () => {
           appSpecTemplateInput: artifact,
           appSpecTemplateFile: artifactPath,
         });
-      }).toThrow(/Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action/);
-
+      }).toThrow(
+        /Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action/
+      );
     });
 
     test('throws an exception if neither appspec artifact input nor file are specified', () => {
@@ -59,8 +59,9 @@ describe('CodeDeploy ECS Deploy Action', () => {
           deploymentGroup,
           taskDefinitionTemplateInput: artifact,
         });
-      }).toThrow(/Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action/);
-
+      }).toThrow(
+        /Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action/
+      );
     });
 
     test('throws an exception if both task definition artifact input and file are specified', () => {
@@ -77,8 +78,9 @@ describe('CodeDeploy ECS Deploy Action', () => {
           taskDefinitionTemplateFile: artifactPath,
           appSpecTemplateInput: artifact,
         });
-      }).toThrow(/Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action/);
-
+      }).toThrow(
+        /Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action/
+      );
     });
 
     test('throws an exception if neither task definition artifact input nor file are specified', () => {
@@ -92,8 +94,9 @@ describe('CodeDeploy ECS Deploy Action', () => {
           deploymentGroup,
           appSpecTemplateInput: artifact,
         });
-      }).toThrow(/Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action/);
-
+      }).toThrow(
+        /Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action/
+      );
     });
 
     test('defaults task definition and appspec template paths', () => {
@@ -133,7 +136,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           },
         ],
       });
-
     });
 
     test('defaults task definition placeholder string', () => {
@@ -187,7 +189,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           },
         ],
       });
-
     });
   });
 
@@ -199,8 +200,11 @@ describe('CodeDeploy ECS Deploy Action', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Pipe', { env: stackEnv });
     const deploymentGroup = codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(stack, 'Group', {
-      application: codedeploy.EcsApplication.fromEcsApplicationArn(stack, 'Application',
-        `arn:aws:codedeploy:${deployEnv.region}:${deployEnv.account}:application:MyApplication`),
+      application: codedeploy.EcsApplication.fromEcsApplicationArn(
+        stack,
+        'Application',
+        `arn:aws:codedeploy:${deployEnv.region}:${deployEnv.account}:application:MyApplication`
+      ),
       deploymentGroupName: 'MyGroup',
     });
 
@@ -216,7 +220,7 @@ describe('CodeDeploy ECS Deploy Action', () => {
     // (region stack has bucket, account stack has role)
     const asm = app.synth();
 
-    const stacks = Object.fromEntries(asm.stacks.map(s => [s.stackName, s]));
+    const stacks = Object.fromEntries(asm.stacks.map((s) => [s.stackName, s]));
     expect(Object.keys(stacks)).toContain('Pipe-support-us-east-2');
     expect(Object.keys(stacks)).toContain('Pipe-support-222222222222');
 
@@ -225,13 +229,10 @@ describe('CodeDeploy ECS Deploy Action', () => {
 });
 
 function addEcsDeploymentGroup(stack: cdk.Stack): codedeploy.IEcsDeploymentGroup {
-  return codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(
-    stack, 'EDG', {
-      application: codedeploy.EcsApplication.fromEcsApplicationName(
-        stack, 'EA', 'MyApplication',
-      ),
-      deploymentGroupName: 'MyDeploymentGroup',
-    });
+  return codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(stack, 'EDG', {
+    application: codedeploy.EcsApplication.fromEcsApplicationName(stack, 'EA', 'MyApplication'),
+    deploymentGroupName: 'MyDeploymentGroup',
+  });
 }
 
 function addCodeDeployECSCodePipeline(stack: cdk.Stack, props: cpactions.CodeDeployEcsDeployActionProps) {
@@ -258,9 +259,7 @@ function addCodeDeployECSCodePipeline(stack: cdk.Stack, props: cpactions.CodeDep
       },
       {
         stageName: 'Invoke',
-        actions: [
-          new cpactions.CodeDeployEcsDeployAction(props),
-        ],
+        actions: [new cpactions.CodeDeployEcsDeployAction(props)],
       },
     ],
   });

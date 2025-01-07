@@ -3,17 +3,7 @@ import { CfnBackupVault } from './backup.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
-import {
-  ArnFormat,
-  Duration,
-  IResource,
-  Lazy,
-  Names,
-  RemovalPolicy,
-  Resource,
-  Stack,
-  Token,
-} from '../../core';
+import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 /**
  * A backup vault
@@ -237,11 +227,7 @@ export class BackupVault extends BackupVaultBase {
   /**
    * Import an existing backup vault by name
    */
-  public static fromBackupVaultName(
-    scope: Construct,
-    id: string,
-    backupVaultName: string
-  ): IBackupVault {
+  public static fromBackupVaultName(scope: Construct, id: string, backupVaultName: string): IBackupVault {
     const backupVaultArn = Stack.of(scope).formatArn({
       service: 'backup',
       resource: 'backup-vault',
@@ -255,11 +241,7 @@ export class BackupVault extends BackupVaultBase {
   /**
    * Import an existing backup vault by arn
    */
-  public static fromBackupVaultArn(
-    scope: Construct,
-    id: string,
-    backupVaultArn: string
-  ): IBackupVault {
+  public static fromBackupVaultArn(scope: Construct, id: string, backupVaultArn: string): IBackupVault {
     const parsedArn = Stack.of(scope).splitArn(backupVaultArn, ArnFormat.COLON_RESOURCE_NAME);
 
     if (parsedArn.arnFormat !== ArnFormat.COLON_RESOURCE_NAME) {
@@ -354,9 +336,7 @@ export class BackupVault extends BackupVaultBase {
   }
 }
 
-function renderLockConfiguration(
-  config?: LockConfiguration
-): CfnBackupVault.LockConfigurationTypeProperty | undefined {
+function renderLockConfiguration(config?: LockConfiguration): CfnBackupVault.LockConfigurationTypeProperty | undefined {
   if (!config) {
     return undefined;
   }

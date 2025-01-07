@@ -12,7 +12,6 @@ describe('firelens log driver', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
-
   });
   test('create a firelens log driver with default options', () => {
     // WHEN
@@ -127,22 +126,14 @@ describe('firelens log driver', () => {
       PolicyDocument: {
         Statement: Match.arrayWith([
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: {
               Ref: 'SecretA720EF05',
             },
           },
           {
-            Action: [
-              'ssm:DescribeParameters',
-              'ssm:GetParameters',
-              'ssm:GetParameter',
-              'ssm:GetParameterHistory',
-            ],
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [

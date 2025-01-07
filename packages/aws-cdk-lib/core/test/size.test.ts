@@ -9,10 +9,7 @@ describe('size', () => {
     const stack = new Stack();
     const lazySize = Size.kibibytes(Token.asNumber({ resolve: () => 1337 }));
     expect(stack.resolve(lazySize.toKibibytes())).toEqual(1337);
-    expect(
-      () => stack.resolve(lazySize.toMebibytes())).toThrow(
-      /Size must be specified as 'Size.mebibytes\(\)' here/,
-    );
+    expect(() => stack.resolve(lazySize.toMebibytes())).toThrow(/Size must be specified as 'Size.mebibytes\(\)' here/);
   });
 
   test('Size in bytes', () => {
@@ -24,7 +21,10 @@ describe('size', () => {
     expect(size.toGibibytes()).toEqual(1024);
     expect(size.toTebibytes()).toEqual(1);
     expect(() => size.toPebibytes()).toThrow(/'1099511627776 bytes' cannot be converted into a whole number/);
-    floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 1_099_511_627_776 / (1024 * 1024 * 1024 * 1024 * 1024));
+    floatEqual(
+      size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }),
+      1_099_511_627_776 / (1024 * 1024 * 1024 * 1024 * 1024)
+    );
 
     expect(Size.bytes(4 * 1024 * 1024 * 1024).toGibibytes()).toEqual(4);
   });
@@ -96,7 +96,9 @@ describe('size', () => {
     const size = Size.mebibytes(5_200);
 
     expect(() => size.toGibibytes()).toThrow(/cannot be converted into a whole number/);
-    expect(() => size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL })).toThrow(/cannot be converted into a whole number/);
+    expect(() => size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL })).toThrow(
+      /cannot be converted into a whole number/
+    );
 
     expect(size.toGibibytes({ rounding: SizeRoundingBehavior.FLOOR })).toEqual(5);
     expect(size.toTebibytes({ rounding: SizeRoundingBehavior.FLOOR })).toEqual(0);
@@ -117,6 +119,6 @@ describe('size', () => {
 function floatEqual(actual: number, expected: number) {
   expect(
     // Floats are subject to rounding errors up to Number.ESPILON
-    actual >= expected - Number.EPSILON && actual <= expected + Number.EPSILON,
+    actual >= expected - Number.EPSILON && actual <= expected + Number.EPSILON
   ).toEqual(true);
 }

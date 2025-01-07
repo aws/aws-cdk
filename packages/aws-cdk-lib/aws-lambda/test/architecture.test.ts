@@ -1,4 +1,3 @@
-
 import { App, Stack } from '../../core';
 import * as lambda from '../lib';
 
@@ -12,8 +11,7 @@ describe('architecture', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
-    },
-    );
+    });
 
     // THEN
     expect(`${testLambda.architecture}`).toEqual(testLambda.architecture.name);

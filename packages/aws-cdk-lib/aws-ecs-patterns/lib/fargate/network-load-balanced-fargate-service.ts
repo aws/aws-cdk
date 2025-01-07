@@ -78,8 +78,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       // Create log driver if logging is enabled
       const enableLogging = taskImageOptions.enableLogging ?? true;
       const logDriver =
-        taskImageOptions.logDriver ??
-        (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+        taskImageOptions.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {

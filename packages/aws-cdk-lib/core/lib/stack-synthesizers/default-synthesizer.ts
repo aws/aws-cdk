@@ -3,12 +3,7 @@ import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import * as cxapi from '../../../cx-api';
-import {
-  DockerImageAssetLocation,
-  DockerImageAssetSource,
-  FileAssetLocation,
-  FileAssetSource,
-} from '../assets';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { StringSpecializer } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -337,14 +332,12 @@ export class DefaultStackSynthesizer
   /**
    * Default file assets bucket name
    */
-  public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME =
-    'cdk-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Name of the CloudFormation Export with the asset key name
    */
-  public static readonly DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME =
-    'CdkBootstrap-${Qualifier}-FileAssetKeyArn';
+  public static readonly DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME = 'CdkBootstrap-${Qualifier}-FileAssetKeyArn';
 
   /**
    * Default file asset prefix
@@ -358,8 +351,7 @@ export class DefaultStackSynthesizer
   /**
    * Default bootstrap stack version SSM parameter.
    */
-  public static readonly DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER =
-    '/cdk-bootstrap/${Qualifier}/version';
+  public static readonly DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER = '/cdk-bootstrap/${Qualifier}/version';
 
   private bucketName?: string;
   private repositoryName?: string;
@@ -443,30 +435,20 @@ export class DefaultStackSynthesizer
       this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME
     );
     this.repositoryName = spec.specialize(
-      this.props.imageAssetsRepositoryName ??
-        DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
+      this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
     );
-    this._deployRoleArn = spec.specialize(
-      this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN
-    );
+    this._deployRoleArn = spec.specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
     this._cloudFormationExecutionRoleArn = spec.specialize(
-      this.props.cloudFormationExecutionRole ??
-        DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN
+      this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN
     );
     this.fileAssetPublishingRoleArn = spec.specialize(
-      this.props.fileAssetPublishingRoleArn ??
-        DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN
+      this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN
     );
     this.imageAssetPublishingRoleArn = spec.specialize(
-      this.props.imageAssetPublishingRoleArn ??
-        DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN
+      this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN
     );
-    this.lookupRoleArn = spec.specialize(
-      this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN
-    );
-    this.bucketPrefix = spec.specialize(
-      this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
-    );
+    this.lookupRoleArn = spec.specialize(this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
+    this.bucketPrefix = spec.specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
     this.dockerTagPrefix = spec.specialize(
       this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX
     );
@@ -614,9 +596,7 @@ export class DefaultStackSynthesizer
    */
   public get deployRoleArn(): string {
     if (!this._deployRoleArn) {
-      throw new Error(
-        'deployRoleArn getter can only be called after the synthesizer has been bound to a Stack'
-      );
+      throw new Error('deployRoleArn getter can only be called after the synthesizer has been bound to a Stack');
     }
     return this._deployRoleArn;
   }

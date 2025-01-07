@@ -22,29 +22,38 @@ describe('stacks', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: { Service: 'lambda.amazonaws.com' },
-        }],
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
+          },
+        ],
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
         { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
       ],
-      Policies: [{
-        PolicyName: 'Inline',
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [{
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/cdk/EdgeFunctionArn/*']],
-            },
-            Action: ['ssm:GetParameter'],
-          }],
+      Policies: [
+        {
+          PolicyName: 'Inline',
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/cdk/EdgeFunctionArn/*'],
+                  ],
+                },
+                Action: ['ssm:GetParameter'],
+              },
+            ],
+          },
         },
-      }],
+      ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: '__entrypoint__.handler',
@@ -83,7 +92,12 @@ describe('stacks', () => {
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
-        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
+        {
+          'Fn::Join': [
+            '',
+            ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+          ],
+        },
       ],
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Function', {
@@ -97,7 +111,9 @@ describe('stacks', () => {
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
       Type: 'String',
-      Value: { Ref: Match.stringLikeRegexp(stack.getLogicalId(edgeFn.currentVersion.node.defaultChild as lambda.CfnVersion)) },
+      Value: {
+        Ref: Match.stringLikeRegexp(stack.getLogicalId(edgeFn.currentVersion.node.defaultChild as lambda.CfnVersion)),
+      },
       Name: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
@@ -145,7 +161,12 @@ describe('stacks', () => {
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
-        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
+        {
+          'Fn::Join': [
+            '',
+            ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+          ],
+        },
       ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {

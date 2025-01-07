@@ -1,6 +1,11 @@
 import { Template } from '../../assertions';
 import { App, Aws, Stack } from '../../core';
-import { OriginRequestPolicy, OriginRequestCookieBehavior, OriginRequestHeaderBehavior, OriginRequestQueryStringBehavior } from '../lib';
+import {
+  OriginRequestPolicy,
+  OriginRequestCookieBehavior,
+  OriginRequestHeaderBehavior,
+  OriginRequestQueryStringBehavior,
+} from '../lib';
 
 describe('OriginRequestPolicy', () => {
   let app: App;
@@ -68,54 +73,132 @@ describe('OriginRequestPolicy', () => {
 
   test('throws if given a originRequestPolicyName with invalid characters', () => {
     const errorMessage = /'originRequestPolicyName' can only include '-', '_', and alphanumeric characters/;
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { originRequestPolicyName: 'My Policy' })).toThrow(errorMessage);
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { originRequestPolicyName: 'MyPolicy!' })).toThrow(errorMessage);
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { originRequestPolicyName: 'MyPolicy,New' })).toThrow(errorMessage);
+    expect(
+      () => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { originRequestPolicyName: 'My Policy' })
+    ).toThrow(errorMessage);
+    expect(
+      () => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { originRequestPolicyName: 'MyPolicy!' })
+    ).toThrow(errorMessage);
+    expect(
+      () => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { originRequestPolicyName: 'MyPolicy,New' })
+    ).toThrow(errorMessage);
 
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy4', { originRequestPolicyName: 'MyPolicy' })).not.toThrow();
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy5', { originRequestPolicyName: 'My-Policy' })).not.toThrow();
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { originRequestPolicyName: 'My_Policy' })).not.toThrow();
+    expect(
+      () => new OriginRequestPolicy(stack, 'OriginRequestPolicy4', { originRequestPolicyName: 'MyPolicy' })
+    ).not.toThrow();
+    expect(
+      () => new OriginRequestPolicy(stack, 'OriginRequestPolicy5', { originRequestPolicyName: 'My-Policy' })
+    ).not.toThrow();
+    expect(
+      () => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { originRequestPolicyName: 'My_Policy' })
+    ).not.toThrow();
   });
 
   test('throws if prohibited headers are being passed', () => {
     const errorMessage = /you cannot pass `Authorization` or `Accept-Encoding` as header values/;
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { headerBehavior: OriginRequestHeaderBehavior.allowList('Authorization') })).toThrow(errorMessage);
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { headerBehavior: OriginRequestHeaderBehavior.allowList('Accept-Encoding') })).toThrow(errorMessage);
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { headerBehavior: OriginRequestHeaderBehavior.allowList('authorization') })).toThrow(errorMessage);
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy4', { headerBehavior: OriginRequestHeaderBehavior.allowList('accept-encoding') })).toThrow(errorMessage);
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy5', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Authorization', 'Bar') })).toThrow(errorMessage);
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Accept-Encoding', 'Bar') })).toThrow(errorMessage);
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy1', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('Authorization'),
+        })
+    ).toThrow(errorMessage);
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy2', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('Accept-Encoding'),
+        })
+    ).toThrow(errorMessage);
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy3', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('authorization'),
+        })
+    ).toThrow(errorMessage);
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy4', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('accept-encoding'),
+        })
+    ).toThrow(errorMessage);
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy5', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Authorization', 'Bar'),
+        })
+    ).toThrow(errorMessage);
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy6', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Accept-Encoding', 'Bar'),
+        })
+    ).toThrow(errorMessage);
 
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy7', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Bar') })).not.toThrow();
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy7', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Bar'),
+        })
+    ).not.toThrow();
   });
 
   test('accepts headers with disallowed keywords as part of the header', () => {
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { headerBehavior: OriginRequestHeaderBehavior.allowList('x-wp-access-authorization') })).not.toThrow();
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { headerBehavior: OriginRequestHeaderBehavior.allowList('do-not-accept-encoding') })).not.toThrow();
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { headerBehavior: OriginRequestHeaderBehavior.allowList('authorization-Header') })).not.toThrow();
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy1', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('x-wp-access-authorization'),
+        })
+    ).not.toThrow();
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy2', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('do-not-accept-encoding'),
+        })
+    ).not.toThrow();
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'OriginRequestPolicy3', {
+          headerBehavior: OriginRequestHeaderBehavior.allowList('authorization-Header'),
+        })
+    ).not.toThrow();
   });
 
   test('does not throw if originRequestPolicyName is a token', () => {
-    expect(() => new OriginRequestPolicy(stack, 'CachePolicy', {
-      originRequestPolicyName: Aws.STACK_NAME,
-    })).not.toThrow();
+    expect(
+      () =>
+        new OriginRequestPolicy(stack, 'CachePolicy', {
+          originRequestPolicyName: Aws.STACK_NAME,
+        })
+    ).not.toThrow();
   });
 });
 
 test('managed policies are provided', () => {
-  expect(OriginRequestPolicy.USER_AGENT_REFERER_HEADERS.originRequestPolicyId).toEqual('acba4595-bd28-49b8-b9fe-13317c0390fa');
+  expect(OriginRequestPolicy.USER_AGENT_REFERER_HEADERS.originRequestPolicyId).toEqual(
+    'acba4595-bd28-49b8-b9fe-13317c0390fa'
+  );
   expect(OriginRequestPolicy.CORS_CUSTOM_ORIGIN.originRequestPolicyId).toEqual('59781a5b-3903-41f3-afcb-af62929ccde1');
   expect(OriginRequestPolicy.CORS_S3_ORIGIN.originRequestPolicyId).toEqual('88a5eaf4-2fd4-4709-b370-b4c650ea3fcf');
   expect(OriginRequestPolicy.ALL_VIEWER.originRequestPolicyId).toEqual('216adef6-5c7f-47e4-b989-5492eafa07d3');
-  expect(OriginRequestPolicy.ELEMENTAL_MEDIA_TAILOR.originRequestPolicyId).toEqual('775133bc-15f2-49f9-abea-afb2e0bf67d2');
-  expect(OriginRequestPolicy.ALL_VIEWER_AND_CLOUDFRONT_2022.originRequestPolicyId).toEqual('33f36d7e-f396-46d9-90e0-52428a34d9dc');
-  expect(OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER.originRequestPolicyId).toEqual('b689b0a8-53d0-40ab-baf2-68738e2966ac');
+  expect(OriginRequestPolicy.ELEMENTAL_MEDIA_TAILOR.originRequestPolicyId).toEqual(
+    '775133bc-15f2-49f9-abea-afb2e0bf67d2'
+  );
+  expect(OriginRequestPolicy.ALL_VIEWER_AND_CLOUDFRONT_2022.originRequestPolicyId).toEqual(
+    '33f36d7e-f396-46d9-90e0-52428a34d9dc'
+  );
+  expect(OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER.originRequestPolicyId).toEqual(
+    'b689b0a8-53d0-40ab-baf2-68738e2966ac'
+  );
 });
 
 // OriginRequestCookieBehavior and OriginRequestQueryStringBehavior have identical behavior
 describe.each([
   ['CookieBehavior', OriginRequestCookieBehavior, 'cookie', (c: OriginRequestCookieBehavior) => c.cookies],
-  ['QueryStringBehavior', OriginRequestQueryStringBehavior, 'query string', (qs: OriginRequestQueryStringBehavior) => qs.queryStrings],
+  [
+    'QueryStringBehavior',
+    OriginRequestQueryStringBehavior,
+    'query string',
+    (qs: OriginRequestQueryStringBehavior) => qs.queryStrings,
+  ],
 ])('%s', (_className, clazz, type, items) => {
   test('none()', () => {
     const behavior = clazz.none();
@@ -189,8 +272,11 @@ describe('HeaderBehavior', () => {
     });
 
     test('throws if provided a header that is not a CloudFront- header', () => {
-      const errorMessage = 'additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with \'CloudFront-\'';
-      expect(() => { OriginRequestHeaderBehavior.all('X-MyCustomHeader'); }).toThrow(errorMessage);
+      const errorMessage =
+        "additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with 'CloudFront-'";
+      expect(() => {
+        OriginRequestHeaderBehavior.all('X-MyCustomHeader');
+      }).toThrow(errorMessage);
     });
   });
 

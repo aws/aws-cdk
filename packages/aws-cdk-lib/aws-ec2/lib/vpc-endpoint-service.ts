@@ -101,10 +101,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
     super(scope, id);
 
-    if (
-      props.vpcEndpointServiceLoadBalancers === undefined ||
-      props.vpcEndpointServiceLoadBalancers.length === 0
-    ) {
+    if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
       throw new Error('VPC Endpoint Service must have at least one load balancer specified.');
     }
 
@@ -113,9 +110,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.contributorInsightsEnabled = props.contributorInsights;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
-      throw new Error(
-        '`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead'
-      );
+      throw new Error('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead');
     }
     this.allowedPrincipals = props.allowedPrincipals ?? props.whitelistedPrincipals ?? [];
     this.whitelistedPrincipals = this.allowedPrincipals;
@@ -133,11 +128,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
       ? (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? VpcEndpointService.DEFAULT_PREFIX)
       : VpcEndpointService.DEFAULT_PREFIX;
 
-    this.vpcEndpointServiceName = Fn.join('.', [
-      serviceNamePrefix,
-      Aws.REGION,
-      this.vpcEndpointServiceId,
-    ]);
+    this.vpcEndpointServiceName = Fn.join('.', [serviceNamePrefix, Aws.REGION, this.vpcEndpointServiceId]);
     if (this.allowedPrincipals.length > 0) {
       new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,

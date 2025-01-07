@@ -111,9 +111,7 @@ export abstract class SourceWithDeadLetterTarget implements ISource {
   /**
    * Determines if the source is an instance of SourceWithDeadLetterTarget.
    */
-  public static isSourceWithDeadLetterTarget(
-    source: ISource
-  ): source is SourceWithDeadLetterTarget {
+  public static isSourceWithDeadLetterTarget(source: ISource): source is SourceWithDeadLetterTarget {
     return (source as SourceWithDeadLetterTarget).deadLetterTarget !== undefined;
   }
   /**

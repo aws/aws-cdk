@@ -190,10 +190,7 @@ export class ApiKey extends ApiKeyBase {
     });
   }
 
-  private renderStageKeys(
-    resources?: IRestApi[],
-    stages?: IStage[]
-  ): CfnApiKey.StageKeyProperty[] | undefined {
+  private renderStageKeys(resources?: IRestApi[], stages?: IStage[]): CfnApiKey.StageKeyProperty[] | undefined {
     if (!resources && !stages) {
       return undefined;
     }
@@ -278,9 +275,4 @@ export class RateLimitedApiKey extends ApiKeyBase {
 
 const readPermissions = ['apigateway:GET'];
 
-const writePermissions = [
-  'apigateway:POST',
-  'apigateway:PUT',
-  'apigateway:PATCH',
-  'apigateway:DELETE',
-];
+const writePermissions = ['apigateway:POST', 'apigateway:PUT', 'apigateway:PATCH', 'apigateway:DELETE'];

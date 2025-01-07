@@ -59,12 +59,7 @@ enum DependencyOperation {
  *
  * @internal
  */
-function operateOnDependency(
-  operation: DependencyOperation,
-  source: Element,
-  target: Element,
-  description?: string
-) {
+function operateOnDependency(operation: DependencyOperation, source: Element, target: Element, description?: string) {
   if (source === target) {
     return;
   }
@@ -174,9 +169,7 @@ export function obtainDependencies(source: Element) {
  * @internal
  */
 function resourceInCommonStackFor(element: Element, commonStack: Stack): CfnResource {
-  const resource: CfnResource = (
-    Stack.isStack(element) ? element.nestedStackResource : element
-  ) as CfnResource;
+  const resource: CfnResource = (Stack.isStack(element) ? element.nestedStackResource : element) as CfnResource;
   if (!resource) {
     // see "assertion" in operateOnDependency above
     throw new Error(`Unexpected value for resource when looking at ${element}!`);

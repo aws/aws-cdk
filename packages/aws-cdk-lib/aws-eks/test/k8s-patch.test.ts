@@ -35,15 +35,14 @@ describe('k8s patch', () => {
         Ref: 'MyCluster8AD82BF8',
       },
       RoleArn: {
-        'Fn::GetAtt': [
-          'MyClusterCreationRoleB5FA4FF3',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'],
       },
     });
 
     // also make sure a dependency on the barrier is added to the patch construct.
-    expect(patch.node.dependencies.map(d => Names.nodeUniqueId(d.node))).toEqual(['MyClusterKubectlReadyBarrier7547948A']);
+    expect(patch.node.dependencies.map((d) => Names.nodeUniqueId(d.node))).toEqual([
+      'MyClusterKubectlReadyBarrier7547948A',
+    ]);
   });
 
   test('defaults to "strategic" patch type if no patchType is specified', () => {

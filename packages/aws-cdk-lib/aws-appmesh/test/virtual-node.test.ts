@@ -71,9 +71,11 @@ describe('virtual node', () => {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
-        node.addListener(appmesh.VirtualNodeListener.tcp({
-          port: 8081,
-        }));
+        node.addListener(
+          appmesh.VirtualNodeListener.tcp({
+            port: 8081,
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
@@ -102,14 +104,17 @@ describe('virtual node', () => {
 
         const node = mesh.addVirtualNode('test-node', {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-          accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
-            appmesh.LoggingFormat.fromJson(
-              { testKey1: 'testValue1', testKey2: 'testValue2' })),
+          accessLog: appmesh.AccessLog.fromFilePath(
+            '/dev/stdout',
+            appmesh.LoggingFormat.fromJson({ testKey1: 'testValue1', testKey2: 'testValue2' })
+          ),
         });
 
-        node.addListener(appmesh.VirtualNodeListener.tcp({
-          port: 8081,
-        }));
+        node.addListener(
+          appmesh.VirtualNodeListener.tcp({
+            port: 8081,
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
@@ -159,9 +164,11 @@ describe('virtual node', () => {
           accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
         });
 
-        node.addListener(appmesh.VirtualNodeListener.tcp({
-          port: 8081,
-        }));
+        node.addListener(
+          appmesh.VirtualNodeListener.tcp({
+            port: 8081,
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
@@ -201,13 +208,15 @@ describe('virtual node', () => {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-          listeners: [appmesh.VirtualNodeListener.grpc({
-            port: 80,
-            timeout: {
-              idle: cdk.Duration.seconds(10),
-              perRequest: cdk.Duration.seconds(10),
-            },
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.grpc({
+              port: 80,
+              timeout: {
+                idle: cdk.Duration.seconds(10),
+                perRequest: cdk.Duration.seconds(10),
+              },
+            }),
+          ],
         });
 
         // THEN
@@ -251,11 +260,13 @@ describe('virtual node', () => {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-          listeners: [appmesh.VirtualNodeListener.http2({
-            port: 80,
-            healthCheck: appmesh.HealthCheck.http2(),
-            timeout: { idle: cdk.Duration.seconds(10) },
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.http2({
+              port: 80,
+              healthCheck: appmesh.HealthCheck.http2(),
+              timeout: { idle: cdk.Duration.seconds(10) },
+            }),
+          ],
         });
 
         // THEN
@@ -305,13 +316,15 @@ describe('virtual node', () => {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
-        node.addListener(appmesh.VirtualNodeListener.tcp({
-          port: 80,
-          healthCheck: appmesh.HealthCheck.tcp({
-            timeout: cdk.Duration.seconds(3),
-          }),
-          timeout: { idle: cdk.Duration.seconds(10) },
-        }));
+        node.addListener(
+          appmesh.VirtualNodeListener.tcp({
+            port: 80,
+            healthCheck: appmesh.HealthCheck.tcp({
+              timeout: cdk.Duration.seconds(3),
+            }),
+            timeout: { idle: cdk.Duration.seconds(10) },
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
@@ -360,15 +373,17 @@ describe('virtual node', () => {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
-        node.addListener(appmesh.VirtualNodeListener.tcp({
-          port: 80,
-          outlierDetection: {
-            baseEjectionDuration: cdk.Duration.seconds(10),
-            interval: cdk.Duration.seconds(30),
-            maxEjectionPercent: 50,
-            maxServerErrors: 5,
-          },
-        }));
+        node.addListener(
+          appmesh.VirtualNodeListener.tcp({
+            port: 80,
+            outlierDetection: {
+              baseEjectionDuration: cdk.Duration.seconds(10),
+              interval: cdk.Duration.seconds(30),
+              maxEjectionPercent: 50,
+              maxServerErrors: 5,
+            },
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
@@ -408,7 +423,8 @@ describe('virtual node', () => {
           meshName: 'test-mesh',
         });
 
-        const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+        const certificateAuthorityArn =
+          'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
@@ -417,7 +433,13 @@ describe('virtual node', () => {
             tlsClientPolicy: {
               ports: [8080, 8081],
               validation: {
-                trust: appmesh.TlsValidationTrust.acm([acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)]),
+                trust: appmesh.TlsValidationTrust.acm([
+                  acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+                    stack,
+                    'certificate',
+                    certificateAuthorityArn
+                  ),
+                ]),
               },
             },
           },
@@ -521,14 +543,16 @@ describe('virtual node', () => {
           virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
         });
 
-        node.addBackend(appmesh.Backend.virtualService(service1, {
-          tlsClientPolicy: {
-            ports: [8080, 8081],
-            validation: {
-              trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
+        node.addBackend(
+          appmesh.Backend.virtualService(service1, {
+            tlsClientPolicy: {
+              ports: [8080, 8081],
+              validation: {
+                trust: appmesh.TlsValidationTrust.file('path-to-certificate'),
+              },
             },
-          },
-        }));
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
@@ -642,14 +666,15 @@ describe('virtual node', () => {
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          listeners: [appmesh.VirtualNodeListener.grpc({
-            port: 80,
-            tls: {
-              mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.acm(cert),
-            },
-          },
-          )],
+          listeners: [
+            appmesh.VirtualNodeListener.grpc({
+              port: 80,
+              tls: {
+                mode: appmesh.TlsMode.STRICT,
+                certificate: appmesh.TlsCertificate.acm(cert),
+              },
+            }),
+          ],
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
@@ -687,13 +712,15 @@ describe('virtual node', () => {
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 80,
-            tls: {
-              mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
-            },
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.http({
+              port: 80,
+              tls: {
+                mode: appmesh.TlsMode.STRICT,
+                certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+              },
+            }),
+          ],
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
@@ -729,13 +756,15 @@ describe('virtual node', () => {
         // WHEN
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          listeners: [appmesh.VirtualNodeListener.http2({
-            port: 80,
-            tls: {
-              mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.sds('secret_certificate'),
-            },
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.http2({
+              port: 80,
+              tls: {
+                mode: appmesh.TlsMode.STRICT,
+                certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+              },
+            }),
+          ],
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
@@ -771,13 +800,15 @@ describe('virtual node', () => {
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 80,
-            tls: {
-              mode: appmesh.TlsMode.PERMISSIVE,
-              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
-            },
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.http({
+              port: 80,
+              tls: {
+                mode: appmesh.TlsMode.PERMISSIVE,
+                certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+              },
+            }),
+          ],
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
@@ -966,8 +997,7 @@ describe('virtual node', () => {
     const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualNode/${virtualNodeName}`;
 
     // WHEN
-    const virtualNode = appmesh.VirtualNode.fromVirtualNodeArn(
-      stack, 'importedVirtualNode', arn);
+    const virtualNode = appmesh.VirtualNode.fromVirtualNodeArn(stack, 'importedVirtualNode', arn);
     // THEN
     expect(virtualNode.mesh.meshName).toEqual(meshName);
     expect(virtualNode.virtualNodeName).toEqual(virtualNodeName);
@@ -996,13 +1026,15 @@ describe('virtual node', () => {
     });
     const node = new appmesh.VirtualNode(stack, 'test-node', {
       mesh,
-      listeners: [appmesh.VirtualNodeListener.http({
-        port: 80,
-        tls: {
-          mode: appmesh.TlsMode.PERMISSIVE,
-          certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
-        },
-      })],
+      listeners: [
+        appmesh.VirtualNodeListener.http({
+          port: 80,
+          tls: {
+            mode: appmesh.TlsMode.PERMISSIVE,
+            certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+          },
+        }),
+      ],
       serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
     });
 
@@ -1037,8 +1069,11 @@ describe('virtual node', () => {
         // Creating stack in Account 9987654321
         const stack = new cdk.Stack(app, 'mySharedStack', { env: virtualNodeEnv });
         // Mesh is in Account 1234567899
-        const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
-          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`);
+        const sharedMesh = appmesh.Mesh.fromMeshArn(
+          stack,
+          'shared-mesh',
+          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`
+        );
 
         // WHEN
         new appmesh.VirtualNode(stack, 'test-node', {
@@ -1117,7 +1152,11 @@ describe('virtual node', () => {
         // WHEN
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          serviceDiscovery: appmesh.ServiceDiscovery.dns('test', appmesh.DnsResponseType.LOAD_BALANCER, appmesh.IpPreference.IPV4_ONLY),
+          serviceDiscovery: appmesh.ServiceDiscovery.dns(
+            'test',
+            appmesh.DnsResponseType.LOAD_BALANCER,
+            appmesh.IpPreference.IPV4_ONLY
+          ),
         });
 
         // THEN

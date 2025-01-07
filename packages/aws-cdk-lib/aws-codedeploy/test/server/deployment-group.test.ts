@@ -19,8 +19,8 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'ApplicationName': {
-        'Ref': 'MyApp3CE31C26',
+      ApplicationName: {
+        Ref: 'MyApp3CE31C26',
       },
     });
   });
@@ -85,18 +85,18 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
-      'UserData': {
+      UserData: {
         'Fn::Base64': {
           'Fn::Join': [
             '',
             [
               '#!/bin/bash\nset +e\nPKG_CMD=`which yum 2>/dev/null`\nset -e\nif [ -z "$PKG_CMD" ]; then\nPKG_CMD=apt-get\nelse\nPKG_CMD=yum\nfi\n$PKG_CMD update -y\nset +e\n$PKG_CMD install -y ruby2.0\nRUBY2_INSTALL=$?\nset -e\nif [ $RUBY2_INSTALL -ne 0 ]; then\n$PKG_CMD install -y ruby\nfi\nAWS_CLI_PACKAGE_NAME=awscli\nif [ "$PKG_CMD" = "yum" ]; then\nAWS_CLI_PACKAGE_NAME=aws-cli\nfi\n$PKG_CMD install -y $AWS_CLI_PACKAGE_NAME\nTMP_DIR=`mktemp -d`\ncd $TMP_DIR\naws s3 cp s3://aws-codedeploy-',
               {
-                'Ref': 'AWS::Region',
+                Ref: 'AWS::Region',
               },
               '/latest/install . --region ',
               {
-                'Ref': 'AWS::Region',
+                Ref: 'AWS::Region',
               },
               '\nchmod +x ./install\n./install auto\nrm -fr $TMP_DIR',
             ],
@@ -121,14 +121,14 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
-      'UserData': {
+      UserData: {
         'Fn::Base64': {
           'Fn::Join': [
             '',
             [
               '<powershell>Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName\naws s3 cp s3://aws-codedeploy-',
               {
-                'Ref': 'AWS::Region',
+                Ref: 'AWS::Region',
               },
               '/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi\ncd $TEMPDIR\n.\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt</powershell>',
             ],
@@ -152,9 +152,9 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'AutoScalingGroups': [
+      AutoScalingGroups: [
         {
-          'Ref': 'ASG46ED3070',
+          Ref: 'ASG46ED3070',
         },
       ],
     });
@@ -173,9 +173,9 @@ describe('CodeDeploy Server Deployment Group', () => {
     deploymentGroup.addAutoScalingGroup(asg);
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'AutoScalingGroups': [
+      AutoScalingGroups: [
         {
-          'Ref': 'ASG46ED3070',
+          Ref: 'ASG46ED3070',
         },
       ],
     });
@@ -195,20 +195,17 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'LoadBalancerInfo': {
-        'TargetGroupInfoList': [
+      LoadBalancerInfo: {
+        TargetGroupInfoList: [
           {
-            'Name': {
-              'Fn::GetAtt': [
-                'ALBListenerFleetGroup008CEEE4',
-                'TargetGroupName',
-              ],
+            Name: {
+              'Fn::GetAtt': ['ALBListenerFleetGroup008CEEE4', 'TargetGroupName'],
             },
           },
         ],
       },
-      'DeploymentStyle': {
-        'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
+      DeploymentStyle: {
+        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
     });
   });
@@ -226,18 +223,24 @@ describe('CodeDeploy Server Deployment Group', () => {
     const loadBalancerInfo: { TargetGroupInfoList?: any[]; ElbInfoList?: any[] } = {};
 
     if (withCLB) {
-      loadBalancers.push(codedeploy.LoadBalancer.classic(new lbv1.LoadBalancer(stack, 'CLB', {
-        vpc: defaultVpc,
-        listeners: [{
-          externalPort: 8080,
-          externalProtocol: lbv1.LoadBalancingProtocol.TCP,
-          internalProtocol: lbv1.LoadBalancingProtocol.TCP,
-        }],
-      })));
+      loadBalancers.push(
+        codedeploy.LoadBalancer.classic(
+          new lbv1.LoadBalancer(stack, 'CLB', {
+            vpc: defaultVpc,
+            listeners: [
+              {
+                externalPort: 8080,
+                externalProtocol: lbv1.LoadBalancingProtocol.TCP,
+                internalProtocol: lbv1.LoadBalancingProtocol.TCP,
+              },
+            ],
+          })
+        )
+      );
 
       loadBalancerInfo.ElbInfoList?.push({
-        'Name': {
-          'Ref': 'CLB677386E0',
+        Name: {
+          Ref: 'CLB677386E0',
         },
       });
     }
@@ -252,11 +255,8 @@ describe('CodeDeploy Server Deployment Group', () => {
       loadBalancers.push(codedeploy.LoadBalancer.application(targetGroup));
 
       loadBalancerInfo.TargetGroupInfoList?.push({
-        'Name': {
-          'Fn::GetAtt': [
-            'ALBListenerALBFleetGroupF4CBAA91',
-            'TargetGroupName',
-          ],
+        Name: {
+          'Fn::GetAtt': ['ALBListenerALBFleetGroupF4CBAA91', 'TargetGroupName'],
         },
       });
     }
@@ -271,11 +271,8 @@ describe('CodeDeploy Server Deployment Group', () => {
       loadBalancers.push(codedeploy.LoadBalancer.network(nlbTargetGroup));
 
       loadBalancerInfo.TargetGroupInfoList?.push({
-        'Name': {
-          'Fn::GetAtt': [
-            'NLBListenerNLB0FleetGroup657E42E4',
-            'TargetGroupName',
-          ],
+        Name: {
+          'Fn::GetAtt': ['NLBListenerNLB0FleetGroup657E42E4', 'TargetGroupName'],
         },
       });
     }
@@ -285,9 +282,9 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'LoadBalancerInfo': loadBalancerInfo,
-      'DeploymentStyle': {
-        'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
+      LoadBalancerInfo: loadBalancerInfo,
+      DeploymentStyle: {
+        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
     });
   });
@@ -316,20 +313,17 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'LoadBalancerInfo': {
-        'TargetGroupInfoList': [
+      LoadBalancerInfo: {
+        TargetGroupInfoList: [
           {
-            'Name': {
-              'Fn::GetAtt': [
-                'NLBListenerFleetGroupB882EC86',
-                'TargetGroupName',
-              ],
+            Name: {
+              'Fn::GetAtt': ['NLBListenerFleetGroupB882EC86', 'TargetGroupName'],
             },
           },
         ],
       },
-      'DeploymentStyle': {
-        'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
+      DeploymentStyle: {
+        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
     });
   });
@@ -338,27 +332,25 @@ describe('CodeDeploy Server Deployment Group', () => {
     const stack = new cdk.Stack();
 
     new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-      ec2InstanceTags: new codedeploy.InstanceTagSet(
-        {
-          'some-key': ['some-value'],
-          'other-key': [],
-        },
-      ),
+      ec2InstanceTags: new codedeploy.InstanceTagSet({
+        'some-key': ['some-value'],
+        'other-key': [],
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'Ec2TagSet': {
-        'Ec2TagSetList': [
+      Ec2TagSet: {
+        Ec2TagSetList: [
           {
-            'Ec2TagGroup': [
+            Ec2TagGroup: [
               {
-                'Key': 'some-key',
-                'Value': 'some-value',
-                'Type': 'KEY_AND_VALUE',
+                Key: 'some-key',
+                Value: 'some-value',
+                Type: 'KEY_AND_VALUE',
               },
               {
-                'Key': 'other-key',
-                'Type': 'KEY_ONLY',
+                Key: 'other-key',
+                Type: 'KEY_ONLY',
               },
             ],
           },
@@ -377,32 +369,32 @@ describe('CodeDeploy Server Deployment Group', () => {
         },
         {
           '': ['keyless-value'],
-        },
+        }
       ),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'OnPremisesTagSet': {
-        'OnPremisesTagSetList': [
+      OnPremisesTagSet: {
+        OnPremisesTagSetList: [
           {
-            'OnPremisesTagGroup': [
+            OnPremisesTagGroup: [
               {
-                'Key': 'some-key',
-                'Value': 'some-value',
-                'Type': 'KEY_AND_VALUE',
+                Key: 'some-key',
+                Value: 'some-value',
+                Type: 'KEY_AND_VALUE',
               },
               {
-                'Key': 'some-key',
-                'Value': 'another-value',
-                'Type': 'KEY_AND_VALUE',
+                Key: 'some-key',
+                Value: 'another-value',
+                Type: 'KEY_AND_VALUE',
               },
             ],
           },
           {
-            'OnPremisesTagGroup': [
+            OnPremisesTagGroup: [
               {
-                'Value': 'keyless-value',
-                'Type': 'VALUE_ONLY',
+                Value: 'keyless-value',
+                Type: 'VALUE_ONLY',
               },
             ],
           },
@@ -449,15 +441,15 @@ describe('CodeDeploy Server Deployment Group', () => {
     deploymentGroup.addAlarm(alarm);
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'AlarmConfiguration': {
-        'Alarms': [
+      AlarmConfiguration: {
+        Alarms: [
           {
-            'Name': {
-              'Ref': 'Alarm1F9009D71',
+            Name: {
+              Ref: 'Alarm1F9009D71',
             },
           },
         ],
-        'Enabled': true,
+        Enabled: true,
       },
     });
   });
@@ -468,11 +460,9 @@ describe('CodeDeploy Server Deployment Group', () => {
     new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'AutoRollbackConfiguration': {
-        'Enabled': true,
-        'Events': [
-          'DEPLOYMENT_FAILURE',
-        ],
+      AutoRollbackConfiguration: {
+        Enabled: true,
+        Events: ['DEPLOYMENT_FAILURE'],
       },
     });
   });
@@ -497,11 +487,9 @@ describe('CodeDeploy Server Deployment Group', () => {
     deploymentGroup.addAlarm(alarm);
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'AutoRollbackConfiguration': {
-        'Enabled': true,
-        'Events': [
-          'DEPLOYMENT_STOP_ON_ALARM',
-        ],
+      AutoRollbackConfiguration: {
+        Enabled: true,
+        Events: ['DEPLOYMENT_STOP_ON_ALARM'],
       },
     });
   });
@@ -530,8 +518,8 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'AutoRollbackConfiguration': {
-        'Enabled': false,
+      AutoRollbackConfiguration: {
+        Enabled: false,
       },
     });
   });
@@ -548,8 +536,8 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'AutoRollbackConfiguration': {
-        'Enabled': false,
+      AutoRollbackConfiguration: {
+        Enabled: false,
       },
     });
   });
@@ -560,21 +548,22 @@ describe('CodeDeploy Server Deployment Group', () => {
     new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
       loadBalancer: codedeploy.LoadBalancer.application(
         lbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedAlbTg', {
-          targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
-        }),
+          targetGroupArn:
+            'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
+        })
       ),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
-      'LoadBalancerInfo': {
-        'TargetGroupInfoList': [
+      LoadBalancerInfo: {
+        TargetGroupInfoList: [
           {
-            'Name': 'myAlbTargetGroup',
+            Name: 'myAlbTargetGroup',
           },
         ],
       },
-      'DeploymentStyle': {
-        'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
+      DeploymentStyle: {
+        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
     });
   });
@@ -593,11 +582,12 @@ describe('CodeDeploy Server Deployment Group', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
-
       deploymentGroupName: 'my name',
     });
 
-    expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
+    expect(() => app.synth()).toThrow(
+      'Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).'
+    );
   });
 
   describe('deploymentGroup from ARN in different account and region', () => {
@@ -611,7 +601,11 @@ describe('CodeDeploy Server Deployment Group', () => {
     beforeEach(() => {
       stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
 
-      application = codedeploy.ServerApplication.fromServerApplicationArn(stack, 'Application', `arn:aws:codedeploy:${region}:${account}:application:MyApplication`);
+      application = codedeploy.ServerApplication.fromServerApplicationArn(
+        stack,
+        'Application',
+        `arn:aws:codedeploy:${region}:${account}:application:MyApplication`
+      );
       group = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(stack, 'Group', {
         application,
         deploymentGroupName: 'DeploymentGroup',
@@ -625,9 +619,9 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
 
     test('references the predefined DeploymentGroupConfig in the right region', () => {
-      expect(group.deploymentConfig.deploymentConfigArn).toEqual(expect.stringContaining(
-        `:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.OneAtATime`,
-      ));
+      expect(group.deploymentConfig.deploymentConfigArn).toEqual(
+        expect.stringContaining(`:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.OneAtATime`)
+      );
     });
   });
 

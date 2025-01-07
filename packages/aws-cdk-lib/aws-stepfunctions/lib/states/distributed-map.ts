@@ -7,14 +7,7 @@ import { Annotations } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
-import {
-  CatchProps,
-  IChainable,
-  INextable,
-  ProcessorConfig,
-  ProcessorMode,
-  RetryProps,
-} from '../types';
+import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
@@ -162,9 +155,7 @@ export class DistributedMap extends MapBase implements INextable {
     }
 
     if (this.toleratedFailurePercentage && this.toleratedFailurePercentagePath) {
-      errors.push(
-        'Provide either `toleratedFailurePercentage` or `toleratedFailurePercentagePath`, but not both'
-      );
+      errors.push('Provide either `toleratedFailurePercentage` or `toleratedFailurePercentagePath`, but not both');
     }
 
     if (
@@ -175,9 +166,7 @@ export class DistributedMap extends MapBase implements INextable {
     }
 
     if (this.toleratedFailureCount && this.toleratedFailureCountPath) {
-      errors.push(
-        'Provide either `toleratedFailureCount` or `toleratedFailureCountPath`, but not both'
-      );
+      errors.push('Provide either `toleratedFailureCount` or `toleratedFailureCountPath`, but not both');
     }
 
     if (this.itemBatcher) {
@@ -193,8 +182,7 @@ export class DistributedMap extends MapBase implements INextable {
         errors.push('label must be 40 characters or less');
       }
 
-      let labelRegex =
-        /[\s\?\*\<\>\{\}\\[\]\:\;\,\|\^\~\$\#\%\&\`\"]|[\u0000-\u001f]|[\u007f-\u009f]/gi;
+      let labelRegex = /[\s\?\*\<\>\{\}\\[\]\:\;\,\|\^\~\$\#\%\&\`\"]|[\u0000-\u001f]|[\u007f-\u009f]/gi;
       if (labelRegex.test(this.label)) {
         errors.push('label cannot contain any whitespace or special characters');
       }

@@ -345,11 +345,7 @@ export class ExampleResource extends ExampleResourceBase {
    * or fromExampleResourceAttributes
    * (the last one if you want the importing behavior to be more customizable).
    */
-  public static fromExampleResourceName(
-    scope: Construct,
-    id: string,
-    exampleResourceName: string
-  ): IExampleResource {
+  public static fromExampleResourceName(scope: Construct, id: string, exampleResourceName: string): IExampleResource {
     // Imports are almost always implemented as a module-private
     // inline class in the method itself.
     // We extend ExampleResourceBase to reuse all of the logic inside it.

@@ -107,7 +107,7 @@ test('Set termination protection with static ClusterId and TerminationProtected 
     },
     End: true,
     Parameters: {
-      'ClusterId': 'ClusterId',
+      ClusterId: 'ClusterId',
       'TerminationProtected.$': '$.TerminationProtected',
     },
   });
@@ -138,7 +138,7 @@ test('Set termination protection with ClusterId from payload and static Terminat
     End: true,
     Parameters: {
       'ClusterId.$': '$.ClusterId',
-      'TerminationProtected': false,
+      TerminationProtected: false,
     },
   });
 });

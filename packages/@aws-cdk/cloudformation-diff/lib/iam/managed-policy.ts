@@ -1,10 +1,7 @@
 import { MaybeParsed, mkParsed } from '../diff/maybe-parsed';
 
 export class ManagedPolicyAttachment {
-  public static parseManagedPolicies(
-    identityArn: string,
-    arns: string | string[]
-  ): ManagedPolicyAttachment[] {
+  public static parseManagedPolicies(identityArn: string, arns: string | string[]): ManagedPolicyAttachment[] {
     return typeof arns === 'string'
       ? [new ManagedPolicyAttachment(identityArn, arns)]
       : arns.map((arn: string) => new ManagedPolicyAttachment(identityArn, arn));
@@ -16,9 +13,7 @@ export class ManagedPolicyAttachment {
   ) {}
 
   public equal(other: ManagedPolicyAttachment): boolean {
-    return (
-      this.identityArn === other.identityArn && this.managedPolicyArn === other.managedPolicyArn
-    );
+    return this.identityArn === other.identityArn && this.managedPolicyArn === other.managedPolicyArn;
   }
 
   /**

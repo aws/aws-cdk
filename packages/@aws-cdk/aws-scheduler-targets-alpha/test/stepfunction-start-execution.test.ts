@@ -144,50 +144,58 @@ describe('stepfunction start execution', () => {
 
     const template = Template.fromStack(stack);
 
-    template.resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'states:StartExecution',
-            Effect: 'Allow',
-            Resource: { Ref: 'MyStateMachine6C968CA5' },
-          },
-        ],
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'states:StartExecution',
+              Effect: 'Allow',
+              Resource: { Ref: 'MyStateMachine6C968CA5' },
+            },
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
@@ -209,73 +217,82 @@ describe('stepfunction start execution', () => {
 
     const template = Template.fromStack(stack);
 
-    template.resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'GroupC77FDACD',
-                    'Arn',
-                  ],
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::GetAtt': ['GroupC77FDACD', 'Arn'],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'states:StartExecution',
-            Effect: 'Allow',
-            Resource: { Ref: 'MyStateMachine6C968CA5' },
-          },
-        ],
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'states:StartExecution',
+              Effect: 'Allow',
+              Resource: { Ref: 'MyStateMachine6C968CA5' },
+            },
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM policy for imported state machine in the same account', () => {
     const importedStateMachineArn = 'arn:aws:states:us-east-1:123456789012:stateMachine/MyStateMachine';
-    const importedStateMachine = sfn.StateMachine.fromStateMachineArn(stack, 'ImportedStateMachine', importedStateMachineArn);
+    const importedStateMachine = sfn.StateMachine.fromStateMachineArn(
+      stack,
+      'ImportedStateMachine',
+      importedStateMachineArn
+    );
 
     const stepFunctionTarget = new StepFunctionsStartExecution(importedStateMachine, {});
 
@@ -352,7 +369,11 @@ describe('stepfunction start execution', () => {
 
   test('creates IAM policy for imported step function with imported IAM role in the same account', () => {
     const importedStateMachineArn = 'arn:aws:states:us-east-1:123456789012:stateMachine/MyStateMachine';
-    const importedStateMachine = sfn.StateMachine.fromStateMachineArn(stack, 'ImportedStateMachine', importedStateMachineArn);
+    const importedStateMachine = sfn.StateMachine.fromStateMachineArn(
+      stack,
+      'ImportedStateMachine',
+      importedStateMachineArn
+    );
     const importedRoleArn = 'arn:aws:iam::123456789012:role/someRole';
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', importedRoleArn);
 
@@ -487,11 +508,13 @@ describe('stepfunction start execution', () => {
       maxEventAge: Duration.days(3),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: stepFunctionTarget,
-      })).toThrow(/Maximum event age is 1 day/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: stepFunctionTarget,
+        })
+    ).toThrow(/Maximum event age is 1 day/);
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
@@ -499,11 +522,13 @@ describe('stepfunction start execution', () => {
       maxEventAge: Duration.seconds(59),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: stepFunctionTarget,
-      })).toThrow(/Minimum event age is 1 minute/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: stepFunctionTarget,
+        })
+    ).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
@@ -511,10 +536,12 @@ describe('stepfunction start execution', () => {
       retryAttempts: 200,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: stepFunctionTarget,
-      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: stepFunctionTarget,
+        })
+    ).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 });

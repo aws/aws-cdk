@@ -20,7 +20,9 @@ jest.mock('../lib/bundling', () => {
             },
           };
         },
-        bindToResource: () => { return; },
+        bindToResource: () => {
+          return;
+        },
       }),
     },
   };
@@ -70,9 +72,12 @@ test('NodejsFunction with .ts handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.handler',
@@ -101,12 +106,17 @@ describe('lambda.Code.fromCustomCommand', () => {
     const handlerName = undefined;
 
     // THEN
-    expect(() => new NodejsFunction(stack, 'handler1', {
-      handler: handlerName,
-      code: Code.fromCustomCommand('function.test.handler7.zip', ['node'], undefined),
-    })).toThrow('Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
-     + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
-     + 'For example, handler should be specified in the form `myFile.myFunction`');
+    expect(
+      () =>
+        new NodejsFunction(stack, 'handler1', {
+          handler: handlerName,
+          code: Code.fromCustomCommand('function.test.handler7.zip', ['node'], undefined),
+        })
+    ).toThrow(
+      'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n' +
+        'The handler should be the name of the exported function to be invoked and the file containing that function.\n' +
+        'For example, handler should be specified in the form `myFile.myFunction`'
+    );
   });
 
   test('if code and handler properties are included, the template can be synthesized', () => {
@@ -131,9 +141,12 @@ test('NodejsFunction with overridden handler - no dots', () => {
     handler: 'myHandler',
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.myHandler', // automatic index. prefix
@@ -147,9 +160,12 @@ test('NodejsFunction with overridden handler - with dots', () => {
     handler: 'run.sh',
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'run.sh', // No index. prefix
@@ -162,9 +178,12 @@ test('NodejsFunction with .js handler', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
+    })
+  );
 });
 
 test('NodejsFunction with .mjs handler', () => {
@@ -172,9 +191,12 @@ test('NodejsFunction with .mjs handler', () => {
   new NodejsFunction(stack, 'handler3');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler3.mjs'), // Automatically finds .mjs handler file
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: expect.stringContaining('function.test.handler3.mjs'), // Automatically finds .mjs handler file
+    })
+  );
 });
 
 test('NodejsFunction with .mts handler', () => {
@@ -182,9 +204,12 @@ test('NodejsFunction with .mts handler', () => {
   new NodejsFunction(stack, 'handler4');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler4.mts'), // Automatically finds .mts handler file
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: expect.stringContaining('function.test.handler4.mts'), // Automatically finds .mts handler file
+    })
+  );
 });
 
 test('NodejsFunction with .cts handler', () => {
@@ -192,9 +217,12 @@ test('NodejsFunction with .cts handler', () => {
   new NodejsFunction(stack, 'handler5');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler5.cts'), // Automatically finds .cts handler file
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: expect.stringContaining('function.test.handler5.cts'), // Automatically finds .cts handler file
+    })
+  );
 });
 
 test('NodejsFunction with .cjs handler', () => {
@@ -202,9 +230,12 @@ test('NodejsFunction with .cjs handler', () => {
   new NodejsFunction(stack, 'handler6');
 
   // THEN
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: expect.stringContaining('function.test.handler6.cjs'), // Automatically finds .cjs handler file
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: expect.stringContaining('function.test.handler6.cjs'), // Automatically finds .cjs handler file
+    })
+  );
 });
 
 test('NodejsFunction with container env vars', () => {
@@ -217,53 +248,76 @@ test('NodejsFunction with container env vars', () => {
     },
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    environment: {
-      KEY: 'VALUE',
-    },
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      environment: {
+        KEY: 'VALUE',
+      },
+    })
+  );
 });
 
 test('throws when entry is not js/ts', () => {
-  expect(() => new NodejsFunction(stack, 'Fn', {
-    entry: 'handler.py',
-  })).toThrow(/Only JavaScript or TypeScript entry files are supported/);
+  expect(
+    () =>
+      new NodejsFunction(stack, 'Fn', {
+        entry: 'handler.py',
+      })
+  ).toThrow(/Only JavaScript or TypeScript entry files are supported/);
 });
 
 test('accepts tsx', () => {
   const entry = bockPath`handler.tsx`;
 
-  expect(() => new NodejsFunction(stack, 'Fn', {
-    entry,
-  })).not.toThrow();
+  expect(
+    () =>
+      new NodejsFunction(stack, 'Fn', {
+        entry,
+      })
+  ).not.toThrow();
 });
 
 test('throws when entry does not exist', () => {
-  expect(() => new NodejsFunction(stack, 'Fn', {
-    entry: 'notfound.ts',
-  })).toThrow(/Cannot find entry file at/);
+  expect(
+    () =>
+      new NodejsFunction(stack, 'Fn', {
+        entry: 'notfound.ts',
+      })
+  ).toThrow(/Cannot find entry file at/);
 });
 
 test('throws when entry cannot be automatically found', () => {
-  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function\.test\.Fn\.ts.*function\.test\.Fn\.js.*function\.test\.Fn\.mjs/);
+  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(
+    /Cannot find handler file .*function\.test\.Fn\.ts.*function\.test\.Fn\.js.*function\.test\.Fn\.mjs/
+  );
 });
 
 test('throws with the wrong runtime family', () => {
-  expect(() => new NodejsFunction(stack, 'handler1', {
-    runtime: Runtime.PYTHON_3_8,
-  })).toThrow(/Only `NODEJS` runtimes are supported/);
+  expect(
+    () =>
+      new NodejsFunction(stack, 'handler1', {
+        runtime: Runtime.PYTHON_3_8,
+      })
+  ).toThrow(/Only `NODEJS` runtimes are supported/);
 });
 
 test('throws with non existing lock file', () => {
-  expect(() => new NodejsFunction(stack, 'handler1', {
-    depsLockFilePath: '/does/not/exist.lock',
-  })).toThrow(/Lock file at \/does\/not\/exist.lock doesn't exist/);
+  expect(
+    () =>
+      new NodejsFunction(stack, 'handler1', {
+        depsLockFilePath: '/does/not/exist.lock',
+      })
+  ).toThrow(/Lock file at \/does\/not\/exist.lock doesn't exist/);
 });
 
 test('throws when depsLockFilePath is not a file', () => {
-  expect(() => new NodejsFunction(stack, 'handler1', {
-    depsLockFilePath: __dirname,
-  })).toThrow(/\`depsLockFilePath\` should point to a file/);
+  expect(
+    () =>
+      new NodejsFunction(stack, 'handler1', {
+        depsLockFilePath: __dirname,
+      })
+  ).toThrow(/\`depsLockFilePath\` should point to a file/);
 });
 
 test('resolves depsLockFilePath to an absolute path', () => {
@@ -271,9 +325,12 @@ test('resolves depsLockFilePath to an absolute path', () => {
     depsLockFilePath: './package.json',
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    depsLockFilePath: bockPath`/home/project/package.json`,
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      depsLockFilePath: bockPath`/home/project/package.json`,
+    })
+  );
 });
 
 test('resolves entry to an absolute path', () => {
@@ -282,9 +339,12 @@ test('resolves entry to an absolute path', () => {
     entry: 'aws-lambda-nodejs/lib/index.ts',
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: bockPath`/home/project/aws-lambda-nodejs/lib/index.ts`,
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    stack,
+    expect.objectContaining({
+      entry: bockPath`/home/project/aws-lambda-nodejs/lib/index.ts`,
+    })
+  );
 });
 
 test('configures connection reuse for aws sdk', () => {
@@ -323,10 +383,7 @@ test('NodejsFunction in a VPC', () => {
     VpcConfig: {
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'handler1SecurityGroup30688A62',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['handler1SecurityGroup30688A62', 'GroupId'],
         },
       ],
       SubnetIds: [
@@ -402,8 +459,9 @@ describe('Node 18+ runtimes', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('*',
-      'The AWS_NODEJS_CONNECTION_REUSE_ENABLED environment variable does not exist in SDK v3. You have explicitly set `awsSdkConnectionReuse`; please make sure this is intentional. [ack: aws-cdk-lib/aws-lambda-nodejs:unusedSdkEvironmentVariable]',
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      'The AWS_NODEJS_CONNECTION_REUSE_ENABLED environment variable does not exist in SDK v3. You have explicitly set `awsSdkConnectionReuse`; please make sure this is intentional. [ack: aws-cdk-lib/aws-lambda-nodejs:unusedSdkEvironmentVariable]'
     );
     // AND
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -415,4 +473,3 @@ describe('Node 18+ runtimes', () => {
     });
   });
 });
-

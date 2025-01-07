@@ -515,14 +515,9 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       grantee,
       actions,
       resourceArns: [
-        [
-          'arn',
-          Aws.PARTITION,
-          'neptune-db',
-          Aws.REGION,
-          Aws.ACCOUNT_ID,
-          `${this.clusterResourceIdentifier}/*`,
-        ].join(':'),
+        ['arn', Aws.PARTITION, 'neptune-db', Aws.REGION, Aws.ACCOUNT_ID, `${this.clusterResourceIdentifier}/*`].join(
+          ':'
+        ),
       ],
     });
   }
@@ -614,8 +609,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         description: `Subnets for ${id} database`,
         vpc: this.vpc,
         vpcSubnets: this.vpcSubnets,
-        removalPolicy:
-          props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+        removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
       });
 
     const securityGroups = props.securityGroups ?? [
@@ -638,9 +632,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     this.enableIamAuthentication = props.iamAuthentication;
 
     if (props.instanceType === InstanceType.SERVERLESS && !props.serverlessScalingConfiguration) {
-      throw new Error(
-        'You need to specify a serverless scaling configuration with a db.serverless instance type.'
-      );
+      throw new Error('You need to specify a serverless scaling configuration with a db.serverless instance type.');
     }
 
     this.validateServerlessScalingConfiguration(props.serverlessScalingConfiguration);
@@ -740,19 +732,14 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     });
   }
 
-  private validateServerlessScalingConfiguration(
-    serverlessScalingConfiguration?: ServerlessScalingConfiguration
-  ) {
+  private validateServerlessScalingConfiguration(serverlessScalingConfiguration?: ServerlessScalingConfiguration) {
     if (!serverlessScalingConfiguration) return;
     if (serverlessScalingConfiguration.minCapacity < 1) {
       throw new Error(
         `ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`
       );
     }
-    if (
-      serverlessScalingConfiguration.maxCapacity < 2.5 ||
-      serverlessScalingConfiguration.maxCapacity > 128
-    ) {
+    if (serverlessScalingConfiguration.maxCapacity < 2.5 || serverlessScalingConfiguration.maxCapacity > 128) {
       throw new Error(
         `ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived ${serverlessScalingConfiguration.maxCapacity}`
       );

@@ -36,13 +36,9 @@ export class AutoScalingGroupRequireImdsv2Aspect implements cdk.IAspect {
         return;
       }
 
-      const metadataOptions = (data as CfnLaunchTemplate.LaunchTemplateDataProperty)
-        .metadataOptions;
+      const metadataOptions = (data as CfnLaunchTemplate.LaunchTemplateDataProperty).metadataOptions;
       if (cdk.isResolvableObject(metadataOptions)) {
-        this.warn(
-          node,
-          'CfnLaunchTemplate.LaunchTemplateData.MetadataOptions field is a CDK token.'
-        );
+        this.warn(node, 'CfnLaunchTemplate.LaunchTemplateData.MetadataOptions field is a CDK token.');
         return;
       }
 

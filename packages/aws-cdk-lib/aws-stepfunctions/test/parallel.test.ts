@@ -47,11 +47,9 @@ describe('Parallel State', () => {
         'Parallel State': {
           Type: 'Parallel',
           End: true,
-          Branches: [
-            { StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } },
-          ],
+          Branches: [{ StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } }],
           ResultSelector: {
-            'buz': 'buz',
+            buz: 'buz',
             'baz.$': '$.baz',
           },
         },

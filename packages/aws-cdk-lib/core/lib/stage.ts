@@ -180,9 +180,7 @@ export class Stage extends Construct {
     props.permissionsBoundary?._bind(this);
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [this.parentStage?.stageName, props.stageName ?? id]
-      .filter((x) => x)
-      .join('-');
+    this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter((x) => x).join('-');
 
     if (props.policyValidationBeta1) {
       this.policyValidationBeta1 = props.policyValidationBeta1;
@@ -231,9 +229,7 @@ export class Stage extends Construct {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
         aspectStabilization:
-          options.aspectStabilization ??
-          FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ??
-          false,
+          options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ?? false,
       });
       newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;

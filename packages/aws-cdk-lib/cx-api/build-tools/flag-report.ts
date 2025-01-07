@@ -17,9 +17,7 @@ async function main() {
   });
 
   // Write to the package root
-  await updateRecommendedFlagsFile(
-    path.join(__dirname, '..', '..', 'recommended-feature-flags.json')
-  );
+  await updateRecommendedFlagsFile(path.join(__dirname, '..', '..', 'recommended-feature-flags.json'));
 }
 
 function flagsTable() {
@@ -35,9 +33,7 @@ function flagsTable() {
 }
 
 function removedFlags() {
-  const removedInV2 = flags(
-    (flag) => flag.introducedIn.v2 === undefined && flag.introducedIn.v1 !== undefined
-  );
+  const removedInV2 = flags((flag) => flag.introducedIn.v2 === undefined && flag.introducedIn.v1 !== undefined);
 
   return renderTable([
     ['Flag', 'Summary', 'Type', 'Since'],
@@ -95,18 +91,12 @@ function flagsDetails() {
 
         // V2
         flag.introducedIn.v2
-          ? [
-              flag.introducedIn.v2,
-              renderValue(flag.defaults?.v2 ?? false),
-              renderValue(flag.recommendedValue),
-            ]
+          ? [flag.introducedIn.v2, renderValue(flag.defaults?.v2 ?? false), renderValue(flag.recommendedValue)]
           : flag.defaults?.v2 !== undefined
             ? ['(default in v2)', renderValue(flag.defaults?.v2), '']
             : ['(not in v2)', '', ''],
       ]),
-      ...(oldBehavior(flag)
-        ? [`**Compatibility with old behavior:** ${oldBehavior(flag)}`, '']
-        : []),
+      ...(oldBehavior(flag) ? [`**Compatibility with old behavior:** ${oldBehavior(flag)}`, ''] : []),
       '',
     ])
     .join('\n');
@@ -124,11 +114,7 @@ function oldBehavior(flag: FlagInfo): string | undefined {
 }
 
 function recommendedJson() {
-  return [
-    '```json',
-    JSON.stringify({ context: feats.CURRENTLY_RECOMMENDED_FLAGS }, undefined, 2),
-    '```',
-  ].join('\n');
+  return ['```json', JSON.stringify({ context: feats.CURRENTLY_RECOMMENDED_FLAGS }, undefined, 2), '```'].join('\n');
 }
 
 function v2flags() {

@@ -79,8 +79,7 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
     return new (class extends Resource implements ILambdaApplication {
       public applicationArn = lambdaApplicationArn;
       public applicationName =
-        Arn.split(lambdaApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ??
-        '<invalid arn>';
+        Arn.split(lambdaApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
     })(scope, id, { environmentFromArn: lambdaApplicationArn });
   }
 
@@ -98,15 +97,12 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(
-      arnForApplication(Stack.of(this), resource.ref),
-      {
-        service: 'codedeploy',
-        resource: 'application',
-        resourceName: this.physicalName,
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      }
-    );
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(this), resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
 
     this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }

@@ -187,9 +187,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  public abstract addToResourcePolicy(
-    statement: iam.PolicyStatement
-  ): iam.AddToResourcePolicyResult;
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The URI of this repository (represents the latest image):
@@ -296,10 +294,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailImagePushed(
-    id: string,
-    options: OnCloudTrailImagePushedOptions = {}
-  ): events.Rule {
+  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
@@ -453,9 +448,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * to the grantee in the resource policy of this ECR repository,
    * and 'undefined' in case we can.
    */
-  private unsafeCrossAccountResourcePolicyPrincipal(
-    grantee: iam.IGrantable
-  ): IConstruct | undefined {
+  private unsafeCrossAccountResourcePolicyPrincipal(grantee: iam.IGrantable): IConstruct | undefined {
     // A principal cannot be safely added to the Resource Policy of this ECR repository, if:
     // 1. The principal is from a different account, and
     // 2. The principal is a new resource (meaning, not just referenced), and
@@ -615,11 +608,7 @@ export class Repository extends RepositoryBase {
   /**
    * Import a repository
    */
-  public static fromRepositoryAttributes(
-    scope: Construct,
-    id: string,
-    attrs: RepositoryAttributes
-  ): IRepository {
+  public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
     class Import extends RepositoryBase {
       public readonly repositoryName = attrs.repositoryName;
       public readonly repositoryArn = attrs.repositoryArn;
@@ -633,11 +622,7 @@ export class Repository extends RepositoryBase {
     return new Import(scope, id);
   }
 
-  public static fromRepositoryArn(
-    scope: Construct,
-    id: string,
-    repositoryArn: string
-  ): IRepository {
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     // if repositoryArn is a token, the repository name is also required. this is because
     // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
     // parse the name from an ARN using CloudFormation's split/select.
@@ -676,11 +661,7 @@ export class Repository extends RepositoryBase {
     }
   }
 
-  public static fromRepositoryName(
-    scope: Construct,
-    id: string,
-    repositoryName: string
-  ): IRepository {
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
     class Import extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
@@ -698,11 +679,7 @@ export class Repository extends RepositoryBase {
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(
-    repositoryName: string,
-    scope: IConstruct,
-    account?: string
-  ): string {
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct, account?: string): string {
     return Stack.of(scope).formatArn({
       account,
       service: 'ecr',
@@ -725,9 +702,7 @@ export class Repository extends RepositoryBase {
     if (repositoryName.length < 2 || repositoryName.length > 256) {
       errors.push('Repository name must be at least 2 and no more than 256 characters');
     }
-    const isPatternMatch = /^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(
-      repositoryName
-    );
+    const isPatternMatch = /^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(repositoryName);
     if (!isPatternMatch) {
       errors.push(
         'Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes'
@@ -735,9 +710,7 @@ export class Repository extends RepositoryBase {
     }
 
     if (errors.length > 0) {
-      throw new Error(
-        `Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`
-      );
+      throw new Error(`Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
     }
   }
 
@@ -833,9 +806,7 @@ export class Repository extends RepositoryBase {
       rule = {
         ...rule,
         tagStatus:
-          rule.tagPrefixList === undefined && rule.tagPatternList === undefined
-            ? TagStatus.ANY
-            : TagStatus.TAGGED,
+          rule.tagPrefixList === undefined && rule.tagPatternList === undefined ? TagStatus.ANY : TagStatus.TAGGED,
       };
     }
 
@@ -844,22 +815,16 @@ export class Repository extends RepositoryBase {
       (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0) &&
       (rule.tagPatternList === undefined || rule.tagPatternList.length === 0)
     ) {
-      throw new Error(
-        'TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList'
-      );
+      throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList');
     }
     if (
       rule.tagStatus !== TagStatus.TAGGED &&
       (rule.tagPrefixList !== undefined || rule.tagPatternList !== undefined)
     ) {
-      throw new Error(
-        'tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged'
-      );
+      throw new Error('tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged');
     }
     if (rule.tagPrefixList !== undefined && rule.tagPatternList !== undefined) {
-      throw new Error(
-        'Both tagPrefixList and tagPatternList cannot be specified together in a rule'
-      );
+      throw new Error('Both tagPrefixList and tagPatternList cannot be specified together in a rule');
     }
     if (rule.tagPatternList !== undefined) {
       rule.tagPatternList.forEach((pattern) => {
@@ -929,11 +894,7 @@ export class Repository extends RepositoryBase {
       (r) => r.rulePriority === undefined && r.tagStatus !== TagStatus.ANY
     );
     const anyRules = this.lifecycleRules.filter((r) => r.tagStatus === TagStatus.ANY);
-    if (
-      anyRules.length > 0 &&
-      anyRules[0].rulePriority !== undefined &&
-      autoPrioritizedRules.length > 0
-    ) {
+    if (anyRules.length > 0 && anyRules[0].rulePriority !== undefined && autoPrioritizedRules.length > 0) {
       // Supporting this is too complex for very little value. We just prohibit it.
       throw new Error(
         "Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule."
@@ -960,13 +921,10 @@ export class Repository extends RepositoryBase {
    * Set up key properties and return the Repository encryption property from the
    * user's configuration.
    */
-  private parseEncryption(
-    props: RepositoryProps
-  ): CfnRepository.EncryptionConfigurationProperty | undefined {
+  private parseEncryption(props: RepositoryProps): CfnRepository.EncryptionConfigurationProperty | undefined {
     // default based on whether encryptionKey is specified
     const encryptionType =
-      props.encryption ??
-      (props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256);
+      props.encryption ?? (props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
@@ -991,32 +949,19 @@ export class Repository extends RepositoryBase {
 
   private enableAutoDeleteImages() {
     const firstTime =
-      Stack.of(this).node.tryFindChild(
-        `${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`
-      ) === undefined;
-    const provider = AutoDeleteImagesProvider.getOrCreateProvider(
-      this,
-      AUTO_DELETE_IMAGES_RESOURCE_TYPE,
-      {
-        useCfnResponseWrapper: false,
-        description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
-      }
-    );
+      Stack.of(this).node.tryFindChild(`${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`) === undefined;
+    const provider = AutoDeleteImagesProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
+      useCfnResponseWrapper: false,
+      description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
+    });
 
     if (firstTime) {
       // Use a iam policy to allow the custom resource to list & delete
       // images in the repository and the ability to get all repositories to find the arn needed on delete.
       provider.addToRolePolicy({
         Effect: 'Allow',
-        Action: [
-          'ecr:BatchDeleteImage',
-          'ecr:DescribeRepositories',
-          'ecr:ListImages',
-          'ecr:ListTagsForResource',
-        ],
-        Resource: [
-          `arn:${Aws.PARTITION}:ecr:${Stack.of(this).region}:${Stack.of(this).account}:repository/*`,
-        ],
+        Action: ['ecr:BatchDeleteImage', 'ecr:DescribeRepositories', 'ecr:ListImages', 'ecr:ListTagsForResource'],
+        Resource: [`arn:${Aws.PARTITION}:ecr:${Stack.of(this).region}:${Stack.of(this).account}:repository/*`],
         Condition: {
           StringEquals: {
             ['ecr:ResourceTag/' + AUTO_DELETE_IMAGES_TAG]: 'true',
@@ -1066,10 +1011,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       tagPatternList: rule.tagPatternList,
-      countType:
-        rule.maxImageAge !== undefined
-          ? CountType.SINCE_IMAGE_PUSHED
-          : CountType.IMAGE_COUNT_MORE_THAN,
+      countType: rule.maxImageAge !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
       countNumber: rule.maxImageAge?.toDays() ?? rule.maxImageCount,
       countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
     },

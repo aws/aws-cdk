@@ -78,12 +78,7 @@ export class ResultWriter {
 
     return [
       new iam.PolicyStatement({
-        actions: [
-          's3:PutObject',
-          's3:GetObject',
-          's3:ListMultipartUploadParts',
-          's3:AbortMultipartUpload',
-        ],
+        actions: ['s3:PutObject', 's3:GetObject', 's3:ListMultipartUploadParts', 's3:AbortMultipartUpload'],
         resources: [resource],
       }),
     ];

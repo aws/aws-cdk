@@ -14,13 +14,15 @@ test('Can create a scheduled Ec2 Task - with only required props', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -78,13 +80,15 @@ test('Can create a scheduled Ec2 Task - with optional props', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -178,12 +182,11 @@ test('Scheduled ECS Task - with securityGroups defined', () => {
           NetworkConfiguration: {
             AwsVpcConfiguration: {
               AssignPublicIp: 'DISABLED',
-              SecurityGroups: [{
-                'Fn::GetAtt': [
-                  'MySG94FE69A8',
-                  'GroupId',
-                ],
-              }],
+              SecurityGroups: [
+                {
+                  'Fn::GetAtt': ['MySG94FE69A8', 'GroupId'],
+                },
+              ],
               Subnets: [
                 {
                   Ref: 'VpcPrivateSubnet1Subnet536B997A',
@@ -207,13 +210,15 @@ test('Scheduled Ec2 Task - with MemoryReservation defined', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -254,13 +259,15 @@ test('Scheduled Ec2 Task - with Command defined', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -276,11 +283,7 @@ test('Scheduled Ec2 Task - with Command defined', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
-        Command: [
-          '-c',
-          '4',
-          'amazon.com',
-        ],
+        Command: ['-c', '4', 'amazon.com'],
         Essential: true,
         Image: 'henk',
         LogConfiguration: {
@@ -307,25 +310,28 @@ test('throws if desiredTaskCount is 0', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   // THEN
-  expect(() =>
-    new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
-      cluster,
-      scheduledEc2TaskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('henk'),
-        memoryLimitMiB: 512,
-      },
-      schedule: events.Schedule.expression('rate(1 minute)'),
-      desiredTaskCount: 0,
-    }),
+  expect(
+    () =>
+      new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+        cluster,
+        scheduledEc2TaskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('henk'),
+          memoryLimitMiB: 512,
+        },
+        schedule: events.Schedule.expression('rate(1 minute)'),
+        desiredTaskCount: 0,
+      })
   ).toThrow(/You must specify a desiredTaskCount greater than 0/);
 });
 
@@ -364,7 +370,10 @@ test('Scheduled Ec2 Task shows warning when minute is not defined in cron', () =
   });
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('/Default', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]");
+  Annotations.fromStack(stack).hasWarning(
+    '/Default',
+    "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]"
+  );
 });
 
 test('Scheduled Ec2 Task shows no warning when minute is * in cron', () => {
@@ -392,13 +401,15 @@ test('Scheduled Ec2 Task - with tag propagation', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -428,13 +439,15 @@ test('Scheduled Ec2 Task - with list of tags', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux2023(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux2023(),
+      }),
+    })
+  );
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -474,13 +487,15 @@ test('Can create a scheduled Ec2 Task - with customized container name', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
-  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-      vpc,
-      instanceType: new ec2.InstanceType('t2.micro'),
-      machineImage: MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,

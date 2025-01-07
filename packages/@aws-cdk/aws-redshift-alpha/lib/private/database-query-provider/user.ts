@@ -33,9 +33,7 @@ export async function handler(
       clusterProps,
       event.OldResourceProperties as unknown as UserHandlerProps & ClusterProps
     );
-    const physicalId = replace
-      ? makePhysicalId(username, clusterProps, event.RequestId)
-      : event.PhysicalResourceId;
+    const physicalId = replace ? makePhysicalId(username, clusterProps, event.RequestId) : event.PhysicalResourceId;
     return { PhysicalResourceId: physicalId, Data: { username: username } };
   } else {
     /* eslint-disable-next-line dot-notation */

@@ -71,11 +71,9 @@ const message = test.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: targetQueue.queueUrl,
 });
 
-message
-  .assertAtPath('Messages.0.Body.dynamodb.Keys.id.S', ExpectedResult.stringLikeRegexp('myPK'))
-  .waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(2),
-    interval: cdk.Duration.seconds(15),
-  });
+message.assertAtPath('Messages.0.Body.dynamodb.Keys.id.S', ExpectedResult.stringLikeRegexp('myPK')).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(2),
+  interval: cdk.Duration.seconds(15),
+});
 
 app.synth();

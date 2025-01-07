@@ -134,16 +134,18 @@ describe('fargate', () => {
 
     // THEN
     expect(() => cluster.addFargateProfile('MyProfile', { selectors: [] }));
-    expect(() => cluster.addFargateProfile('MyProfile', {
-      selectors: [
-        { namespace: '1' },
-        { namespace: '2' },
-        { namespace: '3' },
-        { namespace: '4' },
-        { namespace: '5' },
-        { namespace: '6' },
-      ],
-    }));
+    expect(() =>
+      cluster.addFargateProfile('MyProfile', {
+        selectors: [
+          { namespace: '1' },
+          { namespace: '2' },
+          { namespace: '3' },
+          { namespace: '4' },
+          { namespace: '5' },
+          { namespace: '6' },
+        ],
+      })
+    );
   });
 
   test('FargateCluster creates an EKS cluster fully managed by Fargate', () => {
@@ -170,15 +172,9 @@ describe('fargate', () => {
           Ref: 'FargateCluster019F03E8',
         },
         podExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['FargateClusterfargateprofiledefaultPodExecutionRole66F2610E', 'Arn'],
         },
-        selectors: [
-          { namespace: 'default' },
-          { namespace: 'kube-system' },
-        ],
+        selectors: [{ namespace: 'default' }, { namespace: 'kube-system' }],
       },
     });
   });
@@ -190,7 +186,8 @@ describe('fargate', () => {
     // WHEN
     new eks.FargateCluster(stack, 'FargateCluster', {
       defaultProfile: {
-        fargateProfileName: 'my-app', selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
+        fargateProfileName: 'my-app',
+        selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
       version: CLUSTER_VERSION,
     });
@@ -203,15 +200,9 @@ describe('fargate', () => {
         },
         fargateProfileName: 'my-app',
         podExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'FargateClusterfargateprofilemyappPodExecutionRole875B4635',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['FargateClusterfargateprofilemyappPodExecutionRole875B4635', 'Arn'],
         },
-        selectors: [
-          { namespace: 'foo' },
-          { namespace: 'bar' },
-        ],
+        selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
     });
   });
@@ -235,15 +226,9 @@ describe('fargate', () => {
           Ref: 'FargateCluster019F03E8',
         },
         podExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'FargateClusterfargateprofilecustomPodExecutionRoleDB415F19',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['FargateClusterfargateprofilecustomPodExecutionRoleDB415F19', 'Arn'],
         },
-        selectors: [
-          { namespace: 'foo' },
-          { namespace: 'bar' },
-        ],
+        selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
     });
   });
@@ -306,10 +291,7 @@ describe('fargate', () => {
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c858eb9c291620a59a3334f61f9b8a259e9786af60":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['FargateClusterfargateprofiledefaultPodExecutionRole66F2610E', 'Arn'],
             },
             '\\",\\"username\\":\\"system:node:{{SessionName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\",\\"system:node-proxier\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
           ],
@@ -333,10 +315,7 @@ describe('fargate', () => {
             Action: 'iam:PassRole',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'FargateClusterRole8E36B33A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['FargateClusterRole8E36B33A', 'Arn'],
             },
           },
           {
@@ -352,15 +331,10 @@ describe('fargate', () => {
               'eks:UntagResource',
             ],
             Effect: 'Allow',
-            Resource: [
-              '*',
-            ],
+            Resource: ['*'],
           },
           {
-            Action: [
-              'eks:DescribeFargateProfile',
-              'eks:DeleteFargateProfile',
-            ],
+            Action: ['eks:DescribeFargateProfile', 'eks:DeleteFargateProfile'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -391,10 +365,7 @@ describe('fargate', () => {
             Action: 'iam:PassRole',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['FargateClusterfargateprofiledefaultPodExecutionRole66F2610E', 'Arn'],
             },
           },
         ],
@@ -416,17 +387,16 @@ describe('fargate', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
-        encryptionConfig: [{
-          provider: {
-            keyArn: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+        encryptionConfig: [
+          {
+            provider: {
+              keyArn: {
+                'Fn::GetAtt': ['Key961B73FD', 'Arn'],
+              },
             },
+            resources: ['secrets'],
           },
-          resources: ['secrets'],
-        }],
+        ],
       },
     });
   });
@@ -450,9 +420,7 @@ describe('fargate', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         logging: {
-          clusterLogging: [
-            { enabled: true, types: ['api', 'authenticator', 'scheduler'] },
-          ],
+          clusterLogging: [{ enabled: true, types: ['api', 'authenticator', 'scheduler'] }],
         },
       },
     });
@@ -484,10 +452,7 @@ describe('FargateCluster authentication mode', () => {
             [
               '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c89d3ef2163dfb30f38b127f20b71024bf7995ca21":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
               {
-                'Fn::GetAtt': [
-                  'ClusterfargateprofiledefaultPodExecutionRole09952CFF',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['ClusterfargateprofiledefaultPodExecutionRole09952CFF', 'Arn'],
               },
               '\\",\\"username\\":\\"system:node:{{SessionName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\",\\"system:node-proxier\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
             ],

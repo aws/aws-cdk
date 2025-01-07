@@ -136,17 +136,12 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Import an existing VirtualNode given an ARN
    */
-  public static fromVirtualNodeArn(
-    scope: Construct,
-    id: string,
-    virtualNodeArn: string
-  ): IVirtualNode {
+  public static fromVirtualNodeArn(scope: Construct, id: string, virtualNodeArn: string): IVirtualNode {
     return new (class extends VirtualNodeBase {
       readonly virtualNodeArn = virtualNodeArn;
       private readonly parsedArn = cdk.Fn.split(
         '/',
-        cdk.Stack.of(scope).splitArn(virtualNodeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-          .resourceName!
+        cdk.Stack.of(scope).splitArn(virtualNodeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!
       );
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
       readonly virtualNodeName = cdk.Fn.select(2, this.parsedArn);
@@ -156,11 +151,7 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Import an existing VirtualNode given its name
    */
-  public static fromVirtualNodeAttributes(
-    scope: Construct,
-    id: string,
-    attrs: VirtualNodeAttributes
-  ): IVirtualNode {
+  public static fromVirtualNodeAttributes(scope: Construct, id: string, attrs: VirtualNodeAttributes): IVirtualNode {
     return new (class extends VirtualNodeBase {
       readonly mesh = attrs.mesh;
       readonly virtualNodeName = attrs.virtualNodeName;
@@ -194,8 +185,7 @@ export class VirtualNode extends VirtualNodeBase {
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
-      physicalName:
-        props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;
@@ -253,9 +243,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
-      throw new Error(
-        'Service discovery information is required for a VirtualNode with a listener.'
-      );
+      throw new Error('Service discovery information is required for a VirtualNode with a listener.');
     }
     this.listeners.push(listener.bind(this));
   }
@@ -283,9 +271,7 @@ export interface VirtualNodeAttributes {
   readonly mesh: IMesh;
 }
 
-function renderServiceDiscovery(
-  config?: ServiceDiscoveryConfig
-): CfnVirtualNode.ServiceDiscoveryProperty | undefined {
+function renderServiceDiscovery(config?: ServiceDiscoveryConfig): CfnVirtualNode.ServiceDiscoveryProperty | undefined {
   return config
     ? {
         dns: config?.dns,

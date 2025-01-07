@@ -20,8 +20,10 @@ describe('amis', () => {
     // THEN
     const assembly = app.synth();
     const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-    expect(Object.entries(parameters).some(
-      ([k, v]) => k.startsWith(ssmKey) && (v as any).Default.includes(`/bottlerocket/${variant}/x86_64/`),
-    )).toEqual(true);
+    expect(
+      Object.entries(parameters).some(
+        ([k, v]) => k.startsWith(ssmKey) && (v as any).Default.includes(`/bottlerocket/${variant}/x86_64/`)
+      )
+    ).toEqual(true);
   });
 });

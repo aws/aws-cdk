@@ -34,10 +34,7 @@ describe('dynamodb source', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyTable794EDED1',
-          'StreamArn',
-        ],
+        'Fn::GetAtt': ['MyTable794EDED1', 'StreamArn'],
       },
       SourceParameters: {
         DynamoDBStreamParameters: {
@@ -101,10 +98,7 @@ describe('dynamodb source', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyTable794EDED1',
-          'StreamArn',
-        ],
+        'Fn::GetAtt': ['MyTable794EDED1', 'StreamArn'],
       },
       SourceParameters: {
         DynamoDBStreamParameters: {
@@ -157,20 +151,14 @@ describe('dynamodb source', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyTable794EDED1',
-          'StreamArn',
-        ],
+        'Fn::GetAtt': ['MyTable794EDED1', 'StreamArn'],
       },
       SourceParameters: {
         DynamoDBStreamParameters: {
           BatchSize: 10,
           DeadLetterConfig: {
             Arn: {
-              'Fn::GetAtt': [
-                'MyQueueE6CA6235',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
             },
           },
           MaximumBatchingWindowInSeconds: 10,

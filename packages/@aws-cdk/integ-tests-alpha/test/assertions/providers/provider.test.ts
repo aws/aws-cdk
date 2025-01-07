@@ -14,7 +14,9 @@ describe('AssertionProvider', () => {
     const provider = new AssertionsProvider(stack, 'AssertionProvider');
 
     // THEN
-    expect(stack.resolve(provider.serviceToken)).toEqual({ 'Fn::GetAtt': ['SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F', 'Arn'] });
+    expect(stack.resolve(provider.serviceToken)).toEqual({
+      'Fn::GetAtt': ['SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F', 'Arn'],
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
       Timeout: 120,
@@ -30,7 +32,9 @@ describe('AssertionProvider', () => {
     // THEN
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::Logs::LogGroup', 1);
-    expect(stack.resolve(provider.serviceToken)).toEqual({ 'Fn::GetAtt': ['SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F', 'Arn'] });
+    expect(stack.resolve(provider.serviceToken)).toEqual({
+      'Fn::GetAtt': ['SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F', 'Arn'],
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
       Timeout: 120,
@@ -96,7 +100,6 @@ describe('AssertionProvider', () => {
     });
 
     test('multiple providers, 1 resource', () => {
-
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
       const provider2 = new AssertionsProvider(stack, 'AssertionsProvider2');

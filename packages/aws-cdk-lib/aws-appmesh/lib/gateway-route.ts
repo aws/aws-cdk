@@ -65,37 +65,24 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
   /**
    * Import an existing GatewayRoute given an ARN
    */
-  public static fromGatewayRouteArn(
-    scope: Construct,
-    id: string,
-    gatewayRouteArn: string
-  ): IGatewayRoute {
+  public static fromGatewayRouteArn(scope: Construct, id: string, gatewayRouteArn: string): IGatewayRoute {
     return new (class extends cdk.Resource implements IGatewayRoute {
       readonly gatewayRouteArn = gatewayRouteArn;
       readonly gatewayRouteName = cdk.Fn.select(
         4,
         cdk.Fn.split(
           '/',
-          cdk.Stack.of(scope).splitArn(gatewayRouteArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-            .resourceName!
+          cdk.Stack.of(scope).splitArn(gatewayRouteArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!
         )
       );
-      readonly virtualGateway = VirtualGateway.fromVirtualGatewayArn(
-        this,
-        'virtualGateway',
-        gatewayRouteArn
-      );
+      readonly virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', gatewayRouteArn);
     })(scope, id);
   }
 
   /**
    * Import an existing GatewayRoute given attributes
    */
-  public static fromGatewayRouteAttributes(
-    scope: Construct,
-    id: string,
-    attrs: GatewayRouteAttributes
-  ): IGatewayRoute {
+  public static fromGatewayRouteAttributes(scope: Construct, id: string, attrs: GatewayRouteAttributes): IGatewayRoute {
     return new (class extends cdk.Resource implements IGatewayRoute {
       readonly gatewayRouteName = attrs.gatewayRouteName;
       readonly gatewayRouteArn = cdk.Stack.of(scope).formatArn({
@@ -124,8 +111,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
 
   constructor(scope: Construct, id: string, props: GatewayRouteProps) {
     super(scope, id, {
-      physicalName:
-        props.gatewayRouteName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.gatewayRouteName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.virtualGateway = props.virtualGateway;
@@ -155,12 +141,9 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
       validate() {
         if (cdk.Resource.isOwnedResource(props.virtualGateway)) {
           const cfnGateway = props.virtualGateway.node.defaultChild as CfnVirtualGateway;
-          const listeners = (cfnGateway.spec as CfnVirtualGateway.VirtualGatewaySpecProperty)
-            .listeners;
+          const listeners = (cfnGateway.spec as CfnVirtualGateway.VirtualGatewaySpecProperty).listeners;
           if (Array.isArray(listeners) && listeners.length > 1) {
-            return [
-              'Gateway route must define a match port if the parent Virtual Gateway has multiple listeners.',
-            ];
+            return ['Gateway route must define a match port if the parent Virtual Gateway has multiple listeners.'];
           }
         }
         return [];

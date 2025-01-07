@@ -8,7 +8,9 @@ describe('expiration', () => {
 
   test('at specified date', () => {
     const date = new Date('Sun, 26 Jan 2020 00:53:20 GMT');
-    expect(Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+    expect(Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual(
+      'Sun, 26 Jan 2020 00:53:20 GMT'
+    );
     expect(Expiration.atDate(new Date(1580000000000)).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
     expect(Expiration.atDate(new Date(date)).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
   });
@@ -18,7 +20,10 @@ describe('expiration', () => {
   });
 
   test('after', () => {
-    expect(Math.abs(new Date(Expiration.after(Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)) < 15000).toBeDefined();
+    expect(
+      Math.abs(new Date(Expiration.after(Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)) <
+        15000
+    ).toBeDefined();
   });
 
   test('toEpoch returns correct value', () => {

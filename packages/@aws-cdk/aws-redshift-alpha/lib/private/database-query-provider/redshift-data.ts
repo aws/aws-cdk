@@ -4,10 +4,7 @@ import { ClusterProps } from './types';
 
 const redshiftData = new RedshiftData({});
 
-export async function executeStatement(
-  statement: string,
-  clusterProps: ClusterProps
-): Promise<void> {
+export async function executeStatement(statement: string, clusterProps: ClusterProps): Promise<void> {
   const executeStatementProps = {
     ClusterIdentifier: clusterProps.clusterName,
     Database: clusterProps.databaseName,
@@ -27,11 +24,7 @@ async function waitForStatementComplete(statementId: string): Promise<void> {
     setTimeout(() => resolve(), waitTimeout);
   });
   const statement = await redshiftData.describeStatement({ Id: statementId });
-  if (
-    statement.Status !== 'FINISHED' &&
-    statement.Status !== 'FAILED' &&
-    statement.Status !== 'ABORTED'
-  ) {
+  if (statement.Status !== 'FINISHED' && statement.Status !== 'FAILED' && statement.Status !== 'ABORTED') {
     return waitForStatementComplete(statementId);
   } else if (statement.Status === 'FINISHED') {
     return;

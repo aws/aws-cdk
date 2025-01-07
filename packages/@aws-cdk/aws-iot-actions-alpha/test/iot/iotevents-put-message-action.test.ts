@@ -19,9 +19,7 @@ beforeEach(() => {
 
 test('Default IoT Events input action', () => {
   // WHEN
-  topicRule.addAction(
-    new actions.IotEventsPutMessageAction(input),
-  );
+  topicRule.addAction(new actions.IotEventsPutMessageAction(input));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -79,17 +77,13 @@ test('Default IoT Events input action', () => {
       Version: '2012-10-17',
     },
     PolicyName: 'MyTopicRuleTopicRuleActionRoleDefaultPolicy54A701F7',
-    Roles: [
-      { Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' },
-    ],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
 test('can set batchMode', () => {
   // WHEN
-  topicRule.addAction(
-    new actions.IotEventsPutMessageAction(input, { batchMode: true }),
-  );
+  topicRule.addAction(new actions.IotEventsPutMessageAction(input, { batchMode: true }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -101,9 +95,7 @@ test('can set batchMode', () => {
 
 test('can set messageId', () => {
   // WHEN
-  topicRule.addAction(
-    new actions.IotEventsPutMessageAction(input, { messageId: '${topic()}-${timestamp()}' }),
-  );
+  topicRule.addAction(new actions.IotEventsPutMessageAction(input, { messageId: '${topic()}-${timestamp()}' }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -117,9 +109,7 @@ test('can set role', () => {
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
-  topicRule.addAction(
-    new actions.IotEventsPutMessageAction(input, { role }),
-  );
+  topicRule.addAction(new actions.IotEventsPutMessageAction(input, { role }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {

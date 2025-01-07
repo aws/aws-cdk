@@ -28,12 +28,12 @@ describe('delivery stream', () => {
     });
     mockS3Destination = {
       bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
-        dependable = new class extends Construct {
+        dependable = new (class extends Construct {
           constructor(depScope: Construct, id: string) {
             super(depScope, id);
             new cdk.CfnResource(this, 'Resource', { type: 'CDK::Dummy' });
           }
-        }(scope, 'Dummy Dep');
+        })(scope, 'Dummy Dep');
         return {
           extendedS3DestinationConfiguration: {
             bucketArn: bucketArn,
@@ -74,23 +74,21 @@ describe('delivery stream', () => {
           eventName: ['PutObject'],
         },
       },
-    }).addTarget(new targets.KinesisFirehoseStreamV2(firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'firehose', stream.deliveryStreamArn)));
+    }).addTarget(
+      new targets.KinesisFirehoseStreamV2(
+        firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'firehose', stream.deliveryStreamArn)
+      )
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           Arn: {
-            'Fn::GetAtt': [
-              'DeliveryStream58CF96DB',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['DeliveryStream58CF96DB', 'Arn'],
           },
           Id: 'Target0',
           RoleArn: {
-            'Fn::GetAtt': [
-              'firehoseEventsRole71BC7157',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['firehoseEventsRole71BC7157', 'Arn'],
           },
         },
       ],
@@ -226,10 +224,7 @@ describe('delivery stream', () => {
       PolicyDocument: {
         Statement: [
           Match.objectLike({
-            Action: Match.arrayWith([
-              'kms:Decrypt',
-              'kms:Encrypt',
-            ]),
+            Action: Match.arrayWith(['kms:Decrypt', 'kms:Encrypt']),
           }),
         ],
       },
@@ -238,10 +233,7 @@ describe('delivery stream', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamEncryptionConfigurationInput: {
         KeyARN: {
-          'Fn::GetAtt': [
-            'DeliveryStreamKey56A6407F',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['DeliveryStreamKey56A6407F', 'Arn'],
         },
         KeyType: 'CUSTOMER_MANAGED_CMK',
       },
@@ -262,10 +254,7 @@ describe('delivery stream', () => {
       PolicyDocument: {
         Statement: [
           Match.objectLike({
-            Action: Match.arrayWith([
-              'kms:Decrypt',
-              'kms:Encrypt',
-            ]),
+            Action: Match.arrayWith(['kms:Decrypt', 'kms:Encrypt']),
             Resource: stack.resolve(key.keyArn),
           }),
         ],
@@ -316,21 +305,36 @@ describe('delivery stream', () => {
   test('requesting encryption or providing a key when source is a stream throws an error', () => {
     const sourceStream = new kinesis.Stream(stack, 'Source Stream');
 
-    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 1', {
-      destination: mockS3Destination,
-      encryption: firehose.StreamEncryption.awsOwnedKey(),
-      source: new source.KinesisStreamSource(sourceStream),
-    })).toThrow('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
-    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
-      destination: mockS3Destination,
-      encryption: firehose.StreamEncryption.customerManagedKey(),
-      source: new source.KinesisStreamSource(sourceStream),
-    })).toThrow('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
-    expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 3', {
-      destination: mockS3Destination,
-      encryption: StreamEncryption.customerManagedKey(new kms.Key(stack, 'Key')),
-      source: new source.KinesisStreamSource(sourceStream),
-    })).toThrow('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    expect(
+      () =>
+        new firehose.DeliveryStream(stack, 'Delivery Stream 1', {
+          destination: mockS3Destination,
+          encryption: firehose.StreamEncryption.awsOwnedKey(),
+          source: new source.KinesisStreamSource(sourceStream),
+        })
+    ).toThrow(
+      'Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.'
+    );
+    expect(
+      () =>
+        new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
+          destination: mockS3Destination,
+          encryption: firehose.StreamEncryption.customerManagedKey(),
+          source: new source.KinesisStreamSource(sourceStream),
+        })
+    ).toThrow(
+      'Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.'
+    );
+    expect(
+      () =>
+        new firehose.DeliveryStream(stack, 'Delivery Stream 3', {
+          destination: mockS3Destination,
+          encryption: StreamEncryption.customerManagedKey(new kms.Key(stack, 'Key')),
+          source: new source.KinesisStreamSource(sourceStream),
+        })
+    ).toThrow(
+      'Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.'
+    );
   });
 
   test('grant provides access to stream', () => {
@@ -370,10 +374,7 @@ describe('delivery stream', () => {
       PolicyDocument: {
         Statement: [
           Match.objectLike({
-            Action: [
-              'firehose:PutRecord',
-              'firehose:PutRecordBatch',
-            ],
+            Action: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
             Resource: stack.resolve(deliveryStream.deliveryStreamArn),
           }),
         ],
@@ -582,60 +583,120 @@ describe('delivery stream', () => {
 
   describe('importing', () => {
     test('from name', () => {
-      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamName(stack, 'DeliveryStream', 'mydeliverystream');
+      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamName(
+        stack,
+        'DeliveryStream',
+        'mydeliverystream'
+      );
 
       expect(deliveryStream.deliveryStreamName).toBe('mydeliverystream');
       expect(stack.resolve(deliveryStream.deliveryStreamArn)).toStrictEqual({
-        'Fn::Join': ['', ['arn:', stack.resolve(stack.partition), ':firehose:', stack.resolve(stack.region), ':', stack.resolve(stack.account), ':deliverystream/mydeliverystream']],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            stack.resolve(stack.partition),
+            ':firehose:',
+            stack.resolve(stack.region),
+            ':',
+            stack.resolve(stack.account),
+            ':deliverystream/mydeliverystream',
+          ],
+        ],
       });
       expect(deliveryStream.grantPrincipal).toBeInstanceOf(iam.UnknownPrincipal);
     });
 
     test('from ARN', () => {
-      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'DeliveryStream', 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/mydeliverystream');
+      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamArn(
+        stack,
+        'DeliveryStream',
+        'arn:aws:firehose:xx-west-1:111122223333:deliverystream/mydeliverystream'
+      );
 
       expect(deliveryStream.deliveryStreamName).toBe('mydeliverystream');
-      expect(deliveryStream.deliveryStreamArn).toBe('arn:aws:firehose:xx-west-1:111122223333:deliverystream/mydeliverystream');
+      expect(deliveryStream.deliveryStreamArn).toBe(
+        'arn:aws:firehose:xx-west-1:111122223333:deliverystream/mydeliverystream'
+      );
       expect(deliveryStream.grantPrincipal).toBeInstanceOf(iam.UnknownPrincipal);
     });
 
     test('from attributes (just name)', () => {
-      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', { deliveryStreamName: 'mydeliverystream' });
+      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', {
+        deliveryStreamName: 'mydeliverystream',
+      });
 
       expect(deliveryStream.deliveryStreamName).toBe('mydeliverystream');
       expect(stack.resolve(deliveryStream.deliveryStreamArn)).toStrictEqual({
-        'Fn::Join': ['', ['arn:', stack.resolve(stack.partition), ':firehose:', stack.resolve(stack.region), ':', stack.resolve(stack.account), ':deliverystream/mydeliverystream']],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            stack.resolve(stack.partition),
+            ':firehose:',
+            stack.resolve(stack.region),
+            ':',
+            stack.resolve(stack.account),
+            ':deliverystream/mydeliverystream',
+          ],
+        ],
       });
       expect(deliveryStream.grantPrincipal).toBeInstanceOf(iam.UnknownPrincipal);
     });
 
     test('from attributes (just ARN)', () => {
-      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', { deliveryStreamArn: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/mydeliverystream' });
+      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', {
+        deliveryStreamArn: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/mydeliverystream',
+      });
 
       expect(deliveryStream.deliveryStreamName).toBe('mydeliverystream');
-      expect(deliveryStream.deliveryStreamArn).toBe('arn:aws:firehose:xx-west-1:111122223333:deliverystream/mydeliverystream');
+      expect(deliveryStream.deliveryStreamArn).toBe(
+        'arn:aws:firehose:xx-west-1:111122223333:deliverystream/mydeliverystream'
+      );
       expect(deliveryStream.grantPrincipal).toBeInstanceOf(iam.UnknownPrincipal);
     });
 
     test('from attributes (with role)', () => {
-      const role = iam.Role.fromRoleArn(stack, 'Delivery Stream Role', 'arn:aws:iam::111122223333:role/DeliveryStreamRole');
-      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', { deliveryStreamName: 'mydeliverystream', role });
+      const role = iam.Role.fromRoleArn(
+        stack,
+        'Delivery Stream Role',
+        'arn:aws:iam::111122223333:role/DeliveryStreamRole'
+      );
+      const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', {
+        deliveryStreamName: 'mydeliverystream',
+        role,
+      });
 
       expect(deliveryStream.deliveryStreamName).toBe('mydeliverystream');
       expect(stack.resolve(deliveryStream.deliveryStreamArn)).toStrictEqual({
-        'Fn::Join': ['', ['arn:', stack.resolve(stack.partition), ':firehose:', stack.resolve(stack.region), ':', stack.resolve(stack.account), ':deliverystream/mydeliverystream']],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            stack.resolve(stack.partition),
+            ':firehose:',
+            stack.resolve(stack.region),
+            ':',
+            stack.resolve(stack.account),
+            ':deliverystream/mydeliverystream',
+          ],
+        ],
       });
       expect(deliveryStream.grantPrincipal).toBe(role);
     });
 
     test('throws when malformatted ARN', () => {
-      expect(() => firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', { deliveryStreamArn: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/' }))
-        .toThrow("No delivery stream name found in ARN: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/'");
+      expect(() =>
+        firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', {
+          deliveryStreamArn: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/',
+        })
+      ).toThrow("No delivery stream name found in ARN: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/'");
     });
 
     test('throws when without name or ARN', () => {
-      expect(() => firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', {}))
-        .toThrow('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
+      expect(() => firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', {})).toThrow(
+        'Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes'
+      );
     });
   });
 });

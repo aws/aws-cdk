@@ -29,16 +29,11 @@ export function addStackArtifactToAssembly(
     const resolvedTags = Object.entries(stackTags).filter(
       ([k, v]) => !(Token.isUnresolved(k) || Token.isUnresolved(v))
     );
-    const unresolvedTags = Object.entries(stackTags).filter(
-      ([k, v]) => Token.isUnresolved(k) || Token.isUnresolved(v)
-    );
+    const unresolvedTags = Object.entries(stackTags).filter(([k, v]) => Token.isUnresolved(k) || Token.isUnresolved(v));
 
     if (unresolvedTags.length > 0) {
       const rendered = unresolvedTags
-        .map(
-          ([k, v]) =>
-            `${Token.isUnresolved(k) ? '<TOKEN>' : k}=${Token.isUnresolved(v) ? '<TOKEN>' : v}`
-        )
+        .map(([k, v]) => `${Token.isUnresolved(k) ? '<TOKEN>' : k}=${Token.isUnresolved(v) ? '<TOKEN>' : v}`)
         .join(', ');
       stack.node.addMetadata(
         cxschema.ArtifactMetadataEntryType.WARN,
@@ -64,8 +59,7 @@ export function addStackArtifactToAssembly(
   // changes to the assembly manifest. so this means that as long as stack
   // name and artifact ID are the same, the cloud assembly manifest will not
   // change.
-  const stackNameProperty =
-    stack.stackName === stack.artifactId ? {} : { stackName: stack.stackName };
+  const stackNameProperty = stack.stackName === stack.artifactId ? {} : { stackName: stack.stackName };
 
   const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,

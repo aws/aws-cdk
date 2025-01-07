@@ -5,7 +5,12 @@ import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import {
+  ApplicationLoadBalancer,
+  ApplicationProtocol,
+  NetworkLoadBalancer,
+  SslPolicy,
+} from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as route53 from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
@@ -166,13 +171,15 @@ describe('ApplicationLoadBalancedFargateService', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
@@ -539,7 +546,8 @@ describe('ApplicationLoadBalancedFargateService', () => {
   test('passing in imported application load balancer and resources', () => {
     // GIVEN
     const stack1 = new cdk.Stack();
-    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const albArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack1, 'Vpc');
     const cluster = new ecs.Cluster(stack1, 'Cluster', { vpc, clusterName: 'MyClusterName' });
     const sg = new ec2.SecurityGroup(stack1, 'SecurityGroup', { vpc });
@@ -766,14 +774,17 @@ describe('ApplicationLoadBalancedFargateService', () => {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    expect(() => new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
-      },
-      minHealthyPercent: 0.5,
-    })).toThrow(/Must be a non-negative integer/);
+    expect(
+      () =>
+        new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+            dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+          },
+          minHealthyPercent: 0.5,
+        })
+    ).toThrow(/Must be a non-negative integer/);
   });
 
   test('should validate maxHealthyPercent', () => {
@@ -783,14 +794,17 @@ describe('ApplicationLoadBalancedFargateService', () => {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    expect(() => new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
-      },
-      maxHealthyPercent: 0.5,
-    })).toThrow(/Must be a non-negative integer/);
+    expect(
+      () =>
+        new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+            dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+          },
+          maxHealthyPercent: 0.5,
+        })
+    ).toThrow(/Must be a non-negative integer/);
   });
 
   test('minHealthyPercent must be less than maxHealthyPercent', () => {
@@ -800,15 +814,18 @@ describe('ApplicationLoadBalancedFargateService', () => {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    expect(() => new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
-      },
-      minHealthyPercent: 100,
-      maxHealthyPercent: 70,
-    })).toThrow(/must be less than/);
+    expect(
+      () =>
+        new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+            dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+          },
+          minHealthyPercent: 100,
+          maxHealthyPercent: 70,
+        })
+    ).toThrow(/must be less than/);
   });
 
   test('test Fargate loadbalanced construct', () => {
@@ -942,9 +959,11 @@ describe('ApplicationLoadBalancedFargateService', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 443,
       Protocol: 'HTTPS',
-      Certificates: [{
-        CertificateArn: 'helloworld',
-      }],
+      Certificates: [
+        {
+          CertificateArn: 'helloworld',
+        },
+      ],
       SslPolicy: SslPolicy.TLS12_EXT,
     });
 
@@ -1011,11 +1030,13 @@ describe('ApplicationLoadBalancedFargateService', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 443,
       Protocol: 'HTTPS',
-      Certificates: [{
-        CertificateArn: {
-          Ref: 'ServiceCertificateA7C65FE6',
+      Certificates: [
+        {
+          CertificateArn: {
+            Ref: 'ServiceCertificateA7C65FE6',
+          },
         },
-      }],
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -1354,19 +1375,22 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
 
     // WHEN
-    expect(() => new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        enableLogging: true,
-        environment: {
-          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
-        },
-      },
-      desiredCount: 2,
-      taskDefinition,
-    })).toThrow();
+    expect(
+      () =>
+        new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('test'),
+            enableLogging: true,
+            environment: {
+              TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+              TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+            },
+          },
+          desiredCount: 2,
+          taskDefinition,
+        })
+    ).toThrow();
   });
 
   test('test Fargate application loadbalanced construct with taskDefinition provided', () => {
@@ -1486,13 +1510,16 @@ describe('NetworkLoadBalancedFargateService', () => {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    expect(() => new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
-      cluster,
-      vpc,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-      },
-    })).toThrow();
+    expect(
+      () =>
+        new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+          cluster,
+          vpc,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          },
+        })
+    ).toThrow();
   });
 
   test('setting executionRole updated taskDefinition with given execution role', () => {
@@ -1505,7 +1532,7 @@ describe('NetworkLoadBalancedFargateService', () => {
       path: '/',
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('ecs.amazonaws.com'),
-        new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
       ),
     });
 
@@ -1533,7 +1560,7 @@ describe('NetworkLoadBalancedFargateService', () => {
       path: '/',
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('ecs.amazonaws.com'),
-        new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
       ),
     });
 
@@ -1658,9 +1685,11 @@ describe('NetworkLoadBalancedFargateService', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 443,
       Protocol: 'TLS',
-      Certificates: [{
-        CertificateArn: 'helloworld',
-      }],
+      Certificates: [
+        {
+          CertificateArn: 'helloworld',
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -1852,7 +1881,8 @@ describe('NetworkLoadBalancedFargateService', () => {
     const stack1 = new cdk.Stack(app, 'MyStack');
     const vpc1 = new ec2.Vpc(stack1, 'VPC');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
-    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const nlbArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const stack2 = new cdk.Stack(stack1, 'Stack2');
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster', {
       vpc: vpc1,
@@ -1978,13 +2008,15 @@ describe('NetworkLoadBalancedFargateService', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     cluster.addDefaultCloudMapNamespace({
@@ -2009,10 +2041,7 @@ describe('NetworkLoadBalancedFargateService', () => {
       ServiceRegistries: [
         {
           RegistryArn: {
-            'Fn::GetAtt': [
-              'ServiceCloudmapServiceDE76B29D',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['ServiceCloudmapServiceDE76B29D', 'Arn'],
           },
         },
       ],
@@ -2027,10 +2056,7 @@ describe('NetworkLoadBalancedFargateService', () => {
           },
         ],
         NamespaceId: {
-          'Fn::GetAtt': [
-            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id',
-          ],
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
         },
         RoutingPolicy: 'MULTIVALUE',
       },
@@ -2039,10 +2065,7 @@ describe('NetworkLoadBalancedFargateService', () => {
       },
       Name: 'myApp',
       NamespaceId: {
-        'Fn::GetAtt': [
-          'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-          'Id',
-        ],
+        'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
       },
     });
   });

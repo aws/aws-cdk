@@ -344,18 +344,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error(
-        'You can only specify either vpc or cluster. Alternatively, you can leave both blank'
-      );
+      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (
-      props.queue &&
-      (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)
-    ) {
-      const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter(
-        (prop) => props.hasOwnProperty(prop)
+    if (props.queue && (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)) {
+      const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter((prop) =>
+        props.hasOwnProperty(prop)
       );
       throw new Error(
         `${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`
@@ -389,16 +384,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
     if (props.cooldown && props.cooldown.toSeconds() > 999999999) {
-      throw new Error(
-        `cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`
-      );
+      throw new Error(`cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`);
     }
     this.cooldown = props.cooldown;
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging ?? true;
-    this.logDriver =
-      props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+    this.logDriver = props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
@@ -468,10 +460,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return (
-      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
-      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
-    );
+    return (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

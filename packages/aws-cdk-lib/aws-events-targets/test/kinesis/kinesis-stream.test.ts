@@ -111,9 +111,11 @@ describe('KinesisStream event target', () => {
 
     describe('with an explicit partition key path', () => {
       beforeEach(() => {
-        rule.addTarget(new targets.KinesisStream(stream, {
-          partitionKeyPath: events.EventField.eventId,
-        }));
+        rule.addTarget(
+          new targets.KinesisStream(stream, {
+            partitionKeyPath: events.EventField.eventId,
+          })
+        );
       });
 
       test('sets the partition key path', () => {
@@ -134,9 +136,11 @@ describe('KinesisStream event target', () => {
 
     describe('with an explicit message', () => {
       beforeEach(() => {
-        rule.addTarget(new targets.KinesisStream(stream, {
-          message: events.RuleTargetInput.fromText('fooBar'),
-        }));
+        rule.addTarget(
+          new targets.KinesisStream(stream, {
+            message: events.RuleTargetInput.fromText('fooBar'),
+          })
+        );
       });
 
       test('sets the input', () => {
@@ -156,11 +160,13 @@ describe('KinesisStream event target', () => {
       test('specifying retry policy and dead letter queue', () => {
         const queue = new sqs.Queue(stack, 'Queue');
 
-        rule.addTarget(new targets.KinesisStream(stream, {
-          retryAttempts: 2,
-          maxEventAge: Duration.hours(2),
-          deadLetterQueue: queue,
-        }));
+        rule.addTarget(
+          new targets.KinesisStream(stream, {
+            retryAttempts: 2,
+            maxEventAge: Duration.hours(2),
+            deadLetterQueue: queue,
+          })
+        );
 
         Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [

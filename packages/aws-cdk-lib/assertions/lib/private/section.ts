@@ -52,10 +52,7 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
   }
 }
 
-function eachEntryInSection(
-  section: any,
-  cb: (logicalId: string, entry: { [key: string]: any }) => void
-): void {
+function eachEntryInSection(section: any, cb: (logicalId: string, entry: { [key: string]: any }) => void): void {
   for (const logicalId of Object.keys(section ?? {})) {
     const resource: { [key: string]: any } = section[logicalId];
     cb(logicalId, resource);
@@ -66,10 +63,7 @@ export function formatAllMatches(matches: { [key: string]: any }): string {
   return [leftPad(JSON.stringify(matches, undefined, 2))].join('\n');
 }
 
-export function formatAllMismatches(
-  analyzed: { [key: string]: any },
-  matches: { [key: string]: any } = {}
-): string {
+export function formatAllMismatches(analyzed: { [key: string]: any }, matches: { [key: string]: any } = {}): string {
   return [
     'The following resources do not match the given definition:',
     ...Object.keys(analyzed)
@@ -78,11 +72,7 @@ export function formatAllMismatches(
   ].join('\n');
 }
 
-export function formatSectionMatchFailure(
-  qualifier: string,
-  result: MatchFailure,
-  what = 'Template'
-): string {
+export function formatSectionMatchFailure(qualifier: string, result: MatchFailure, what = 'Template'): string {
   return [
     `${what} has ${result.analyzedCount} ${qualifier}`,
     result.analyzedCount > 0 ? ', but none match as expected' : '',
@@ -108,10 +98,7 @@ function leftPad(x: string, indent: number = 2): string {
   return pad + x.split('\n').join(`\n${pad}`);
 }
 
-export function filterLogicalId(
-  section: { [key: string]: {} },
-  logicalId: string
-): { [key: string]: {} } {
+export function filterLogicalId(section: { [key: string]: {} }, logicalId: string): { [key: string]: {} } {
   // default signal for all logicalIds is '*'
   if (logicalId === '*') return section;
 

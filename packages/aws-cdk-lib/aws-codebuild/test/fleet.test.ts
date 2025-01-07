@@ -128,16 +128,17 @@ test('can import with a concrete ARN', () => {
   const stack = new cdk.Stack();
 
   // WHEN
-  const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet',
-    'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be',
+  const fleet = codebuild.Fleet.fromFleetArn(
+    stack,
+    'Fleet',
+    'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be'
   );
 
   // THEN
   expect(fleet.fleetArn).toEqual(
-    'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be',
+    'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be'
   );
   expect(fleet.fleetName).toEqual('MyFleet');
-
 });
 
 test('throws if fleet name is longer than 128 characters', () => {
@@ -190,8 +191,10 @@ test('throws if trying to retrieve properties from an imported Fleet', () => {
   const stack = new cdk.Stack();
 
   // WHEN
-  const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet',
-    'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be',
+  const fleet = codebuild.Fleet.fromFleetArn(
+    stack,
+    'Fleet',
+    'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be'
   );
 
   // THEN

@@ -1,9 +1,6 @@
 import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
-import {
-  HttpRouteIntegrationBindOptions,
-  HttpRouteIntegrationConfig,
-} from '../../../aws-apigatewayv2';
+import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 
@@ -35,9 +32,7 @@ export class HttpNlbIntegration extends HttpPrivateIntegration {
       vpc = this.listener.loadBalancer.vpc;
     }
     if (!vpc) {
-      throw new Error(
-        'The vpcLink property must be specified when using an imported Network Listener.'
-      );
+      throw new Error('The vpcLink property must be specified when using an imported Network Listener.');
     }
 
     const vpcLink = this._configureVpcLink(options, {

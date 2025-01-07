@@ -54,10 +54,7 @@ export interface TrimmedSumStatistic extends PairStatistic {
   statName: 'trimmedSum';
 }
 
-function parseSingleStatistic(
-  statistic: string,
-  prefix: string
-): Omit<SingleStatistic, 'statName'> | undefined {
+function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleStatistic, 'statName'> | undefined {
   const prefixLower = prefix.toLowerCase();
 
   // Allow `P99` uppercase
@@ -92,10 +89,7 @@ function parseSingleStatistic(
 /**
  * Parse a statistic that looks like `tm( LOWER : UPPER )`.
  */
-function parsePairStatistic(
-  statistic: string,
-  prefix: string
-): Omit<PairStatistic, 'statName'> | undefined {
+function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatistic, 'statName'> | undefined {
   const r = new RegExp(`^${prefix}\\(([^)]+)\\)$`, 'i').exec(statistic);
   if (!r) {
     return undefined;
@@ -193,8 +187,7 @@ export function parseStatistic(
     } as SimpleStatistic;
   }
 
-  let m: ReturnType<typeof parseSingleStatistic> | ReturnType<typeof parsePairStatistic> =
-    undefined;
+  let m: ReturnType<typeof parseSingleStatistic> | ReturnType<typeof parsePairStatistic> = undefined;
 
   // Percentile statistics
   m = parseSingleStatistic(stat, 'p');

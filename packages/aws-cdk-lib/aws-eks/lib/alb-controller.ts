@@ -317,19 +317,14 @@ export class AlbController extends Construct {
     });
 
     if (props.version.custom && !props.policy) {
-      throw new Error(
-        "'albControllerOptions.policy' is required when using a custom controller version"
-      );
+      throw new Error("'albControllerOptions.policy' is required when using a custom controller version");
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions
     const policy: any =
       props.policy ??
       JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, 'addons', `alb-iam_policy-${props.version.version}.json`),
-          'utf8'
-        )
+        fs.readFileSync(path.join(__dirname, 'addons', `alb-iam_policy-${props.version.version}.json`), 'utf8')
       );
 
     for (const statement of policy.Statement) {
@@ -361,8 +356,7 @@ export class AlbController extends Construct {
         vpcId: props.cluster.vpc.vpcId,
         image: {
           repository:
-            props.repository ??
-            '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
+            props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
           tag: props.version.version,
         },
       },
@@ -377,9 +371,7 @@ export class AlbController extends Construct {
     }
   }
 
-  private rewritePolicyResources(
-    resources: string | string[] | undefined
-  ): string | string[] | undefined {
+  private rewritePolicyResources(resources: string | string[] | undefined): string | string[] | undefined {
     // This is safe to disable because we're actually replacing the literal partition with a reference to
     // the stack partition (which is hardcoded into the JSON files) to prevent issues such as
     // aws/aws-cdk#22520.

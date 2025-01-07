@@ -77,7 +77,9 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       endpointConfigName: 'MyEndpointConfig',
       endpointName: 'MyEndpoint',
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i
+  );
 });
 
 test('PolicyStatement has sufficient permissions', () => {
@@ -91,25 +93,23 @@ test('PolicyStatement has sufficient permissions', () => {
   const graph = new sfn.StateGraph(task, 'test');
 
   // THEN
-  expect(graph.policyStatements).toEqual(
-    [
-      new iam.PolicyStatement({
-        actions: ['sagemaker:updateEndpoint'],
-        resources: [
-          stack.formatArn({
-            service: 'sagemaker',
-            resource: 'endpoint',
-            resourceName: props.endpointName.toLowerCase(),
-          }),
-          stack.formatArn({
-            service: 'sagemaker',
-            resource: 'endpoint-config',
-            resourceName: props.endpointConfigName.toLowerCase(),
-          }),
-        ],
-      }),
-    ],
-  );
+  expect(graph.policyStatements).toEqual([
+    new iam.PolicyStatement({
+      actions: ['sagemaker:updateEndpoint'],
+      resources: [
+        stack.formatArn({
+          service: 'sagemaker',
+          resource: 'endpoint',
+          resourceName: props.endpointName.toLowerCase(),
+        }),
+        stack.formatArn({
+          service: 'sagemaker',
+          resource: 'endpoint-config',
+          resourceName: props.endpointConfigName.toLowerCase(),
+        }),
+      ],
+    }),
+  ]);
 
   // WHEN
   const props2 = {
@@ -121,23 +121,21 @@ test('PolicyStatement has sufficient permissions', () => {
   const graph2 = new sfn.StateGraph(task2, 'test');
 
   // THEN
-  expect(graph2.policyStatements).toEqual(
-    [
-      new iam.PolicyStatement({
-        actions: ['sagemaker:updateEndpoint'],
-        resources: [
-          stack.formatArn({
-            service: 'sagemaker',
-            resource: 'endpoint',
-            resourceName: '*',
-          }),
-          stack.formatArn({
-            service: 'sagemaker',
-            resource: 'endpoint-config',
-            resourceName: '*',
-          }),
-        ],
-      }),
-    ],
-  );
+  expect(graph2.policyStatements).toEqual([
+    new iam.PolicyStatement({
+      actions: ['sagemaker:updateEndpoint'],
+      resources: [
+        stack.formatArn({
+          service: 'sagemaker',
+          resource: 'endpoint',
+          resourceName: '*',
+        }),
+        stack.formatArn({
+          service: 'sagemaker',
+          resource: 'endpoint-config',
+          resourceName: '*',
+        }),
+      ],
+    }),
+  ]);
 });

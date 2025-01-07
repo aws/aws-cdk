@@ -77,10 +77,7 @@ export function setupS3ImportExport(
 }
 
 export function engineDescription(engine: IEngine) {
-  return (
-    engine.engineType +
-    (engine.engineVersion?.fullVersion ? `-${engine.engineVersion.fullVersion}` : '')
-  );
+  return engine.engineType + (engine.engineVersion?.fullVersion ? `-${engine.engineVersion.fullVersion}` : '');
 }
 
 /**
@@ -97,13 +94,8 @@ export function defaultDeletionProtection(
 /**
  * Renders the credentials for an instance or cluster
  */
-export function renderCredentials(
-  scope: Construct,
-  engine: IEngine,
-  credentials?: Credentials
-): Credentials {
-  let renderedCredentials =
-    credentials ?? Credentials.fromUsername(engine.defaultUsername ?? 'admin'); // For backwards compatibilty
+export function renderCredentials(scope: Construct, engine: IEngine, credentials?: Credentials): Credentials {
+  let renderedCredentials = credentials ?? Credentials.fromUsername(engine.defaultUsername ?? 'admin'); // For backwards compatibilty
 
   if (!renderedCredentials.secret && !renderedCredentials.password) {
     renderedCredentials = Credentials.fromSecret(
@@ -134,9 +126,7 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
   let secret = renderedCredentials?.secret;
   if (!secret && renderedCredentials?.generatePassword) {
     if (!renderedCredentials.username) {
-      throw new Error(
-        '`snapshotCredentials` `username` must be specified when `generatePassword` is set to true'
-      );
+      throw new Error('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true');
     }
 
     renderedCredentials = SnapshotCredentials.fromSecret(

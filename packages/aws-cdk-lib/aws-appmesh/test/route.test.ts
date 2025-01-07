@@ -86,10 +86,7 @@ describe('route', () => {
               WeightedTargets: [
                 {
                   VirtualNode: {
-                    'Fn::GetAtt': [
-                      'meshtestnodeF93946D4',
-                      'VirtualNodeName',
-                    ],
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
                   Weight: 1,
                 },
@@ -121,10 +118,7 @@ describe('route', () => {
               WeightedTargets: [
                 {
                   VirtualNode: {
-                    'Fn::GetAtt': [
-                      'meshtestnodeF93946D4',
-                      'VirtualNodeName',
-                    ],
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
                   Weight: 1,
                 },
@@ -155,10 +149,7 @@ describe('route', () => {
               WeightedTargets: [
                 {
                   VirtualNode: {
-                    'Fn::GetAtt': [
-                      'meshtestnodeF93946D4',
-                      'VirtualNodeName',
-                    ],
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
                   Weight: 1,
                 },
@@ -182,10 +173,7 @@ describe('route', () => {
               WeightedTargets: [
                 {
                   VirtualNode: {
-                    'Fn::GetAtt': [
-                      'meshtestnodeF93946D4',
-                      'VirtualNodeName',
-                    ],
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
                   Weight: 1,
                 },
@@ -251,10 +239,7 @@ describe('route', () => {
               WeightedTargets: [
                 {
                   VirtualNode: {
-                    'Fn::GetAtt': [
-                      'meshtestnodeF93946D4',
-                      'VirtualNodeName',
-                    ],
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
                   Weight: 1,
                 },
@@ -277,7 +262,6 @@ describe('route', () => {
         },
         RouteName: 'test-http-route',
       });
-
     });
 
     test('should allow weighted targets with port specified', () => {
@@ -322,10 +306,7 @@ describe('route', () => {
               WeightedTargets: [
                 {
                   VirtualNode: {
-                    'Fn::GetAtt': [
-                      'meshtestnodeF93946D4',
-                      'VirtualNodeName',
-                    ],
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
                   Weight: 1,
                   Port: 1234,
@@ -336,7 +317,6 @@ describe('route', () => {
         },
         RouteName: 'test-http-route',
       });
-
     });
 
     test('should not have weighted targets port when not specified', () => {
@@ -380,10 +360,7 @@ describe('route', () => {
               WeightedTargets: [
                 {
                   VirtualNode: {
-                    'Fn::GetAtt': [
-                      'meshtestnodeF93946D4',
-                      'VirtualNodeName',
-                    ],
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
                   Weight: 1,
                   Port: Match.absent(),
@@ -394,7 +371,6 @@ describe('route', () => {
         },
         RouteName: 'test-http-route',
       });
-
     });
 
     test('should allow http retries', () => {
@@ -756,8 +732,11 @@ describe('route', () => {
         // Creating stack in Account 9987654321
         const stack = new cdk.Stack(app, 'mySharedStack', { env: routeEnv });
         // Mesh is in Account 1234567899
-        const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
-          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`);
+        const sharedMesh = appmesh.Mesh.fromMeshArn(
+          stack,
+          'shared-mesh',
+          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`
+        );
         const router = new appmesh.VirtualRouter(stack, 'router', {
           mesh: sharedMesh,
         });
@@ -773,7 +752,6 @@ describe('route', () => {
             match: { serviceName: 'example' },
           }),
           virtualRouter: router,
-
         });
 
         // THEN
@@ -1636,7 +1614,6 @@ describe('route', () => {
     expect(route.routeName).toEqual(routeName);
     expect(route.virtualRouter.virtualRouterName).toEqual(virtualRouterName);
     expect(route.virtualRouter.mesh.meshName).toEqual(meshName);
-
   });
 
   test('Can import Routes using ARN and attributes', () => {

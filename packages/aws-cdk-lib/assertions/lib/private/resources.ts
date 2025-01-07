@@ -37,11 +37,7 @@ export function allResources(template: Template, type: string, props: any): stri
   }
 }
 
-export function allResourcesProperties(
-  template: Template,
-  type: string,
-  props: any
-): string | void {
+export function allResourcesProperties(template: Template, type: string, props: any): string | void {
   let amended = template;
 
   // special case to exclude AbsentMatch because adding an empty Properties object will affect its evaluation.
@@ -132,10 +128,7 @@ function addEmptyProperties(template: Template): Template {
   return template;
 }
 
-function filterType(
-  section: { [key: string]: Resource },
-  type: string
-): { [key: string]: Resource } {
+function filterType(section: { [key: string]: Resource }, type: string): { [key: string]: Resource } {
   return Object.entries(section ?? {})
     .filter(([_, v]) => v.Type === type)
     .reduce((agg, [k, v]) => {

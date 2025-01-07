@@ -236,9 +236,7 @@ export class CodeDeployEcsDeployAction extends Action {
   }
 }
 
-function determineTaskDefinitionArtifact(
-  props: CodeDeployEcsDeployActionProps
-): codepipeline.Artifact {
+function determineTaskDefinitionArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
   if (props.taskDefinitionTemplateFile && props.taskDefinitionTemplateInput) {
     throw new Error(
       "Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action"

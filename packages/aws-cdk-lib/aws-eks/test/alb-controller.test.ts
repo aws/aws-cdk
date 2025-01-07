@@ -3,7 +3,15 @@ import * as path from 'path';
 import { testFixture } from './util';
 import { Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart, KubernetesManifest, AuthenticationMode } from '../lib';
+import {
+  Cluster,
+  KubernetesVersion,
+  AlbController,
+  AlbControllerVersion,
+  HelmChart,
+  KubernetesManifest,
+  AuthenticationMode,
+} from '../lib';
 
 const versions = Object.values(AlbControllerVersion);
 
@@ -46,11 +54,9 @@ test('all vended policies are valid', () => {
     if (addOn.startsWith('alb-iam_policy')) {
       const policy = JSON.parse(fs.readFileSync(path.join(addOnsDir, addOn)).toString());
       try {
-
         for (const statement of policy.Statement) {
           iam.PolicyStatement.fromJson(statement);
         }
-
       } catch (error) {
         throw new Error(`Invalid policy: ${addOn}: ${error}`);
       }
@@ -98,10 +104,12 @@ test('throws when a policy is not defined for a custom version', () => {
     version: KubernetesVersion.V1_27,
   });
 
-  expect(() => AlbController.create(stack, {
-    cluster,
-    version: AlbControllerVersion.of('custom'),
-  })).toThrow("'albControllerOptions.policy' is required when using a custom controller version");
+  expect(() =>
+    AlbController.create(stack, {
+      cluster,
+      version: AlbControllerVersion.of('custom'),
+    })
+  ).toThrow("'albControllerOptions.policy' is required when using a custom controller version");
 });
 
 test.each(['us-gov-west-1', 'cn-north-1'])('stack does not include hard-coded partition', (region) => {
@@ -174,10 +182,7 @@ describe('AlbController AwsAuth creation', () => {
         [
           '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
           {
-            'Fn::GetAtt': [
-              'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['ClusterNodegroupDefaultCapacityNodeGroupRole55953B04', 'Arn'],
           },
           '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
         ],
@@ -190,12 +195,11 @@ describe('AlbController AwsAuth creation', () => {
     Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, Match.not(awsAuthManifest));
   });
 
-  test.each([
-    AuthenticationMode.API_AND_CONFIG_MAP,
-    AuthenticationMode.CONFIG_MAP,
-    undefined,
-  ])('will create AwsAuth when the authenticationMode is %p', (authenticationMode) => {
-    const stack = setupTest(authenticationMode);
-    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, awsAuthManifest);
-  });
+  test.each([AuthenticationMode.API_AND_CONFIG_MAP, AuthenticationMode.CONFIG_MAP, undefined])(
+    'will create AwsAuth when the authenticationMode is %p',
+    (authenticationMode) => {
+      const stack = setupTest(authenticationMode);
+      Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, awsAuthManifest);
+    }
+  );
 });

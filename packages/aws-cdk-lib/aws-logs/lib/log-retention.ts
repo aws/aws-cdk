@@ -141,10 +141,7 @@ export class LogRetention extends Construct {
 class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
 
-  public readonly tags: cdk.TagManager = new cdk.TagManager(
-    cdk.TagType.KEY_VALUE,
-    'AWS::Lambda::Function'
-  );
+  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
 
   private readonly role: iam.IRole;
 
@@ -152,24 +149,14 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     super(scope, id);
 
     const asset = new s3_assets.Asset(this, 'Code', {
-      path: path.join(
-        __dirname,
-        '..',
-        '..',
-        'custom-resource-handlers',
-        'dist',
-        'aws-logs',
-        'log-retention-handler'
-      ),
+      path: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-logs', 'log-retention-handler'),
     });
 
     const role =
       props.role ||
       new iam.Role(this, 'ServiceRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-        ],
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
       });
     // Duplicate statements will be deduplicated by `PolicyDocument`
     role.addToPrincipalPolicy(

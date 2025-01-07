@@ -104,17 +104,9 @@ describe('exec', () => {
       signal: null,
     });
 
-    const proc = exec(
-      'cmd',
-      ['arg1', 'arg2'],
-      { env: { KEY: 'value' } },
-    );
+    const proc = exec('cmd', ['arg1', 'arg2'], { env: { KEY: 'value' } });
 
-    expect(spawnSyncMock).toHaveBeenCalledWith(
-      'cmd',
-      ['arg1', 'arg2'],
-      { env: { KEY: 'value' } },
-    );
+    expect(spawnSyncMock).toHaveBeenCalledWith('cmd', ['arg1', 'arg2'], { env: { KEY: 'value' } });
     expect(proc.stdout.toString()).toBe('stdout');
 
     spawnSyncMock.mockRestore();
@@ -154,40 +146,36 @@ describe('exec', () => {
 
 describe('extractDependencies', () => {
   test('with dependencies referenced in package.json', () => {
-    const deps = extractDependencies(
-      path.join(__dirname, 'testpackage.json'),
-      ['@aws-cdk/aws-lambda', '@aws-cdk/core'],
-    );
-    expect(Object.keys(deps)).toEqual([
+    const deps = extractDependencies(path.join(__dirname, 'testpackage.json'), [
       '@aws-cdk/aws-lambda',
       '@aws-cdk/core',
     ]);
+    expect(Object.keys(deps)).toEqual(['@aws-cdk/aws-lambda', '@aws-cdk/core']);
   });
 
   test('with transitive dependencies', () => {
-    expect(extractDependencies(
-      path.join(__dirname, 'testpackage.json'),
-      ['typescript'],
-    )).toEqual({
+    expect(extractDependencies(path.join(__dirname, 'testpackage.json'), ['typescript'])).toEqual({
       // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
       typescript: require('typescript/package.json').version,
     });
   });
 
   test('with unknown dependency', () => {
-    expect(() => extractDependencies(
-      path.join(__dirname, 'testpackage.json'),
-      ['unknown'],
-    )).toThrow(/Cannot extract version for module 'unknown'/);
+    expect(() => extractDependencies(path.join(__dirname, 'testpackage.json'), ['unknown'])).toThrow(
+      /Cannot extract version for module 'unknown'/
+    );
   });
 
   test('with file dependency', () => {
     const pkgPath = path.join(__dirname, 'package-file.json');
-    fs.writeFileSync(pkgPath, JSON.stringify({
-      dependencies: {
-        'my-module': 'file:../../core',
-      },
-    }));
+    fs.writeFileSync(
+      pkgPath,
+      JSON.stringify({
+        dependencies: {
+          'my-module': 'file:../../core',
+        },
+      })
+    );
 
     expect(extractDependencies(pkgPath, ['my-module'])).toEqual({
       'my-module': expect.stringMatching(/packages\/aws-cdk-lib\/core/),
@@ -201,64 +189,68 @@ describe('getTsconfigCompilerOptions', () => {
   test('should extract compiler options and returns as string', () => {
     const tsconfig = path.join(__dirname, 'testtsconfig.json');
     const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-    expect(compilerOptions).toEqual([
-      '--alwaysStrict',
-      '--declaration',
-      '--declarationMap false',
-      '--experimentalDecorators',
-      '--incremental false',
-      '--inlineSourceMap',
-      '--inlineSources',
-      '--lib es2020,dom',
-      '--module CommonJS',
-      '--newLine lf',
-      '--noEmitOnError',
-      '--noFallthroughCasesInSwitch',
-      '--noImplicitAny',
-      '--noImplicitReturns',
-      '--noImplicitThis',
-      '--noUnusedLocals',
-      '--noUnusedParameters',
-      '--outDir ./',
-      '--resolveJsonModule',
-      '--rootDir ./',
-      '--strict',
-      '--strictNullChecks',
-      '--strictPropertyInitialization',
-      '--stripInternal false',
-      '--target ES2020',
-    ].join(' '));
+    expect(compilerOptions).toEqual(
+      [
+        '--alwaysStrict',
+        '--declaration',
+        '--declarationMap false',
+        '--experimentalDecorators',
+        '--incremental false',
+        '--inlineSourceMap',
+        '--inlineSources',
+        '--lib es2020,dom',
+        '--module CommonJS',
+        '--newLine lf',
+        '--noEmitOnError',
+        '--noFallthroughCasesInSwitch',
+        '--noImplicitAny',
+        '--noImplicitReturns',
+        '--noImplicitThis',
+        '--noUnusedLocals',
+        '--noUnusedParameters',
+        '--outDir ./',
+        '--resolveJsonModule',
+        '--rootDir ./',
+        '--strict',
+        '--strictNullChecks',
+        '--strictPropertyInitialization',
+        '--stripInternal false',
+        '--target ES2020',
+      ].join(' ')
+    );
   });
 
   test('should extract compiler options with extended config overriding', () => {
     const tsconfig = path.join(__dirname, 'testtsconfig-extended.json');
     const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-    expect(compilerOptions).toEqual([
-      '--alwaysStrict',
-      '--declaration',
-      '--declarationMap false',
-      '--experimentalDecorators',
-      '--incremental false',
-      '--inlineSourceMap',
-      '--inlineSources',
-      '--lib es2020,dom',
-      '--module CommonJS',
-      '--newLine lf',
-      '--noEmitOnError',
-      '--noFallthroughCasesInSwitch',
-      '--noImplicitAny',
-      '--noImplicitReturns',
-      '--noImplicitThis',
-      '--noUnusedLocals',
-      '--noUnusedParameters',
-      '--outDir ./',
-      '--resolveJsonModule',
-      '--rootDir ./',
-      '--strict',
-      '--strictNullChecks',
-      '--strictPropertyInitialization',
-      '--stripInternal false',
-      '--target ES2022',
-    ].join(' '));
+    expect(compilerOptions).toEqual(
+      [
+        '--alwaysStrict',
+        '--declaration',
+        '--declarationMap false',
+        '--experimentalDecorators',
+        '--incremental false',
+        '--inlineSourceMap',
+        '--inlineSources',
+        '--lib es2020,dom',
+        '--module CommonJS',
+        '--newLine lf',
+        '--noEmitOnError',
+        '--noFallthroughCasesInSwitch',
+        '--noImplicitAny',
+        '--noImplicitReturns',
+        '--noImplicitThis',
+        '--noUnusedLocals',
+        '--noUnusedParameters',
+        '--outDir ./',
+        '--resolveJsonModule',
+        '--rootDir ./',
+        '--strict',
+        '--strictNullChecks',
+        '--strictPropertyInitialization',
+        '--stripInternal false',
+        '--target ES2022',
+      ].join(' ')
+    );
   });
 });

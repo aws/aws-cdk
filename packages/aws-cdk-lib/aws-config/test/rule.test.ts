@@ -88,10 +88,7 @@ describe('rule', () => {
             },
           ],
           SourceIdentifier: {
-            'Fn::GetAtt': [
-              'Function76856677',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Function76856677', 'Arn'],
           },
         },
         ConfigRuleName: 'cool rule',
@@ -162,9 +159,7 @@ describe('rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Scope: {
         ComplianceResourceId: 'i-1234',
-        ComplianceResourceTypes: [
-          'AWS::EC2::Instance',
-        ],
+        ComplianceResourceTypes: ['AWS::EC2::Instance'],
       },
     });
   });
@@ -176,107 +171,105 @@ describe('rule', () => {
     // WHEN
     new config.ManagedRule(stack, 'Rule', {
       identifier: 'AWS_SUPER_COOL',
-      ruleScope: config.RuleScope.fromResources([config.ResourceType.S3_BUCKET, config.ResourceType.CLOUDFORMATION_STACK]),
+      ruleScope: config.RuleScope.fromResources([
+        config.ResourceType.S3_BUCKET,
+        config.ResourceType.CLOUDFORMATION_STACK,
+      ]),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Scope: {
-        ComplianceResourceTypes: [
-          'AWS::S3::Bucket',
-          'AWS::CloudFormation::Stack',
-        ],
+        ComplianceResourceTypes: ['AWS::S3::Bucket', 'AWS::CloudFormation::Stack'],
       },
     });
   }),
+    test('scope to tag', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-  test('scope to tag', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
+      // WHEN
+      new config.ManagedRule(stack, 'Rule', {
+        identifier: 'RULE',
+        ruleScope: config.RuleScope.fromTag('key', 'value'),
+      });
 
-    // WHEN
-    new config.ManagedRule(stack, 'Rule', {
-      identifier: 'RULE',
-      ruleScope: config.RuleScope.fromTag('key', 'value'),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
-      Scope: {
-        TagKey: 'key',
-        TagValue: 'value',
-      },
-    });
-  }),
-
-  test('allows scoping a custom rule without configurationChanges enabled', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.AssetCode.fromInline('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-    });
-
-    // THEN
-    expect(() => new config.CustomRule(stack, 'Rule', {
-      lambdaFunction: fn,
-      periodic: true,
-      ruleScope: config.RuleScope.fromResources([config.ResourceType.of('resource')]),
-    })).not.toThrow();
-  }),
-
-  test('throws when both configurationChanges and periodic are falsy', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.AssetCode.fromInline('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-    });
-
-    // THEN
-    expect(() => new config.CustomRule(stack, 'Rule', {
-      lambdaFunction: fn,
-    })).toThrow(/`configurationChanges`.*`periodic`/);
-  }),
-
-  test('on compliance change event', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'RULE',
-    });
-
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.fromInline('dummy'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-    });
-
-    // WHEN
-    rule.onComplianceChange('ComplianceChange', {
-      target: new targets.LambdaFunction(fn),
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      EventPattern: {
-        'source': [
-          'aws.config',
-        ],
-        'detail': {
-          configRuleName: [
-            {
-              Ref: 'Rule4C995B7F',
-            },
-          ],
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
+        Scope: {
+          TagKey: 'key',
+          TagValue: 'value',
         },
-        'detail-type': [
-          'Config Rules Compliance Change',
-        ],
-      },
+      });
+    }),
+    test('allows scoping a custom rule without configurationChanges enabled', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.AssetCode.fromInline('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+
+      // THEN
+      expect(
+        () =>
+          new config.CustomRule(stack, 'Rule', {
+            lambdaFunction: fn,
+            periodic: true,
+            ruleScope: config.RuleScope.fromResources([config.ResourceType.of('resource')]),
+          })
+      ).not.toThrow();
+    }),
+    test('throws when both configurationChanges and periodic are falsy', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.AssetCode.fromInline('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+
+      // THEN
+      expect(
+        () =>
+          new config.CustomRule(stack, 'Rule', {
+            lambdaFunction: fn,
+          })
+      ).toThrow(/`configurationChanges`.*`periodic`/);
+    }),
+    test('on compliance change event', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new config.ManagedRule(stack, 'Rule', {
+        identifier: 'RULE',
+      });
+
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('dummy'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+
+      // WHEN
+      rule.onComplianceChange('ComplianceChange', {
+        target: new targets.LambdaFunction(fn),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        EventPattern: {
+          source: ['aws.config'],
+          detail: {
+            configRuleName: [
+              {
+                Ref: 'Rule4C995B7F',
+              },
+            ],
+          },
+          'detail-type': ['Config Rules Compliance Change'],
+        },
+      });
     });
-  });
 
   test('Add EKS Cluster check to ManagedRule', () => {
     // GIVEN
@@ -514,10 +507,7 @@ describe('rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        'Fn::GetAtt': [
-          'Function76856677',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Function76856677', 'Arn'],
       },
       Principal: 'config.amazonaws.com',
       SourceAccount: {
@@ -531,9 +521,12 @@ describe('rule', () => {
 
     // WHEN
     // THEN
-    expect(() => new config.CustomPolicy(stack, 'Rule', {
-      policyText: '',
-    })).toThrow('Policy Text cannot be empty.');
+    expect(
+      () =>
+        new config.CustomPolicy(stack, 'Rule', {
+          policyText: '',
+        })
+    ).toThrow('Policy Text cannot be empty.');
   });
 
   test('create over 10000 charactor policy', () => {
@@ -542,8 +535,11 @@ describe('rule', () => {
     const stringLen10001 = '0123456789'.repeat(1000) + 'a';
     // WHEN
     // THEN
-    expect(() => new config.CustomPolicy(stack, 'Rule', {
-      policyText: stringLen10001,
-    })).toThrow('Policy Text is limited to 10,000 characters or less.');
+    expect(
+      () =>
+        new config.CustomPolicy(stack, 'Rule', {
+          policyText: stringLen10001,
+        })
+    ).toThrow('Policy Text is limited to 10,000 characters or less.');
   });
 });

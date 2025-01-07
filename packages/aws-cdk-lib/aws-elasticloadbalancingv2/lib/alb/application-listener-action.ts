@@ -37,10 +37,7 @@ export class ListenerAction implements IListenerAction {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#forward-actions
    */
-  public static forward(
-    targetGroups: IApplicationTargetGroup[],
-    options: ForwardOptions = {}
-  ): ListenerAction {
+  public static forward(targetGroups: IApplicationTargetGroup[], options: ForwardOptions = {}): ListenerAction {
     if (targetGroups.length === 0) {
       throw new Error('Need at least one targetGroup in a ListenerAction.forward()');
     }
@@ -63,10 +60,7 @@ export class ListenerAction implements IListenerAction {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#forward-actions
    */
-  public static weightedForward(
-    targetGroups: WeightedTargetGroup[],
-    options: ForwardOptions = {}
-  ): ListenerAction {
+  public static weightedForward(targetGroups: WeightedTargetGroup[], options: ForwardOptions = {}): ListenerAction {
     if (targetGroups.length === 0) {
       throw new Error('Need at least one targetGroup in a ListenerAction.weightedForward()');
     }
@@ -96,10 +90,7 @@ export class ListenerAction implements IListenerAction {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#fixed-response-actions
    */
-  public static fixedResponse(
-    statusCode: number,
-    options: FixedResponseOptions = {}
-  ): ListenerAction {
+  public static fixedResponse(statusCode: number, options: FixedResponseOptions = {}): ListenerAction {
     return new ListenerAction({
       type: 'fixed-response',
       fixedResponseConfig: {
@@ -133,13 +124,10 @@ export class ListenerAction implements IListenerAction {
    */
   public static redirect(options: RedirectOptions): ListenerAction {
     if (
-      [options.host, options.path, options.port, options.protocol, options.query].findIndex(
-        (x) => x !== undefined
-      ) === -1
+      [options.host, options.path, options.port, options.protocol, options.query].findIndex((x) => x !== undefined) ===
+      -1
     ) {
-      throw new Error(
-        "To prevent redirect loops, set at least one of 'protocol', 'host', 'port', 'path', or 'query'."
-      );
+      throw new Error("To prevent redirect loops, set at least one of 'protocol', 'host', 'port', 'path', or 'query'.");
     }
     if (options.path && !Token.isUnresolved(options.path) && !options.path.startsWith('/')) {
       throw new Error(`Redirect path must start with a \'/\', got: ${options.path}`);
@@ -181,8 +169,7 @@ export class ListenerAction implements IListenerAction {
    * Render the listener rule actions in this chain
    */
   public renderRuleActions(): CfnListenerRule.ActionProperty[] {
-    const actionJson =
-      this._actionJson ?? (this.defaultActionJson as CfnListenerRule.ActionProperty);
+    const actionJson = this._actionJson ?? (this.defaultActionJson as CfnListenerRule.ActionProperty);
     return this._renumber([actionJson, ...(this.next?.renderRuleActions() ?? [])]);
   }
 
@@ -201,9 +188,7 @@ export class ListenerAction implements IListenerAction {
   }
 
   private _renumber<
-    ActionProperty extends
-      | CfnListener.ActionProperty
-      | CfnListenerRule.ActionProperty = CfnListener.ActionProperty,
+    ActionProperty extends CfnListener.ActionProperty | CfnListenerRule.ActionProperty = CfnListener.ActionProperty,
   >(actions: ActionProperty[]): ActionProperty[] {
     if (actions.length < 2) {
       return actions;
@@ -497,11 +482,7 @@ class TargetGroupListenerAction extends ListenerAction {
     super(defaultActionJson);
   }
 
-  public bind(
-    _scope: Construct,
-    listener: IApplicationListener,
-    associatingConstruct?: IConstruct
-  ) {
+  public bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener, associatingConstruct);
     }
@@ -545,11 +526,7 @@ class AuthenticateOidcAction extends ListenerAction {
       },
     });
   }
-  public bind(
-    scope: Construct,
-    listener: IApplicationListener,
-    associatingConstruct?: IConstruct | undefined
-  ): void {
+  public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct | undefined): void {
     super.bind(scope, listener, associatingConstruct);
 
     if (!this.allowHttpsOutbound) return;

@@ -264,11 +264,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @param jobState the job state.
    * @param options optional event options.
    */
-  public onStateChange(
-    id: string,
-    jobState: JobState,
-    options: events.OnEventOptions = {}
-  ): events.Rule {
+  public onStateChange(id: string, jobState: JobState, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, {
       description: `Rule triggered when Glue job ${this.jobName} is in ${jobState} state`,
       ...options,
@@ -320,11 +316,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html
    */
-  public metric(
-    metricName: string,
-    type: MetricType,
-    props?: cloudwatch.MetricOptions
-  ): cloudwatch.Metric {
+  public metric(metricName: string, type: MetricType, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       metricName,
       namespace: 'Glue',
@@ -666,11 +658,7 @@ export class Job extends JobBase {
    * @param id The construct's id.
    * @param attrs Import attributes
    */
-  public static fromJobAttributes(
-    scope: constructs.Construct,
-    id: string,
-    attrs: JobAttributes
-  ): IJob {
+  public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
     class Import extends JobBase {
       public readonly jobName = attrs.jobName;
       public readonly jobArn = jobArn(scope, attrs.jobName);
@@ -719,15 +707,11 @@ export class Job extends JobBase {
       props.role ??
       new iam.Role(this, 'ServiceRole', {
         assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole'),
-        ],
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
       });
     this.grantPrincipal = this.role;
 
-    const sparkUI = props.sparkUI?.enabled
-      ? this.setupSparkUI(executable, this.role, props.sparkUI)
-      : undefined;
+    const sparkUI = props.sparkUI?.enabled ? this.setupSparkUI(executable, this.role, props.sparkUI) : undefined;
     this.sparkUILoggingLocation = sparkUI?.location;
     const continuousLoggingArgs = props.continuousLogging?.enabled
       ? this.setupContinuousLogging(this.role, props.continuousLogging)
@@ -749,11 +733,7 @@ export class Job extends JobBase {
       if ([GlueVersion.V0_9, GlueVersion.V1_0, GlueVersion.V2_0].includes(executable.glueVersion)) {
         throw new Error('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
       }
-      if (
-        props.workerType &&
-        props.workerType !== WorkerType.G_1X &&
-        props.workerType !== WorkerType.G_2X
-      ) {
+      if (props.workerType && props.workerType !== WorkerType.G_1X && props.workerType !== WorkerType.G_2X) {
         throw new Error('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
       }
       if (props.jobRunQueuingEnabled === true) {
@@ -777,10 +757,7 @@ export class Job extends JobBase {
       throw new Error('maxCapacity cannot be used when setting workerType and workerCount');
     }
     if (executable.type !== JobType.PYTHON_SHELL) {
-      if (
-        maxCapacity !== undefined &&
-        ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)
-      ) {
+      if (maxCapacity !== undefined && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)) {
         throw new Error('maxCapacity cannot be used when GlueVersion 2.0 or later');
       }
     } else {
@@ -805,9 +782,7 @@ export class Job extends JobBase {
       !cdk.Token.isUnresolved(props.maxRetries) &&
       props.maxRetries > 0
     ) {
-      throw new Error(
-        `Maximum retries was set to ${props.maxRetries}, must be set to 0 with job run queuing enabled`
-      );
+      throw new Error(`Maximum retries was set to ${props.maxRetries}, must be set to 0 with job run queuing enabled`);
     }
 
     const jobResource = new CfnJob(this, 'Resource', {
@@ -827,9 +802,7 @@ export class Job extends JobBase {
       maxCapacity: props.maxCapacity,
       maxRetries: props.maxRetries,
       executionClass: props.executionClass,
-      executionProperty: props.maxConcurrentRuns
-        ? { maxConcurrentRuns: props.maxConcurrentRuns }
-        : undefined,
+      executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       notificationProperty: props.notifyDelayAfter
         ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() }
         : undefined,
@@ -874,14 +847,10 @@ export class Job extends JobBase {
       args['--extra-jars'] = config.extraJars.map((code) => this.codeS3ObjectUrl(code)).join(',');
     }
     if (config.extraPythonFiles && config.extraPythonFiles.length > 0) {
-      args['--extra-py-files'] = config.extraPythonFiles
-        .map((code) => this.codeS3ObjectUrl(code))
-        .join(',');
+      args['--extra-py-files'] = config.extraPythonFiles.map((code) => this.codeS3ObjectUrl(code)).join(',');
     }
     if (config.s3PythonModules && config.s3PythonModules.length > 0) {
-      args['--s3-py-modules'] = config.s3PythonModules
-        .map((code) => this.codeS3ObjectUrl(code))
-        .join(',');
+      args['--s3-py-modules'] = config.s3PythonModules.map((code) => this.codeS3ObjectUrl(code)).join(',');
     }
     if (config.extraFiles && config.extraFiles.length > 0) {
       args['--extra-files'] = config.extraFiles.map((code) => this.codeS3ObjectUrl(code)).join(',');

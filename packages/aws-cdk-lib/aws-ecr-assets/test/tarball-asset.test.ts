@@ -29,23 +29,16 @@ describe('image asset', () => {
     expect(Object.keys(manifest.files ?? {}).length).toBe(1);
     expect(Object.keys(manifest.dockerImages ?? {}).length).toBe(1);
 
-    expect(manifest.dockerImages?.[asset.assetHash]?.destinations?.['current_account-current_region']).toStrictEqual(
-      {
-        assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}',
-        imageTag: asset.assetHash,
-        repositoryName: 'cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}',
-      },
-    );
+    expect(manifest.dockerImages?.[asset.assetHash]?.destinations?.['current_account-current_region']).toStrictEqual({
+      assumeRoleArn:
+        'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}',
+      imageTag: asset.assetHash,
+      repositoryName: 'cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}',
+    });
 
-    expect(manifest.dockerImages?.[asset.assetHash]?.source).toStrictEqual(
-      {
-        executable: [
-          'sh',
-          '-c',
-          `docker load -i asset.${asset.assetHash}.tar | tail -n 1 | sed "s/Loaded image: //g"`,
-        ],
-      },
-    );
+    expect(manifest.dockerImages?.[asset.assetHash]?.source).toStrictEqual({
+      executable: ['sh', '-c', `docker load -i asset.${asset.assetHash}.tar | tail -n 1 | sed "s/Loaded image: //g"`],
+    });
 
     // AssetStaging in TarballImageAsset uses `this` as scope'
     expect(asset.node.tryFindChild('Staging')).toBeDefined();
@@ -65,29 +58,25 @@ describe('image asset', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        'Statement': [
+        Statement: [
           {
-            'Action': [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            'Effect': 'Allow',
-            'Resource': {
+            Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+            Effect: 'Allow',
+            Resource: {
               'Fn::Join': [
                 '',
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition',
+                    Ref: 'AWS::Partition',
                   },
                   ':ecr:',
                   {
-                    'Ref': 'AWS::Region',
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    'Ref': 'AWS::AccountId',
+                    Ref: 'AWS::AccountId',
                   },
                   ':repository/',
                   {
@@ -98,17 +87,17 @@ describe('image asset', () => {
             },
           },
           {
-            'Action': 'ecr:GetAuthorizationToken',
-            'Effect': 'Allow',
-            'Resource': '*',
+            Action: 'ecr:GetAuthorizationToken',
+            Effect: 'Allow',
+            Resource: '*',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'PolicyName': 'MyUserDefaultPolicy7B897426',
-      'Users': [
+      PolicyName: 'MyUserDefaultPolicy7B897426',
+      Users: [
         {
-          'Ref': 'MyUserDC45028B',
+          Ref: 'MyUserDC45028B',
         },
       ],
     });
@@ -134,7 +123,6 @@ describe('image asset', () => {
         tarballFile: `/does/not/exist/${Math.floor(Math.random() * 9999)}`,
       });
     }).toThrow(/Cannot find file at/);
-
   });
 
   describe('imageTag is correct for different stack synthesizers', () => {
@@ -161,7 +149,6 @@ describe('image asset', () => {
       expect(asset2.imageTag).toEqual('banana95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df');
     });
   });
-
 });
 
 function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
@@ -170,7 +157,9 @@ function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifa
 
 function getAssetManifest(asm: cxapi.CloudAssembly): cxapi.AssetManifestArtifact {
   const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
-  if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
+  if (!manifestArtifact) {
+    throw new Error('no asset manifest in assembly');
+  }
   return manifestArtifact;
 }
 

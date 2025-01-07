@@ -183,9 +183,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     });
 
     if (props.disableSuppressionList && props.suppressionReasons) {
-      throw new Error(
-        'When disableSuppressionList is true, suppressionReasons must not be specified.'
-      );
+      throw new Error('When disableSuppressionList is true, suppressionReasons must not be specified.');
     }
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
@@ -214,9 +212,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         sendingEnabled: props.sendingEnabled,
       }),
       suppressionOptions: undefinedIfNoKeys({
-        suppressedReasons: props.disableSuppressionList
-          ? []
-          : renderSuppressedReasons(props.suppressionReasons),
+        suppressedReasons: props.disableSuppressionList ? [] : renderSuppressedReasons(props.suppressionReasons),
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
@@ -231,9 +227,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         guardianOptions:
           props.vdmOptions?.optimizedSharedDelivery !== undefined
             ? {
-                optimizedSharedDelivery: booleanToEnabledDisabled(
-                  props.vdmOptions?.optimizedSharedDelivery
-                ),
+                optimizedSharedDelivery: booleanToEnabledDisabled(props.vdmOptions?.optimizedSharedDelivery),
               }
             : undefined,
       }),

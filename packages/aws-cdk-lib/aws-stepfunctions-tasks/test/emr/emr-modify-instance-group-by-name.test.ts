@@ -16,12 +16,14 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
     clusterId: 'ClusterId',
     instanceGroupName: 'InstanceGroupName',
     instanceGroup: {
-      configurations: [{
-        classification: 'Classification',
-        properties: {
-          Key: 'Value',
+      configurations: [
+        {
+          classification: 'Classification',
+          properties: {
+            Key: 'Value',
+          },
         },
-      }],
+      ],
       eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
       instanceCount: 1,
       shrinkPolicy: {
@@ -55,12 +57,14 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
       ClusterId: 'ClusterId',
       InstanceGroupName: 'InstanceGroupName',
       InstanceGroup: {
-        Configurations: [{
-          Classification: 'Classification',
-          Properties: {
-            Key: 'Value',
+        Configurations: [
+          {
+            Classification: 'Classification',
+            Properties: {
+              Key: 'Value',
+            },
           },
-        }],
+        ],
         EC2InstanceIdsToTerminate: ['InstanceToTerminate'],
         InstanceCount: 1,
         ShrinkPolicy: {
@@ -82,12 +86,14 @@ test('task policies are generated', () => {
     clusterId: 'ClusterId',
     instanceGroupName: 'InstanceGroupName',
     instanceGroup: {
-      configurations: [{
-        classification: 'Classification',
-        properties: {
-          Key: 'Value',
+      configurations: [
+        {
+          classification: 'Classification',
+          properties: {
+            Key: 'Value',
+          },
         },
-      }],
+      ],
     },
   });
   new sfn.StateMachine(stack, 'SM', {
@@ -99,10 +105,7 @@ test('task policies are generated', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'elasticmapreduce:ModifyInstanceGroups',
-            'elasticmapreduce:ListInstanceGroups',
-          ],
+          Action: ['elasticmapreduce:ModifyInstanceGroups', 'elasticmapreduce:ListInstanceGroups'],
           Effect: 'Allow',
           Resource: {
             'Fn::Join': [
@@ -158,8 +161,8 @@ test('Modify an InstanceGroup with ClusterId from payload and static InstanceGro
     End: true,
     Parameters: {
       'ClusterId.$': '$.ClusterId',
-      'InstanceGroupName': 'InstanceGroupName',
-      'InstanceGroup': {
+      InstanceGroupName: 'InstanceGroupName',
+      InstanceGroup: {
         InstanceCount: 1,
       },
     },
@@ -193,9 +196,9 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupConfigurate
     },
     End: true,
     Parameters: {
-      'ClusterId': 'ClusterId',
+      ClusterId: 'ClusterId',
       'InstanceGroupName.$': '$.InstanceGroupName',
-      'InstanceGroup': {
+      InstanceGroup: {
         InstanceCount: 1,
       },
     },

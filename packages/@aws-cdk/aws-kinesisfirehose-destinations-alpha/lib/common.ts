@@ -141,9 +141,7 @@ export interface CommonDestinationS3Props {
  *
  * S3 backup is available for all destinations, regardless of whether the final destination is S3 or not.
  */
-export interface DestinationS3BackupProps
-  extends DestinationLoggingProps,
-    CommonDestinationS3Props {
+export interface DestinationS3BackupProps extends DestinationLoggingProps, CommonDestinationS3Props {
   /**
    * The S3 bucket that will store data and failed records.
    *

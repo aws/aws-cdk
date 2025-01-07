@@ -205,9 +205,7 @@ export class QueryDefinition extends Resource {
       name: props.queryDefinitionName,
       queryString: props.queryString.toString(),
       logGroupNames:
-        typeof props.logGroups === 'undefined'
-          ? []
-          : props.logGroups.flatMap((logGroup) => logGroup.logGroupName),
+        typeof props.logGroups === 'undefined' ? [] : props.logGroups.flatMap((logGroup) => logGroup.logGroupName),
     });
 
     this.queryDefinitionId = queryDefinition.attrQueryDefinitionId;

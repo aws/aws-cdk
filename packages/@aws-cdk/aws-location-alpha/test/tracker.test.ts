@@ -35,8 +35,7 @@ test('create a tracker', () => {
 test('creates a tracker with empty description', () => {
   new Tracker(stack, 'Tracker');
 
-  Template.fromStack(stack).hasResourceProperties('AWS::Location::Tracker', {
-  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Location::Tracker', {});
 });
 
 test('creates a tracker with empty description', () => {
@@ -76,27 +75,41 @@ test('add geofence collection after tracker is implemented', () => {
 });
 
 test('throws with invalid description', () => {
-  expect(() => new Tracker(stack, 'Tracker', {
-    description: 'a'.repeat(1001),
-  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+  expect(
+    () =>
+      new Tracker(stack, 'Tracker', {
+        description: 'a'.repeat(1001),
+      })
+  ).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
 test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (trackerName) => {
-  expect(() => new Tracker(stack, 'Tracker', {
-    trackerName,
-  })).toThrow(`\`trackerName\` must be between 1 and 100 characters, got: ${trackerName.length} characters.`);
+  expect(
+    () =>
+      new Tracker(stack, 'Tracker', {
+        trackerName,
+      })
+  ).toThrow(`\`trackerName\` must be between 1 and 100 characters, got: ${trackerName.length} characters.`);
 });
 
 test('throws with invalid name', () => {
-  expect(() => new Tracker(stack, 'Tracker', {
-    trackerName: 'inv@lid',
-  })).toThrow('`trackerName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
+  expect(
+    () =>
+      new Tracker(stack, 'Tracker', {
+        trackerName: 'inv@lid',
+      })
+  ).toThrow('`trackerName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
 });
 
 test('throws when kmsKeyEnableGeospatialQueries is true without a customer managed key', () => {
-  expect(() => new Tracker(stack, 'Tracker', {
-    kmsKeyEnableGeospatialQueries: true,
-  })).toThrow('`kmsKeyEnableGeospatialQueries` can only be enabled that are configured to use an AWS KMS customer managed key');
+  expect(
+    () =>
+      new Tracker(stack, 'Tracker', {
+        kmsKeyEnableGeospatialQueries: true,
+      })
+  ).toThrow(
+    '`kmsKeyEnableGeospatialQueries` can only be enabled that are configured to use an AWS KMS customer managed key'
+  );
 });
 
 test('grant update device positions action', () => {
@@ -108,22 +121,22 @@ test('grant update device positions action', () => {
 
   tracker.grantUpdateDevicePositions(role);
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
-    PolicyDocument: Match.objectLike({
-      Statement: [
-        {
-          Action: 'geo:BatchUpdateDevicePosition',
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'TrackerAF5FC55F',
-              'Arn',
-            ],
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::IAM::Policy',
+    Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: 'geo:BatchUpdateDevicePosition',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['TrackerAF5FC55F', 'Arn'],
+            },
           },
-        },
-      ],
-    }),
-  }));
+        ],
+      }),
+    })
+  );
 });
 
 test('grant resd device positions actions', () => {
@@ -135,35 +148,30 @@ test('grant resd device positions actions', () => {
 
   tracker.grantRead(role);
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
-    PolicyDocument: Match.objectLike({
-      Statement: [
-        {
-          Action: [
-            'geo:BatchGetDevicePosition',
-            'geo:GetDevicePosition',
-            'geo:GetDevicePositionHistory',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  'Fn::GetAtt':
-                    [
-                      'TrackerAF5FC55F',
-                      'Arn',
-                    ],
-                },
-                '/*',
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::IAM::Policy',
+    Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: ['geo:BatchGetDevicePosition', 'geo:GetDevicePosition', 'geo:GetDevicePositionHistory'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': ['TrackerAF5FC55F', 'Arn'],
+                  },
+                  '/*',
+                ],
               ],
-            ],
+            },
           },
-        },
-      ],
-    }),
-  }));
+        ],
+      }),
+    })
+  );
 });
 
 test('import from arn', () => {
@@ -186,9 +194,11 @@ test('import from name', () => {
 
   // THEN
   expect(tracker.trackerName).toEqual(trackerName);
-  expect(tracker.trackerArn).toEqual(stack.formatArn({
-    service: 'geo',
-    resource: 'tracker',
-    resourceName: 'MyTracker',
-  }));
+  expect(tracker.trackerArn).toEqual(
+    stack.formatArn({
+      service: 'geo',
+      resource: 'tracker',
+      resourceName: 'MyTracker',
+    })
+  );
 });

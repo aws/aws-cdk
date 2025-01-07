@@ -1,11 +1,7 @@
 import { ClusterProps } from './types';
 import { Column } from '../../table';
 
-export function makePhysicalId(
-  resourceName: string,
-  clusterProps: ClusterProps,
-  requestId: string
-): string {
+export function makePhysicalId(resourceName: string, clusterProps: ClusterProps, requestId: string): string {
   return `${clusterProps.clusterName}:${clusterProps.databaseName}:${resourceName}:${requestId}`;
 }
 
@@ -26,9 +22,7 @@ export function getDistKeyColumn(columns: Column[]): Column | undefined {
 
 export function getSortKeyColumns(columns: Column[]): Column[] {
   // string comparison is required for custom resource since everything is passed as string
-  return columns.filter(
-    (column) => column.sortKey === true || (column.sortKey as unknown as string) === 'true'
-  );
+  return columns.filter((column) => column.sortKey === true || (column.sortKey as unknown as string) === 'true');
 }
 
 export function areColumnsEqual(columnsA: Column[], columnsB: Column[]): boolean {
@@ -36,8 +30,6 @@ export function areColumnsEqual(columnsA: Column[], columnsB: Column[]): boolean
     return false;
   }
   return columnsA.every((columnA) => {
-    return columnsB.find(
-      (column) => column.name === columnA.name && column.dataType === columnA.dataType
-    );
+    return columnsB.find((column) => column.name === columnA.name && column.dataType === columnA.dataType);
   });
 }

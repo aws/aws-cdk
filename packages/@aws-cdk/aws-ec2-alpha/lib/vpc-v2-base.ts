@@ -373,9 +373,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     // Propagate routes on route tables associated with the right subnets
     const vpnRoutePropagation = options.vpnRoutePropagation ?? [{}];
-    const routeTableIds = allRouteTableIds(
-      flatten(vpnRoutePropagation.map((s) => this.selectSubnets(s).subnets))
-    );
+    const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map((s) => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
       Annotations.of(this).addError(
@@ -435,10 +433,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   /**
    * Adds a new interface endpoint to this VPC
    */
-  public addInterfaceEndpoint(
-    id: string,
-    options: InterfaceVpcEndpointOptions
-  ): InterfaceVpcEndpoint {
+  public addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint {
     return new InterfaceVpcEndpoint(this, id, {
       vpc: this,
       ...options,
@@ -471,8 +466,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     if (this.secondaryCidrBlock) {
       useIpv6 = this.secondaryCidrBlock.some(
         (secondaryAddress) =>
-          secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-          secondaryAddress.ipv6IpamPoolId != undefined
+          secondaryAddress.amazonProvidedIpv6CidrBlock === true || secondaryAddress.ipv6IpamPoolId != undefined
       );
     }
 
@@ -492,11 +486,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Creates a route for EGW with destination set to outbound IPv6('::/0') or custom ipv6 address.
    * @internal
    */
-  private createEgressRoute(
-    subnet: ISubnetV2,
-    egw: EgressOnlyInternetGateway,
-    destination?: string
-  ): void {
+  private createEgressRoute(subnet: ISubnetV2, egw: EgressOnlyInternetGateway, destination?: string): void {
     const destinationIpv6 = destination ?? '::/0';
     new Route(this, `${subnet.node.id}-EgressRoute`, {
       routeTable: subnet.routeTable,
@@ -534,11 +524,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Adds default route for the internet gateway
    * @internal
    */
-  private addDefaultInternetRoute(
-    subnet: ISubnetV2,
-    igw: InternetGateway,
-    options?: InternetGatewayOptions
-  ): void {
+  private addDefaultInternetRoute(subnet: ISubnetV2, igw: InternetGateway, options?: InternetGatewayOptions): void {
     if (subnet.subnetType !== SubnetType.PUBLIC) {
       throw new Error('No public subnets defined to add route for internet gateway');
     }
@@ -599,9 +585,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['ec2:AcceptVpcPeeringConnection'],
-        resources: [
-          `arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`,
-        ],
+        resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`],
       })
     );
 
@@ -609,9 +593,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       new PolicyStatement({
         actions: ['ec2:AcceptVpcPeeringConnection'],
         effect: Effect.ALLOW,
-        resources: [
-          `arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc-peering-connection/*`,
-        ],
+        resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc-peering-connection/*`],
         conditions: {
           StringEquals: {
             'ec2:AccepterVpc': `arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`,
@@ -626,10 +608,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   /**
    * Creates a peering connection
    */
-  public createPeeringConnection(
-    id: string,
-    options: VPCPeeringConnectionOptions
-  ): VPCPeeringConnection {
+  public createPeeringConnection(id: string, options: VPCPeeringConnectionOptions): VPCPeeringConnection {
     return new VPCPeeringConnection(this, id, {
       requestorVpc: this,
       ...options,
@@ -692,9 +671,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     if (subnets.length === 0 && !this.incompleteSubnetDefinition) {
       const names = Array.from(new Set(allSubnets.map(subnetGroupNameFromConstructId)));
-      throw new Error(
-        `There are no subnet groups with name '${groupName}' in this VPC. Available names: ${names}`
-      );
+      throw new Error(`There are no subnet groups with name '${groupName}' in this VPC. Available names: ${names}`);
     }
 
     return subnets;
@@ -719,9 +696,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       const availableTypes = Object.entries(allSubnets)
         .filter(([_, subs]) => subs.length > 0)
         .map(([typeName, _]) => typeName);
-      throw new Error(
-        `There are no '${subnetType}' subnet groups in this VPC. Available types: ${availableTypes}`
-      );
+      throw new Error(`There are no '${subnetType}' subnet groups in this VPC. Available types: ${availableTypes}`);
     }
 
     return subnets;
@@ -737,9 +712,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     // TODO: throw error as new VpcV2 cannot support subnetName or subnetGroupName anymore
     if (placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
-        throw new Error(
-          "Please use only 'subnetGroupName' ('subnetName' is deprecated and has the same behavior)"
-        );
+        throw new Error("Please use only 'subnetGroupName' ('subnetName' is deprecated and has the same behavior)");
       } else {
         Annotations.of(this).addWarningV2(
           '@aws-cdk/aws-ec2:subnetNameDeprecated',
@@ -749,11 +722,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       placement = { ...placement, subnetGroupName: placement.subnetName };
     }
 
-    const exclusiveSelections: Array<keyof SubnetSelection> = [
-      'subnets',
-      'subnetType',
-      'subnetGroupName',
-    ];
+    const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
     const providedSelections = exclusiveSelections.filter((key) => placement[key] !== undefined);
     if (providedSelections.length > 1) {
       throw new Error(`Only one of '${providedSelections}' can be supplied to subnet selection.`);

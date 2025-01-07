@@ -92,10 +92,7 @@ export class Tag extends TagBase {
    * @deprecated use `Tags.of(scope).add()`
    */
   public static add(scope: Construct, key: string, value: string, props: TagProps = {}) {
-    Annotations.of(scope).addDeprecation(
-      '@aws-cdk/core.Tag.add(scope,k,v)',
-      'Use "Tags.of(scope).add(k,v)" instead'
-    );
+    Annotations.of(scope).addDeprecation('@aws-cdk/core.Tag.add(scope,k,v)', 'Use "Tags.of(scope).add(k,v)" instead');
     Tags.of(scope).add(key, value, props);
   }
 

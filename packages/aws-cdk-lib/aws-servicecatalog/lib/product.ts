@@ -237,37 +237,13 @@ export class CloudFormationProduct extends Product {
   }
 
   private validateProductProps(props: CloudFormationProductProps) {
-    InputValidator.validateLength(
-      this.node.path,
-      'product product name',
-      1,
-      100,
-      props.productName
-    );
+    InputValidator.validateLength(this.node.path, 'product product name', 1, 100, props.productName);
     InputValidator.validateLength(this.node.path, 'product owner', 1, 8191, props.owner);
-    InputValidator.validateLength(
-      this.node.path,
-      'product description',
-      0,
-      8191,
-      props.description
-    );
-    InputValidator.validateLength(
-      this.node.path,
-      'product distributor',
-      0,
-      8191,
-      props.distributor
-    );
+    InputValidator.validateLength(this.node.path, 'product description', 0, 8191, props.description);
+    InputValidator.validateLength(this.node.path, 'product distributor', 0, 8191, props.distributor);
     InputValidator.validateEmail(this.node.path, 'support email', props.supportEmail);
     InputValidator.validateUrl(this.node.path, 'support url', props.supportUrl);
-    InputValidator.validateLength(
-      this.node.path,
-      'support description',
-      0,
-      8191,
-      props.supportDescription
-    );
+    InputValidator.validateLength(this.node.path, 'support description', 0, 8191, props.supportDescription);
     if (props.productVersions.length == 0) {
       throw new Error(
         `Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`

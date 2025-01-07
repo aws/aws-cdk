@@ -23,16 +23,13 @@ describe('IAM groups', () => {
     group.addUser(user2);
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
+      Resources: {
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
-        User1E278A736:
-        {
+        User1E278A736: {
           Type: 'AWS::IAM::User',
           Properties: { Groups: [{ Ref: 'MyGroupCBA54B1B' }] },
         },
-        User21F1486D1:
-        {
+        User21F1486D1: {
           Type: 'AWS::IAM::User',
           Properties: { Groups: [{ Ref: 'MyGroupCBA54B1B' }] },
         },
@@ -51,9 +48,7 @@ describe('IAM groups', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Group', {
-      ManagedPolicyArns: [
-        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] },
-      ],
+      ManagedPolicyArns: [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] }],
     });
   });
 
@@ -70,7 +65,10 @@ describe('IAM groups', () => {
       'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':group/MyGroupName1']],
     });
     expect(stack.resolve(group2.groupArn)).toStrictEqual({
-      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':group/division/MyGroupName2']],
+      'Fn::Join': [
+        '',
+        ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':group/division/MyGroupName2'],
+      ],
     });
   });
 });
@@ -126,7 +124,10 @@ test('throw warning if attached managed policies exceed 10 in constructor', () =
     ],
   });
 
-  Annotations.fromStack(stack).hasWarning('*', 'You added 11 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10. [ack: @aws-cdk/aws-iam:groupMaxPoliciesExceeded]');
+  Annotations.fromStack(stack).hasWarning(
+    '*',
+    'You added 11 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10. [ack: @aws-cdk/aws-iam:groupMaxPoliciesExceeded]'
+  );
 });
 
 test('throw warning if attached managed policies exceed 10 when calling `addManagedPolicy`', () => {
@@ -142,5 +143,8 @@ test('throw warning if attached managed policies exceed 10 when calling `addMana
     group.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(i.toString()));
   }
 
-  Annotations.fromStack(stack).hasWarning('/Default/MyGroup', 'You added 12 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10. [ack: @aws-cdk/aws-iam:groupMaxPoliciesExceeded]');
+  Annotations.fromStack(stack).hasWarning(
+    '/Default/MyGroup',
+    'You added 12 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10. [ack: @aws-cdk/aws-iam:groupMaxPoliciesExceeded]'
+  );
 });

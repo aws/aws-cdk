@@ -16,8 +16,7 @@ describe('Linux GPU build image', () => {
           },
         }),
         environment: {
-          buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage(
-            'my-repo', 'my-tag', '123456789012'),
+          buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage('my-repo', 'my-tag', '123456789012'),
         },
       });
 
@@ -25,35 +24,33 @@ describe('Linux GPU build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
-              '123456789012.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/my-repo:my-tag',
-            ]],
+            'Fn::Join': [
+              '',
+              ['123456789012.dkr.ecr.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/my-repo:my-tag'],
+            ],
           },
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([Match.objectLike({
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':ecr:',
-                { Ref: 'AWS::Region' },
-                ':123456789012:repository/my-repo',
-              ]],
-            },
-          })]),
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ecr:',
+                    { Ref: 'AWS::Region' },
+                    ':123456789012:repository/my-repo',
+                  ],
+                ],
+              },
+            }),
+          ]),
         },
       });
     });
@@ -69,8 +66,7 @@ describe('Linux GPU build image', () => {
           },
         }),
         environment: {
-          buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage(
-            'my-repo', 'my-tag', '123456789012'),
+          buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage('my-repo', 'my-tag', '123456789012'),
           computeType: codebuild.ComputeType.SMALL,
         },
       });
@@ -79,13 +75,10 @@ describe('Linux GPU build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_SMALL',
           Image: {
-            'Fn::Join': ['', [
-              '123456789012.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/my-repo:my-tag',
-            ]],
+            'Fn::Join': [
+              '',
+              ['123456789012.dkr.ecr.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/my-repo:my-tag'],
+            ],
           },
         },
       });
@@ -114,41 +107,45 @@ describe('Linux GPU build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
-              { Ref: 'AWS::AccountId' },
-              '.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/',
-              { Ref: 'myrepo5DFA62E5' },
-              ':v1',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                { Ref: 'AWS::AccountId' },
+                '.dkr.ecr.',
+                { Ref: 'AWS::Region' },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+                '/',
+                { Ref: 'myrepo5DFA62E5' },
+                ':v1',
+              ],
+            ],
           },
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([Match.objectLike({
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':ecr:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':repository/',
-                { Ref: 'myrepo5DFA62E5' },
-              ]],
-            },
-          })]),
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ecr:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':repository/',
+                    { Ref: 'myrepo5DFA62E5' },
+                  ],
+                ],
+              },
+            }),
+          ]),
         },
       });
     });
@@ -174,38 +171,42 @@ describe('Linux GPU build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
-              { Ref: 'AWS::AccountId' },
-              '.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/test-repo:latest',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                { Ref: 'AWS::AccountId' },
+                '.dkr.ecr.',
+                { Ref: 'AWS::Region' },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+                '/test-repo:latest',
+              ],
+            ],
           },
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([Match.objectLike({
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':ecr:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':repository/test-repo',
-              ]],
-            },
-          })]),
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ecr:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':repository/test-repo',
+                  ],
+                ],
+              },
+            }),
+          ]),
         },
       });
     });
@@ -213,7 +214,11 @@ describe('Linux GPU build image', () => {
     test('allows creating a build image from an existing cross-account ECR repository', () => {
       const stack = new cdk.Stack();
 
-      const repository = ecr.Repository.fromRepositoryArn(stack, 'my-cross-acount-repo', 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
+      const repository = ecr.Repository.fromRepositoryArn(
+        stack,
+        'my-cross-acount-repo',
+        'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo'
+      );
 
       new codebuild.Project(stack, 'Project', {
         buildSpec: codebuild.BuildSpec.fromObject({
@@ -231,35 +236,39 @@ describe('Linux GPU build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
-              '585695036304.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/foo/bar/foo/fooo:latest',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                '585695036304.dkr.ecr.',
+                { Ref: 'AWS::Region' },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+                '/foo/bar/foo/fooo:latest',
+              ],
+            ],
           },
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([Match.objectLike({
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':ecr:',
-                { Ref: 'AWS::Region' },
-                ':585695036304:repository/foo/bar/foo/fooo',
-              ]],
-            },
-          })]),
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ecr:',
+                    { Ref: 'AWS::Region' },
+                    ':585695036304:repository/foo/bar/foo/fooo',
+                  ],
+                ],
+              },
+            }),
+          ]),
         },
       });
     });

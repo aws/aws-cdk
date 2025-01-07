@@ -74,11 +74,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
   /**
    * Import an existing provider
    */
-  public static fromSamlProviderArn(
-    scope: Construct,
-    id: string,
-    samlProviderArn: string
-  ): ISamlProvider {
+  public static fromSamlProviderArn(scope: Construct, id: string, samlProviderArn: string): ISamlProvider {
     class Import extends Resource implements ISamlProvider {
       public readonly samlProviderArn = samlProviderArn;
     }

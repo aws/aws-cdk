@@ -80,154 +80,150 @@ describe('CloudFormation Pipeline Actions', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'ArtifactStore': {
-        'Location': {
-          'Ref': 'MagicPipelineArtifactsBucket212FE7BF',
+      ArtifactStore: {
+        Location: {
+          Ref: 'MagicPipelineArtifactsBucket212FE7BF',
         },
-        'Type': 'S3',
+        Type: 'S3',
       },
-      'RoleArn': {
-        'Fn::GetAtt': ['MagicPipelineRoleFB2BD6DE',
-          'Arn'],
+      RoleArn: {
+        'Fn::GetAtt': ['MagicPipelineRoleFB2BD6DE', 'Arn'],
       },
-      'Stages': [{
-        'Actions': [
-          {
-            'ActionTypeId': {
-              'Category': 'Source',
-              'Owner': 'AWS',
-              'Provider': 'CodeCommit',
-              'Version': '1',
-            },
-            'Configuration': {
-              'RepositoryName': {
-                'Fn::GetAtt': [
-                  'MyVeryImportantRepo11BC3EBD',
-                  'Name',
-                ],
+      Stages: [
+        {
+          Actions: [
+            {
+              ActionTypeId: {
+                Category: 'Source',
+                Owner: 'AWS',
+                Provider: 'CodeCommit',
+                Version: '1',
               },
-              'BranchName': 'master',
-              'PollForSourceChanges': true,
-            },
-            'Name': 'source',
-            'OutputArtifacts': [
-              {
-                'Name': 'SourceArtifact',
+              Configuration: {
+                RepositoryName: {
+                  'Fn::GetAtt': ['MyVeryImportantRepo11BC3EBD', 'Name'],
+                },
+                BranchName: 'master',
+                PollForSourceChanges: true,
               },
-            ],
-            'RunOrder': 1,
-          },
-        ],
-        'Name': 'source',
-      },
-      {
-        'Actions': [
-          {
-            'ActionTypeId': {
-              'Category': 'Build',
-              'Owner': 'AWS',
-              'Provider': 'CodeBuild',
-              'Version': '1',
+              Name: 'source',
+              OutputArtifacts: [
+                {
+                  Name: 'SourceArtifact',
+                },
+              ],
+              RunOrder: 1,
             },
-            'Configuration': {
-              'ProjectName': {
-                'Ref': 'MyBuildProject30DB9D6E',
+          ],
+          Name: 'source',
+        },
+        {
+          Actions: [
+            {
+              ActionTypeId: {
+                Category: 'Build',
+                Owner: 'AWS',
+                Provider: 'CodeBuild',
+                Version: '1',
               },
-            },
-            'InputArtifacts': [
-              {
-                'Name': 'SourceArtifact',
+              Configuration: {
+                ProjectName: {
+                  Ref: 'MyBuildProject30DB9D6E',
+                },
               },
-            ],
-            'Name': 'build',
-            'OutputArtifacts': [
-              {
-                'Name': 'OutputYo',
+              InputArtifacts: [
+                {
+                  Name: 'SourceArtifact',
+                },
+              ],
+              Name: 'build',
+              OutputArtifacts: [
+                {
+                  Name: 'OutputYo',
+                },
+              ],
+              RunOrder: 1,
+            },
+          ],
+          Name: 'build',
+        },
+        {
+          Actions: [
+            {
+              ActionTypeId: {
+                Category: 'Deploy',
+                Owner: 'AWS',
+                Provider: 'CloudFormation',
+                Version: '1',
               },
-            ],
-            'RunOrder': 1,
-          },
-        ],
-        'Name': 'build',
-      },
-      {
-        'Actions': [
-          {
-            'ActionTypeId': {
-              'Category': 'Deploy',
-              'Owner': 'AWS',
-              'Provider': 'CloudFormation',
-              'Version': '1',
-            },
-            'Configuration': {
-              'ActionMode': 'CHANGE_SET_REPLACE',
-              'ChangeSetName': 'MyMagicalChangeSet',
-              'RoleArn': {
-                'Fn::GetAtt': [
-                  'ChangeSetRole0BCF99E6',
-                  'Arn',
-                ],
+              Configuration: {
+                ActionMode: 'CHANGE_SET_REPLACE',
+                ChangeSetName: 'MyMagicalChangeSet',
+                RoleArn: {
+                  'Fn::GetAtt': ['ChangeSetRole0BCF99E6', 'Arn'],
+                },
+                StackName: 'BrelandsStack',
+                TemplatePath: 'OutputYo::template.yaml',
+                TemplateConfiguration: 'OutputYo::templateConfig.json',
               },
-              'StackName': 'BrelandsStack',
-              'TemplatePath': 'OutputYo::template.yaml',
-              'TemplateConfiguration': 'OutputYo::templateConfig.json',
+              InputArtifacts: [{ Name: 'OutputYo' }],
+              Name: 'BuildChangeSetProd',
+              RunOrder: 1,
             },
-            'InputArtifacts': [{ 'Name': 'OutputYo' }],
-            'Name': 'BuildChangeSetProd',
-            'RunOrder': 1,
-          },
-          {
-            'ActionTypeId': {
-              'Category': 'Deploy',
-              'Owner': 'AWS',
-              'Provider': 'CloudFormation',
-              'Version': '1',
+            {
+              ActionTypeId: {
+                Category: 'Deploy',
+                Owner: 'AWS',
+                Provider: 'CloudFormation',
+                Version: '1',
+              },
+              Configuration: {
+                ActionMode: 'CHANGE_SET_EXECUTE',
+                ChangeSetName: 'MyMagicalChangeSet',
+              },
+              Name: 'ExecuteChangeSetProd',
+              RunOrder: 1,
             },
-            'Configuration': {
-              'ActionMode': 'CHANGE_SET_EXECUTE',
-              'ChangeSetName': 'MyMagicalChangeSet',
-            },
-            'Name': 'ExecuteChangeSetProd',
-            'RunOrder': 1,
-          },
-        ],
-        'Name': 'prod',
-      }],
+          ],
+          Name: 'prod',
+        },
+      ],
     });
-
   });
 
   test('fullPermissions leads to admin role and full IAM capabilities with pipeline bucket+key read permissions', () => {
-  // GIVEN
+    // GIVEN
     const stack = new TestFixture();
 
     // WHEN
-    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CreateUpdate',
-      stackName: 'MyStack',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      adminPermissions: true,
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CreateUpdate',
+        stackName: 'MyStack',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        adminPermissions: true,
+      })
+    );
 
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM capabilities
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
+      Stages: [
+        { Name: 'Source' /* don't care about the rest */ },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'Configuration': {
-                'Capabilities': 'CAPABILITY_NAMED_IAM',
-                'RoleArn': { 'Fn::GetAtt': [roleId, 'Arn'] },
-                'ActionMode': 'CREATE_UPDATE',
-                'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml',
+              Configuration: {
+                Capabilities: 'CAPABILITY_NAMED_IAM',
+                RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
+                ActionMode: 'CREATE_UPDATE',
+                StackName: 'MyStack',
+                TemplatePath: 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
-              'Name': 'CreateUpdate',
+              InputArtifacts: [{ Name: 'SourceArtifact' }],
+              Name: 'CreateUpdate',
             },
           ],
         },
@@ -240,19 +236,12 @@ describe('CloudFormation Pipeline Actions', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            'Action': [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
-            ],
-            'Effect': 'Allow',
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+            Effect: 'Allow',
           },
           {
-            'Action': [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
-            'Effect': 'Allow',
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
+            Effect: 'Allow',
           },
           {
             Action: '*',
@@ -263,112 +252,110 @@ describe('CloudFormation Pipeline Actions', () => {
       },
       Roles: [{ Ref: roleId }],
     });
-
   });
 
   test('outputFileName leads to creation of output artifact', () => {
-  // GIVEN
+    // GIVEN
     const stack = new TestFixture();
 
     // WHEN
-    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CreateUpdate',
-      stackName: 'MyStack',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      outputFileName: 'CreateResponse.json',
-      adminPermissions: false,
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CreateUpdate',
+        stackName: 'MyStack',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        outputFileName: 'CreateResponse.json',
+        adminPermissions: false,
+      })
+    );
 
     // THEN: Action has output artifacts
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
+      Stages: [
+        { Name: 'Source' /* don't care about the rest */ },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'OutputArtifacts': [{ 'Name': 'CreateUpdate_MyStack_Artifact' }],
-              'Name': 'CreateUpdate',
+              OutputArtifacts: [{ Name: 'CreateUpdate_MyStack_Artifact' }],
+              Name: 'CreateUpdate',
             },
           ],
         },
       ],
     });
-
   });
 
   test('replaceOnFailure switches action type', () => {
-  // GIVEN
+    // GIVEN
     const stack = new TestFixture();
 
     // WHEN
-    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CreateUpdate',
-      stackName: 'MyStack',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      replaceOnFailure: true,
-      adminPermissions: false,
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CreateUpdate',
+        stackName: 'MyStack',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        replaceOnFailure: true,
+        adminPermissions: false,
+      })
+    );
 
     // THEN: Action has output artifacts
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
+      Stages: [
+        { Name: 'Source' /* don't care about the rest */ },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'Configuration': {
-                'ActionMode': 'REPLACE_ON_FAILURE',
+              Configuration: {
+                ActionMode: 'REPLACE_ON_FAILURE',
               },
-              'Name': 'CreateUpdate',
+              Name: 'CreateUpdate',
             },
           ],
         },
       ],
     });
-
   });
 
   test('parameterOverrides are serialized as a string', () => {
-  // GIVEN
+    // GIVEN
     const stack = new TestFixture();
 
     // WHEN
-    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CreateUpdate',
-      stackName: 'MyStack',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      adminPermissions: false,
-      parameterOverrides: {
-        RepoName: stack.repo.repositoryName,
-      },
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CreateUpdate',
+        stackName: 'MyStack',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        adminPermissions: false,
+        parameterOverrides: {
+          RepoName: stack.repo.repositoryName,
+        },
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
+      Stages: [
+        { Name: 'Source' /* don't care about the rest */ },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'Configuration': {
-                'ParameterOverrides': {
-                  'Fn::Join': ['', [
-                    '{"RepoName":"',
-                    { 'Fn::GetAtt': ['MyVeryImportantRepo11BC3EBD', 'Name'] },
-                    '"}',
-                  ]],
+              Configuration: {
+                ParameterOverrides: {
+                  'Fn::Join': ['', ['{"RepoName":"', { 'Fn::GetAtt': ['MyVeryImportantRepo11BC3EBD', 'Name'] }, '"}']],
                 },
               },
-              'Name': 'CreateUpdate',
+              Name: 'CreateUpdate',
             },
           ],
         },
       ],
     });
-
   });
 
   test('Action service role is passed to template', () => {
@@ -379,172 +366,168 @@ describe('CloudFormation Pipeline Actions', () => {
       assumedBy: new ServicePrincipal('magicservice'),
     });
 
-    stack.deployStage.addAction(new cpactions.CloudFormationExecuteChangeSetAction({
-      actionName: 'ImportedRoleAction',
-      role: importedRole,
-      changeSetName: 'magicSet',
-      stackName: 'magicStack',
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationExecuteChangeSetAction({
+        actionName: 'ImportedRoleAction',
+        role: importedRole,
+        changeSetName: 'magicSet',
+        stackName: 'magicStack',
+      })
+    );
 
-    stack.deployStage.addAction(new cpactions.CloudFormationExecuteChangeSetAction({
-      actionName: 'FreshRoleAction',
-      role: freshRole,
-      changeSetName: 'magicSet',
-      stackName: 'magicStack',
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationExecuteChangeSetAction({
+        actionName: 'FreshRoleAction',
+        role: freshRole,
+        changeSetName: 'magicSet',
+        stackName: 'magicStack',
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {
-          'Name': 'Source', /* don't care about the rest */
+          Name: 'Source' /* don't care about the rest */,
         },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'Name': 'ImportedRoleAction',
-              'RoleArn': 'arn:aws:iam::000000000000:role/action-role',
+              Name: 'ImportedRoleAction',
+              RoleArn: 'arn:aws:iam::000000000000:role/action-role',
             },
             {
-              'Name': 'FreshRoleAction',
-              'RoleArn': {
-                'Fn::GetAtt': [
-                  'FreshRole472F6E18',
-                  'Arn',
-                ],
+              Name: 'FreshRoleAction',
+              RoleArn: {
+                'Fn::GetAtt': ['FreshRole472F6E18', 'Arn'],
               },
             },
           ],
         },
       ],
     });
-
   });
 
   test('Single capability is passed to template', () => {
-  // GIVEN
+    // GIVEN
     const stack = new TestFixture();
 
     // WHEN
-    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CreateUpdate',
-      stackName: 'MyStack',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      adminPermissions: false,
-      cfnCapabilities: [
-        cdk.CfnCapabilities.NAMED_IAM,
-      ],
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CreateUpdate',
+        stackName: 'MyStack',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        adminPermissions: false,
+        cfnCapabilities: [cdk.CfnCapabilities.NAMED_IAM],
+      })
+    );
 
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM capabilities
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
+      Stages: [
+        { Name: 'Source' /* don't care about the rest */ },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'Configuration': {
-                'Capabilities': 'CAPABILITY_NAMED_IAM',
-                'RoleArn': { 'Fn::GetAtt': [roleId, 'Arn'] },
-                'ActionMode': 'CREATE_UPDATE',
-                'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml',
+              Configuration: {
+                Capabilities: 'CAPABILITY_NAMED_IAM',
+                RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
+                ActionMode: 'CREATE_UPDATE',
+                StackName: 'MyStack',
+                TemplatePath: 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
-              'Name': 'CreateUpdate',
+              InputArtifacts: [{ Name: 'SourceArtifact' }],
+              Name: 'CreateUpdate',
             },
           ],
         },
       ],
     });
-
   });
 
   test('Multiple capabilities are passed to template', () => {
-  // GIVEN
+    // GIVEN
     const stack = new TestFixture();
 
     // WHEN
-    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CreateUpdate',
-      stackName: 'MyStack',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      adminPermissions: false,
-      cfnCapabilities: [
-        cdk.CfnCapabilities.NAMED_IAM,
-        cdk.CfnCapabilities.AUTO_EXPAND,
-      ],
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CreateUpdate',
+        stackName: 'MyStack',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        adminPermissions: false,
+        cfnCapabilities: [cdk.CfnCapabilities.NAMED_IAM, cdk.CfnCapabilities.AUTO_EXPAND],
+      })
+    );
 
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
+      Stages: [
+        { Name: 'Source' /* don't care about the rest */ },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'Configuration': {
-                'Capabilities': 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
-                'RoleArn': { 'Fn::GetAtt': [roleId, 'Arn'] },
-                'ActionMode': 'CREATE_UPDATE',
-                'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml',
+              Configuration: {
+                Capabilities: 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
+                RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
+                ActionMode: 'CREATE_UPDATE',
+                StackName: 'MyStack',
+                TemplatePath: 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
-              'Name': 'CreateUpdate',
+              InputArtifacts: [{ Name: 'SourceArtifact' }],
+              Name: 'CreateUpdate',
             },
           ],
         },
       ],
     });
-
   });
 
   test('Empty capabilities is not passed to template', () => {
-  // GIVEN
+    // GIVEN
     const stack = new TestFixture();
 
     // WHEN
-    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CreateUpdate',
-      stackName: 'MyStack',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      adminPermissions: false,
-      cfnCapabilities: [
-        cdk.CfnCapabilities.NONE,
-      ],
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CreateUpdate',
+        stackName: 'MyStack',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        adminPermissions: false,
+        cfnCapabilities: [cdk.CfnCapabilities.NONE],
+      })
+    );
 
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has no capabilities
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
+      Stages: [
+        { Name: 'Source' /* don't care about the rest */ },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'Configuration': {
-                'RoleArn': { 'Fn::GetAtt': [roleId, 'Arn'] },
-                'ActionMode': 'CREATE_UPDATE',
-                'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml',
+              Configuration: {
+                RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
+                ActionMode: 'CREATE_UPDATE',
+                StackName: 'MyStack',
+                TemplatePath: 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
-              'Name': 'CreateUpdate',
+              InputArtifacts: [{ Name: 'SourceArtifact' }],
+              Name: 'CreateUpdate',
             },
           ],
         },
       ],
     });
-
   });
 
   test('can use CfnCapabilities from the core module', () => {
@@ -552,40 +535,38 @@ describe('CloudFormation Pipeline Actions', () => {
     const stack = new TestFixture();
 
     // WHEN
-    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
-      actionName: 'CreateUpdate',
-      stackName: 'MyStack',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      adminPermissions: false,
-      cfnCapabilities: [
-        cdk.CfnCapabilities.NAMED_IAM,
-        cdk.CfnCapabilities.AUTO_EXPAND,
-      ],
-    }));
+    stack.deployStage.addAction(
+      new cpactions.CloudFormationCreateUpdateStackAction({
+        actionName: 'CreateUpdate',
+        stackName: 'MyStack',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        adminPermissions: false,
+        cfnCapabilities: [cdk.CfnCapabilities.NAMED_IAM, cdk.CfnCapabilities.AUTO_EXPAND],
+      })
+    );
 
     // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
+      Stages: [
+        { Name: 'Source' /* don't care about the rest */ },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'Configuration': {
-                'Capabilities': 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
-                'RoleArn': { 'Fn::GetAtt': ['PipelineDeployCreateUpdateRole515CB7D4', 'Arn'] },
-                'ActionMode': 'CREATE_UPDATE',
-                'StackName': 'MyStack',
-                'TemplatePath': 'SourceArtifact::template.yaml',
+              Configuration: {
+                Capabilities: 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
+                RoleArn: { 'Fn::GetAtt': ['PipelineDeployCreateUpdateRole515CB7D4', 'Arn'] },
+                ActionMode: 'CREATE_UPDATE',
+                StackName: 'MyStack',
+                TemplatePath: 'SourceArtifact::template.yaml',
               },
-              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
-              'Name': 'CreateUpdate',
+              InputArtifacts: [{ Name: 'SourceArtifact' }],
+              Name: 'CreateUpdate',
             },
           ],
         },
       ],
     });
-
   });
 
   describe('cross-account CFN Pipeline', () => {
@@ -628,23 +609,35 @@ describe('CloudFormation Pipeline Actions', () => {
       });
 
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
+            Name: 'Source',
           },
           {
-            'Name': 'Deploy',
-            'Actions': [
+            Name: 'Deploy',
+            Actions: [
               {
-                'Name': 'CFN',
-                'RoleArn': {
-                  'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
-                    ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50']],
+                Name: 'CFN',
+                RoleArn: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
+                    ],
+                  ],
                 },
-                'Configuration': {
-                  'RoleArn': {
-                    'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
-                      ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508']],
+                Configuration: {
+                  RoleArn: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        { Ref: 'AWS::Partition' },
+                        ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
+                      ],
+                    ],
                   },
                 },
               },
@@ -655,48 +648,52 @@ describe('CloudFormation Pipeline Actions', () => {
 
       // the pipeline's BucketPolicy should trust both CFN roles
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::S3::BucketPolicy', {
-        'PolicyDocument': Match.objectLike({
-          'Statement': [
+        PolicyDocument: Match.objectLike({
+          Statement: [
             {
-              'Action': 's3:*',
-              'Condition': {
-                'Bool': { 'aws:SecureTransport': 'false' },
+              Action: 's3:*',
+              Condition: {
+                Bool: { 'aws:SecureTransport': 'false' },
               },
-              'Effect': 'Deny',
-              'Principal': {
-                'AWS': '*',
+              Effect: 'Deny',
+              Principal: {
+                AWS: '*',
               },
-              'Resource': Match.anyValue(),
+              Resource: Match.anyValue(),
             },
             {
-              'Action': [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-              ],
-              'Effect': 'Allow',
-              'Principal': {
-                'AWS': {
-                  'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
-                    ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508']],
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
+                    ],
+                  ],
                 },
               },
-              'Resource': Match.anyValue(),
+              Resource: Match.anyValue(),
             },
             {
-              'Action': [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-              ],
-              'Effect': 'Allow',
-              'Principal': {
-                'AWS': {
-                  'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' },
-                    ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50']],
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
+                    ],
+                  ],
                 },
               },
-              'Resource': Match.anyValue(),
+              Resource: Match.anyValue(),
             },
           ],
         }),
@@ -704,12 +701,11 @@ describe('CloudFormation Pipeline Actions', () => {
 
       const otherStack = app.node.findChild('cross-account-support-stack-123456789012') as cdk.Stack;
       Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Role', {
-        'RoleName': 'pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
+        RoleName: 'pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
       });
       Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Role', {
-        'RoleName': 'pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
+        RoleName: 'pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
       });
-
     });
   });
 });

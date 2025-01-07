@@ -114,10 +114,7 @@ export class Trigger extends Construct implements ITrigger {
   constructor(scope: Construct, id: string, props: TriggerProps) {
     super(scope, id);
 
-    const provider = TriggerProvider.getOrCreateProvider(
-      this,
-      'AWSCDK.TriggerCustomResourceProvider'
-    );
+    const provider = TriggerProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider');
 
     provider.addToRolePolicy({
       Effect: 'Allow',
@@ -131,9 +128,7 @@ export class Trigger extends Construct implements ITrigger {
       properties: {
         HandlerArn: props.handler.currentVersion.functionArn,
         InvocationType: props.invocationType ?? 'RequestResponse',
-        Timeout:
-          props.timeout?.toMilliseconds().toString() ??
-          Duration.minutes(2).toMilliseconds().toString(),
+        Timeout: props.timeout?.toMilliseconds().toString() ?? Duration.minutes(2).toMilliseconds().toString(),
         ExecuteOnHandlerChange: props.executeOnHandlerChange ?? true,
       },
     });

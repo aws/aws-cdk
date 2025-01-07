@@ -14,7 +14,7 @@ test('use CloudFrontTarget partition hosted zone id mapping', () => {
 
   // THEN
   Template.fromStack(stack).hasMapping('AWSCloudFrontPartitionHostedZoneIdMap', {
-    'aws': {
+    aws: {
       zoneId: 'Z2FDTNDATAQYW2',
     },
     'aws-cn': {
@@ -36,7 +36,7 @@ test('use CloudFrontTarget hosted zone id mappings in nested stacks', () => {
   // THEN
   for (let nestedStack of [nestedStackA, nestedStackB]) {
     Template.fromStack(nestedStack).hasMapping('AWSCloudFrontPartitionHostedZoneIdMap', {
-      'aws': {
+      aws: {
         zoneId: 'Z2FDTNDATAQYW2',
       },
       'aws-cn': {

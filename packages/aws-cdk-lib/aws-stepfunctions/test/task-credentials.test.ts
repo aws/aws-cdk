@@ -24,7 +24,7 @@ describe('TaskRole', () => {
       const role = sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn');
 
       expect(stack.resolve(role.roleArn)).toEqual('$.RoleArn');
-      expect(role.resource).toEqual( '*');
+      expect(role.resource).toEqual('*');
     });
 
     test('returns expected roleArn and resource', () => {

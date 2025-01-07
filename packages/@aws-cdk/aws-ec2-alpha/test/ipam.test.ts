@@ -23,7 +23,6 @@ describe('IPAM Test', () => {
   });
 
   test('Creates IP Pool under Public Scope', () => {
-
     const pool = ipam.publicScope.addPool('Public', {
       addressFamily: AddressFamily.IP_V6,
       awsService: vpc.AwsServiceName.EC2,
@@ -33,26 +32,24 @@ describe('IPAM Test', () => {
 
     new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
-        ipamPool: pool,
-        netmaskLength: 52,
-        cidrBlockName: 'Ipv6Ipam',
-      })],
+      secondaryAddressBlocks: [
+        vpc.IpAddresses.ipv6Ipam({
+          ipamPool: pool,
+          netmaskLength: 52,
+          cidrBlockName: 'Ipv6Ipam',
+        }),
+      ],
     });
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::EC2::IPAMPool',
-      {
-        AddressFamily: 'ipv6',
-        IpamScopeId: {
-          'Fn::GetAtt': ['Ipam50346F82', 'PublicDefaultScopeId'],
-        },
-        Locale: 'us-west-2',
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::IPAMPool', {
+      AddressFamily: 'ipv6',
+      IpamScopeId: {
+        'Fn::GetAtt': ['Ipam50346F82', 'PublicDefaultScopeId'],
       },
-    ); //End Template
+      Locale: 'us-west-2',
+    }); //End Template
   }); // End Test
 
   test('Creates IP Pool under Private Scope', () => {
-
     const pool = ipam.privateScope.addPool('Private', {
       addressFamily: vpc.AddressFamily.IP_V4,
       ipv4ProvisionedCidrs: ['10.2.0.0/16'],
@@ -61,22 +58,21 @@ describe('IPAM Test', () => {
 
     new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4Ipam({
-        ipamPool: pool,
-        netmaskLength: 20,
-        cidrBlockName: 'SecondaryIpv4',
-      })],
+      secondaryAddressBlocks: [
+        vpc.IpAddresses.ipv4Ipam({
+          ipamPool: pool,
+          netmaskLength: 20,
+          cidrBlockName: 'SecondaryIpv4',
+        }),
+      ],
     });
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::EC2::IPAMPool',
-      {
-        AddressFamily: 'ipv4',
-        IpamScopeId: {
-          'Fn::GetAtt': ['Ipam50346F82', 'PrivateDefaultScopeId'],
-        },
-        Locale: 'us-west-2',
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::IPAMPool', {
+      AddressFamily: 'ipv4',
+      IpamScopeId: {
+        'Fn::GetAtt': ['Ipam50346F82', 'PrivateDefaultScopeId'],
       },
-    ); //End Template
+      Locale: 'us-west-2',
+    }); //End Template
   });
 
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {
@@ -148,11 +144,7 @@ describe('IPAM Test', () => {
   });
 
   test('Creates IPAM with default scopes', () => {
-    new Ipam(stack, 'TestIpam', {
-    });
-    Template.fromStack(stack).hasResource(
-      'AWS::EC2::IPAM', {},
-    );
+    new Ipam(stack, 'TestIpam', {});
+    Template.fromStack(stack).hasResource('AWS::EC2::IPAM', {});
   });
-
-});// End Test
+}); // End Test

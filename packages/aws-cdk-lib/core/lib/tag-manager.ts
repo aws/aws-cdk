@@ -67,9 +67,7 @@ interface ITagFormatter {
 class StandardFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new Error(
-        `Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`
-      );
+      throw new Error(`Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -150,9 +148,7 @@ class AsgFormatter implements ITagFormatter {
 class MapFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (Array.isArray(cfnPropertyTags) || typeof cfnPropertyTags !== 'object') {
-      throw new Error(
-        `Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`
-      );
+      throw new Error(`Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -310,12 +306,7 @@ export class TagManager {
    */
   public static isTaggable(construct: any): construct is ITaggable {
     const tags = (construct as any).tags;
-    return (
-      tags !== undefined &&
-      tags !== null &&
-      typeof tags === 'object' &&
-      (tags as any)[TAG_MANAGER_SYM]
-    );
+    return tags !== undefined && tags !== null && typeof tags === 'object' && (tags as any)[TAG_MANAGER_SYM];
   }
 
   /**
@@ -360,12 +351,7 @@ export class TagManager {
   private readonly externalTagPriority = 50;
   private readonly didHaveInitialTags: boolean;
 
-  constructor(
-    tagType: TagType,
-    resourceTypeName: string,
-    initialTags?: any,
-    options: TagManagerOptions = {}
-  ) {
+  constructor(tagType: TagType, resourceTypeName: string, initialTags?: any, options: TagManagerOptions = {}) {
     this.resourceTypeName = resourceTypeName;
     this.tagFormatter = TAG_FORMATTERS()[tagType];
     this.tagPropertyName = options.tagPropertyName || 'tags';

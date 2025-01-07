@@ -22,9 +22,7 @@ describe('k8s manifest', () => {
         },
         spec: {
           type: 'LoadBalancer',
-          ports: [
-            { port: 80, targetPort: 8080 },
-          ],
+          ports: [{ port: 80, targetPort: 8080 }],
           selector: {
             app: 'hello-kubernetes',
           },
@@ -54,9 +52,7 @@ describe('k8s manifest', () => {
                 {
                   name: 'hello-kubernetes',
                   image: 'paulbouwer/hello-kubernetes:1.5',
-                  ports: [
-                    { containerPort: 8080 },
-                  ],
+                  ports: [{ containerPort: 8080 }],
                 },
               ],
             },
@@ -136,15 +132,17 @@ describe('k8s manifest', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
-        Manifest: JSON.stringify([{
-          apiVersion: 'v1beta1',
-          kind: 'Foo',
-          metadata: {
-            labels: {
-              'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac': '',
+        Manifest: JSON.stringify([
+          {
+            apiVersion: 'v1beta1',
+            kind: 'Foo',
+            metadata: {
+              labels: {
+                'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac': '',
+              },
             },
           },
-        }]),
+        ]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
       });
     });
@@ -154,7 +152,8 @@ describe('k8s manifest', () => {
       const { stack, cluster } = testFixtureCluster({ prune: true });
 
       // WHEN
-      cluster.addManifest('m1',
+      cluster.addManifest(
+        'm1',
         {
           apiVersion: 'v1beta',
           kind: 'Foo',
@@ -171,7 +170,7 @@ describe('k8s manifest', () => {
           spec: {
             containers: [{ name: 'main', image: 'main' }],
           },
-        },
+        }
       );
 
       // THEN
@@ -193,7 +192,7 @@ describe('k8s manifest', () => {
               name: 'foo',
               labels: {
                 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac': '',
-                'bar': 1234,
+                bar: 1234,
               },
             },
             spec: {
@@ -259,7 +258,7 @@ describe('k8s manifest', () => {
               name: 'foo',
               labels: {
                 'aws.cdk.eks/prune-c8aff6ac817006dd4d644e9d99b2cdbb8c8cd036d9': '',
-                'bar': 1234,
+                bar: 1234,
               },
             },
             spec: {
@@ -340,17 +339,19 @@ describe('k8s manifest', () => {
 
       expect(m1.Manifest).toEqual(JSON.stringify([{ apiVersion: 'v1beta', kind: 'Foo' }]));
       expect(m2.Manifest).toEqual(JSON.stringify([{ apiVersion: 'v1', kind: 'Pod' }]));
-      expect(m3.Manifest).toEqual(JSON.stringify([
-        {
-          apiVersion: 'v1',
-          kind: 'Deployment',
-          metadata: {
-            labels: {
-              'aws.cdk.eks/prune-c8971972440c5bb3661e468e4cb8069f7ee549414c': '',
+      expect(m3.Manifest).toEqual(
+        JSON.stringify([
+          {
+            apiVersion: 'v1',
+            kind: 'Deployment',
+            metadata: {
+              labels: {
+                'aws.cdk.eks/prune-c8971972440c5bb3661e468e4cb8069f7ee549414c': '',
+              },
             },
           },
-        },
-      ]));
+        ])
+      );
       expect(m1.PruneLabel).toBeFalsy();
       expect(m2.PruneLabel).toBeFalsy();
       expect(m3.PruneLabel).toEqual('aws.cdk.eks/prune-c8971972440c5bb3661e468e4cb8069f7ee549414c');

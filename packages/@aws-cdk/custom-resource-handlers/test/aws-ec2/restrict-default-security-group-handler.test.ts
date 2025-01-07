@@ -1,5 +1,11 @@
 import 'aws-sdk-client-mock-jest';
-import { AuthorizeSecurityGroupEgressCommand, AuthorizeSecurityGroupIngressCommand, EC2, RevokeSecurityGroupEgressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
+import {
+  AuthorizeSecurityGroupEgressCommand,
+  AuthorizeSecurityGroupIngressCommand,
+  EC2,
+  RevokeSecurityGroupEgressCommand,
+  RevokeSecurityGroupIngressCommand,
+} from '@aws-sdk/client-ec2';
 import { mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../../lib/aws-ec2/restrict-default-security-group-handler';
 
@@ -28,22 +34,30 @@ test('revokes rules on create event', async () => {
   expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupIngressCommand, 1);
   expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupEgressCommand, {
     GroupId: 'sg-abc123',
-    IpPermissions: [{
-      IpRanges: [{
-        CidrIp: '0.0.0.0/0',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        IpRanges: [
+          {
+            CidrIp: '0.0.0.0/0',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
   expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupIngressCommand, {
     GroupId: 'sg-abc123',
-    IpPermissions: [{
-      UserIdGroupPairs: [{
-        UserId: '12345678912',
-        GroupId: 'sg-abc123',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        UserIdGroupPairs: [
+          {
+            UserId: '12345678912',
+            GroupId: 'sg-abc123',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
 });
 
@@ -68,22 +82,30 @@ test('authorizes rules on delete event', async () => {
   expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupIngressCommand, 1);
   expect(mockEc2Client).toHaveReceivedCommandWith(AuthorizeSecurityGroupIngressCommand, {
     GroupId: 'sg-abc123',
-    IpPermissions: [{
-      UserIdGroupPairs: [{
-        UserId: '12345678912',
-        GroupId: 'sg-abc123',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        UserIdGroupPairs: [
+          {
+            UserId: '12345678912',
+            GroupId: 'sg-abc123',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
   expect(mockEc2Client).toHaveReceivedCommandWith(AuthorizeSecurityGroupEgressCommand, {
     GroupId: 'sg-abc123',
-    IpPermissions: [{
-      IpRanges: [{
-        CidrIp: '0.0.0.0/0',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        IpRanges: [
+          {
+            CidrIp: '0.0.0.0/0',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
 });
 
@@ -139,41 +161,57 @@ test('update event with security group change', async () => {
   expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupIngressCommand, 1);
   expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupIngressCommand, {
     GroupId: 'sg-abc123',
-    IpPermissions: [{
-      UserIdGroupPairs: [{
-        UserId: '12345678912',
-        GroupId: 'sg-abc123',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        UserIdGroupPairs: [
+          {
+            UserId: '12345678912',
+            GroupId: 'sg-abc123',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
   expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupEgressCommand, {
     GroupId: 'sg-abc123',
-    IpPermissions: [{
-      IpRanges: [{
-        CidrIp: '0.0.0.0/0',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        IpRanges: [
+          {
+            CidrIp: '0.0.0.0/0',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
   expect(mockEc2Client).toHaveReceivedCommandWith(AuthorizeSecurityGroupEgressCommand, {
     GroupId: 'sg-xyz123',
-    IpPermissions: [{
-      IpRanges: [{
-        CidrIp: '0.0.0.0/0',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        IpRanges: [
+          {
+            CidrIp: '0.0.0.0/0',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
   expect(mockEc2Client).toHaveReceivedCommandWith(AuthorizeSecurityGroupIngressCommand, {
     GroupId: 'sg-xyz123',
-    IpPermissions: [{
-      UserIdGroupPairs: [{
-        UserId: '12345678912',
-        GroupId: 'sg-xyz123',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        UserIdGroupPairs: [
+          {
+            UserId: '12345678912',
+            GroupId: 'sg-xyz123',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
 });
 
@@ -196,22 +234,30 @@ test('invoking when rules are not found should not throw error', async () => {
   expect(mockEc2Client).toHaveReceivedCommandTimes(RevokeSecurityGroupIngressCommand, 1);
   expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupEgressCommand, {
     GroupId: 'sg-abc123',
-    IpPermissions: [{
-      IpRanges: [{
-        CidrIp: '0.0.0.0/0',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        IpRanges: [
+          {
+            CidrIp: '0.0.0.0/0',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
   expect(mockEc2Client).toHaveReceivedCommandWith(RevokeSecurityGroupIngressCommand, {
     GroupId: 'sg-abc123',
-    IpPermissions: [{
-      UserIdGroupPairs: [{
-        UserId: '12345678912',
-        GroupId: 'sg-abc123',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        UserIdGroupPairs: [
+          {
+            UserId: '12345678912',
+            GroupId: 'sg-abc123',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   });
 });
 

@@ -17,9 +17,8 @@ describe('every aspect gets invoked exactly once', () => {
             }
           });
         }, stabilizeAspects)(app);
-      }),
-    ),
-  );
+      })
+    ));
 
   test('all aspects that exist at the start of synthesis get invoked on all nodes in its scope at the start of synthesis', () =>
     fc.assert(
@@ -34,21 +33,21 @@ describe('every aspect gets invoked exactly once', () => {
             for (const construct of originalConstructsOnApp) {
               if (isAncestorOf(aspectApplication.construct, construct)) {
                 if (!visitsMap.get(construct)!.includes(aspectApplication.aspect)) {
-                  throw new Error(`Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its original scope.`);
+                  throw new Error(
+                    `Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its original scope.`
+                  );
                 }
               }
             }
           }
         }, stabilizeAspects)(app);
-      }),
-    ),
-  );
+      })
+    ));
 
   test('with stabilization, every aspect applied on the tree eventually executes on all of its nodes in scope', () =>
     fc.assert(
       fc.property(appWithAspects(), (app) => {
         afterSynth((testApp) => {
-
           const allConstructsOnApp = testApp.cdkApp.node.findAll();
           const allAspectApplications = getAllAspectApplications(allConstructsOnApp);
           const visitsMap = getVisitsMap(testApp.visitLog);
@@ -58,15 +57,16 @@ describe('every aspect gets invoked exactly once', () => {
             for (const construct of allConstructsOnApp) {
               if (isAncestorOf(aspectApplication.construct, construct)) {
                 if (!visitsMap.get(construct)!.includes(aspectApplication.aspect)) {
-                  throw new Error(`Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its scope.`);
+                  throw new Error(
+                    `Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its scope.`
+                  );
                 }
               }
             }
           }
         }, true)(app);
-      }),
-    ),
-  );
+      })
+    ));
 });
 
 test('inherited aspects get invoked before locally defined aspects, if both have the same priority', () =>
@@ -88,14 +88,13 @@ test('inherited aspects get invoked before locally defined aspects, if both have
 
           if (!(a.index < b.index)) {
             throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
+              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`
             );
           }
         });
       }, stabilizeAspects)(app);
-    }),
-  ),
-);
+    })
+  ));
 
 test('for every construct, lower priorities go before higher priorities', () =>
   fc.assert(
@@ -113,14 +112,13 @@ test('for every construct, lower priorities go before higher priorities', () =>
 
           if (!implies(aPrio < bPrio && aAppliedT <= bAppliedT, a.index < b.index)) {
             throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
+              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`
             );
           }
         });
       }, stabilizeAspects)(app);
-    }),
-  ),
-);
+    })
+  ));
 
 test('for every construct, if a invokes before b that must mean it is of equal or lower priority', () =>
   fc.assert(
@@ -134,14 +132,13 @@ test('for every construct, if a invokes before b that must mean it is of equal o
 
           if (!implies(a.index < b.index, aPrio <= bPrio)) {
             throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
+              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`
             );
           }
         });
       }, stabilizeAspects)(app);
-    }),
-  ),
-);
+    })
+  ));
 
 test('visitLog is nonempty', () =>
   fc.assert(
@@ -149,9 +146,8 @@ test('visitLog is nonempty', () =>
       afterSynth((testApp) => {
         expect(testApp.visitLog).not.toEqual([]);
       }, stabilizeAspects)(app);
-    }),
-  ),
-);
+    })
+  ));
 
 //////////////////////////////////////////////////////////////////////
 //  Test Helpers
@@ -195,7 +191,9 @@ interface AspectVisitWithIndex extends AspectVisit {
 function forEveryVisitPair(log: AspectVisitLog, block: (a: AspectVisitWithIndex, b: AspectVisitWithIndex) => void) {
   for (let i = 0; i < log.length; i++) {
     for (let j = 0; j < log.length; j++) {
-      if (i === j) { continue; }
+      if (i === j) {
+        continue;
+      }
 
       block({ ...log[i], index: i }, { ...log[j], index: j });
     }
@@ -292,9 +290,11 @@ function allAspectApplicationsInScope(a: Construct): AspectApplication[] {
  * Take the minimum of all added applications that could lead to this execution.
  */
 function aspectAppliedT(prettyApp: PrettyApp, a: IAspect, c: Construct): number {
-  const potentialTimes = [...prettyApp.initialAspects, ...prettyApp.addedAspects].filter((appl) => {
-    return appl.aspect === a && isAncestorOf(appl.construct, c);
-  }).map((appl) => appl.t);
+  const potentialTimes = [...prettyApp.initialAspects, ...prettyApp.addedAspects]
+    .filter((appl) => {
+      return appl.aspect === a && isAncestorOf(appl.construct, c);
+    })
+    .map((appl) => appl.t);
 
   return Math.min(...potentialTimes);
 }
@@ -320,9 +320,11 @@ function lowestAspectPrioFor(a: IAspect, c: IConstruct) {
 //  Arbitraries
 
 function appWithAspects() {
-  return arbCdkAppFactory().chain(arbAddAspects).map(([a, l]) => {
-    return new PrettyApp(a, l);
-  });
+  return arbCdkAppFactory()
+    .chain(arbAddAspects)
+    .map(([a, l]) => {
+      return new PrettyApp(a, l);
+    });
 }
 
 /**
@@ -347,14 +349,18 @@ function arbCdkAppFactory(props?: AppProps): fc.Arbitrary<AppFactory> {
 function arbConstructTreeFactory(): fc.Arbitrary<ConstructFactory> {
   const { tree } = fc.letrec((rec) => {
     return {
-      tree: fc.oneof({ depthSize: 'small', withCrossShrink: true }, rec('leaf'), rec('node')) as fc.Arbitrary<ConstructFactory>,
+      tree: fc.oneof(
+        { depthSize: 'small', withCrossShrink: true },
+        rec('leaf'),
+        rec('node')
+      ) as fc.Arbitrary<ConstructFactory>,
       leaf: fc.constant(constructFactory({})),
-      node: fc.tuple(
-        fc.array(fc.tuple(identifierString(), rec('tree') as fc.Arbitrary<ConstructFactory>), { maxLength: 5 }),
-      ).map(([children]) => {
-        const c = Object.fromEntries(children);
-        return constructFactory(c);
-      }),
+      node: fc
+        .tuple(fc.array(fc.tuple(identifierString(), rec('tree') as fc.Arbitrary<ConstructFactory>), { maxLength: 5 }))
+        .map(([children]) => {
+          const c = Object.fromEntries(children);
+          return constructFactory(c);
+        }),
     };
   });
   return tree;
@@ -370,17 +376,25 @@ class PrettyApp {
   private readonly _initialAspects: Map<string, Set<string>>;
   public readonly initialAspects: RecordedAspectApplication[];
 
-  constructor(public readonly cdkApp: App, public readonly executionState: ExecutionState) {
+  constructor(
+    public readonly cdkApp: App,
+    public readonly executionState: ExecutionState
+  ) {
     const constructs = cdkApp.node.findAll();
-    this.initialTree = new Set(constructs.map(c => c.node.path));
-    this._initialAspects = new Map(constructs.map(c => [c.node.path, new Set(renderAspects(c))]));
+    this.initialTree = new Set(constructs.map((c) => c.node.path));
+    this._initialAspects = new Map(constructs.map((c) => [c.node.path, new Set(renderAspects(c))]));
 
-    this.initialAspects = constructs.flatMap(c => Aspects.of(c).applied.map(a => ({
-      aspect: a.aspect,
-      construct: a.construct,
-      priority: a.priority,
-      t: 0,
-    } as RecordedAspectApplication)));
+    this.initialAspects = constructs.flatMap((c) =>
+      Aspects.of(c).applied.map(
+        (a) =>
+          ({
+            aspect: a.aspect,
+            construct: a.construct,
+            priority: a.priority,
+            t: 0,
+          }) as RecordedAspectApplication
+      )
+    );
   }
 
   /**
@@ -438,12 +452,14 @@ class PrettyApp {
         }
       }
 
-      line([
-        '+-',
-        ...self.initialTree.has(construct.node.path) ? [] : ['(added)'],
-        construct.node.id || '(root)',
-        ...aspects.length > 0 ? [` <-- ${aspects.join(', ')}`] : [],
-      ].join(' '));
+      line(
+        [
+          '+-',
+          ...(self.initialTree.has(construct.node.path) ? [] : ['(added)']),
+          construct.node.id || '(root)',
+          ...(aspects.length > 0 ? [` <-- ${aspects.join(', ')}`] : []),
+        ].join(' ')
+      );
 
       prefixes.push('     ');
       construct.node.children.forEach((child, i) => {
@@ -455,14 +471,16 @@ class PrettyApp {
 }
 
 function renderAspects(c: Construct) {
-  return unique(Aspects.of(c).applied.map(a => `${a.aspect}@${a.priority}`));
+  return unique(Aspects.of(c).applied.map((a) => `${a.aspect}@${a.priority}`));
 }
 
 function unique(xs: string[]): string[] {
   const seen = new Set<string>();
   const ret: string[] = [];
   for (const x of xs) {
-    if (seen.has(x)) { continue; }
+    if (seen.has(x)) {
+      continue;
+    }
     ret.push(x);
     seen.add(x);
   }
@@ -517,7 +535,8 @@ function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, ExecutionState]> 
 
 function arbAspectApplication(constructs: Construct[]): fc.Arbitrary<TestAspectApplication> {
   return fc.record({
-    constructPaths: fc.shuffledSubarray(constructs, { minLength: 1, maxLength: Math.min(3, constructs.length) })
+    constructPaths: fc
+      .shuffledSubarray(constructs, { minLength: 1, maxLength: Math.min(3, constructs.length) })
       .map((cs) => cs.map((c) => c.node.path)),
     aspect: arbAspect(constructs),
     priority: fc.nat({ max: 1000 }),
@@ -525,32 +544,36 @@ function arbAspectApplication(constructs: Construct[]): fc.Arbitrary<TestAspectA
 }
 
 function arbAspect(constructs: Construct[]): fc.Arbitrary<IAspect> {
-  return (fc.oneof(
-    {
-      depthIdentifier: 'aspects',
-    },
-    // Simple: inspecting aspect
-    fc.constant(() => fc.constant(new InspectingAspect())),
-    // Simple: mutating aspect
-    fc.constant(() => fc.constant(new MutatingAspect())),
-    // More complex: adds a new construct, optionally immediately adds an aspect to it
-    fc.constant(() => fc.record({
-      constructLoc: arbConstructLoc(constructs),
-      newAspects: fc.array(arbAspectApplication(constructs), { size: '-1', maxLength: 2 }),
-    }).map(({ constructLoc, newAspects }) => {
-      return new NodeAddingAspect(constructLoc, newAspects);
-    })),
-    // More complex: adds a new aspect to an existing construct.
-    // NOTE: this will never add an aspect to a construct that didn't exist in the initial tree.
-    fc.constant(() => arbAspectApplication(constructs).map(((aspectApp) =>
-      new AspectAddingAspect(aspectApp)
-    ))),
-  ) satisfies fc.Arbitrary<() => fc.Arbitrary<IAspect>>).chain((fact) => fact());
+  return (
+    fc.oneof(
+      {
+        depthIdentifier: 'aspects',
+      },
+      // Simple: inspecting aspect
+      fc.constant(() => fc.constant(new InspectingAspect())),
+      // Simple: mutating aspect
+      fc.constant(() => fc.constant(new MutatingAspect())),
+      // More complex: adds a new construct, optionally immediately adds an aspect to it
+      fc.constant(() =>
+        fc
+          .record({
+            constructLoc: arbConstructLoc(constructs),
+            newAspects: fc.array(arbAspectApplication(constructs), { size: '-1', maxLength: 2 }),
+          })
+          .map(({ constructLoc, newAspects }) => {
+            return new NodeAddingAspect(constructLoc, newAspects);
+          })
+      ),
+      // More complex: adds a new aspect to an existing construct.
+      // NOTE: this will never add an aspect to a construct that didn't exist in the initial tree.
+      fc.constant(() => arbAspectApplication(constructs).map((aspectApp) => new AspectAddingAspect(aspectApp)))
+    ) satisfies fc.Arbitrary<() => fc.Arbitrary<IAspect>>
+  ).chain((fact) => fact());
 }
 
 function arbConstructLoc(constructs: Construct[]): fc.Arbitrary<ConstructLoc> {
   return fc.record({
-    scope: fc.constantFrom(...constructs.map(c => c.node.path)),
+    scope: fc.constantFrom(...constructs.map((c) => c.node.path)),
     id: identifierString(),
   });
 }
@@ -611,7 +634,11 @@ function findConstructDeep(root: IConstruct, path: string) {
 }
 
 function identifierString() {
-  return fc.string({ minLength: 1, maxLength: 3, unit: fc.constantFrom('Da', 'Fu', 'Glo', 'Ba', 'Ro', 'ni', 'za', 'go', 'moo', 'flub', 'bu', 'vin', 'e', 'be') });
+  return fc.string({
+    minLength: 1,
+    maxLength: 3,
+    unit: fc.constantFrom('Da', 'Fu', 'Glo', 'Ba', 'Ro', 'ni', 'za', 'go', 'moo', 'flub', 'bu', 'vin', 'e', 'be'),
+  });
 }
 
 /**
@@ -726,7 +753,10 @@ interface RecordedAspectApplication extends PartialTestAspectApplication {
  * An aspect that adds a new node, if one doesn't exist yet
  */
 class NodeAddingAspect extends TracingAspect {
-  constructor(private readonly loc: ConstructLoc, private readonly newAspects: PartialTestAspectApplication[]) {
+  constructor(
+    private readonly loc: ConstructLoc,
+    private readonly newAspects: PartialTestAspectApplication[]
+  ) {
     super();
   }
 

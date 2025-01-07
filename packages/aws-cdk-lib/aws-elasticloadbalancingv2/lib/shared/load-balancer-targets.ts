@@ -1,9 +1,6 @@
 import { ITargetGroup, LoadBalancerTargetProps } from './base-target-group';
 import { TargetType } from './enums';
-import {
-  IApplicationLoadBalancerTarget,
-  IApplicationTargetGroup,
-} from '../alb/application-target-group';
+import { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from '../alb/application-target-group';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup } from '../nlb/network-target-group';
 
 /**
@@ -32,9 +29,7 @@ export class InstanceTarget implements IApplicationLoadBalancerTarget, INetworkL
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(
-    targetGroup: IApplicationTargetGroup
-  ): LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: IApplicationTargetGroup): LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 
@@ -104,9 +99,7 @@ export class IpTarget implements IApplicationLoadBalancerTarget, INetworkLoadBal
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(
-    targetGroup: IApplicationTargetGroup
-  ): LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: IApplicationTargetGroup): LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 

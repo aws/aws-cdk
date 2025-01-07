@@ -1,13 +1,7 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import {
-  BuildSpec,
-  ComputeType,
-  LinuxBuildImage,
-  Project,
-  ProjectProps,
-} from 'aws-cdk-lib/aws-codebuild';
+import { BuildSpec, ComputeType, LinuxBuildImage, Project, ProjectProps } from 'aws-cdk-lib/aws-codebuild';
 import { CompositePrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
@@ -35,9 +29,7 @@ class TestCodeBuildProject extends Project {
         version: '0.2',
         phases: {
           build: {
-            commands: [
-              `aws ssm put-parameter --overwrite --name ${payload.Name} --value ${payload.Value}`,
-            ],
+            commands: [`aws ssm put-parameter --overwrite --name ${payload.Name} --value ${payload.Value}`],
           },
         },
       }),

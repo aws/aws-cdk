@@ -318,10 +318,7 @@ export class Lazy {
    * the value depends on the Stack the value is being used in. Both of these
    * cases are rare, and only ever occur for AWS Construct Library authors.
    */
-  public static uncachedAny(
-    producer: IAnyProducer,
-    options: LazyAnyValueOptions = {}
-  ): IResolvable {
+  public static uncachedAny(producer: IAnyProducer, options: LazyAnyValueOptions = {}): IResolvable {
     return new LazyAny(producer, false, options);
   }
 

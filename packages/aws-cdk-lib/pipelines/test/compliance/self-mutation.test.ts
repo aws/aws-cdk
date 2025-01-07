@@ -19,22 +19,23 @@ afterEach(() => {
 });
 
 test('CodePipeline has self-mutation stage', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'UpdatePipeline',
-      Actions: [
-        Match.objectLike({
-          Name: 'SelfMutate',
-          Configuration: Match.objectLike({
-            ProjectName: { Ref: Match.anyValue() },
+    Stages: Match.arrayWith([
+      {
+        Name: 'UpdatePipeline',
+        Actions: [
+          Match.objectLike({
+            Name: 'SelfMutate',
+            Configuration: Match.objectLike({
+              ProjectName: { Ref: Match.anyValue() },
+            }),
           }),
-        }),
-      ],
-    }]),
+        ],
+      },
+    ]),
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
@@ -42,23 +43,24 @@ test('CodePipeline has self-mutation stage', () => {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: ['npm install -g aws-cdk@2'],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: ['npm install -g aws-cdk@2'],
+            },
+            build: {
+              commands: Match.arrayWith(['cdk -a . deploy PipelineStack --require-approval=never --verbose']),
+            },
           },
-          build: {
-            commands: Match.arrayWith(['cdk -a . deploy PipelineStack --require-approval=never --verbose']),
-          },
-        },
-      })),
+        })
+      ),
       Type: 'CODEPIPELINE',
     },
   });
 });
 
 test('selfmutation stage correctly identifies nested assembly of pipeline stack', () => {
-
   const pipelineStage = new Stage(app, 'PipelineStage');
   const nestedPipelineStack = new Stack(pipelineStage, 'PipelineStack', { env: PIPELINE_ENV });
   new ModernTestGitHubNpmPipeline(nestedPipelineStack, 'Cdk');
@@ -68,29 +70,36 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          build: {
-            commands: Match.arrayWith(['cdk -a assembly-PipelineStage deploy PipelineStage/PipelineStack --require-approval=never --verbose']),
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            build: {
+              commands: Match.arrayWith([
+                'cdk -a assembly-PipelineStage deploy PipelineStage/PipelineStack --require-approval=never --verbose',
+              ]),
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
 
 test('selfmutation feature can be turned off', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     selfMutation: false,
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.not(Match.arrayWith([{
-      Name: 'UpdatePipeline',
-      Actions: Match.anyValue(),
-    }])),
+    Stages: Match.not(
+      Match.arrayWith([
+        {
+          Name: 'UpdatePipeline',
+          Actions: Match.anyValue(),
+        },
+      ])
+    ),
   });
 });
 
@@ -104,19 +113,20 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Name: 'vpipe-selfupdate',
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: ['npm install -g aws-cdk@1.2.3'],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: ['npm install -g aws-cdk@1.2.3'],
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
 
 test('Pipeline stack itself can use assets (has implications for selfupdate)', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'PrivilegedPipeline', {
     dockerEnabledForSelfMutation: true,
@@ -162,7 +172,6 @@ test('self-update project role uses tagged bootstrap-role permissions', () => {
 });
 
 test('self-mutation stage can be customized with BuildSpec', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     selfMutationCodeBuildDefaults: {
       partialBuildSpec: cb.BuildSpec.fromObject({
@@ -184,19 +193,21 @@ test('self-mutation stage can be customized with BuildSpec', () => {
       PrivilegedMode: false,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: ['npm config set registry example.com', 'npm install -g aws-cdk@2'],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: ['npm config set registry example.com', 'npm install -g aws-cdk@2'],
+            },
+            build: {
+              commands: Match.arrayWith(['cdk -a . deploy PipelineStack --require-approval=never --verbose']),
+            },
           },
-          build: {
-            commands: Match.arrayWith(['cdk -a . deploy PipelineStack --require-approval=never --verbose']),
+          cache: {
+            paths: ['node_modules'],
           },
-        },
-        cache: {
-          paths: ['node_modules'],
-        },
-      })),
+        })
+      ),
       Type: 'CODEPIPELINE',
     },
   });

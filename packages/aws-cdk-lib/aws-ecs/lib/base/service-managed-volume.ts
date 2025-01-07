@@ -220,9 +220,7 @@ export class ServiceManagedVolume extends Construct {
       new iam.Role(this, 'EBSRole', {
         assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
         managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName(
-            'service-role/AmazonECSInfrastructureRolePolicyForVolumes'
-          ),
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSInfrastructureRolePolicyForVolumes'),
         ],
       });
     this.config = {
@@ -246,13 +244,7 @@ export class ServiceManagedVolume extends Construct {
   private validateEbsVolumeConfiguration(volumeConfig?: ServiceManagedEBSVolumeConfiguration) {
     if (!volumeConfig) return;
 
-    const {
-      volumeType = ec2.EbsDeviceVolumeType.GP2,
-      iops,
-      size,
-      throughput,
-      snapShotId,
-    } = volumeConfig;
+    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, size, throughput, snapShotId } = volumeConfig;
 
     // Validate if both size and snapShotId are not specified.
     if (size === undefined && snapShotId === undefined) {
@@ -290,13 +282,9 @@ export class ServiceManagedVolume extends Construct {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-servicemanagedebsvolumeconfiguration.html#cfn-ecs-service-servicemanagedebsvolumeconfiguration-throughput
     if (throughput !== undefined) {
       if (volumeType !== ec2.EbsDeviceVolumeType.GP3) {
-        throw new Error(
-          `'throughput' can only be configured with gp3 volume type, got ${volumeType}`
-        );
+        throw new Error(`'throughput' can only be configured with gp3 volume type, got ${volumeType}`);
       } else if (!Token.isUnresolved(throughput) && throughput > 1000) {
-        throw new Error(
-          `'throughput' must be less than or equal to 1000 MiB/s, got ${throughput} MiB/s`
-        );
+        throw new Error(`'throughput' must be less than or equal to 1000 MiB/s, got ${throughput} MiB/s`);
       }
     }
 
@@ -311,16 +299,11 @@ export class ServiceManagedVolume extends Construct {
       ].includes(volumeType) &&
       iops !== undefined
     ) {
-      throw new Error(
-        `'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got ${volumeType}`
-      );
+      throw new Error(`'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got ${volumeType}`);
     }
 
     // Check if IOPS is required but not provided.
-    if (
-      [ec2.EbsDeviceVolumeType.IO1, ec2.EbsDeviceVolumeType.IO2].includes(volumeType) &&
-      iops === undefined
-    ) {
+    if ([ec2.EbsDeviceVolumeType.IO1, ec2.EbsDeviceVolumeType.IO2].includes(volumeType) && iops === undefined) {
       throw new Error(`'iops' must be specified with io1 or io2 volume types, got ${volumeType}`);
     }
 
@@ -332,9 +315,7 @@ export class ServiceManagedVolume extends Construct {
     if (iops !== undefined && !Token.isUnresolved(iops)) {
       const { min, max } = iopsRanges[volumeType];
       if (iops < min || iops > max) {
-        throw new Error(
-          `'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`
-        );
+        throw new Error(`'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`);
       }
     }
   }

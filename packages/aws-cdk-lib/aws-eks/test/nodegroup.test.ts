@@ -115,10 +115,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -158,10 +155,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -202,10 +196,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -246,10 +237,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -290,10 +278,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -341,10 +326,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -399,10 +381,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -457,10 +436,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -515,10 +491,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'NodegroupNodeGroupRole038A128B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
       },
       Subnets: [
         {
@@ -561,10 +534,7 @@ describe('node group', () => {
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceTypes: [
-        new ec2.InstanceType('m5.large'),
-        new ec2.InstanceType('c5.large'),
-      ],
+      instanceTypes: [new ec2.InstanceType('m5.large'), new ec2.InstanceType('c5.large')],
     });
 
     // THEN
@@ -589,10 +559,7 @@ describe('node group', () => {
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceTypes: [
-        new ec2.InstanceType('c6g.large'),
-        new ec2.InstanceType('t4g.large'),
-      ],
+      instanceTypes: [new ec2.InstanceType('c6g.large'), new ec2.InstanceType('t4g.large')],
     });
 
     // THEN
@@ -617,10 +584,7 @@ describe('node group', () => {
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceTypes: [
-        new ec2.InstanceType('g6e.large'),
-        new ec2.InstanceType('g5.large'),
-      ],
+      instanceTypes: [new ec2.InstanceType('g6e.large'), new ec2.InstanceType('g5.large')],
     });
 
     // THEN
@@ -642,13 +606,14 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      amiType: NodegroupAmiType.AL2_X86_64,
-      instanceTypes: [
-        new ec2.InstanceType('p3.large'),
-        new ec2.InstanceType('g3.large'),
-      ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64_GPU, AL2023_X86_64_NEURON, AL2023_X86_64_NVIDIA, BOTTLEROCKET_X86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        amiType: NodegroupAmiType.AL2_X86_64,
+        instanceTypes: [new ec2.InstanceType('p3.large'), new ec2.InstanceType('g3.large')],
+      })
+    ).toThrow(
+      /The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64_GPU, AL2023_X86_64_NEURON, AL2023_X86_64_NVIDIA, BOTTLEROCKET_X86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/
+    );
   });
 
   /**
@@ -664,13 +629,14 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
-      instanceTypes: [
-        new ec2.InstanceType('c6g.large'),
-        new ec2.InstanceType('t4g.large'),
-      ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_ARM_64, AL2023_ARM_64_STANDARD, BOTTLEROCKET_ARM_64 or don't specify any/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
+        instanceTypes: [new ec2.InstanceType('c6g.large'), new ec2.InstanceType('t4g.large')],
+      })
+    ).toThrow(
+      /The specified AMI does not match the instance types architecture, either specify one of AL2_ARM_64, AL2023_ARM_64_STANDARD, BOTTLEROCKET_ARM_64 or don't specify any/
+    );
   });
 
   /**
@@ -686,13 +652,14 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      amiType: NodegroupAmiType.AL2023_ARM_64_STANDARD,
-      instanceTypes: [
-        new ec2.InstanceType('m5.large'),
-        new ec2.InstanceType('c5.large'),
-      ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        amiType: NodegroupAmiType.AL2023_ARM_64_STANDARD,
+        instanceTypes: [new ec2.InstanceType('m5.large'), new ec2.InstanceType('c5.large')],
+      })
+    ).toThrow(
+      /The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/
+    );
   });
 
   /**
@@ -708,13 +675,14 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      amiType: NodegroupAmiType.AL2_ARM_64,
-      instanceTypes: [
-        new ec2.InstanceType('c5.large'),
-        new ec2.InstanceType('m5.large'),
-      ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        amiType: NodegroupAmiType.AL2_ARM_64,
+        instanceTypes: [new ec2.InstanceType('c5.large'), new ec2.InstanceType('m5.large')],
+      })
+    ).toThrow(
+      /The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/
+    );
   });
 
   test('throws when AmiType is Windows and forbidden instanceType is selected', () => {
@@ -726,12 +694,14 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
-      instanceTypes: [
-        new ec2.InstanceType('c3.large'),
-      ],
-    })).toThrow(/The specified instanceType does not support Windows workloads. Amazon EC2 instance types C3, C4, D2, I2, M4 \(excluding m4.16xlarge\), M6a.x, and R3 instances aren't supported for Windows workloads./);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+        instanceTypes: [new ec2.InstanceType('c3.large')],
+      })
+    ).toThrow(
+      /The specified instanceType does not support Windows workloads. Amazon EC2 instance types C3, C4, D2, I2, M4 \(excluding m4.16xlarge\), M6a.x, and R3 instances aren't supported for Windows workloads./
+    );
   });
 
   /**
@@ -747,13 +717,14 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      amiType: NodegroupAmiType.AL2_X86_64_GPU,
-      instanceTypes: [
-        new ec2.InstanceType('c5.large'),
-        new ec2.InstanceType('m5.large'),
-      ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        amiType: NodegroupAmiType.AL2_X86_64_GPU,
+        instanceTypes: [new ec2.InstanceType('c5.large'), new ec2.InstanceType('m5.large')],
+      })
+    ).toThrow(
+      /The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/
+    );
   });
 
   test('throws when LaunchTemplate is undefined, amiType is BOTTLEROCKET_ARM_64_NVIDIA and instanceTypes are not GPU', () => {
@@ -765,13 +736,14 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
-      instanceTypes: [
-        new ec2.InstanceType('c5.large'),
-        new ec2.InstanceType('m5.large'),
-      ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
+        instanceTypes: [new ec2.InstanceType('c5.large'), new ec2.InstanceType('m5.large')],
+      })
+    ).toThrow(
+      /The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/
+    );
   });
 
   test('throws when LaunchTemplate is undefined, amiType is BOTTLEROCKET_X86_64_NVIDIA and instanceTypes are not GPU', () => {
@@ -783,13 +755,14 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      amiType: NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
-      instanceTypes: [
-        new ec2.InstanceType('c5.large'),
-        new ec2.InstanceType('m5.large'),
-      ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        amiType: NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
+        instanceTypes: [new ec2.InstanceType('c5.large'), new ec2.InstanceType('m5.large')],
+      })
+    ).toThrow(
+      /The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64, AL2023_X86_64_STANDARD, BOTTLEROCKET_X86_64, WINDOWS_CORE_2019_X86_64, WINDOWS_CORE_2022_X86_64, WINDOWS_FULL_2019_X86_64, WINDOWS_FULL_2022_X86_64 or don't specify any/
+    );
   });
 
   /**
@@ -808,10 +781,7 @@ describe('node group', () => {
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceTypes: [
-        new ec2.InstanceType('p3.large'),
-        new ec2.InstanceType('g3.large'),
-      ],
+      instanceTypes: [new ec2.InstanceType('p3.large'), new ec2.InstanceType('g3.large')],
       launchTemplateSpec: {
         id: 'mock',
       },
@@ -837,10 +807,7 @@ describe('node group', () => {
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceTypes: [
-        new ec2.InstanceType('c5.large'),
-        new ec2.InstanceType('m5.large'),
-      ],
+      instanceTypes: [new ec2.InstanceType('c5.large'), new ec2.InstanceType('m5.large')],
       launchTemplateSpec: {
         id: 'mock',
       },
@@ -866,10 +833,7 @@ describe('node group', () => {
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceTypes: [
-        new ec2.InstanceType('c6g.large'),
-        new ec2.InstanceType('t4g.large'),
-      ],
+      instanceTypes: [new ec2.InstanceType('c6g.large'), new ec2.InstanceType('t4g.large')],
       launchTemplateSpec: {
         id: 'mock',
       },
@@ -913,7 +877,7 @@ describe('node group', () => {
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
-      // THEN
+    // THEN
     cluster.addNodegroupCapacity('bottlerocket', {
       instanceTypes: [new ec2.InstanceType('c6g.xlarge')],
       amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
@@ -1040,24 +1004,15 @@ describe('node group', () => {
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'MastersRole0257C11B',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MastersRole0257C11B', 'Arn'],
             },
             '\\",\\"username\\":\\"',
             {
-              'Fn::GetAtt': [
-                'MastersRole0257C11B',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MastersRole0257C11B', 'Arn'],
             },
             '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'NodegroupNodeGroupRole038A128B',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['NodegroupNodeGroupRole038A128B', 'Arn'],
             },
             '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
           ],
@@ -1067,10 +1022,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       RoleArn: {
-        'Fn::GetAtt': [
-          'ClusterCreationRole360249B6',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ClusterCreationRole360249B6', 'Arn'],
       },
       PruneLabel: 'aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76',
     });
@@ -1099,10 +1051,7 @@ describe('node group', () => {
         Ec2SshKey: 'foo',
         SourceSecurityGroups: [
           {
-            'Fn::GetAtt': [
-              'SGADB53937',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['SGADB53937', 'GroupId'],
           },
         ],
       },
@@ -1144,9 +1093,7 @@ describe('node group', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
-      InstanceTypes: [
-        'm5.large',
-      ],
+      InstanceTypes: ['m5.large'],
     });
   });
 
@@ -1168,9 +1115,7 @@ describe('node group', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
-      InstanceTypes: [
-        'm5.large',
-      ],
+      InstanceTypes: ['m5.large'],
       CapacityType: 'ON_DEMAND',
     });
   });
@@ -1196,11 +1141,7 @@ describe('node group', () => {
     });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
-      InstanceTypes: [
-        'm5.large',
-        't3.large',
-        'c5.large',
-      ],
+      InstanceTypes: ['m5.large', 't3.large', 'c5.large'],
       CapacityType: 'SPOT',
     });
   });
@@ -1226,11 +1167,7 @@ describe('node group', () => {
     });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
-      InstanceTypes: [
-        'm5.large',
-        't3.large',
-        'c5.large',
-      ],
+      InstanceTypes: ['m5.large', 't3.large', 'c5.large'],
       CapacityType: 'ON_DEMAND',
     });
   });
@@ -1246,15 +1183,17 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      instanceType: new ec2.InstanceType('m5.large'),
-      instanceTypes: [
-        new ec2.InstanceType('m5.large'),
-        new ec2.InstanceType('t3.large'),
-        new ec2.InstanceType('c5.large'),
-      ],
-      capacityType: eks.CapacityType.SPOT,
-    })).toThrow(/"instanceType is deprecated, please use "instanceTypes" only/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        instanceType: new ec2.InstanceType('m5.large'),
+        instanceTypes: [
+          new ec2.InstanceType('m5.large'),
+          new ec2.InstanceType('t3.large'),
+          new ec2.InstanceType('c5.large'),
+        ],
+        capacityType: eks.CapacityType.SPOT,
+      })
+    ).toThrow(/"instanceType is deprecated, please use "instanceTypes" only/);
   });
 
   test('create nodegroup with neither instanceTypes nor instanceType defined', () => {
@@ -1285,15 +1224,17 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      instanceTypes: [
-        // X86
-        new ec2.InstanceType('c5.large'),
-        new ec2.InstanceType('c5a.large'),
-        // ARM64
-        new ec2.InstanceType('m6g.large'),
-      ],
-    })).toThrow(/instanceTypes of different architectures is not allowed/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        instanceTypes: [
+          // X86
+          new ec2.InstanceType('c5.large'),
+          new ec2.InstanceType('c5a.large'),
+          // ARM64
+          new ec2.InstanceType('m6g.large'),
+        ],
+      })
+    ).toThrow(/instanceTypes of different architectures is not allowed/);
   });
 
   test('throws when amiType provided is incorrect', () => {
@@ -1305,15 +1246,17 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', {
-      instanceTypes: [
-        new ec2.InstanceType('c5.large'),
-        new ec2.InstanceType('c5a.large'),
-        new ec2.InstanceType('c5d.large'),
-      ],
-      // incorrect amiType
-      amiType: eks.NodegroupAmiType.AL2_ARM_64,
-    })).toThrow(/The specified AMI does not match the instance types architecture/);
+    expect(() =>
+      cluster.addNodegroupCapacity('ng', {
+        instanceTypes: [
+          new ec2.InstanceType('c5.large'),
+          new ec2.InstanceType('c5a.large'),
+          new ec2.InstanceType('c5d.large'),
+        ],
+        // incorrect amiType
+        amiType: eks.NodegroupAmiType.AL2_ARM_64,
+      })
+    ).toThrow(/The specified AMI does not match the instance types architecture/);
   });
 
   test('remoteAccess without security group provided', () => {
@@ -1387,10 +1330,7 @@ describe('node group', () => {
         Ref: 'Cluster9EE0221C',
       },
       NodeRole: {
-        'Fn::GetAtt': [
-          'ClusterNodegroupngNodeGroupRoleDA0D35DA',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ClusterNodegroupngNodeGroupRoleDA0D35DA', 'Arn'],
       },
       Subnets: [
         {
@@ -1453,7 +1393,9 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 3, maxSize: 2 })).toThrow(/Desired capacity 3 can't be greater than max size 2/);
+    expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 3, maxSize: 2 })).toThrow(
+      /Desired capacity 3 can't be greater than max size 2/
+    );
   });
 
   test('throws when desiredSize < minSize', () => {
@@ -1465,7 +1407,9 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 2, minSize: 3 })).toThrow(/Minimum capacity 3 can't be greater than desired size 2/);
+    expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 2, minSize: 3 })).toThrow(
+      /Minimum capacity 3 can't be greater than desired size 2/
+    );
   });
 
   test('can set minSize , maxSize and DesiredSize', () => {
@@ -1529,10 +1473,7 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     const userData = ec2.UserData.forLinux();
-    userData.addCommands(
-      'set -o xtrace',
-      `/etc/eks/bootstrap.sh ${cluster.clusterName}`,
-    );
+    userData.addCommands('set -o xtrace', `/etc/eks/bootstrap.sh ${cluster.clusterName}`);
     const lt = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
       launchTemplateData: {
         imageId: new eks.EksOptimizedImage().getImage(stack).imageId,
@@ -1554,10 +1495,7 @@ describe('node group', () => {
           Ref: 'LaunchTemplate',
         },
         Version: {
-          'Fn::GetAtt': [
-            'LaunchTemplate',
-            'DefaultVersionNumber',
-          ],
+          'Fn::GetAtt': ['LaunchTemplate', 'DefaultVersionNumber'],
         },
       },
     });
@@ -1574,10 +1512,7 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     const userData = ec2.UserData.forLinux();
-    userData.addCommands(
-      'set -o xtrace',
-      `/etc/eks/bootstrap.sh ${cluster.clusterName}`,
-    );
+    userData.addCommands('set -o xtrace', `/etc/eks/bootstrap.sh ${cluster.clusterName}`);
     const lt = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
       launchTemplateData: {
         imageId: new eks.EksOptimizedImage().getImage(stack).imageId,
@@ -1593,7 +1528,8 @@ describe('node group', () => {
           id: lt.ref,
           version: lt.attrDefaultVersionNumber,
         },
-      })).toThrow(/diskSize must be specified within the launch template/);
+      })
+    ).toThrow(/diskSize must be specified within the launch template/);
   });
 
   test('create updateConfig for maxUnavailable correctly', () => {
@@ -1673,7 +1609,9 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 3, maxUnavailablePercentage: 2 })).toThrow(/maxUnavailable and maxUnavailablePercentage are not allowed to be defined together/);
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 3, maxUnavailablePercentage: 2 })).toThrow(
+      /maxUnavailable and maxUnavailablePercentage are not allowed to be defined together/
+    );
   });
 
   test('throws when maxUnavailable is greater than maxSize', () => {
@@ -1685,7 +1623,9 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 5, maxSize: 4 })).toThrow(/maxUnavailable must be lower than maxSize/);
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 5, maxSize: 4 })).toThrow(
+      /maxUnavailable must be lower than maxSize/
+    );
   });
 
   test('throws when maxUnavailable is less than 1', () => {
@@ -1697,7 +1637,9 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: -3, maxSize: 10 })).toThrow(/maxUnavailable must be between 1 and 100/);
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: -3, maxSize: 10 })).toThrow(
+      /maxUnavailable must be between 1 and 100/
+    );
   });
 
   test('throws when maxUnavailable is greater than 100', () => {
@@ -1709,7 +1651,9 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 101, maxSize: 200 })).toThrow(/maxUnavailable must be between 1 and 100/);
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 101, maxSize: 200 })).toThrow(
+      /maxUnavailable must be between 1 and 100/
+    );
   });
 
   test('throws when maxUnavailablePercentage is less than 1', () => {
@@ -1721,7 +1665,9 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: -3, maxSize: 10 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: -3, maxSize: 10 })).toThrow(
+      /maxUnavailablePercentage must be between 1 and 100/
+    );
   });
 
   test('throws when maxUnavailablePercentage is greater than 100', () => {
@@ -1733,7 +1679,9 @@ describe('node group', () => {
       version: CLUSTER_VERSION,
     });
     // THEN
-    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
+    expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(
+      /maxUnavailablePercentage must be between 1 and 100/
+    );
   });
 });
 
@@ -1756,7 +1704,7 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.G5, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G5G, ec2.InstanceSize.XLARGE),
     ];
-    gpuInstanceTypes.forEach(instanceType => {
+    gpuInstanceTypes.forEach((instanceType) => {
       expect(isGpuInstanceType(instanceType)).toBe(true);
     });
   });
@@ -1766,7 +1714,7 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.XLARGE),
     ];
-    nonGpuInstanceTypes.forEach(instanceType => {
+    nonGpuInstanceTypes.forEach((instanceType) => {
       expect(isGpuInstanceType(instanceType)).toBe(false);
     });
   });
@@ -1782,7 +1730,7 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MICRO),
       ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.METAL),
     ];
-    gpuInstanceTypes.forEach(instanceType => {
+    gpuInstanceTypes.forEach((instanceType) => {
       expect(isGpuInstanceType(instanceType)).toBe(true);
     });
   });

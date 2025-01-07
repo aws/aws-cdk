@@ -52,14 +52,9 @@ export interface LambdaDeploymentConfigProps extends BaseDeploymentConfigOptions
  * A custom Deployment Configuration for a Lambda Deployment Group.
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
-export class LambdaDeploymentConfig
-  extends BaseDeploymentConfig
-  implements ILambdaDeploymentConfig
-{
+export class LambdaDeploymentConfig extends BaseDeploymentConfig implements ILambdaDeploymentConfig {
   /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated Lambda function at once. */
-  public static readonly ALL_AT_ONCE = LambdaDeploymentConfig.deploymentConfig(
-    'CodeDeployDefault.LambdaAllAtOnce'
-  );
+  public static readonly ALL_AT_ONCE = LambdaDeploymentConfig.deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
   /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 30 minutes later. */
   public static readonly CANARY_10PERCENT_30MINUTES = LambdaDeploymentConfig.deploymentConfig(
     'CodeDeployDefault.LambdaCanary10Percent30Minutes'

@@ -99,8 +99,8 @@ test('Invoke glue job with dynamic worker type', () => {
     },
     End: true,
     Parameters: {
-      'JobName': glueJobName,
-      'NumberOfWorkers': 2,
+      JobName: glueJobName,
+      NumberOfWorkers: 2,
       'WorkerType.$': '$.workerType',
     },
   });
@@ -179,7 +179,7 @@ test('Invoke glue job with Timeout.at()', () => {
     },
     End: true,
     Parameters: {
-      'JobName': glueJobName,
+      JobName: glueJobName,
       'Timeout.$': '$.timeout',
     },
   });
@@ -211,7 +211,7 @@ test('job arguments can reference state input', () => {
     },
     End: true,
     Parameters: {
-      'JobName': glueJobName,
+      JobName: glueJobName,
       'Arguments.$': '$.input',
     },
   });
@@ -229,9 +229,11 @@ test('permitted role actions limited to start job run if service integration pat
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [Match.objectLike({
-        Action: 'glue:StartJobRun',
-      })],
+      Statement: [
+        Match.objectLike({
+          Action: 'glue:StartJobRun',
+        }),
+      ],
     },
   });
 });
@@ -248,14 +250,11 @@ test('permitted role actions include start, get, and stop job run if service int
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [Match.objectLike({
-        Action: [
-          'glue:StartJobRun',
-          'glue:GetJobRun',
-          'glue:GetJobRuns',
-          'glue:BatchStopJobRun',
-        ],
-      })],
+      Statement: [
+        Match.objectLike({
+          Action: ['glue:StartJobRun', 'glue:GetJobRun', 'glue:GetJobRuns', 'glue:BatchStopJobRun'],
+        }),
+      ],
     },
   });
 });

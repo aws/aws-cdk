@@ -17,12 +17,14 @@ describe('general validation', () => {
       { name: 'BlahBleep123.@-_', shouldPassValidation: true, explanation: 'should be valid' },
       { name: '', shouldPassValidation: false, explanation: 'the empty string should be invalid' },
       { name: ' BlahBleep', shouldPassValidation: false, explanation: 'spaces should be invalid' },
-      { name: '!BlahBleep', shouldPassValidation: false, explanation: '\'!\' should be invalid' },
+      { name: '!BlahBleep', shouldPassValidation: false, explanation: "'!' should be invalid" },
     ];
 
-    cases.forEach(testCase => {
+    cases.forEach((testCase) => {
       const name = testCase.name;
-      const validationBlock = () => { validateName('test thing', name); };
+      const validationBlock = () => {
+        validateName('test thing', name);
+      };
       if (testCase.shouldPassValidation) {
         expect(validationBlock).not.toThrow();
       } else {

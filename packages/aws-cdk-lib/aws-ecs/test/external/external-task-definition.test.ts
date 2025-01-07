@@ -31,7 +31,7 @@ describe('external task definition', () => {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
             new iam.ServicePrincipal('ecs.amazonaws.com'),
-            new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+            new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
           ),
         }),
         family: 'ecs-tasks',
@@ -44,21 +44,13 @@ describe('external task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'ExecutionRole605A040B',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'],
         },
         Family: 'ecs-tasks',
         NetworkMode: 'host',
-        RequiresCompatibilities: [
-          'EXTERNAL',
-        ],
+        RequiresCompatibilities: ['EXTERNAL'],
         TaskRoleArn: {
-          'Fn::GetAtt': [
-            'TaskRole30FC0FBB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'],
         },
       });
     });
@@ -96,34 +88,40 @@ describe('external task definition', () => {
         softLimit: 128,
       });
 
-      container.addToExecutionPolicy(new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['ecs:*'],
-      }));
+      container.addToExecutionPolicy(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['ecs:*'],
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'ExternalTaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EXTERNAL'],
-        ContainerDefinitions: [{
-          Essential: true,
-          Memory: 512,
-          Image: 'amazon/amazon-ecs-sample',
-          Name: 'web',
-          PortMappings: [{
-            ContainerPort: 3000,
-            HostPort: 0,
-            Protocol: Protocol.TCP,
-          }],
-          Ulimits: [
-            {
-              HardLimit: 128,
-              Name: 'rss',
-              SoftLimit: 128,
-            },
-          ],
-        }],
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Memory: 512,
+            Image: 'amazon/amazon-ecs-sample',
+            Name: 'web',
+            PortMappings: [
+              {
+                ContainerPort: 3000,
+                HostPort: 0,
+                Protocol: Protocol.TCP,
+              },
+            ],
+            Ulimits: [
+              {
+                HardLimit: 128,
+                Name: 'rss',
+                SoftLimit: 128,
+              },
+            ],
+          },
+        ],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -162,7 +160,9 @@ describe('external task definition', () => {
         dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
         entryPoint: ['/app/node_modules/.bin/cdk'],
         environment: { TEST_ENVIRONMENT_VARIABLE: 'test environment variable value' },
-        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, '..', 'demo-envfiles', 'test-envfile.env'))],
+        environmentFiles: [
+          ecs.EnvironmentFile.fromAsset(path.join(__dirname, '..', 'demo-envfiles', 'test-envfile.env')),
+        ],
         essential: true,
         extraHosts: { EXTRAHOST: 'extra host' },
         healthCheck: {
@@ -193,51 +193,43 @@ describe('external task definition', () => {
         RequiresCompatibilities: ['EXTERNAL'],
         ContainerDefinitions: [
           {
-            Command: [
-              'CMD env',
-            ],
+            Command: ['CMD env'],
             Cpu: 256,
             DisableNetworking: true,
-            DnsSearchDomains: [
-              '0.0.0.0',
-            ],
-            DnsServers: [
-              '1.1.1.1',
-            ],
+            DnsSearchDomains: ['0.0.0.0'],
+            DnsServers: ['1.1.1.1'],
             DockerLabels: {
               LABEL: 'label',
             },
-            DockerSecurityOptions: [
-              'ECS_SELINUX_CAPABLE=true',
-            ],
-            EntryPoint: [
-              '/app/node_modules/.bin/cdk',
-            ],
+            DockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
+            EntryPoint: ['/app/node_modules/.bin/cdk'],
             Environment: [
               {
                 Name: 'TEST_ENVIRONMENT_VARIABLE',
                 Value: 'test environment variable value',
               },
             ],
-            EnvironmentFiles: [{
-              Type: 's3',
-              Value: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':s3:::',
-                    {
-                      'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
-                    },
-                    '/872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d.env',
+            EnvironmentFiles: [
+              {
+                Type: 's3',
+                Value: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
+                      {
+                        'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+                      },
+                      '/872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724d.env',
+                    ],
                   ],
-                ],
+                },
               },
-            }],
+            ],
             Essential: true,
             ExtraHosts: [
               {
@@ -246,10 +238,7 @@ describe('external task definition', () => {
               },
             ],
             HealthCheck: {
-              Command: [
-                'CMD-SHELL',
-                'curl localhost:8000',
-              ],
+              Command: ['CMD-SHELL', 'curl localhost:8000'],
               Interval: 20,
               Retries: 5,
               StartPeriod: 10,
@@ -322,16 +311,20 @@ describe('external task definition', () => {
       const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
 
       taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage', {
-          lifecycleRegistryId: '123456789101',
-          lifecycleRules: [{
-            rulePriority: 10,
-            tagPrefixList: ['abc'],
-            maxImageCount: 1,
-          }],
-          removalPolicy: cdk.RemovalPolicy.DESTROY,
-          repositoryName: 'project-a/amazon-ecs-sample',
-        })),
+        image: ecs.ContainerImage.fromEcrRepository(
+          new Repository(stack, 'myECRImage', {
+            lifecycleRegistryId: '123456789101',
+            lifecycleRules: [
+              {
+                rulePriority: 10,
+                tagPrefixList: ['abc'],
+                maxImageCount: 1,
+              },
+            ],
+            removalPolicy: cdk.RemovalPolicy.DESTROY,
+            repositoryName: 'project-a/amazon-ecs-sample',
+          })
+        ),
         memoryLimitMiB: 512,
       });
 
@@ -339,7 +332,8 @@ describe('external task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
-          LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
+          LifecyclePolicyText:
+            '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
           RegistryId: '123456789101',
         },
         RepositoryName: 'project-a/amazon-ecs-sample',
@@ -349,60 +343,56 @@ describe('external task definition', () => {
         Family: 'ExternalTaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EXTERNAL'],
-        ContainerDefinitions: [{
-          Essential: true,
-          Memory: 512,
-          Image: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  'Fn::Select': [
-                    4,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myECRImage7DEAE474',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.dkr.ecr.',
-                {
-                  'Fn::Select': [
-                    3,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myECRImage7DEAE474',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/',
-                {
-                  Ref: 'myECRImage7DEAE474',
-                },
-                ':latest',
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Memory: 512,
+            Image: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::Select': [
+                      4,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '.dkr.ecr.',
+                  {
+                    'Fn::Select': [
+                      3,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '.',
+                  {
+                    Ref: 'AWS::URLSuffix',
+                  },
+                  '/',
+                  {
+                    Ref: 'myECRImage7DEAE474',
+                  },
+                  ':latest',
+                ],
               ],
-            ],
+            },
+            Name: 'web',
           },
-          Name: 'web',
-        }],
+        ],
       });
     });
   });
@@ -422,60 +412,56 @@ describe('external task definition', () => {
       Family: 'ExternalTaskDef',
       NetworkMode: ecs.NetworkMode.BRIDGE,
       RequiresCompatibilities: ['EXTERNAL'],
-      ContainerDefinitions: [{
-        Essential: true,
-        Memory: 512,
-        Image: {
-          'Fn::Join': [
-            '',
-            [
-              {
-                'Fn::Select': [
-                  4,
-                  {
-                    'Fn::Split': [
-                      ':',
-                      {
-                        'Fn::GetAtt': [
-                          'myECRImage7DEAE474',
-                          'Arn',
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              '.dkr.ecr.',
-              {
-                'Fn::Select': [
-                  3,
-                  {
-                    'Fn::Split': [
-                      ':',
-                      {
-                        'Fn::GetAtt': [
-                          'myECRImage7DEAE474',
-                          'Arn',
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/',
-              {
-                Ref: 'myECRImage7DEAE474',
-              },
-              ':myTag',
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Memory: 512,
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::Select': [
+                    4,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.dkr.ecr.',
+                {
+                  'Fn::Select': [
+                    3,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  Ref: 'myECRImage7DEAE474',
+                },
+                ':myTag',
+              ],
             ],
-          ],
+          },
+          Name: 'web',
         },
-        Name: 'web',
-      }],
+      ],
     });
   });
 
@@ -484,7 +470,10 @@ describe('external task definition', () => {
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
     taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage'), 'sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE'),
+      image: ecs.ContainerImage.fromEcrRepository(
+        new Repository(stack, 'myECRImage'),
+        'sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE'
+      ),
       memoryLimitMiB: 512,
     });
 
@@ -493,60 +482,56 @@ describe('external task definition', () => {
       Family: 'ExternalTaskDef',
       NetworkMode: ecs.NetworkMode.BRIDGE,
       RequiresCompatibilities: ['EXTERNAL'],
-      ContainerDefinitions: [{
-        Essential: true,
-        Memory: 512,
-        Image: {
-          'Fn::Join': [
-            '',
-            [
-              {
-                'Fn::Select': [
-                  4,
-                  {
-                    'Fn::Split': [
-                      ':',
-                      {
-                        'Fn::GetAtt': [
-                          'myECRImage7DEAE474',
-                          'Arn',
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              '.dkr.ecr.',
-              {
-                'Fn::Select': [
-                  3,
-                  {
-                    'Fn::Split': [
-                      ':',
-                      {
-                        'Fn::GetAtt': [
-                          'myECRImage7DEAE474',
-                          'Arn',
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/',
-              {
-                Ref: 'myECRImage7DEAE474',
-              },
-              '@sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE',
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Memory: 512,
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::Select': [
+                    4,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.dkr.ecr.',
+                {
+                  'Fn::Select': [
+                    3,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  Ref: 'myECRImage7DEAE474',
+                },
+                '@sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE',
+              ],
             ],
-          ],
+          },
+          Name: 'web',
         },
-        Name: 'web',
-      }],
+      ],
     });
   });
 
@@ -578,7 +563,10 @@ describe('external task definition', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/ExternalTaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]");
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/ExternalTaskDef/web',
+      "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]"
+    );
   });
 
   test('correctly sets volumes', () => {
@@ -612,10 +600,12 @@ describe('external task definition', () => {
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {});
 
     // THEN
-    expect(() => taskDefinition.addInferenceAccelerator({
-      deviceName: 'device1',
-      deviceType: 'eia2.medium',
-    })).toThrow('Cannot use inference accelerators on tasks that run on External service');
+    expect(() =>
+      taskDefinition.addInferenceAccelerator({
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      })
+    ).toThrow('Cannot use inference accelerators on tasks that run on External service');
   });
 
   test('can import an External Task Definition using attributes', () => {

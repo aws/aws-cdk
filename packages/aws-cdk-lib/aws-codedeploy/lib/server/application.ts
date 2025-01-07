@@ -79,8 +79,7 @@ export class ServerApplication extends Resource implements IServerApplication {
     return new (class extends Resource implements IServerApplication {
       public applicationArn = serverApplicationArn;
       public applicationName =
-        Arn.split(serverApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ??
-        '<invalid arn>';
+        Arn.split(serverApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
     })(scope, id, { environmentFromArn: serverApplicationArn });
   }
 
@@ -98,15 +97,12 @@ export class ServerApplication extends Resource implements IServerApplication {
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(
-      arnForApplication(Stack.of(scope), resource.ref),
-      {
-        service: 'codedeploy',
-        resource: 'application',
-        resourceName: this.physicalName,
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      }
-    );
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(scope), resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
 
     this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }

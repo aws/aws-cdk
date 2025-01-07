@@ -67,11 +67,13 @@ testDeprecated('use log group as an event rule target with rule target input', (
   });
 
   // WHEN
-  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    event: events.RuleTargetInput.fromObject({
-      message: events.EventField.fromPath('$'),
-    }),
-  }));
+  rule1.addTarget(
+    new targets.CloudWatchLogGroup(logGroup, {
+      event: events.RuleTargetInput.fromObject({
+        message: events.EventField.fromPath('$'),
+      }),
+    })
+  );
 
   // THEN
   expect(() => {
@@ -92,12 +94,14 @@ testDeprecated('cannot use both logEvent and event', () => {
 
   // THEN
   expect(() => {
-    rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-      event: events.RuleTargetInput.fromObject({
-        message: events.EventField.fromPath('$'),
-      }),
-      logEvent: LogGroupTargetInput.fromObject(),
-    }));
+    rule1.addTarget(
+      new targets.CloudWatchLogGroup(logGroup, {
+        event: events.RuleTargetInput.fromObject({
+          message: events.EventField.fromPath('$'),
+        }),
+        logEvent: LogGroupTargetInput.fromObject(),
+      })
+    );
   }).toThrow(/Only one of "event" or "logEvent" can be specified/);
 });
 
@@ -112,9 +116,11 @@ test('logEvent with defaults', () => {
   });
 
   // WHEN
-  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    logEvent: LogGroupTargetInput.fromObject(),
-  }));
+  rule1.addTarget(
+    new targets.CloudWatchLogGroup(logGroup, {
+      logEvent: LogGroupTargetInput.fromObject(),
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -148,7 +154,7 @@ test('logEvent with defaults', () => {
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {
-            'time': '$.time',
+            time: '$.time',
             'detail-type': '$.detail-type',
           },
           InputTemplate: '{"timestamp":<time>,"message":<detail-type>}',
@@ -169,9 +175,11 @@ test('can set install latest AWS SDK value to false', () => {
   });
 
   // WHEN
-  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    installLatestAwsSdk: false,
-  }));
+  rule1.addTarget(
+    new targets.CloudWatchLogGroup(logGroup, {
+      installLatestAwsSdk: false,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::CloudwatchLogResourcePolicy', {
@@ -209,12 +217,14 @@ test('can use logEvent', () => {
   });
 
   // WHEN
-  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    logEvent: LogGroupTargetInput.fromObject({
-      timestamp: events.EventField.time,
-      message: events.EventField.fromPath('$'),
-    }),
-  }));
+  rule1.addTarget(
+    new targets.CloudWatchLogGroup(logGroup, {
+      logEvent: LogGroupTargetInput.fromObject({
+        timestamp: events.EventField.time,
+        message: events.EventField.fromPath('$'),
+      }),
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -271,15 +281,17 @@ testDeprecated('specifying retry policy and dead letter queue', () => {
   const queue = new sqs.Queue(stack, 'Queue');
 
   // WHEN
-  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    event: events.RuleTargetInput.fromObject({
-      timestamp: events.EventField.time,
-      message: events.EventField.fromPath('$'),
-    }),
-    retryAttempts: 2,
-    maxEventAge: cdk.Duration.hours(2),
-    deadLetterQueue: queue,
-  }));
+  rule1.addTarget(
+    new targets.CloudWatchLogGroup(logGroup, {
+      event: events.RuleTargetInput.fromObject({
+        timestamp: events.EventField.time,
+        message: events.EventField.fromPath('$'),
+      }),
+      retryAttempts: 2,
+      maxEventAge: cdk.Duration.hours(2),
+      deadLetterQueue: queue,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -312,10 +324,7 @@ testDeprecated('specifying retry policy and dead letter queue', () => {
         },
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'Queue4A7E3555',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
           },
         },
         Id: 'Target0',
@@ -346,13 +355,15 @@ testDeprecated('specifying retry policy with 0 retryAttempts', () => {
   });
 
   // WHEN
-  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    event: events.RuleTargetInput.fromObject({
-      timestamp: events.EventField.time,
-      message: events.EventField.fromPath('$'),
-    }),
-    retryAttempts: 0,
-  }));
+  rule1.addTarget(
+    new targets.CloudWatchLogGroup(logGroup, {
+      event: events.RuleTargetInput.fromObject({
+        timestamp: events.EventField.time,
+        message: events.EventField.fromPath('$'),
+      }),
+      retryAttempts: 0,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -424,10 +435,14 @@ test('metricIncomingLogEvents with MetricOptions props', () => {
     logGroupName: '/aws/events/MyLogGroup',
   });
 
-  expect(stack.resolve(logGroup.metricIncomingLogEvents({
-    period: cdk.Duration.hours(10),
-    label: 'MyMetric',
-  }))).toEqual({
+  expect(
+    stack.resolve(
+      logGroup.metricIncomingLogEvents({
+        period: cdk.Duration.hours(10),
+        label: 'MyMetric',
+      })
+    )
+  ).toEqual({
     period: {
       amount: 10,
       unit: { label: 'hours', inMillis: 3600000, isoLabel: 'H' },
@@ -464,10 +479,14 @@ test('metricIncomingBytes with MetricOptions props', () => {
     logGroupName: '/aws/events/MyLogGroup',
   });
 
-  expect(stack.resolve(logGroup.metricIncomingBytes({
-    period: cdk.Duration.minutes(15),
-    statistic: 'Sum',
-  }))).toEqual({
+  expect(
+    stack.resolve(
+      logGroup.metricIncomingBytes({
+        period: cdk.Duration.minutes(15),
+        statistic: 'Sum',
+      })
+    )
+  ).toEqual({
     period: {
       amount: 15,
       unit: { label: 'minutes', inMillis: 60000, isoLabel: 'M' },
@@ -477,4 +496,3 @@ test('metricIncomingBytes with MetricOptions props', () => {
     statistic: 'Sum',
   });
 });
-

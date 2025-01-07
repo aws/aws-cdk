@@ -16,10 +16,7 @@ describe('WebSocketLambdaAuthorizer', () => {
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
-    const integration = new WebSocketLambdaIntegration(
-      'Integration',
-      handler,
-    );
+    const integration = new WebSocketLambdaIntegration('Integration', handler);
 
     const authorizer = new WebSocketLambdaAuthorizer('default-authorizer', handler);
 
@@ -35,9 +32,7 @@ describe('WebSocketLambdaAuthorizer', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       Name: 'default-authorizer',
       AuthorizerType: 'REQUEST',
-      IdentitySource: [
-        'route.request.header.Authorization',
-      ],
+      IdentitySource: ['route.request.header.Authorization'],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {

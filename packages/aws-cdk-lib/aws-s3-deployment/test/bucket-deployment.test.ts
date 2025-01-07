@@ -29,47 +29,48 @@ test('deploy from local directory asset', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536', 'Arn'],
     },
-    SourceBucketNames: [{
-      Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A',
-    }],
-    SourceObjectKeys: [{
-      'Fn::Join': [
-        '',
-        [
-          {
-            'Fn::Select': [
-              0,
-              {
-                'Fn::Split': [
-                  '||',
-                  {
-                    Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            'Fn::Select': [
-              1,
-              {
-                'Fn::Split': [
-                  '||',
-                  {
-                    Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
-                  },
-                ],
-              },
-            ],
-          },
+    SourceBucketNames: [
+      {
+        Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A',
+      },
+    ],
+    SourceObjectKeys: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            {
+              'Fn::Select': [
+                0,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         ],
-      ],
-    }],
+      },
+    ],
     DestinationBucketName: {
       Ref: 'DestC383B82A',
     },
@@ -128,10 +129,7 @@ test('deploy from local directory assets', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536', 'Arn'],
     },
     SourceBucketNames: [
       {
@@ -221,10 +219,13 @@ test('fails if local asset is a non-zip file', () => {
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // THEN
-  expect(() => new s3deploy.BucketDeployment(stack, 'Deploy', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website', 'index.html'))],
-    destinationBucket: bucket,
-  })).toThrow(/Asset path must be either a \.zip file or a directory/);
+  expect(
+    () =>
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website', 'index.html'))],
+        destinationBucket: bucket,
+      })
+  ).toThrow(/Asset path must be either a \.zip file or a directory/);
 });
 
 test('deploy from a local .zip file', () => {
@@ -237,7 +238,6 @@ test('deploy from a local .zip file', () => {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
     destinationBucket: bucket,
   });
-
 });
 
 test('AWS_CA_BUNDLE is set', () => {
@@ -349,56 +349,59 @@ testDeprecated('honors passed asset options', () => {
 
   // WHEN
   new s3deploy.BucketDeployment(stack, 'Deploy', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'), {
-      exclude: ['*', '!index.html'],
-    })],
+    sources: [
+      s3deploy.Source.asset(path.join(__dirname, 'my-website'), {
+        exclude: ['*', '!index.html'],
+      }),
+    ],
     destinationBucket: bucket,
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536', 'Arn'],
     },
-    SourceBucketNames: [{
-      Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3Bucket02009982',
-    }],
-    SourceObjectKeys: [{
-      'Fn::Join': [
-        '',
-        [
-          {
-            'Fn::Select': [
-              0,
-              {
-                'Fn::Split': [
-                  '||',
-                  {
-                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            'Fn::Select': [
-              1,
-              {
-                'Fn::Split': [
-                  '||',
-                  {
-                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
-                  },
-                ],
-              },
-            ],
-          },
+    SourceBucketNames: [
+      {
+        Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3Bucket02009982',
+      },
+    ],
+    SourceObjectKeys: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            {
+              'Fn::Select': [
+                0,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         ],
-      ],
-    }],
+      },
+    ],
     DestinationBucketName: {
       Ref: 'DestC383B82A',
     },
@@ -474,13 +477,13 @@ test('system metadata is correctly transformed', () => {
       'content-language': 'en',
       'content-disposition': 'inline',
       'storage-class': 'INTELLIGENT_TIERING',
-      'sse': 'aws:kms',
+      sse: 'aws:kms',
       'sse-kms-key-id': 'mykey',
       'cache-control': 'public, max-age=3600',
-      'expires': expiration.date.toUTCString(),
+      expires: expiration.date.toUTCString(),
       'sse-c-copy-source': 'rot13',
       'website-redirect': 'example',
-      'acl': 'bucket-owner-full-control',
+      acl: 'bucket-owner-full-control',
     },
   });
 });
@@ -518,14 +521,22 @@ test.each(Object.entries(accessControlMap) as [s3.BucketAccessControl, string][]
         acl: systemMetadataKeyword,
       },
     });
-  },
+  }
 );
 
 test('expires type has correct values', () => {
-  expect(cdk.Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(cdk.Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual(
+    'Sun, 26 Jan 2020 00:53:20 GMT'
+  );
   expect(cdk.Expiration.atTimestamp(1580000000000).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(Math.abs(new Date(cdk.Expiration.after(cdk.Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
-  expect(cdk.Expiration.fromString('Tue, 04 Feb 2020 08:45:33 GMT').date.toUTCString()).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
+  expect(
+    Math.abs(
+      new Date(cdk.Expiration.after(cdk.Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)
+    ) < 15000
+  ).toBeTruthy();
+  expect(cdk.Expiration.fromString('Tue, 04 Feb 2020 08:45:33 GMT').date.toUTCString()).toEqual(
+    'Tue, 04 Feb 2020 08:45:33 GMT'
+  );
 });
 
 test('cache control type has correct values', () => {
@@ -540,7 +551,9 @@ test('cache control type has correct values', () => {
   expect(s3deploy.CacheControl.proxyRevalidate().value).toEqual('proxy-revalidate');
   expect(s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1)).value).toEqual('max-age=60');
   expect(s3deploy.CacheControl.sMaxAge(cdk.Duration.minutes(1)).value).toEqual('s-maxage=60');
-  expect(s3deploy.CacheControl.staleWhileRevalidate(cdk.Duration.minutes(1)).value).toEqual('stale-while-revalidate=60');
+  expect(s3deploy.CacheControl.staleWhileRevalidate(cdk.Duration.minutes(1)).value).toEqual(
+    'stale-while-revalidate=60'
+  );
   expect(s3deploy.CacheControl.staleIfError(cdk.Duration.minutes(1)).value).toEqual('stale-if-error=60');
   expect(s3deploy.CacheControl.fromString('only-if-cached').value).toEqual('only-if-cached');
 });
@@ -618,7 +631,6 @@ test('invalidation can happen without distributionPaths provided', () => {
       Ref: 'DistributionCFDistribution882A7313',
     },
   });
-
 });
 
 test('fails if distribution paths provided but not distribution ID', () => {
@@ -627,12 +639,14 @@ test('fails if distribution paths provided but not distribution ID', () => {
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // THEN
-  expect(() => new s3deploy.BucketDeployment(stack, 'Deploy', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website', 'index.html'))],
-    destinationBucket: bucket,
-    distributionPaths: ['/images/*'],
-  })).toThrow(/Distribution must be specified if distribution paths are specified/);
-
+  expect(
+    () =>
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website', 'index.html'))],
+        destinationBucket: bucket,
+        distributionPaths: ['/images/*'],
+      })
+  ).toThrow(/Distribution must be specified if distribution paths are specified/);
 });
 
 test('fails if distribution paths don\'t start with "/"', () => {
@@ -651,12 +665,15 @@ test('fails if distribution paths don\'t start with "/"', () => {
   });
 
   // THEN
-  expect(() => new s3deploy.BucketDeployment(stack, 'Deploy', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
-    destinationBucket: bucket,
-    distribution,
-    distributionPaths: ['images/*'],
-  })).toThrow(/Distribution paths must start with "\/"/);
+  expect(
+    () =>
+      new s3deploy.BucketDeployment(stack, 'Deploy', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+        destinationBucket: bucket,
+        distribution,
+        distributionPaths: ['images/*'],
+      })
+  ).toThrow(/Distribution paths must start with "\/"/);
 });
 
 test('lambda execution role gets permissions to read from the source bucket and read/write in destination', () => {
@@ -676,28 +693,18 @@ test('lambda execution role gets permissions to read from the source bucket and 
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            's3:GetObject*',
-            's3:GetBucket*',
-            's3:List*',
-          ],
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
             {
-              'Fn::GetAtt': [
-                'Source71E471F1',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Source71E471F1', 'Arn'],
             },
             {
               'Fn::Join': [
                 '',
                 [
                   {
-                    'Fn::GetAtt': [
-                      'Source71E471F1',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['Source71E471F1', 'Arn'],
                   },
                   '/*',
                 ],
@@ -721,20 +728,14 @@ test('lambda execution role gets permissions to read from the source bucket and 
           Effect: 'Allow',
           Resource: [
             {
-              'Fn::GetAtt': [
-                'DestC383B82A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['DestC383B82A', 'Arn'],
             },
             {
               'Fn::Join': [
                 '',
                 [
                   {
-                    'Fn::GetAtt': [
-                      'DestC383B82A',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['DestC383B82A', 'Arn'],
                   },
                   '/*',
                 ],
@@ -772,20 +773,14 @@ test('lambda execution role gets putObjectAcl permission when deploying with acc
   expect(map).toBeDefined();
   const resource = map[Object.keys(map)[0]];
   expect(resource.Properties.PolicyDocument.Statement).toContainEqual({
-    Action: [
-      's3:PutObjectAcl',
-      's3:PutObjectVersionAcl',
-    ],
+    Action: ['s3:PutObjectAcl', 's3:PutObjectVersionAcl'],
     Effect: 'Allow',
     Resource: {
       'Fn::Join': [
         '',
         [
           {
-            'Fn::GetAtt': [
-              'DestC383B82A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['DestC383B82A', 'Arn'],
           },
           '/*',
         ],
@@ -867,7 +862,6 @@ test('ephemeralStorageSize can be used to specify the storage size for the deplo
 });
 
 test('deployment allows custom role to be supplied', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -887,16 +881,12 @@ test('deployment allows custom role to be supplied', () => {
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Role: {
-      'Fn::GetAtt': [
-        'Role1ABCC5F0',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
     },
   });
 });
 
 test('deploy without deleting missing files from destination', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -931,7 +921,6 @@ test('deploy with excluded files from destination', () => {
 });
 
 test('deploy with included files from destination', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -949,7 +938,6 @@ test('deploy with included files from destination', () => {
 });
 
 test('deploy with excluded and included files from destination', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -969,7 +957,6 @@ test('deploy with excluded and included files from destination', () => {
 });
 
 test('deploy with multiple exclude and include filters', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1019,7 +1006,7 @@ test('deploy without extracting files in destination and get the object key', ()
   });
 
   // Tests object key retrieval.
-  void(cdk.Fn.select(0, deployment.objectKeys));
+  void cdk.Fn.select(0, deployment.objectKeys);
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
@@ -1050,11 +1037,12 @@ test('given a source with markers and extract is false, BucketDeployment throws 
   // THEN
   expect(() => {
     Template.fromStack(stack);
-  }).toThrow('Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.');
+  }).toThrow(
+    "Some sources are incompatible with extract=false; sources with deploy-time values (such as 'snsTopic.topicArn') must be extracted."
+  );
 });
 
 test('deployment allows vpc to be implicitly supplied to lambda', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1091,7 +1079,6 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
 });
 
 test('deployment allows vpc and subnets to be implicitly supplied to lambda', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1144,7 +1131,7 @@ test('s3 deployment bucket is identical to destination bucket', () => {
   });
 
   // Call this function
-  void(bd.deployedBucket);
+  void bd.deployedBucket;
 
   // THEN
   const template = Template.fromStack(stack);
@@ -1207,21 +1194,28 @@ test('using deployment bucket references the destination bucket by means of the 
     },
     DestinationName: {
       Value: {
-        'Fn::Select': [0, {
-          'Fn::Split': ['/', {
-            'Fn::Select': [5, {
-              'Fn::Split': [':',
-                { 'Fn::GetAtt': ['DeploymentCustomResource47E8B2E6', 'DestinationBucketArn'] }],
-            }],
-          }],
-        }],
+        'Fn::Select': [
+          0,
+          {
+            'Fn::Split': [
+              '/',
+              {
+                'Fn::Select': [
+                  5,
+                  {
+                    'Fn::Split': [':', { 'Fn::GetAtt': ['DeploymentCustomResource47E8B2E6', 'DestinationBucketArn'] }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
     },
   });
 });
 
 test('resource id includes memory and vpc', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1246,7 +1240,6 @@ test('resource id includes memory and vpc', () => {
 });
 
 test('bucket includes custom resource owner tag', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1263,38 +1256,44 @@ test('bucket includes custom resource owner tag', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-    Tags: [{
-      Key: 'aws-cdk:cr-owned:/a/b/c:971e1fa8',
-      Value: 'true',
-    }],
+    Tags: [
+      {
+        Key: 'aws-cdk:cr-owned:/a/b/c:971e1fa8',
+        Value: 'true',
+      },
+    ],
   });
 });
 
 test('throws if destinationKeyPrefix is too long', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
-  expect(() => new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-    destinationBucket: bucket,
-    destinationKeyPrefix: '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long??????',
-    memoryLimit: 256,
-  })).toThrow(/The BucketDeployment construct requires that/);
-
+  expect(
+    () =>
+      new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+        sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+        destinationBucket: bucket,
+        destinationKeyPrefix:
+          '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long??????',
+        memoryLimit: 256,
+      })
+  ).toThrow(/The BucketDeployment construct requires that/);
 });
 
 test('skips destinationKeyPrefix validation if token', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
   // trick the cdk into creating a very long token
-  const prefixToken = cdk.Token.asString(5, { displayHint: 'longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong' });
+  const prefixToken = cdk.Token.asString(5, {
+    displayHint:
+      'longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong',
+  });
   new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
@@ -1305,11 +1304,9 @@ test('skips destinationKeyPrefix validation if token', () => {
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     DestinationBucketKeyPrefix: 5,
   });
-
 });
 
 test('bucket has multiple deployments', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -1325,9 +1322,11 @@ test('bucket has multiple deployments', () => {
   });
 
   new s3deploy.BucketDeployment(stack, 'DeployWithVpc2Exclude', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'), {
-      exclude: ['index.html'],
-    })],
+    sources: [
+      s3deploy.Source.asset(path.join(__dirname, 'my-website'), {
+        exclude: ['index.html'],
+      }),
+    ],
     destinationBucket: bucket,
     destinationKeyPrefix: '/a/b/c',
     vpc,
@@ -1426,9 +1425,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
-    SourceMarkers: [
-      { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
-    ],
+    SourceMarkers: [{ '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } }],
   });
 });
 
@@ -1451,11 +1448,7 @@ test('Source.yamlData() can be used to create a file with YAML content', () => {
 
   const result = app.synth();
   const output = readDataFile(result, 'app-config.yaml');
-  expect(output.trim()).toEqual([
-    'foo: bar',
-    'sub:',
-    '  hello: <<marker:0xbaba:0>>',
-  ].join('\n'));
+  expect(output.trim()).toEqual(['foo: bar', 'sub:', '  hello: <<marker:0xbaba:0>>'].join('\n'));
 });
 
 test('can add sources with addSource', () => {
@@ -1474,10 +1467,7 @@ test('can add sources with addSource', () => {
   expect(content).toStrictEqual('helloWorld');
   expect(content2).toStrictEqual('hello world');
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
-    SourceMarkers: [
-      {},
-      {},
-    ],
+    SourceMarkers: [{}, {}],
   });
 });
 
@@ -1512,10 +1502,7 @@ test('if any source has markers then all sources have markers', () => {
   const content = readDataFile(result, 'my/path.txt');
   expect(content).toStrictEqual('helloWorld');
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
-    SourceMarkers: [
-      {},
-      {},
-    ],
+    SourceMarkers: [{}, {}],
   });
 });
 
@@ -1586,12 +1573,15 @@ test('DeployTimeSubstitutedFile does not make substitutions when no substitution
   const stack = new cdk.Stack(app, 'Test');
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'), 'utf8');
+  const originalFileData = readFileSync(
+    path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    'utf8'
+  );
 
   const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
     source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
     destinationBucket: bucket,
-    substitutions: { },
+    substitutions: {},
   });
 
   const result = app.synth();
@@ -1604,7 +1594,10 @@ test('DeployTimeSubstitutedFile does not substitute nested variables', () => {
   const stack = new cdk.Stack(app, 'Test');
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'), 'utf8');
+  const originalFileData = readFileSync(
+    path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'),
+    'utf8'
+  );
 
   const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
     source: path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'),
@@ -1627,7 +1620,10 @@ test('DeployTimeSubstitutedFile does not substitute nested variables', () => {
   const stack = new cdk.Stack(app, 'Test');
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'), 'utf8');
+  const originalFileData = readFileSync(
+    path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'),
+    'utf8'
+  );
 
   const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
     source: path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'),
@@ -1650,7 +1646,10 @@ test('DeployTimeSubstitutedFile does not double substitute already replaced vari
   const stack = new cdk.Stack(app, 'Test');
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'), 'utf8');
+  const originalFileData = readFileSync(
+    path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    'utf8'
+  );
 
   const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
     source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
@@ -1670,7 +1669,7 @@ test('DeployTimeSubstitutedFile does not double substitute already replaced vari
 });
 
 function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
-  const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
+  const assetDirs = readdirSync(casm.directory).filter((f) => f.startsWith('asset.'));
   for (const dir of assetDirs) {
     const candidate = path.join(casm.directory, dir, relativePath);
     if (existsSync(candidate)) {
@@ -1703,10 +1702,7 @@ test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Role: {
-      'Fn::GetAtt': [
-        'Role1ABCC5F0',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
     },
   });
 });

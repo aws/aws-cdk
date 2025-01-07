@@ -74,10 +74,7 @@ describe('extension', () => {
               {
                 Effect: Effect.ALLOW,
                 Resource: { 'Fn::GetAtt': ['MyFunction3BAA72D1', 'Arn'] },
-                Action: [
-                  'lambda:InvokeFunction',
-                  'lambda:InvokeAsync',
-                ],
+                Action: ['lambda:InvokeFunction', 'lambda:InvokeAsync'],
               },
             ],
           },
@@ -108,15 +105,11 @@ describe('extension', () => {
     new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_COMPLETE,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_COMPLETE],
           eventDestination: new LambdaDestination(func1),
         }),
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_ROLLED_BACK,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_ROLLED_BACK],
           eventDestination: new LambdaDestination(func2),
         }),
       ],
@@ -141,44 +134,46 @@ describe('extension', () => {
         ],
       },
     });
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      Policies: [
-        {
-          PolicyDocument: {
-            Statement: [
-              {
-                Effect: Effect.ALLOW,
-                Resource: 'arn:lambda:us-east-1:123456789012:function:my-function',
-                Action: [
-                  'lambda:InvokeFunction',
-                  'lambda:InvokeAsync',
-                ],
-              },
-            ],
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        Policies: [
+          {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Effect: Effect.ALLOW,
+                  Resource: 'arn:lambda:us-east-1:123456789012:function:my-function',
+                  Action: ['lambda:InvokeFunction', 'lambda:InvokeAsync'],
+                },
+              ],
+            },
+            PolicyName: 'AllowAppConfigInvokeExtensionEventSourcePolicy',
           },
-          PolicyName: 'AllowAppConfigInvokeExtensionEventSourcePolicy',
-        },
-      ],
-    }, 1);
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      Policies: [
-        {
-          PolicyDocument: {
-            Statement: [
-              {
-                Effect: Effect.ALLOW,
-                Resource: 'arn:lambda:us-east-1:123456789012:function:my-diff-function',
-                Action: [
-                  'lambda:InvokeFunction',
-                  'lambda:InvokeAsync',
-                ],
-              },
-            ],
+        ],
+      },
+      1
+    );
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        Policies: [
+          {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Effect: Effect.ALLOW,
+                  Resource: 'arn:lambda:us-east-1:123456789012:function:my-diff-function',
+                  Action: ['lambda:InvokeFunction', 'lambda:InvokeAsync'],
+                },
+              ],
+            },
+            PolicyName: 'AllowAppConfigInvokeExtensionEventSourcePolicy',
           },
-          PolicyName: 'AllowAppConfigInvokeExtensionEventSourcePolicy',
-        },
-      ],
-    }, 1);
+        ],
+      },
+      1
+    );
   });
 
   test('extension with all props using lambda', () => {
@@ -197,18 +192,13 @@ describe('extension', () => {
     const ext = new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_COMPLETE,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_COMPLETE],
           eventDestination: new LambdaDestination(func),
         }),
       ],
       extensionName: 'TestExtension',
       description: 'This is my extension',
-      parameters: [
-        Parameter.required('testVariable', 'hello'),
-        Parameter.notRequired('testNotRequiredVariable'),
-      ],
+      parameters: [Parameter.required('testVariable', 'hello'), Parameter.notRequired('testNotRequiredVariable')],
       latestVersionNumber: 1,
     });
     appconfig.addExtension(ext);
@@ -265,10 +255,7 @@ describe('extension', () => {
               {
                 Effect: Effect.ALLOW,
                 Resource: 'arn:lambda:us-east-1:123456789012:function:my-function',
-                Action: [
-                  'lambda:InvokeFunction',
-                  'lambda:InvokeAsync',
-                ],
+                Action: ['lambda:InvokeFunction', 'lambda:InvokeAsync'],
               },
             ],
           },
@@ -287,9 +274,7 @@ describe('extension', () => {
     new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_ROLLED_BACK,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_ROLLED_BACK],
           eventDestination: new SqsDestination(queue),
           name: 'ActionTestName',
           description: 'This is my action description',
@@ -337,9 +322,7 @@ describe('extension', () => {
     new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_BAKING,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_BAKING],
           eventDestination: new SnsDestination(topic),
         }),
       ],
@@ -384,9 +367,7 @@ describe('extension', () => {
     new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_BAKING,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_BAKING],
           eventDestination: new EventBridgeDestination(bus),
         }),
       ],
@@ -421,9 +402,7 @@ describe('extension', () => {
     const ext = new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_COMPLETE,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_COMPLETE],
           eventDestination: new LambdaDestination(func),
         }),
       ],
@@ -475,10 +454,7 @@ describe('extension', () => {
               {
                 Effect: Effect.ALLOW,
                 Resource: 'arn:lambda:us-east-1:123456789012:function:my-function',
-                Action: [
-                  'lambda:InvokeFunction',
-                  'lambda:InvokeAsync',
-                ],
+                Action: ['lambda:InvokeFunction', 'lambda:InvokeAsync'],
               },
             ],
           },
@@ -506,9 +482,7 @@ describe('extension', () => {
     const ext = new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_COMPLETE,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_COMPLETE],
           eventDestination: new LambdaDestination(func),
         }),
       ],
@@ -560,10 +534,7 @@ describe('extension', () => {
               {
                 Effect: Effect.ALLOW,
                 Resource: 'arn:lambda:us-east-1:123456789012:function:my-function',
-                Action: [
-                  'lambda:InvokeFunction',
-                  'lambda:InvokeAsync',
-                ],
+                Action: ['lambda:InvokeFunction', 'lambda:InvokeAsync'],
               },
             ],
           },
@@ -592,9 +563,7 @@ describe('extension', () => {
     new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
-          actionPoints: [
-            ActionPoint.ON_DEPLOYMENT_COMPLETE,
-          ],
+          actionPoints: [ActionPoint.ON_DEPLOYMENT_COMPLETE],
           eventDestination: new LambdaDestination(func),
           executionRole: role,
         }),
@@ -617,8 +586,11 @@ describe('extension', () => {
 
   test('from extension arn', () => {
     const stack = new cdk.Stack();
-    const extension = Extension.fromExtensionArn(stack, 'MyExtension',
-      'arn:aws:appconfig:us-west-2:123456789012:extension/abc123/1');
+    const extension = Extension.fromExtensionArn(
+      stack,
+      'MyExtension',
+      'arn:aws:appconfig:us-west-2:123456789012:extension/abc123/1'
+    );
 
     expect(extension.extensionId).toEqual('abc123');
     expect(extension.extensionVersionNumber).toEqual(1);
@@ -629,25 +601,26 @@ describe('extension', () => {
   test('from extension arn with no resource name', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      Extension.fromExtensionArn(stack, 'MyExtension',
-        'arn:aws:appconfig:us-west-2:123456789012:extension/');
+      Extension.fromExtensionArn(stack, 'MyExtension', 'arn:aws:appconfig:us-west-2:123456789012:extension/');
     }).toThrow('Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN:');
   });
 
   test('from extension arn with no extension id', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      Extension.fromExtensionArn(stack, 'MyExtension',
-        'arn:aws:appconfig:us-west-2:123456789012:extension//1');
-    }).toThrow('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}');
+      Extension.fromExtensionArn(stack, 'MyExtension', 'arn:aws:appconfig:us-west-2:123456789012:extension//1');
+    }).toThrow(
+      'Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}'
+    );
   });
 
   test('from extension arn with no extension version number', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      Extension.fromExtensionArn(stack, 'MyExtension',
-        'arn:aws:appconfig:us-west-2:123456789012:extension/abc123/');
-    }).toThrow('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}');
+      Extension.fromExtensionArn(stack, 'MyExtension', 'arn:aws:appconfig:us-west-2:123456789012:extension/abc123/');
+    }).toThrow(
+      'Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}'
+    );
   });
 
   test('from extension id', () => {

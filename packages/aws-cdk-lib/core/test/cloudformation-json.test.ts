@@ -1,6 +1,18 @@
 import { Construct } from 'constructs';
 import { evaluateCFN } from './evaluate-cfn';
-import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
+import {
+  App,
+  Aws,
+  CfnOutput,
+  CfnResource,
+  Fn,
+  IPostProcessor,
+  IResolvable,
+  IResolveContext,
+  Lazy,
+  Stack,
+  Token,
+} from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
 let app: App;
@@ -30,7 +42,6 @@ test('JSONification of undefined leads to undefined', () => {
 });
 
 describe('tokens that return literals', () => {
-
   test('string tokens can be JSONified and JSONification can be reversed', () => {
     for (const token of tokensThatResolveTo('woof woof')) {
       // GIVEN
@@ -112,15 +123,11 @@ describe('tokens that return literals', () => {
 
     const asm = app.synth();
     const template = asm.getStackByName(stack.stackName).template;
-    const stringifyLogicalId = Object.keys(template.Resources).filter(id => id.startsWith('CdkJsonStringify'))[0];
+    const stringifyLogicalId = Object.keys(template.Resources).filter((id) => id.startsWith('CdkJsonStringify'))[0];
     expect(stringifyLogicalId).toBeDefined();
 
     expect(template.Resources.Resource.Properties.someJson).toEqual({
-      'Fn::Join': ['', [
-        '{"someList":',
-        { 'Fn::GetAtt': [stringifyLogicalId, 'Value'] },
-        '}',
-      ]],
+      'Fn::Join': ['', ['{"someList":', { 'Fn::GetAtt': [stringifyLogicalId, 'Value'] }, '}']],
     });
   });
 
@@ -138,7 +145,7 @@ describe('tokens that return literals', () => {
 
     const asm = app.synth();
     const template = asm.getStackByName(stack.stackName).template;
-    const stringifyLogicalId = Object.keys(template.Resources).filter(id => id.startsWith('CdkJsonStringify'))[0];
+    const stringifyLogicalId = Object.keys(template.Resources).filter((id) => id.startsWith('CdkJsonStringify'))[0];
     expect(stringifyLogicalId).toEqual('CdkJsonStringifyRefThing47B9E256');
   });
 
@@ -158,9 +165,11 @@ describe('tokens that return literals', () => {
     const fidoSays = Lazy.string({ produce: () => 'woof' });
 
     // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`,
-    }));
+    const resolved = stack.resolve(
+      stack.toJsonString({
+        information: `Did you know that Fido says: ${fidoSays}`,
+      })
+    );
 
     // THEN
     expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: woof"}');
@@ -171,9 +180,11 @@ describe('tokens that return literals', () => {
     const fidoSays = Lazy.string({ produce: () => '"woof"' });
 
     // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`,
-    }));
+    const resolved = stack.resolve(
+      stack.toJsonString({
+        information: `Did you know that Fido says: ${fidoSays}`,
+      })
+    );
 
     // THEN
     expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: \\"woof\\""}');
@@ -201,16 +212,14 @@ describe('tokens returning CloudFormation intrinsics', () => {
         },
       },
       b: {
-        'Fn::GetParam': [
-          'val1',
-          'val2',
-        ],
+        'Fn::GetParam': ['val1', 'val2'],
       },
     });
 
     const stringified = stack.toJsonString(fakeIntrinsics);
     expect(evaluateCFN(stack.resolve(stringified))).toEqual(
-      '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
+      '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}'
+    );
   });
 
   test('embedded string literals in intrinsics are escaped when calling TokenJSON.stringify()', () => {
@@ -218,10 +227,12 @@ describe('tokens returning CloudFormation intrinsics', () => {
     const token = Fn.join('', ['Hello ', Token.asString({ Ref: 'Planet' }), ', this\nIs', 'Very "cool"']);
 
     // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      literal: 'I can also "contain" quotes',
-      token,
-    }));
+    const resolved = stack.resolve(
+      stack.toJsonString({
+        literal: 'I can also "contain" quotes',
+        token,
+      })
+    );
 
     // THEN
     const context = { Planet: 'World' };
@@ -290,9 +301,11 @@ describe('tokens returning CloudFormation intrinsics', () => {
     const fidoSays = Lazy.string({ produce: () => 'woof' });
 
     // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`,
-    }));
+    const resolved = stack.resolve(
+      stack.toJsonString({
+        information: `Did you know that Fido says: ${fidoSays}`,
+      })
+    );
 
     // THEN
     expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: woof"}');
@@ -303,9 +316,11 @@ describe('tokens returning CloudFormation intrinsics', () => {
     const fidoSays = Lazy.any({ produce: () => ({ Ref: 'Something' }) });
 
     // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`,
-    }));
+    const resolved = stack.resolve(
+      stack.toJsonString({
+        information: `Did you know that Fido says: ${fidoSays}`,
+      })
+    );
 
     // THEN
     const context = { Something: 'woof woof' };
@@ -316,9 +331,11 @@ describe('tokens returning CloudFormation intrinsics', () => {
     const fidoSays = Lazy.string({ produce: () => '"woof"' });
 
     // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`,
-    }));
+    const resolved = stack.resolve(
+      stack.toJsonString({
+        information: `Did you know that Fido says: ${fidoSays}`,
+      })
+    );
 
     // THEN
     expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: \\"woof\\""}');
@@ -342,13 +359,16 @@ describe('tokens returning CloudFormation intrinsics', () => {
     expect(asm.getStackByName('Stack2').template?.Outputs).toEqual({
       Stack1Id: {
         Value: {
-          'Fn::Join': ['', [
-            '{"Stack1Id":"',
-            { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
-            '","Stack2Id":"',
-            { Ref: 'AWS::StackId' },
-            '"}',
-          ]],
+          'Fn::Join': [
+            '',
+            [
+              '{"Stack1Id":"',
+              { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
+              '","Stack2Id":"',
+              { Ref: 'AWS::StackId' },
+              '"}',
+            ],
+          ],
         },
       },
     });
@@ -359,10 +379,12 @@ describe('tokens returning CloudFormation intrinsics', () => {
     const bucketName = Token.asString({ Ref: 'MyBucket' });
 
     // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      [bucketName]: 'Is Cool',
-      [`${bucketName} Is`]: 'Cool',
-    }));
+    const resolved = stack.resolve(
+      stack.toJsonString({
+        [bucketName]: 'Is Cool',
+        [`${bucketName} Is`]: 'Cool',
+      })
+    );
 
     // THEN
     const context = { MyBucket: 'Harry' };
@@ -427,10 +449,7 @@ test('JSON strings nested inside JSON strings have correct quoting', () => {
  * Return two Tokens, one of which evaluates to a Token directly, one which evaluates to it lazily
  */
 function tokensThatResolveTo(value: any): Token[] {
-  return [
-    new Intrinsic(value),
-    Lazy.any({ produce: () => value }),
-  ];
+  return [new Intrinsic(value), Lazy.any({ produce: () => value })];
 }
 
 class DummyPostProcessor implements IResolvable, IPostProcessor {

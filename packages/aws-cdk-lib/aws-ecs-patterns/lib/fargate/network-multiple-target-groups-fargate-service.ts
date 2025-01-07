@@ -51,11 +51,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsFargateService class.
    */
-  constructor(
-    scope: Construct,
-    id: string,
-    props: NetworkMultipleTargetGroupsFargateServiceProps = {}
-  ) {
+  constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsFargateServiceProps = {}) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp ?? false;
@@ -115,9 +111,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       const containerPort = this.taskDefinition.defaultContainer.portMappings[0].containerPort;
 
       if (!containerPort) {
-        throw new Error(
-          'The first port mapping added to the default container must expose a single port'
-        );
+        throw new Error('The first port mapping added to the default container must expose a single port');
       }
 
       this.targetGroup = this.listener.addTargets('ECS', {
@@ -127,9 +121,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
     }
   }
 
-  private createFargateService(
-    props: NetworkMultipleTargetGroupsFargateServiceProps
-  ): FargateService {
+  private createFargateService(props: NetworkMultipleTargetGroupsFargateServiceProps): FargateService {
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
       ? this.internalDesiredCount
       : this.desiredCount;

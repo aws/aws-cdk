@@ -1,11 +1,5 @@
 import { IntrinsicParser, IntrinsicExpression } from './intrinstics';
-import {
-  captureStackTrace,
-  IResolvable,
-  IResolveContext,
-  Token,
-  Tokenization,
-} from '../../../core';
+import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '../../../core';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
@@ -303,9 +297,7 @@ export function jsonPathString(x: string): string | undefined {
   const jsonPathTokens = fragments.tokens.filter(JsonPathToken.isJsonPathToken);
 
   if (jsonPathTokens.length > 0 && fragments.length > 1) {
-    throw new Error(
-      `Field references must be the entire string, cannot concatenate them (found '${x}')`
-    );
+    throw new Error(`Field references must be the entire string, cannot concatenate them (found '${x}')`);
   }
   if (jsonPathTokens.length > 0) {
     return jsonPathTokens[0].path;

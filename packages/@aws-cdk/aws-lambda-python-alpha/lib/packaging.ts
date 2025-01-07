@@ -89,11 +89,7 @@ export class Packaging {
     return new Packaging({ dependenciesFile: DependenciesFile.NONE });
   }
 
-  public static fromEntry(
-    entry: string,
-    poetryIncludeHashes?: boolean,
-    poetryWithoutUrls?: boolean
-  ): Packaging {
+  public static fromEntry(entry: string, poetryIncludeHashes?: boolean, poetryWithoutUrls?: boolean): Packaging {
     if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
       return this.withPipenv();
     }

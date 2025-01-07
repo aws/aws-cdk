@@ -1,10 +1,6 @@
 import { Construct } from 'constructs';
 import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import {
-  DynamoAttributeValue,
-  DynamoConsumedCapacity,
-  DynamoProjectionExpression,
-} from './shared-types';
+import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoProjectionExpression } from './shared-types';
 import * as ddb from '../../../aws-dynamodb';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
@@ -113,11 +109,7 @@ export class DynamoGetItem extends sfn.TaskStateBase {
     };
   }
 
-  private configureProjectionExpression(
-    expressions?: DynamoProjectionExpression[]
-  ): string | undefined {
-    return expressions
-      ? expressions.map((expression) => expression.toString()).join(',')
-      : undefined;
+  private configureProjectionExpression(expressions?: DynamoProjectionExpression[]): string | undefined {
+    return expressions ? expressions.map((expression) => expression.toString()).join(',') : undefined;
   }
 }

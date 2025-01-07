@@ -181,20 +181,12 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       props?.trafficRouting &&
       (props?.computePlatform === undefined || props?.computePlatform === ComputePlatform.SERVER)
     ) {
-      throw new Error(
-        'Traffic routing config must not be specified for a Server-base deployment configuration'
-      );
+      throw new Error('Traffic routing config must not be specified for a Server-base deployment configuration');
     }
 
     // Minimum healthy hosts is only applicable to Server-based deployment configs
-    if (
-      props?.minimumHealthyHosts &&
-      props?.computePlatform &&
-      props?.computePlatform !== ComputePlatform.SERVER
-    ) {
-      throw new Error(
-        'Minimum healthy hosts config must only be specified for a Server-base deployment configuration'
-      );
+    if (props?.minimumHealthyHosts && props?.computePlatform && props?.computePlatform !== ComputePlatform.SERVER) {
+      throw new Error('Minimum healthy hosts config must only be specified for a Server-base deployment configuration');
     }
 
     if (props?.zonalConfig) {
@@ -202,10 +194,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
         this.validateMinimumDuration(props.zonalConfig.monitorDuration, 'monitorDuration');
       }
       if (props.zonalConfig.firstZoneMonitorDuration) {
-        this.validateMinimumDuration(
-          props.zonalConfig.firstZoneMonitorDuration,
-          'firstZoneMonitorDuration'
-        );
+        this.validateMinimumDuration(props.zonalConfig.firstZoneMonitorDuration, 'firstZoneMonitorDuration');
       }
     }
 
@@ -217,8 +206,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       zonalConfig: props?.zonalConfig
         ? {
             monitorDurationInSeconds: props.zonalConfig.monitorDuration?.toSeconds(),
-            firstZoneMonitorDurationInSeconds:
-              props.zonalConfig.firstZoneMonitorDuration?.toSeconds(),
+            firstZoneMonitorDurationInSeconds: props.zonalConfig.firstZoneMonitorDuration?.toSeconds(),
             minimumHealthyHostsPerZone: props.zonalConfig.minimumHealthyHostsPerZone?._json,
           }
         : undefined,
@@ -240,9 +228,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
   private validateMinimumDuration(duration: Duration, name: string) {
     const milliseconds = duration.toMilliseconds();
     if (milliseconds > 0 && milliseconds < 1000) {
-      throw new Error(
-        `${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`
-      );
+      throw new Error(`${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`);
     }
   }
 }

@@ -27,10 +27,7 @@ describe('lifecycle hooks', () => {
 
     // Lifecycle Hook has a dependency on the policy object
     Template.fromStack(stack).hasResource('AWS::AutoScaling::LifecycleHook', {
-      DependsOn: [
-        'ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB',
-        'ASGLifecycleHookTransitionRole3AAA6BB7',
-      ],
+      DependsOn: ['ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB', 'ASGLifecycleHookTransitionRole3AAA6BB7'],
     });
 
     // A default role is provided
@@ -65,7 +62,7 @@ describe('lifecycle hooks', () => {
   });
 });
 
-test('we can add a lifecycle hook to an ASG with no role and with no notificationTargetArn', ()=> {
+test('we can add a lifecycle hook to an ASG with no role and with no notificationTargetArn', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const asg = newASG(stack);
@@ -83,20 +80,23 @@ test('we can add a lifecycle hook to an ASG with no role and with no notificatio
   });
 
   // A default role is NOT provided
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', Match.not({
-    AssumeRolePolicyDocument: {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'autoscaling.amazonaws.com',
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::IAM::Role',
+    Match.not({
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'autoscaling.amazonaws.com',
+            },
           },
-        },
-      ],
-    },
-  }));
+        ],
+      },
+    })
+  );
 
   // FakeNotificationTarget.bind() was NOT executed
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
@@ -172,13 +172,18 @@ class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
     return role;
   }
 
-  public bind(_scope: constructs.Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
+  public bind(
+    _scope: constructs.Construct,
+    options: autoscaling.BindHookTargetOptions
+  ): autoscaling.LifecycleHookTargetConfig {
     const role = this.createRole(options.lifecycleHook, options.role);
 
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['action:Work'],
-      resources: ['*'],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['action:Work'],
+        resources: ['*'],
+      })
+    );
 
     return { notificationTargetArn: 'target:arn', createdRole: role };
   }

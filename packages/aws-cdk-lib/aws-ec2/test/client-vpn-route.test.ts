@@ -3,11 +3,7 @@ import { Template } from '../../assertions';
 import { SamlMetadataDocument, SamlProvider } from '../../aws-iam';
 import { App, Stack } from '../../core';
 import * as ec2 from '../lib';
-import {
-  ClientVpnRoute,
-  ClientVpnRouteTarget,
-  ClientVpnUserBasedAuthentication,
-} from '../lib';
+import { ClientVpnRoute, ClientVpnRouteTarget, ClientVpnUserBasedAuthentication } from '../lib';
 
 let stack: Stack;
 let vpc: ec2.IVpc;
@@ -54,9 +50,7 @@ describe('ClientVpnRoute constructor', () => {
         target: ClientVpnRouteTarget.local(),
       });
     }).toThrow(
-      new Error(
-        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
-      ),
+      new Error('ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified')
     );
   });
   testDeprecated('specifying both clientVpnEndoint (deprecated, typo) and clientVpnEndpoint is not allowed', () => {
@@ -84,9 +78,8 @@ describe('ClientVpnRoute constructor', () => {
       });
     }).toThrow(
       new Error(
-        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
-          ', but not both',
-      ),
+        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' + ', but not both'
+      )
     );
   });
   test('invalid constructor calls should not add anything to the stack', () => {

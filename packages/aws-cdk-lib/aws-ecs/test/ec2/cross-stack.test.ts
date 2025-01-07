@@ -36,7 +36,6 @@ describe('cross stack', () => {
       cluster,
       taskDefinition,
     });
-
   });
 
   test('ALB next to Service', () => {
@@ -52,7 +51,6 @@ describe('cross stack', () => {
     Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
 
     expectIngress(stack2);
-
   });
 
   test('ALB next to Cluster', () => {
@@ -67,7 +65,6 @@ describe('cross stack', () => {
     // THEN: it shouldn't throw due to cyclic dependencies
     Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
     expectIngress(stack2);
-
   });
 
   test('ALB in its own stack', () => {
@@ -83,7 +80,6 @@ describe('cross stack', () => {
     // THEN: it shouldn't throw due to cyclic dependencies
     Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
     expectIngress(stack2);
-
   });
 });
 
@@ -91,6 +87,9 @@ function expectIngress(stack: Stack) {
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
     FromPort: 32768,
     ToPort: 65535,
-    GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttDefaultAutoScalingGroupInstanceSecurityGroupFBA881D0GroupId2F7C804A' },
+    GroupId: {
+      'Fn::ImportValue':
+        'Stack1:ExportsOutputFnGetAttDefaultAutoScalingGroupInstanceSecurityGroupFBA881D0GroupId2F7C804A',
+    },
   });
 }

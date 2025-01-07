@@ -14,7 +14,9 @@ describe('environment variables', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
       environmentVariables: {
         EnvKey1: 'non-empty-1',
         EnvKey2: 'non-empty-2',
@@ -34,7 +36,9 @@ describe('environment variables', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
     api.addEnvironmentVariable('EnvKey1', 'non-empty-1');
     api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
@@ -52,7 +56,9 @@ describe('environment variables', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     // THEN
@@ -65,7 +71,9 @@ describe('environment variables', () => {
     expect(() => {
       new appsync.GraphqlApi(stack, 'api', {
         name: 'api',
-        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        definition: appsync.Definition.fromSchema(
+          appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+        ),
         environmentVariables: {
           '1EnvKey': 'non-empty-1',
         },
@@ -77,7 +85,9 @@ describe('environment variables', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     // THEN
@@ -90,7 +100,9 @@ describe('environment variables', () => {
     expect(() => {
       new appsync.GraphqlApi(stack, 'api', {
         name: 'api',
-        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        definition: appsync.Definition.fromSchema(
+          appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+        ),
         environmentVariables: {
           a: 'non-empty-1',
         },
@@ -102,7 +114,9 @@ describe('environment variables', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     // THEN
@@ -115,32 +129,42 @@ describe('environment variables', () => {
     expect(() => {
       new appsync.GraphqlApi(stack, 'api', {
         name: 'api',
-        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        definition: appsync.Definition.fromSchema(
+          appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+        ),
         environmentVariables: {
           aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: 'non-empty-1',
         },
       });
-    }).toThrow(/Key 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' must be between 2 and 64 characters long, got 65/);
+    }).toThrow(
+      /Key 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' must be between 2 and 64 characters long, got 65/
+    );
   });
 
   test('throws if environment variables key by addEnvironmentVariable method is greater than 64 characters long', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     // THEN
     expect(() => {
       api.addEnvironmentVariable('a'.repeat(65), 'non-empty-1');
-    }).toThrow(/Key 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' must be between 2 and 64 characters long, got 65/);
+    }).toThrow(
+      /Key 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' must be between 2 and 64 characters long, got 65/
+    );
   });
 
   test('throws if environment variables key contains invalid characters', () => {
     expect(() => {
       new appsync.GraphqlApi(stack, 'api', {
         name: 'api',
-        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        definition: appsync.Definition.fromSchema(
+          appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+        ),
         environmentVariables: {
           '1|2|3': 'non-empty-1',
         },
@@ -152,7 +176,9 @@ describe('environment variables', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     // THEN
@@ -165,7 +191,9 @@ describe('environment variables', () => {
     expect(() => {
       new appsync.GraphqlApi(stack, 'api', {
         name: 'api',
-        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        definition: appsync.Definition.fromSchema(
+          appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+        ),
         environmentVariables: {
           EnvKey1: 'a'.repeat(513),
         },
@@ -177,7 +205,9 @@ describe('environment variables', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     // THEN
@@ -194,7 +224,9 @@ describe('environment variables', () => {
     }
     new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
       environmentVariables: vars,
     });
 
@@ -210,7 +242,9 @@ describe('environment variables', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     for (let i = 0; i < 51; i++) {
@@ -229,7 +263,9 @@ describe('environment variables', () => {
     // GIVEN
     const source = new appsync.GraphqlApi(stack, 'source', {
       name: 'source',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     // THEN
@@ -254,7 +290,9 @@ describe('environment variables', () => {
     // GIVEN
     const source = new appsync.GraphqlApi(stack, 'source', {
       name: 'source',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
 
     // WHEN

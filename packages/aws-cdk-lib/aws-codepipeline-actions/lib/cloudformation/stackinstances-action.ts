@@ -1,10 +1,6 @@
 import { Construct } from 'constructs';
 import { SingletonPolicy } from './private/singleton-policy';
-import {
-  CommonCloudFormationStackSetOptions,
-  StackInstances,
-  StackSetParameters,
-} from './stackset-types';
+import { CommonCloudFormationStackSetOptions, StackInstances, StackSetParameters } from './stackset-types';
 import * as codepipeline from '../../../aws-codepipeline';
 import { Action } from '../action';
 import { validatePercentage } from '../common';

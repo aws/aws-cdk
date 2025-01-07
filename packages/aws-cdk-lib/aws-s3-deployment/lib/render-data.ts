@@ -37,9 +37,7 @@ export function renderData(scope: Construct, data: string): Content {
     const parts = fnJoin[1];
 
     if (sep !== '') {
-      throw new Error(
-        `Unexpected "Fn::Join", expecting separator to be an empty string but got "${sep}"`
-      );
+      throw new Error(`Unexpected "Fn::Join", expecting separator to be an empty string but got "${sep}"`);
     }
 
     for (const part of parts) {
@@ -53,16 +51,12 @@ export function renderData(scope: Construct, data: string): Content {
         continue;
       }
 
-      throw new Error(
-        `Unexpected "Fn::Join" part, expecting string or object but got ${typeof part}`
-      );
+      throw new Error(`Unexpected "Fn::Join" part, expecting string or object but got ${typeof part}`);
     }
   } else if (obj.Ref || obj['Fn::GetAtt'] || obj['Fn::Select']) {
     addMarker(obj);
   } else {
-    throw new Error(
-      'Unexpected: Expecting `resolve()` to return "Fn::Join", "Ref" or "Fn::GetAtt"'
-    );
+    throw new Error('Unexpected: Expecting `resolve()` to return "Fn::Join", "Ref" or "Fn::GetAtt"');
   }
 
   function addMarker(part: Ref | GetAtt | FnSelect) {

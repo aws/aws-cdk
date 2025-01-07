@@ -1,6 +1,17 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
-import { AmazonLinuxGeneration, Connections, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Peer, SubnetType, Vpc } from '../../aws-ec2';
+import {
+  AmazonLinuxGeneration,
+  Connections,
+  Instance,
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  MachineImage,
+  Peer,
+  SubnetType,
+  Vpc,
+} from '../../aws-ec2';
 import { Duration, Stack } from '../../core';
 import { ILoadBalancerTarget, InstanceTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
 
@@ -20,12 +31,14 @@ describe('tests', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
-      Listeners: [{
-        InstancePort: '8080',
-        InstanceProtocol: 'http',
-        LoadBalancerPort: '8080',
-        Protocol: 'http',
-      }],
+      Listeners: [
+        {
+          InstancePort: '8080',
+          InstanceProtocol: 'http',
+          LoadBalancerPort: '8080',
+          Protocol: 'http',
+        },
+      ],
     });
   });
 
@@ -95,9 +108,10 @@ describe('tests', () => {
     const vpc = new Vpc(stack, 'VCP');
     const instance = new Instance(stack, 'targetInstance', {
       vpc: vpc,
-      instanceType: InstanceType.of( // t2.micro has free tier usage in aws
+      instanceType: InstanceType.of(
+        // t2.micro has free tier usage in aws
         InstanceClass.T2,
-        InstanceSize.MICRO,
+        InstanceSize.MICRO
       ),
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
@@ -127,16 +141,10 @@ describe('tests', () => {
       IpProtocol: 'tcp',
       ToPort: 8080,
       GroupId: {
-        'Fn::GetAtt': [
-          'LBSecurityGroup8A41EA2B',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['LBSecurityGroup8A41EA2B', 'GroupId'],
       },
       DestinationSecurityGroupId: {
-        'Fn::GetAtt': [
-          'targetInstanceInstanceSecurityGroupF268BD07',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['targetInstanceInstanceSecurityGroupF268BD07', 'GroupId'],
       },
     });
   });
@@ -147,9 +155,10 @@ describe('tests', () => {
     const vpc = new Vpc(stack, 'VCP');
     const instance = new Instance(stack, 'targetInstance', {
       vpc: vpc,
-      instanceType: InstanceType.of( // t2.micro has free tier usage in aws
+      instanceType: InstanceType.of(
+        // t2.micro has free tier usage in aws
         InstanceClass.T2,
-        InstanceSize.MICRO,
+        InstanceSize.MICRO
       ),
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
@@ -179,16 +188,10 @@ describe('tests', () => {
       IpProtocol: 'tcp',
       ToPort: 8080,
       GroupId: {
-        'Fn::GetAtt': [
-          'LBSecurityGroup8A41EA2B',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['LBSecurityGroup8A41EA2B', 'GroupId'],
       },
       DestinationSecurityGroupId: {
-        'Fn::GetAtt': [
-          'targetInstanceInstanceSecurityGroupF268BD07',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['targetInstanceInstanceSecurityGroupF268BD07', 'GroupId'],
       },
     });
   });
@@ -276,9 +279,11 @@ describe('tests', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
-      Subnets: vpc.selectSubnets({
-        subnetGroupName: 'private1',
-      }).subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
+      Subnets: vpc
+        .selectSubnets({
+          subnetGroupName: 'private1',
+        })
+        .subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
     });
   });
 
@@ -299,13 +304,15 @@ describe('tests', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
-      Listeners: [{
-        InstancePort: '8080',
-        InstanceProtocol: 'http',
-        LoadBalancerPort: '80',
-        Protocol: 'http',
-        SSLCertificateId: sslCertificateArn,
-      }],
+      Listeners: [
+        {
+          InstancePort: '8080',
+          InstanceProtocol: 'http',
+          LoadBalancerPort: '80',
+          Protocol: 'http',
+          SSLCertificateId: sslCertificateArn,
+        },
+      ],
     });
   });
 
@@ -326,13 +333,15 @@ describe('tests', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
-      Listeners: [{
-        InstancePort: '8080',
-        InstanceProtocol: 'http',
-        LoadBalancerPort: '80',
-        Protocol: 'http',
-        SSLCertificateId: sslCertificateArn,
-      }],
+      Listeners: [
+        {
+          InstancePort: '8080',
+          InstanceProtocol: 'http',
+          LoadBalancerPort: '80',
+          Protocol: 'http',
+          SSLCertificateId: sslCertificateArn,
+        },
+      ],
     });
   });
 
@@ -352,7 +361,8 @@ describe('tests', () => {
         internalPort: 8080,
         sslCertificateArn: sslCertificateArn,
         sslCertificateId: sslCertificateArn,
-      })).toThrow(/"sslCertificateId" is deprecated, please use "sslCertificateArn" only./);
+      })
+    ).toThrow(/"sslCertificateId" is deprecated, please use "sslCertificateArn" only./);
   });
 
   test('enable load balancer access logs', () => {

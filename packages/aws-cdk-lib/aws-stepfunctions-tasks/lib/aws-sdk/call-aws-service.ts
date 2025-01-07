@@ -83,16 +83,11 @@ export class CallAwsService extends sfn.TaskStateBase {
     if (this.props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
     }
-    if (
-      !Token.isUnresolved(this.props.action) &&
-      !this.props.action.startsWith(this.props.action[0]?.toLowerCase())
-    ) {
+    if (!Token.isUnresolved(this.props.action) && !this.props.action.startsWith(this.props.action[0]?.toLowerCase())) {
       throw new Error(`action must be camelCase, got: ${this.props.action}`);
     }
     if (this.props.parameters) {
-      const invalidKeys = Object.keys(this.props.parameters).filter(
-        (key) => !key.startsWith(key[0]?.toUpperCase())
-      );
+      const invalidKeys = Object.keys(this.props.parameters).filter((key) => !key.startsWith(key[0]?.toUpperCase()));
       if (invalidKeys.length) {
         throw new Error(`parameter names must be PascalCase, got: ${invalidKeys.join(', ')}`);
       }
@@ -133,11 +128,7 @@ export class CallAwsService extends sfn.TaskStateBase {
     // See here: https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
     // This does not change with sdk upgrades, TT:P125388388
     return {
-      Resource: integrationResourceArn(
-        'aws-sdk',
-        `${service}:${this.props.action}`,
-        this.props.integrationPattern
-      ),
+      Resource: integrationResourceArn('aws-sdk', `${service}:${this.props.action}`, this.props.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject(this.props.parameters) ?? {}, // Parameters is required for aws-sdk
     };
   }

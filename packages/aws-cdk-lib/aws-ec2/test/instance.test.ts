@@ -53,7 +53,6 @@ describe('instance', () => {
       InstanceType: 't3.large',
       SourceDestCheck: false,
     });
-
   });
   test('instance is grantable', () => {
     // GIVEN
@@ -72,12 +71,7 @@ describe('instance', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'ssm:DescribeParameters',
-              'ssm:GetParameters',
-              'ssm:GetParameter',
-              'ssm:GetParameterHistory',
-            ],
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -107,13 +101,33 @@ describe('instance', () => {
         Version: '2012-10-17',
       },
     });
-
   });
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
     const sampleInstanceClasses = [
-      'a1', 't4g', 'c6g', 'c7g', 'c6gd', 'c6gn', 'c7g', 'c7gd', 'm6g', 'm6gd', 'm7g', 'm7gd', 'r6g', 'r6gd', 'r7g', 'r7gd', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
-      'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
+      'a1',
+      't4g',
+      'c6g',
+      'c7g',
+      'c6gd',
+      'c6gn',
+      'c7g',
+      'c7gd',
+      'm6g',
+      'm6gd',
+      'm7g',
+      'm7gd',
+      'r6g',
+      'r6gd',
+      'r7g',
+      'r7gd',
+      'g5g',
+      'im4gn',
+      'is4gen', // current Graviton-based instance classes
+      'a13',
+      't11g',
+      'y10ng',
+      'z11ngd', // theoretical future Graviton-based instance classes
     ];
 
     for (const instanceClass of sampleInstanceClasses) {
@@ -123,7 +137,6 @@ describe('instance', () => {
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
     }
-
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
@@ -136,7 +149,6 @@ describe('instance', () => {
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
     }
-
   });
 
   test('sameInstanceClassAs compares InstanceTypes contains dashes', () => {
@@ -159,25 +171,32 @@ describe('instance', () => {
 
   test('instances with local NVME drive are correctly named', () => {
     // GIVEN
-    const sampleInstanceClassKeys = [{
-      key: InstanceClass.R5D,
-      value: 'r5d',
-    }, {
-      key: InstanceClass.MEMORY5_NVME_DRIVE,
-      value: 'r5d',
-    }, {
-      key: InstanceClass.R5AD,
-      value: 'r5ad',
-    }, {
-      key: InstanceClass.MEMORY5_AMD_NVME_DRIVE,
-      value: 'r5ad',
-    }, {
-      key: InstanceClass.M5AD,
-      value: 'm5ad',
-    }, {
-      key: InstanceClass.STANDARD5_AMD_NVME_DRIVE,
-      value: 'm5ad',
-    }]; // A sample of instances with NVME drives
+    const sampleInstanceClassKeys = [
+      {
+        key: InstanceClass.R5D,
+        value: 'r5d',
+      },
+      {
+        key: InstanceClass.MEMORY5_NVME_DRIVE,
+        value: 'r5d',
+      },
+      {
+        key: InstanceClass.R5AD,
+        value: 'r5ad',
+      },
+      {
+        key: InstanceClass.MEMORY5_AMD_NVME_DRIVE,
+        value: 'r5ad',
+      },
+      {
+        key: InstanceClass.M5AD,
+        value: 'm5ad',
+      },
+      {
+        key: InstanceClass.STANDARD5_AMD_NVME_DRIVE,
+        value: 'm5ad',
+      },
+    ]; // A sample of instances with NVME drives
 
     for (const instanceClass of sampleInstanceClassKeys) {
       // WHEN
@@ -197,7 +216,6 @@ describe('instance', () => {
       // THEN
       expect(() => instanceType.architecture).toThrow('Malformed instance type identifier');
     }
-
   });
   test('can propagate EBS volume tags', () => {
     // WHEN
@@ -253,46 +271,52 @@ describe('instance', () => {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-        blockDevices: [{
-          deviceName: 'ebs',
-          mappingEnabled: true,
-          volume: BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            volumeType: EbsDeviceVolumeType.IO1,
-            iops: 5000,
-          }),
-        }, {
-          deviceName: 'ebs-gp3',
-          mappingEnabled: true,
-          volume: BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            volumeType: EbsDeviceVolumeType.GP3,
-            iops: 5000,
-          }),
-        }, {
-          deviceName: 'ebs-cmk',
-          mappingEnabled: true,
-          volume: BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            kmsKey: kmsKey,
-            volumeType: EbsDeviceVolumeType.IO1,
-            iops: 5000,
-          }),
-        }, {
-          deviceName: 'ebs-snapshot',
-          mappingEnabled: false,
-          volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
-            volumeSize: 500,
-            deleteOnTermination: false,
-            volumeType: EbsDeviceVolumeType.SC1,
-          }),
-        }, {
-          deviceName: 'ephemeral',
-          volume: BlockDeviceVolume.ephemeral(0),
-        }],
+        blockDevices: [
+          {
+            deviceName: 'ebs',
+            mappingEnabled: true,
+            volume: BlockDeviceVolume.ebs(15, {
+              deleteOnTermination: true,
+              encrypted: true,
+              volumeType: EbsDeviceVolumeType.IO1,
+              iops: 5000,
+            }),
+          },
+          {
+            deviceName: 'ebs-gp3',
+            mappingEnabled: true,
+            volume: BlockDeviceVolume.ebs(15, {
+              deleteOnTermination: true,
+              encrypted: true,
+              volumeType: EbsDeviceVolumeType.GP3,
+              iops: 5000,
+            }),
+          },
+          {
+            deviceName: 'ebs-cmk',
+            mappingEnabled: true,
+            volume: BlockDeviceVolume.ebs(15, {
+              deleteOnTermination: true,
+              encrypted: true,
+              kmsKey: kmsKey,
+              volumeType: EbsDeviceVolumeType.IO1,
+              iops: 5000,
+            }),
+          },
+          {
+            deviceName: 'ebs-snapshot',
+            mappingEnabled: false,
+            volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+              volumeSize: 500,
+              deleteOnTermination: false,
+              volumeType: EbsDeviceVolumeType.SC1,
+            }),
+          },
+          {
+            deviceName: 'ephemeral',
+            volume: BlockDeviceVolume.ephemeral(0),
+          },
+        ],
       });
 
       // THEN
@@ -324,10 +348,7 @@ describe('instance', () => {
               DeleteOnTermination: true,
               Encrypted: true,
               KmsKeyId: {
-                'Fn::GetAtt': [
-                  'EbsKeyD3FEE551',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EbsKeyD3FEE551', 'Arn'],
               },
               Iops: 5000,
               VolumeSize: 15,
@@ -350,7 +371,6 @@ describe('instance', () => {
           },
         ],
       });
-
     });
 
     test('throws if ephemeral volumeIndex < 0', () => {
@@ -360,13 +380,14 @@ describe('instance', () => {
           vpc,
           machineImage: new AmazonLinuxImage(),
           instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-          blockDevices: [{
-            deviceName: 'ephemeral',
-            volume: BlockDeviceVolume.ephemeral(-1),
-          }],
+          blockDevices: [
+            {
+              deviceName: 'ephemeral',
+              volume: BlockDeviceVolume.ephemeral(-1),
+            },
+          ],
         });
       }).toThrow(/volumeIndex must be a number starting from 0/);
-
     });
 
     test('throws if volumeType === IO1 without iops', () => {
@@ -376,14 +397,16 @@ describe('instance', () => {
           vpc,
           machineImage: new AmazonLinuxImage(),
           instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-          blockDevices: [{
-            deviceName: 'ebs',
-            volume: BlockDeviceVolume.ebs(15, {
-              deleteOnTermination: true,
-              encrypted: true,
-              volumeType: EbsDeviceVolumeType.IO1,
-            }),
-          }],
+          blockDevices: [
+            {
+              deviceName: 'ebs',
+              volume: BlockDeviceVolume.ebs(15, {
+                deleteOnTermination: true,
+                encrypted: true,
+                volumeType: EbsDeviceVolumeType.IO1,
+              }),
+            },
+          ],
         });
       }).toThrow(/ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
     });
@@ -395,14 +418,16 @@ describe('instance', () => {
           vpc,
           machineImage: new AmazonLinuxImage(),
           instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-          blockDevices: [{
-            deviceName: 'ebs',
-            volume: BlockDeviceVolume.ebs(15, {
-              deleteOnTermination: true,
-              encrypted: true,
-              volumeType: EbsDeviceVolumeType.IO2,
-            }),
-          }],
+          blockDevices: [
+            {
+              deviceName: 'ebs',
+              volume: BlockDeviceVolume.ebs(15, {
+                deleteOnTermination: true,
+                encrypted: true,
+                volumeType: EbsDeviceVolumeType.IO2,
+              }),
+            },
+          ],
         });
       }).toThrow(/ops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2/);
     });
@@ -412,18 +437,23 @@ describe('instance', () => {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            iops: 5000,
-          }),
-        }],
+        blockDevices: [
+          {
+            deviceName: 'ebs',
+            volume: BlockDeviceVolume.ebs(15, {
+              deleteOnTermination: true,
+              encrypted: true,
+              iops: 5000,
+            }),
+          },
+        ],
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3 [ack: @aws-cdk/aws-ec2:iopsIgnored]');
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/Instance',
+        'iops will be ignored without volumeType: IO1, IO2, or GP3 [ack: @aws-cdk/aws-ec2:iopsIgnored]'
+      );
     });
 
     test('warning if iops and invalid volumeType', () => {
@@ -431,19 +461,24 @@ describe('instance', () => {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            volumeType: EbsDeviceVolumeType.GP2,
-            iops: 5000,
-          }),
-        }],
+        blockDevices: [
+          {
+            deviceName: 'ebs',
+            volume: BlockDeviceVolume.ebs(15, {
+              deleteOnTermination: true,
+              encrypted: true,
+              volumeType: EbsDeviceVolumeType.GP2,
+              iops: 5000,
+            }),
+          },
+        ],
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3 [ack: @aws-cdk/aws-ec2:iopsIgnored]');
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/Instance',
+        'iops will be ignored without volumeType: IO1, IO2, or GP3 [ack: @aws-cdk/aws-ec2:iopsIgnored]'
+      );
     });
   });
 
@@ -500,7 +535,6 @@ describe('instance', () => {
       InstanceType: 't3.large',
       PrivateIpAddress: '10.0.0.2',
     });
-
   });
 
   test('instance can be created with Private IP Address AND Associate Public IP Address', () => {
@@ -526,22 +560,21 @@ describe('instance', () => {
     });
     Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
       Properties: {
-        NetworkInterfaces: [{
-          PrivateIpAddress: privateIpAddress,
-          AssociatePublicIpAddress: true,
-          DeviceIndex: '0',
-          GroupSet: [
-            {
-              'Fn::GetAtt': [
-                'SecurityGroupDD263621',
-                'GroupId',
-              ],
+        NetworkInterfaces: [
+          {
+            PrivateIpAddress: privateIpAddress,
+            AssociatePublicIpAddress: true,
+            DeviceIndex: '0',
+            GroupSet: [
+              {
+                'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+              },
+            ],
+            SubnetId: {
+              Ref: 'VPCPublicSubnet1SubnetB4246D30',
             },
-          ],
-          SubnetId: {
-            Ref: 'VPCPublicSubnet1SubnetB4246D30',
           },
-        }],
+        ],
       },
       DependsOn: [
         'InstanceInstanceRoleE9785DE5',
@@ -551,7 +584,6 @@ describe('instance', () => {
         'VPCPublicSubnet2RouteTableAssociation5A808732',
       ],
     });
-
   });
 
   test('instance requires IMDSv2', () => {
@@ -591,12 +623,15 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(() => new Instance(stack, 'Instance', {
-      vpc,
-      machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE),
-      instanceType: new InstanceType('t2.micro'),
-      keyPair,
-    })).toThrow('ed25519 keys are not compatible with the chosen AMI');
+    expect(
+      () =>
+        new Instance(stack, 'Instance', {
+          vpc,
+          machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE),
+          instanceType: new InstanceType('t2.micro'),
+          keyPair,
+        })
+    ).toThrow('ed25519 keys are not compatible with the chosen AMI');
   });
 
   it('throws an error if keyName and keyPair both provided', () => {
@@ -604,13 +639,16 @@ describe('instance', () => {
     const keyPair = new KeyPair(stack, 'KeyPair');
 
     // THEN
-    expect(() => new Instance(stack, 'Instance', {
-      vpc,
-      instanceType: new InstanceType('t2.micro'),
-      machineImage: new AmazonLinuxImage(),
-      keyName: 'test-key-pair',
-      keyPair,
-    })).toThrow('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    expect(
+      () =>
+        new Instance(stack, 'Instance', {
+          vpc,
+          instanceType: new InstanceType('t2.micro'),
+          machineImage: new AmazonLinuxImage(),
+          keyName: 'test-key-pair',
+          keyPair,
+        })
+    ).toThrow("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
   });
 
   it('correctly associates a key pair', () => {
@@ -741,36 +779,39 @@ test('add CloudFormation Init to instance', () => {
     vpc,
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-    init: CloudFormationInit.fromElements(
-      InitCommand.shellCommand('echo hello'),
-    ),
+    init: CloudFormationInit.fromElements(InitCommand.shellCommand('echo hello')),
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
     UserData: {
       'Fn::Base64': {
-        'Fn::Join': ['', [
-          '#!/bin/bash\n# fingerprint: 85ac432b1de1144f\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
-          { Ref: 'AWS::Region' },
-          ' --stack ',
-          { Ref: 'AWS::StackName' },
-          ' --resource InstanceC1063A87 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ',
-          { Ref: 'AWS::Region' },
-          ' --stack ',
-          { Ref: 'AWS::StackName' },
-          ' --resource InstanceC1063A87\n  cat /var/log/cfn-init.log >&2\n)',
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\n# fingerprint: 85ac432b1de1144f\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
+            { Ref: 'AWS::Region' },
+            ' --stack ',
+            { Ref: 'AWS::StackName' },
+            ' --resource InstanceC1063A87 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ',
+            { Ref: 'AWS::Region' },
+            ' --stack ',
+            { Ref: 'AWS::StackName' },
+            ' --resource InstanceC1063A87\n  cat /var/log/cfn-init.log >&2\n)',
+          ],
+        ],
       },
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
-        Effect: 'Allow',
-        Resource: { Ref: 'AWS::StackId' },
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
+          Effect: 'Allow',
+          Resource: { Ref: 'AWS::StackId' },
+        },
+      ]),
       Version: '2012-10-17',
     },
   });
@@ -825,18 +866,20 @@ test('cause replacement from s3 asset in userdata', () => {
   // on the actual asset hash and not accidentally on the token stringification of them.
   // (which would base the hash on '${Token[1234.bla]}'
   const hash = 'f88eace39faf39d7';
-  Template.fromStack(stack).templateMatches(Match.objectLike({
-    Resources: Match.objectLike({
-      [`InstanceOne5B821005${hash}`]: Match.objectLike({
-        Type: 'AWS::EC2::Instance',
-        Properties: Match.anyValue(),
+  Template.fromStack(stack).templateMatches(
+    Match.objectLike({
+      Resources: Match.objectLike({
+        [`InstanceOne5B821005${hash}`]: Match.objectLike({
+          Type: 'AWS::EC2::Instance',
+          Properties: Match.anyValue(),
+        }),
+        [`InstanceTwoDC29A7A7${hash}`]: Match.objectLike({
+          Type: 'AWS::EC2::Instance',
+          Properties: Match.anyValue(),
+        }),
       }),
-      [`InstanceTwoDC29A7A7${hash}`]: Match.objectLike({
-        Type: 'AWS::EC2::Instance',
-        Properties: Match.anyValue(),
-      }),
-    }),
-  }));
+    })
+  );
 });
 
 test('ssm permissions adds right managed policy', () => {
@@ -851,11 +894,7 @@ test('ssm permissions adds right managed policy', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     ManagedPolicyArns: [
       {
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':iam::aws:policy/AmazonSSMManagedInstanceCore',
-        ]],
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonSSMManagedInstanceCore']],
       },
     ],
   });
@@ -906,21 +945,20 @@ test('associate public IP address with instance', () => {
   // THEN
   Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
     Properties: {
-      NetworkInterfaces: [{
-        AssociatePublicIpAddress: true,
-        DeviceIndex: '0',
-        GroupSet: [
-          {
-            'Fn::GetAtt': [
-              'SecurityGroupDD263621',
-              'GroupId',
-            ],
+      NetworkInterfaces: [
+        {
+          AssociatePublicIpAddress: true,
+          DeviceIndex: '0',
+          GroupSet: [
+            {
+              'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+            },
+          ],
+          SubnetId: {
+            Ref: 'VPCPublicSubnet1SubnetB4246D30',
           },
-        ],
-        SubnetId: {
-          Ref: 'VPCPublicSubnet1SubnetB4246D30',
         },
-      }],
+      ],
     },
     DependsOn: [
       'InstanceInstanceRoleE9785DE5',
@@ -949,21 +987,20 @@ test('do not associate public IP address with instance', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
-    NetworkInterfaces: [{
-      AssociatePublicIpAddress: false,
-      DeviceIndex: '0',
-      GroupSet: [
-        {
-          'Fn::GetAtt': [
-            'SecurityGroupDD263621',
-            'GroupId',
-          ],
+    NetworkInterfaces: [
+      {
+        AssociatePublicIpAddress: false,
+        DeviceIndex: '0',
+        GroupSet: [
+          {
+            'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+          },
+        ],
+        SubnetId: {
+          Ref: 'VPCPublicSubnet1SubnetB4246D30',
         },
-      ],
-      SubnetId: {
-        Ref: 'VPCPublicSubnet1SubnetB4246D30',
       },
-    }],
+    ],
   });
 });
 
@@ -977,7 +1014,9 @@ test('associate public IP address with instance and no public subnet', () => {
       sourceDestCheck: false,
       associatePublicIpAddress: true,
     });
-  }).toThrow("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+  }).toThrow(
+    "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })"
+  );
 });
 
 test('specify ebs optimized instance', () => {
@@ -1042,14 +1081,16 @@ test.each([
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.XLARGE),
     hibernationEnabled: given,
-    blockDevices: [{
-      deviceName: '/dev/xvda',
-      volume: BlockDeviceVolume.ebs(30, {
-        volumeType: EbsDeviceVolumeType.GP3,
-        encrypted: true,
-        deleteOnTermination: true,
-      }),
-    }],
+    blockDevices: [
+      {
+        deviceName: '/dev/xvda',
+        volume: BlockDeviceVolume.ebs(30, {
+          volumeType: EbsDeviceVolumeType.GP3,
+          encrypted: true,
+          deleteOnTermination: true,
+        }),
+      },
+    ],
   });
 
   // THEN
@@ -1069,16 +1110,18 @@ test('throw if both enclaveEnabled and hibernationEnabled are set to true', () =
       instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.LARGE),
       enclaveEnabled: true,
       hibernationEnabled: true,
-      blockDevices: [{
-        deviceName: '/dev/xvda',
-        volume: BlockDeviceVolume.ebs(30, {
-          volumeType: EbsDeviceVolumeType.GP3,
-          encrypted: true,
-          deleteOnTermination: true,
-        }),
-      }],
+      blockDevices: [
+        {
+          deviceName: '/dev/xvda',
+          volume: BlockDeviceVolume.ebs(30, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            encrypted: true,
+            deleteOnTermination: true,
+          }),
+        },
+      ],
     });
-  }).toThrow('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
+  }).toThrow("You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance");
 });
 
 test('instance with ipv6 address count', () => {
@@ -1109,18 +1152,21 @@ test.each([-1, 0.1, 1.1])('throws if ipv6AddressCount is not a positive integer'
   }).toThrow(`\'ipv6AddressCount\' must be a non-negative integer, got: ${ipv6AddressCount}`);
 });
 
-test.each([true, false])('throw error for specifying ipv6AddressCount with associatePublicIpAddress', (associatePublicIpAddress) => {
-  // THEN
-  expect(() => {
-    new Instance(stack, 'Instance', {
-      vpc,
-      machineImage: new AmazonLinuxImage(),
-      instanceType: new InstanceType('t2.micro'),
-      ipv6AddressCount: 2,
-      associatePublicIpAddress,
-    });
-  }).toThrow('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
-});
+test.each([true, false])(
+  'throw error for specifying ipv6AddressCount with associatePublicIpAddress',
+  (associatePublicIpAddress) => {
+    // THEN
+    expect(() => {
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: new InstanceType('t2.micro'),
+        ipv6AddressCount: 2,
+        associatePublicIpAddress,
+      });
+    }).toThrow("You can't set both 'ipv6AddressCount' and 'associatePublicIpAddress'");
+  }
+);
 
 test('resourceSignalTimeout overwrites initOptions.timeout when feature flag turned off', () => {
   // GIVEN
@@ -1135,9 +1181,7 @@ test('resourceSignalTimeout overwrites initOptions.timeout when feature flag tur
     vpc,
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-    init: CloudFormationInit.fromElements(
-      InitCommand.shellCommand('echo hello'),
-    ),
+    init: CloudFormationInit.fromElements(InitCommand.shellCommand('echo hello')),
     initOptions: {
       timeout: Duration.minutes(30),
     },
@@ -1168,9 +1212,7 @@ test('initOptions.timeout and resourceSignalTimeout are both not set. Timeout is
     vpc,
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-    init: CloudFormationInit.fromElements(
-      InitCommand.shellCommand('echo hello'),
-    ),
+    init: CloudFormationInit.fromElements(InitCommand.shellCommand('echo hello')),
   });
 
   // THEN
@@ -1196,9 +1238,7 @@ test('initOptions.timeout is set and not resourceSignalTimeout. Timeout is set t
     vpc,
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-    init: CloudFormationInit.fromElements(
-      InitCommand.shellCommand('echo hello'),
-    ),
+    init: CloudFormationInit.fromElements(InitCommand.shellCommand('echo hello')),
     initOptions: {
       timeout: Duration.minutes(10),
     },
@@ -1228,9 +1268,7 @@ test('resourceSignalTimeout is set and not initOptions.timeout. Timeout is set t
     vpc,
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-    init: CloudFormationInit.fromElements(
-      InitCommand.shellCommand('echo hello'),
-    ),
+    init: CloudFormationInit.fromElements(InitCommand.shellCommand('echo hello')),
     resourceSignalTimeout: Duration.minutes(10),
   });
 
@@ -1257,9 +1295,7 @@ test('resourceSignalTimeout and initOptions.timeout are both set, sum timeout an
     vpc,
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-    init: CloudFormationInit.fromElements(
-      InitCommand.shellCommand('echo hello'),
-    ),
+    init: CloudFormationInit.fromElements(InitCommand.shellCommand('echo hello')),
     initOptions: {
       timeout: Duration.minutes(10),
     },

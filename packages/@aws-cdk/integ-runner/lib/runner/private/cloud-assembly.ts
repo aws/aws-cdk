@@ -11,11 +11,7 @@ import {
   ContainerImageAssetMetadataEntry,
   FileAssetMetadataEntry,
 } from '@aws-cdk/cloud-assembly-schema';
-import {
-  AssetManifest,
-  FileManifestEntry,
-  DockerImageManifestEntry,
-} from 'cdk-assets/lib/asset-manifest';
+import { AssetManifest, FileManifestEntry, DockerImageManifestEntry } from 'cdk-assets/lib/asset-manifest';
 import * as fs from 'fs-extra';
 
 /**
@@ -62,9 +58,7 @@ export class AssemblyManifestReader {
       throw new Error(`Cannot read integ manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
-      return AssemblyManifestReader.fromFile(
-        path.join(filePath, AssemblyManifestReader.DEFAULT_FILENAME)
-      );
+      return AssemblyManifestReader.fromFile(path.join(filePath, AssemblyManifestReader.DEFAULT_FILENAME));
     }
     return AssemblyManifestReader.fromFile(filePath);
   }
@@ -216,19 +210,14 @@ export class AssemblyManifestReader {
   /**
    * Get a list of assets from the asset manifest
    */
-  private assetsFromAssetManifest(
-    artifact: ArtifactManifest
-  ): (FileManifestEntry | DockerImageManifestEntry)[] {
+  private assetsFromAssetManifest(artifact: ArtifactManifest): (FileManifestEntry | DockerImageManifestEntry)[] {
     const assets: (FileManifestEntry | DockerImageManifestEntry)[] = [];
     const fileName = (artifact.properties as AssetManifestProperties).file;
     const assetManifest = AssetManifest.fromFile(path.join(this.directory, fileName));
     assetManifest.entries.forEach((entry) => {
       if (entry.type === 'file') {
         const source = (entry as FileManifestEntry).source;
-        if (
-          source.path &&
-          (source.path.startsWith('asset.') || source.path.endsWith('nested.template.json'))
-        ) {
+        if (source.path && (source.path.startsWith('asset.') || source.path.endsWith('nested.template.json'))) {
           assets.push(entry as FileManifestEntry);
         }
       } else if (entry.type === 'docker-image') {

@@ -199,13 +199,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
 
-    if (
-      props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
-      !props.internetFacing
-    ) {
-      throw new Error(
-        'dual-stack without public IPv4 address can only be used with internet-facing scheme.'
-      );
+    if (props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 && !props.internetFacing) {
+      throw new Error('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
     }
 
     const securityGroups = [
@@ -325,18 +320,14 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       new PolicyStatement({
         actions: ['s3:PutObject'],
         principals: [this.resourcePolicyPrincipal()],
-        resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
-        ],
+        resources: [bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`)],
       })
     );
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
         principals: [logsDeliveryServicePrincipal],
-        resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
-        ],
+        resources: [bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`)],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
         },
@@ -355,12 +346,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     // and https://github.com/aws/aws-cdk/issues/27928)
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
-    if (
-      lb &&
-      bucketPolicy &&
-      CfnResource.isCfnResource(lb) &&
-      CfnResource.isCfnResource(bucketPolicy)
-    ) {
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
       lb.addDependency(bucketPolicy);
     }
   }
@@ -393,9 +379,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       new PolicyStatement({
         actions: ['s3:PutObject'],
         principals: [this.resourcePolicyPrincipal()],
-        resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
-        ],
+        resources: [bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`)],
       })
     );
     // We still need this policy for the bucket using the ACL
@@ -403,9 +387,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       new PolicyStatement({
         actions: ['s3:PutObject'],
         principals: [logsDeliveryServicePrincipal],
-        resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
-        ],
+        resources: [bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`)],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
         },
@@ -424,12 +406,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     // and https://github.com/aws/aws-cdk/issues/27928)
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
-    if (
-      lb &&
-      bucketPolicy &&
-      CfnResource.isCfnResource(lb) &&
-      CfnResource.isCfnResource(bucketPolicy)
-    ) {
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
       lb.addDependency(bucketPolicy);
     }
   }
@@ -1246,10 +1223,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
         }),
       ],
     });
-    this.metrics = new ApplicationLoadBalancerMetrics(
-      this,
-      parseLoadBalancerFullName(props.loadBalancerArn)
-    );
+    this.metrics = new ApplicationLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
@@ -1308,9 +1282,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
       this.ipAddressType = IpAddressType.IPV4;
     } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK) {
       this.ipAddressType = IpAddressType.DUAL_STACK;
-    } else if (
-      props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4
-    ) {
+    } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) {
       this.ipAddressType = IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4;
     }
 
@@ -1320,17 +1292,10 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
 
     this.connections = new ec2.Connections();
     for (const securityGroupId of props.securityGroupIds) {
-      const securityGroup = ec2.SecurityGroup.fromLookupById(
-        this,
-        `SecurityGroup-${securityGroupId}`,
-        securityGroupId
-      );
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
-    this.metrics = new ApplicationLoadBalancerMetrics(
-      this,
-      parseLoadBalancerFullName(this.loadBalancerArn)
-    );
+    this.metrics = new ApplicationLoadBalancerMetrics(this, parseLoadBalancerFullName(this.loadBalancerArn));
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {

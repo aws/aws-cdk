@@ -3,7 +3,16 @@ import { Construct, IConstruct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
+import {
+  EventBus,
+  EventField,
+  IRule,
+  IRuleTarget,
+  RuleTargetConfig,
+  RuleTargetInput,
+  Schedule,
+  Match as m,
+} from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable quote-props */
@@ -17,12 +26,12 @@ describe('rule', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyRuleA44AB831': {
-          'Type': 'AWS::Events::Rule',
-          'Properties': {
-            'ScheduleExpression': 'rate(10 minutes)',
-            'State': 'ENABLED',
+      Resources: {
+        MyRuleA44AB831: {
+          Type: 'AWS::Events::Rule',
+          Properties: {
+            ScheduleExpression: 'rate(10 minutes)',
+            State: 'ENABLED',
           },
         },
       },
@@ -38,7 +47,10 @@ describe('rule', () => {
       }),
     });
 
-    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]");
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyRule',
+      "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]"
+    );
   });
 
   test('rule does not display warning when minute is set to * in cron', () => {
@@ -103,8 +115,8 @@ describe('rule', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      'Name': 'rateInMinutes',
-      'ScheduleExpression': 'rate(5 minutes)',
+      Name: 'rateInMinutes',
+      ScheduleExpression: 'rate(5 minutes)',
     });
   });
 
@@ -174,11 +186,11 @@ describe('rule', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyRuleA44AB831': {
-          'Type': 'AWS::Events::Rule',
-          'Properties': {
-            'EventPattern': {
+      Resources: {
+        MyRuleA44AB831: {
+          Type: 'AWS::Events::Rule',
+          Properties: {
+            EventPattern: {
               account: ['account1', 'account2'],
               detail: {
                 foo: [1, 2],
@@ -198,7 +210,7 @@ describe('rule', () => {
                 },
                 state: [{ 'anything-but': ['initializing'] }],
                 limit: [{ 'anything-but': [100, 200, 300] }],
-                notPrefixedBy: [{ 'anything-but': { 'prefix': 'sensitive-' } }],
+                notPrefixedBy: [{ 'anything-but': { prefix: 'sensitive-' } }],
               },
               'detail-type': ['detailType1'],
               id: ['id1', 'id2'],
@@ -208,7 +220,7 @@ describe('rule', () => {
               time: ['t1'],
               version: ['0'],
             },
-            'State': 'ENABLED',
+            State: 'ENABLED',
           },
         },
       },
@@ -245,12 +257,14 @@ describe('rule', () => {
   test('fails synthesis when rule name contains invalid characters', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
-    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => {
+    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach((invalidChar) => {
       new Rule(stack, `Rule${invalidChar}`, {
         ruleName: `Rule${invalidChar}`,
         schedule: Schedule.rate(cdk.Duration.minutes(10)),
       });
-      expect(() => app.synth()).toThrow(/can contain only letters, numbers, periods, hyphens, or underscores with no spaces./);
+      expect(() => app.synth()).toThrow(
+        /can contain only letters, numbers, periods, hyphens, or underscores with no spaces./
+      );
     });
   });
 
@@ -276,30 +290,21 @@ describe('rule', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyRuleA44AB831': {
-          'Type': 'AWS::Events::Rule',
-          'Properties': {
-            'EventPattern': {
-              'account': [
-                '12345',
-              ],
-              'detail': {
-                'foo': [
-                  'hello',
-                  'bar',
-                ],
-                'goo': {
-                  'hello': [
-                    'world',
-                  ],
+      Resources: {
+        MyRuleA44AB831: {
+          Type: 'AWS::Events::Rule',
+          Properties: {
+            EventPattern: {
+              account: ['12345'],
+              detail: {
+                foo: ['hello', 'bar'],
+                goo: {
+                  hello: ['world'],
                 },
               },
-              'source': [
-                'aws.source',
-              ],
+              source: ['aws.source'],
             },
-            'State': 'ENABLED',
+            State: 'ENABLED',
           },
         },
       },
@@ -319,17 +324,14 @@ describe('rule', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyRuleA44AB831': {
-          'Type': 'AWS::Events::Rule',
-          'Properties': {
-            'EventPattern': {
-              'detail-type': [
-                'AWS API Call via CloudTrail',
-                'EC2 Instance State-change Notification',
-              ],
+      Resources: {
+        MyRuleA44AB831: {
+          Type: 'AWS::Events::Rule',
+          Properties: {
+            EventPattern: {
+              'detail-type': ['AWS API Call via CloudTrail', 'EC2 Instance State-change Notification'],
             },
-            'State': 'ENABLED',
+            State: 'ENABLED',
           },
         },
       },
@@ -362,28 +364,28 @@ describe('rule', () => {
     rule.addTarget(t2);
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'EventRule5A491D2C': {
-          'Type': 'AWS::Events::Rule',
-          'Properties': {
-            'ScheduleExpression': 'rate(5 minutes)',
-            'State': 'ENABLED',
-            'Targets': [
+      Resources: {
+        EventRule5A491D2C: {
+          Type: 'AWS::Events::Rule',
+          Properties: {
+            ScheduleExpression: 'rate(5 minutes)',
+            State: 'ENABLED',
+            Targets: [
               {
-                'Arn': 'ARN1',
-                'Id': 'Target0',
-                'KinesisParameters': {
-                  'PartitionKeyPath': 'partitionKeyPath',
+                Arn: 'ARN1',
+                Id: 'Target0',
+                KinesisParameters: {
+                  PartitionKeyPath: 'partitionKeyPath',
                 },
               },
               {
-                'Arn': 'ARN2',
-                'Id': 'Target1',
-                'InputTransformer': {
-                  'InputPathsMap': {
+                Arn: 'ARN2',
+                Id: 'Target1',
+                InputTransformer: {
+                  InputPathsMap: {
                     'detail-bla': '$.detail.bla',
                   },
-                  'InputTemplate': '"This is <detail-bla>"',
+                  InputTemplate: '"This is <detail-bla>"',
                 },
               },
             ],
@@ -403,7 +405,9 @@ describe('rule', () => {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        id: '', arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"'),
+        id: '',
+        arn: 'ARN2',
+        input: RuleTargetInput.fromText('Hello, "world"'),
       }),
     });
 
@@ -437,40 +441,40 @@ describe('rule', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'EventRule5A491D2C': {
-          'Type': 'AWS::Events::Rule',
-          'Properties': {
-            'State': 'ENABLED',
-            'ScheduleExpression': 'rate(1 minute)',
-            'Targets': [
+      Resources: {
+        EventRule5A491D2C: {
+          Type: 'AWS::Events::Rule',
+          Properties: {
+            State: 'ENABLED',
+            ScheduleExpression: 'rate(1 minute)',
+            Targets: [
               {
-                'Arn': 'ARN2',
-                'Id': 'Target0',
-                'Input': '"Hello, \\"world\\""',
+                Arn: 'ARN2',
+                Id: 'Target0',
+                Input: '"Hello, \\"world\\""',
               },
               {
-                'Arn': 'ARN1',
-                'Id': 'Target1',
-                'Input': '"ab"',
-                'KinesisParameters': {
-                  'PartitionKeyPath': 'partitionKeyPath',
+                Arn: 'ARN1',
+                Id: 'Target1',
+                Input: '"ab"',
+                KinesisParameters: {
+                  PartitionKeyPath: 'partitionKeyPath',
                 },
               },
               {
-                'Arn': 'ARN3',
-                'Id': 'Target2',
-                'InputTransformer': {
-                  'InputPathsMap': {
+                Arn: 'ARN3',
+                Id: 'Target2',
+                InputTransformer: {
+                  InputPathsMap: {
                     'detail-bar': '$.detail.bar',
                   },
-                  'InputTemplate': '{"foo":<detail-bar>}',
+                  InputTemplate: '{"foo":<detail-bar>}',
                 },
               },
               {
-                'Arn': 'ARN4',
-                'Id': 'Target3',
-                'Input': '"hello \\"world\\""',
+                Arn: 'ARN4',
+                Id: 'Target3',
+                Input: '"hello \\"world\\""',
               },
             ],
           },
@@ -502,11 +506,11 @@ describe('rule', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      'Targets': [
+      Targets: [
         {
-          'Arn': 'ARN2',
-          'Id': 'Target0',
-          'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+          Arn: 'ARN2',
+          Id: 'Target0',
+          RoleArn: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         },
       ],
     });
@@ -540,20 +544,16 @@ describe('rule', () => {
     Template.fromStack(ruleStack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
-          Arn: { 'Fn::Join': ['', [
-            'arn:',
-            { 'Ref': 'AWS::Partition' },
-            ':events:us-east-1:5678:event-bus/default',
-          ]] },
+          Arn: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':events:us-east-1:5678:event-bus/default']] },
         },
       ],
     });
     Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
-      'Targets': [
+      Targets: [
         {
-          'Arn': 'ARN2',
-          'Id': 'Target0',
-          'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+          Arn: 'ARN2',
+          Id: 'Target0',
+          RoleArn: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         },
       ],
     });
@@ -590,7 +590,11 @@ describe('rule', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:aws:events:us-east-2:123456789012:rule/example');
+    const importedRule = Rule.fromEventRuleArn(
+      stack,
+      'ImportedRule',
+      'arn:aws:events:us-east-2:123456789012:rule/example'
+    );
 
     // THEN
     expect(importedRule.ruleArn).toEqual('arn:aws:events:us-east-2:123456789012:rule/example');
@@ -623,7 +627,7 @@ describe('rule', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      'State': 'DISABLED',
+      State: 'DISABLED',
     });
   });
 
@@ -641,17 +645,17 @@ describe('rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
-          'Arn': 'ARN1',
-          'Id': 'Target0',
-          'KinesisParameters': {
-            'PartitionKeyPath': 'partitionKeyPath',
+          Arn: 'ARN1',
+          Id: 'Target0',
+          KinesisParameters: {
+            PartitionKeyPath: 'partitionKeyPath',
           },
         },
         {
-          'Arn': 'ARN1',
-          'Id': 'Target1',
-          'KinesisParameters': {
-            'PartitionKeyPath': 'partitionKeyPath',
+          Arn: 'ARN1',
+          Id: 'Target1',
+          KinesisParameters: {
+            PartitionKeyPath: 'partitionKeyPath',
           },
         },
       ],
@@ -676,10 +680,10 @@ describe('rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
-          'Arn': 'ARN1',
-          'Id': 'Target0',
-          'SqsParameters': {
-            'MessageGroupId': 'messageGroupId',
+          Arn: 'ARN1',
+          Id: 'Target0',
+          SqsParameters: {
+            MessageGroupId: 'messageGroupId',
           },
         },
       ],
@@ -714,15 +718,15 @@ describe('rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
-          'Arn': 'ARN1',
-          'Id': 'Target0',
-          'RedshiftDataParameters': {
-            'Database': 'database',
-            'DbUser': 'dbUser',
-            'SecretManagerArn': 'secretManagerArn',
-            'Sqls': ['sqls'],
-            'StatementName': 'statementName',
-            'WithEvent': true,
+          Arn: 'ARN1',
+          Id: 'Target0',
+          RedshiftDataParameters: {
+            Database: 'database',
+            DbUser: 'dbUser',
+            SecretManagerArn: 'secretManagerArn',
+            Sqls: ['sqls'],
+            StatementName: 'statementName',
+            WithEvent: true,
           },
         },
       ],
@@ -757,10 +761,13 @@ describe('rule', () => {
     const eventBus = new EventBus(stack, 'EventBus');
 
     // THEN
-    expect(() => new Rule(stack, 'MyRule', {
-      schedule: Schedule.rate(cdk.Duration.minutes(10)),
-      eventBus,
-    })).toThrow(/Cannot associate rule with 'eventBus' when using 'schedule'/);
+    expect(
+      () =>
+        new Rule(stack, 'MyRule', {
+          schedule: Schedule.rate(cdk.Duration.minutes(10)),
+          eventBus,
+        })
+    ).toThrow(/Cannot associate rule with 'eventBus' when using 'schedule'/);
   });
 
   test('allow an imported target if is in the same account and region', () => {
@@ -775,17 +782,21 @@ describe('rule', () => {
       },
     });
 
-    const resource = EventBus.fromEventBusArn(sourceStack, 'TargetEventBus', `arn:aws:events:${sourceRegion}:${sourceAccount}:event-bus/default`);
+    const resource = EventBus.fromEventBusArn(
+      sourceStack,
+      'TargetEventBus',
+      `arn:aws:events:${sourceRegion}:${sourceAccount}:event-bus/default`
+    );
 
     rule.addTarget(new SomeTarget('T', resource));
 
     Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
-          'Arn': 'ARN1',
-          'Id': 'T',
-          'KinesisParameters': {
-            'PartitionKeyPath': 'partitionKeyPath',
+          Arn: 'ARN1',
+          Id: 'T',
+          KinesisParameters: {
+            PartitionKeyPath: 'partitionKeyPath',
           },
         },
       ],
@@ -808,14 +819,17 @@ describe('rule', () => {
       const resource = new Construct(targetStack, 'Resource');
       rule.addTarget(new SomeTarget('T', resource));
       Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
-        'Targets': [
+        Targets: [
           {
-            'Id': 'T',
-            'Arn': 'ARN1',
+            Id: 'T',
+            Arn: 'ARN1',
           },
         ],
       });
-      Annotations.fromStack(sourceStack).hasWarning('/'+rule.node.path, Match.stringLikeRegexp('Either the Event Rule or target has an unresolved environment'));
+      Annotations.fromStack(sourceStack).hasWarning(
+        '/' + rule.node.path,
+        Match.stringLikeRegexp('Either the Event Rule or target has an unresolved environment')
+      );
     });
 
     test('requires that the target stack specify a concrete account', () => {
@@ -833,14 +847,17 @@ describe('rule', () => {
       const resource = new Construct(targetStack, 'Resource');
       rule.addTarget(new SomeTarget('T', resource));
       Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
-        'Targets': [
+        Targets: [
           {
-            'Id': 'T',
-            'Arn': 'ARN1',
+            Id: 'T',
+            Arn: 'ARN1',
           },
         ],
       });
-      Annotations.fromStack(sourceStack).hasWarning('/'+rule.node.path, Match.stringLikeRegexp('Either the Event Rule or target has an unresolved environment'));
+      Annotations.fromStack(sourceStack).hasWarning(
+        '/' + rule.node.path,
+        Match.stringLikeRegexp('Either the Event Rule or target has an unresolved environment')
+      );
     });
 
     test('requires that the target stack specify a concrete region', () => {
@@ -856,7 +873,9 @@ describe('rule', () => {
 
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }).toThrow(/You need to provide a concrete region for the target stack when using cross-account or cross-region events/);
+      }).toThrow(
+        /You need to provide a concrete region for the target stack when using cross-account or cross-region events/
+      );
     });
 
     test('creates cross-account targets if in the same region', () => {
@@ -879,18 +898,14 @@ describe('rule', () => {
       rule.addTarget(new SomeTarget('T', resource));
 
       Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
-        'State': 'ENABLED',
-        'Targets': [
+        State: 'ENABLED',
+        Targets: [
           {
-            'Id': 'T',
-            'Arn': {
+            Id: 'T',
+            Arn: {
               'Fn::Join': [
                 '',
-                [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  `:events:${targetRegion}:${targetAccount}:event-bus/default`,
-                ],
+                ['arn:', { Ref: 'AWS::Partition' }, `:events:${targetRegion}:${targetAccount}:event-bus/default`],
               ],
             },
           },
@@ -900,10 +915,10 @@ describe('rule', () => {
       Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         Targets: [
           {
-            'Arn': 'ARN1',
-            'Id': 'T',
-            'KinesisParameters': {
-              'PartitionKeyPath': 'partitionKeyPath',
+            Arn: 'ARN1',
+            Id: 'T',
+            KinesisParameters: {
+              PartitionKeyPath: 'partitionKeyPath',
             },
           },
         ],
@@ -930,18 +945,14 @@ describe('rule', () => {
       rule.addTarget(new SomeTarget('T', resource));
 
       Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
-        'State': 'ENABLED',
-        'Targets': [
+        State: 'ENABLED',
+        Targets: [
           {
-            'Id': 'T',
-            'Arn': {
+            Id: 'T',
+            Arn: {
               'Fn::Join': [
                 '',
-                [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  `:events:${targetRegion}:${targetAccount}:event-bus/default`,
-                ],
+                ['arn:', { Ref: 'AWS::Partition' }, `:events:${targetRegion}:${targetAccount}:event-bus/default`],
               ],
             },
           },
@@ -951,10 +962,10 @@ describe('rule', () => {
       Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         Targets: [
           {
-            'Arn': 'ARN1',
-            'Id': 'T',
-            'KinesisParameters': {
-              'PartitionKeyPath': 'partitionKeyPath',
+            Arn: 'ARN1',
+            Id: 'T',
+            KinesisParameters: {
+              PartitionKeyPath: 'partitionKeyPath',
             },
           },
         ],
@@ -983,42 +994,37 @@ describe('rule', () => {
       rule.addTarget(new SomeTarget('T1', resource));
 
       Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
-        'State': 'ENABLED',
-        'Targets': [
+        State: 'ENABLED',
+        Targets: [
           {
-            'Id': 'T',
-            'Arn': {
+            Id: 'T',
+            Arn: {
               'Fn::Join': [
                 '',
-                [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  `:events:${targetRegion}:${targetAccount}:event-bus/default`,
-                ],
+                ['arn:', { Ref: 'AWS::Partition' }, `:events:${targetRegion}:${targetAccount}:event-bus/default`],
               ],
             },
           },
         ],
       });
 
-      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', Match.not({
-        'State': 'ENABLED',
-        'Targets': [
-          {
-            'Id': 'T1',
-            'Arn': {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  `:events:${targetRegion}:${targetAccount}:event-bus/default`,
+      Template.fromStack(sourceStack).hasResourceProperties(
+        'AWS::Events::Rule',
+        Match.not({
+          State: 'ENABLED',
+          Targets: [
+            {
+              Id: 'T1',
+              Arn: {
+                'Fn::Join': [
+                  '',
+                  ['arn:', { Ref: 'AWS::Partition' }, `:events:${targetRegion}:${targetAccount}:event-bus/default`],
                 ],
-              ],
+              },
             },
-          },
-        ],
-      }));
+          ],
+        })
+      );
     });
 
     test('requires that the target is not imported', () => {
@@ -1035,7 +1041,11 @@ describe('rule', () => {
 
       const targetAccount = '123456789012';
       const targetRegion = 'us-west-1';
-      const resource = EventBus.fromEventBusArn(sourceStack, 'TargetEventBus', `arn:aws:events:${targetRegion}:${targetAccount}:event-bus/default`);
+      const resource = EventBus.fromEventBusArn(
+        sourceStack,
+        'TargetEventBus',
+        `arn:aws:events:${targetRegion}:${targetAccount}:event-bus/default`
+      );
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
       }).toThrow(/Cannot create a cross-account or cross-region rule for an imported resource/);
@@ -1044,12 +1054,16 @@ describe('rule', () => {
     test('requires that the source and target stacks be part of the same App', () => {
       const sourceApp = new cdk.App();
       const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(sourceApp, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
+      const sourceStack = new cdk.Stack(sourceApp, 'SourceStack', {
+        env: { account: sourceAccount, region: 'us-west-2' },
+      });
       const rule = new Rule(sourceStack, 'Rule');
 
       const targetApp = new cdk.App();
       const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(targetApp, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
+      const targetStack = new cdk.Stack(targetApp, 'TargetStack', {
+        env: { account: targetAccount, region: 'us-west-2' },
+      });
       const resource = new Construct(targetStack, 'Resource');
 
       expect(() => {
@@ -1088,23 +1102,17 @@ describe('rule', () => {
       rule.addTarget(new SomeTarget('T2', resource2));
 
       Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'some-event',
-          ],
+        EventPattern: {
+          source: ['some-event'],
         },
-        'State': 'ENABLED',
-        'Targets': [
+        State: 'ENABLED',
+        Targets: [
           {
-            'Id': 'T1',
-            'Arn': {
+            Id: 'T1',
+            Arn: {
               'Fn::Join': [
                 '',
-                [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  `:events:us-west-2:${targetAccount}:event-bus/default`,
-                ],
+                ['arn:', { Ref: 'AWS::Partition' }, `:events:us-west-2:${targetAccount}:event-bus/default`],
               ],
             },
           },
@@ -1112,39 +1120,37 @@ describe('rule', () => {
       });
 
       Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'some-event',
-          ],
+        EventPattern: {
+          source: ['some-event'],
         },
-        'State': 'ENABLED',
-        'Targets': [
+        State: 'ENABLED',
+        Targets: [
           {
-            'Id': 'T1',
-            'Arn': 'ARN1',
+            Id: 'T1',
+            Arn: 'ARN1',
           },
         ],
       });
       Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'some-event',
-          ],
+        EventPattern: {
+          source: ['some-event'],
         },
-        'State': 'ENABLED',
-        'Targets': [
+        State: 'ENABLED',
+        Targets: [
           {
-            'Id': 'T2',
-            'Arn': 'ARN1',
+            Id: 'T2',
+            Arn: 'ARN1',
           },
         ],
       });
 
-      const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
+      const eventBusPolicyStack = app.node.findChild(
+        `EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`
+      ) as cdk.Stack;
       Template.fromStack(eventBusPolicyStack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-        'Action': 'events:PutEvents',
-        'StatementId': `Allow-account-${sourceAccount}-${uniqueName}`,
-        'Principal': sourceAccount,
+        Action: 'events:PutEvents',
+        StatementId: `Allow-account-${sourceAccount}-${uniqueName}`,
+        Principal: sourceAccount,
       });
     });
 
@@ -1176,16 +1182,14 @@ describe('rule', () => {
       });
 
       Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'some-event',
-          ],
+        EventPattern: {
+          source: ['some-event'],
         },
-        'State': 'ENABLED',
-        'Targets': [
+        State: 'ENABLED',
+        Targets: [
           {
-            'Id': 'T',
-            'Arn': 'ARN1',
+            Id: 'T',
+            Arn: 'ARN1',
           },
         ],
       });
@@ -1195,8 +1199,10 @@ describe('rule', () => {
 
 class SomeTarget implements IRuleTarget {
   // eslint-disable-next-line @cdklabs/no-core-construct
-  public constructor(private readonly id?: string, private readonly resource?: IConstruct) {
-  }
+  public constructor(
+    private readonly id?: string,
+    private readonly resource?: IConstruct
+  ) {}
 
   public bind(): RuleTargetConfig {
     return {

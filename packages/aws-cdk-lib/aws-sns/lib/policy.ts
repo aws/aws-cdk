@@ -61,9 +61,7 @@ export class TopicPolicy extends Resource {
     this.document = props.policyDocument ?? this.document;
 
     if (props.enforceSSL) {
-      props.topics.map((t) =>
-        this.document.addStatements(this.createSSLPolicyDocument(t.topicArn))
-      );
+      props.topics.map((t) => this.document.addStatements(this.createSSLPolicyDocument(t.topicArn)));
     }
 
     new CfnTopicPolicy(this, 'Resource', {

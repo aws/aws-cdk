@@ -12,7 +12,18 @@ import { ArnPrincipal, Role } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
-import { CfnJobDefinitionProps, EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, Secret, UlimitName } from '../lib';
+import {
+  CfnJobDefinitionProps,
+  EcsContainerDefinitionProps,
+  EcsEc2ContainerDefinition,
+  EcsFargateContainerDefinition,
+  EcsJobDefinition,
+  EcsVolume,
+  IEcsEc2ContainerDefinition,
+  LinuxParameters,
+  Secret,
+  UlimitName,
+} from '../lib';
 
 // GIVEN
 const defaultContainerProps: EcsContainerDefinitionProps = {
@@ -92,10 +103,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-            ],
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -116,9 +124,11 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
         Version: '2012-10-17',
       },
       PolicyName: 'EcsContainerExecutionRoleDefaultPolicy6F59CD37',
-      Roles: [{
-        Ref: 'EcsContainerExecutionRole3B199293',
-      }],
+      Roles: [
+        {
+          Ref: 'EcsContainerExecutionRole3B199293',
+        },
+      ],
     });
   });
 
@@ -158,10 +168,12 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       ...pascalCaseExpectedProps,
       ContainerProperties: {
         ...pascalCaseExpectedProps.ContainerProperties,
-        Environment: [{
-          Name: 'foo',
-          Value: 'bar',
-        }],
+        Environment: [
+          {
+            Name: 'foo',
+            Value: 'bar',
+          },
+        ],
       },
     });
   });
@@ -344,7 +356,8 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
-                '', [
+                '',
+                [
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':logs:',
@@ -389,12 +402,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
           {
             Name: 'envName',
             ValueFrom: {
-              'Fn::Join': [
-                '', [
-                  { Ref: 'testSecretB96AD12C' },
-                  '::stage:versionID',
-                ],
-              ],
+              'Fn::Join': ['', [{ Ref: 'testSecretB96AD12C' }, '::stage:versionID']],
             },
           },
         ],
@@ -409,7 +417,8 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
-                '', [
+                '',
+                [
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':logs:',
@@ -452,7 +461,8 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
             Name: 'envName',
             ValueFrom: {
               'Fn::Join': [
-                '', [
+                '',
+                [
                   'arn:',
                   {
                     Ref: 'AWS::Partition',
@@ -479,7 +489,8 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
-                '', [
+                '',
+                [
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':logs:',
@@ -507,7 +518,6 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
                   ':parameter/',
                   { Ref: 'myParam03610B68' },
                 ],
-
               ],
             },
           },
@@ -517,7 +527,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
   });
 
   test('respects user', () => {
-  // WHEN
+    // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
@@ -656,31 +666,37 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
 
     // WHEN
-    jobDefn.container.addVolume(EcsVolume.efs({
-      containerPath: '/container/path',
-      fileSystem: new efs.FileSystem(stack, 'efs', {
-        vpc: new Vpc(stack, 'vpc'),
-      }),
-      name: 'AddedEfsVolume',
-    }));
+    jobDefn.container.addVolume(
+      EcsVolume.efs({
+        containerPath: '/container/path',
+        fileSystem: new efs.FileSystem(stack, 'efs', {
+          vpc: new Vpc(stack, 'vpc'),
+        }),
+        name: 'AddedEfsVolume',
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ...pascalCaseExpectedProps,
       ContainerProperties: {
         ...pascalCaseExpectedProps.ContainerProperties,
-        Volumes: [{
-          Name: 'AddedEfsVolume',
-          EfsVolumeConfiguration: {
-            FileSystemId: {
-              Ref: 'efs6C17982A',
+        Volumes: [
+          {
+            Name: 'AddedEfsVolume',
+            EfsVolumeConfiguration: {
+              FileSystemId: {
+                Ref: 'efs6C17982A',
+              },
             },
           },
-        }],
-        MountPoints: [{
-          ContainerPath: '/container/path',
-          SourceVolume: 'AddedEfsVolume',
-        }],
+        ],
+        MountPoints: [
+          {
+            ContainerPath: '/container/path',
+            SourceVolume: 'AddedEfsVolume',
+          },
+        ],
       },
     });
   });
@@ -694,28 +710,34 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
 
     // WHEN
-    jobDefn.container.addVolume(EcsVolume.host({
-      containerPath: '/container/path/new',
-      name: 'hostName',
-      hostPath: '/host/path',
-      readonly: false,
-    }));
+    jobDefn.container.addVolume(
+      EcsVolume.host({
+        containerPath: '/container/path/new',
+        name: 'hostName',
+        hostPath: '/host/path',
+        readonly: false,
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ...pascalCaseExpectedProps,
       ContainerProperties: {
         ...pascalCaseExpectedProps.ContainerProperties,
-        Volumes: [{
-          Name: 'hostName',
-          Host: {
-            SourcePath: '/host/path',
+        Volumes: [
+          {
+            Name: 'hostName',
+            Host: {
+              SourcePath: '/host/path',
+            },
           },
-        }],
-        MountPoints: [{
-          ContainerPath: '/container/path/new',
-          SourceVolume: 'hostName',
-        }],
+        ],
+        MountPoints: [
+          {
+            ContainerPath: '/container/path/new',
+            SourceVolume: 'hostName',
+          },
+        ],
       },
     });
   });
@@ -725,9 +747,11 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
-        image: ecs.ContainerImage.fromDockerImageAsset(new DockerImageAsset(stack, 'dockerImageAsset', {
-          directory: path.join(__dirname, 'batchjob-image'),
-        })),
+        image: ecs.ContainerImage.fromDockerImageAsset(
+          new DockerImageAsset(stack, 'dockerImageAsset', {
+            directory: path.join(__dirname, 'batchjob-image'),
+          })
+        ),
       }),
     });
 
@@ -737,7 +761,8 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       ContainerProperties: {
         ...pascalCaseExpectedProps.ContainerProperties,
         Image: {
-          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b',
+          'Fn::Sub':
+            '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b',
         },
       },
     });
@@ -768,10 +793,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
                 'Fn::Select': [
                   4,
                   {
-                    'Fn::Split': [
-                      ':',
-                      { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] },
-                    ],
+                    'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }],
                   },
                 ],
               },
@@ -780,10 +802,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
                 'Fn::Select': [
                   3,
                   {
-                    'Fn::Split': [
-                      ':',
-                      { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] },
-                    ],
+                    'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }],
                   },
                 ],
               },
@@ -835,11 +854,13 @@ describe('EC2 containers', () => {
       ...pascalCaseExpectedProps,
       ContainerProperties: {
         ...pascalCaseExpectedProps.ContainerProperties,
-        Ulimits: [{
-          HardLimit: 10,
-          SoftLimit: 1,
-          Name: 'sigpending',
-        }],
+        Ulimits: [
+          {
+            HardLimit: 10,
+            SoftLimit: 1,
+            Name: 'sigpending',
+          },
+        ],
       },
     });
   });
@@ -932,9 +953,7 @@ describe('EC2 containers', () => {
     new EcsJobDefinition(stack, 'ECSJobDefn', {
       container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
-        image: ecs.ContainerImage.fromAsset(
-          path.join(__dirname, 'batchjob-image'),
-        ),
+        image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'batchjob-image')),
       }),
     });
 
@@ -944,7 +963,8 @@ describe('EC2 containers', () => {
       ContainerProperties: {
         ...pascalCaseExpectedProps.ContainerProperties,
         Image: {
-          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b',
+          'Fn::Sub':
+            '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b',
         },
         ExecutionRoleArn: { 'Fn::GetAtt': ['EcsEc2ContainerExecutionRole90E18680', 'Arn'] },
       },
@@ -988,11 +1008,13 @@ describe('Fargate containers', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: { Service: 'ecs-tasks.amazonaws.com' },
-        }],
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'ecs-tasks.amazonaws.com' },
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -1051,31 +1073,42 @@ describe('Fargate containers', () => {
   });
 
   test('ephemeralStorageSize throws error when out of range', () => {
-    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
-        ...defaultContainerProps,
-        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
-        ephemeralStorageSize: Size.gibibytes(19),
-      }),
-    })).toThrow("ECS Fargate container 'EcsFargateContainer' specifies 'ephemeralStorageSize' at 19 < 21 GB");
+    expect(
+      () =>
+        new EcsJobDefinition(stack, 'ECSJobDefn', {
+          container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+            ...defaultContainerProps,
+            fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+            ephemeralStorageSize: Size.gibibytes(19),
+          }),
+        })
+    ).toThrow("ECS Fargate container 'EcsFargateContainer' specifies 'ephemeralStorageSize' at 19 < 21 GB");
 
-    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn2', {
-      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer2', {
-        ...defaultContainerProps,
-        fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
-        ephemeralStorageSize: Size.gibibytes(201),
-      }),
-    })).toThrow("ECS Fargate container 'EcsFargateContainer2' specifies 'ephemeralStorageSize' at 201 > 200 GB");
+    expect(
+      () =>
+        new EcsJobDefinition(stack, 'ECSJobDefn2', {
+          container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer2', {
+            ...defaultContainerProps,
+            fargatePlatformVersion: ecs.FargatePlatformVersion.LATEST,
+            ephemeralStorageSize: Size.gibibytes(201),
+          }),
+        })
+    ).toThrow("ECS Fargate container 'EcsFargateContainer2' specifies 'ephemeralStorageSize' at 201 > 200 GB");
   });
 
-  test('readonlyRootFilesystem can\'t be true with Windows family', () => {
-    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
-        ...defaultContainerProps,
-        readonlyRootFilesystem: true,
-        fargateOperatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
-      }),
-    })).toThrow('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container');
+  test("readonlyRootFilesystem can't be true with Windows family", () => {
+    expect(
+      () =>
+        new EcsJobDefinition(stack, 'ECSJobDefn', {
+          container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+            ...defaultContainerProps,
+            readonlyRootFilesystem: true,
+            fargateOperatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
+          }),
+        })
+    ).toThrow(
+      'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container'
+    );
   });
 
   test('readonlyRootFilesystem is undefined with Windows family', () => {

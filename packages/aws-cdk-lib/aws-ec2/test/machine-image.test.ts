@@ -128,11 +128,14 @@ test('WindowsImage retains userdata if given', () => {
   // WHEN
   const ud = ec2.UserData.forWindows();
 
-  const image = new ec2.GenericWindowsImage({
-    testregion: 'ami-1234',
-  }, {
-    userData: ud,
-  });
+  const image = new ec2.GenericWindowsImage(
+    {
+      testregion: 'ami-1234',
+    },
+    {
+      userData: ud,
+    }
+  );
 
   // THEN
   const details = image.getImage(stack);
@@ -168,8 +171,8 @@ test('LookupMachineImage default search', () => {
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         owners: ['amazon'],
         filters: {
-          'name': ['bla*'],
-          'state': ['available'],
+          name: ['bla*'],
+          state: ['available'],
           'image-type': ['machine'],
         },
       },
@@ -181,7 +184,9 @@ test('LookupMachineImage default search', () => {
 test('LookupMachineImage creates correct type of UserData', () => {
   // WHEN
   const linuxDetails = new ec2.LookupMachineImage({ name: 'bla*', owners: ['amazon'] }).getImage(stack);
-  const windowsDetails = new ec2.LookupMachineImage({ name: 'bla*', owners: ['amazon'], windows: true }).getImage(stack);
+  const windowsDetails = new ec2.LookupMachineImage({ name: 'bla*', owners: ['amazon'], windows: true }).getImage(
+    stack
+  );
 
   // THEN
   expect(isWindowsUserData(windowsDetails.userData)).toBeTruthy();

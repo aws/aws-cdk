@@ -215,9 +215,7 @@ export class Connections implements IConnectable {
    */
   public allowDefaultPortInternally(description?: string) {
     if (!this.defaultPort) {
-      throw new Error(
-        'Cannot call allowDefaultPortInternally(): this resource has no default port'
-      );
+      throw new Error('Cannot call allowDefaultPortInternally(): this resource has no default port');
     }
     this.allowInternally(this.defaultPort, description);
   }
@@ -227,9 +225,7 @@ export class Connections implements IConnectable {
    */
   public allowDefaultPortFromAnyIpv4(description?: string) {
     if (!this.defaultPort) {
-      throw new Error(
-        'Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port'
-      );
+      throw new Error('Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port');
     }
     this.allowFromAnyIpv4(this.defaultPort, description);
   }

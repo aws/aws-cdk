@@ -42,10 +42,7 @@ export class FromCloudFormationResult<T> {
     this.extraProperties = {};
   }
 
-  public appendExtraProperties(
-    prefix: string,
-    properties: { [key: string]: any } | undefined
-  ): void {
+  public appendExtraProperties(prefix: string, properties: { [key: string]: any } | undefined): void {
     for (const [key, val] of Object.entries(properties ?? {})) {
       this.extraProperties[`${prefix}.${key}`] = val;
     }
@@ -55,9 +52,7 @@ export class FromCloudFormationResult<T> {
 /**
  * A property object we will accumulate properties into
  */
-export class FromCloudFormationPropertyObject<
-  T extends Record<string, any>,
-> extends FromCloudFormationResult<T> {
+export class FromCloudFormationPropertyObject<T extends Record<string, any>> extends FromCloudFormationResult<T> {
   private readonly recognizedProperties = new Set<string>();
 
   public constructor() {
@@ -67,11 +62,7 @@ export class FromCloudFormationPropertyObject<
   /**
    * Add a parse result under a given key
    */
-  public addPropertyResult(
-    cdkPropName: keyof T,
-    cfnPropName: string,
-    result?: FromCloudFormationResult<any>
-  ): void {
+  public addPropertyResult(cdkPropName: keyof T, cfnPropName: string, result?: FromCloudFormationResult<any>): void {
     this.recognizedProperties.add(cfnPropName);
     if (!result) {
       return;
@@ -390,9 +381,7 @@ export class CfnParser {
     cfnOptions.creationPolicy = creationPolicy.value;
     cfnOptions.updatePolicy = updatePolicy.value;
     cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
-    cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(
-      resourceAttributes.UpdateReplacePolicy
-    );
+    cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
     cfnOptions.version = this.parseValue(resourceAttributes.Version);
     cfnOptions.description = this.parseValue(resourceAttributes.Description);
     cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
@@ -408,9 +397,7 @@ export class CfnParser {
     if (resourceAttributes.Condition) {
       const condition = this.finder.findCondition(resourceAttributes.Condition);
       if (!condition) {
-        throw new Error(
-          `Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`
-        );
+        throw new Error(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
       }
       cfnOptions.condition = condition;
     }
@@ -429,10 +416,7 @@ export class CfnParser {
     }
   }
 
-  private parseCreationPolicy(
-    policy: any,
-    logicalId: string
-  ): FromCloudFormationResult<CfnCreationPolicy | undefined> {
+  private parseCreationPolicy(policy: any, logicalId: string): FromCloudFormationResult<CfnCreationPolicy | undefined> {
     if (typeof policy !== 'object') {
       return new FromCloudFormationResult(undefined);
     }
@@ -470,10 +454,7 @@ export class CfnParser {
     }
   }
 
-  private parseUpdatePolicy(
-    policy: any,
-    logicalId: string
-  ): FromCloudFormationResult<CfnUpdatePolicy | undefined> {
+  private parseUpdatePolicy(policy: any, logicalId: string): FromCloudFormationResult<CfnUpdatePolicy | undefined> {
     if (typeof policy !== 'object') {
       return new FromCloudFormationResult(undefined);
     }
@@ -503,9 +484,7 @@ export class CfnParser {
       return repUp.toResult();
     }
 
-    function parseAutoScalingRollingUpdate(
-      p: any
-    ): FromCloudFormationResult<CfnAutoScalingRollingUpdate | undefined> {
+    function parseAutoScalingRollingUpdate(p: any): FromCloudFormationResult<CfnAutoScalingRollingUpdate | undefined> {
       if (typeof p !== 'object') {
         return new FromCloudFormationResult(undefined);
       }
@@ -621,9 +600,7 @@ export class CfnParser {
         } else {
           const refElement = this.finder.findRefTarget(refTarget);
           if (!refElement) {
-            throw new Error(
-              `Element used in Ref expression with logical ID: '${refTarget}' not found`
-            );
+            throw new Error(`Element used in Ref expression with logical ID: '${refTarget}' not found`);
           }
           return CfnReference.for(refElement, 'Ref');
         }
@@ -636,9 +613,7 @@ export class CfnParser {
           // ...in which case the logical ID and the attribute name are separated with '.'
           const dotIndex = value.indexOf('.');
           if (dotIndex === -1) {
-            throw new Error(
-              `Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${value}'`
-            );
+            throw new Error(`Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${value}'`);
           }
           logicalId = value.slice(0, dotIndex);
           attributeName = value.slice(dotIndex + 1); // the +1 is to skip the actual '.'
@@ -651,15 +626,9 @@ export class CfnParser {
         }
         const target = this.finder.findResource(logicalId);
         if (!target) {
-          throw new Error(
-            `Resource used in GetAtt expression with logical ID: '${logicalId}' not found`
-          );
+          throw new Error(`Resource used in GetAtt expression with logical ID: '${logicalId}' not found`);
         }
-        return CfnReference.for(
-          target,
-          attributeName,
-          stringForm ? ReferenceRendering.GET_ATT_STRING : undefined
-        );
+        return CfnReference.for(target, attributeName, stringForm ? ReferenceRendering.GET_ATT_STRING : undefined);
       }
       case 'Fn::Join': {
         // Fn::Join takes a 2-element list as its argument,
@@ -725,9 +694,7 @@ export class CfnParser {
         const value = this.parseValue(object[key]);
         const condition = this.finder.findCondition(value[0]);
         if (!condition) {
-          throw new Error(
-            `Condition '${value[0]}' used in an Fn::If expression does not exist in the template`
-          );
+          throw new Error(`Condition '${value[0]}' used in an Fn::If expression does not exist in the template`);
         }
         return Fn.conditionIf(condition.logicalId, value[1], value[2]);
       }
@@ -765,9 +732,7 @@ export class CfnParser {
         // a reference to a Condition from another Condition
         const condition = this.finder.findCondition(object[key]);
         if (!condition) {
-          throw new Error(
-            `Referenced Condition with name '${object[key]}' was not found in the template`
-          );
+          throw new Error(`Referenced Condition with name '${object[key]}' was not found in the template`);
         }
         return { Condition: condition.logicalId };
       }
@@ -787,11 +752,7 @@ export class CfnParser {
     if (!this.stack) {
       throw new Error('cannot call this method before handleAttributes!');
     }
-    if (
-      FeatureFlags.of(this.stack).isEnabled(
-        CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS
-      )
-    ) {
+    if (FeatureFlags.of(this.stack).isEnabled(CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS)) {
       if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
         throw new Error(
           `Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`
@@ -816,10 +777,7 @@ export class CfnParser {
       : undefined;
   }
 
-  private parseFnSubString(
-    templateString: string,
-    expressionMap: { [key: string]: any } | undefined
-  ): string {
+  private parseFnSubString(templateString: string, expressionMap: { [key: string]: any } | undefined): string {
     const map = expressionMap ?? {};
     const self = this;
     return Fn.sub(go(templateString), Object.keys(map).length === 0 ? expressionMap : map);
@@ -883,11 +841,7 @@ export class CfnParser {
             `Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`
           );
         }
-        return (
-          leftHalf +
-          CfnReference.for(refElement, 'Ref', ReferenceRendering.FN_SUB).toString() +
-          go(rightHalf)
-        );
+        return leftHalf + CfnReference.for(refElement, 'Ref', ReferenceRendering.FN_SUB).toString() + go(rightHalf);
       } else {
         const targetId = refTarget.substring(0, dotIndex);
         const refResource = self.finder.findResource(targetId);
@@ -898,9 +852,7 @@ export class CfnParser {
         }
         const attribute = refTarget.substring(dotIndex + 1);
         return (
-          leftHalf +
-          CfnReference.for(refResource, attribute, ReferenceRendering.FN_SUB).toString() +
-          go(rightHalf)
+          leftHalf + CfnReference.for(refResource, attribute, ReferenceRendering.FN_SUB).toString() + go(rightHalf)
         );
       }
     }
@@ -924,9 +876,7 @@ export class CfnParser {
         }
         const param = this.finder.findRefTarget(parameterName);
         if (!param) {
-          throw new Error(
-            `Rule references parameter '${parameterName}' which was not found in the template`
-          );
+          throw new Error(`Rule references parameter '${parameterName}' which was not found in the template`);
         }
         // create an explicit IResolvable,
         // as Fn.valueOf() returns a string,

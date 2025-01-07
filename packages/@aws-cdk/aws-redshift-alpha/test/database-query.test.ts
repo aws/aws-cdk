@@ -46,11 +46,13 @@ describe('database query', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([{
-            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-            Effect: 'Allow',
-            Resource: { Ref: 'ClusterSecretAttachment769E6258' },
-          }]),
+          Statement: Match.arrayWith([
+            {
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+              Effect: 'Allow',
+              Resource: { Ref: 'ClusterSecretAttachment769E6258' },
+            },
+          ]),
         },
         Roles: [{ Ref: 'QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717' }],
       });
@@ -112,10 +114,15 @@ describe('database query', () => {
         publiclyAccessible: true,
       });
 
-      expect(() => new DatabaseQuery(stack, 'Query', {
-        ...minimalProps,
-        cluster,
-      })).toThrow('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)');
+      expect(
+        () =>
+          new DatabaseQuery(stack, 'Query', {
+            ...minimalProps,
+            cluster,
+          })
+      ).toThrow(
+        'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)'
+      );
     });
 
     it('throws error if admin user not provided and cluster was imported', () => {
@@ -125,10 +132,15 @@ describe('database query', () => {
         clusterEndpointPort: 5439,
       });
 
-      expect(() => new DatabaseQuery(stack, 'Query', {
-        ...minimalProps,
-        cluster,
-      })).toThrow('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported');
+      expect(
+        () =>
+          new DatabaseQuery(stack, 'Query', {
+            ...minimalProps,
+            cluster,
+          })
+      ).toThrow(
+        'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported'
+      );
     });
   });
 
@@ -156,11 +168,13 @@ describe('database query', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: ['redshift-data:DescribeStatement', 'redshift-data:ExecuteStatement'],
-          Effect: 'Allow',
-          Resource: '*',
-        }]),
+        Statement: Match.arrayWith([
+          {
+            Action: ['redshift-data:DescribeStatement', 'redshift-data:ExecuteStatement'],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ]),
       },
       Roles: [{ Ref: 'QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717' }],
     });
@@ -184,17 +198,23 @@ describe('database query', () => {
     });
 
     it('throw error for timeout being too short', () => {
-      expect(() => new DatabaseQuery(stack, 'Query', {
-        ...minimalProps,
-        timeout: cdk.Duration.millis(999),
-      })).toThrow('The timeout for the handler must be BETWEEN 1 second and 15 minutes, got 999 milliseconds.');
+      expect(
+        () =>
+          new DatabaseQuery(stack, 'Query', {
+            ...minimalProps,
+            timeout: cdk.Duration.millis(999),
+          })
+      ).toThrow('The timeout for the handler must be BETWEEN 1 second and 15 minutes, got 999 milliseconds.');
     });
 
     it('throw error for timeout being too long', () => {
-      expect(() => new DatabaseQuery(stack, 'Query', {
-        ...minimalProps,
-        timeout: cdk.Duration.minutes(16),
-      })).toThrow('The timeout for the handler must be between 1 second and 15 minutes, got 960 seconds.');
+      expect(
+        () =>
+          new DatabaseQuery(stack, 'Query', {
+            ...minimalProps,
+            timeout: cdk.Duration.minutes(16),
+          })
+      ).toThrow('The timeout for the handler must be between 1 second and 15 minutes, got 960 seconds.');
     });
   });
 
@@ -227,7 +247,9 @@ describe('database query', () => {
     });
 
     expect(stack.resolve(query.getAtt('attribute'))).toStrictEqual({ 'Fn::GetAtt': ['Query435140A1', 'attribute'] });
-    expect(stack.resolve(query.getAttString('attribute'))).toStrictEqual({ 'Fn::GetAtt': ['Query435140A1', 'attribute'] });
+    expect(stack.resolve(query.getAttString('attribute'))).toStrictEqual({
+      'Fn::GetAtt': ['Query435140A1', 'attribute'],
+    });
   });
 
   it('creates at most one IAM invoker role for handler', () => {

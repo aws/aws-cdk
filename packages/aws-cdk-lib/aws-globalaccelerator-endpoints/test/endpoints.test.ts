@@ -47,13 +47,12 @@ test('Application Load Balancer with all properties', () => {
 test('Get region from imported ALB', () => {
   // WHEN
   const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
-    loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
+    loadBalancerArn:
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
     securityGroupId: 'sg-1234',
   });
   listener.addEndpointGroup('Group', {
-    endpoints: [
-      new endpoints.ApplicationLoadBalancerEndpoint(alb),
-    ],
+    endpoints: [new endpoints.ApplicationLoadBalancerEndpoint(alb)],
   });
 
   // THEN
@@ -61,7 +60,8 @@ test('Get region from imported ALB', () => {
     EndpointGroupRegion: 'us-west-2',
     EndpointConfigurations: [
       {
-        EndpointId: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
+        EndpointId:
+          'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
       },
     ],
   });
@@ -95,12 +95,11 @@ test('Network Load Balancer with all properties', () => {
 test('Get region from imported NLB', () => {
   // WHEN
   const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
-    loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
+    loadBalancerArn:
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
   });
   listener.addEndpointGroup('Group', {
-    endpoints: [
-      new endpoints.NetworkLoadBalancerEndpoint(nlb),
-    ],
+    endpoints: [new endpoints.NetworkLoadBalancerEndpoint(nlb)],
   });
 
   // THEN
@@ -108,7 +107,8 @@ test('Get region from imported NLB', () => {
     EndpointGroupRegion: 'us-west-2',
     EndpointConfigurations: [
       {
-        EndpointId: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
+        EndpointId:
+          'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
       },
     ],
   });

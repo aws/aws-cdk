@@ -74,18 +74,12 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
     private readonly glueJobName: string,
     private readonly props: RunGlueJobTaskProps = {}
   ) {
-    this.integrationPattern =
-      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
-    const supportedPatterns = [
-      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC,
-    ];
+    const supportedPatterns = [sfn.ServiceIntegrationPattern.FIRE_AND_FORGET, sfn.ServiceIntegrationPattern.SYNC];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(
-        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Glue.`
-      );
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Glue.`);
     }
   }
 
@@ -97,12 +91,7 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.FIRE_AND_FORGET) {
       iamActions = ['glue:StartJobRun'];
     } else if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
-      iamActions = [
-        'glue:StartJobRun',
-        'glue:GetJobRun',
-        'glue:GetJobRuns',
-        'glue:BatchStopJobRun',
-      ];
+      iamActions = ['glue:StartJobRun', 'glue:GetJobRun', 'glue:GetJobRuns', 'glue:BatchStopJobRun'];
     }
     return {
       resourceArn: getResourceArn('glue', 'startJobRun', this.integrationPattern),

@@ -149,11 +149,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   /**
    * import from attributes
    */
-  public static fromAcceleratorAttributes(
-    scope: Construct,
-    id: string,
-    attrs: AcceleratorAttributes
-  ): IAccelerator {
+  public static fromAcceleratorAttributes(scope: Construct, id: string, attrs: AcceleratorAttributes): IAccelerator {
     class Import extends cdk.Resource implements IAccelerator {
       public readonly acceleratorArn = attrs.acceleratorArn;
       public readonly dnsName = attrs.dnsName;
@@ -226,14 +222,8 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   }
 
   private validateAcceleratorName(name?: string) {
-    if (
-      !cdk.Token.isUnresolved(name) &&
-      name !== undefined &&
-      (name.length < 1 || name.length > 64)
-    ) {
-      throw new Error(
-        `Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`
-      );
+    if (!cdk.Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 64)) {
+      throw new Error(`Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`);
     }
   }
 

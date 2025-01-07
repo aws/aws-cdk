@@ -6,10 +6,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 /**
  * Use an AWS CodePipeline pipeline as a target for AWS EventBridge Scheduler.
  */
-export class CodePipelineStartPipelineExecution
-  extends ScheduleTargetBase
-  implements IScheduleTarget
-{
+export class CodePipelineStartPipelineExecution extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly pipeline: IPipeline,
     props: ScheduleTargetBaseProps = {}

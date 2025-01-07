@@ -109,12 +109,10 @@ export const external = {
     iam().createOpenIDConnectProvider(req),
   deleteOpenIDConnectProvider: (req: sdk.DeleteOpenIDConnectProviderCommandInput) =>
     iam().deleteOpenIDConnectProvider(req),
-  updateOpenIDConnectProviderThumbprint: (
-    req: sdk.UpdateOpenIDConnectProviderThumbprintCommandInput
-  ) => iam().updateOpenIDConnectProviderThumbprint(req),
+  updateOpenIDConnectProviderThumbprint: (req: sdk.UpdateOpenIDConnectProviderThumbprintCommandInput) =>
+    iam().updateOpenIDConnectProviderThumbprint(req),
   addClientIDToOpenIDConnectProvider: (req: sdk.AddClientIDToOpenIDConnectProviderCommandInput) =>
     iam().addClientIDToOpenIDConnectProvider(req),
-  removeClientIDFromOpenIDConnectProvider: (
-    req: sdk.RemoveClientIDFromOpenIDConnectProviderCommandInput
-  ) => iam().removeClientIDFromOpenIDConnectProvider(req),
+  removeClientIDFromOpenIDConnectProvider: (req: sdk.RemoveClientIDFromOpenIDConnectProviderCommandInput) =>
+    iam().removeClientIDFromOpenIDConnectProvider(req),
 };

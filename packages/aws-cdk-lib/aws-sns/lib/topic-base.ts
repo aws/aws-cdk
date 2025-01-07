@@ -113,9 +113,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
     if (scope.node.tryFindChild(id)) {
-      throw new Error(
-        `A subscription with id "${id}" already exists under the scope ${scope.node.path}`
-      );
+      throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
     }
 
     const subscription = new Subscription(scope, id, {
@@ -201,9 +199,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Represents a notification target
    * That allows SNS topic to associate with this rule target.
    */
-  public bindAsNotificationRuleTarget(
-    _scope: constructs.Construct
-  ): notifications.NotificationRuleTargetConfig {
+  public bindAsNotificationRuleTarget(_scope: constructs.Construct): notifications.NotificationRuleTargetConfig {
     // SNS topic need to grant codestar-notifications service to publish
     // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
     this.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));

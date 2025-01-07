@@ -86,10 +86,7 @@ describe('scaling', () => {
 
       // THEN
       const arnParts = {
-        'Fn::Split': [
-          '/',
-          { Ref: 'ALBListener3B99FF85' },
-        ],
+        'Fn::Split': ['/', { Ref: 'ALBListener3B99FF85' }],
       };
 
       Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
@@ -99,15 +96,18 @@ describe('scaling', () => {
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: {
-              'Fn::Join': ['', [
-                { 'Fn::Select': [1, arnParts] },
-                '/',
-                { 'Fn::Select': [2, arnParts] },
-                '/',
-                { 'Fn::Select': [3, arnParts] },
-                '/',
-                { 'Fn::GetAtt': ['ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName'] },
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::Select': [1, arnParts] },
+                  '/',
+                  { 'Fn::Select': [2, arnParts] },
+                  '/',
+                  { 'Fn::Select': [3, arnParts] },
+                  '/',
+                  { 'Fn::GetAtt': ['ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName'] },
+                ],
+              ],
             },
           },
         },
@@ -132,10 +132,7 @@ describe('scaling', () => {
 
       // THEN
       const arnParts = {
-        'Fn::Split': [
-          '/',
-          { Ref: 'ALBListener3B99FF85' },
-        ],
+        'Fn::Split': ['/', { Ref: 'ALBListener3B99FF85' }],
       };
 
       Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
@@ -145,15 +142,18 @@ describe('scaling', () => {
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: {
-              'Fn::Join': ['', [
-                { 'Fn::Select': [1, arnParts] },
-                '/',
-                { 'Fn::Select': [2, arnParts] },
-                '/',
-                { 'Fn::Select': [3, arnParts] },
-                '/',
-                { 'Fn::GetAtt': ['ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName'] },
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::Select': [1, arnParts] },
+                  '/',
+                  { 'Fn::Select': [2, arnParts] },
+                  '/',
+                  { 'Fn::Select': [3, arnParts] },
+                  '/',
+                  { 'Fn::GetAtt': ['ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName'] },
+                ],
+              ],
             },
           },
         },
@@ -210,9 +210,11 @@ describe('scaling', () => {
     });
 
     // THEN
-    expect(() => Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
-      CoolDown: undefined,
-    })).toThrow(/Template has 1 resources with type AWS::AutoScaling::ScalingPolicy, but none match as expected/);
+    expect(() =>
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+        CoolDown: undefined,
+      })
+    ).toThrow(/Template has 1 resources with type AWS::AutoScaling::ScalingPolicy, but none match as expected/);
   });
 
   test('step scaling', () => {
@@ -306,9 +308,7 @@ test('step scaling from percentile metric', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     ComparisonOperator: 'GreaterThanOrEqualToThreshold',
     EvaluationPeriods: 1,
-    AlarmActions: [
-      { Ref: 'FixtureASGTrackingUpperPolicy27D4301F' },
-    ],
+    AlarmActions: [{ Ref: 'FixtureASGTrackingUpperPolicy27D4301F' }],
     ExtendedStatistic: 'p99',
     MetricName: 'Metric',
     Namespace: 'Test',
@@ -466,7 +466,9 @@ describe('datapointsToAlarm', () => {
         datapointsToAlarm: 15,
         metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
       });
-    }).toThrow(/datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: 15, evaluationPeriods: 10/);
+    }).toThrow(
+      /datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: 15, evaluationPeriods: 10/
+    );
   });
 
   test('step scaling with datapointsToAlarm without evaluationPeriods throws error', () => {
@@ -505,9 +507,7 @@ describe('step-scaling-policy scalingSteps length validation checks', () => {
         }),
         estimatedInstanceWarmup: cdk.Duration.seconds(150),
         // only one scaling step throws an error.
-        scalingSteps: [
-          { lower: 0, upper: 2, change: +1 },
-        ],
+        scalingSteps: [{ lower: 0, upper: 2, change: +1 }],
       });
     }).toThrow(/must supply at least 2/);
   });
@@ -540,7 +540,7 @@ describe('step-scaling-policy scalingSteps length validation checks', () => {
         estimatedInstanceWarmup: cdk.Duration.seconds(150),
         scalingSteps: steps,
       });
-    }).toThrow('\'scalingSteps\' can have at most 40 steps, got 41');
+    }).toThrow("'scalingSteps' can have at most 40 steps, got 41");
   });
 });
 

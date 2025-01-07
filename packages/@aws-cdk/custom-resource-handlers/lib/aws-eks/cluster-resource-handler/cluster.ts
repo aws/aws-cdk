@@ -1,10 +1,7 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as EKS from '@aws-sdk/client-eks';
-import {
-  IsCompleteResponse,
-  OnEventResponse,
-} from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
+import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
 
@@ -28,10 +25,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     this.newProps = parseProps(this.event.ResourceProperties);
     this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : {};
     // compare newProps and oldProps and update the newProps by appending disabled LogSetup if any
-    const compared: Partial<EKS.CreateClusterCommandInput> = compareLoggingProps(
-      this.oldProps,
-      this.newProps
-    );
+    const compared: Partial<EKS.CreateClusterCommandInput> = compareLoggingProps(this.oldProps, this.newProps);
     this.newProps.logging = compared.logging;
   }
 
@@ -40,10 +34,7 @@ export class ClusterResourceHandler extends ResourceHandler {
   // ------
 
   protected async onCreate(): Promise<OnEventResponse> {
-    console.log(
-      'onCreate: creating cluster with options:',
-      JSON.stringify(this.newProps, undefined, 2)
-    );
+    console.log('onCreate: creating cluster with options:', JSON.stringify(this.newProps, undefined, 2));
     if (!this.newProps.roleArn) {
       throw new Error('"roleArn" is required');
     }
@@ -98,9 +89,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       console.log('describeCluster returned:', JSON.stringify(resp, undefined, 2));
     } catch (e: any) {
       if (e.name === 'ResourceNotFoundException') {
-        console.log(
-          'received ResourceNotFoundException, this means the cluster has been deleted (or never existed)'
-        );
+        console.log('received ResourceNotFoundException, this means the cluster has been deleted (or never existed)');
         return { IsComplete: true };
       }
 
@@ -129,11 +118,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
     // deleted by cloudformation upon success.
-    if (
-      updates.replaceName ||
-      updates.replaceRole ||
-      updates.updateBootstrapClusterCreatorAdminPermissions
-    ) {
+    if (updates.replaceName || updates.replaceRole || updates.updateBootstrapClusterCreatorAdminPermissions) {
       // if we are replacing this cluster and the cluster has an explicit
       // physical name, the creation of the new cluster will fail with "there is
       // already a cluster with that name". this is a common behavior for
@@ -215,20 +200,13 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if a version update is required, issue the version update
     if (updates.updateVersion) {
       if (!this.newProps.version) {
-        throw new Error(
-          `Cannot remove cluster version configuration. Current version is ${this.oldProps.version}`
-        );
+        throw new Error(`Cannot remove cluster version configuration. Current version is ${this.oldProps.version}`);
       }
 
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (
-      updates.updateLogging ||
-      updates.updateAccess ||
-      updates.updateVpc ||
-      updates.updateAuthMode
-    ) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -291,13 +269,8 @@ export class ClusterResourceHandler extends ResourceHandler {
         // so skip in this case.
         try {
           const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
-          if (
-            cluster?.accessConfig?.authenticationMode ===
-            this.newProps.accessConfig?.authenticationMode
-          ) {
-            console.log(
-              `cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`
-            );
+          if (cluster?.accessConfig?.authenticationMode === this.newProps.accessConfig?.authenticationMode) {
+            console.log(`cluster already at ${cluster?.accessConfig?.authenticationMode}, skipping authMode update`);
             return;
           }
         } catch (e: any) {
@@ -426,9 +399,7 @@ export class ClusterResourceHandler extends ResourceHandler {
           `cluster update id "${eksUpdateId}" failed with errors: ${JSON.stringify(describeUpdateResponse.update.errors)}`
         );
       default:
-        throw new Error(
-          `unknown status "${describeUpdateResponse.update.status}" for update id "${eksUpdateId}"`
-        );
+        throw new Error(`unknown status "${describeUpdateResponse.update.status}" for update id "${eksUpdateId}"`);
     }
   }
 
@@ -447,13 +418,11 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
   // Otherwise it fails with 'Unexpected Parameter: params.resourcesVpcConfig.endpointPrivateAccess is expected to be a boolean'
 
   if (typeof parsed.resourcesVpcConfig?.endpointPrivateAccess === 'string') {
-    parsed.resourcesVpcConfig.endpointPrivateAccess =
-      parsed.resourcesVpcConfig.endpointPrivateAccess === 'true';
+    parsed.resourcesVpcConfig.endpointPrivateAccess = parsed.resourcesVpcConfig.endpointPrivateAccess === 'true';
   }
 
   if (typeof parsed.resourcesVpcConfig?.endpointPublicAccess === 'string') {
-    parsed.resourcesVpcConfig.endpointPublicAccess =
-      parsed.resourcesVpcConfig.endpointPublicAccess === 'true';
+    parsed.resourcesVpcConfig.endpointPublicAccess = parsed.resourcesVpcConfig.endpointPublicAccess === 'true';
   }
 
   if (typeof parsed.logging?.clusterLogging[0].enabled === 'string') {
@@ -497,10 +466,8 @@ function analyzeUpdate(
   return {
     replaceName: newProps.name !== oldProps.name,
     updateVpc:
-      JSON.stringify(newVpcProps.subnetIds?.sort()) !==
-        JSON.stringify(oldVpcProps.subnetIds?.sort()) ||
-      JSON.stringify(newVpcProps.securityGroupIds?.sort()) !==
-        JSON.stringify(oldVpcProps.securityGroupIds?.sort()),
+      JSON.stringify(newVpcProps.subnetIds?.sort()) !== JSON.stringify(oldVpcProps.subnetIds?.sort()) ||
+      JSON.stringify(newVpcProps.securityGroupIds?.sort()) !== JSON.stringify(oldVpcProps.securityGroupIds?.sort()),
     updateAccess:
       newVpcProps.endpointPrivateAccess !== oldVpcProps.endpointPrivateAccess ||
       newVpcProps.endpointPublicAccess !== oldVpcProps.endpointPublicAccess ||
@@ -510,8 +477,7 @@ function analyzeUpdate(
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
     updateAuthMode:
-      JSON.stringify(newAccessConfig.authenticationMode) !==
-      JSON.stringify(oldAccessConfig.authenticationMode),
+      JSON.stringify(newAccessConfig.authenticationMode) !== JSON.stringify(oldAccessConfig.authenticationMode),
     updateBootstrapClusterCreatorAdminPermissions:
       JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
       JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),

@@ -17,13 +17,15 @@ beforeEach(() => {
   stack = new Stack();
   vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Capacity', {
-    autoScalingGroup: new autoscaling.AutoScalingGroup(stack, 'ASG', {
-      vpc,
-      instanceType: new ec2.InstanceType('t3.medium'),
-      machineImage: ec2.MachineImage.latestAmazonLinux(),
-    }),
-  }));
+  cluster.addAsgCapacityProvider(
+    new ecs.AsgCapacityProvider(stack, 'Capacity', {
+      autoScalingGroup: new autoscaling.AutoScalingGroup(stack, 'ASG', {
+        vpc,
+        instanceType: new ec2.InstanceType('t3.medium'),
+        machineImage: ec2.MachineImage.latestAmazonLinux(),
+      }),
+    })
+  );
 });
 
 test('Cannot create a Fargate task with a fargate-incompatible task definition', () => {
@@ -38,7 +40,11 @@ test('Cannot create a Fargate task with a fargate-incompatible task definition',
   });
 
   expect(() =>
-    new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson()
   ).toThrow(/Supplied TaskDefinition is not compatible with Fargate/);
 });
 
@@ -49,7 +55,11 @@ test('Cannot create a Fargate task without a default container', () => {
     compatibility: ecs.Compatibility.FARGATE,
   });
   expect(() =>
-    new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson()
   ).toThrow(/must have at least one essential container/);
 });
 
@@ -85,7 +95,7 @@ test('Cannot override container definitions when container is not in task defini
         },
       ],
       launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson(),
+    }).toStateJson()
   ).toThrow(/no such container in task definition/);
 });
 
@@ -101,32 +111,33 @@ test('Running a task with container override and container has explicitly set a 
     memoryLimitMiB: 256,
   });
 
-  expect(stack.resolve(
-    new tasks.EcsRunTask(stack, 'task', {
-      cluster,
-      taskDefinition,
-      containerOverrides: [
-        {
-          containerDefinition,
-          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
-        },
-      ],
-      launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson()))
-    .toHaveProperty('Parameters.Overrides',
-      {
-        ContainerOverrides: [
+  expect(
+    stack.resolve(
+      new tasks.EcsRunTask(stack, 'task', {
+        cluster,
+        taskDefinition,
+        containerOverrides: [
           {
-            Environment: [
-              {
-                Name: 'SOME_KEY',
-                'Value.$': '$.SomeKey',
-              },
-            ],
-            Name: 'ExplicitContainerName',
+            containerDefinition,
+            environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
           },
         ],
-      });
+        launchTarget: new tasks.EcsFargateLaunchTarget(),
+      }).toStateJson()
+    )
+  ).toHaveProperty('Parameters.Overrides', {
+    ContainerOverrides: [
+      {
+        Environment: [
+          {
+            Name: 'SOME_KEY',
+            'Value.$': '$.SomeKey',
+          },
+        ],
+        Name: 'ExplicitContainerName',
+      },
+    ],
+  });
 });
 
 test('Running a task without propagated tag source', () => {
@@ -141,18 +152,21 @@ test('Running a task without propagated tag source', () => {
     memoryLimitMiB: 256,
   });
 
-  expect(stack.resolve(
-    new tasks.EcsRunTask(stack, 'task', {
-      cluster,
-      taskDefinition,
-      containerOverrides: [
-        {
-          containerDefinition,
-          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
-        },
-      ],
-      launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson())).not.toContain('Parameters.PropagateTags');
+  expect(
+    stack.resolve(
+      new tasks.EcsRunTask(stack, 'task', {
+        cluster,
+        taskDefinition,
+        containerOverrides: [
+          {
+            containerDefinition,
+            environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+          },
+        ],
+        launchTarget: new tasks.EcsFargateLaunchTarget(),
+      }).toStateJson()
+    )
+  ).not.toContain('Parameters.PropagateTags');
 });
 
 test('Running a task with TASK_DEFINITION as propagated tag source', () => {
@@ -167,19 +181,22 @@ test('Running a task with TASK_DEFINITION as propagated tag source', () => {
     memoryLimitMiB: 256,
   });
 
-  expect(stack.resolve(
-    new tasks.EcsRunTask(stack, 'task', {
-      cluster,
-      taskDefinition,
-      containerOverrides: [
-        {
-          containerDefinition,
-          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
-        },
-      ],
-      launchTarget: new tasks.EcsFargateLaunchTarget(),
-      propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
-    }).toStateJson())).toHaveProperty('Parameters.PropagateTags', 'TASK_DEFINITION');
+  expect(
+    stack.resolve(
+      new tasks.EcsRunTask(stack, 'task', {
+        cluster,
+        taskDefinition,
+        containerOverrides: [
+          {
+            containerDefinition,
+            environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+          },
+        ],
+        launchTarget: new tasks.EcsFargateLaunchTarget(),
+        propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
+      }).toStateJson()
+    )
+  ).toHaveProperty('Parameters.PropagateTags', 'TASK_DEFINITION');
 });
 
 test('Running a task with NONE as propagated tag source', () => {
@@ -194,19 +211,22 @@ test('Running a task with NONE as propagated tag source', () => {
     memoryLimitMiB: 256,
   });
 
-  expect(stack.resolve(
-    new tasks.EcsRunTask(stack, 'task', {
-      cluster,
-      taskDefinition,
-      containerOverrides: [
-        {
-          containerDefinition,
-          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
-        },
-      ],
-      launchTarget: new tasks.EcsFargateLaunchTarget(),
-      propagatedTagSource: ecs.PropagatedTagSource.NONE,
-    }).toStateJson())).toHaveProperty('Parameters.PropagateTags', 'NONE');
+  expect(
+    stack.resolve(
+      new tasks.EcsRunTask(stack, 'task', {
+        cluster,
+        taskDefinition,
+        containerOverrides: [
+          {
+            containerDefinition,
+            environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+          },
+        ],
+        launchTarget: new tasks.EcsFargateLaunchTarget(),
+        propagatedTagSource: ecs.PropagatedTagSource.NONE,
+      }).toStateJson()
+    )
+  ).toHaveProperty('Parameters.PropagateTags', 'NONE');
 });
 
 test('Running a task with cpu parameter', () => {
@@ -221,19 +241,22 @@ test('Running a task with cpu parameter', () => {
     memoryLimitMiB: 256,
   });
 
-  expect(stack.resolve(
-    new tasks.EcsRunTask(stack, 'task', {
-      cluster,
-      taskDefinition,
-      cpu: '1024',
-      containerOverrides: [
-        {
-          containerDefinition,
-          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
-        },
-      ],
-      launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson())).toHaveProperty('Parameters.Overrides.Cpu', '1024');
+  expect(
+    stack.resolve(
+      new tasks.EcsRunTask(stack, 'task', {
+        cluster,
+        taskDefinition,
+        cpu: '1024',
+        containerOverrides: [
+          {
+            containerDefinition,
+            environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+          },
+        ],
+        launchTarget: new tasks.EcsFargateLaunchTarget(),
+      }).toStateJson()
+    )
+  ).toHaveProperty('Parameters.Overrides.Cpu', '1024');
 });
 
 test('Running a task with memory parameter', () => {
@@ -248,19 +271,22 @@ test('Running a task with memory parameter', () => {
     memoryLimitMiB: 256,
   });
 
-  expect(stack.resolve(
-    new tasks.EcsRunTask(stack, 'task', {
-      cluster,
-      taskDefinition,
-      memoryMiB: '2048',
-      containerOverrides: [
-        {
-          containerDefinition,
-          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
-        },
-      ],
-      launchTarget: new tasks.EcsFargateLaunchTarget(),
-    }).toStateJson())).toHaveProperty('Parameters.Overrides.Memory', '2048');
+  expect(
+    stack.resolve(
+      new tasks.EcsRunTask(stack, 'task', {
+        cluster,
+        taskDefinition,
+        memoryMiB: '2048',
+        containerOverrides: [
+          {
+            containerDefinition,
+            environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+          },
+        ],
+        launchTarget: new tasks.EcsFargateLaunchTarget(),
+      }).toStateJson()
+    )
+  ).toHaveProperty('Parameters.Overrides.Memory', '2048');
 });
 
 test('Running a Fargate Task', () => {
@@ -348,17 +374,27 @@ test('Running a Fargate Task', () => {
               '',
               [
                 'arn:',
-                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                { 'Fn::Select': [1, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] },
                 ':',
-                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                { 'Fn::Select': [2, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] },
                 ':',
-                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                { 'Fn::Select': [3, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] },
                 ':',
-                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                { 'Fn::Select': [4, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] },
                 ':',
-                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                {
+                  'Fn::Select': [
+                    0,
+                    { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] }] },
+                  ],
+                },
                 '/',
-                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                {
+                  'Fn::Select': [
+                    1,
+                    { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] }] },
+                  ],
+                },
                 ':*',
               ],
             ],
@@ -471,17 +507,27 @@ test('Running an EC2 Task with bridge network', () => {
               '',
               [
                 'arn:',
-                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                { 'Fn::Select': [1, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] },
                 ':',
-                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                { 'Fn::Select': [2, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] },
                 ':',
-                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                { 'Fn::Select': [3, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] },
                 ':',
-                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                { 'Fn::Select': [4, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] },
                 ':',
-                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                {
+                  'Fn::Select': [
+                    0,
+                    { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] }] },
+                  ],
+                },
                 '/',
-                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                {
+                  'Fn::Select': [
+                    1,
+                    { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'TD49C78F36' }] }] }] },
+                  ],
+                },
                 ':*',
               ],
             ],
@@ -535,7 +581,11 @@ test('Running an EC2 Task with placement strategies', () => {
     cluster,
     taskDefinition,
     launchTarget: new tasks.EcsEc2LaunchTarget({
-      placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
+      placementStrategies: [
+        ecs.PlacementStrategy.spreadAcrossInstances(),
+        ecs.PlacementStrategy.packedByCpu(),
+        ecs.PlacementStrategy.randomly(),
+      ],
       placementConstraints: [ecs.PlacementConstraint.memberOf('blieptuut')],
     }),
   });
@@ -552,7 +602,11 @@ test('Running an EC2 Task with placement strategies', () => {
       LaunchType: 'EC2',
       TaskDefinition: 'TD',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'blieptuut' }],
-      PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
+      PlacementStrategy: [
+        { Field: 'instanceId', Type: 'spread' },
+        { Field: 'CPU', Type: 'binpack' },
+        { Type: 'random' },
+      ],
     },
     Resource: {
       'Fn::Join': [
@@ -638,24 +692,25 @@ test('Cannot create a task with WAIT_FOR_TASK_TOKEN if no TaskToken provided', (
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
   });
 
-  expect(() =>
-    new tasks.EcsRunTask(stack, 'RunTask', {
-      cluster,
-      containerOverrides: [
-        {
-          containerDefinition,
-          environment: [
-            {
-              name: 'Foo',
-              value: 'Bar',
-            },
-          ],
-        },
-      ],
-      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      launchTarget: new tasks.EcsEc2LaunchTarget(),
-      taskDefinition,
-    }),
+  expect(
+    () =>
+      new tasks.EcsRunTask(stack, 'RunTask', {
+        cluster,
+        containerOverrides: [
+          {
+            containerDefinition,
+            environment: [
+              {
+                name: 'Foo',
+                value: 'Bar',
+              },
+            ],
+          },
+        ],
+        integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+        launchTarget: new tasks.EcsEc2LaunchTarget(),
+        taskDefinition,
+      })
   ).toThrow(/Task Token is required in at least one `containerOverrides.environment`/);
 });
 
@@ -674,32 +729,35 @@ test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', ()
     essential: false,
   });
 
-  expect(() => new tasks.EcsRunTask(stack, 'RunTask', {
-    cluster,
-    containerOverrides: [
-      {
-        containerDefinition: primaryContainerDef,
-        environment: [
+  expect(
+    () =>
+      new tasks.EcsRunTask(stack, 'RunTask', {
+        cluster,
+        containerOverrides: [
           {
-            name: 'Foo',
-            value: 'Bar',
+            containerDefinition: primaryContainerDef,
+            environment: [
+              {
+                name: 'Foo',
+                value: 'Bar',
+              },
+            ],
+          },
+          {
+            containerDefinition: sidecarContainerDef,
+            environment: [
+              {
+                name: 'TaskToken.$',
+                value: sfn.JsonPath.taskToken,
+              },
+            ],
           },
         ],
-      },
-      {
-        containerDefinition: sidecarContainerDef,
-        environment: [
-          {
-            name: 'TaskToken.$',
-            value: sfn.JsonPath.taskToken,
-          },
-        ],
-      },
-    ],
-    integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    launchTarget: new tasks.EcsEc2LaunchTarget(),
-    taskDefinition,
-  })).not.toThrow();
+        integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+        launchTarget: new tasks.EcsEc2LaunchTarget(),
+        taskDefinition,
+      })
+  ).not.toThrow();
 });
 
 test('Set revision number of ECS task definition family', () => {
@@ -721,54 +779,46 @@ test('Set revision number of ECS task definition family', () => {
   });
 
   // Then
-  expect(stack.resolve(runTask.toStateJson())).toEqual(
-    {
-      End: true,
-      Parameters: {
-        Cluster: {
-          'Fn::GetAtt': [
-            'ClusterEB0386A7',
-            'Arn',
-          ],
-        },
-        LaunchType: 'FARGATE',
-        NetworkConfiguration: {
-          AwsvpcConfiguration: {
-            SecurityGroups: [
-              {
-                'Fn::GetAtt': [
-                  'taskSecurityGroup28F0D539',
-                  'GroupId',
-                ],
-              },
-            ],
-            Subnets: [
-              {
-                Ref: 'VpcPrivateSubnet1Subnet536B997A',
-              },
-              {
-                Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
-              },
-            ],
-          },
-        },
-        TaskDefinition: 'TD:1',
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: {
+        'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'],
       },
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          SecurityGroups: [
             {
-              'Ref': 'AWS::Partition',
+              'Fn::GetAtt': ['taskSecurityGroup28F0D539', 'GroupId'],
             },
-            ':states:::ecs:runTask',
           ],
-        ],
+          Subnets: [
+            {
+              Ref: 'VpcPrivateSubnet1Subnet536B997A',
+            },
+            {
+              Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+            },
+          ],
+        },
       },
-      Type: 'Task',
+      TaskDefinition: 'TD:1',
     },
-  );
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::ecs:runTask',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
 });
 
 test('set enableExecuteCommand', () => {

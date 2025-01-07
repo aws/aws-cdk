@@ -65,9 +65,7 @@ export class NotificationsResourceHandler extends Construct {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
 
-    this.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
-    );
+    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
     this.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         actions: ['s3:PutBucketNotification'],
@@ -107,8 +105,7 @@ export class NotificationsResourceHandler extends Construct {
     const resource = new InLineLambda(this, 'Resource', {
       type: resourceType,
       properties: {
-        Description:
-          'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+        Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
         Role: this.role.roleArn,

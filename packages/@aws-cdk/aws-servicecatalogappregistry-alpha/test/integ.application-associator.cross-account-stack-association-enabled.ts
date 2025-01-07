@@ -20,10 +20,7 @@ new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
   ],
 });
 
-const crossAccountStack = new cdk.Stack(
-  app,
-  'integ-servicecatalogappregistry-cross-account-resource'
-);
+const crossAccountStack = new cdk.Stack(app, 'integ-servicecatalogappregistry-cross-account-resource');
 
 new integ.IntegTest(app, 'ApplicationAssociatorTest', {
   testCases: [localStack, crossAccountStack],

@@ -13,7 +13,7 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -59,7 +59,7 @@ describe('params and secrets', () => {
     });
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -93,7 +93,7 @@ describe('params and secrets', () => {
     const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -127,7 +127,7 @@ describe('params and secrets', () => {
     const stack = new cdk.Stack(app, 'Stack');
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -171,7 +171,7 @@ describe('params and secrets', () => {
     const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -206,7 +206,7 @@ describe('params and secrets', () => {
     const stack = new cdk.Stack(app, 'Stack');
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -262,7 +262,7 @@ describe('params and secrets', () => {
     });
 
     // WHEN
-    new lambda.Function (stack, 'Function', {
+    new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -298,7 +298,7 @@ describe('params and secrets', () => {
 
     // WHEN/THEN
     expect(() => {
-      new lambda.Function (stack, 'Function', {
+      new lambda.Function(stack, 'Function', {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -317,7 +317,7 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    const lambdaFunction = new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -363,10 +363,7 @@ describe('params and secrets', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: {
               Ref: 'SecretA720EF05',
@@ -394,7 +391,7 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    const lambdaFunction = new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -424,10 +421,7 @@ describe('params and secrets', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: {
               Ref: 'SecretA720EF05',
@@ -470,12 +464,7 @@ describe('params and secrets', () => {
             Resource: '*',
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Condition: {
               StringEquals: {
                 'kms:ViaService': {
@@ -514,10 +503,7 @@ describe('params and secrets', () => {
             Resource: '*',
           },
           {
-            Action: [
-              'kms:CreateGrant',
-              'kms:DescribeKey',
-            ],
+            Action: ['kms:CreateGrant', 'kms:DescribeKey'],
             Condition: {
               StringEquals: {
                 'kms:ViaService': {
@@ -576,10 +562,7 @@ describe('params and secrets', () => {
             Effect: 'Allow',
             Principal: {
               AWS: {
-                'Fn::GetAtt': [
-                  'FunctionServiceRole675BB04A',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['FunctionServiceRole675BB04A', 'Arn'],
               },
             },
             Resource: '*',
@@ -600,7 +583,7 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    const lambdaFunction = new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -630,12 +613,7 @@ describe('params and secrets', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'ssm:DescribeParameters',
-              'ssm:GetParameters',
-              'ssm:GetParameter',
-              'ssm:GetParameterHistory',
-            ],
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -686,7 +664,7 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    const lambdaFunction = new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
@@ -719,19 +697,11 @@ describe('params and secrets', () => {
             Action: 'kms:Decrypt',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
           {
-            Action: [
-              'ssm:DescribeParameters',
-              'ssm:GetParameters',
-              'ssm:GetParameter',
-              'ssm:GetParameterHistory',
-            ],
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -799,10 +769,7 @@ describe('params and secrets', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
-    const secrets = [
-      new sm.Secret(stack, 'Secret1'),
-      new sm.Secret(stack, 'Secret2'),
-    ];
+    const secrets = [new sm.Secret(stack, 'Secret1'), new sm.Secret(stack, 'Secret2')];
     const parameters = [
       new ssm.StringParameter(stack, 'Parameter1', {
         parameterName: 'name',
@@ -816,47 +783,36 @@ describe('params and secrets', () => {
     const layerArn = 'arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4';
 
     // WHEN
-    const lambdaFunction = new lambda.Function (stack, 'Function', {
+    const lambdaFunction = new lambda.Function(stack, 'Function', {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
-    secrets.forEach(secret => secret.grantRead(lambdaFunction));
-    parameters.forEach(parameter => parameter.grantRead(lambdaFunction));
+    secrets.forEach((secret) => secret.grantRead(lambdaFunction));
+    parameters.forEach((parameter) => parameter.grantRead(lambdaFunction));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: {
               Ref: 'Secret1C2786A59',
             },
           },
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: {
               Ref: 'Secret244EA3BB5',
             },
           },
           {
-            Action: [
-              'ssm:DescribeParameters',
-              'ssm:GetParameters',
-              'ssm:GetParameter',
-              'ssm:GetParameterHistory',
-            ],
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -883,12 +839,7 @@ describe('params and secrets', () => {
             },
           },
           {
-            Action: [
-              'ssm:DescribeParameters',
-              'ssm:GetParameters',
-              'ssm:GetParameter',
-              'ssm:GetParameterHistory',
-            ],
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -930,7 +881,7 @@ describe('params and secrets', () => {
 
     // WHEN/THEN
     expect(() => {
-      new lambda.Function (stack, 'Function', {
+      new lambda.Function(stack, 'Function', {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -951,7 +902,7 @@ describe('params and secrets', () => {
 
     // WHEN/THEN
     expect(() => {
-      new lambda.Function (stack, 'Function', {
+      new lambda.Function(stack, 'Function', {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -972,7 +923,7 @@ describe('params and secrets', () => {
 
     // WHEN/THEN
     expect(() => {
-      new lambda.Function (stack, 'Function', {
+      new lambda.Function(stack, 'Function', {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -993,7 +944,7 @@ describe('params and secrets', () => {
 
     // WHEN/THEN
     expect(() => {
-      new lambda.Function (stack, 'Function', {
+      new lambda.Function(stack, 'Function', {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -1014,7 +965,7 @@ describe('params and secrets', () => {
 
     // WHEN/THEN
     expect(() => {
-      new lambda.Function (stack, 'Function', {
+      new lambda.Function(stack, 'Function', {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -1035,7 +986,7 @@ describe('params and secrets', () => {
 
     // WHEN/THEN
     expect(() => {
-      new lambda.Function (stack, 'Function', {
+      new lambda.Function(stack, 'Function', {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -1056,7 +1007,7 @@ describe('params and secrets', () => {
 
     // WHEN/THEN
     expect(() => {
-      new lambda.Function (stack, 'Function', {
+      new lambda.Function(stack, 'Function', {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',

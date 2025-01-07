@@ -11,12 +11,14 @@ test('Default cloudwatch logs action', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
+  const logGroup = logs.LogGroup.fromLogGroupArn(
+    stack,
+    'my-log-group',
+    'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group'
+  );
 
   // WHEN
-  topicRule.addAction(
-    new actions.CloudWatchLogsAction(logGroup),
-  );
+  topicRule.addAction(new actions.CloudWatchLogsAction(logGroup));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -26,10 +28,7 @@ test('Default cloudwatch logs action', () => {
           CloudwatchLogs: {
             LogGroupName: 'my-log-group',
             RoleArn: {
-              'Fn::GetAtt': [
-                'MyTopicRuleTopicRuleActionRoleCE2D05DA',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
             },
           },
         },
@@ -69,9 +68,7 @@ test('Default cloudwatch logs action', () => {
       Version: '2012-10-17',
     },
     PolicyName: 'MyTopicRuleTopicRuleActionRoleDefaultPolicy54A701F7',
-    Roles: [
-      { Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' },
-    ],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
@@ -81,22 +78,24 @@ test('can set role', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
+  const logGroup = logs.LogGroup.fromLogGroupArn(
+    stack,
+    'my-log-group',
+    'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group'
+  );
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
   topicRule.addAction(
     new actions.CloudWatchLogsAction(logGroup, {
       role,
-    }),
+    })
   );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ CloudwatchLogs: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
-      ],
+      Actions: [Match.objectLike({ CloudwatchLogs: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } })],
     },
   });
 
@@ -112,8 +111,16 @@ test('When multiple actions are omitted role property, the actions use same one 
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const logGroup1 = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group1', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group1');
-  const logGroup2 = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group2', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group2');
+  const logGroup1 = logs.LogGroup.fromLogGroupArn(
+    stack,
+    'my-log-group1',
+    'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group1'
+  );
+  const logGroup2 = logs.LogGroup.fromLogGroupArn(
+    stack,
+    'my-log-group2',
+    'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group2'
+  );
 
   // WHEN
   topicRule.addAction(new actions.CloudWatchLogsAction(logGroup1));
@@ -127,10 +134,7 @@ test('When multiple actions are omitted role property, the actions use same one 
           CloudwatchLogs: {
             LogGroupName: 'my-log-group1',
             RoleArn: {
-              'Fn::GetAtt': [
-                'MyTopicRuleTopicRuleActionRoleCE2D05DA',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
             },
           },
         },
@@ -138,10 +142,7 @@ test('When multiple actions are omitted role property, the actions use same one 
           CloudwatchLogs: {
             LogGroupName: 'my-log-group2',
             RoleArn: {
-              'Fn::GetAtt': [
-                'MyTopicRuleTopicRuleActionRoleCE2D05DA',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
             },
           },
         },

@@ -19,15 +19,7 @@ describe('hosted zone', () => {
       });
 
       expect(stack.resolve(testZone.hostedZoneArn)).toEqual({
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':route53:::hostedzone/',
-            { Ref: 'HostedZoneDB99F866' },
-          ],
-        ],
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':route53:::hostedzone/', { Ref: 'HostedZoneDB99F866' }]],
       });
     });
   });
@@ -168,7 +160,9 @@ describe('hosted zone', () => {
         zoneName: 'testZone',
         crossAccountZoneDelegationRoleName: 'myrole',
       });
-    }).toThrow(/crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal/);
+    }).toThrow(
+      /crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal/
+    );
   });
 
   test('fromHostedZoneId throws error when zoneName is referenced', () => {
@@ -183,7 +177,9 @@ describe('hosted zone', () => {
     // THEN
     expect(() => {
       hz.zoneName;
-    }).toThrow('Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.');
+    }).toThrow(
+      'Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.'
+    );
   });
 
   test('fromLookup throws error when domainName is undefined', () => {

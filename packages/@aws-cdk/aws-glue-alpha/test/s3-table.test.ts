@@ -11,10 +11,12 @@ test('encrypted table: SSE-S3', () => {
 
   const table = new glue.S3Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.S3_MANAGED,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -86,10 +88,12 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
 
   const table = new glue.S3Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.KMS,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -106,10 +110,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
         {
           ServerSideEncryptionByDefault: {
             KMSMasterKeyID: {
-              'Fn::GetAtt': [
-                'TableBucketKey3E9F984A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['TableBucketKey3E9F984A', 'Arn'],
             },
             SSEAlgorithm: 'aws:kms',
           },
@@ -173,10 +174,12 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
 
   const table = new glue.S3Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.KMS,
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
@@ -195,10 +198,7 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
         {
           ServerSideEncryptionByDefault: {
             KMSMasterKeyID: {
-              'Fn::GetAtt': [
-                'MyKey6AB29FA6',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
             },
             SSEAlgorithm: 'aws:kms',
           },
@@ -259,10 +259,12 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
 
   const table = new glue.S3Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.KMS_MANAGED,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -334,10 +336,12 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
 
   const table = new glue.S3Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -402,10 +406,12 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
 
   const table = new glue.S3Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
@@ -474,10 +480,12 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
 
   const table = new glue.S3Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     bucket,
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     encryptionKey,
@@ -548,10 +556,12 @@ test('explicit s3 bucket and prefix', () => {
     database,
     bucket,
     s3Prefix: 'prefix/',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
   });
 
@@ -612,10 +622,12 @@ test('explicit s3 bucket and with empty prefix', () => {
     database,
     bucket,
     s3Prefix: '',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
   });
 
@@ -673,10 +685,12 @@ describe('grants', () => {
 
     const table = new glue.S3Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
     });
@@ -736,10 +750,12 @@ describe('grants', () => {
 
     const table = new glue.S3Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
     });
@@ -789,28 +805,18 @@ describe('grants', () => {
             },
           },
           {
-            Action: [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
-            ],
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
                     },
                     '/*',
                   ],
@@ -837,10 +843,12 @@ describe('grants', () => {
 
     const table = new glue.S3Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
     });
@@ -900,20 +908,14 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
                     },
                     '/*',
                   ],
@@ -940,10 +942,12 @@ describe('grants', () => {
 
     const table = new glue.S3Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
     });
@@ -1013,20 +1017,14 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
                     },
                     '/*',
                   ],
@@ -1051,10 +1049,12 @@ describe('validate', () => {
   test('can not specify an explicit bucket and encryption', () => {
     expect(() => {
       createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: glue.TableEncryption.KMS,
       });
@@ -1062,36 +1062,48 @@ describe('validate', () => {
   });
 
   test('can explicitly pass bucket if Encryption undefined', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: undefined,
-    })).not.toThrow();
+    expect(() =>
+      createTable({
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: undefined,
+      })
+    ).not.toThrow();
   });
 
   test('can explicitly pass bucket if encryption is not set', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: undefined,
-    })).not.toThrow();
+    expect(() =>
+      createTable({
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: undefined,
+      })
+    ).not.toThrow();
   });
 
   test('can explicitly pass bucket if ClientSideKms', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-    })).not.toThrow();
+    expect(() =>
+      createTable({
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
+      })
+    ).not.toThrow();
   });
 });
 
@@ -1102,10 +1114,12 @@ test('can specify table parameter', () => {
   const dataFormat = glue.DataFormat.JSON;
   new glue.S3Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat,
     parameters: {
       key1: 'val1',
@@ -1125,7 +1139,9 @@ test('can specify table parameter', () => {
   });
 });
 
-function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {
+function createTable(
+  props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>
+): void {
   const stack = new cdk.Stack();
   new glue.S3Table(stack, 'table', {
     ...props,

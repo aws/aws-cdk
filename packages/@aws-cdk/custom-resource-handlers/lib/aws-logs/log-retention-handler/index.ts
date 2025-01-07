@@ -8,8 +8,7 @@ export function disableSleepForTesting() {
   FAKE_SLEEP = true;
 }
 
-interface LogRetentionEvent
-  extends Omit<AWSLambda.CloudFormationCustomResourceEvent, 'ResourceProperties'> {
+interface LogRetentionEvent extends Omit<AWSLambda.CloudFormationCustomResourceEvent, 'ResourceProperties'> {
   ResourceProperties: {
     ServiceToken: string;
     LogGroupName: string;
@@ -132,20 +131,11 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
         // Due to the async nature of the log group creation, the log group for this function might
         // still be not created yet at this point. Therefore we attempt to create it.
         // In case it is being created, createLogGroupSafe will handle the conflict.
-        await createLogGroupSafe(
-          `/aws/lambda/${context.functionName}`,
-          clientForCustomResourceFunction,
-          withDelay
-        );
+        await createLogGroupSafe(`/aws/lambda/${context.functionName}`, clientForCustomResourceFunction, withDelay);
         // If createLogGroupSafe fails, the log group is not created even after multiple attempts.
         // In this case we have nothing to set the retention policy on but an exception will skip
         // the next line.
-        await setRetentionPolicy(
-          `/aws/lambda/${context.functionName}`,
-          clientForCustomResourceFunction,
-          withDelay,
-          1
-        );
+        await setRetentionPolicy(`/aws/lambda/${context.functionName}`, clientForCustomResourceFunction, withDelay, 1);
       }
     }
 

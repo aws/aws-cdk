@@ -29,17 +29,8 @@ export class InputValidator {
   /**
    * Validates string matches the allowed regex pattern.
    */
-  public static validateRegex(
-    resourceName: string,
-    inputName: string,
-    regexp: RegExp,
-    inputString?: string
-  ): void {
-    if (
-      !cdk.Token.isUnresolved(inputString) &&
-      inputString !== undefined &&
-      !regexp.test(inputString)
-    ) {
+  public static validateRegex(resourceName: string, inputName: string, regexp: RegExp, inputString?: string): void {
+    if (!cdk.Token.isUnresolved(inputString) && inputString !== undefined && !regexp.test(inputString)) {
       throw new Error(
         `Invalid ${inputName} for resource ${resourceName}, must match regex pattern ${regexp}, got: '${this.truncateString(inputString, 100)}'`
       );
@@ -57,12 +48,7 @@ export class InputValidator {
    * Validates string matches the valid email regex pattern.
    */
   public static validateEmail(resourceName: string, inputName: string, inputString?: string): void {
-    this.validateRegex(
-      resourceName,
-      inputName,
-      /^[\w\d.%+\-]+@[a-z\d.\-]+\.[a-z]{2,4}$/i,
-      inputString
-    );
+    this.validateRegex(resourceName, inputName, /^[\w\d.%+\-]+@[a-z\d.\-]+\.[a-z]{2,4}$/i, inputString);
   }
 
   /**
@@ -71,9 +57,7 @@ export class InputValidator {
   public static validateRoleNameSetForLocalLaunchRole(role: iam.IRole): void {
     if (role.node.defaultChild) {
       if (cdk.Token.isUnresolved((role.node.defaultChild as iam.CfnRole).roleName)) {
-        throw new Error(
-          `Role ${role.node.id} used for Local Launch Role must have roleName explicitly set`
-        );
+        throw new Error(`Role ${role.node.id} used for Local Launch Role must have roleName explicitly set`);
       }
     }
   }

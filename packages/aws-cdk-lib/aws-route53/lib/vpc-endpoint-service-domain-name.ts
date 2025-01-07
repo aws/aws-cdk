@@ -2,11 +2,7 @@ import { Construct } from 'constructs';
 import { IVpcEndpointService } from '../../aws-ec2';
 import { Fn, Names, Stack } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
-import {
-  AwsCustomResource,
-  AwsCustomResourcePolicy,
-  PhysicalResourceId,
-} from '../../custom-resources';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import { IPublicHostedZone, TxtRecord } from '../lib';
 
 /**
@@ -70,11 +66,7 @@ export class VpcEndpointServiceDomainName extends Construct {
     VpcEndpointServiceDomainName.endpointServices.push(props.endpointService);
 
     // Enable Private DNS on the endpoint service and retrieve the AWS-generated configuration
-    const privateDnsConfiguration = this.getPrivateDnsConfiguration(
-      serviceUniqueId,
-      serviceId,
-      this.domainName
-    );
+    const privateDnsConfiguration = this.getPrivateDnsConfiguration(serviceUniqueId, serviceId, this.domainName);
 
     // Tell AWS to verify that this account owns the domain attached to the service
     this.verifyPrivateDnsConfiguration(privateDnsConfiguration, props.publicHostedZone);
@@ -171,12 +163,8 @@ export class VpcEndpointServiceDomainName extends Construct {
     getNames.node.addDependency(enable);
 
     // Get the references to the name/value pair associated with the endpoint service
-    const name = getNames.getResponseField(
-      'ServiceConfigurations.0.PrivateDnsNameConfiguration.Name'
-    );
-    const value = getNames.getResponseField(
-      'ServiceConfigurations.0.PrivateDnsNameConfiguration.Value'
-    );
+    const name = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Name');
+    const value = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Value');
 
     return { name, value, serviceId };
   }
@@ -185,10 +173,7 @@ export class VpcEndpointServiceDomainName extends Construct {
    * Creates a Route53 entry and a Custom Resource which explicitly tells AWS to verify ownership
    * of the domain name attached to an endpoint service.
    */
-  private verifyPrivateDnsConfiguration(
-    config: PrivateDnsConfiguration,
-    publicHostedZone: IPublicHostedZone
-  ) {
+  private verifyPrivateDnsConfiguration(config: PrivateDnsConfiguration, publicHostedZone: IPublicHostedZone) {
     // Create the TXT record in the provided hosted zone
     const verificationRecord = new TxtRecord(this, 'DnsVerificationRecord', {
       recordName: config.name,

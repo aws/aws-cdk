@@ -31,57 +31,100 @@ describe('bundling', () => {
     helper.run();
 
     // volume Creation
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
-      'volume', 'create', sinon.match(/assetInput.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(DOCKER_CMD, sinon.match(['volume', 'create', sinon.match(/assetInput.*/g)]), {
+        encoding: 'utf-8',
+        stdio: ['ignore', process.stderr, 'inherit'],
+      })
+    ).toEqual(true);
 
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
-      'volume', 'create', sinon.match(/assetOutput.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(DOCKER_CMD, sinon.match(['volume', 'create', sinon.match(/assetOutput.*/g)]), {
+        encoding: 'utf-8',
+        stdio: ['ignore', process.stderr, 'inherit'],
+      })
+    ).toEqual(true);
 
     // volume removal
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
-      'volume', 'rm', sinon.match(/assetInput.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(DOCKER_CMD, sinon.match(['volume', 'rm', sinon.match(/assetInput.*/g)]), {
+        encoding: 'utf-8',
+        stdio: ['ignore', process.stderr, 'inherit'],
+      })
+    ).toEqual(true);
 
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
-      'volume', 'rm', sinon.match(/assetOutput.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(DOCKER_CMD, sinon.match(['volume', 'rm', sinon.match(/assetOutput.*/g)]), {
+        encoding: 'utf-8',
+        stdio: ['ignore', process.stderr, 'inherit'],
+      })
+    ).toEqual(true);
 
     // prepare copy container
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
-      'run',
-      '--name', sinon.match(/copyContainer.*/g),
-      '-v', sinon.match(/assetInput.*/g),
-      '-v', sinon.match(/assetOutput.*/g),
-      'public.ecr.aws/docker/library/alpine',
-      'sh',
-      '-c',
-      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        DOCKER_CMD,
+        sinon.match([
+          'run',
+          '--name',
+          sinon.match(/copyContainer.*/g),
+          '-v',
+          sinon.match(/assetInput.*/g),
+          '-v',
+          sinon.match(/assetOutput.*/g),
+          'public.ecr.aws/docker/library/alpine',
+          'sh',
+          '-c',
+          `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+        ]),
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
 
     // delete copy container
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
-      'rm', sinon.match(/copyContainer.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(DOCKER_CMD, sinon.match(['rm', sinon.match(/copyContainer.*/g)]), {
+        encoding: 'utf-8',
+        stdio: ['ignore', process.stderr, 'inherit'],
+      })
+    ).toEqual(true);
 
     // copy files to copy container
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
-      'cp', `${options.sourcePath}/.`, `${helper.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        DOCKER_CMD,
+        sinon.match([
+          'cp',
+          `${options.sourcePath}/.`,
+          `${helper.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
+        ]),
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
 
     // copy files from copy container to host
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
-      'cp', `${helper.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, options.bundleDir,
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        DOCKER_CMD,
+        sinon.match(['cp', `${helper.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, options.bundleDir]),
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
 
     // actual docker run
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
-      'run', '--rm',
-      '--volumes-from', helper.copyContainerName,
-      'public.ecr.aws/docker/library/alpine',
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
-
+    expect(
+      spawnSyncStub.calledWith(
+        DOCKER_CMD,
+        sinon.match.array.contains([
+          'run',
+          '--rm',
+          '--volumes-from',
+          helper.copyContainerName,
+          'public.ecr.aws/docker/library/alpine',
+        ]),
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 
   test('AssetBundlingBindMount bundles with bind mount ', () => {
@@ -106,11 +149,12 @@ describe('bundling', () => {
     helper.run();
 
     // actual docker run with bind mount is called
-    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
-      'run', '--rm',
-      '--network', 'host',
-      '-v',
-      'public.ecr.aws/docker/library/alpine',
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    expect(
+      spawnSyncStub.calledWith(
+        DOCKER_CMD,
+        sinon.match.array.contains(['run', '--rm', '--network', 'host', '-v', 'public.ecr.aws/docker/library/alpine']),
+        { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] }
+      )
+    ).toEqual(true);
   });
 });

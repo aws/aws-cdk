@@ -15,10 +15,12 @@ test('Default property', () => {
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.fromString('test-eventCondition'),
+        },
+      ],
     }),
   });
 
@@ -26,15 +28,19 @@ test('Default property', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
     DetectorModelDefinition: {
       InitialStateName: 'test-state',
-      States: [{
-        StateName: 'test-state',
-        OnEnter: {
-          Events: [{
-            EventName: 'test-eventName',
-            Condition: 'test-eventCondition',
-          }],
+      States: [
+        {
+          StateName: 'test-state',
+          OnEnter: {
+            Events: [
+              {
+                EventName: 'test-eventName',
+                Condition: 'test-eventCondition',
+              },
+            ],
+          },
         },
-      }],
+      ],
     },
     RoleArn: {
       'Fn::GetAtt': ['MyDetectorModelDetectorModelRoleF2FB4D88', 'Arn'],
@@ -43,11 +49,13 @@ test('Default property', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
-      Statement: [{
-        Action: 'sts:AssumeRole',
-        Effect: 'Allow',
-        Principal: { Service: 'iotevents.amazonaws.com' },
-      }],
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'iotevents.amazonaws.com' },
+        },
+      ],
     },
   });
 });
@@ -57,10 +65,12 @@ test('can get detector model name', () => {
   const detectorModel = new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.fromString('test-eventCondition'),
+        },
+      ],
     }),
   });
 
@@ -80,7 +90,11 @@ test('can get detector model name', () => {
 
 test.each([
   ['physical name', { detectorModelName: 'test-detector-model' }, { DetectorModelName: 'test-detector-model' }],
-  ['description', { description: 'test-detector-model-description' }, { DetectorModelDescription: 'test-detector-model-description' }],
+  [
+    'description',
+    { description: 'test-detector-model-description' },
+    { DetectorModelDescription: 'test-detector-model-description' },
+  ],
   ['evaluationMethod', { evaluationMethod: iotevents.EventEvaluation.SERIAL }, { EvaluationMethod: 'SERIAL' }],
   ['detectorKey', { detectorKey: 'payload.deviceId' }, { Key: 'payload.deviceId' }],
 ])('can set %s', (_, partialProps, expected) => {
@@ -89,10 +103,12 @@ test.each([
     ...partialProps,
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.fromString('test-eventCondition'),
+        },
+      ],
     }),
   });
 
@@ -144,19 +160,23 @@ test('can set actions to events', () => {
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName1',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [{
-          _bind: () => ({
-            configuration: {
-              lambda: {
-                functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
-              },
+      onEnter: [
+        {
+          eventName: 'test-eventName1',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [
+            {
+              _bind: () => ({
+                configuration: {
+                  lambda: {
+                    functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+                  },
+                },
+              }),
             },
-          }),
-        }],
-      }],
+          ],
+        },
+      ],
     }),
   });
 
@@ -166,9 +186,11 @@ test('can set actions to events', () => {
       States: [
         Match.objectLike({
           OnEnter: {
-            Events: [{
-              Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
-            }],
+            Events: [
+              {
+                Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
+              },
+            ],
           },
         }),
       ],
@@ -177,8 +199,16 @@ test('can set actions to events', () => {
 });
 
 test.each([
-  ['onInput', { onInput: [{ eventName: 'test-eventName1' }] }, { OnInput: { Events: [{ EventName: 'test-eventName1' }] } }],
-  ['onExit', { onExit: [{ eventName: 'test-eventName1' }] }, { OnExit: { Events: [{ EventName: 'test-eventName1' }] } }],
+  [
+    'onInput',
+    { onInput: [{ eventName: 'test-eventName1' }] },
+    { OnInput: { Events: [{ EventName: 'test-eventName1' }] } },
+  ],
+  [
+    'onExit',
+    { onExit: [{ eventName: 'test-eventName1' }] },
+    { OnExit: { Events: [{ EventName: 'test-eventName1' }] } },
+  ],
 ])('can set %s to State', (_, events, expected) => {
   // WHEN
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
@@ -201,10 +231,12 @@ test('can set an action to multiple detector models', () => {
   // GIVEN an action
   const action: iotevents.IAction = {
     _bind: (_, { role }) => {
-      role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['lambda:InvokeFunction'],
-        resources: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn'],
-      }));
+      role.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: ['lambda:InvokeFunction'],
+          resources: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn'],
+        })
+      );
       return {
         configuration: {
           lambda: { functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' },
@@ -218,22 +250,26 @@ test('can set an action to multiple detector models', () => {
     detectorModelName: 'MyDetectorModel1',
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName1',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [action],
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName1',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [action],
+        },
+      ],
     }),
   });
   new iotevents.DetectorModel(stack, 'MyDetectorModel2', {
     detectorModelName: 'MyDetectorModel2',
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName1',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [action],
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName1',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [action],
+        },
+      ],
     }),
   });
 
@@ -247,9 +283,11 @@ test('can set an action to multiple detector models', () => {
       States: [
         Match.objectLike({
           OnEnter: {
-            Events: [{
-              Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
-            }],
+            Events: [
+              {
+                Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
+              },
+            ],
           },
         }),
       ],
@@ -261,9 +299,11 @@ test('can set an action to multiple detector models', () => {
       States: [
         Match.objectLike({
           OnEnter: {
-            Events: [{
-              Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
-            }],
+            Events: [
+              {
+                Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
+              },
+            ],
           },
         }),
       ],
@@ -272,21 +312,25 @@ test('can set an action to multiple detector models', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     Roles: [{ Ref: 'MyDetectorModel1DetectorModelRoleB36845CD' }],
     PolicyDocument: {
-      Statement: [{
-        Action: 'lambda:InvokeFunction',
-        Effect: 'Allow',
-        Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
-      }],
+      Statement: [
+        {
+          Action: 'lambda:InvokeFunction',
+          Effect: 'Allow',
+          Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        },
+      ],
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     Roles: [{ Ref: 'MyDetectorModel2DetectorModelRole3C437E90' }],
     PolicyDocument: {
-      Statement: [{
-        Action: 'lambda:InvokeFunction',
-        Effect: 'Allow',
-        Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
-      }],
+      Statement: [
+        {
+          Action: 'lambda:InvokeFunction',
+          Effect: 'Allow',
+          Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        },
+      ],
     },
   });
 });
@@ -295,10 +339,12 @@ test('can set states with transitions', () => {
   // GIVEN
   const firstState = new iotevents.State({
     stateName: 'firstState',
-    onEnter: [{
-      eventName: 'test-eventName',
-      condition: iotevents.Expression.currentInput(input),
-    }],
+    onEnter: [
+      {
+        eventName: 'test-eventName',
+        condition: iotevents.Expression.currentInput(input),
+      },
+    ],
   });
   const secondState = new iotevents.State({
     stateName: 'secondState',
@@ -312,7 +358,7 @@ test('can set states with transitions', () => {
   firstState.transitionTo(secondState, {
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('12'),
+      iotevents.Expression.fromString('12')
     ),
   });
   // transition as 2nd -> 1st, make circular reference
@@ -320,14 +366,14 @@ test('can set states with transitions', () => {
     eventName: 'secondToFirst',
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('21'),
+      iotevents.Expression.fromString('21')
     ),
   });
   // transition as 2nd -> 3rd, to test recursive calling
   secondState.transitionTo(thirdState, {
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('23'),
+      iotevents.Expression.fromString('23')
     ),
   });
 
@@ -342,11 +388,13 @@ test('can set states with transitions', () => {
         {
           StateName: 'firstState',
           OnInput: {
-            TransitionEvents: [{
-              EventName: 'firstState_to_secondState',
-              NextState: 'secondState',
-              Condition: '$input.test-input.payload.temperature == 12',
-            }],
+            TransitionEvents: [
+              {
+                EventName: 'firstState_to_secondState',
+                NextState: 'secondState',
+                Condition: '$input.test-input.payload.temperature == 12',
+              },
+            ],
           },
         },
         {
@@ -378,10 +426,12 @@ test('can set actions to transitions', () => {
   // GIVEN
   const firstState = new iotevents.State({
     stateName: 'firstState',
-    onEnter: [{
-      eventName: 'test-eventName',
-      condition: iotevents.Expression.currentInput(input),
-    }],
+    onEnter: [
+      {
+        eventName: 'test-eventName',
+        condition: iotevents.Expression.currentInput(input),
+      },
+    ],
   });
   const secondState = new iotevents.State({
     stateName: 'secondState',
@@ -391,7 +441,7 @@ test('can set actions to transitions', () => {
   firstState.transitionTo(secondState, {
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('12'),
+      iotevents.Expression.fromString('12')
     ),
     executing: [{ _bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
   });
@@ -403,14 +453,18 @@ test('can set actions to transitions', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
     DetectorModelDefinition: {
-      States: Match.arrayWith([Match.objectLike({
-        StateName: 'firstState',
-        OnInput: {
-          TransitionEvents: [{
-            Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
-          }],
-        },
-      })]),
+      States: Match.arrayWith([
+        Match.objectLike({
+          StateName: 'firstState',
+          OnInput: {
+            TransitionEvents: [
+              {
+                Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
+              },
+            ],
+          },
+        }),
+      ]),
     },
   });
 });
@@ -422,10 +476,12 @@ test('can set role', () => {
     role,
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.fromString('test-eventCondition'),
+        },
+      ],
     }),
   });
 
@@ -438,7 +494,11 @@ test('can set role', () => {
 test('can import a DetectorModel by detectorModelName', () => {
   // WHEN
   const detectorModelName = 'detector-model-name';
-  const detectorModel = iotevents.DetectorModel.fromDetectorModelName(stack, 'ExistingDetectorModel', detectorModelName);
+  const detectorModel = iotevents.DetectorModel.fromDetectorModelName(
+    stack,
+    'ExistingDetectorModel',
+    detectorModelName
+  );
 
   // THEN
   expect(detectorModel).toMatchObject({
@@ -451,9 +511,11 @@ test('cannot create without condition', () => {
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
-        onEnter: [{
-          eventName: 'test-eventName',
-        }],
+        onEnter: [
+          {
+            eventName: 'test-eventName',
+          },
+        ],
       }),
     });
   }).toThrow('Detector Model must have at least one Input with a condition');
@@ -472,9 +534,11 @@ test('cannot create without event', () => {
 test('cannot create transitions that transit to duprecated target state', () => {
   const firstState = new iotevents.State({
     stateName: 'firstState',
-    onEnter: [{
-      eventName: 'test-eventName',
-    }],
+    onEnter: [
+      {
+        eventName: 'test-eventName',
+      },
+    ],
   });
   const secondState = new iotevents.State({
     stateName: 'secondState',
@@ -483,7 +547,7 @@ test('cannot create transitions that transit to duprecated target state', () => 
   firstState.transitionTo(secondState, {
     when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('12.1'),
+      iotevents.Expression.fromString('12.1')
     ),
   });
 
@@ -491,7 +555,7 @@ test('cannot create transitions that transit to duprecated target state', () => 
     firstState.transitionTo(secondState, {
       when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-        iotevents.Expression.fromString('12.2'),
+        iotevents.Expression.fromString('12.2')
       ),
     });
   }).toThrow("State 'firstState' already has a transition defined to 'secondState'");
@@ -502,7 +566,11 @@ describe('Expression', () => {
   test.each([
     ['currentInput', (testInput: iotevents.IInput) => E.currentInput(testInput), 'currentInput("test-input")'],
     ['timeout', () => E.timeout('test-timer'), 'timeout("test-timer")'],
-    ['inputAttribute', (testInput: iotevents.IInput) => E.inputAttribute(testInput, 'json.path'), '$input.test-input.json.path'],
+    [
+      'inputAttribute',
+      (testInput: iotevents.IInput) => E.inputAttribute(testInput, 'json.path'),
+      '$input.test-input.json.path',
+    ],
     ['add', () => E.add(E.fromString('5'), E.fromString('2')), '5 + 2'],
     ['subtract', () => E.subtract(E.fromString('5'), E.fromString('2')), '5 - 2'],
     ['divide', () => E.divide(E.fromString('5'), E.fromString('2')), '5 / 2'],
@@ -519,19 +587,23 @@ describe('Expression', () => {
     ['gte', () => E.gte(E.fromString('5'), E.fromString('2')), '5 >= 2'],
     ['and', () => E.and(E.fromString('true'), E.fromString('false')), 'true && false'],
     ['or', () => E.or(E.fromString('true'), E.fromString('false')), 'true || false'],
-    ['operator priority', () => E.and(
-      E.and(E.fromString('false'), E.fromString('false')),
-      E.or(E.fromString('true'), E.fromString('true')),
-    ), 'false && false && (true || true)'],
+    [
+      'operator priority',
+      () =>
+        E.and(E.and(E.fromString('false'), E.fromString('false')), E.or(E.fromString('true'), E.fromString('true'))),
+      'false && false && (true || true)',
+    ],
   ])('%s', (_, getExpression, expectedCondition) => {
     // WHEN
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
-        onEnter: [{
-          eventName: 'test-eventName',
-          condition: getExpression(input),
-        }],
+        onEnter: [
+          {
+            eventName: 'test-eventName',
+            condition: getExpression(input),
+          },
+        ],
       }),
     });
 
@@ -541,9 +613,11 @@ describe('Expression', () => {
         States: [
           Match.objectLike({
             OnEnter: {
-              Events: [Match.objectLike({
-                Condition: expectedCondition,
-              })],
+              Events: [
+                Match.objectLike({
+                  Condition: expectedCondition,
+                }),
+              ],
             },
           }),
         ],

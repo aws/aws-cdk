@@ -58,16 +58,11 @@ describe('cloudformation stack', () => {
       },
       InputParameters: {
         cloudformationRoleArn: {
-          'Fn::GetAtt': [
-            'DriftRole8A5FB833',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['DriftRole8A5FB833', 'Arn'],
         },
       },
       Scope: {
-        ComplianceResourceTypes: [
-          'AWS::CloudFormation::Stack',
-        ],
+        ComplianceResourceTypes: ['AWS::CloudFormation::Stack'],
       },
     });
 
@@ -127,9 +122,7 @@ describe('cloudformation stack', () => {
         },
       },
       Scope: {
-        ComplianceResourceTypes: [
-          'AWS::CloudFormation::Stack',
-        ],
+        ComplianceResourceTypes: ['AWS::CloudFormation::Stack'],
       },
     });
   });
@@ -140,9 +133,12 @@ describe('cloudformation stack', () => {
     const topic = new sns.Topic(stack, 'AllowedTopic1');
 
     // THEN
-    expect(() => new config.CloudFormationStackNotificationCheck(stack, 'Notification', {
-      topics: [topic, topic, topic, topic, topic, topic],
-    })).toThrow(/5 topics/);
+    expect(
+      () =>
+        new config.CloudFormationStackNotificationCheck(stack, 'Notification', {
+          topics: [topic, topic, topic, topic, topic, topic],
+        })
+    ).toThrow(/5 topics/);
   });
 });
 

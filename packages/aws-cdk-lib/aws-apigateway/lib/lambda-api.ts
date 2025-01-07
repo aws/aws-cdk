@@ -52,9 +52,7 @@ export interface LambdaRestApiProps extends RestApiProps {
 export class LambdaRestApi extends RestApi {
   constructor(scope: Construct, id: string, props: LambdaRestApiProps) {
     if (props.options?.defaultIntegration || props.defaultIntegration) {
-      throw new Error(
-        'Cannot specify "defaultIntegration" since Lambda integration is automatically defined'
-      );
+      throw new Error('Cannot specify "defaultIntegration" since Lambda integration is automatically defined');
     }
 
     super(scope, id, {

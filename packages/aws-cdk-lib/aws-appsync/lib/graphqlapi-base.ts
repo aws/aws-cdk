@@ -78,9 +78,7 @@ export class IamResource {
    * Example: ofType('Query', 'GetExample')
    */
   public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length
-      ? fields.map((field) => `types/${type}/fields/${field}`)
-      : [`types/${type}/*`];
+    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
     return new IamResource(arns);
   }
 
@@ -221,11 +219,7 @@ export interface IGraphqlApi extends IResource {
    * @param eventBus The EventBridge EventBus on which to put events
    * @param options The optional configuration for this data source
    */
-  addEventBridgeDataSource(
-    id: string,
-    eventBus: IEventBus,
-    options?: DataSourceOptions
-  ): EventBridgeDataSource;
+  addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource;
 
   /**
    * add a new Lambda data source to this API
@@ -234,11 +228,7 @@ export interface IGraphqlApi extends IResource {
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
    */
-  addLambdaDataSource(
-    id: string,
-    lambdaFunction: IFunction,
-    options?: DataSourceOptions
-  ): LambdaDataSource;
+  addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
 
   /**
    * add a new Rds data source to this API
@@ -295,11 +285,7 @@ export interface IGraphqlApi extends IResource {
    * @param domain The OpenSearch domain for this data source
    * @param options The optional configuration for this data source
    */
-  addOpenSearchDataSource(
-    id: string,
-    domain: IOpenSearchDomain,
-    options?: DataSourceOptions
-  ): OpenSearchDataSource;
+  addOpenSearchDataSource(id: string, domain: IOpenSearchDomain, options?: DataSourceOptions): OpenSearchDataSource;
 
   /**
    * creates a new resolver for this datasource and API using the given properties
@@ -403,11 +389,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param table The DynamoDB table backing this data source
    * @param options The optional configuration for this data source
    */
-  public addDynamoDbDataSource(
-    id: string,
-    table: ITable,
-    options?: DataSourceOptions
-  ): DynamoDbDataSource {
+  public addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource {
     return new DynamoDbDataSource(this, id, {
       api: this,
       table,
@@ -423,11 +405,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
    */
-  public addHttpDataSource(
-    id: string,
-    endpoint: string,
-    options?: HttpDataSourceOptions
-  ): HttpDataSource {
+  public addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource {
     return new HttpDataSource(this, id, {
       api: this,
       endpoint,
@@ -444,11 +422,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
    */
-  public addLambdaDataSource(
-    id: string,
-    lambdaFunction: IFunction,
-    options?: DataSourceOptions
-  ): LambdaDataSource {
+  public addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource {
     return new LambdaDataSource(this, id, {
       api: this,
       lambdaFunction,
@@ -534,11 +508,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param eventBus The EventBridge EventBus on which to put events
    * @param options The optional configuration for this data source
    */
-  addEventBridgeDataSource(
-    id: string,
-    eventBus: IEventBus,
-    options?: DataSourceOptions
-  ): EventBridgeDataSource {
+  addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource {
     return new EventBridgeDataSource(this, id, {
       api: this,
       eventBus,

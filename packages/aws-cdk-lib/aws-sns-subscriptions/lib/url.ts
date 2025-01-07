@@ -57,9 +57,7 @@ export class UrlSubscription implements sns.ITopicSubscription {
     if (this.unresolvedUrl) {
       this.protocol = props.protocol!;
     } else {
-      this.protocol = this.url.startsWith('https:')
-        ? sns.SubscriptionProtocol.HTTPS
-        : sns.SubscriptionProtocol.HTTP;
+      this.protocol = this.url.startsWith('https:') ? sns.SubscriptionProtocol.HTTPS : sns.SubscriptionProtocol.HTTP;
     }
   }
 

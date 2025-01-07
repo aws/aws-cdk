@@ -54,10 +54,7 @@ describe('lambda api', () => {
               },
               ':lambda:path/2015-03-31/functions/',
               {
-                'Fn::GetAtt': [
-                  'handlerE1533BD5',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['handlerE1533BD5', 'Arn'],
               },
               '/invocations',
             ],
@@ -150,9 +147,12 @@ describe('lambda api', () => {
     tasks.addMethod('POST');
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', Match.not({
-      PathPart: '{proxy+}',
-    }));
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::ApiGateway::Resource',
+      Match.not({
+        PathPart: '{proxy+}',
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'tasks',
@@ -206,15 +206,21 @@ describe('lambda api', () => {
       runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
-    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
-      handler,
-      defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
-    })).toThrow(/Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
+    expect(
+      () =>
+        new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+          handler,
+          defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
+        })
+    ).toThrow(/Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
-    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
-      handler,
-      defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
-    })).toThrow(/Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
+    expect(
+      () =>
+        new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+          handler,
+          defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
+        })
+    ).toThrow(/Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
   });
 
   test('LambdaRestApi defines a REST API with CORS enabled', () => {
@@ -244,7 +250,8 @@ describe('lambda api', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'GET,PUT'",
@@ -304,7 +311,8 @@ describe('lambda api', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'GET,PUT'",
@@ -433,6 +441,8 @@ describe('lambda api', () => {
       },
     });
 
-    expect(() => app.synth()).toThrow('Validation failed with the following errors:\n  [Default/RestApi] Stage variable value $$$ does not match the regex.');
+    expect(() => app.synth()).toThrow(
+      'Validation failed with the following errors:\n  [Default/RestApi] Stage variable value $$$ does not match the regex.'
+    );
   });
 });

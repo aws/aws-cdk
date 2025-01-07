@@ -2,7 +2,6 @@ import { Stack } from '../../core';
 import { AnyPrincipal, Group, PolicyDocument, PolicyStatement, Effect } from '../lib';
 
 describe('IAM policy statement', () => {
-
   describe('from JSON', () => {
     test('parses with no principal', () => {
       // given
@@ -81,7 +80,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('parses with notAction', () => {
@@ -97,7 +95,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('parses with notActions', () => {
@@ -113,7 +110,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('parses with notResource', () => {
@@ -129,7 +125,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('parses with notResources', () => {
@@ -145,7 +140,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('the kitchen sink', () => {
@@ -169,14 +163,8 @@ describe('IAM policy statement', () => {
           {
             Sid: 'ThirdStatement',
             Effect: 'Allow',
-            Action: [
-              's3:List*',
-              's3:Get*',
-            ],
-            Resource: [
-              'arn:aws:s3:::confidential-data',
-              'arn:aws:s3:::confidential-data/*',
-            ],
+            Action: ['s3:List*', 's3:Get*'],
+            Resource: ['arn:aws:s3:::confidential-data', 'arn:aws:s3:::confidential-data/*'],
             Condition: { Bool: { 'aws:MultiFactorAuthPresent': 'true' } },
           },
         ],
@@ -204,24 +192,28 @@ describe('IAM policy statement', () => {
     });
   });
 
-  test('throws error when group is specified for \'Principal\' or \'NotPrincipal\'', () => {
+  test("throws error when group is specified for 'Principal' or 'NotPrincipal'", () => {
     const stack = new Stack();
     const group = new Group(stack, 'groupId');
     const policyStatement = new PolicyStatement();
 
-    expect(() => policyStatement.addPrincipals(group))
-      .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
-    expect(() => policyStatement.addNotPrincipals(group))
-      .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
+    expect(() => policyStatement.addPrincipals(group)).toThrow(
+      /Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/
+    );
+    expect(() => policyStatement.addNotPrincipals(group)).toThrow(
+      /Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/
+    );
   });
 
-  test('throws error when an invalid \'Action\' or \'NotAction\' is added', () => {
+  test("throws error when an invalid 'Action' or 'NotAction' is added", () => {
     const policyStatement = new PolicyStatement();
     const invalidAction = 'xyz';
-    expect(() => policyStatement.addActions(invalidAction))
-      .toThrow(`Action '${invalidAction}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
-    expect(() => policyStatement.addNotActions(invalidAction))
-      .toThrow(`Action '${invalidAction}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+    expect(() => policyStatement.addActions(invalidAction)).toThrow(
+      `Action '${invalidAction}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`
+    );
+    expect(() => policyStatement.addNotActions(invalidAction)).toThrow(
+      `Action '${invalidAction}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`
+    );
   });
 
   test('multiple identical entries render to a scalar (instead of a singleton list)', () => {
@@ -251,8 +243,8 @@ describe('IAM policy statement', () => {
 
     // WHEN
     const modifications = [
-      () => statement.sid = 'asdf',
-      () => statement.effect = Effect.DENY,
+      () => (statement.sid = 'asdf'),
+      () => (statement.effect = Effect.DENY),
       () => statement.addActions('abc:def'),
       () => statement.addNotActions('abc:def'),
       () => statement.addResources('*'),

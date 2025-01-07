@@ -12,10 +12,12 @@ test('apex domain selection by default', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
-    DomainValidationOptions: [{
-      DomainName: 'test.example.com',
-      ValidationDomain: 'example.com',
-    }],
+    DomainValidationOptions: [
+      {
+        DomainName: 'test.example.com',
+        ValidationDomain: 'example.com',
+      },
+    ],
   });
 });
 
@@ -49,10 +51,12 @@ test('validation domain can be overridden', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
-    DomainValidationOptions: [{
-      DomainName: 'test.example.com',
-      ValidationDomain: 'test.example.com',
-    }],
+    DomainValidationOptions: [
+      {
+        DomainName: 'test.example.com',
+        ValidationDomain: 'test.example.com',
+      },
+    ],
   });
 });
 
@@ -94,7 +98,7 @@ test('throws when domain name is longer than 64 characters', () => {
 test('does not throw when domain name is longer than 64 characters with tokens', () => {
   const stack = new Stack();
   const embededToken = Aws.REGION;
-  const baseDomain = 'a'.repeat(65-embededToken.length);
+  const baseDomain = 'a'.repeat(65 - embededToken.length);
   const domainName = `${embededToken}${baseDomain}`;
   new Certificate(stack, 'Certificate', {
     domainName,
@@ -116,10 +120,12 @@ test('does not throw when domain name is longer than 64 characters with tokens',
   };
   Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: domainNameJoin,
-    DomainValidationOptions: [{
-      DomainName: domainNameJoin,
-      ValidationDomain: 'example.com',
-    }],
+    DomainValidationOptions: [
+      {
+        DomainName: domainNameJoin,
+        ValidationDomain: 'example.com',
+      },
+    ],
   });
 });
 
@@ -147,10 +153,12 @@ test('validationdomains can be given for a Token', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'my.example.com',
-    DomainValidationOptions: [{
-      DomainName: 'my.example.com',
-      ValidationDomain: 'example.com',
-    }],
+    DomainValidationOptions: [
+      {
+        DomainName: 'my.example.com',
+        ValidationDomain: 'example.com',
+      },
+    ],
   });
 });
 
@@ -183,7 +191,6 @@ test('CertificateValidation.fromEmail', () => {
 });
 
 describe('CertificateValidation.fromDns', () => {
-
   test('without a hosted zone', () => {
     const stack = new Stack();
 
@@ -315,7 +322,6 @@ describe('CertificateValidation.fromDns', () => {
       ValidationMethod: 'DNS',
     });
   });
-
 });
 
 test('CertificateValidation.fromDnsMultiZone', () => {
@@ -415,8 +421,9 @@ describe('Certificate Name setting', () => {
       domainName: 'test.example.com',
     });
 
-    Template.fromStack(stack).hasResource('AWS::CertificateManager::Certificate',
-      hasTags([{ Key: 'Name', Value: 'TestStack/TheCertificate' }]),
+    Template.fromStack(stack).hasResource(
+      'AWS::CertificateManager::Certificate',
+      hasTags([{ Key: 'Name', Value: 'TestStack/TheCertificate' }])
     );
   });
 
@@ -428,13 +435,14 @@ describe('Certificate Name setting', () => {
       certificateName: 'Custom Certificate Name',
     });
 
-    Template.fromStack(stack).hasResource('AWS::CertificateManager::Certificate',
-      hasTags([{ Key: 'Name', Value: 'Custom Certificate Name' }]),
+    Template.fromStack(stack).hasResource(
+      'AWS::CertificateManager::Certificate',
+      hasTags([{ Key: 'Name', Value: 'Custom Certificate Name' }])
     );
   });
 });
 
-function hasTags(expectedTags: Array<{Key: string; Value: string}>) {
+function hasTags(expectedTags: Array<{ Key: string; Value: string }>) {
   return {
     Properties: {
       Tags: Match.arrayWith(expectedTags),

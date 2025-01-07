@@ -3,7 +3,14 @@ import { Template } from '../../assertions';
 import { Stream } from '../../aws-kinesis';
 import { KinesisDestination } from '../../aws-logs-destinations';
 import { Stack } from '../../core';
-import { Distribution, FilterPattern, ILogGroup, ILogSubscriptionDestination, LogGroup, SubscriptionFilter } from '../lib';
+import {
+  Distribution,
+  FilterPattern,
+  ILogGroup,
+  ILogSubscriptionDestination,
+  LogGroup,
+  SubscriptionFilter,
+} from '../lib';
 
 describe('subscription filter', () => {
   test('trivial instantiation', () => {

@@ -57,14 +57,9 @@ export function renderAmazonLinuxUserData(
   const kubeletExtraArgsSuffix = options.kubeletExtraArgs || '';
 
   // determine lifecycle label based on whether the ASG has a spot price.
-  const lifecycleLabel = autoScalingGroup.spotPrice
-    ? LifecycleLabel.SPOT
-    : LifecycleLabel.ON_DEMAND;
-  const withTaints = autoScalingGroup.spotPrice
-    ? '--register-with-taints=spotInstance=true:PreferNoSchedule'
-    : '';
-  const kubeletExtraArgs =
-    `--node-labels lifecycle=${lifecycleLabel} ${withTaints} ${kubeletExtraArgsSuffix}`.trim();
+  const lifecycleLabel = autoScalingGroup.spotPrice ? LifecycleLabel.SPOT : LifecycleLabel.ON_DEMAND;
+  const withTaints = autoScalingGroup.spotPrice ? '--register-with-taints=spotInstance=true:PreferNoSchedule' : '';
+  const kubeletExtraArgs = `--node-labels lifecycle=${lifecycleLabel} ${withTaints} ${kubeletExtraArgsSuffix}`.trim();
 
   return [
     'set -o xtrace',

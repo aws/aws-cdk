@@ -110,11 +110,7 @@ export class InstanceProfile extends InstanceProfileBase {
    * @param id construct id
    * @param instanceProfileName the name of the existing InstanceProfile to import
    */
-  public static fromInstanceProfileName(
-    scope: Construct,
-    id: string,
-    instanceProfileName: string
-  ): IInstanceProfile {
+  public static fromInstanceProfileName(scope: Construct, id: string, instanceProfileName: string): IInstanceProfile {
     const instanceProfileArn = Stack.of(scope).formatArn({
       service: 'iam',
       region: '',
@@ -134,11 +130,7 @@ export class InstanceProfile extends InstanceProfileBase {
    * @param id construct id
    * @param instanceProfileArn the ARN of the exiting InstanceProfile to import
    */
-  public static fromInstanceProfileArn(
-    scope: Construct,
-    id: string,
-    instanceProfileArn: string
-  ): IInstanceProfile {
+  public static fromInstanceProfileArn(scope: Construct, id: string, instanceProfileArn: string): IInstanceProfile {
     return InstanceProfile.fromInstanceProfileAttributes(scope, id, { instanceProfileArn });
   }
 

@@ -28,13 +28,15 @@ test('stream can be subscription destination', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: 'sts:AssumeRole',
-        Effect: 'Allow',
-        Principal: {
-          Service: 'logs.amazonaws.com',
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'logs.amazonaws.com',
+          },
         },
-      }],
+      ],
     },
   });
 
@@ -43,11 +45,7 @@ test('stream can be subscription destination', () => {
       Version: '2012-10-17',
       Statement: [
         {
-          Action: [
-            'kinesis:ListShards',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
+          Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
           Effect: 'Allow',
           Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
         },
@@ -91,13 +89,15 @@ test('stream can be subscription destination twice, without duplicating permissi
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: 'sts:AssumeRole',
-        Effect: 'Allow',
-        Principal: {
-          Service: 'logs.amazonaws.com',
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'logs.amazonaws.com',
+          },
         },
-      }],
+      ],
     },
   });
 
@@ -106,11 +106,7 @@ test('stream can be subscription destination twice, without duplicating permissi
       Version: '2012-10-17',
       Statement: [
         {
-          Action: [
-            'kinesis:ListShards',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
+          Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
           Effect: 'Allow',
           Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
         },
@@ -124,13 +120,17 @@ test('stream can be subscription destination twice, without duplicating permissi
   });
 });
 
-test('an existing IAM role can be passed to new destination instance instead of auto-created ', ()=> {
+test('an existing IAM role can be passed to new destination instance instead of auto-created ', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const stream = new kinesis.Stream(stack, 'MyStream');
   const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
-  const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/ImportedRoleKinesisDestinationTest');
+  const importedRole = iam.Role.fromRoleArn(
+    stack,
+    'ImportedRole',
+    'arn:aws:iam::123456789012:role/ImportedRoleKinesisDestinationTest'
+  );
 
   const kinesisDestination = new dests.KinesisDestination(stream, { role: importedRole });
 
@@ -148,7 +148,7 @@ test('an existing IAM role can be passed to new destination instance instead of 
   });
 });
 
-test('creates a new IAM Role if not passed on new destination instance', ()=> {
+test('creates a new IAM Role if not passed on new destination instance', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const stream = new kinesis.Stream(stack, 'MyStream');
@@ -167,10 +167,7 @@ test('creates a new IAM Role if not passed on new destination instance', ()=> {
   template.resourceCountIs('AWS::IAM::Role', 1);
   template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     RoleArn: {
-      'Fn::GetAtt': [
-        'LogGroupMySubscriptionFilterCloudWatchLogsCanPutRecords9112BD02',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['LogGroupMySubscriptionFilterCloudWatchLogsCanPutRecords9112BD02', 'Arn'],
     },
   });
 

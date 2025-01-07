@@ -79,9 +79,7 @@ export class IpInstance extends InstanceBase {
     const dnsRecordType = props.service.dnsRecordType;
 
     if (dnsRecordType === DnsRecordType.CNAME) {
-      throw new Error(
-        'Service must support `A`, `AAAA` or `SRV` records to register this instance type.'
-      );
+      throw new Error('Service must support `A`, `AAAA` or `SRV` records to register this instance type.');
     }
     if (dnsRecordType === DnsRecordType.SRV) {
       if (!props.port) {
@@ -89,23 +87,15 @@ export class IpInstance extends InstanceBase {
       }
 
       if (!props.ipv4 && !props.ipv6) {
-        throw new Error(
-          'At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record.'
-        );
+        throw new Error('At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record.');
       }
     }
 
-    if (
-      !props.ipv4 &&
-      (dnsRecordType === DnsRecordType.A || dnsRecordType === DnsRecordType.A_AAAA)
-    ) {
+    if (!props.ipv4 && (dnsRecordType === DnsRecordType.A || dnsRecordType === DnsRecordType.A_AAAA)) {
       throw new Error('An `ipv4` must be specified for a service using a `A` record.');
     }
 
-    if (
-      !props.ipv6 &&
-      (dnsRecordType === DnsRecordType.AAAA || dnsRecordType === DnsRecordType.A_AAAA)
-    ) {
+    if (!props.ipv6 && (dnsRecordType === DnsRecordType.AAAA || dnsRecordType === DnsRecordType.A_AAAA)) {
       throw new Error('An `ipv6` must be specified for a service using a `AAAA` record.');
     }
 

@@ -77,41 +77,53 @@ test('placement group throws if the CLUSTER strategy is used with partitions', (
   // GIVEN
   const stack = new Stack();
 
-  expect(() => new PlacementGroup(stack, 'placementgroup', {
-    partitions: 5,
-    spreadLevel: PlacementGroupSpreadLevel.HOST,
-    strategy: PlacementGroupStrategy.CLUSTER,
-  })).toThrow(/PlacementGroup 'placementgroup' can only specify 'partitions' with the 'PARTITION' strategy/);
+  expect(
+    () =>
+      new PlacementGroup(stack, 'placementgroup', {
+        partitions: 5,
+        spreadLevel: PlacementGroupSpreadLevel.HOST,
+        strategy: PlacementGroupStrategy.CLUSTER,
+      })
+  ).toThrow(/PlacementGroup 'placementgroup' can only specify 'partitions' with the 'PARTITION' strategy/);
 });
 
 test('placement group throws if the SPREAD strategy is used with partitions', () => {
   // GIVEN
   const stack = new Stack();
 
-  expect(() => new PlacementGroup(stack, 'placementgroup', {
-    partitions: 5,
-    spreadLevel: PlacementGroupSpreadLevel.HOST,
-    strategy: PlacementGroupStrategy.SPREAD,
-  })).toThrow(/PlacementGroup 'placementgroup' can only specify 'partitions' with the 'PARTITION' strategy/);
+  expect(
+    () =>
+      new PlacementGroup(stack, 'placementgroup', {
+        partitions: 5,
+        spreadLevel: PlacementGroupSpreadLevel.HOST,
+        strategy: PlacementGroupStrategy.SPREAD,
+      })
+  ).toThrow(/PlacementGroup 'placementgroup' can only specify 'partitions' with the 'PARTITION' strategy/);
 });
 
 test('placement group throws if the SPREAD strategy is used with partitions', () => {
   // GIVEN
   const stack = new Stack();
 
-  expect(() => new PlacementGroup(stack, 'placementgroup', {
-    partitions: 5,
-    spreadLevel: PlacementGroupSpreadLevel.HOST,
-    strategy: PlacementGroupStrategy.SPREAD,
-  })).toThrow(/PlacementGroup 'placementgroup' can only specify 'partitions' with the 'PARTITION' strategy/);
+  expect(
+    () =>
+      new PlacementGroup(stack, 'placementgroup', {
+        partitions: 5,
+        spreadLevel: PlacementGroupSpreadLevel.HOST,
+        strategy: PlacementGroupStrategy.SPREAD,
+      })
+  ).toThrow(/PlacementGroup 'placementgroup' can only specify 'partitions' with the 'PARTITION' strategy/);
 });
 
 test('placement group throws if spreadLevel is used without the SPREAD strategy', () => {
   // GIVEN
   const stack = new Stack();
 
-  expect(() => new PlacementGroup(stack, 'placementgroup', {
-    spreadLevel: PlacementGroupSpreadLevel.HOST,
-    strategy: PlacementGroupStrategy.CLUSTER,
-  })).toThrow(/PlacementGroup 'placementgroup' can only specify 'spreadLevel' with the 'SPREAD' strategy/);
+  expect(
+    () =>
+      new PlacementGroup(stack, 'placementgroup', {
+        spreadLevel: PlacementGroupSpreadLevel.HOST,
+        strategy: PlacementGroupStrategy.CLUSTER,
+      })
+  ).toThrow(/PlacementGroup 'placementgroup' can only specify 'spreadLevel' with the 'SPREAD' strategy/);
 });

@@ -13,7 +13,9 @@ beforeEach(() => {
   api = new appsync.GraphqlApi(stack, 'api', {
     authorizationConfig: {},
     name: 'api',
-    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    definition: appsync.Definition.fromSchema(
+      appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+    ),
     logConfig: {},
   });
 });
@@ -115,9 +117,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
   // GIVEN
   const cloudWatchLogRole: iam.Role = new iam.Role(stack, 'CloudWatchLogRole', {
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
-    managedPolicies: [
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
-    ],
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
   });
 
   // WHEN
@@ -135,10 +135,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
     Name: 'apiWithCustomRole',
     LogConfig: {
       CloudWatchLogsRoleArn: {
-        'Fn::GetAtt': [
-          'CloudWatchLogRoleE3242F1C',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['CloudWatchLogRoleE3242F1C', 'Arn'],
       },
     },
   });
@@ -150,10 +147,7 @@ test('appsync GraphqlApi should not use custom role for CW Logs when not specifi
     Name: 'api',
     LogConfig: {
       CloudWatchLogsRoleArn: {
-        'Fn::GetAtt': [
-          'apiApiLogsRole56BEE3F1',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['apiApiLogsRole56BEE3F1', 'Arn'],
       },
     },
   });
@@ -180,10 +174,7 @@ test('appsync GraphqlApi should be configured with custom domain when specified'
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DomainNameApiAssociation', {
     ApiId: {
-      'Fn::GetAtt': [
-        'apicustomcwlogsrole508EAC74',
-        'ApiId',
-      ],
+      'Fn::GetAtt': ['apicustomcwlogsrole508EAC74', 'ApiId'],
     },
     DomainName: domainName,
   });
@@ -216,10 +207,7 @@ test('log retention should be configured with given retention time when specifie
         [
           '/aws/appsync/apis/',
           {
-            'Fn::GetAtt': [
-              'logretentionB69DFB48',
-              'ApiId',
-            ],
+            'Fn::GetAtt': ['logretentionB69DFB48', 'ApiId'],
           },
         ],
       ],
@@ -295,7 +283,9 @@ test('appsync fails when specifing schema and definition', () => {
     new appsync.GraphqlApi(stack, 'apiWithSchemaAndDefinition', {
       name: 'api',
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
     });
   }).toThrow('You cannot specify both properties schema and definition.');
 });
@@ -333,7 +323,6 @@ test('when query limits are set, they should be used on API', () => {
 });
 
 test('when query depth limit is out of range, it throws an error', () => {
-
   const errorString = 'You must specify a query depth limit between 0 and 75.';
 
   const buildWithLimit = (name, queryDepthLimit) => {
@@ -349,11 +338,9 @@ test('when query depth limit is out of range, it throws an error', () => {
   expect(() => buildWithLimit('query-limit-min', 0)).not.toThrow(errorString);
   expect(() => buildWithLimit('query-limit-max', 75)).not.toThrow(errorString);
   expect(() => buildWithLimit('query-limit-high', 76)).toThrow(errorString);
-
 });
 
 test('when resolver limit is out of range, it throws an error', () => {
-
   const errorString = 'You must specify a resolver count limit between 0 and 10000.';
 
   const buildWithLimit = (name, resolverCountLimit) => {
@@ -369,7 +356,6 @@ test('when resolver limit is out of range, it throws an error', () => {
   expect(() => buildWithLimit('resolver-limit-min', 0)).not.toThrow(errorString);
   expect(() => buildWithLimit('resolver-limit-max', 10000)).not.toThrow(errorString);
   expect(() => buildWithLimit('resolver-limit-high', 10001)).toThrow(errorString);
-
 });
 
 test.each([
@@ -400,7 +386,9 @@ test('when owner contact is set, they should be used on API', () => {
   // WHEN
   new appsync.GraphqlApi(stack, 'owner-contact', {
     name: 'owner-contact',
-    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    definition: appsync.Definition.fromSchema(
+      appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+    ),
     ownerContact: 'test',
   });
 
@@ -414,10 +402,14 @@ test('when owner contact exceeds 256 characters, it throws an error', () => {
   const buildWithOwnerContact = () => {
     new appsync.GraphqlApi(stack, 'owner-contact-length-exceeded', {
       name: 'owner-contact',
-      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+      definition: appsync.Definition.fromSchema(
+        appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))
+      ),
       ownerContact: 'a'.repeat(256 + 1),
     });
   };
 
-  expect(() => buildWithOwnerContact()).toThrow('You must specify `ownerContact` as a string of 256 characters or less.');
+  expect(() => buildWithOwnerContact()).toThrow(
+    'You must specify `ownerContact` as a string of 256 characters or less.'
+  );
 });

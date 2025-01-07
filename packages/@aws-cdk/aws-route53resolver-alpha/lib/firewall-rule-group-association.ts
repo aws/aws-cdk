@@ -108,9 +108,7 @@ export class FirewallRuleGroupAssociation extends Resource {
     super(scope, id);
 
     if (!Token.isUnresolved(props.priority) && (props.priority <= 100 || props.priority >= 9000)) {
-      throw new Error(
-        `Priority must be greater than 100 and less than 9000, got ${props.priority}`
-      );
+      throw new Error(`Priority must be greater than 100 and less than 9000, got ${props.priority}`);
     }
 
     const association = new CfnFirewallRuleGroupAssociation(this, 'Resource', {

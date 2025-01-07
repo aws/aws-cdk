@@ -63,8 +63,9 @@ describe('layers', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
     // THEN
-    expect(() => new lambda.LayerVersion(stack, 'LayerVersion', { code, compatibleRuntimes: [] }))
-      .toThrow(/supports no runtime/);
+    expect(() => new lambda.LayerVersion(stack, 'LayerVersion', { code, compatibleRuntimes: [] })).toThrow(
+      /supports no runtime/
+    );
   });
 
   test('asset metadata is added to the cloudformation resource', () => {

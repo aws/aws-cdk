@@ -97,13 +97,9 @@ export class Fail extends State {
       Type: StateType.FAIL,
       Comment: this.comment,
       Error: this.error,
-      ErrorPath: this.isIntrinsicString(this.errorPath)
-        ? this.errorPath
-        : renderJsonPath(this.errorPath),
+      ErrorPath: this.isIntrinsicString(this.errorPath) ? this.errorPath : renderJsonPath(this.errorPath),
       Cause: this.cause,
-      CausePath: this.isIntrinsicString(this.causePath)
-        ? this.causePath
-        : renderJsonPath(this.causePath),
+      CausePath: this.isIntrinsicString(this.causePath) ? this.causePath : renderJsonPath(this.causePath),
     };
   }
 
@@ -113,21 +109,13 @@ export class Fail extends State {
   protected validateState(): string[] {
     const errors = super.validateState();
 
-    if (
-      this.errorPath &&
-      this.isIntrinsicString(this.errorPath) &&
-      !this.isAllowedIntrinsic(this.errorPath)
-    ) {
+    if (this.errorPath && this.isIntrinsicString(this.errorPath) && !this.isAllowedIntrinsic(this.errorPath)) {
       errors.push(
         `You must specify a valid intrinsic function in errorPath. Must be one of ${Fail.allowedIntrinsics.join(', ')}`
       );
     }
 
-    if (
-      this.causePath &&
-      this.isIntrinsicString(this.causePath) &&
-      !this.isAllowedIntrinsic(this.causePath)
-    ) {
+    if (this.causePath && this.isIntrinsicString(this.causePath) && !this.isAllowedIntrinsic(this.causePath)) {
       errors.push(
         `You must specify a valid intrinsic function in causePath. Must be one of ${Fail.allowedIntrinsics.join(', ')}`
       );

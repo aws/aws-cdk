@@ -27,8 +27,7 @@ export class EnvironmentUtils {
     const env = AWS_ENV_REGEX.exec(environment);
     if (!env) {
       throw new Error(
-        `Unable to parse environment specification "${environment}". ` +
-          'Expected format: aws://account/region'
+        `Unable to parse environment specification "${environment}". ` + 'Expected format: aws://account/region'
       );
     }
 

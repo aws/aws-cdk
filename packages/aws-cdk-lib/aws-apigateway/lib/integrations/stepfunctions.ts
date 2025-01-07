@@ -123,10 +123,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
   private readonly useDefaultMethodResponses: boolean;
 
-  constructor(
-    stateMachine: sfn.IStateMachine,
-    options: StepFunctionsExecutionIntegrationOptions = {}
-  ) {
+  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
     super({
       service: 'states',
       action: 'StartSyncExecution',
@@ -165,8 +162,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
 
       //if not imported, extract the name from the CFN layer to reach the
       //literal value if it is given (rather than a token)
-      stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine)
-        .stateMachineName;
+      stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineName;
     } else {
       //imported state machine
       stateMachineName = `StateMachine-${this.stateMachine.stack.node.addr}`;
@@ -261,10 +257,7 @@ function integrationResponse() {
  * @param options
  * @returns requestTemplate
  */
-function requestTemplates(
-  stateMachine: sfn.IStateMachine,
-  options: StepFunctionsExecutionIntegrationOptions
-) {
+function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions) {
   const templateStr = templateString(stateMachine, options);
 
   const requestTemplate: { [contentType: string]: string } = {
@@ -283,10 +276,7 @@ function requestTemplates(
  * @param options
  * @reutrns templateString
  */
-function templateString(
-  stateMachine: sfn.IStateMachine,
-  options: StepFunctionsExecutionIntegrationOptions
-): string {
+function templateString(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions): string {
   let templateStr: string;
 
   let requestContextStr = '';
@@ -316,9 +306,7 @@ function requestContext(requestContextObj: RequestContext | undefined): string {
     accountId: requestContextObj?.accountId ? '$context.identity.accountId' : undefined,
     apiId: requestContextObj?.apiId ? '$context.apiId' : undefined,
     apiKey: requestContextObj?.apiKey ? '$context.identity.apiKey' : undefined,
-    authorizerPrincipalId: requestContextObj?.authorizerPrincipalId
-      ? '$context.authorizer.principalId'
-      : undefined,
+    authorizerPrincipalId: requestContextObj?.authorizerPrincipalId ? '$context.authorizer.principalId' : undefined,
     caller: requestContextObj?.caller ? '$context.identity.caller' : undefined,
     cognitoAuthenticationProvider: requestContextObj?.cognitoAuthenticationProvider
       ? '$context.identity.cognitoAuthenticationProvider'
@@ -326,9 +314,7 @@ function requestContext(requestContextObj: RequestContext | undefined): string {
     cognitoAuthenticationType: requestContextObj?.cognitoAuthenticationType
       ? '$context.identity.cognitoAuthenticationType'
       : undefined,
-    cognitoIdentityId: requestContextObj?.cognitoIdentityId
-      ? '$context.identity.cognitoIdentityId'
-      : undefined,
+    cognitoIdentityId: requestContextObj?.cognitoIdentityId ? '$context.identity.cognitoIdentityId' : undefined,
     cognitoIdentityPoolId: requestContextObj?.cognitoIdentityPoolId
       ? '$context.identity.cognitoIdentityPoolId'
       : undefined,

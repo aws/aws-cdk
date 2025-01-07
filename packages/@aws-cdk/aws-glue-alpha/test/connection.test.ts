@@ -141,11 +141,13 @@ test('fromConnectionName', () => {
   const connection = glue.Connection.fromConnectionName(stack, 'ImportedConnection', connectionName);
 
   expect(connection.connectionName).toEqual(connectionName);
-  expect(connection.connectionArn).toEqual(stack.formatArn({
-    service: 'glue',
-    resource: 'connection',
-    resourceName: connectionName,
-  }));
+  expect(connection.connectionArn).toEqual(
+    stack.formatArn({
+      service: 'glue',
+      resource: 'connection',
+      resourceName: connectionName,
+    })
+  );
 });
 
 test('fromConnectionArn', () => {

@@ -66,9 +66,7 @@ export class JenkinsAction extends Action {
     super({
       ...props,
       category:
-        props.type === JenkinsActionType.BUILD
-          ? codepipeline.ActionCategory.BUILD
-          : codepipeline.ActionCategory.TEST,
+        props.type === JenkinsActionType.BUILD ? codepipeline.ActionCategory.BUILD : codepipeline.ActionCategory.TEST,
       provider: props.jenkinsProvider.providerName,
       owner: 'Custom',
       artifactBounds: jenkinsArtifactsBounds,

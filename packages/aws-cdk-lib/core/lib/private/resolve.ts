@@ -179,10 +179,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
     const str = TokenString.forString(obj);
     if (str.test()) {
       const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
-      return tagResolvedValue(
-        options.resolver.resolveString(fragments, makeContext()[0]),
-        ResolutionTypeHint.STRING
-      );
+      return tagResolvedValue(options.resolver.resolveString(fragments, makeContext()[0]), ResolutionTypeHint.STRING);
     }
     return obj;
   }
@@ -208,10 +205,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (Array.isArray(obj)) {
     if (containsListTokenElement(obj)) {
-      return tagResolvedValue(
-        options.resolver.resolveList(obj, makeContext()[0]),
-        ResolutionTypeHint.STRING_LIST
-      );
+      return tagResolvedValue(options.resolver.resolveList(obj, makeContext()[0]), ResolutionTypeHint.STRING_LIST);
     }
 
     const arr = obj
@@ -235,10 +229,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (unresolved(obj)) {
     const [context, postProcessor] = makeContext();
-    const ret = tagResolvedValue(
-      options.resolver.resolveToken(obj, context, postProcessor),
-      ResolutionTypeHint.STRING
-    );
+    const ret = tagResolvedValue(options.resolver.resolveToken(obj, context, postProcessor), ResolutionTypeHint.STRING);
     return ret;
   }
 

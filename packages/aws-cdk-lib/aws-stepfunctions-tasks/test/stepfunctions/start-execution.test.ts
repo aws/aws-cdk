@@ -79,7 +79,7 @@ test('Execute State Machine - Run Job', () => {
     End: true,
     Parameters: {
       'Input.$': '$',
-      'StateMachineArn': {
+      StateMachineArn: {
         Ref: 'ChildStateMachine9133117F',
       },
     },
@@ -265,5 +265,7 @@ test('Execute State Machine - Associate With Parent - Incorrect Input Type', () 
       associateWithParent: true,
       input: sfn.TaskInput.fromText('{ "token.$": "$$.Task.Token" }'),
     });
-  }).toThrow('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.');
+  }).toThrow(
+    'Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.'
+  );
 });

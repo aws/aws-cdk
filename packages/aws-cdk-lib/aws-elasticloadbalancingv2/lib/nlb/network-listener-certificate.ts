@@ -27,9 +27,7 @@ export class NetworkListenerCertificate extends Construct {
   constructor(scope: Construct, id: string, props: NetworkListenerCertificateProps) {
     super(scope, id);
 
-    const certificates = [
-      ...(props.certificates || []).map((c) => ({ certificateArn: c.certificateArn })),
-    ];
+    const certificates = [...(props.certificates || []).map((c) => ({ certificateArn: c.certificateArn }))];
 
     new CfnListenerCertificate(this, 'Resource', {
       listenerArn: props.listener.listenerArn,

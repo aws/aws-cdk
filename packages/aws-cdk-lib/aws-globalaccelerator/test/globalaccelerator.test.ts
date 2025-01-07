@@ -35,10 +35,7 @@ test('create listener', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Listener', {
     AcceleratorArn: {
-      'Fn::GetAtt': [
-        'Accelerator8EB0B6B1',
-        'AcceleratorArn',
-      ],
+      'Fn::GetAtt': ['Accelerator8EB0B6B1', 'AcceleratorArn'],
     },
     PortRanges: [
       {
@@ -58,9 +55,7 @@ test('toPort defaults to fromPort if left out', () => {
   // WHEN
   const accelerator = new ga.Accelerator(stack, 'Accelerator');
   accelerator.addListener('Listener', {
-    portRanges: [
-      { fromPort: 123 },
-    ],
+    portRanges: [{ fromPort: 123 }],
   });
 
   // THEN
@@ -97,15 +92,12 @@ test('create endpointgroup', () => {
       Ref: 'AWS::Region',
     },
     ListenerArn: {
-      'Fn::GetAtt': [
-        'Listener828B0E81',
-        'ListenerArn',
-      ],
+      'Fn::GetAtt': ['Listener828B0E81', 'ListenerArn'],
     },
   });
 });
 
-test('endpointgroup region is the first endpoint\'s region', () => {
+test("endpointgroup region is the first endpoint's region", () => {
   // GIVEN
   const { stack } = testFixture();
 
@@ -231,10 +223,7 @@ test('create accelerator with IpAddresses and IpAddressType', () => {
 
   // WHEN
   const acc = new ga.Accelerator(stack, 'Accelerator', {
-    ipAddresses: [
-      '1.1.1.1',
-      '2.2.2.2',
-    ],
+    ipAddresses: ['1.1.1.1', '2.2.2.2'],
     ipAddressType: ga.IpAddressType.DUAL_STACK,
   });
 
@@ -242,10 +231,7 @@ test('create accelerator with IpAddresses and IpAddressType', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Accelerator', {
     Enabled: true,
     Name: 'StackAccelerator472129D8',
-    IpAddresses: [
-      '1.1.1.1',
-      '2.2.2.2',
-    ],
+    IpAddresses: ['1.1.1.1', '2.2.2.2'],
     IpAddressType: 'DUAL_STACK',
   });
 });

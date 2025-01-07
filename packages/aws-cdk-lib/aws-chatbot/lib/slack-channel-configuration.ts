@@ -157,10 +157,7 @@ export interface ISlackChannelConfiguration
 /**
  * Either a new or imported Slack channel configuration
  */
-abstract class SlackChannelConfigurationBase
-  extends cdk.Resource
-  implements ISlackChannelConfiguration
-{
+abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISlackChannelConfiguration {
   abstract readonly slackChannelConfigurationArn: string;
 
   abstract readonly slackChannelConfigurationName: string;
@@ -198,9 +195,7 @@ abstract class SlackChannelConfigurationBase
     });
   }
 
-  public bindAsNotificationRuleTarget(
-    _scope: Construct
-  ): notifications.NotificationRuleTargetConfig {
+  public bindAsNotificationRuleTarget(_scope: Construct): notifications.NotificationRuleTargetConfig {
     return {
       targetType: 'AWSChatbotSlack',
       targetAddress: this.slackChannelConfigurationArn,
@@ -226,10 +221,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     slackChannelConfigurationArn: string
   ): ISlackChannelConfiguration {
     const re = /^slack-channel\//;
-    const resourceName = cdk.Arn.extractResourceName(
-      slackChannelConfigurationArn,
-      'chat-configuration'
-    );
+    const resourceName = cdk.Arn.extractResourceName(slackChannelConfigurationArn, 'chat-configuration');
 
     if (!cdk.Token.isUnresolved(slackChannelConfigurationArn) && !re.test(resourceName)) {
       throw new Error(
@@ -261,10 +253,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
         // handle slackChannelConfigurationName as specified above
         if (cdk.Token.isUnresolved(slackChannelConfigurationArn)) {
-          this.slackChannelConfigurationName = cdk.Fn.select(
-            1,
-            cdk.Fn.split('slack-channel/', resourceName)
-          );
+          this.slackChannelConfigurationName = cdk.Fn.select(1, cdk.Fn.split('slack-channel/', resourceName));
         } else {
           this.slackChannelConfigurationName = resourceName.substring('slack-channel/'.length);
         }

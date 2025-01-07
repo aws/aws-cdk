@@ -73,7 +73,8 @@ describe('query definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
       Name: 'MyQuery',
-      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| filter loggingType = "ERROR"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage',
+      QueryString:
+        'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| filter loggingType = "ERROR"\n| sort @timestamp desc\n| limit 20\n| display loggingMessage',
     });
   });
 
@@ -90,10 +91,7 @@ describe('query definition', () => {
           '@message "[*] *" as loggingType, loggingMessage',
           '@message "<*>: *" as differentLoggingType, differentLoggingMessage',
         ],
-        filterStatements: [
-          'loggingType = "ERROR"',
-          'loggingMessage = "A very strange error occurred!"',
-        ],
+        filterStatements: ['loggingType = "ERROR"', 'loggingMessage = "A very strange error occurred!"'],
         sort: '@timestamp desc',
         limit: 20,
       }),
@@ -102,7 +100,8 @@ describe('query definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
       Name: 'MyQuery',
-      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| parse @message "<*>: *" as differentLoggingType, differentLoggingMessage\n| filter loggingType = "ERROR"\n| filter loggingMessage = "A very strange error occurred!"\n| sort @timestamp desc\n| limit 20',
+      QueryString:
+        'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| parse @message "<*>: *" as differentLoggingType, differentLoggingMessage\n| filter loggingType = "ERROR"\n| filter loggingMessage = "A very strange error occurred!"\n| sort @timestamp desc\n| limit 20',
     });
   });
 
@@ -121,10 +120,7 @@ describe('query definition', () => {
           '@message "<*>: *" as differentLoggingType, differentLoggingMessage',
         ],
         filter: 'loggingType = "ERROR"',
-        filterStatements: [
-          'loggingType = "ERROR"',
-          'loggingMessage = "A very strange error occurred!"',
-        ],
+        filterStatements: ['loggingType = "ERROR"', 'loggingMessage = "A very strange error occurred!"'],
         sort: '@timestamp desc',
         limit: 20,
       }),
@@ -133,7 +129,8 @@ describe('query definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::QueryDefinition', {
       Name: 'MyQuery',
-      QueryString: 'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| parse @message "<*>: *" as differentLoggingType, differentLoggingMessage\n| filter loggingType = "ERROR"\n| filter loggingMessage = "A very strange error occurred!"\n| sort @timestamp desc\n| limit 20',
+      QueryString:
+        'fields @timestamp, @message\n| parse @message "[*] *" as loggingType, loggingMessage\n| parse @message "<*>: *" as differentLoggingType, differentLoggingMessage\n| filter loggingType = "ERROR"\n| filter loggingMessage = "A very strange error occurred!"\n| sort @timestamp desc\n| limit 20',
     });
   });
 });

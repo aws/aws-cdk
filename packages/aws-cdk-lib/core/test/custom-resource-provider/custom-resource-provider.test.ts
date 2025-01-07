@@ -3,7 +3,25 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as cxapi from '../../../cx-api';
-import { App, AssetStaging, CustomResourceProvider, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderBaseProps, CustomResourceProviderOptions, CustomResourceProviderRuntime } from '../../lib';
+import {
+  App,
+  AssetStaging,
+  CustomResourceProvider,
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  Duration,
+  FileAssetLocation,
+  FileAssetSource,
+  ISynthesisSession,
+  Size,
+  Stack,
+  CfnResource,
+  determineLatestNodeRuntimeName,
+  CustomResourceProviderBase,
+  CustomResourceProviderBaseProps,
+  CustomResourceProviderOptions,
+  CustomResourceProviderRuntime,
+} from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
@@ -68,27 +86,31 @@ describe('custom resource provider', () => {
       const filePath = path.join(assembly.directory, 'iam-policy-report.json');
       const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
       expect(JSON.parse(file)).toEqual({
-        roles: [{
-          roleConstructPath: 'MyStack/Custom:MyResourceTypeCustomResourceProvider/Role',
-          roleName: 'my-custom-role-name',
-          missing: false,
-          assumeRolePolicy: [{
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'lambda.amazonaws.com',
-            },
-          }],
-          managedPolicyArns: [
-            'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-          ],
-          managedPolicyStatements: [],
-          identityPolicyStatements: [{
-            Action: 's3:GetBucket',
-            Effect: 'Allow',
-            Resource: '(MyStack/SomeResource.Ref)',
-          }],
-        }],
+        roles: [
+          {
+            roleConstructPath: 'MyStack/Custom:MyResourceTypeCustomResourceProvider/Role',
+            roleName: 'my-custom-role-name',
+            missing: false,
+            assumeRolePolicy: [
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'lambda.amazonaws.com',
+                },
+              },
+            ],
+            managedPolicyArns: ['arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+            managedPolicyStatements: [],
+            identityPolicyStatements: [
+              {
+                Action: 's3:GetBucket',
+                Effect: 'Allow',
+                Resource: '(MyStack/SomeResource.Ref)',
+              },
+            ],
+          },
+        ],
       });
     });
 
@@ -125,37 +147,38 @@ describe('custom resource provider', () => {
       expect(resourceTypes).toContain('AWS::IAM::Role');
       // lambda function references the created role
       expect(template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A.Properties.Role).toEqual({
-        'Fn::GetAtt': [
-          'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['CustomMyResourceTypeCustomResourceProviderRoleBD5E655F', 'Arn'],
       });
 
       // report is still generated
       const filePath = path.join(assembly.directory, 'iam-policy-report.json');
       const file = fs.readFileSync(filePath, { encoding: 'utf-8' });
       expect(JSON.parse(file)).toEqual({
-        roles: [{
-          roleConstructPath: 'MyStack/Custom:MyResourceTypeCustomResourceProvider/Role',
-          roleName: 'missing role',
-          missing: true,
-          assumeRolePolicy: [{
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'lambda.amazonaws.com',
-            },
-          }],
-          managedPolicyArns: [
-            'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-          ],
-          managedPolicyStatements: [],
-          identityPolicyStatements: [{
-            Action: 's3:GetBucket',
-            Effect: 'Allow',
-            Resource: '(MyStack/SomeResource.Ref)',
-          }],
-        }],
+        roles: [
+          {
+            roleConstructPath: 'MyStack/Custom:MyResourceTypeCustomResourceProvider/Role',
+            roleName: 'missing role',
+            missing: true,
+            assumeRolePolicy: [
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'lambda.amazonaws.com',
+                },
+              },
+            ],
+            managedPolicyArns: ['arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+            managedPolicyStatements: [],
+            identityPolicyStatements: [
+              {
+                Action: 's3:GetBucket',
+                Effect: 'Allow',
+                Resource: '(MyStack/SomeResource.Ref)',
+              },
+            ],
+          },
+        ],
       });
     });
   });
@@ -176,7 +199,9 @@ describe('custom resource provider', () => {
 
     // The asset hash constantly changes, so in order to not have to chase it, just look
     // it up from the output.
-    const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
+    const staging = stack.node
+      .tryFindChild('Custom:MyResourceTypeCustomResourceProvider')
+      ?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
     const sourcePath = staging.sourcePath;
     const paramNames = Object.keys(cfn.Parameters);
@@ -221,10 +246,7 @@ describe('custom resource provider', () => {
                       'Fn::Select': [
                         0,
                         {
-                          'Fn::Split': [
-                            '||',
-                            { Ref: keyParam },
-                          ],
+                          'Fn::Split': ['||', { Ref: keyParam }],
                         },
                       ],
                     },
@@ -232,10 +254,7 @@ describe('custom resource provider', () => {
                       'Fn::Select': [
                         1,
                         {
-                          'Fn::Split': [
-                            '||',
-                            { Ref: keyParam },
-                          ],
+                          'Fn::Split': ['||', { Ref: keyParam }],
                         },
                       ],
                     },
@@ -247,16 +266,11 @@ describe('custom resource provider', () => {
             MemorySize: 128,
             Handler: '__entrypoint__.handler',
             Role: {
-              'Fn::GetAtt': [
-                'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomMyResourceTypeCustomResourceProviderRoleBD5E655F', 'Arn'],
             },
             Runtime: DEFAULT_PROVIDER_RUNTIME,
           },
-          DependsOn: [
-            'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
-          ],
+          DependsOn: ['CustomMyResourceTypeCustomResourceProviderRoleBD5E655F'],
         },
       },
       Parameters: {
@@ -274,7 +288,6 @@ describe('custom resource provider', () => {
         },
       },
     });
-
   });
 
   test('asset metadata added to custom resource that contains code definition', () => {
@@ -299,18 +312,17 @@ describe('custom resource provider', () => {
       // The asset path should be a temporary folder prefixed with 'cdk-custom-resource'
       'aws:asset:path': expect.stringMatching(/^.*\/cdk-custom-resource\w{6}\/?$/),
     });
-
   });
 
   test('custom resource provided creates asset in new-style synthesis with relative path', () => {
     // GIVEN
 
-    let assetFilename : string | undefined;
+    let assetFilename: string | undefined;
 
     const app = new App();
     const stack = new Stack(app, 'Stack', {
       synthesizer: {
-        bind(_stack: Stack): void { },
+        bind(_stack: Stack): void {},
 
         addFileAsset(asset: FileAssetSource): FileAssetLocation {
           assetFilename = asset.fileName;
@@ -321,7 +333,7 @@ describe('custom resource provider', () => {
           return { imageUri: '', repositoryName: '' };
         },
 
-        synthesize(_session: ISynthesisSession): void { },
+        synthesize(_session: ISynthesisSession): void {},
       },
     });
 
@@ -335,7 +347,6 @@ describe('custom resource provider', () => {
     if (!assetFilename || assetFilename.startsWith(path.sep)) {
       throw new Error(`Asset filename must be a relative path, got: ${assetFilename}`);
     }
-
   });
 
   test('policyStatements can be used to add statements to the inline policy', () => {
@@ -346,23 +357,21 @@ describe('custom resource provider', () => {
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
       runtime: DEFAULT_PROVIDER_RUNTIME,
-      policyStatements: [
-        { statement1: 123 },
-        { statement2: { foo: 111 } },
-      ],
+      policyStatements: [{ statement1: 123 }, { statement2: { foo: 111 } }],
     });
 
     // THEN
     const template = toCloudFormation(stack);
     const role = template.Resources.CustomMyResourceTypeCustomResourceProviderRoleBD5E655F;
-    expect(role.Properties.Policies).toEqual([{
-      PolicyName: 'Inline',
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [{ statement1: 123 }, { statement2: { foo: 111 } }],
+    expect(role.Properties.Policies).toEqual([
+      {
+        PolicyName: 'Inline',
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [{ statement1: 123 }, { statement2: { foo: 111 } }],
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('addToRolePolicy() can be used to add statements to the inline policy', () => {
@@ -373,23 +382,22 @@ describe('custom resource provider', () => {
     const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
       runtime: DEFAULT_PROVIDER_RUNTIME,
-      policyStatements: [
-        { statement1: 123 },
-        { statement2: { foo: 111 } },
-      ],
+      policyStatements: [{ statement1: 123 }, { statement2: { foo: 111 } }],
     });
     provider.addToRolePolicy({ statement3: 456 });
 
     // THEN
     const template = toCloudFormation(stack);
     const role = template.Resources.CustomMyResourceTypeCustomResourceProviderRoleBD5E655F;
-    expect(role.Properties.Policies).toEqual([{
-      PolicyName: 'Inline',
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [{ statement1: 123 }, { statement2: { foo: 111 } }, { statement3: 456 }],
+    expect(role.Properties.Policies).toEqual([
+      {
+        PolicyName: 'Inline',
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [{ statement1: 123 }, { statement2: { foo: 111 } }, { statement3: 456 }],
+        },
       },
-    }]);
+    ]);
   });
 
   test('memorySize, timeout and description', () => {
@@ -411,7 +419,6 @@ describe('custom resource provider', () => {
     expect(lambda.Properties.MemorySize).toEqual(2048);
     expect(lambda.Properties.Timeout).toEqual(300);
     expect(lambda.Properties.Description).toEqual('veni vidi vici');
-
   });
 
   test('environment variables', () => {
@@ -437,7 +444,6 @@ describe('custom resource provider', () => {
         B: 'b',
       }),
     });
-
   });
 
   test('roleArn', () => {
@@ -452,12 +458,8 @@ describe('custom resource provider', () => {
 
     // THEN
     expect(stack.resolve(cr.roleArn)).toEqual({
-      'Fn::GetAtt': [
-        'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CustomMyResourceTypeCustomResourceProviderRoleBD5E655F', 'Arn'],
     });
-
   });
 });
 
@@ -675,8 +677,8 @@ class TestCustomResourceProvider extends CustomResourceProviderBase {
   public static getOrCreateProvider(scope: Construct, uniqueid: string, props?: CustomResourceProviderOptions) {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
-    const provider = stack.node.tryFindChild(id) as TestCustomResourceProvider
-      ?? new TestCustomResourceProvider(stack, id, props);
+    const provider =
+      (stack.node.tryFindChild(id) as TestCustomResourceProvider) ?? new TestCustomResourceProvider(stack, id, props);
     return provider;
   }
 

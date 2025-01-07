@@ -100,10 +100,7 @@ export class StackParameters {
   public readonly parameters: Map<string, string | undefined>;
   public readonly keepExistingParameters: boolean;
 
-  private constructor(
-    params: { [name: string]: string | undefined },
-    usePreviousParameters = true
-  ) {
+  private constructor(params: { [name: string]: string | undefined }, usePreviousParameters = true) {
     this.keepExistingParameters = usePreviousParameters;
     this.parameters = new Map(Object.entries(params));
   }

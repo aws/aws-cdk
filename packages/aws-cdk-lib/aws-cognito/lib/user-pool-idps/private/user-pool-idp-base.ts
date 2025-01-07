@@ -9,10 +9,7 @@ import { UserPoolIdentityProviderProps, AttributeMapping } from '../base';
  *
  * @internal
  */
-export abstract class UserPoolIdentityProviderBase
-  extends Resource
-  implements IUserPoolIdentityProvider
-{
+export abstract class UserPoolIdentityProviderBase extends Resource implements IUserPoolIdentityProvider {
   public abstract readonly providerName: string;
 
   public constructor(

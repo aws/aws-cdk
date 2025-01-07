@@ -154,11 +154,7 @@ export class DomainName extends Resource implements IDomainName {
   /**
    * Import from attributes
    */
-  public static fromDomainNameAttributes(
-    scope: Construct,
-    id: string,
-    attrs: DomainNameAttributes
-  ): IDomainName {
+  public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
     class Import extends Resource implements IDomainName {
       public readonly regionalDomainName = attrs.regionalDomainName;
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
@@ -200,9 +196,7 @@ export class DomainName extends Resource implements IDomainName {
     }
   }
 
-  private configureMTLS(
-    mtlsConfig?: MTLSConfig
-  ): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
+  private configureMTLS(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
     if (!mtlsConfig) return undefined;
     return {
       truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),

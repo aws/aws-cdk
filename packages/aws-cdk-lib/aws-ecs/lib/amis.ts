@@ -119,13 +119,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) {
       // generation defined in the props object
-      if (
-        props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX &&
-        this.hwType !== AmiHardwareType.STANDARD
-      ) {
-        throw new Error(
-          'Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead'
-        );
+      if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
+        throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
         throw new Error('"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
@@ -149,12 +144,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/') +
       (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '') +
       (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '') +
-      (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023
-        ? 'amazon-linux-2023/'
-        : '') +
-      (this.windowsVersion
-        ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/`
-        : '') +
+      (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '') +
+      (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '') +
       (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '') +
       (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '') +
       (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '') +
@@ -169,9 +160,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
 
-    const osType = this.windowsVersion
-      ? ec2.OperatingSystemType.WINDOWS
-      : ec2.OperatingSystemType.LINUX;
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
       osType,
@@ -294,12 +283,8 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/') +
       (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '') +
       (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '') +
-      (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023
-        ? 'amazon-linux-2023/'
-        : '') +
-      (this.windowsVersion
-        ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/`
-        : '') +
+      (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '') +
+      (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '') +
       (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '') +
       (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '') +
       (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '') +
@@ -314,9 +299,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
   public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
 
-    const osType = this.windowsVersion
-      ? ec2.OperatingSystemType.WINDOWS
-      : ec2.OperatingSystemType.LINUX;
+    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
       imageId: ami,
       osType,
@@ -444,16 +427,8 @@ Object.defineProperty(BottleRocketImage.prototype, BR_IMAGE_SYMBOL, {
   writable: false,
 });
 
-function lookupImage(
-  scope: Construct,
-  cachedInContext: boolean | undefined,
-  parameterName: string
-) {
+function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
   return cachedInContext
     ? ssm.StringParameter.valueFromLookup(scope, parameterName)
-    : ssm.StringParameter.valueForTypedStringParameterV2(
-        scope,
-        parameterName,
-        ssm.ParameterValueType.AWS_EC2_IMAGE_ID
-      );
+    : ssm.StringParameter.valueForTypedStringParameterV2(scope, parameterName, ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
 }

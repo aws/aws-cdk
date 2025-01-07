@@ -14,7 +14,6 @@ describe('user data', () => {
     // THEN
     const rendered = userData.render();
     expect(rendered).toEqual('<powershell>command1\ncommand2</powershell>');
-
   });
   test('can create Windows user data with commands on exit', () => {
     // GIVEN
@@ -26,7 +25,8 @@ describe('user data', () => {
 
     // THEN
     const rendered = userData.render();
-    expect(rendered).toEqual('<powershell>trap {\n' +
+    expect(rendered).toEqual(
+      '<powershell>trap {\n' +
         '$success=($PSItem.Exception.Message -eq "Success")\n' +
         'onexit1\n' +
         'onexit2\n' +
@@ -34,8 +34,8 @@ describe('user data', () => {
         '}\n' +
         'command1\n' +
         'command2\n' +
-        'throw "Success"</powershell>');
-
+        'throw "Success"</powershell>'
+    );
   });
   test('can create Windows with Signal Command', () => {
     // GIVEN
@@ -45,22 +45,22 @@ describe('user data', () => {
     const logicalId = (resource.node.defaultChild as CfnResource).logicalId;
 
     // WHEN
-    userData.addSignalOnExitCommand( resource );
+    userData.addSignalOnExitCommand(resource);
     userData.addCommands('command1');
 
     // THEN
     const rendered = userData.render();
 
     expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552F');
-    expect(rendered).toEqual('<powershell>trap {\n' +
+    expect(rendered).toEqual(
+      '<powershell>trap {\n' +
         '$success=($PSItem.Exception.Message -eq "Success")\n' +
         `cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} --success ($success.ToString().ToLower())\n` +
         'break\n' +
         '}\n' +
         'command1\n' +
-        'throw "Success"</powershell>',
+        'throw "Success"</powershell>'
     );
-
   });
   test('can create Windows with Signal Command and userDataCausesReplacement', () => {
     // GIVEN
@@ -78,7 +78,7 @@ describe('user data', () => {
     const logicalId = (resource.node.defaultChild as CfnResource).logicalId;
 
     // WHEN
-    userData.addSignalOnExitCommand( resource );
+    userData.addSignalOnExitCommand(resource);
     userData.addCommands('command1');
 
     // THEN
@@ -91,70 +91,71 @@ describe('user data', () => {
     });
     expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552Fdfd505305f427919');
     const rendered = userData.render();
-    expect(rendered).toEqual('<powershell>trap {\n' +
+    expect(rendered).toEqual(
+      '<powershell>trap {\n' +
         '$success=($PSItem.Exception.Message -eq "Success")\n' +
         `cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} --success ($success.ToString().ToLower())\n` +
         'break\n' +
         '}\n' +
         'command1\n' +
-        'throw "Success"</powershell>',
+        'throw "Success"</powershell>'
     );
   });
   test('can windows userdata download S3 files', () => {
     // GIVEN
     const stack = new Stack();
     const userData = ec2.UserData.forWindows();
-    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
-    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
+    const bucket2 = Bucket.fromBucketName(stack, 'testBucket2', 'test2');
 
     // WHEN
     userData.addS3DownloadCommand({
       bucket,
       bucketKey: 'filename.bat',
-    } );
+    });
     userData.addS3DownloadCommand({
       bucket: bucket2,
       bucketKey: 'filename2.bat',
       localFile: 'c:\\test\\location\\otherScript.bat',
-    } );
+    });
 
     // THEN
     const rendered = userData.render();
-    expect(rendered).toEqual('<powershell>mkdir (Split-Path -Path \'C:/temp/filename.bat\' ) -ea 0\n' +
-      'Read-S3Object -BucketName \'test\' -key \'filename.bat\' -file \'C:/temp/filename.bat\' -ErrorAction Stop\n' +
-      'mkdir (Split-Path -Path \'c:\\test\\location\\otherScript.bat\' ) -ea 0\n' +
-      'Read-S3Object -BucketName \'test2\' -key \'filename2.bat\' -file \'c:\\test\\location\\otherScript.bat\' -ErrorAction Stop</powershell>',
+    expect(rendered).toEqual(
+      "<powershell>mkdir (Split-Path -Path 'C:/temp/filename.bat' ) -ea 0\n" +
+        "Read-S3Object -BucketName 'test' -key 'filename.bat' -file 'C:/temp/filename.bat' -ErrorAction Stop\n" +
+        "mkdir (Split-Path -Path 'c:\\test\\location\\otherScript.bat' ) -ea 0\n" +
+        "Read-S3Object -BucketName 'test2' -key 'filename2.bat' -file 'c:\\test\\location\\otherScript.bat' -ErrorAction Stop</powershell>"
     );
-
   });
   test('can windows userdata download S3 files with given region', () => {
     // GIVEN
     const stack = new Stack();
     const userData = ec2.UserData.forWindows();
-    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
-    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
+    const bucket2 = Bucket.fromBucketName(stack, 'testBucket2', 'test2');
 
     // WHEN
     userData.addS3DownloadCommand({
       bucket,
       bucketKey: 'filename.bat',
       region: 'us-east-1',
-    } );
+    });
     userData.addS3DownloadCommand({
       bucket: bucket2,
       bucketKey: 'filename2.bat',
       localFile: 'c:\\test\\location\\otherScript.bat',
       region: 'us-east-1',
-    } );
+    });
 
     // THEN
     const rendered = userData.render();
-    expect(rendered).toEqual('<powershell>mkdir (Split-Path -Path \'C:/temp/filename.bat\' ) -ea 0\n' +
-      'Read-S3Object -BucketName \'test\' -key \'filename.bat\' -file \'C:/temp/filename.bat\' -ErrorAction Stop -Region us-east-1\n' +
-      'mkdir (Split-Path -Path \'c:\\test\\location\\otherScript.bat\' ) -ea 0\n' +
-      'Read-S3Object -BucketName \'test2\' -key \'filename2.bat\' -file \'c:\\test\\location\\otherScript.bat\' -ErrorAction Stop -Region us-east-1</powershell>',
+    expect(rendered).toEqual(
+      "<powershell>mkdir (Split-Path -Path 'C:/temp/filename.bat' ) -ea 0\n" +
+        "Read-S3Object -BucketName 'test' -key 'filename.bat' -file 'C:/temp/filename.bat' -ErrorAction Stop -Region us-east-1\n" +
+        "mkdir (Split-Path -Path 'c:\\test\\location\\otherScript.bat' ) -ea 0\n" +
+        "Read-S3Object -BucketName 'test2' -key 'filename2.bat' -file 'c:\\test\\location\\otherScript.bat' -ErrorAction Stop -Region us-east-1</powershell>"
     );
-
   });
   test('can windows userdata execute files', () => {
     // GIVEN
@@ -163,20 +164,20 @@ describe('user data', () => {
     // WHEN
     userData.addExecuteFileCommand({
       filePath: 'C:\\test\\filename.bat',
-    } );
+    });
     userData.addExecuteFileCommand({
       filePath: 'C:\\test\\filename2.bat',
       arguments: 'arg1 arg2 -arg $variable',
-    } );
+    });
 
     // THEN
     const rendered = userData.render();
-    expect(rendered).toEqual('<powershell>&\'C:\\test\\filename.bat\'\n' +
-      'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename.bat"\' -ErrorAction Stop }\n' +
-      '&\'C:\\test\\filename2.bat\' arg1 arg2 -arg $variable\n' +
-      'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename2.bat"\' -ErrorAction Stop }</powershell>',
+    expect(rendered).toEqual(
+      "<powershell>&'C:\\test\\filename.bat'\n" +
+        'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename.bat"\' -ErrorAction Stop }\n' +
+        "&'C:\\test\\filename2.bat' arg1 arg2 -arg $variable\n" +
+        'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename2.bat"\' -ErrorAction Stop }</powershell>'
     );
-
   });
   test('can persist windows userdata', () => {
     // WHEN
@@ -196,7 +197,6 @@ describe('user data', () => {
     // THEN
     const rendered = userData.render();
     expect(rendered).toEqual('#!/bin/bash\ncommand1\ncommand2');
-
   });
   test('can create Linux user data with commands on exit', () => {
     // GIVEN
@@ -208,7 +208,8 @@ describe('user data', () => {
 
     // THEN
     const rendered = userData.render();
-    expect(rendered).toEqual('#!/bin/bash\n' +
+    expect(rendered).toEqual(
+      '#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
         'onexit1\n' +
@@ -216,8 +217,8 @@ describe('user data', () => {
         '}\n' +
         'trap exitTrap EXIT\n' +
         'command1\n' +
-        'command2');
-
+        'command2'
+    );
   });
   test('can create Linux with Signal Command', () => {
     // GIVEN
@@ -228,19 +229,20 @@ describe('user data', () => {
     // WHEN
     const userData = ec2.UserData.forLinux();
     userData.addCommands('command1');
-    userData.addSignalOnExitCommand( resource );
+    userData.addSignalOnExitCommand(resource);
 
     // THEN
     const rendered = userData.render();
     expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552F');
-    expect(rendered).toEqual('#!/bin/bash\n' +
+    expect(rendered).toEqual(
+      '#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
         `/opt/aws/bin/cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
         '}\n' +
         'trap exitTrap EXIT\n' +
-        'command1');
-
+        'command1'
+    );
   });
   test('can create Linux with Signal Command and userDataCausesReplacement', () => {
     // GIVEN
@@ -258,7 +260,7 @@ describe('user data', () => {
     const logicalId = (resource.node.defaultChild as CfnResource).logicalId;
 
     // WHEN
-    userData.addSignalOnExitCommand( resource );
+    userData.addSignalOnExitCommand(resource);
     userData.addCommands('command1');
 
     // THEN
@@ -271,71 +273,73 @@ describe('user data', () => {
     });
     expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552F74a24ef4fbc89422');
     const rendered = userData.render();
-    expect(rendered).toEqual('#!/bin/bash\n' +
+    expect(rendered).toEqual(
+      '#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
         `/opt/aws/bin/cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
         '}\n' +
         'trap exitTrap EXIT\n' +
-        'command1');
+        'command1'
+    );
   });
   test('can linux userdata download S3 files', () => {
     // GIVEN
     const stack = new Stack();
     const userData = ec2.UserData.forLinux();
-    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
-    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
+    const bucket2 = Bucket.fromBucketName(stack, 'testBucket2', 'test2');
 
     // WHEN
     userData.addS3DownloadCommand({
       bucket,
       bucketKey: 'filename.sh',
-    } );
+    });
     userData.addS3DownloadCommand({
       bucket: bucket2,
       bucketKey: 'filename2.sh',
       localFile: 'c:\\test\\location\\otherScript.sh',
-    } );
+    });
 
     // THEN
     const rendered = userData.render();
-    expect(rendered).toEqual('#!/bin/bash\n' +
-      'mkdir -p $(dirname \'/tmp/filename.sh\')\n' +
-      'aws s3 cp \'s3://test/filename.sh\' \'/tmp/filename.sh\'\n' +
-      'mkdir -p $(dirname \'c:\\test\\location\\otherScript.sh\')\n' +
-      'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\'',
+    expect(rendered).toEqual(
+      '#!/bin/bash\n' +
+        "mkdir -p $(dirname '/tmp/filename.sh')\n" +
+        "aws s3 cp 's3://test/filename.sh' '/tmp/filename.sh'\n" +
+        "mkdir -p $(dirname 'c:\\test\\location\\otherScript.sh')\n" +
+        "aws s3 cp 's3://test2/filename2.sh' 'c:\\test\\location\\otherScript.sh'"
     );
-
   });
   test('can linux userdata download S3 files from specific region', () => {
     // GIVEN
     const stack = new Stack();
     const userData = ec2.UserData.forLinux();
-    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
-    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
+    const bucket2 = Bucket.fromBucketName(stack, 'testBucket2', 'test2');
 
     // WHEN
     userData.addS3DownloadCommand({
       bucket,
       bucketKey: 'filename.sh',
       region: 'us-east-1',
-    } );
+    });
     userData.addS3DownloadCommand({
       bucket: bucket2,
       bucketKey: 'filename2.sh',
       localFile: 'c:\\test\\location\\otherScript.sh',
       region: 'us-east-1',
-    } );
+    });
 
     // THEN
     const rendered = userData.render();
-    expect(rendered).toEqual('#!/bin/bash\n' +
-      'mkdir -p $(dirname \'/tmp/filename.sh\')\n' +
-      'aws s3 cp \'s3://test/filename.sh\' \'/tmp/filename.sh\' --region us-east-1\n' +
-      'mkdir -p $(dirname \'c:\\test\\location\\otherScript.sh\')\n' +
-      'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\' --region us-east-1',
+    expect(rendered).toEqual(
+      '#!/bin/bash\n' +
+        "mkdir -p $(dirname '/tmp/filename.sh')\n" +
+        "aws s3 cp 's3://test/filename.sh' '/tmp/filename.sh' --region us-east-1\n" +
+        "mkdir -p $(dirname 'c:\\test\\location\\otherScript.sh')\n" +
+        "aws s3 cp 's3://test2/filename2.sh' 'c:\\test\\location\\otherScript.sh' --region us-east-1"
     );
-
   });
   test('can linux userdata execute files', () => {
     // GIVEN
@@ -344,23 +348,23 @@ describe('user data', () => {
     // WHEN
     userData.addExecuteFileCommand({
       filePath: '/tmp/filename.sh',
-    } );
+    });
     userData.addExecuteFileCommand({
       filePath: '/test/filename2.sh',
       arguments: 'arg1 arg2 -arg $variable',
-    } );
+    });
 
     // THEN
     const rendered = userData.render();
-    expect(rendered).toEqual('#!/bin/bash\n' +
-      'set -e\n' +
-      'chmod +x \'/tmp/filename.sh\'\n' +
-      '\'/tmp/filename.sh\'\n' +
-      'set -e\n' +
-      'chmod +x \'/test/filename2.sh\'\n' +
-      '\'/test/filename2.sh\' arg1 arg2 -arg $variable',
+    expect(rendered).toEqual(
+      '#!/bin/bash\n' +
+        'set -e\n' +
+        "chmod +x '/tmp/filename.sh'\n" +
+        "'/tmp/filename.sh'\n" +
+        'set -e\n' +
+        "chmod +x '/test/filename2.sh'\n" +
+        "'/test/filename2.sh' arg1 arg2 -arg $variable"
     );
-
   });
   test('can create Custom user data', () => {
     // GIVEN
@@ -371,7 +375,6 @@ describe('user data', () => {
     // THEN
     const rendered = userData.render();
     expect(rendered).toEqual('Some\nmultiline\ncontent');
-
   });
   test('Custom user data throws when adding on exit commands', () => {
     // GIVEN
@@ -379,8 +382,7 @@ describe('user data', () => {
     const userData = ec2.UserData.custom('');
 
     // THEN
-    expect(() => userData.addOnExitCommands( 'a command goes here' )).toThrow();
-
+    expect(() => userData.addOnExitCommands('a command goes here')).toThrow();
   });
   test('Custom user data throws when adding signal command', () => {
     // GIVEN
@@ -391,21 +393,21 @@ describe('user data', () => {
     const userData = ec2.UserData.custom('');
 
     // THEN
-    expect(() => userData.addSignalOnExitCommand( resource )).toThrow();
-
+    expect(() => userData.addSignalOnExitCommand(resource)).toThrow();
   });
   test('Custom user data throws when downloading file', () => {
     // GIVEN
     const stack = new Stack();
     const userData = ec2.UserData.custom('');
-    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
     // WHEN
     // THEN
-    expect(() => userData.addS3DownloadCommand({
-      bucket,
-      bucketKey: 'filename.sh',
-    })).toThrow();
-
+    expect(() =>
+      userData.addS3DownloadCommand({
+        bucket,
+        bucketKey: 'filename.sh',
+      })
+    ).toThrow();
   });
   test('Custom user data throws when executing file', () => {
     // GIVEN
@@ -415,8 +417,8 @@ describe('user data', () => {
     expect(() =>
       userData.addExecuteFileCommand({
         filePath: '/tmp/filename.sh',
-      })).toThrow();
-
+      })
+    ).toThrow();
   });
 
   test('Linux user rendering multipart headers', () => {
@@ -442,32 +444,34 @@ describe('user data', () => {
       '',
       { 'Fn::Base64': '#!/bin/bash\necho \"Hello world\"' },
     ]);
-
   });
 
   test('Default parts separator used, if not specified', () => {
     // GIVEN
     const multipart = new ec2.MultipartUserData();
 
-    multipart.addPart(ec2.MultipartBody.fromRawBody({
-      contentType: 'CT',
-    }));
+    multipart.addPart(
+      ec2.MultipartBody.fromRawBody({
+        contentType: 'CT',
+      })
+    );
 
     // WHEN
     const out = multipart.render();
 
     // WHEN
-    expect(out).toEqual([
-      'Content-Type: multipart/mixed; boundary=\"+AWS+CDK+User+Data+Separator==\"',
-      'MIME-Version: 1.0',
-      '',
-      '--+AWS+CDK+User+Data+Separator==',
-      'Content-Type: CT',
-      '',
-      '--+AWS+CDK+User+Data+Separator==--',
-      '',
-    ].join('\n'));
-
+    expect(out).toEqual(
+      [
+        'Content-Type: multipart/mixed; boundary=\"+AWS+CDK+User+Data+Separator==\"',
+        'MIME-Version: 1.0',
+        '',
+        '--+AWS+CDK+User+Data+Separator==',
+        'Content-Type: CT',
+        '',
+        '--+AWS+CDK+User+Data+Separator==--',
+        '',
+      ].join('\n')
+    );
   });
 
   test('Non-default parts separator used, if not specified', () => {
@@ -476,25 +480,28 @@ describe('user data', () => {
       partsSeparator: '//',
     });
 
-    multipart.addPart(ec2.MultipartBody.fromRawBody({
-      contentType: 'CT',
-    }));
+    multipart.addPart(
+      ec2.MultipartBody.fromRawBody({
+        contentType: 'CT',
+      })
+    );
 
     // WHEN
     const out = multipart.render();
 
     // WHEN
-    expect(out).toEqual([
-      'Content-Type: multipart/mixed; boundary=\"//\"',
-      'MIME-Version: 1.0',
-      '',
-      '--//',
-      'Content-Type: CT',
-      '',
-      '--//--',
-      '',
-    ].join('\n'));
-
+    expect(out).toEqual(
+      [
+        'Content-Type: multipart/mixed; boundary=\"//\"',
+        'MIME-Version: 1.0',
+        '',
+        '--//',
+        'Content-Type: CT',
+        '',
+        '--//--',
+        '',
+      ].join('\n')
+    );
   });
 
   test('Multipart separator validation', () => {
@@ -504,12 +511,13 @@ describe('user data', () => {
       partsSeparator: 'a-zA-Z0-9()+,-./:=?',
     });
 
-    [' ', '\n', '\r', '[', ']', '<', '>', '違う'].forEach(s => expect(() => {
-      new ec2.MultipartUserData({
-        partsSeparator: s,
-      });
-    }).toThrow(/Invalid characters in separator/));
-
+    [' ', '\n', '\r', '[', ']', '<', '>', '違う'].forEach((s) =>
+      expect(() => {
+        new ec2.MultipartUserData({
+          partsSeparator: s,
+        });
+      }).toThrow(/Invalid characters in separator/)
+    );
   });
 
   test('Multipart user data throws when adding on exit commands', () => {
@@ -518,8 +526,7 @@ describe('user data', () => {
     const userData = new ec2.MultipartUserData();
 
     // THEN
-    expect(() => userData.addOnExitCommands( 'a command goes here' )).toThrow();
-
+    expect(() => userData.addOnExitCommands('a command goes here')).toThrow();
   });
   test('Multipart user data throws when adding signal command', () => {
     // GIVEN
@@ -530,21 +537,21 @@ describe('user data', () => {
     const userData = new ec2.MultipartUserData();
 
     // THEN
-    expect(() => userData.addSignalOnExitCommand( resource )).toThrow();
-
+    expect(() => userData.addSignalOnExitCommand(resource)).toThrow();
   });
   test('Multipart user data throws when downloading file', () => {
     // GIVEN
     const stack = new Stack();
     const userData = new ec2.MultipartUserData();
-    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
     // WHEN
     // THEN
-    expect(() => userData.addS3DownloadCommand({
-      bucket,
-      bucketKey: 'filename.sh',
-    } )).toThrow();
-
+    expect(() =>
+      userData.addS3DownloadCommand({
+        bucket,
+        bucketKey: 'filename.sh',
+      })
+    ).toThrow();
   });
   test('Multipart user data throws when executing file', () => {
     // GIVEN
@@ -555,8 +562,8 @@ describe('user data', () => {
     expect(() =>
       userData.addExecuteFileCommand({
         filePath: '/tmp/filename.sh',
-      } )).toThrow();
-
+      })
+    ).toThrow();
   });
 
   test('can add commands to Multipart user data', () => {
@@ -595,7 +602,6 @@ describe('user data', () => {
         ],
       ],
     });
-
   });
   test('can add commands on exit to Multipart user data', () => {
     // GIVEN
@@ -609,15 +615,16 @@ describe('user data', () => {
     userData.addOnExitCommands('onexit1', 'onexit2');
 
     // THEN
-    const expectedInner = '#!/bin/bash\n' +
-    'function exitTrap(){\n' +
-    'exitCode=$?\n' +
-    'onexit1\n' +
-    'onexit2\n' +
-    '}\n' +
-    'trap exitTrap EXIT\n' +
-    'command1\n' +
-    'command2';
+    const expectedInner =
+      '#!/bin/bash\n' +
+      'function exitTrap(){\n' +
+      'exitCode=$?\n' +
+      'onexit1\n' +
+      'onexit2\n' +
+      '}\n' +
+      'trap exitTrap EXIT\n' +
+      'command1\n' +
+      'command2';
     const rendered = stack.resolve(innerUserData.render());
     expect(rendered).toEqual(expectedInner);
     const out = stack.resolve(userData.render());
@@ -642,7 +649,6 @@ describe('user data', () => {
         ],
       ],
     });
-
   });
   test('can add Signal Command to Multipart user data', () => {
     // GIVEN
@@ -654,16 +660,18 @@ describe('user data', () => {
     // WHEN
     userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
     userData.addCommands('command1');
-    userData.addSignalOnExitCommand( resource );
+    userData.addSignalOnExitCommand(resource);
 
     // THEN
-    const expectedInner = stack.resolve('#!/bin/bash\n' +
-    'function exitTrap(){\n' +
-    'exitCode=$?\n' +
-    `/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
-    '}\n' +
-    'trap exitTrap EXIT\n' +
-    'command1');
+    const expectedInner = stack.resolve(
+      '#!/bin/bash\n' +
+        'function exitTrap(){\n' +
+        'exitCode=$?\n' +
+        `/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
+        '}\n' +
+        'trap exitTrap EXIT\n' +
+        'command1'
+    );
     const rendered = stack.resolve(innerUserData.render());
     expect(rendered).toEqual(expectedInner);
     const out = stack.resolve(userData.render());
@@ -688,34 +696,34 @@ describe('user data', () => {
         ],
       ],
     });
-
   });
   test('can add download S3 files to Multipart user data', () => {
     // GIVEN
     const stack = new Stack();
     const innerUserData = ec2.UserData.forLinux();
     const userData = new ec2.MultipartUserData();
-    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
-    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
+    const bucket2 = Bucket.fromBucketName(stack, 'testBucket2', 'test2');
 
     // WHEN
     userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
     userData.addS3DownloadCommand({
       bucket,
       bucketKey: 'filename.sh',
-    } );
+    });
     userData.addS3DownloadCommand({
       bucket: bucket2,
       bucketKey: 'filename2.sh',
       localFile: 'c:\\test\\location\\otherScript.sh',
-    } );
+    });
 
     // THEN
-    const expectedInner = '#!/bin/bash\n' +
-    'mkdir -p $(dirname \'/tmp/filename.sh\')\n' +
-    'aws s3 cp \'s3://test/filename.sh\' \'/tmp/filename.sh\'\n' +
-    'mkdir -p $(dirname \'c:\\test\\location\\otherScript.sh\')\n' +
-    'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\'';
+    const expectedInner =
+      '#!/bin/bash\n' +
+      "mkdir -p $(dirname '/tmp/filename.sh')\n" +
+      "aws s3 cp 's3://test/filename.sh' '/tmp/filename.sh'\n" +
+      "mkdir -p $(dirname 'c:\\test\\location\\otherScript.sh')\n" +
+      "aws s3 cp 's3://test2/filename2.sh' 'c:\\test\\location\\otherScript.sh'";
     const rendered = stack.resolve(innerUserData.render());
     expect(rendered).toEqual(expectedInner);
     const out = stack.resolve(userData.render());
@@ -740,7 +748,6 @@ describe('user data', () => {
         ],
       ],
     });
-
   });
   test('can add execute files to Multipart user data', () => {
     // GIVEN
@@ -752,20 +759,21 @@ describe('user data', () => {
     userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
     userData.addExecuteFileCommand({
       filePath: '/tmp/filename.sh',
-    } );
+    });
     userData.addExecuteFileCommand({
       filePath: '/test/filename2.sh',
       arguments: 'arg1 arg2 -arg $variable',
-    } );
+    });
 
     // THEN
-    const expectedInner = '#!/bin/bash\n' +
-    'set -e\n' +
-    'chmod +x \'/tmp/filename.sh\'\n' +
-    '\'/tmp/filename.sh\'\n' +
-    'set -e\n' +
-    'chmod +x \'/test/filename2.sh\'\n' +
-    '\'/test/filename2.sh\' arg1 arg2 -arg $variable';
+    const expectedInner =
+      '#!/bin/bash\n' +
+      'set -e\n' +
+      "chmod +x '/tmp/filename.sh'\n" +
+      "'/tmp/filename.sh'\n" +
+      'set -e\n' +
+      "chmod +x '/test/filename2.sh'\n" +
+      "'/test/filename2.sh' arg1 arg2 -arg $variable";
     const rendered = stack.resolve(innerUserData.render());
     expect(rendered).toEqual(expectedInner);
     const out = stack.resolve(userData.render());
@@ -790,6 +798,5 @@ describe('user data', () => {
         ],
       ],
     });
-
   });
 });

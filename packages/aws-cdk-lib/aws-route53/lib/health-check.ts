@@ -240,11 +240,7 @@ export class HealthCheck extends Resource implements IHealthCheck {
    * @param healthCheckId ID of the health check.
    * @returns a reference to the existing health check.
    */
-  public static fromHealthCheckId(
-    scope: Construct,
-    id: string,
-    healthCheckId: string
-  ): IHealthCheck {
+  public static fromHealthCheckId(scope: Construct, id: string, healthCheckId: string): IHealthCheck {
     class Import extends Resource implements IHealthCheck {
       public readonly healthCheckId = healthCheckId;
     }
@@ -269,24 +265,20 @@ export class HealthCheck extends Resource implements IHealthCheck {
       healthCheckConfig: {
         type: props.type,
         alarmIdentifier: props.alarmIdentifier,
-        childHealthChecks: props.childHealthChecks?.map(
-          (childHealthCheck) => childHealthCheck.healthCheckId
-        ),
+        childHealthChecks: props.childHealthChecks?.map((childHealthCheck) => childHealthCheck.healthCheckId),
         enableSni: props.enableSNI ?? getDefaultEnableSNIForType(props.type),
         failureThreshold: props.failureThreshold ?? getDefaultFailureThresholdForType(props.type),
         fullyQualifiedDomainName: props.fqdn,
         healthThreshold: props.healthThreshold ?? getDefaultHealthThresholdForType(props),
         insufficientDataHealthStatus:
-          props.insufficientDataHealthStatus ??
-          getDefaultInsufficientDataHealthStatusForType(props.type),
+          props.insufficientDataHealthStatus ?? getDefaultInsufficientDataHealthStatusForType(props.type),
         inverted: props.inverted ?? false,
         ipAddress: props.ipAddress,
         measureLatency: props.measureLatency ?? getDefaultMeasureLatencyForType(props.type),
         port: props.port ?? getDefaultPortForType(props.type),
         regions: props.regions,
         requestInterval:
-          props.requestInterval?.toSeconds() ??
-          getDefaultRequestIntervalForType(props.type)?.toSeconds(),
+          props.requestInterval?.toSeconds() ?? getDefaultRequestIntervalForType(props.type)?.toSeconds(),
         resourcePath: props.resourcePath ?? getDefaultResourcePathForType(props.type),
         routingControlArn: props.routingControl,
         searchString: props.searchString,

@@ -8,7 +8,9 @@ test('Default cloudwatch metric action', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'"),
+    sql: iot.IotSql.fromStringAsVer20160323(
+      "SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'"
+    ),
   });
 
   // WHEN
@@ -18,7 +20,7 @@ test('Default cloudwatch metric action', () => {
       metricNamespace: '${namespace}',
       metricUnit: '${unit}',
       metricValue: '${value}',
-    }),
+    })
   );
 
   // THEN
@@ -75,7 +77,9 @@ test('can set timestamp', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'"),
+    sql: iot.IotSql.fromStringAsVer20160323(
+      "SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'"
+    ),
   });
 
   // WHEN
@@ -86,15 +90,13 @@ test('can set timestamp', () => {
       metricUnit: '${unit}',
       metricValue: '${value}',
       metricTimestamp: '${timestamp()}',
-    }),
+    })
   );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ CloudwatchMetric: { MetricTimestamp: '${timestamp()}' } }),
-      ],
+      Actions: [Match.objectLike({ CloudwatchMetric: { MetricTimestamp: '${timestamp()}' } })],
     },
   });
 });
@@ -103,7 +105,9 @@ test('can set role', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'"),
+    sql: iot.IotSql.fromStringAsVer20160323(
+      "SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'"
+    ),
   });
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
@@ -115,15 +119,13 @@ test('can set role', () => {
       metricUnit: '${unit}',
       metricValue: '${value}',
       role,
-    }),
+    })
   );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ CloudwatchMetric: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
-      ],
+      Actions: [Match.objectLike({ CloudwatchMetric: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } })],
     },
   });
 

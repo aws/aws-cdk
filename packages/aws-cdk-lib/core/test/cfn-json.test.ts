@@ -2,7 +2,6 @@ import { App, CfnResource, Lazy, Stack } from '../lib';
 import { CfnJson } from '../lib/cfn-json';
 
 describe('cfn json', () => {
-
   test('resolves to a fn::getatt', () => {
     // GIVEN
     const app = new App();
@@ -64,7 +63,7 @@ describe('cfn json', () => {
     const str = JSON.stringify(cfnjson);
 
     // THEN
-    expect(typeof(str)).toEqual('string');
+    expect(typeof str).toEqual('string');
     expect(stack.resolve(str)).toEqual({
       'Fn::Join': ['', ['"{"ref=', { Ref: 'MyResource' }, '":"this is a I am lazy"}"']],
     });

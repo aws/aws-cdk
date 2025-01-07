@@ -6,7 +6,17 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { Asset } from '../../aws-s3-assets';
-import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '../../core';
+import {
+  AssetStaging,
+  App,
+  Aws,
+  CfnResource,
+  Stack,
+  DefaultStackSynthesizer,
+  IStackSynthesizer,
+  FileAssetSource,
+  FileAssetLocation,
+} from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ec2 from '../lib';
 
@@ -41,7 +51,7 @@ function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
     type: 'CDK::Test::Resource',
   });
   linuxUserData = ec2.UserData.forLinux();
-};
+}
 
 beforeEach(resetState);
 
@@ -57,22 +67,24 @@ test('whole config with restart handles', () => {
   ]);
 
   // THEN
-  expect(config._bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
-    services: {
-      sysvinit: {
-        httpd: {
-          enabled: true,
-          ensureRunning: true,
-          commands: ['000'],
-          files: ['/etc/my.cnf'],
-          packages: {
-            yum: ['httpd'],
+  expect(config._bind(stack, linuxOptions()).config).toEqual(
+    expect.objectContaining({
+      services: {
+        sysvinit: {
+          httpd: {
+            enabled: true,
+            ensureRunning: true,
+            commands: ['000'],
+            files: ['/etc/my.cnf'],
+            packages: {
+              yum: ['httpd'],
+            },
+            sources: ['/tmp/foo'],
           },
-          sources: ['/tmp/foo'],
         },
       },
-    },
-  }));
+    })
+  );
 });
 
 test('CloudFormationInit can be added to after instantiation', () => {
@@ -104,15 +116,15 @@ test('CloudFormationInit cannot be attached twice', () => {
   init.attach(resource, linuxOptions());
 
   // THEN
-  expect(() => { init.attach(resource, linuxOptions()); }).toThrow(/already has/);
+  expect(() => {
+    init.attach(resource, linuxOptions());
+  }).toThrow(/already has/);
 });
 
 test('empty configs are not rendered', () => {
   // GIVEN
   const config1 = new ec2.InitConfig([]);
-  const config2 = new ec2.InitConfig([
-    ec2.InitCommand.argvCommand(['/bin/true']),
-  ]);
+  const config2 = new ec2.InitConfig([ec2.InitCommand.argvCommand(['/bin/true'])]);
 
   // WHEN
   const init = ec2.CloudFormationInit.fromConfigSets({
@@ -139,12 +151,8 @@ test('empty configs are not rendered', () => {
 test('duplicate config arguments not deduplicated', () => {
   //GIVEN
   const config = new ec2.InitConfig([
-    ec2.InitCommand.argvCommand([
-      'useradd', '-u', '1001', '-g', '1001', 'eguser',
-    ]),
-    ec2.InitCommand.argvCommand([
-      'useradd', '-a', '-u', '1001', '-g', '1001', 'eguser',
-    ]),
+    ec2.InitCommand.argvCommand(['useradd', '-u', '1001', '-g', '1001', 'eguser']),
+    ec2.InitCommand.argvCommand(['useradd', '-a', '-u', '1001', '-g', '1001', 'eguser']),
   ]);
 
   // WHEN
@@ -188,22 +196,22 @@ test('deepMerge properly deduplicates non-command arguments', () => {
   ]);
 
   // THEN
-  expect(config._bind(stack, linuxOptions()).config).toEqual(expect.objectContaining({
-    sources: {
-      '/tmp/blinky': 'https://amazon.com/blinky.zip',
-      '/tmp/pinky': 'https://amazon.com/pinky.zip',
-      '/tmp/inky': 'https://amazon.com/inky.zip',
-      '/tmp/clyde': 'https://amazon.com/blinky.zip',
-    },
-  }));
+  expect(config._bind(stack, linuxOptions()).config).toEqual(
+    expect.objectContaining({
+      sources: {
+        '/tmp/blinky': 'https://amazon.com/blinky.zip',
+        '/tmp/pinky': 'https://amazon.com/pinky.zip',
+        '/tmp/inky': 'https://amazon.com/inky.zip',
+        '/tmp/clyde': 'https://amazon.com/blinky.zip',
+      },
+    })
+  );
 });
 
 describe('userdata', () => {
   let simpleInit: ec2.CloudFormationInit;
   beforeEach(() => {
-    simpleInit = ec2.CloudFormationInit.fromElements(
-      ec2.InitCommand.argvCommand(['/bin/true']),
-    );
+    simpleInit = ec2.CloudFormationInit.fromElements(ec2.InitCommand.argvCommand(['/bin/true']));
   });
 
   function linuxUserDataTest(signalLogicalId: string) {
@@ -220,10 +228,7 @@ describe('userdata', () => {
     expectLine(lines, /fingerprint/);
   }
 
-  function windowsUserDataTest(
-    windowsUserData: ec2.UserData,
-    signalLogicalId: string,
-  ) {
+  function windowsUserDataTest(windowsUserData: ec2.UserData, signalLogicalId: string) {
     const lines = windowsUserData.render().split('\n');
     expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
     expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
@@ -368,37 +373,28 @@ const ASSET_STATEMENT = {
   Effect: 'Allow',
   Resource: [
     {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':s3:::',
-        { Ref: stringLike(/AssetParameter.*S3Bucket.*/) },
-      ]],
+      'Fn::Join': [
+        '',
+        ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: stringLike(/AssetParameter.*S3Bucket.*/) }],
+      ],
     },
     {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':s3:::',
-        { Ref: stringLike(/AssetParameter.*S3Bucket.*/) },
-        '/*',
-      ]],
+      'Fn::Join': [
+        '',
+        ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: stringLike(/AssetParameter.*S3Bucket.*/) }, '/*'],
+      ],
     },
   ],
 };
 
 describe('assets n buckets', () => {
-
-  test.each([
-    ['Existing'],
-    [''],
-  ])('InitFile.from%sAsset', (existing: string) => {
+  test.each([['Existing'], ['']])('InitFile.from%sAsset', (existing: string) => {
     // GIVEN
     const asset = new Asset(stack, 'Asset', { path: __filename });
     const init = ec2.CloudFormationInit.fromElements(
       existing
         ? ec2.InitFile.fromExistingAsset('/etc/fun.js', asset)
-        : ec2.InitFile.fromAsset('/etc/fun.js', __filename),
+        : ec2.InitFile.fromAsset('/etc/fun.js', __filename)
     );
 
     // WHEN
@@ -417,15 +413,18 @@ describe('assets n buckets', () => {
           files: {
             '/etc/fun.js': {
               source: {
-                'Fn::Join': ['', [
-                  'https://s3.testregion.',
-                  { Ref: 'AWS::URLSuffix' },
-                  '/',
-                  { Ref: stringLike(/AssetParameters.*/) },
-                  '/',
-                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
-                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'https://s3.testregion.',
+                    { Ref: 'AWS::URLSuffix' },
+                    '/',
+                    { Ref: stringLike(/AssetParameters.*/) },
+                    '/',
+                    { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
+                    { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
+                  ],
+                ],
               },
             },
           },
@@ -435,24 +434,19 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: [
-            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
-          ],
+          buckets: [{ Ref: stringLike(/AssetParameters.*S3Bucket.*/) }],
         },
       },
     });
   });
 
-  test.each([
-    ['Existing'],
-    [''],
-  ])('InitSource.from%sAsset', (existing: string) => {
+  test.each([['Existing'], ['']])('InitSource.from%sAsset', (existing: string) => {
     // GIVEN
     const asset = new Asset(stack, 'Asset', { path: path.join(__dirname, 'asset-fixture') });
     const init = ec2.CloudFormationInit.fromElements(
       existing
         ? ec2.InitSource.fromExistingAsset('/etc/fun', asset)
-        : ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture')),
+        : ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture'))
     );
 
     // WHEN
@@ -470,15 +464,18 @@ describe('assets n buckets', () => {
         config: {
           sources: {
             '/etc/fun': {
-              'Fn::Join': ['', [
-                'https://s3.testregion.',
-                { Ref: 'AWS::URLSuffix' },
-                '/',
-                { Ref: stringLike(/AssetParameters.*/) },
-                '/',
-                { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
-                { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'https://s3.testregion.',
+                  { Ref: 'AWS::URLSuffix' },
+                  '/',
+                  { Ref: stringLike(/AssetParameters.*/) },
+                  '/',
+                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
+                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
+                ],
+              ],
             },
           },
         },
@@ -487,9 +484,7 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: [
-            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
-          ],
+          buckets: [{ Ref: stringLike(/AssetParameters.*S3Bucket.*/) }],
         },
       },
     });
@@ -497,9 +492,7 @@ describe('assets n buckets', () => {
 
   test('InitFile.fromS3Object', () => {
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
-    const init = ec2.CloudFormationInit.fromElements(
-      ec2.InitFile.fromS3Object('/etc/fun.js', bucket, 'file.js'),
-    );
+    const init = ec2.CloudFormationInit.fromElements(ec2.InitFile.fromS3Object('/etc/fun.js', bucket, 'file.js'));
 
     // WHEN
     init.attach(resource, linuxOptions());
@@ -507,14 +500,16 @@ describe('assets n buckets', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-          Effect: 'Allow',
-          Resource: [
-            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
-            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.js']] },
-          ],
-        }]),
+        Statement: Match.arrayWith([
+          {
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.js']] },
+            ],
+          },
+        ]),
         Version: '2012-10-17',
       },
     });
@@ -540,9 +535,7 @@ describe('assets n buckets', () => {
 
   test('InitSource.fromS3Object', () => {
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
-    const init = ec2.CloudFormationInit.fromElements(
-      ec2.InitSource.fromS3Object('/etc/fun', bucket, 'file.zip'),
-    );
+    const init = ec2.CloudFormationInit.fromElements(ec2.InitSource.fromS3Object('/etc/fun', bucket, 'file.zip'));
 
     // WHEN
     init.attach(resource, linuxOptions());
@@ -550,14 +543,16 @@ describe('assets n buckets', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-          Effect: 'Allow',
-          Resource: [
-            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
-            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.zip']] },
-          ],
-        }]),
+        Statement: Match.arrayWith([
+          {
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.zip']] },
+            ],
+          },
+        ]),
         Version: '2012-10-17',
       },
     });
@@ -565,7 +560,9 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Init': {
         config: {
           sources: {
-            '/etc/fun': { 'Fn::Join': ['', ['https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.zip']] },
+            '/etc/fun': {
+              'Fn::Join': ['', ['https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.zip']],
+            },
           },
         },
       },
@@ -583,7 +580,7 @@ describe('assets n buckets', () => {
     // GIVEN
     const init = ec2.CloudFormationInit.fromElements(
       ec2.InitFile.fromAsset('/etc/fun.js', __filename),
-      ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture')),
+      ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture'))
     );
 
     // WHEN
@@ -595,9 +592,7 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: Match.arrayWith([
-            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
-          ]),
+          buckets: Match.arrayWith([{ Ref: stringLike(/AssetParameters.*S3Bucket.*/) }]),
         },
       },
     });
@@ -608,7 +603,7 @@ describe('assets n buckets', () => {
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
     const init = ec2.CloudFormationInit.fromElements(
       ec2.InitFile.fromS3Object('/etc/fun.js', bucket, 'file.js'),
-      ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture')),
+      ec2.InitSource.fromAsset('/etc/fun', path.join(__dirname, 'asset-fixture'))
     );
 
     // WHEN
@@ -620,10 +615,7 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: Match.arrayWith([
-            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
-            'my-bucket',
-          ]),
+          buckets: Match.arrayWith([{ Ref: stringLike(/AssetParameters.*S3Bucket.*/) }, 'my-bucket']),
         },
       },
     });
@@ -633,12 +625,13 @@ describe('assets n buckets', () => {
     function calculateFingerprint(assetFilePath: string): string | undefined {
       resetState(); // Needed so the same resources/assets/filenames can be used.
       AssetStaging.clearAssetHashCache(); // Needed so changing the content of the file will update the hash
-      const init = ec2.CloudFormationInit.fromElements(
-        ec2.InitFile.fromAsset('/etc/myFile', assetFilePath),
-      );
+      const init = ec2.CloudFormationInit.fromElements(ec2.InitFile.fromAsset('/etc/myFile', assetFilePath));
       init.attach(resource, linuxOptions());
 
-      return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
+      return linuxUserData
+        .render()
+        .split('\n')
+        .find((line) => line.match(/# fingerprint:/));
     }
 
     // Setup initial asset file
@@ -664,11 +657,14 @@ describe('assets n buckets', () => {
       resetStateWithSynthesizer(new SingletonLocationSythesizer());
       AssetStaging.clearAssetHashCache(); // Needed so changing the content of the file will update the hash
       const init = ec2.CloudFormationInit.fromElements(
-        ec2.InitFile.fromExistingAsset('/etc/myFile', new Asset(stack, 'FileAsset', { path: assetFilePath })),
+        ec2.InitFile.fromExistingAsset('/etc/myFile', new Asset(stack, 'FileAsset', { path: assetFilePath }))
       );
       init.attach(resource, linuxOptions());
 
-      return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
+      return linuxUserData
+        .render()
+        .split('\n')
+        .find((line) => line.match(/# fingerprint:/));
     }
 
     // Setup initial asset file
@@ -706,7 +702,9 @@ function expectMetadataLike(pattern: any) {
 
 function expectLine(lines: string[], re: RegExp) {
   for (const line of lines) {
-    if (re.test(line)) { return; }
+    if (re.test(line)) {
+      return;
+    }
   }
 
   throw new Error(`None of the lines matched '${re}': ${lines.join('\n')}`);

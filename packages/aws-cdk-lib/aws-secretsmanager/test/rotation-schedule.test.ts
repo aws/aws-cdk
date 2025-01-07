@@ -32,10 +32,7 @@ test('create a rotation schedule with a rotation Lambda', () => {
       Ref: 'SecretA720EF05',
     },
     RotationLambdaARN: {
-      'Fn::GetAtt': [
-        'LambdaD247545B',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['LambdaD247545B', 'Arn'],
     },
     RotationRules: {
       ScheduleExpression: 'rate(30 days)',
@@ -90,10 +87,7 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
-      'Fn::GetAtt': [
-        'LambdaD247545B',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['LambdaD247545B', 'Arn'],
     },
     Principal: 'secretsmanager.amazonaws.com',
   });
@@ -158,15 +152,18 @@ test('grants correct permissions for secret imported by name', () => {
           ],
           Effect: 'Allow',
           Resource: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':secretsmanager:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':secret:mySecretName-??????',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':secretsmanager:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':secret:mySecretName-??????',
+              ],
+            ],
           },
         },
       ]),
@@ -200,14 +197,12 @@ test('assign kms permissions for rotation schedule with a rotation Lambda', () =
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [Match.anyValue(), Match.anyValue(), Match.anyValue(),
+      Statement: [
+        Match.anyValue(),
+        Match.anyValue(),
+        Match.anyValue(),
         {
-          Action: [
-            'kms:Decrypt',
-            'kms:Encrypt',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-          ],
+          Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
           Condition: {
             StringEquals: {
               'kms:ViaService': {
@@ -227,14 +222,12 @@ test('assign kms permissions for rotation schedule with a rotation Lambda', () =
           Effect: 'Allow',
           Principal: {
             AWS: {
-              'Fn::GetAtt': [
-                'LambdaServiceRoleA8ED4D3B',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['LambdaServiceRoleA8ED4D3B', 'Arn'],
             },
           },
           Resource: '*',
-        }],
+        },
+      ],
     },
   });
 });
@@ -258,16 +251,18 @@ describe('hosted rotation', () => {
       },
       HostedRotationLambda: {
         RotationType: 'MySQLSingleUser',
-        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+        ExcludeCharacters: ' %+~`#$&*()|[]{}:;<>?!\'/@"\\',
       },
       RotationRules: {
         ScheduleExpression: 'rate(30 days)',
       },
     });
 
-    expect(app.synth().getStackByName(stack.stackName).template).toEqual(expect.objectContaining({
-      Transform: 'AWS::SecretsManager-2020-07-23',
-    }));
+    expect(app.synth().getStackByName(stack.stackName).template).toEqual(
+      expect.objectContaining({
+        Transform: 'AWS::SecretsManager-2020-07-23',
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
       ResourcePolicy: {
@@ -390,10 +385,7 @@ describe('hosted rotation', () => {
       HostedRotationLambda: {
         RotationType: 'MySQLSingleUser',
         VpcSecurityGroupIds: {
-          'Fn::GetAtt': [
-            'SecretRotationScheduleSecurityGroup3F1F76EA',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SecretRotationScheduleSecurityGroup3F1F76EA', 'GroupId'],
         },
         VpcSubnetIds: {
           'Fn::Join': [
@@ -418,16 +410,10 @@ describe('hosted rotation', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       FromPort: 3306,
       GroupId: {
-        'Fn::GetAtt': [
-          'SecurityGroupDD263621',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
       },
       SourceSecurityGroupId: {
-        'Fn::GetAtt': [
-          'SecretRotationScheduleSecurityGroup3F1F76EA',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['SecretRotationScheduleSecurityGroup3F1F76EA', 'GroupId'],
       },
       ToPort: 3306,
     });
@@ -446,10 +432,7 @@ describe('hosted rotation', () => {
     // WHEN
     const hostedRotation = secretsmanager.HostedRotation.mysqlSingleUser({
       vpc,
-      securityGroups: [
-        new ec2.SecurityGroup(stack, 'SG1', { vpc }),
-        new ec2.SecurityGroup(stack, 'SG2', { vpc }),
-      ],
+      securityGroups: [new ec2.SecurityGroup(stack, 'SG1', { vpc }), new ec2.SecurityGroup(stack, 'SG2', { vpc })],
     });
     secret.addRotationSchedule('RotationSchedule', { hostedRotation });
     dbConnections.allowDefaultPortFrom(hostedRotation);
@@ -466,17 +449,11 @@ describe('hosted rotation', () => {
             '',
             [
               {
-                'Fn::GetAtt': [
-                  'SG1BA065B6E',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'],
               },
               ',',
               {
-                'Fn::GetAtt': [
-                  'SG20CE3219C',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['SG20CE3219C', 'GroupId'],
               },
             ],
           ],
@@ -504,16 +481,10 @@ describe('hosted rotation', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       FromPort: 3306,
       GroupId: {
-        'Fn::GetAtt': [
-          'SecurityGroupDD263621',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
       },
       SourceSecurityGroupId: {
-        'Fn::GetAtt': [
-          'SG20CE3219C',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['SG20CE3219C', 'GroupId'],
       },
       ToPort: 3306,
     });
@@ -524,11 +495,13 @@ describe('hosted rotation', () => {
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
     // THEN
-    expect(() => secret.addRotationSchedule('RotationSchedule', {
-      hostedRotation: secretsmanager.HostedRotation.oracleSingleUser({
-        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(secret, 'SG', 'sg-12345678')],
-      }),
-    })).toThrow(/`vpc` must be specified when specifying `securityGroups`/);
+    expect(() =>
+      secret.addRotationSchedule('RotationSchedule', {
+        hostedRotation: secretsmanager.HostedRotation.oracleSingleUser({
+          securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(secret, 'SG', 'sg-12345678')],
+        }),
+      })
+    ).toThrow(/`vpc` must be specified when specifying `securityGroups`/);
   });
 
   test('throws when accessing the connections object when not in a vpc', () => {
@@ -540,8 +513,9 @@ describe('hosted rotation', () => {
     secret.addRotationSchedule('RotationSchedule', { hostedRotation });
 
     // THEN
-    expect(() => hostedRotation.connections.allowToAnyIpv4(ec2.Port.allTraffic()))
-      .toThrow(/Cannot use connections for a hosted rotation that is not deployed in a VPC/);
+    expect(() => hostedRotation.connections.allowToAnyIpv4(ec2.Port.allTraffic())).toThrow(
+      /Cannot use connections for a hosted rotation that is not deployed in a VPC/
+    );
   });
 
   test('can customize exclude characters', () => {
@@ -593,7 +567,11 @@ describe('hosted rotation', () => {
   test('the arn is used as it is when specifying masterSecret as an imported secret with full arn', () => {
     // GIVEN
     const secret = new secretsmanager.Secret(stack, 'Secret');
-    const importedSecret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'MasterSecretImported', 'arn:aws:secretsmanager:us-east-1:123456789012:secret:MySecret-123456');
+    const importedSecret = secretsmanager.Secret.fromSecretCompleteArn(
+      stack,
+      'MasterSecretImported',
+      'arn:aws:secretsmanager:us-east-1:123456789012:secret:MySecret-123456'
+    );
 
     // WHEN
     secret.addRotationSchedule('RotationSchedule', {
@@ -670,15 +648,15 @@ describe('manual rotations', () => {
       });
 
       // THEN
-      Template.fromStack(localStack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', Match.objectEquals({
-        SecretId: { Ref: 'SecretA720EF05' },
-        RotationLambdaARN: {
-          'Fn::GetAtt': [
-            'LambdaD247545B',
-            'Arn',
-          ],
-        },
-      }));
+      Template.fromStack(localStack).hasResourceProperties(
+        'AWS::SecretsManager::RotationSchedule',
+        Match.objectEquals({
+          SecretId: { Ref: 'SecretA720EF05' },
+          RotationLambdaARN: {
+            'Fn::GetAtt': ['LambdaD247545B', 'Arn'],
+          },
+        })
+      );
     };
 
     checkRotationNotSet(Duration.days(0));
@@ -705,9 +683,7 @@ test('rotation schedule should have a dependency on lambda permissions', () => {
 
   // THEN
   Template.fromStack(stack).hasResource('AWS::SecretsManager::RotationSchedule', {
-    DependsOn: [
-      'LambdaInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc69846677',
-    ],
+    DependsOn: ['LambdaInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc69846677'],
   });
 });
 
@@ -728,18 +704,18 @@ test('automaticallyAfter set scheduleExpression with days duration', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', Match.objectEquals({
-    SecretId: { Ref: 'SecretA720EF05' },
-    RotationLambdaARN: {
-      'Fn::GetAtt': [
-        'LambdaD247545B',
-        'Arn',
-      ],
-    },
-    RotationRules: {
-      ScheduleExpression: 'rate(90 days)',
-    },
-  }));
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::SecretsManager::RotationSchedule',
+    Match.objectEquals({
+      SecretId: { Ref: 'SecretA720EF05' },
+      RotationLambdaARN: {
+        'Fn::GetAtt': ['LambdaD247545B', 'Arn'],
+      },
+      RotationRules: {
+        ScheduleExpression: 'rate(90 days)',
+      },
+    })
+  );
 });
 
 test('automaticallyAfter set scheduleExpression with hours duration', () => {
@@ -759,18 +735,18 @@ test('automaticallyAfter set scheduleExpression with hours duration', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', Match.objectEquals({
-    SecretId: { Ref: 'SecretA720EF05' },
-    RotationLambdaARN: {
-      'Fn::GetAtt': [
-        'LambdaD247545B',
-        'Arn',
-      ],
-    },
-    RotationRules: {
-      ScheduleExpression: 'rate(6 hours)',
-    },
-  }));
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::SecretsManager::RotationSchedule',
+    Match.objectEquals({
+      SecretId: { Ref: 'SecretA720EF05' },
+      RotationLambdaARN: {
+        'Fn::GetAtt': ['LambdaD247545B', 'Arn'],
+      },
+      RotationRules: {
+        ScheduleExpression: 'rate(6 hours)',
+      },
+    })
+  );
 });
 
 test('automaticallyAfter must not be smaller than 4 hours', () => {
@@ -784,11 +760,14 @@ test('automaticallyAfter must not be smaller than 4 hours', () => {
 
   // WHEN
   // THEN
-  expect(() => new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
-    secret,
-    rotationLambda,
-    automaticallyAfter: Duration.hours(2),
-  })).toThrow(/automaticallyAfter must not be smaller than 4 hours, got 2 hours/);
+  expect(
+    () =>
+      new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+        secret,
+        rotationLambda,
+        automaticallyAfter: Duration.hours(2),
+      })
+  ).toThrow(/automaticallyAfter must not be smaller than 4 hours, got 2 hours/);
 });
 
 test('automaticallyAfter must not be greater than 1000 days', () => {
@@ -802,9 +781,12 @@ test('automaticallyAfter must not be greater than 1000 days', () => {
 
   // WHEN
   // THEN
-  expect(() => new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
-    secret,
-    rotationLambda,
-    automaticallyAfter: Duration.days(1001),
-  })).toThrow(/automaticallyAfter must not be greater than 1000 days, got 1001 days/);
+  expect(
+    () =>
+      new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+        secret,
+        rotationLambda,
+        automaticallyAfter: Duration.days(1001),
+      })
+  ).toThrow(/automaticallyAfter must not be greater than 1000 days, got 1001 days/);
 });

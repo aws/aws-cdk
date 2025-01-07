@@ -101,9 +101,7 @@ test("on Update event from CFN calls updateTable with Create if a replica in the
 test("on Update event from CFN calls doesn't call updateTable if a replica in the region does exist", async () => {
   ddbMock.on(DescribeTableCommand).resolves({
     Table: {
-      Replicas: [
-        { RegionName: REGION },
-      ],
+      Replicas: [{ RegionName: REGION }],
     },
   });
 

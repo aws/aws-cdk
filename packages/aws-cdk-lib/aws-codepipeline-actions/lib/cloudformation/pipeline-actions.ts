@@ -77,10 +77,7 @@ abstract class CloudFormationAction extends Action {
       },
       inputs,
       outputs: props.outputFileName
-        ? [
-            props.output ||
-              new codepipeline.Artifact(`${props.actionName}_${props.stackName}_Artifact`),
-          ]
+        ? [props.output || new codepipeline.Artifact(`${props.actionName}_${props.stackName}_Artifact`)]
         : undefined,
     });
 
@@ -380,8 +377,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
 /**
  * Properties for the CloudFormationCreateReplaceChangeSetAction.
  */
-export interface CloudFormationCreateReplaceChangeSetActionProps
-  extends CloudFormationDeployActionProps {
+export interface CloudFormationCreateReplaceChangeSetActionProps extends CloudFormationDeployActionProps {
   /**
    * Name of the change set to create or update.
    */
@@ -438,8 +434,7 @@ export class CloudFormationCreateReplaceChangeSetAction extends CloudFormationDe
 /**
  * Properties for the CloudFormationCreateUpdateStackAction.
  */
-export interface CloudFormationCreateUpdateStackActionProps
-  extends CloudFormationDeployActionProps {
+export interface CloudFormationCreateUpdateStackActionProps extends CloudFormationDeployActionProps {
   /**
    * Input artifact with the CloudFormation template to deploy
    */

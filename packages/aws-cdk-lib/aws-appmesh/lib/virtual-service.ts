@@ -62,17 +62,12 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   /**
    * Import an existing VirtualService given an ARN
    */
-  public static fromVirtualServiceArn(
-    scope: Construct,
-    id: string,
-    virtualServiceArn: string
-  ): IVirtualService {
+  public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
     return new (class extends cdk.Resource implements IVirtualService {
       readonly virtualServiceArn = virtualServiceArn;
       private readonly parsedArn = cdk.Fn.split(
         '/',
-        cdk.Stack.of(scope).splitArn(virtualServiceArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-          .resourceName!
+        cdk.Stack.of(scope).splitArn(virtualServiceArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!
       );
       readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
@@ -115,8 +110,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
-      physicalName:
-        props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     const providerConfig = props.virtualServiceProvider.bind(this);

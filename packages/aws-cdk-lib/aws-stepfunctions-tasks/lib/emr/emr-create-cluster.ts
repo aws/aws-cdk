@@ -198,10 +198,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     super(scope, id, props);
     this.visibleToAllUsers = this.props.visibleToAllUsers ?? true;
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.RUN_JOB;
-    validatePatternSupported(
-      this.integrationPattern,
-      EmrCreateCluster.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, EmrCreateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this._autoScalingRole = this.props.autoScalingRole;
 
@@ -219,30 +216,20 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     // AutoScaling roles are not valid with InstanceFleet clusters.
     // Attempt to create only if .instances.instanceFleets is undefined or empty
-    if (
-      this.props.instances.instanceFleets === undefined ||
-      this.props.instances.instanceFleets.length === 0
-    ) {
+    if (this.props.instances.instanceFleets === undefined || this.props.instances.instanceFleets.length === 0) {
       this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole();
       // If InstanceFleets are used and an AutoScaling Role is specified, throw an error
     } else if (this._autoScalingRole !== undefined) {
       throw new Error('Auto Scaling roles can not be specified with instance fleets.');
     }
 
-    this.taskPolicies = this.createPolicyStatements(
-      this._serviceRole,
-      this._clusterRole,
-      this._autoScalingRole
-    );
+    this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
     if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
       this.validateReleaseLabel(this.props.releaseLabel);
     }
 
-    if (
-      this.props.stepConcurrencyLevel !== undefined &&
-      !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)
-    ) {
+    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
       if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
         throw new Error(
           `Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`
@@ -313,11 +300,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn(
-        'elasticmapreduce',
-        'createCluster',
-        this.integrationPattern
-      ),
+      Resource: integrationResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Instances: InstancesConfigPropertyToJson(this.props.instances),
         JobFlowRole: cdk.stringToCloudFormation(this._clusterRole.roleName),
@@ -432,16 +415,12 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     if (cdk.FeatureFlags.of(this).isEnabled(ENABLE_EMR_SERVICE_POLICY_V2)) {
       return new iam.Role(this, 'ServiceRole', {
         assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEMRServicePolicy_v2'),
-        ],
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEMRServicePolicy_v2')],
       });
     }
     return new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
-      ],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole')],
     });
   }
 
@@ -470,9 +449,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     const role = new iam.Role(this, 'AutoScalingRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
       managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'service-role/AmazonElasticMapReduceforAutoScalingRole'
-        ),
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceforAutoScalingRole'),
       ],
     });
 
@@ -497,9 +474,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     const prefix = releaseLabel.slice(0, 4);
     const versions = releaseLabel.slice(4).split('.');
     if (prefix !== 'emr-' || versions.length !== 3 || versions.some((e) => isNotANumber(e))) {
-      throw new Error(
-        `The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`
-      );
+      throw new Error(`The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`);
     }
     return releaseLabel;
 

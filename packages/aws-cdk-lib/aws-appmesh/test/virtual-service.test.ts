@@ -46,9 +46,7 @@ describe('virtual service', () => {
         });
 
         const testRouter = mesh.addVirtualRouter('test-router', {
-          listeners: [
-            appmesh.VirtualRouterListener.http(),
-          ],
+          listeners: [appmesh.VirtualRouterListener.http()],
         });
 
         new appmesh.VirtualService(stack, 'service', {
@@ -57,19 +55,18 @@ describe('virtual service', () => {
         });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::VirtualService', {
-            Spec: {
-              Provider: {
-                VirtualRouter: {
-                  VirtualRouterName: {
-                    'Fn::GetAtt': ['meshtestrouterF78D72DD', 'VirtualRouterName'],
-                  },
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualService', {
+          Spec: {
+            Provider: {
+              VirtualRouter: {
+                VirtualRouterName: {
+                  'Fn::GetAtt': ['meshtestrouterF78D72DD', 'VirtualRouterName'],
                 },
               },
             },
-            MeshOwner: Match.absent(),
-          });
+          },
+          MeshOwner: Match.absent(),
+        });
       });
     });
 
@@ -85,9 +82,11 @@ describe('virtual service', () => {
 
         const node = mesh.addVirtualNode('test-node', {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 8080,
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.http({
+              port: 8080,
+            }),
+          ],
         });
 
         new appmesh.VirtualService(stack, 'service2', {
@@ -96,18 +95,17 @@ describe('virtual service', () => {
         });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::VirtualService', {
-            Spec: {
-              Provider: {
-                VirtualNode: {
-                  VirtualNodeName: {
-                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
-                  },
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualService', {
+          Spec: {
+            Provider: {
+              VirtualNode: {
+                VirtualNodeName: {
+                  'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                 },
               },
             },
-          });
+          },
+        });
       });
     });
   });
@@ -123,14 +121,19 @@ describe('virtual service', () => {
         // Creating stack in Account B
         const stack = new cdk.Stack(app, 'mySharedStack', { env: virtualServiceEnv });
         // Mesh is in Account A
-        const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
-          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`);
+        const sharedMesh = appmesh.Mesh.fromMeshArn(
+          stack,
+          'shared-mesh',
+          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`
+        );
 
         const node = sharedMesh.addVirtualNode('test-node', {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 8080,
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.http({
+              port: 8080,
+            }),
+          ],
         });
 
         // WHEN

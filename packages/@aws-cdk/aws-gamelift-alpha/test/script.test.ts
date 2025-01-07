@@ -52,10 +52,7 @@ describe('script', () => {
     const localAsset = path.join(__dirname, 'my-game-script');
     const contentBucketName = 'bucketname';
     const contentBucketAccessStatement = {
-      Action: [
-        's3:GetObject',
-        's3:GetObjectVersion',
-      ],
+      Action: ['s3:GetObject', 's3:GetObjectVersion'],
       Effect: 'Allow',
       Resource: {
         'Fn::Join': [
@@ -87,7 +84,7 @@ describe('script', () => {
       test('should create a new script from asset', () => {
         script = gamelift.Script.fromAsset(stack, 'ImportedScript', localAsset);
 
-        expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+        expect(stack.node.metadata.find((m) => m.type === 'aws:cdk:asset')).toBeDefined();
         Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Script', {
           StorageLocation: {
             Bucket: {
@@ -95,7 +92,6 @@ describe('script', () => {
             },
           },
         });
-
       });
     });
 
@@ -109,7 +105,6 @@ describe('script', () => {
             Key: 'content',
           },
         });
-
       });
     });
 
@@ -137,9 +132,7 @@ describe('script', () => {
         // Role policy should grant reading from the assets bucket
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
-            Statement: [
-              contentBucketAccessStatement,
-            ],
+            Statement: [contentBucketAccessStatement],
           },
           Roles: [
             {
@@ -154,10 +147,7 @@ describe('script', () => {
             Bucket: 'bucketname',
             Key: 'content',
             RoleArn: {
-              'Fn::GetAtt': [
-                'ScriptServiceRole23DD8079',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['ScriptServiceRole23DD8079', 'Arn'],
             },
           },
         });
@@ -166,10 +156,7 @@ describe('script', () => {
       test('should return correct script attributes from CloudFormation', () => {
         expect(stack.resolve(script.scriptId)).toEqual({ Ref: 'Script09016516' });
         expect(stack.resolve(script.scriptArn)).toEqual({
-          'Fn::GetAtt': [
-            'Script09016516',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Script09016516', 'Arn'],
         });
       });
 
@@ -218,10 +205,13 @@ describe('script', () => {
           incorrectScriptName += 'A';
         }
 
-        expect(() => new gamelift.Script(stack, 'ScriptWithWrongName', {
-          content,
-          scriptName: incorrectScriptName,
-        })).toThrow(/Script name can not be longer than 1024 characters but has 1025 characters./);
+        expect(
+          () =>
+            new gamelift.Script(stack, 'ScriptWithWrongName', {
+              content,
+              scriptName: incorrectScriptName,
+            })
+        ).toThrow(/Script name can not be longer than 1024 characters but has 1025 characters./);
       });
     });
   });

@@ -85,15 +85,10 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     id: string,
     geofenceCollectionArn: string
   ): IGeofenceCollection {
-    const parsedArn = Stack.of(scope).splitArn(
-      geofenceCollectionArn,
-      ArnFormat.SLASH_RESOURCE_NAME
-    );
+    const parsedArn = Stack.of(scope).splitArn(geofenceCollectionArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new Error(
-        `Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`
-      );
+      throw new Error(`Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IGeofenceCollection {
@@ -126,20 +121,13 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
   public readonly geofenceCollectionUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: GeofenceCollectionProps = {}) {
-    if (
-      props.description &&
-      !Token.isUnresolved(props.description) &&
-      props.description.length > 1000
-    ) {
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(
         `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`
       );
     }
 
-    if (
-      props.geofenceCollectionName !== undefined &&
-      !Token.isUnresolved(props.geofenceCollectionName)
-    ) {
+    if (props.geofenceCollectionName !== undefined && !Token.isUnresolved(props.geofenceCollectionName)) {
       if (props.geofenceCollectionName.length < 1 || props.geofenceCollectionName.length > 100) {
         throw new Error(
           `\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${props.geofenceCollectionName.length} characters.`
@@ -154,8 +142,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     }
 
     super(scope, id, {
-      physicalName:
-        props.geofenceCollectionName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
+      physicalName: props.geofenceCollectionName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
 
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {

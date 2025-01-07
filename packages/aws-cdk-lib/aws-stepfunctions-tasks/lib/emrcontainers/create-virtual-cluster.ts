@@ -94,10 +94,7 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
   ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(
-      this.integrationPattern,
-      EmrContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, EmrContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -107,11 +104,7 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn(
-        'emr-containers',
-        'createVirtualCluster',
-        this.integrationPattern
-      ),
+      Resource: integrationResourceArn('emr-containers', 'createVirtualCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Name:
           this.props.virtualClusterName ??

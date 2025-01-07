@@ -1,9 +1,4 @@
-import {
-  addToDeadLetterQueueResourcePolicy,
-  bindBaseTargetConfig,
-  singletonEventRole,
-  TargetBaseProps,
-} from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';

@@ -22,11 +22,7 @@ export function arnForParameterName(
   const physicalName = options.physicalName;
   const nameToValidate = physicalName || parameterName;
 
-  if (
-    !Token.isUnresolved(nameToValidate) &&
-    nameToValidate.includes('/') &&
-    !nameToValidate.startsWith('/')
-  ) {
+  if (!Token.isUnresolved(nameToValidate) && nameToValidate.includes('/') && !nameToValidate.startsWith('/')) {
     throw new Error(
       `Parameter names must be fully qualified (if they include "/" they must also begin with a "/"): ${nameToValidate}`
     );

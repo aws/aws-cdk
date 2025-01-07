@@ -113,10 +113,7 @@ export class ProxyTarget {
     }
 
     // allow connecting to the Cluster/Instance from the Proxy
-    this.dbCluster?.connections.allowDefaultPortFrom(
-      proxy,
-      'Allow connections to the database Cluster from the Proxy'
-    );
+    this.dbCluster?.connections.allowDefaultPortFrom(proxy, 'Allow connections to the database Cluster from the Proxy');
     this.dbInstance?.connections.allowDefaultPortFrom(
       proxy,
       'Allow connections to the database Instance from the Proxy'
@@ -387,10 +384,7 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
       throw new Error('For imported Database Proxies, the dbUser is required in grantConnect()');
     }
     const scopeStack = cdk.Stack.of(this);
-    const proxyGeneratedId = scopeStack.splitArn(
-      this.dbProxyArn,
-      cdk.ArnFormat.COLON_RESOURCE_NAME
-    ).resourceName;
+    const proxyGeneratedId = scopeStack.splitArn(this.dbProxyArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName;
     const userArn = scopeStack.formatArn({
       service: 'rds-db',
       resource: 'dbuser',
@@ -596,39 +590,24 @@ export class DatabaseProxy
     return super.grantConnect(grantee, dbUser);
   }
 
-  private validateClientPasswordAuthType(
-    engineFamily: string,
-    clientPasswordAuthType?: ClientPasswordAuthType
-  ) {
+  private validateClientPasswordAuthType(engineFamily: string, clientPasswordAuthType?: ClientPasswordAuthType) {
     if (!clientPasswordAuthType || cdk.Token.isUnresolved(clientPasswordAuthType)) return;
-    if (
-      clientPasswordAuthType === ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD &&
-      engineFamily !== 'MYSQL'
-    ) {
+    if (clientPasswordAuthType === ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD && engineFamily !== 'MYSQL') {
       throw new Error(
         `${ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD} client password authentication type requires MYSQL engineFamily, got ${engineFamily}`
       );
     }
-    if (
-      clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256 &&
-      engineFamily !== 'POSTGRESQL'
-    ) {
+    if (clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256 && engineFamily !== 'POSTGRESQL') {
       throw new Error(
         `${ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`
       );
     }
-    if (
-      clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_MD5 &&
-      engineFamily !== 'POSTGRESQL'
-    ) {
+    if (clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_MD5 && engineFamily !== 'POSTGRESQL') {
       throw new Error(
         `${ClientPasswordAuthType.POSTGRES_MD5} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`
       );
     }
-    if (
-      clientPasswordAuthType === ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION &&
-      engineFamily !== 'SQLSERVER'
-    ) {
+    if (clientPasswordAuthType === ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION && engineFamily !== 'SQLSERVER') {
       throw new Error(
         `${ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION} client password authentication type requires SQLSERVER engineFamily, got ${engineFamily}`
       );

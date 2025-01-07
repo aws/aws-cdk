@@ -1,5 +1,9 @@
 import { App, Aws, Lazy, Resource, Stack, Token } from '../../lib';
-import { GeneratedWhenNeededMarker, generatePhysicalName, isGeneratedWhenNeededMarker } from '../../lib/private/physical-name-generator';
+import {
+  GeneratedWhenNeededMarker,
+  generatePhysicalName,
+  isGeneratedWhenNeededMarker,
+} from '../../lib/private/physical-name-generator';
 
 describe('physical name generator', () => {
   describe('generatePhysicalName', () => {
@@ -12,7 +16,6 @@ describe('physical name generator', () => {
 
       expect(generatePhysicalName(testResourceA)).toEqual('teststackteststackaa164c141d59b37c1b663');
       expect(generatePhysicalName(testResourceB)).toEqual('teststackteststackab27595cd34d8188283a1f');
-
     });
 
     test('generates different names in different accounts', () => {
@@ -25,7 +28,6 @@ describe('physical name generator', () => {
       const resourceB = new TestResource(stackB, 'Resource');
 
       expect(generatePhysicalName(resourceA)).not.toEqual(generatePhysicalName(resourceB));
-
     });
 
     test('generates different names in different regions', () => {
@@ -38,7 +40,6 @@ describe('physical name generator', () => {
       const resourceB = new TestResource(stackB, 'Resource');
 
       expect(generatePhysicalName(resourceA)).not.toEqual(generatePhysicalName(resourceB));
-
     });
 
     test('fails when the region is an unresolved token', () => {
@@ -47,8 +48,8 @@ describe('physical name generator', () => {
       const testResource = new TestResource(stack, 'A');
 
       expect(() => generatePhysicalName(testResource)).toThrow(
-        /Cannot generate a physical name for TestStack\/A, because the region is un-resolved or missing/);
-
+        /Cannot generate a physical name for TestStack\/A, because the region is un-resolved or missing/
+      );
     });
 
     test('fails when the region is not provided', () => {
@@ -57,8 +58,8 @@ describe('physical name generator', () => {
       const testResource = new TestResource(stack, 'A');
 
       expect(() => generatePhysicalName(testResource)).toThrow(
-        /Cannot generate a physical name for TestStack\/A, because the region is un-resolved or missing/);
-
+        /Cannot generate a physical name for TestStack\/A, because the region is un-resolved or missing/
+      );
     });
 
     test('fails when the account is an unresolved token', () => {
@@ -67,8 +68,8 @@ describe('physical name generator', () => {
       const testResource = new TestResource(stack, 'A');
 
       expect(() => generatePhysicalName(testResource)).toThrow(
-        /Cannot generate a physical name for TestStack\/A, because the account is un-resolved or missing/);
-
+        /Cannot generate a physical name for TestStack\/A, because the account is un-resolved or missing/
+      );
     });
 
     test('fails when the account is not provided', () => {
@@ -77,8 +78,8 @@ describe('physical name generator', () => {
       const testResource = new TestResource(stack, 'A');
 
       expect(() => generatePhysicalName(testResource)).toThrow(
-        /Cannot generate a physical name for TestStack\/A, because the account is un-resolved or missing/);
-
+        /Cannot generate a physical name for TestStack\/A, because the account is un-resolved or missing/
+      );
     });
   });
 
@@ -88,7 +89,6 @@ describe('physical name generator', () => {
       const asString = Token.asString(marker);
 
       expect(isGeneratedWhenNeededMarker(asString)).toEqual(true);
-
     });
 
     test('throws when resolved', () => {
@@ -96,7 +96,6 @@ describe('physical name generator', () => {
       const asString = Token.asString(marker);
 
       expect(() => new Stack().resolve(asString)).toThrow(/Use "this.physicalName" instead/);
-
     });
   });
 
@@ -104,7 +103,6 @@ describe('physical name generator', () => {
     test('correctly response for other tokens', () => {
       expect(isGeneratedWhenNeededMarker('this is not even a token!')).toEqual(false);
       expect(isGeneratedWhenNeededMarker(Lazy.string({ produce: () => 'Bazinga!' }))).toEqual(false);
-
     });
   });
 });

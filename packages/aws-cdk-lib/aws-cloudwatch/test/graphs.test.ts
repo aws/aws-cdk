@@ -30,19 +30,20 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        title: 'Test widget',
-        region: { Ref: 'AWS::Region' },
-        stacked: true,
-        yAxis: {},
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          title: 'Test widget',
+          region: { Ref: 'AWS::Region' },
+          stacked: true,
+          yAxis: {},
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('add metrics to graphs on either axis', () => {
@@ -50,31 +51,28 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GraphWidget({
       title: 'My fancy graph',
-      left: [
-        new Metric({ namespace: 'CDK', metricName: 'Test' }),
-      ],
-      right: [
-        new Metric({ namespace: 'CDK', metricName: 'Tast' }),
-      ],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      right: [new Metric({ namespace: 'CDK', metricName: 'Tast' })],
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        title: 'My fancy graph',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-          ['CDK', 'Tast', { yAxis: 'right' }],
-        ],
-        yAxis: {},
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          title: 'My fancy graph',
+          region: { Ref: 'AWS::Region' },
+          metrics: [
+            ['CDK', 'Test'],
+            ['CDK', 'Tast', { yAxis: 'right' }],
+          ],
+          yAxis: {},
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('add metrics to graphs on either axis lazily', () => {
@@ -87,22 +85,23 @@ describe('Graphs', () => {
     widget.addRightMetric(new Metric({ namespace: 'CDK', metricName: 'Tast' }));
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        title: 'My fancy graph',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-          ['CDK', 'Tast', { yAxis: 'right' }],
-        ],
-        yAxis: {},
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          title: 'My fancy graph',
+          region: { Ref: 'AWS::Region' },
+          metrics: [
+            ['CDK', 'Test'],
+            ['CDK', 'Tast', { yAxis: 'right' }],
+          ],
+          yAxis: {},
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('label and color are respected in constructor', () => {
@@ -113,20 +112,19 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
-        ],
-        yAxis: {},
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test', { label: 'MyMetric', color: '000000' }]],
+          yAxis: {},
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('bar view', () => {
@@ -138,18 +136,19 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'bar',
-        title: 'Test widget',
-        region: { Ref: 'AWS::Region' },
-        yAxis: {},
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'bar',
+          title: 'Test widget',
+          region: { Ref: 'AWS::Region' },
+          yAxis: {},
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('singlevalue widget', () => {
@@ -163,19 +162,18 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 3,
-      properties: {
-        view: 'singleValue',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 3,
+        properties: {
+          view: 'singleValue',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('query result widget', () => {
@@ -186,24 +184,22 @@ describe('Graphs', () => {
     // WHEN
     const widget = new LogQueryWidget({
       logGroupNames: [logGroup.logGroupName],
-      queryLines: [
-        'fields @message',
-        'filter @message like /Error/',
-      ],
+      queryLines: ['fields @message', 'filter @message like /Error/'],
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'log',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'table',
-        region: { Ref: 'AWS::Region' },
-        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'log',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'table',
+          region: { Ref: 'AWS::Region' },
+          query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('query result widget - bar', () => {
@@ -215,24 +211,22 @@ describe('Graphs', () => {
     const widget = new LogQueryWidget({
       logGroupNames: [logGroup.logGroupName],
       view: LogQueryVisualizationType.BAR,
-      queryLines: [
-        'fields @message',
-        'filter @message like /Error/',
-      ],
+      queryLines: ['fields @message', 'filter @message like /Error/'],
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'log',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'bar',
-        region: { Ref: 'AWS::Region' },
-        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'log',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'bar',
+          region: { Ref: 'AWS::Region' },
+          query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('query result widget - pie', () => {
@@ -244,54 +238,50 @@ describe('Graphs', () => {
     const widget = new LogQueryWidget({
       logGroupNames: [logGroup.logGroupName],
       view: LogQueryVisualizationType.PIE,
-      queryLines: [
-        'fields @message',
-        'filter @message like /Error/',
-      ],
+      queryLines: ['fields @message', 'filter @message like /Error/'],
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'log',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'pie',
-        region: { Ref: 'AWS::Region' },
-        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'log',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'pie',
+          region: { Ref: 'AWS::Region' },
+          query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('query result widget - line', () => {
     // GIVEN
     const stack = new Stack();
-    const logGroup = { logGroupName: 'my-log-group' } ;
+    const logGroup = { logGroupName: 'my-log-group' };
 
     // WHEN
     const widget = new LogQueryWidget({
       logGroupNames: [logGroup.logGroupName],
       view: LogQueryVisualizationType.LINE,
-      queryLines: [
-        'fields @message',
-        'filter @message like /Error/',
-      ],
+      queryLines: ['fields @message', 'filter @message like /Error/'],
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'log',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        stacked: false,
-        region: { Ref: 'AWS::Region' },
-        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'log',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          stacked: false,
+          region: { Ref: 'AWS::Region' },
+          query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('query result widget - stackedarea', () => {
@@ -303,25 +293,23 @@ describe('Graphs', () => {
     const widget = new LogQueryWidget({
       logGroupNames: [logGroup.logGroupName],
       view: LogQueryVisualizationType.STACKEDAREA,
-      queryLines: [
-        'fields @message',
-        'filter @message like /Error/',
-      ],
+      queryLines: ['fields @message', 'filter @message like /Error/'],
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'log',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        stacked: true,
-        region: { Ref: 'AWS::Region' },
-        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'log',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          stacked: true,
+          region: { Ref: 'AWS::Region' },
+          query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('alarm widget', () => {
@@ -339,20 +327,21 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        region: { Ref: 'AWS::Region' },
-        annotations: {
-          alarms: [{ 'Fn::GetAtt': ['Alarm7103F465', 'Arn'] }],
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          region: { Ref: 'AWS::Region' },
+          annotations: {
+            alarms: [{ 'Fn::GetAtt': ['Alarm7103F465', 'Arn'] }],
+          },
+          yAxis: {},
         },
-        yAxis: {},
       },
-    }]);
-
+    ]);
   });
 
   test('custom widget basic', () => {
@@ -366,20 +355,22 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'custom',
-      width: 6,
-      height: 6,
-      properties: {
-        title: 'CustomWidget',
-        endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
-        updateOn: {
-          refresh: true,
-          resize: true,
-          timeRange: true,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'custom',
+        width: 6,
+        height: 6,
+        properties: {
+          title: 'CustomWidget',
+          endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
+          updateOn: {
+            refresh: true,
+            resize: true,
+            timeRange: true,
+          },
         },
       },
-    }]);
+    ]);
   });
 
   test('custom widget full config', () => {
@@ -401,23 +392,25 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'custom',
-      width: 1,
-      height: 1,
-      properties: {
-        title: 'CustomWidget',
-        endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
-        params: {
-          any: 'param',
-        },
-        updateOn: {
-          refresh: false,
-          resize: false,
-          timeRange: false,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'custom',
+        width: 1,
+        height: 1,
+        properties: {
+          title: 'CustomWidget',
+          endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
+          params: {
+            any: 'param',
+          },
+          updateOn: {
+            refresh: false,
+            resize: false,
+            timeRange: false,
+          },
         },
       },
-    }]);
+    ]);
   });
 
   test('add horizontal annotations to graph', () => {
@@ -425,42 +418,43 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GraphWidget({
       title: 'My fancy graph',
-      left: [
-        new Metric({ namespace: 'CDK', metricName: 'Test' }),
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      leftAnnotations: [
+        {
+          value: 1000,
+          color: '667788',
+          fill: Shading.BELOW,
+          label: 'this is the annotation',
+        },
       ],
-      leftAnnotations: [{
-        value: 1000,
-        color: '667788',
-        fill: Shading.BELOW,
-        label: 'this is the annotation',
-      }],
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        title: 'My fancy graph',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        annotations: {
-          horizontal: [{
-            yAxis: 'left',
-            value: 1000,
-            color: '667788',
-            fill: 'below',
-            label: 'this is the annotation',
-          }],
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          title: 'My fancy graph',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          annotations: {
+            horizontal: [
+              {
+                yAxis: 'left',
+                value: 1000,
+                color: '667788',
+                fill: 'below',
+                label: 'this is the annotation',
+              },
+            ],
+          },
+          yAxis: {},
         },
-        yAxis: {},
       },
-    }]);
-
+    ]);
   });
 
   test('add vertical annotations to graph', () => {
@@ -468,40 +462,42 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GraphWidget({
       title: 'My fancy graph',
-      left: [
-        new Metric({ namespace: 'CDK', metricName: 'Test' }),
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      verticalAnnotations: [
+        {
+          date: '2021-07-29T02:31:09.890Z',
+          color: '667788',
+          fill: VerticalShading.AFTER,
+          label: 'this is the annotation',
+        },
       ],
-      verticalAnnotations: [{
-        date: '2021-07-29T02:31:09.890Z',
-        color: '667788',
-        fill: VerticalShading.AFTER,
-        label: 'this is the annotation',
-      }],
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        title: 'My fancy graph',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        annotations: {
-          vertical: [{
-            value: '2021-07-29T02:31:09.890Z',
-            color: '667788',
-            fill: 'after',
-            label: 'this is the annotation',
-          }],
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          title: 'My fancy graph',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          annotations: {
+            vertical: [
+              {
+                value: '2021-07-29T02:31:09.890Z',
+                color: '667788',
+                fill: 'after',
+                label: 'this is the annotation',
+              },
+            ],
+          },
+          yAxis: {},
         },
-        yAxis: {},
       },
-    }]);
+    ]);
   });
 
   test('vertical annotation date must match ISO 8601', () => {
@@ -509,15 +505,15 @@ describe('Graphs', () => {
     expect(() => {
       new GraphWidget({
         title: 'My fancy graph',
-        left: [
-          new Metric({ namespace: 'CDK', metricName: 'Test' }),
+        left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+        verticalAnnotations: [
+          {
+            date: '2021-07-29T02:31:09.890ZZ',
+            color: '667788',
+            fill: VerticalShading.AFTER,
+            label: 'this is the annotation',
+          },
         ],
-        verticalAnnotations: [{
-          date: '2021-07-29T02:31:09.890ZZ',
-          color: '667788',
-          fill: VerticalShading.AFTER,
-          label: 'this is the annotation',
-        }],
       });
     }).toThrow();
   });
@@ -541,27 +537,28 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test', { yAxis: 'right' }],
-        ],
-        annotations: {
-          horizontal: [{
-            yAxis: 'right',
-            value: 1000,
-            label: 'Test >= 1000 for 2 datapoints within 35 minutes',
-          }],
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test', { yAxis: 'right' }]],
+          annotations: {
+            horizontal: [
+              {
+                yAxis: 'right',
+                value: 1000,
+                label: 'Test >= 1000 for 2 datapoints within 35 minutes',
+              },
+            ],
+          },
+          yAxis: {},
         },
-        yAxis: {},
       },
-    }]);
-
+    ]);
   });
 
   test('add yAxis to graph', () => {
@@ -569,43 +566,40 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GraphWidget({
       title: 'My fancy graph',
-      left: [
-        new Metric({ namespace: 'CDK', metricName: 'Test' }),
-      ],
-      right: [
-        new Metric({ namespace: 'CDK', metricName: 'Tast' }),
-      ],
-      leftYAxis: ({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      right: [new Metric({ namespace: 'CDK', metricName: 'Tast' })],
+      leftYAxis: {
         label: 'Left yAxis',
         max: 100,
-      }),
-      rightYAxis: ({
+      },
+      rightYAxis: {
         label: 'Right yAxis',
         min: 10,
         showUnits: false,
-      }),
+      },
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        title: 'My fancy graph',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-          ['CDK', 'Tast', { yAxis: 'right' }],
-        ],
-        yAxis: {
-          left: { label: 'Left yAxis', max: 100 },
-          right: { label: 'Right yAxis', min: 10, showUnits: false },
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          title: 'My fancy graph',
+          region: { Ref: 'AWS::Region' },
+          metrics: [
+            ['CDK', 'Test'],
+            ['CDK', 'Tast', { yAxis: 'right' }],
+          ],
+          yAxis: {
+            left: { label: 'Left yAxis', max: 100 },
+            right: { label: 'Right yAxis', min: 10, showUnits: false },
+          },
         },
       },
-    }]);
-
+    ]);
   });
 
   test('specify liveData property on graph', () => {
@@ -613,29 +607,26 @@ describe('Graphs', () => {
     const stack = new Stack();
     const widget = new GraphWidget({
       title: 'My live graph',
-      left: [
-        new Metric({ namespace: 'CDK', metricName: 'Test' }),
-      ],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
       liveData: true,
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        title: 'My live graph',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        liveData: true,
-        yAxis: {},
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          title: 'My live graph',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          liveData: true,
+          yAxis: {},
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('can use imported alarm with graph', () => {
@@ -650,7 +641,6 @@ describe('Graphs', () => {
     });
 
     // THEN: Compiles
-
   });
 
   test('add setPeriodToTimeRange to singleValueWidget', () => {
@@ -665,20 +655,19 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 3,
-      properties: {
-        view: 'singleValue',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        setPeriodToTimeRange: true,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 3,
+        properties: {
+          view: 'singleValue',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          setPeriodToTimeRange: true,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('add sparkline to singleValueWidget', () => {
@@ -693,20 +682,19 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 3,
-      properties: {
-        view: 'singleValue',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        sparkline: true,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 3,
+        properties: {
+          view: 'singleValue',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          sparkline: true,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('throws if setPeriodToTimeRange and sparkline is set on singleValueWidget', () => {
@@ -739,20 +727,19 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 3,
-      properties: {
-        view: 'singleValue',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        singleValueFullPrecision: true,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 3,
+        properties: {
+          view: 'singleValue',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          singleValueFullPrecision: true,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('add period to singleValueWidget', () => {
@@ -767,20 +754,19 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 3,
-      properties: {
-        view: 'singleValue',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        period: 172800,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 3,
+        properties: {
+          view: 'singleValue',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          period: 172800,
+        },
       },
-    }]);
-
+    ]);
   });
 
   test('allows overriding custom values of dashboard widgets', () => {
@@ -795,14 +781,10 @@ describe('Graphs', () => {
 
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [
-        new HiddenMetric({ namespace: 'CDK', metricName: 'Test' }),
-      ],
+      left: [new HiddenMetric({ namespace: 'CDK', metricName: 'Test' })],
     });
 
-    expect(stack.resolve(widget.toJson())[0].properties.metrics[0])
-      .toEqual(['CDK', 'Test', { visible: false }]);
-
+    expect(stack.resolve(widget.toJson())[0].properties.metrics[0]).toEqual(['CDK', 'Test', { visible: false }]);
   });
 
   test('GraphColor is correctly converted into the correct hexcode', () => {
@@ -812,17 +794,20 @@ describe('Graphs', () => {
 
     // WHEN
     const widget = new GraphWidget({
-      left: [metric.with({
-        color: Color.BLUE,
-      })],
-      leftAnnotations: [
-        { color: Color.RED, value: 100 },
+      left: [
+        metric.with({
+          color: Color.BLUE,
+        }),
       ],
+      leftAnnotations: [{ color: Color.RED, value: 100 }],
     });
 
     expect(stack.resolve(widget.toJson())[0].properties.metrics[0]).toEqual(['CDK', 'Test', { color: '#1f77b4' }]);
-    expect(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0]).toEqual({ yAxis: 'left', value: 100, color: '#d62728' });
-
+    expect(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0]).toEqual({
+      yAxis: 'left',
+      value: 100,
+      color: '#d62728',
+    });
   });
 
   test('legend position is respected in constructor', () => {
@@ -834,23 +819,22 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        yAxis: {},
-        legend: {
-          position: 'right',
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          yAxis: {},
+          legend: {
+            position: 'right',
+          },
         },
       },
-    }]);
-
+    ]);
   });
 
   test('add setPeriodToTimeRange to GraphWidget', () => {
@@ -863,20 +847,20 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'pie',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        yAxis: {},
-        setPeriodToTimeRange: true,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'pie',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          yAxis: {},
+          setPeriodToTimeRange: true,
+        },
       },
-    }]);
+    ]);
   });
 
   test('add GaugeWidget', () => {
@@ -887,24 +871,24 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'gauge',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        yAxis: {
-          left: {
-            min: 0,
-            max: 100,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'gauge',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          yAxis: {
+            left: {
+              min: 0,
+              max: 100,
+            },
           },
         },
       },
-    }]);
+    ]);
   });
 
   test('GraphWidget supports stat and period', () => {
@@ -917,21 +901,21 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'timeSeries',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        yAxis: {},
-        stat: 'Average',
-        period: 172800,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'timeSeries',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          yAxis: {},
+          stat: 'Average',
+          period: 172800,
+        },
       },
-    }]);
+    ]);
   });
 
   test('add start and end properties to GraphWidget', () => {
@@ -945,21 +929,21 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'pie',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        yAxis: {},
-        start: '-P7D',
-        end: '2018-12-17T06:00:00.000Z',
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'pie',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          yAxis: {},
+          start: '-P7D',
+          end: '2018-12-17T06:00:00.000Z',
+        },
       },
-    }]);
+    ]);
   });
 
   test('add start and end properties to SingleValueWidget', () => {
@@ -972,20 +956,20 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 3,
-      properties: {
-        view: 'singleValue',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        start: '-P7D',
-        end: '2018-12-17T06:00:00.000Z',
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 3,
+        properties: {
+          view: 'singleValue',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          start: '-P7D',
+          end: '2018-12-17T06:00:00.000Z',
+        },
       },
-    }]);
+    ]);
   });
 
   test('add start and end properties to GaugeWidget', () => {
@@ -998,26 +982,26 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'gauge',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        yAxis: {
-          left: {
-            min: 0,
-            max: 100,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'gauge',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          yAxis: {
+            left: {
+              min: 0,
+              max: 100,
+            },
           },
+          start: '-P7D',
+          end: '2018-12-17T06:00:00.000Z',
         },
-        start: '-P7D',
-        end: '2018-12-17T06:00:00.000Z',
       },
-    }]);
+    ]);
   });
 
   test('cannot specify an end without a start in GraphWidget', () => {
@@ -1076,34 +1060,34 @@ describe('Graphs', () => {
     });
 
     // THEN
-    expect(stack.resolve(widget.toJson())).toEqual([{
-      type: 'metric',
-      width: 6,
-      height: 6,
-      properties: {
-        view: 'gauge',
-        region: { Ref: 'AWS::Region' },
-        metrics: [
-          ['CDK', 'Test'],
-        ],
-        yAxis: {
-          left: {
-            min: 0,
-            max: 100,
+    expect(stack.resolve(widget.toJson())).toEqual([
+      {
+        type: 'metric',
+        width: 6,
+        height: 6,
+        properties: {
+          view: 'gauge',
+          region: { Ref: 'AWS::Region' },
+          metrics: [['CDK', 'Test']],
+          yAxis: {
+            left: {
+              min: 0,
+              max: 100,
+            },
+          },
+          annotations: {
+            horizontal: [
+              {
+                color: '#b2df8d',
+                label: 'Up',
+                value: 1,
+                fill: 'above',
+              },
+            ],
           },
         },
-        annotations: {
-          horizontal: [
-            {
-              color: '#b2df8d',
-              label: 'Up',
-              value: 1,
-              fill: 'above',
-            },
-          ],
-        },
       },
-    }]);
+    ]);
   });
 
   describe('TableWidget', () => {
@@ -1122,25 +1106,25 @@ describe('Graphs', () => {
       });
 
       // THEN
-      expect(stack.resolve(widget.toJson())).toEqual([{
-        type: 'metric',
-        height: 6,
-        width: 6,
-        properties: {
-          view: 'table',
-          metrics: [
-            ['CDK', 'Test'],
-          ],
-          region: { Ref: 'AWS::Region' },
-          table: {
-            layout: 'horizontal',
-            showTimeSeriesData: true,
-            stickySummary: false,
-            summaryColumns: [],
+      expect(stack.resolve(widget.toJson())).toEqual([
+        {
+          type: 'metric',
+          height: 6,
+          width: 6,
+          properties: {
+            view: 'table',
+            metrics: [['CDK', 'Test']],
+            region: { Ref: 'AWS::Region' },
+            table: {
+              layout: 'horizontal',
+              showTimeSeriesData: true,
+              stickySummary: false,
+              summaryColumns: [],
+            },
+            yAxis: {},
           },
-          yAxis: {},
         },
-      }]);
+      ]);
     });
 
     test('add metrics lazily', () => {
@@ -1149,25 +1133,25 @@ describe('Graphs', () => {
       widget.addMetric(metric);
 
       // THEN
-      expect(stack.resolve(widget.toJson())).toEqual([{
-        type: 'metric',
-        height: 6,
-        width: 6,
-        properties: {
-          view: 'table',
-          metrics: [
-            ['CDK', 'Test'],
-          ],
-          region: { Ref: 'AWS::Region' },
-          table: {
-            layout: 'horizontal',
-            showTimeSeriesData: true,
-            stickySummary: false,
-            summaryColumns: [],
+      expect(stack.resolve(widget.toJson())).toEqual([
+        {
+          type: 'metric',
+          height: 6,
+          width: 6,
+          properties: {
+            view: 'table',
+            metrics: [['CDK', 'Test']],
+            region: { Ref: 'AWS::Region' },
+            table: {
+              layout: 'horizontal',
+              showTimeSeriesData: true,
+              stickySummary: false,
+              summaryColumns: [],
+            },
+            yAxis: {},
           },
-          yAxis: {},
         },
-      }]);
+      ]);
     });
 
     test('with most table fields set', () => {
@@ -1186,31 +1170,31 @@ describe('Graphs', () => {
       });
 
       // THEN
-      expect(stack.resolve(widget.toJson())).toEqual([{
-        type: 'metric',
-        height: 6,
-        width: 6,
-        properties: {
-          view: 'table',
-          metrics: [
-            ['CDK', 'Test'],
-          ],
-          region: { Ref: 'AWS::Region' },
-          liveData: true,
-          singleValueFullPrecision: true,
-          table: {
-            layout: 'vertical',
-            showTimeSeriesData: false,
-            stickySummary: true,
-            summaryColumns: ['AVG'],
-          },
-          yAxis: {
-            left: {
-              showUnits: true,
+      expect(stack.resolve(widget.toJson())).toEqual([
+        {
+          type: 'metric',
+          height: 6,
+          width: 6,
+          properties: {
+            view: 'table',
+            metrics: [['CDK', 'Test']],
+            region: { Ref: 'AWS::Region' },
+            liveData: true,
+            singleValueFullPrecision: true,
+            table: {
+              layout: 'vertical',
+              showTimeSeriesData: false,
+              stickySummary: true,
+              summaryColumns: ['AVG'],
+            },
+            yAxis: {
+              left: {
+                showUnits: true,
+              },
             },
           },
         },
-      }]);
+      ]);
     });
 
     test('with thresholds', () => {
@@ -1225,48 +1209,48 @@ describe('Graphs', () => {
       });
 
       // THEN
-      expect(stack.resolve(widget.toJson())).toEqual([{
-        type: 'metric',
-        height: 6,
-        width: 6,
-        properties: {
-          view: 'table',
-          metrics: [
-            ['CDK', 'Test'],
-          ],
-          region: { Ref: 'AWS::Region' },
-          table: {
-            layout: 'horizontal',
-            showTimeSeriesData: true,
-            stickySummary: false,
-            summaryColumns: [],
-          },
-          yAxis: {},
-          annotations: {
-            horizontal: [
-              {
-                color: '#d62728',
-                fill: 'above',
-                value: 1000,
-              },
-              [
+      expect(stack.resolve(widget.toJson())).toEqual([
+        {
+          type: 'metric',
+          height: 6,
+          width: 6,
+          properties: {
+            view: 'table',
+            metrics: [['CDK', 'Test']],
+            region: { Ref: 'AWS::Region' },
+            table: {
+              layout: 'horizontal',
+              showTimeSeriesData: true,
+              stickySummary: false,
+              summaryColumns: [],
+            },
+            yAxis: {},
+            annotations: {
+              horizontal: [
                 {
-                  color: '#ff7f0e',
-                  value: 500,
-                },
-                {
+                  color: '#d62728',
+                  fill: 'above',
                   value: 1000,
                 },
+                [
+                  {
+                    color: '#ff7f0e',
+                    value: 500,
+                  },
+                  {
+                    value: 1000,
+                  },
+                ],
+                {
+                  color: '#2ca02c',
+                  fill: 'below',
+                  value: 500,
+                },
               ],
-              {
-                color: '#2ca02c',
-                fill: 'below',
-                value: 500,
-              },
-            ],
+            },
           },
         },
-      }]);
+      ]);
     });
 
     test('with start and end set', () => {
@@ -1278,27 +1262,27 @@ describe('Graphs', () => {
       });
 
       // THEN
-      expect(stack.resolve(widget.toJson())).toEqual([{
-        type: 'metric',
-        height: 6,
-        width: 6,
-        properties: {
-          view: 'table',
-          metrics: [
-            ['CDK', 'Test'],
-          ],
-          region: { Ref: 'AWS::Region' },
-          table: {
-            layout: 'horizontal',
-            showTimeSeriesData: true,
-            stickySummary: false,
-            summaryColumns: [],
+      expect(stack.resolve(widget.toJson())).toEqual([
+        {
+          type: 'metric',
+          height: 6,
+          width: 6,
+          properties: {
+            view: 'table',
+            metrics: [['CDK', 'Test']],
+            region: { Ref: 'AWS::Region' },
+            table: {
+              layout: 'horizontal',
+              showTimeSeriesData: true,
+              stickySummary: false,
+              summaryColumns: [],
+            },
+            yAxis: {},
+            start: '-P7D',
+            end: '2018-12-17T06:00:00.000Z',
           },
-          yAxis: {},
-          start: '-P7D',
-          end: '2018-12-17T06:00:00.000Z',
         },
-      }]);
+      ]);
     });
 
     test('cannot specify an end without a start', () => {

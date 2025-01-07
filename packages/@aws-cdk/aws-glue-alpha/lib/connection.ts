@@ -252,11 +252,7 @@ export class Connection extends cdk.Resource implements IConnection {
    * @param id The construct's id.
    * @param connectionArn arn of external connection.
    */
-  public static fromConnectionArn(
-    scope: constructs.Construct,
-    id: string,
-    connectionArn: string
-  ): IConnection {
+  public static fromConnectionArn(scope: constructs.Construct, id: string, connectionArn: string): IConnection {
     class Import extends cdk.Resource implements IConnection {
       public readonly connectionName = cdk.Arn.extractResourceName(connectionArn, 'connection');
       public readonly connectionArn = connectionArn;
@@ -272,11 +268,7 @@ export class Connection extends cdk.Resource implements IConnection {
    * @param id The construct's id.
    * @param connectionName name of external connection.
    */
-  public static fromConnectionName(
-    scope: constructs.Construct,
-    id: string,
-    connectionName: string
-  ): IConnection {
+  public static fromConnectionName(scope: constructs.Construct, id: string, connectionName: string): IConnection {
     class Import extends cdk.Resource implements IConnection {
       public readonly connectionName = connectionName;
       public readonly connectionArn = Connection.buildConnectionArn(scope, connectionName);

@@ -24,7 +24,7 @@ function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembl
 }
 
 function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
-  return withApp({ context }, app => {
+  return withApp({ context }, (app) => {
     const stack1 = new Stack(app, 'stack1', { env: { account: '12345', region: 'us-east-1' } });
     new CfnResource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
     const r2 = new CfnResource(stack1, 's1c2', { type: 'DummyResource', properties: { Foo: 123 } });
@@ -67,8 +67,7 @@ describe('app', () => {
     expect(stack1.environment.region).toEqual('us-east-1');
     expect(stack1.environment.name).toEqual('aws://12345/us-east-1');
     expect(stack1.template).toEqual({
-      Resources:
-      {
+      Resources: {
         s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
         s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } },
       },
@@ -76,10 +75,11 @@ describe('app', () => {
     expect(stack1.manifest.metadata).toEqual({
       '/stack1': [{ type: 'meta', data: 111 }],
       '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
-      '/stack1/s1c2':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2' },
-          { type: 'aws:cdk:warning', data: 'warning1 [ack: warning1]' },
-          { type: 'aws:cdk:warning', data: 'warning2 [ack: warning2]' }],
+      '/stack1/s1c2': [
+        { type: 'aws:cdk:logicalId', data: 's1c2' },
+        { type: 'aws:cdk:warning', data: 'warning1 [ack: warning1]' },
+        { type: 'aws:cdk:warning', data: 'warning2 [ack: warning2]' },
+      ],
     });
 
     const stack2 = response.stacks[1];
@@ -87,8 +87,7 @@ describe('app', () => {
     expect(stack2.id).toEqual('stack2');
     expect(stack2.environment.name).toEqual('aws://unknown-account/unknown-region');
     expect(stack2.template).toEqual({
-      Resources:
-      {
+      Resources: {
         s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
         s1c2r1D1791C01: { Type: 'ResourceType1' },
         s1c2r25F685FFF: { Type: 'ResourceType2' },
@@ -97,10 +96,8 @@ describe('app', () => {
     expect(stack2.manifest.metadata).toEqual({
       '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1' }],
       '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' } }],
-      '/stack2/s1c2/r1':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2r1D1791C01' }],
-      '/stack2/s1c2/r2':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2r25F685FFF' }],
+      '/stack2/s1c2/r1': [{ type: 'aws:cdk:logicalId', data: 's1c2r1D1791C01' }],
+      '/stack2/s1c2/r2': [{ type: 'aws:cdk:logicalId', data: 's1c2r25F685FFF' }],
     });
   });
 
@@ -222,8 +219,7 @@ describe('app', () => {
       }
     }
 
-    class Parent extends Stack {
-    }
+    class Parent extends Stack {}
 
     const app = new App();
 
@@ -246,8 +242,7 @@ describe('app', () => {
             account: '12345689012',
             region: 'ab-north-1',
           },
-        },
-        );
+        });
 
         this.reportMissingContextKey({
           key: 'missing-context-key-2',
@@ -256,12 +251,11 @@ describe('app', () => {
             account: '12345689012',
             region: 'ab-south-1',
           },
-        },
-        );
+        });
       }
     }
 
-    const assembly = withApp({}, app => {
+    const assembly = withApp({}, (app) => {
       new MyStack(app, 'MyStack', { synthesizer: new DefaultStackSynthesizer() });
     });
 
@@ -270,7 +264,8 @@ describe('app', () => {
         key: 'missing-context-key',
         provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
-          lookupRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
+          lookupRoleArn:
+            'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
           account: '12345689012',
           region: 'ab-north-1',
         },
@@ -279,7 +274,8 @@ describe('app', () => {
         key: 'missing-context-key-2',
         provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
         props: {
-          lookupRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
+          lookupRoleArn:
+            'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}',
           account: '12345689012',
           region: 'ab-south-1',
         },
@@ -293,7 +289,7 @@ describe('app', () => {
    * The are not emitted into Cloud Assembly metadata anymore
    */
   test('runtime library versions are not emitted in asm anymore', () => {
-    const assembly = withApp({ analyticsReporting: true }, app => {
+    const assembly = withApp({ analyticsReporting: true }, (app) => {
       const stack = new Stack(app, 'stack1');
       new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
@@ -302,7 +298,7 @@ describe('app', () => {
   });
 
   test('deep stack is shown and synthesized properly', () => {
-  // WHEN
+    // WHEN
     const response = withApp({}, (app) => {
       const topStack = new Stack(app, 'Stack');
       const topResource = new CfnResource(topStack, 'Res', { type: 'CDK::TopStack::Resource' });
@@ -312,7 +308,7 @@ describe('app', () => {
     });
 
     // THEN
-    expect(response.stacks.map(s => ({ name: s.stackName, template: s.template }))).toEqual([
+    expect(response.stacks.map((s) => ({ name: s.stackName, template: s.template }))).toEqual([
       {
         name: 'Stack',
         template: { Resources: { Res: { Type: 'CDK::TopStack::Resource' } } },
@@ -342,7 +338,7 @@ describe('app', () => {
     });
 
     // THEN
-    const artifactsIds = assembly.artifacts.map(a => a.id);
+    const artifactsIds = assembly.artifacts.map((a) => a.id);
     expect(artifactsIds.indexOf('StackA')).toBeLessThan(artifactsIds.indexOf('StackC'));
     expect(artifactsIds.indexOf('StackB')).toBeLessThan(artifactsIds.indexOf('StackC'));
     expect(artifactsIds.indexOf('StackC')).toBeLessThan(artifactsIds.indexOf('StackD'));
@@ -368,6 +364,9 @@ class MyConstruct extends Construct {
     super(scope, id);
 
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
-    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
+    new CfnResource(this, 'r2', {
+      type: 'ResourceType2',
+      properties: { FromContext: this.node.tryGetContext('ctx1') },
+    });
   }
 }

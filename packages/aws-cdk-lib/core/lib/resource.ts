@@ -1,10 +1,7 @@
 import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { IStringProducer, Lazy } from './lazy';
-import {
-  generatePhysicalName,
-  isGeneratedWhenNeededMarker,
-} from './private/physical-name-generator';
+import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
 import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
@@ -134,9 +131,7 @@ export abstract class Resource extends Construct implements IResource {
    * Returns true if the construct was created by CDK, and false otherwise
    */
   public static isOwnedResource(construct: IConstruct): boolean {
-    return construct.node.defaultChild
-      ? CfnResource.isCfnResource(construct.node.defaultChild)
-      : false;
+    return construct.node.defaultChild ? CfnResource.isCfnResource(construct.node.defaultChild) : false;
   }
 
   public readonly stack: Stack;
@@ -161,10 +156,7 @@ export abstract class Resource extends Construct implements IResource {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
 
-    if (
-      (props.account !== undefined || props.region !== undefined) &&
-      props.environmentFromArn !== undefined
-    ) {
+    if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
       throw new Error(
         `Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`
       );

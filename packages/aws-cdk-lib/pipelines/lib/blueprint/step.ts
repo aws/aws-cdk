@@ -56,9 +56,7 @@ export abstract class Step implements IFileSetProducer {
    * Return the steps this step depends on, based on the FileSets it requires
    */
   public get dependencies(): Step[] {
-    return Array.from(
-      new Set([...this.dependencyFileSets.map((f) => f.producer), ...this._dependencies])
-    );
+    return Array.from(new Set([...this.dependencyFileSets.map((f) => f.producer), ...this._dependencies]));
   }
 
   /**

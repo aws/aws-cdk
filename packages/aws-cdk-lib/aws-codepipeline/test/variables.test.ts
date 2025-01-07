@@ -16,36 +16,42 @@ describe('variables', () => {
         stages: [
           {
             stageName: 'Source',
-            actions: [new FakeSourceAction({
-              actionName: 'Source',
-              output: sourceArtifact,
-              variablesNamespace: 'MyNamespace',
-            })],
+            actions: [
+              new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceArtifact,
+                variablesNamespace: 'MyNamespace',
+              }),
+            ],
           },
         ],
       });
 
       // -- stages and actions here are needed to satisfy validation rules
       const first = pipeline.addStage({ stageName: 'FirstStage' });
-      first.addAction(new FakeBuildAction({
-        actionName: 'dummyAction',
-        input: sourceArtifact,
-      }));
+      first.addAction(
+        new FakeBuildAction({
+          actionName: 'dummyAction',
+          input: sourceArtifact,
+        })
+      );
       const second = pipeline.addStage({ stageName: 'SecondStage' });
-      second.addAction(new FakeBuildAction({
-        actionName: 'dummyAction',
-        input: sourceArtifact,
-      }));
+      second.addAction(
+        new FakeBuildAction({
+          actionName: 'dummyAction',
+          input: sourceArtifact,
+        })
+      );
       // --
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': Match.arrayWith([
+        Stages: Match.arrayWith([
           {
-            'Name': 'Source',
-            'Actions': [
+            Name: 'Source',
+            Actions: [
               Match.objectLike({
-                'Name': 'Source',
-                'Namespace': 'MyNamespace',
+                Name: 'Source',
+                Namespace: 'MyNamespace',
               }),
             ],
           },
@@ -69,27 +75,29 @@ describe('variables', () => {
           },
           {
             stageName: 'Build',
-            actions: [new FakeBuildAction({
-              actionName: 'Build',
-              input: sourceOutput,
-              customConfigKey: fakeSourceAction.variables.firstVariable,
-            })],
+            actions: [
+              new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                customConfigKey: fakeSourceAction.variables.firstVariable,
+              }),
+            ],
           },
         ],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
+            Name: 'Source',
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'Build',
-                'Configuration': {
-                  'CustomConfigKey': '#{SourceVariables.FirstVariable}',
+                Name: 'Build',
+                Configuration: {
+                  CustomConfigKey: '#{SourceVariables.FirstVariable}',
                 },
               },
             ],
@@ -122,31 +130,35 @@ describe('variables', () => {
         stages: [
           {
             stageName: 'Source',
-            actions: [new FakeSourceAction({
-              actionName: 'Source',
-              output: sourceArtifact,
-            })],
+            actions: [
+              new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceArtifact,
+              }),
+            ],
           },
           {
             stageName: 'Build',
-            actions: [new FakeBuildAction({
-              actionName: 'Build',
-              input: sourceArtifact,
-              customConfigKey: codepipeline.GlobalVariables.executionId,
-            })],
+            actions: [
+              new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceArtifact,
+                customConfigKey: codepipeline.GlobalVariables.executionId,
+              }),
+            ],
           },
         ],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': Match.arrayWith([
+        Stages: Match.arrayWith([
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               Match.objectLike({
-                'Name': 'Build',
-                'Configuration': {
-                  'CustomConfigKey': '#{codepipeline.PipelineExecutionId}',
+                Name: 'Build',
+                Configuration: {
+                  CustomConfigKey: '#{codepipeline.PipelineExecutionId}',
                 },
               }),
             ],
@@ -167,14 +179,18 @@ describe('variables', () => {
     beforeEach(() => {
       stack = new cdk.Stack();
       sourceArtifact = new codepipeline.Artifact();
-      sourceActions = [new FakeSourceAction({
-        actionName: 'FakeSource',
-        output: sourceArtifact,
-      })];
-      buildActions = [new FakeBuildAction({
-        actionName: 'FakeBuild',
-        input: sourceArtifact,
-      })];
+      sourceActions = [
+        new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        }),
+      ];
+      buildActions = [
+        new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        }),
+      ];
       variable1 = new codepipeline.Variable({
         variableName: 'var-name-1',
         description: 'description',
@@ -197,11 +213,13 @@ describe('variables', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         PipelineType: 'V2',
-        Variables: [{
-          Name: 'var-name-1',
-          Description: 'description',
-          DefaultValue: 'default-value',
-        }],
+        Variables: [
+          {
+            Name: 'var-name-1',
+            Description: 'description',
+            DefaultValue: 'default-value',
+          },
+        ],
       });
     });
 
@@ -240,11 +258,13 @@ describe('variables', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         PipelineType: 'V2',
-        Variables: [{
-          Name: 'var-name-1',
-          Description: 'description',
-          DefaultValue: 'default-value',
-        }],
+        Variables: [
+          {
+            Name: 'var-name-1',
+            Description: 'description',
+            DefaultValue: 'default-value',
+          },
+        ],
       });
     });
 
@@ -263,7 +283,9 @@ describe('variables', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/);
+      expect(error).toMatch(
+        /Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/
+      );
     });
 
     test('validate if pipeline-level variables are specified when pipelineType is not set to V2 and addVariable method is used', () => {
@@ -276,7 +298,9 @@ describe('variables', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/);
+      expect(error).toMatch(
+        /Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/
+      );
     });
 
     test('throw if name for pipeline-level variable uses invalid character', () => {
@@ -286,7 +310,7 @@ describe('variables', () => {
           description: 'description',
           defaultValue: 'default-value',
         });
-      }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'var name\'');
+      }).toThrow("Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got 'var name'");
     });
 
     test('throw if length of name for pipeline-level variable is less than 1', () => {
@@ -296,7 +320,7 @@ describe('variables', () => {
           description: 'description',
           defaultValue: 'default-value',
         });
-      }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'\'');
+      }).toThrow("Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got ''");
     });
 
     test('throw if length of name for pipeline-level variable is greater than 128', () => {
@@ -368,7 +392,11 @@ function validate(construct: IConstruct): string[] {
 }
 
 // Adding 2 stages with actions so pipeline validation will pass
-function testPipelineSetup(pipeline: codepipeline.Pipeline, sourceActions?: codepipeline.IAction[], buildActions?: codepipeline.IAction[]) {
+function testPipelineSetup(
+  pipeline: codepipeline.Pipeline,
+  sourceActions?: codepipeline.IAction[],
+  buildActions?: codepipeline.IAction[]
+) {
   pipeline.addStage({
     stageName: 'Source',
     actions: sourceActions,

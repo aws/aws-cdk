@@ -54,9 +54,7 @@ export class NetworkUtils {
     if (octets.length !== 4) {
       return false;
     }
-    return octets
-      .map((octet: string) => parseInt(octet, 10))
-      .every((octet: number) => octet >= 0 && octet <= 255);
+    return octets.map((octet: string) => parseInt(octet, 10)).every((octet: number) => octet >= 0 && octet <= 255);
   }
 
   /**
@@ -74,9 +72,7 @@ export class NetworkUtils {
       throw new Error(`${ipAddress} is not valid`);
     }
 
-    return ipAddress
-      .split('.')
-      .reduce((p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i), 0);
+    return ipAddress.split('.').reduce((p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i), 0);
   }
 
   /**
@@ -181,9 +177,7 @@ export class CidrBlock {
     if (typeof ipAddressOrCidr === 'string') {
       this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
       this.networkAddress =
-        NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
-        CidrBlock.calculateNetsize(this.mask) -
-        1;
+        NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) + CidrBlock.calculateNetsize(this.mask) - 1;
     } else {
       if (typeof mask === 'number') {
         this.mask = mask;

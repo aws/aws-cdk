@@ -36,14 +36,25 @@ describe('splunk log driver', () => {
             Options: {
               'splunk-url': 'my-splunk-url',
             },
-            SecretOptions: [{
-              Name: 'splunk-token',
-              ValueFrom: {
-                'Fn::Join': ['', ['arn:',
-                  { Ref: 'AWS::Partition' }, ':secretsmanager:', { Ref: 'AWS::Region' }, ':',
-                  { Ref: 'AWS::AccountId' }, ':secret:my-splunk-token']],
+            SecretOptions: [
+              {
+                Name: 'splunk-token',
+                ValueFrom: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':secretsmanager:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':secret:my-splunk-token',
+                    ],
+                  ],
+                },
               },
-            }],
+            ],
           },
         }),
       ],
@@ -70,14 +81,25 @@ describe('splunk log driver', () => {
             Options: {
               'splunk-url': 'my-splunk-url',
             },
-            SecretOptions: [{
-              Name: 'splunk-token',
-              ValueFrom: {
-                'Fn::Join': ['', ['arn:',
-                  { Ref: 'AWS::Partition' }, ':secretsmanager:', { Ref: 'AWS::Region' }, ':',
-                  { Ref: 'AWS::AccountId' }, ':secret:my-splunk-token']],
+            SecretOptions: [
+              {
+                Name: 'splunk-token',
+                ValueFrom: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':secretsmanager:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':secret:my-splunk-token',
+                    ],
+                  ],
+                },
               },
-            }],
+            ],
           },
         }),
       ],
@@ -106,14 +128,25 @@ describe('splunk log driver', () => {
               'splunk-url': 'my-splunk-url',
               'splunk-sourcetype': 'my-source-type',
             },
-            SecretOptions: [{
-              Name: 'splunk-token',
-              ValueFrom: {
-                'Fn::Join': ['', ['arn:',
-                  { Ref: 'AWS::Partition' }, ':secretsmanager:', { Ref: 'AWS::Region' }, ':',
-                  { Ref: 'AWS::AccountId' }, ':secret:my-splunk-token']],
+            SecretOptions: [
+              {
+                Name: 'splunk-token',
+                ValueFrom: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':secretsmanager:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':secret:my-splunk-token',
+                    ],
+                  ],
+                },
               },
-            }],
+            ],
           },
         }),
       ],

@@ -11,9 +11,7 @@ import { Resource } from '../../core';
  *   Additionally, the type of the principal will now also be IConstruct
  *   (because a newly created resource must be a construct)
  */
-export function principalIsOwnedResource(
-  principal: IPrincipal
-): principal is IPrincipal & IConstruct {
+export function principalIsOwnedResource(principal: IPrincipal): principal is IPrincipal & IConstruct {
   // a newly created resource will for sure be a construct
   if (!isConstruct(principal)) {
     return false;

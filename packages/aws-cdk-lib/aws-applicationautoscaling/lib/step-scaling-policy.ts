@@ -154,8 +154,7 @@ export class StepScalingPolicy extends Construct {
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType,
         cooldown: props.cooldown,
-        metricAggregationType:
-          props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
+        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         scalingTarget: props.scalingTarget,
       });
@@ -186,8 +185,7 @@ export class StepScalingPolicy extends Construct {
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
         adjustmentType,
         cooldown: props.cooldown,
-        metricAggregationType:
-          props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
+        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         scalingTarget: props.scalingTarget,
       });

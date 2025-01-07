@@ -151,7 +151,11 @@ describe('IVS Recording Configuration', () => {
       new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
         recordingConfigurationName: 'my-recording-configuration',
         bucket,
-        thumbnailConfiguration: ThumbnailConfiguration.interval(Resolution.HD, [Storage.LATEST, Storage.SEQUENTIAL], Duration.seconds(30)),
+        thumbnailConfiguration: ThumbnailConfiguration.interval(
+          Resolution.HD,
+          [Storage.LATEST, Storage.SEQUENTIAL],
+          Duration.seconds(30)
+        ),
       });
 
       // THEN
@@ -179,7 +183,11 @@ describe('IVS Recording Configuration', () => {
     beforeEach(() => {
       app = new App();
       stack = new Stack(app, 'TestStack');
-      importRecordingConfiguration = RecordingConfiguration.fromRecordingConfigurationId(stack, 'ImportedRecordingConfiguration', 'my-record-configuration');
+      importRecordingConfiguration = RecordingConfiguration.fromRecordingConfigurationId(
+        stack,
+        'ImportedRecordingConfiguration',
+        'my-record-configuration'
+      );
     });
 
     test('should correctly set recordingConfigurationId', () => {
@@ -192,7 +200,7 @@ describe('IVS Recording Configuration', () => {
           service: 'ivs',
           resource: 'recording-configuration',
           resourceName: 'my-record-configuration',
-        }),
+        })
       );
     });
   });
@@ -203,7 +211,11 @@ describe('IVS Recording Configuration', () => {
     beforeEach(() => {
       app = new App();
       stack = new Stack(app, 'TestStack');
-      importRecordingConfiguration = RecordingConfiguration.fromArn(stack, 'ImportedRecordingConfiguration', 'arn:aws:ivs:us-east-1:012345678912:recording-configuration/my-record-configuration');
+      importRecordingConfiguration = RecordingConfiguration.fromArn(
+        stack,
+        'ImportedRecordingConfiguration',
+        'arn:aws:ivs:us-east-1:012345678912:recording-configuration/my-record-configuration'
+      );
     });
 
     test('should correctly set recordingConfigurationId', () => {
@@ -211,7 +223,9 @@ describe('IVS Recording Configuration', () => {
     });
 
     test('should correctly format recordingConfigurationArn', () => {
-      expect(importRecordingConfiguration.recordingConfigurationArn).toEqual('arn:aws:ivs:us-east-1:012345678912:recording-configuration/my-record-configuration');
+      expect(importRecordingConfiguration.recordingConfigurationArn).toEqual(
+        'arn:aws:ivs:us-east-1:012345678912:recording-configuration/my-record-configuration'
+      );
     });
   });
 
@@ -222,9 +236,10 @@ describe('IVS Recording Configuration', () => {
           bucket,
           recordingConfigurationName: 'invalid name',
         });
-      }).toThrow('\`recordingConfigurationName\` must consist only of alphanumeric characters, hyphens or underbars, got: invalid name.');
-    },
-    );
+      }).toThrow(
+        '\`recordingConfigurationName\` must consist only of alphanumeric characters, hyphens or underbars, got: invalid name.'
+      );
+    });
 
     test('throws when recordingConfigurationName length is invalid.', () => {
       expect(() => {
@@ -233,13 +248,11 @@ describe('IVS Recording Configuration', () => {
           recordingConfigurationName: 'a'.repeat(129),
         });
       }).toThrow('\`recordingConfigurationName\` must be less than or equal to 128 characters, got: 129 characters.');
-    },
-    );
+    });
   });
 
   describe('validateRecordingReconnectWindowSeconds test', () => {
     test('throws when recordingReconnectWindow is smaller than 1 second.', () => {
-
       expect(() => {
         new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
           bucket,
@@ -272,7 +285,11 @@ describe('IVS Recording Configuration', () => {
       expect(() => {
         new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
           bucket,
-          thumbnailConfiguration: ThumbnailConfiguration.interval(Resolution.HD, [Storage.LATEST], Duration.seconds(61)),
+          thumbnailConfiguration: ThumbnailConfiguration.interval(
+            Resolution.HD,
+            [Storage.LATEST],
+            Duration.seconds(61)
+          ),
         });
       }).toThrow('\`targetInterval\` must be between 1 and 60 seconds, got 61 seconds.');
     });

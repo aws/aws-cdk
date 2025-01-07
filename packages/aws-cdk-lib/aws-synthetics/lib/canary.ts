@@ -13,8 +13,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
 
-const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE =
-  'Custom::SyntheticsAutoDeleteUnderlyingResources';
+const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
 const AUTO_DELETE_UNDERLYING_RESOURCES_TAG = 'aws-cdk:auto-delete-underlying-resources';
 
 /**
@@ -371,9 +370,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
-      artifactS3Location: this.artifactsBucket.s3UrlForObject(
-        props.artifactsBucketLocation?.prefix
-      ),
+      artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.startAfterCreation ?? true,
       runtimeVersion: props.runtime.name,
@@ -525,9 +522,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicies.push(
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole')
-      );
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
     return new iam.Role(this, 'ServiceRole', {
@@ -598,19 +593,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       }
     }
     if (handler.length < 1 || handler.length > 128) {
-      throw new Error(
-        `Canary Handler length must be between 1 and 128, received ${handler.length}`
-      );
+      throw new Error(`Canary Handler length must be between 1 and 128, received ${handler.length}`);
     }
   }
 
   private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
-    if (
-      props.activeTracing === undefined &&
-      !props.environmentVariables &&
-      !props.memory &&
-      !props.timeout
-    ) {
+    if (props.activeTracing === undefined && !props.environmentVariables && !props.memory && !props.timeout) {
       return undefined;
     }
 
@@ -647,9 +635,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
       timeoutInSeconds = props.timeout.toSeconds();
       if (timeoutInSeconds < 3 || timeoutInSeconds > 840) {
-        throw new Error(
-          `\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`
-        );
+        throw new Error(`\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`);
       }
     }
 
@@ -713,10 +699,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     const isNodeRuntime = props.runtime.family === RuntimeFamily.NODEJS;
 
-    if (
-      props.artifactS3EncryptionMode === ArtifactsEncryptionMode.S3_MANAGED &&
-      props.artifactS3KmsKey
-    ) {
+    if (props.artifactS3EncryptionMode === ArtifactsEncryptionMode.S3_MANAGED && props.artifactS3KmsKey) {
       throw new Error(
         `A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: ${props.artifactS3EncryptionMode}.`
       );
@@ -738,8 +721,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     let encryptionKey: kms.IKey | undefined;
     if (encryptionMode === ArtifactsEncryptionMode.KMS) {
       encryptionKey =
-        props.artifactS3KmsKey ??
-        new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
+        props.artifactS3KmsKey ?? new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
     }
 
     encryptionKey?.grantEncryptDecrypt(this.role);
@@ -764,10 +746,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
   }
 
-  private cannedMetric(
-    fn: (dims: { CanaryName: string }) => MetricProps,
-    props?: MetricOptions
-  ): Metric {
+  private cannedMetric(fn: (dims: { CanaryName: string }) => MetricProps, props?: MetricOptions): Metric {
     return new Metric({
       ...fn({ CanaryName: this.canaryName }),
       ...props,
@@ -799,8 +778,6 @@ function validateName(name: string) {
     );
   }
   if (!nameRegex.test(name)) {
-    throw new Error(
-      `Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`
-    );
+    throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);
   }
 }

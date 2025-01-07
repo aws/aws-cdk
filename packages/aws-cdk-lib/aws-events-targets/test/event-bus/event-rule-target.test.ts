@@ -11,12 +11,11 @@ test('Use EventBus as an event rule target', () => {
     schedule: events.Schedule.expression('rate(1 min)'),
   });
 
-  rule.addTarget(new targets.EventBus(events.EventBus.fromEventBusArn(
-    stack,
-    'External',
-    'arn:aws:events:us-east-1:111111111111:default',
-  ),
-  ));
+  rule.addTarget(
+    new targets.EventBus(
+      events.EventBus.fromEventBusArn(stack, 'External', 'arn:aws:events:us-east-1:111111111111:default')
+    )
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
@@ -24,26 +23,27 @@ test('Use EventBus as an event rule target', () => {
         Arn: 'arn:aws:events:us-east-1:111111111111:default',
         Id: 'Target0',
         RoleArn: {
-          'Fn::GetAtt': [
-            'RuleEventsRoleC51A4248',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['RuleEventsRoleC51A4248', 'Arn'],
         },
       },
     ],
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
-        Effect: 'Allow',
-        Action: 'events:PutEvents',
-        Resource: 'arn:aws:events:us-east-1:111111111111:default',
-      }],
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'events:PutEvents',
+          Resource: 'arn:aws:events:us-east-1:111111111111:default',
+        },
+      ],
       Version: '2012-10-17',
     },
-    Roles: [{
-      Ref: 'RuleEventsRoleC51A4248',
-    }],
+    Roles: [
+      {
+        Ref: 'RuleEventsRoleC51A4248',
+      },
+    ],
   });
 });
 
@@ -57,39 +57,40 @@ test('with supplied role', () => {
     roleName: 'GivenRole',
   });
 
-  rule.addTarget(new targets.EventBus(
-    events.EventBus.fromEventBusArn(
-      stack,
-      'External',
-      'arn:aws:events:us-east-1:123456789012:default',
-    ),
-    { role },
-  ));
+  rule.addTarget(
+    new targets.EventBus(
+      events.EventBus.fromEventBusArn(stack, 'External', 'arn:aws:events:us-east-1:123456789012:default'),
+      { role }
+    )
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-    Targets: [{
-      Arn: 'arn:aws:events:us-east-1:123456789012:default',
-      Id: 'Target0',
-      RoleArn: {
-        'Fn::GetAtt': [
-          'Role1ABCC5F0',
-          'Arn',
-        ],
+    Targets: [
+      {
+        Arn: 'arn:aws:events:us-east-1:123456789012:default',
+        Id: 'Target0',
+        RoleArn: {
+          'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
+        },
       },
-    }],
+    ],
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
-        Effect: 'Allow',
-        Action: 'events:PutEvents',
-        Resource: 'arn:aws:events:us-east-1:123456789012:default',
-      }],
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'events:PutEvents',
+          Resource: 'arn:aws:events:us-east-1:123456789012:default',
+        },
+      ],
       Version: '2012-10-17',
     },
-    Roles: [{
-      Ref: 'Role1ABCC5F0',
-    }],
+    Roles: [
+      {
+        Ref: 'Role1ABCC5F0',
+      },
+    ],
   });
 });
 
@@ -100,34 +101,28 @@ test('with a Dead Letter Queue specified', () => {
   });
   const queue = new sqs.Queue(stack, 'Queue');
 
-  rule.addTarget(new targets.EventBus(
-    events.EventBus.fromEventBusArn(
-      stack,
-      'External',
-      'arn:aws:events:us-east-1:123456789012:default',
-    ),
-    { deadLetterQueue: queue },
-  ));
+  rule.addTarget(
+    new targets.EventBus(
+      events.EventBus.fromEventBusArn(stack, 'External', 'arn:aws:events:us-east-1:123456789012:default'),
+      { deadLetterQueue: queue }
+    )
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-    Targets: [{
-      Arn: 'arn:aws:events:us-east-1:123456789012:default',
-      Id: 'Target0',
-      RoleArn: {
-        'Fn::GetAtt': [
-          'RuleEventsRoleC51A4248',
-          'Arn',
-        ],
-      },
-      DeadLetterConfig: {
-        Arn: {
-          'Fn::GetAtt': [
-            'Queue4A7E3555',
-            'Arn',
-          ],
+    Targets: [
+      {
+        Arn: 'arn:aws:events:us-east-1:123456789012:default',
+        Id: 'Target0',
+        RoleArn: {
+          'Fn::GetAtt': ['RuleEventsRoleC51A4248', 'Arn'],
+        },
+        DeadLetterConfig: {
+          Arn: {
+            'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
+          },
         },
       },
-    }],
+    ],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
@@ -138,10 +133,7 @@ test('with a Dead Letter Queue specified', () => {
           Condition: {
             ArnEquals: {
               'aws:SourceArn': {
-                'Fn::GetAtt': [
-                  'Rule4C995B7F',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Rule4C995B7F', 'Arn'],
               },
             },
           },
@@ -150,10 +142,7 @@ test('with a Dead Letter Queue specified', () => {
             Service: 'events.amazonaws.com',
           },
           Resource: {
-            'Fn::GetAtt': [
-              'Queue4A7E3555',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
           },
           Sid: 'AllowEventRuleRule',
         },
@@ -168,7 +157,7 @@ test('with a Dead Letter Queue specified', () => {
   });
 });
 
-test('event buses are correctly added to the rule\'s principal policy', () => {
+test("event buses are correctly added to the rule's principal policy", () => {
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.expression('rate(1 min)'),
@@ -184,32 +173,20 @@ test('event buses are correctly added to the rule\'s principal policy', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'bus110C385DC',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['bus110C385DC', 'Arn'],
         },
         Id: 'Target0',
         RoleArn: {
-          'Fn::GetAtt': [
-            'RuleEventsRoleC51A4248',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['RuleEventsRoleC51A4248', 'Arn'],
         },
       },
       {
         Arn: {
-          'Fn::GetAtt': [
-            'bus22D01F126',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['bus22D01F126', 'Arn'],
         },
         Id: 'Target1',
         RoleArn: {
-          'Fn::GetAtt': [
-            'RuleEventsRoleC51A4248',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['RuleEventsRoleC51A4248', 'Arn'],
         },
       },
     ],
@@ -221,27 +198,23 @@ test('event buses are correctly added to the rule\'s principal policy', () => {
           Effect: 'Allow',
           Action: 'events:PutEvents',
           Resource: {
-            'Fn::GetAtt': [
-              'bus110C385DC',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['bus110C385DC', 'Arn'],
           },
         },
         {
           Effect: 'Allow',
           Action: 'events:PutEvents',
           Resource: {
-            'Fn::GetAtt': [
-              'bus22D01F126',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['bus22D01F126', 'Arn'],
           },
         },
       ],
       Version: '2012-10-17',
     },
-    Roles: [{
-      Ref: 'RuleEventsRoleC51A4248',
-    }],
+    Roles: [
+      {
+        Ref: 'RuleEventsRoleC51A4248',
+      },
+    ],
   });
 });

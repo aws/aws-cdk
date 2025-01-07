@@ -20,10 +20,7 @@ export class ViaServicePrincipal extends iam.PrincipalBase {
     const conditions = Object.assign({}, base.conditions);
 
     if (conditions.StringEquals) {
-      conditions.StringEquals = Object.assign(
-        { 'kms:ViaService': this.serviceName },
-        conditions.StringEquals
-      );
+      conditions.StringEquals = Object.assign({ 'kms:ViaService': this.serviceName }, conditions.StringEquals);
     } else {
       conditions.StringEquals = { 'kms:ViaService': this.serviceName };
     }

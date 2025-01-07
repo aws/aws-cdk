@@ -139,10 +139,7 @@ describeDeprecated('run lambda task', () => {
       End: true,
       Parameters: {
         FunctionName: {
-          'Fn::GetAtt': [
-            'TestFunction22AD90FC',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestFunction22AD90FC', 'Arn'],
         },
         Payload: {
           'execId.$': '$$.Execution.Id',
@@ -184,7 +181,7 @@ describeDeprecated('run lambda task', () => {
       },
       End: true,
       Parameters: {
-        'FunctionName': {
+        FunctionName: {
           Ref: 'Fn9270CBC0',
         },
         'Payload.$': '$',
@@ -218,7 +215,7 @@ describeDeprecated('run lambda task', () => {
       },
       End: true,
       Parameters: {
-        'FunctionName': {
+        FunctionName: {
           Ref: 'Fn9270CBC0',
         },
         'Payload.$': '$',

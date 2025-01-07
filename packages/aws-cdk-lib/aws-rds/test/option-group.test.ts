@@ -60,10 +60,7 @@ describe('option group', () => {
           Port: 1158,
           VpcSecurityGroupMemberships: [
             {
-              'Fn::GetAtt': [
-                'OptionsSecurityGroupOEM6C9FE79D',
-                'GroupId',
-              ],
+              'Fn::GetAtt': ['OptionsSecurityGroupOEM6C9FE79D', 'GroupId'],
             },
           ],
         },
@@ -116,10 +113,7 @@ describe('option group', () => {
           Port: 1158,
           VpcSecurityGroupMemberships: [
             {
-              'Fn::GetAtt': [
-                'CustomSecurityGroupE5E500E5',
-                'GroupId',
-              ],
+              'Fn::GetAtt': ['CustomSecurityGroupE5E500E5', 'GroupId'],
             },
           ],
         },
@@ -132,16 +126,19 @@ describe('option group', () => {
     const stack = new cdk.Stack();
 
     // THEN
-    expect(() => new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.oracleSe2({
-        version: OracleEngineVersion.VER_12_1,
-      }),
-      configurations: [
-        {
-          name: 'OEM',
-          port: 1158,
-        },
-      ],
-    })).toThrow(/`port`.*`vpc`/);
+    expect(
+      () =>
+        new OptionGroup(stack, 'Options', {
+          engine: DatabaseInstanceEngine.oracleSe2({
+            version: OracleEngineVersion.VER_12_1,
+          }),
+          configurations: [
+            {
+              name: 'OEM',
+              port: 1158,
+            },
+          ],
+        })
+    ).toThrow(/`port`.*`vpc`/);
   });
 });

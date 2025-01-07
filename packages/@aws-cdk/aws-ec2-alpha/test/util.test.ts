@@ -1,6 +1,6 @@
 import { CidrBlock } from '../lib/util';
 
-describe('Tests for the CidrBlock.rangesOverlap method to check if IPv4 ranges overlap', () =>{
+describe('Tests for the CidrBlock.rangesOverlap method to check if IPv4 ranges overlap', () => {
   test('Should return false for non-overlapping IP ranges', () => {
     const testCidr = new CidrBlock('10.0.0.0/16');
     const range1 = ['10.0.0.0', '10.0.15.255'] as [string, string];

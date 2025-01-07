@@ -152,9 +152,7 @@ export class CfnResource extends CfnRefElement {
         ];
 
         // error if flag is set, warn if flag is not
-        const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(
-          this.cfnResourceType
-        );
+        const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
         if (problematicSnapshotPolicy) {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY)) {
             throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
@@ -247,8 +245,7 @@ export class CfnResource extends CfnRefElement {
 
       // if we can't recurse further or the previous value is not an
       // object overwrite it with an object.
-      const isObject =
-        curr[key] != null && typeof curr[key] === 'object' && !Array.isArray(curr[key]);
+      const isObject = curr[key] != null && typeof curr[key] === 'object' && !Array.isArray(curr[key]);
       if (!isObject) {
         curr[key] = {};
       }
@@ -439,15 +436,9 @@ export class CfnResource extends CfnRefElement {
               Type: this.cfnResourceType,
               Properties: ignoreEmpty(this.cfnProperties),
               DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
-              CreationPolicy: capitalizePropertyNames(
-                this,
-                renderCreationPolicy(this.cfnOptions.creationPolicy)
-              ),
+              CreationPolicy: capitalizePropertyNames(this, renderCreationPolicy(this.cfnOptions.creationPolicy)),
               UpdatePolicy: capitalizePropertyNames(this, this.cfnOptions.updatePolicy),
-              UpdateReplacePolicy: capitalizePropertyNames(
-                this,
-                this.cfnOptions.updateReplacePolicy
-              ),
+              UpdateReplacePolicy: capitalizePropertyNames(this, this.cfnOptions.updateReplacePolicy),
               DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
               Version: this.cfnOptions.version,
               Description: this.cfnOptions.description,

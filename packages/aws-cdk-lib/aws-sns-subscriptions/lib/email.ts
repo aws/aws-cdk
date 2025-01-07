@@ -32,9 +32,7 @@ export class EmailSubscription implements sns.ITopicSubscription {
     return {
       subscriberId: this.emailAddress,
       endpoint: this.emailAddress,
-      protocol: this.props.json
-        ? sns.SubscriptionProtocol.EMAIL_JSON
-        : sns.SubscriptionProtocol.EMAIL,
+      protocol: this.props.json ? sns.SubscriptionProtocol.EMAIL_JSON : sns.SubscriptionProtocol.EMAIL,
       filterPolicy: this.props.filterPolicy,
       filterPolicyWithMessageBody: this.props.filterPolicyWithMessageBody,
       deadLetterQueue: this.props.deadLetterQueue,

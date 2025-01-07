@@ -87,10 +87,7 @@ test('Add Step with execution role ARN', () => {
     Parameters: {
       ClusterId: 'ClusterId',
       ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'Role1ABCC5F0',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
       },
       Step: {
         Name: 'StepName',
@@ -131,7 +128,7 @@ test('Terminate cluster with ClusterId from payload and static Step configuratio
     End: true,
     Parameters: {
       'ClusterId.$': '$.ClusterId',
-      'Step': {
+      Step: {
         Name: 'StepName',
         ActionOnFailure: 'CONTINUE',
         HadoopJarStep: {
@@ -172,8 +169,8 @@ test('Add Step with static ClusterId and Step Name from payload', () => {
       ClusterId: 'ClusterId',
       Step: {
         'Name.$': '$.StepName',
-        'ActionOnFailure': 'CONTINUE',
-        'HadoopJarStep': {
+        ActionOnFailure: 'CONTINUE',
+        HadoopJarStep: {
           Jar: 'Jar',
         },
       },
@@ -336,10 +333,12 @@ test('Add Step with static ClusterId and Step configuration with Properties', ()
         ActionOnFailure: 'CONTINUE',
         HadoopJarStep: {
           Jar: 'Jar',
-          Properties: [{
-            Key: 'PropertyKey',
-            Value: 'PropertyValue',
-          }],
+          Properties: [
+            {
+              Key: 'PropertyKey',
+              Value: 'PropertyValue',
+            },
+          ],
         },
       },
     },
@@ -361,62 +360,56 @@ test('task policies are generated', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
-        Action: [
-          'elasticmapreduce:AddJobFlowSteps',
-          'elasticmapreduce:DescribeStep',
-          'elasticmapreduce:CancelSteps',
-        ],
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':elasticmapreduce:',
-              {
-                Ref: 'AWS::Region',
-              },
-              ':',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              ':cluster/*',
+      Statement: [
+        {
+          Action: ['elasticmapreduce:AddJobFlowSteps', 'elasticmapreduce:DescribeStep', 'elasticmapreduce:CancelSteps'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':elasticmapreduce:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/*',
+              ],
             ],
-          ],
+          },
         },
-      },
-      {
-        Action: [
-          'events:PutTargets',
-          'events:PutRule',
-          'events:DescribeRule',
-        ],
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':events:',
-              {
-                Ref: 'AWS::Region',
-              },
-              ':',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              ':rule/StepFunctionsGetEventForEMRAddJobFlowStepsRule',
+        {
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':rule/StepFunctionsGetEventForEMRAddJobFlowStepsRule',
+              ],
             ],
-          ],
+          },
         },
-      }],
+      ],
     },
   });
 });
@@ -430,5 +423,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       actionOnFailure: tasks.ActionOnFailure.CONTINUE,
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
+  );
 });

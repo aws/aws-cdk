@@ -74,9 +74,7 @@ export class Duration {
    * @returns the parsed `Duration`.
    */
   public static parse(duration: string): Duration {
-    const matches = duration.match(
-      /^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)\.?(\d{1,3})?S)?)?$/
-    );
+    const matches = duration.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)\.?(\d{1,3})?S)?)?$/);
     if (!matches) {
       throw new Error(`Not a valid ISO duration: ${duration}`);
     }
@@ -118,9 +116,7 @@ export class Duration {
    */
   public plus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
-    const res =
-      convert(this.amount, this.unit, targetUnit, {}) +
-      convert(rhs.amount, rhs.unit, targetUnit, {});
+    const res = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
     return new Duration(res, targetUnit);
   }
 
@@ -129,9 +125,7 @@ export class Duration {
    */
   public minus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
-    const res =
-      convert(this.amount, this.unit, targetUnit, {}) -
-      convert(rhs.amount, rhs.unit, targetUnit, {});
+    const res = convert(this.amount, this.unit, targetUnit, {}) - convert(rhs.amount, rhs.unit, targetUnit, {});
     return new Duration(res, targetUnit);
   }
 
@@ -269,8 +263,7 @@ export class Duration {
     for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds]) {
       const count = convert(millis, TimeUnit.Milliseconds, unit, { integral: false });
       // Round down to a whole number UNLESS we're combining millis and seconds and we got to the seconds
-      const wholeCount =
-        unit === TimeUnit.Seconds && combineMillisWithSeconds ? count : Math.floor(count);
+      const wholeCount = unit === TimeUnit.Seconds && combineMillisWithSeconds ? count : Math.floor(count);
       if (wholeCount > 0) {
         ret.push([wholeCount, unit]);
         millis -= wholeCount * unit.inMillis;
@@ -342,12 +335,7 @@ class TimeUnit {
   }
 }
 
-function convert(
-  amount: number,
-  fromUnit: TimeUnit,
-  toUnit: TimeUnit,
-  { integral = true }: TimeConversionOptions
-) {
+function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
   if (fromUnit.inMillis === toUnit.inMillis) {
     if (integral && !Token.isUnresolved(amount) && !Number.isInteger(amount)) {
       throw new Error(`${amount} must be a whole number of ${toUnit}.`);
@@ -361,9 +349,7 @@ function convert(
   }
   const value = (amount * fromUnit.inMillis) / toUnit.inMillis;
   if (!Number.isInteger(value) && integral) {
-    throw new Error(
-      `'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`
-    );
+    throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
   }
   return value;
 }

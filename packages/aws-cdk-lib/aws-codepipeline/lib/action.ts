@@ -394,9 +394,7 @@ export abstract class Action implements IAction {
       this.__actionProperties = {
         ...actionProperties,
         variablesNamespace:
-          this._customerProvidedNamespace === undefined
-            ? this._namespaceToken
-            : this._customerProvidedNamespace,
+          this._customerProvidedNamespace === undefined ? this._namespaceToken : this._customerProvidedNamespace,
       };
     }
     return this.__actionProperties;
@@ -439,19 +437,13 @@ export abstract class Action implements IAction {
   /**
    * This is a renamed version of the `IAction.bind` method.
    */
-  protected abstract bound(
-    scope: Construct,
-    stage: IStage,
-    options: ActionBindOptions
-  ): ActionConfig;
+  protected abstract bound(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig;
 
   private get _pipeline(): IPipeline {
     if (this.__pipeline) {
       return this.__pipeline;
     } else {
-      throw new Error(
-        'Action must be added to a stage that is part of a pipeline before using onStateChange'
-      );
+      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -459,9 +451,7 @@ export abstract class Action implements IAction {
     if (this.__stage) {
       return this.__stage;
     } else {
-      throw new Error(
-        'Action must be added to a stage that is part of a pipeline before using onStateChange'
-      );
+      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 

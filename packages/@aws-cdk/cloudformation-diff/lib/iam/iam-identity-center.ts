@@ -12,9 +12,7 @@ export namespace ISsoPermissionSet {
     readonly cfnLogicalId: string | undefined;
     readonly ssoInstanceArn: string | undefined;
     readonly ssoPermissionsBoundary: ISsoPermissionSet.PermissionsBoundary | undefined;
-    readonly ssoCustomerManagedPolicyReferences:
-      | ISsoPermissionSet.CustomerManagedPolicyReference[]
-      | undefined;
+    readonly ssoCustomerManagedPolicyReferences: ISsoPermissionSet.CustomerManagedPolicyReference[] | undefined;
   }
   export interface PermissionsBoundary {
     readonly CustomerManagedPolicyReference?: CustomerManagedPolicyReference;
@@ -31,9 +29,7 @@ export class SsoPermissionSet implements ISsoPermissionSet.Props {
   public readonly cfnLogicalId: string | undefined;
   public readonly ssoInstanceArn: string | undefined;
   public readonly ssoPermissionsBoundary: ISsoPermissionSet.PermissionsBoundary | undefined;
-  public readonly ssoCustomerManagedPolicyReferences:
-    | ISsoPermissionSet.CustomerManagedPolicyReference[]
-    | undefined;
+  public readonly ssoCustomerManagedPolicyReferences: ISsoPermissionSet.CustomerManagedPolicyReference[] | undefined;
 
   constructor(props: ISsoPermissionSet.Props) {
     this.cfnLogicalId = props.cfnLogicalId;
@@ -109,9 +105,7 @@ export namespace ISsoInstanceACAConfig {
 export class SsoInstanceACAConfig implements ISsoInstanceACAConfig.Props {
   public readonly cfnLogicalId: string | undefined;
   public readonly ssoInstanceArn: string | undefined;
-  public readonly accessControlAttributes?:
-    | ISsoInstanceACAConfig.AccessControlAttribute[]
-    | undefined;
+  public readonly accessControlAttributes?: ISsoInstanceACAConfig.AccessControlAttribute[] | undefined;
 
   constructor(props: ISsoInstanceACAConfig.Props) {
     this.cfnLogicalId = props.cfnLogicalId;

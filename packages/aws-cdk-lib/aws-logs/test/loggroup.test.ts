@@ -4,7 +4,17 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
+import {
+  LogGroup,
+  RetentionDays,
+  LogGroupClass,
+  DataProtectionPolicy,
+  DataIdentifier,
+  CustomDataIdentifier,
+  ILogGroup,
+  ILogSubscriptionDestination,
+  FilterPattern,
+} from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -155,13 +165,21 @@ describe('log group', () => {
     new LogGroup(stack, 'LogGroup');
 
     // THEN
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::Logs::LogGroup', {
-      LogGroupClass: LogGroupClass.STANDARD,
-    }, 0);
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::Logs::LogGroup',
+      {
+        LogGroupClass: LogGroupClass.STANDARD,
+      },
+      0
+    );
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::Logs::LogGroup', {
-      LogGroupClass: LogGroupClass.INFREQUENT_ACCESS,
-    }, 0);
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::Logs::LogGroup',
+      {
+        LogGroupClass: LogGroupClass.INFREQUENT_ACCESS,
+      },
+      0
+    );
   });
 
   test('with log group class in a non-supported region', () => {
@@ -179,7 +197,10 @@ describe('log group', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(/The LogGroupClass property is not supported in the following regions.+us-isob-east-1/));
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp(/The LogGroupClass property is not supported in the following regions.+us-isob-east-1/)
+    );
   });
 
   test('will delete log group if asked to', () => {
@@ -209,7 +230,11 @@ describe('log group', () => {
     const stack2 = new Stack();
 
     // WHEN
-    const imported = LogGroup.fromLogGroupArn(stack2, 'lg', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
+    const imported = LogGroup.fromLogGroupArn(
+      stack2,
+      'lg',
+      'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group'
+    );
     imported.addStream('MakeMeAStream');
 
     // THEN
@@ -226,8 +251,11 @@ describe('log group', () => {
     const importRegion = 'asgard-1';
 
     // WHEN
-    const imported = LogGroup.fromLogGroupArn(stack, 'lg',
-      `arn:aws:logs:${importRegion}:123456789012:log-group:my-log-group`);
+    const imported = LogGroup.fromLogGroupArn(
+      stack,
+      'lg',
+      `arn:aws:logs:${importRegion}:123456789012:log-group:my-log-group`
+    );
     imported.addStream('MakeMeAStream');
 
     // THEN
@@ -259,77 +287,92 @@ describe('log group', () => {
     });
   });
 
-  describe('loggroups imported by name have stream wildcard appended to grant ARN', () => void dataDrivenTests([
-    // Regardless of whether the user put :* there already because of this bug, we
-    // don't want to append it twice.
-    '',
-    ':*',
-  ], (suffix: string) => {
-    // GIVEN
-    const stack = new Stack();
-    const user = new iam.User(stack, 'Role');
-    const imported = LogGroup.fromLogGroupName(stack, 'lg', `my-log-group${suffix}`);
+  describe('loggroups imported by name have stream wildcard appended to grant ARN', () =>
+    void dataDrivenTests(
+      [
+        // Regardless of whether the user put :* there already because of this bug, we
+        // don't want to append it twice.
+        '',
+        ':*',
+      ],
+      (suffix: string) => {
+        // GIVEN
+        const stack = new Stack();
+        const user = new iam.User(stack, 'Role');
+        const imported = LogGroup.fromLogGroupName(stack, 'lg', `my-log-group${suffix}`);
 
-    // WHEN
-    imported.grantWrite(user);
+        // WHEN
+        imported.grantWrite(user);
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':logs:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':log-group:my-log-group:*',
-              ]],
-            },
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+                Effect: 'Allow',
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':log-group:my-log-group:*',
+                    ],
+                  ],
+                },
+              },
+            ],
           },
-        ],
-      },
-    });
+        });
 
-    expect(imported.logGroupName).toEqual('my-log-group');
-  }));
+        expect(imported.logGroupName).toEqual('my-log-group');
+      }
+    ));
 
-  describe('loggroups imported by ARN have stream wildcard appended to grant ARN', () => void dataDrivenTests([
-    // Regardless of whether the user put :* there already because of this bug, we
-    // don't want to append it twice.
-    '',
-    ':*',
-  ], (suffix: string) => {
-    // GIVEN
-    const stack = new Stack();
-    const user = new iam.User(stack, 'Role');
-    const imported = LogGroup.fromLogGroupArn(stack, 'lg', `arn:aws:logs:us-west-1:123456789012:log-group:my-log-group${suffix}`);
+  describe('loggroups imported by ARN have stream wildcard appended to grant ARN', () =>
+    void dataDrivenTests(
+      [
+        // Regardless of whether the user put :* there already because of this bug, we
+        // don't want to append it twice.
+        '',
+        ':*',
+      ],
+      (suffix: string) => {
+        // GIVEN
+        const stack = new Stack();
+        const user = new iam.User(stack, 'Role');
+        const imported = LogGroup.fromLogGroupArn(
+          stack,
+          'lg',
+          `arn:aws:logs:us-west-1:123456789012:log-group:my-log-group${suffix}`
+        );
 
-    // WHEN
-    imported.grantWrite(user);
+        // WHEN
+        imported.grantWrite(user);
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-            Effect: 'Allow',
-            Resource: 'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group:*',
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+                Effect: 'Allow',
+                Resource: 'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group:*',
+              },
+            ],
           },
-        ],
-      },
-    });
+        });
 
-    expect(imported.logGroupName).toEqual('my-log-group');
-  }));
+        expect(imported.logGroupName).toEqual('my-log-group');
+      }
+    ));
 
   test('extractMetric', () => {
     // GIVEN
@@ -418,7 +461,13 @@ describe('log group', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['logs:FilterLogEvents', 'logs:GetLogEvents', 'logs:GetLogGroupFields', 'logs:DescribeLogGroups', 'logs:DescribeLogStreams'],
+            Action: [
+              'logs:FilterLogEvents',
+              'logs:GetLogEvents',
+              'logs:GetLogGroupFields',
+              'logs:DescribeLogGroups',
+              'logs:DescribeLogStreams',
+            ],
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
           },
@@ -445,10 +494,7 @@ describe('log group', () => {
           [
             '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"',
             {
-              'Fn::GetAtt': [
-                'LogGroupF5B46931',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
             },
             '"}],"Version":"2012-10-17"}',
           ],
@@ -464,15 +510,18 @@ describe('log group', () => {
     const lg = new LogGroup(stack, 'LogGroup');
 
     // WHEN
-    lg.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['logs:PutLogEvents'],
-      principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/user-name')],
-    }));
+    lg.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['logs:PutLogEvents'],
+        principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/user-name')],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
+      PolicyDocument:
+        '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
       PolicyName: 'LogGroupPolicy643B329C',
     });
   });
@@ -483,21 +532,25 @@ describe('log group', () => {
     const lg = new LogGroup(stack, 'LogGroup');
 
     // WHEN
-    lg.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['logs:PutLogEvents'],
-      principals: [new iam.AnyPrincipal()],
-    }));
+    lg.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['logs:PutLogEvents'],
+        principals: [new iam.AnyPrincipal()],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
       PolicyDocument: JSON.stringify({
-        Statement: [{
-          Action: 'logs:PutLogEvents',
-          Effect: 'Allow',
-          Principal: { AWS: '*' },
-          Resource: '*',
-        }],
+        Statement: [
+          {
+            Action: 'logs:PutLogEvents',
+            Effect: 'Allow',
+            Principal: { AWS: '*' },
+            Resource: '*',
+          },
+        ],
         Version: '2012-10-17',
       }),
     });
@@ -509,11 +562,13 @@ describe('log group', () => {
     const lg = new LogGroup(stack, 'LogGroup');
 
     // WHEN
-    lg.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['logs:PutLogEvents'],
-      principals: [iam.Role.fromRoleArn(stack, 'Role', Fn.importValue('SomeRole'))],
-    }));
+    lg.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['logs:PutLogEvents'],
+        principals: [iam.Role.fromRoleArn(stack, 'Role', Fn.importValue('SomeRole'))],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
@@ -523,10 +578,7 @@ describe('log group', () => {
           [
             '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"',
             {
-              'Fn::Select': [
-                4,
-                { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] },
-              ],
+              'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] }],
             },
             '\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
           ],
@@ -582,11 +634,7 @@ describe('log group', () => {
               {
                 'Fn::Join': [
                   '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/EmailAddress',
-                  ],
+                  ['arn:', { Ref: 'AWS::Partition' }, ':dataprotection::aws:data-identifier/EmailAddress'],
                 ],
               },
             ],
@@ -602,11 +650,7 @@ describe('log group', () => {
               {
                 'Fn::Join': [
                   '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/EmailAddress',
-                  ],
+                  ['arn:', { Ref: 'AWS::Partition' }, ':dataprotection::aws:data-identifier/EmailAddress'],
                 ],
               },
             ],
@@ -652,11 +696,7 @@ describe('log group', () => {
               {
                 'Fn::Join': [
                   '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/NewIdentifier',
-                  ],
+                  ['arn:', { Ref: 'AWS::Partition' }, ':dataprotection::aws:data-identifier/NewIdentifier'],
                 ],
               },
             ],
@@ -672,11 +712,7 @@ describe('log group', () => {
               {
                 'Fn::Join': [
                   '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/NewIdentifier',
-                  ],
+                  ['arn:', { Ref: 'AWS::Partition' }, ':dataprotection::aws:data-identifier/NewIdentifier'],
                 ],
               },
             ],
@@ -727,11 +763,7 @@ describe('log group', () => {
               {
                 'Fn::Join': [
                   '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/EmailAddress',
-                  ],
+                  ['arn:', { Ref: 'AWS::Partition' }, ':dataprotection::aws:data-identifier/EmailAddress'],
                 ],
               },
             ],
@@ -761,11 +793,7 @@ describe('log group', () => {
               {
                 'Fn::Join': [
                   '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/EmailAddress',
-                  ],
+                  ['arn:', { Ref: 'AWS::Partition' }, ':dataprotection::aws:data-identifier/EmailAddress'],
                 ],
               },
             ],
@@ -815,9 +843,7 @@ describe('log group', () => {
         statement: [
           {
             sid: 'audit-statement-cdk',
-            dataIdentifier: [
-              'EmployeeId',
-            ],
+            dataIdentifier: ['EmployeeId'],
             operation: {
               audit: {
                 findingsDestination: {},
@@ -826,9 +852,7 @@ describe('log group', () => {
           },
           {
             sid: 'redact-statement-cdk',
-            dataIdentifier: [
-              'EmployeeId',
-            ],
+            dataIdentifier: ['EmployeeId'],
             operation: {
               deidentify: {
                 maskConfig: {},
@@ -880,11 +904,7 @@ describe('log group', () => {
               {
                 'Fn::Join': [
                   '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/EmailAddress',
-                  ],
+                  ['arn:', { Ref: 'AWS::Partition' }, ':dataprotection::aws:data-identifier/EmailAddress'],
                 ],
               },
             ],
@@ -901,11 +921,7 @@ describe('log group', () => {
               {
                 'Fn::Join': [
                   '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/EmailAddress',
-                  ],
+                  ['arn:', { Ref: 'AWS::Partition' }, ':dataprotection::aws:data-identifier/EmailAddress'],
                 ],
               },
             ],

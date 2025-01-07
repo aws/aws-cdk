@@ -1,11 +1,6 @@
 import { Construct } from 'constructs';
 import { ContainerOverride } from './ecs-task-properties';
-import {
-  addToDeadLetterQueueResourcePolicy,
-  bindBaseTargetConfig,
-  singletonEventRole,
-  TargetBaseProps,
-} from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as ec2 from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import * as events from '../../aws-events';
@@ -183,10 +178,7 @@ export class EcsTask implements events.IRuleTarget {
     this.enableExecuteCommand = props.enableExecuteCommand;
     this.launchType = props.launchType;
 
-    const propagateTagsValidValues = [
-      ecs.PropagatedTagSource.TASK_DEFINITION,
-      ecs.PropagatedTagSource.NONE,
-    ];
+    const propagateTagsValidValues = [ecs.PropagatedTagSource.TASK_DEFINITION, ecs.PropagatedTagSource.NONE];
     if (props.propagateTags && !propagateTagsValidValues.includes(props.propagateTags)) {
       throw new Error('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
     }
@@ -223,11 +215,9 @@ export class EcsTask implements events.IRuleTarget {
     }
 
     let securityGroup =
-      props.securityGroup ||
-      (this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup);
+      props.securityGroup || (this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup);
     securityGroup =
-      securityGroup ||
-      new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+      securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.securityGroup = securityGroup; // Maintain backwards-compatibility for customers that read the generated security group.
     this.securityGroups = [securityGroup];
   }
@@ -261,9 +251,7 @@ export class EcsTask implements events.IRuleTarget {
     }
 
     const assignPublicIp =
-      (this.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC)
-        ? 'ENABLED'
-        : 'DISABLED';
+      (this.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
     const launchType = this.launchType ?? (this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE');
 
     if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
@@ -288,8 +276,7 @@ export class EcsTask implements events.IRuleTarget {
               awsVpcConfiguration: {
                 subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
                 assignPublicIp,
-                securityGroups:
-                  this.securityGroups && this.securityGroups.map((sg) => sg.securityGroupId),
+                securityGroups: this.securityGroups && this.securityGroups.map((sg) => sg.securityGroupId),
               },
             },
           }

@@ -57,11 +57,7 @@ export class TrustStore extends Resource implements ITrustStore {
   /**
    * Import from ARN
    */
-  public static fromTrustStoreArn(
-    scope: Construct,
-    id: string,
-    trustStoreArn: string
-  ): ITrustStore {
+  public static fromTrustStoreArn(scope: Construct, id: string, trustStoreArn: string): ITrustStore {
     const resourceParts = Fn.split('/', trustStoreArn);
 
     const trustStoreName = Fn.select(0, resourceParts);

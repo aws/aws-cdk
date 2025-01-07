@@ -77,9 +77,7 @@ class AssetModelData extends ModelData {
   ) {
     super();
     if (!path.toLowerCase().endsWith(ARTIFACT_EXTENSION)) {
-      throw new Error(
-        `Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.path})`
-      );
+      throw new Error(`Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.path})`);
     }
   }
 

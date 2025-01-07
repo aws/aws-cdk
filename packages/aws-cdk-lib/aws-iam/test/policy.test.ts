@@ -1,6 +1,19 @@
 import { Template } from '../../assertions';
 import { App, CfnResource, Resource, Stack } from '../../core';
-import { AddToPrincipalPolicyResult, AnyPrincipal, CfnPolicy, Grant, Group, IResourceWithPolicy, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import {
+  AddToPrincipalPolicyResult,
+  AnyPrincipal,
+  CfnPolicy,
+  Grant,
+  Group,
+  IResourceWithPolicy,
+  Policy,
+  PolicyDocument,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+  User,
+} from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -28,24 +41,21 @@ describe('IAM policy', () => {
     group.attachInlinePolicy(policy);
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyPolicy39D66CF6:
-         {
-           Type: 'AWS::IAM::Policy',
-           Properties:
-          {
+      Resources: {
+        MyPolicy39D66CF6: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
             Groups: [{ Ref: 'MyGroupCBA54B1B' }],
-            PolicyDocument:
-           {
-             Statement:
-            [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
-             Version: '2012-10-17',
-           },
+            PolicyDocument: {
+              Statement: [
+                { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+                { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' },
+              ],
+              Version: '2012-10-17',
+            },
             PolicyName: 'MyPolicyName',
           },
-         },
+        },
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
       },
     });
@@ -76,9 +86,7 @@ describe('IAM policy', () => {
             PolicyName: 'MyPolicyName',
             Groups: [{ Ref: 'MyGroupCBA54B1B' }],
             PolicyDocument: {
-              Statement: [
-                { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              ],
+              Statement: [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' }],
               Version: '2012-10-17',
             },
           },
@@ -96,24 +104,21 @@ describe('IAM policy', () => {
     user.attachInlinePolicy(policy);
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyPolicy39D66CF6:
-         {
-           Type: 'AWS::IAM::Policy',
-           Properties:
-          {
-            PolicyDocument:
-           {
-             Statement:
-            [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
-             Version: '2012-10-17',
-           },
+      Resources: {
+        MyPolicy39D66CF6: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
+                { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+                { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' },
+              ],
+              Version: '2012-10-17',
+            },
             PolicyName: 'MyPolicy39D66CF6',
             Users: [{ Ref: 'MyUserDC45028B' }],
           },
-         },
+        },
         MyUserDC45028B: { Type: 'AWS::IAM::User' },
       },
     });
@@ -135,44 +140,37 @@ describe('IAM policy', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
+      Resources: {
         User1E278A736: { Type: 'AWS::IAM::User' },
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
-        Role13A5C70C1:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'test.service' },
-            }],
-             Version: '2012-10-17',
-           },
+        Role13A5C70C1: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
           },
-         },
-        MyTestPolicy316BDB50:
-         {
-           Type: 'AWS::IAM::Policy',
-           Properties:
-          {
+        },
+        MyTestPolicy316BDB50: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
             Groups: [{ Ref: 'Group1BEBD4686' }],
-            PolicyDocument:
-           {
-             Statement:
-            [{ Action: 'dynamodb:PutItem', Effect: 'Allow', Resource: '*' }],
-             Version: '2012-10-17',
-           },
+            PolicyDocument: {
+              Statement: [{ Action: 'dynamodb:PutItem', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17',
+            },
             PolicyName: 'Foo',
             Roles: [{ Ref: 'Role13A5C70C1' }],
             Users: [{ Ref: 'User1E278A736' }],
           },
-         },
+        },
       },
     });
   });
@@ -186,22 +184,18 @@ describe('IAM policy', () => {
     p.attachToUser(user);
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyPolicy39D66CF6:
-         {
-           Type: 'AWS::IAM::Policy',
-           Properties:
-          {
-            PolicyDocument:
-           {
-             Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
-             Version: '2012-10-17',
-           },
+      Resources: {
+        MyPolicy39D66CF6: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17',
+            },
             PolicyName: 'MyPolicy39D66CF6',
             Users: [{ Ref: 'MyUserDC45028B' }],
           },
-         },
+        },
         MyUserDC45028B: { Type: 'AWS::IAM::User' },
       },
     });
@@ -219,45 +213,38 @@ describe('IAM policy', () => {
     p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['dynamodb:GetItem'] }));
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyTestPolicy316BDB50:
-         {
-           Type: 'AWS::IAM::Policy',
-           Properties:
-          {
+      Resources: {
+        MyTestPolicy316BDB50: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
             Groups: [{ Ref: 'Group1BEBD4686' }],
-            PolicyDocument:
-           {
-             Statement:
-            [{ Action: 'dynamodb:GetItem', Effect: 'Allow', Resource: '*' }],
-             Version: '2012-10-17',
-           },
+            PolicyDocument: {
+              Statement: [{ Action: 'dynamodb:GetItem', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17',
+            },
             PolicyName: 'Foo',
             Roles: [{ Ref: 'Role13A5C70C1' }],
             Users: [{ Ref: 'User1E278A736' }, { Ref: 'User21F1486D1' }],
           },
-         },
+        },
         User1E278A736: { Type: 'AWS::IAM::User' },
         User21F1486D1: { Type: 'AWS::IAM::User' },
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
-        Role13A5C70C1:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'test.service' },
-            }],
-             Version: '2012-10-17',
-           },
+        Role13A5C70C1: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
           },
-         },
+        },
       },
     });
   });
@@ -275,43 +262,37 @@ describe('IAM policy', () => {
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyPolicy39D66CF6:
-         {
-           Type: 'AWS::IAM::Policy',
-           Properties:
-          {
+      Resources: {
+        MyPolicy39D66CF6: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
             Groups: [{ Ref: 'MyGroupCBA54B1B' }],
-            PolicyDocument:
-           {
-             Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
-             Version: '2012-10-17',
-           },
+            PolicyDocument: {
+              Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17',
+            },
             PolicyName: 'MyPolicy39D66CF6',
             Roles: [{ Ref: 'MyRoleF48FFE04' }],
             Users: [{ Ref: 'MyUserDC45028B' }],
           },
-         },
+        },
         MyUserDC45028B: { Type: 'AWS::IAM::User' },
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
-        MyRoleF48FFE04:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'test.service' },
-            }],
-             Version: '2012-10-17',
-           },
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
           },
-         },
+        },
       },
     });
   });
@@ -359,43 +340,37 @@ describe('IAM policy', () => {
     p.attachToRole(role);
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        Policy23B91518:
-         {
-           Type: 'AWS::IAM::Policy',
-           Properties:
-          {
+      Resources: {
+        Policy23B91518: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
             Groups: [{ Ref: 'MyGroupCBA54B1B' }],
-            PolicyDocument:
-           {
-             Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
-             Version: '2012-10-17',
-           },
+            PolicyDocument: {
+              Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17',
+            },
             PolicyName: 'Policy23B91518',
             Roles: [{ Ref: 'MyRoleF48FFE04' }],
             Users: [{ Ref: 'MyUserDC45028B' }],
           },
-         },
+        },
         MyUserDC45028B: { Type: 'AWS::IAM::User' },
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
-        MyRoleF48FFE04:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'test.service' },
-            }],
-             Version: '2012-10-17',
-           },
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
           },
-         },
+        },
       },
     });
   });
@@ -422,43 +397,37 @@ describe('IAM policy', () => {
     p.attachToRole(importedRole);
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        Policy23B91518:
-         {
-           Type: 'AWS::IAM::Policy',
-           Properties:
-          {
+      Resources: {
+        Policy23B91518: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
             Groups: [{ Ref: 'MyGroupCBA54B1B' }],
-            PolicyDocument:
-           {
-             Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
-             Version: '2012-10-17',
-           },
+            PolicyDocument: {
+              Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17',
+            },
             PolicyName: 'Policy23B91518',
             Roles: [{ Ref: 'MyRoleF48FFE04' }],
             Users: [{ Ref: 'MyUserDC45028B' }],
           },
-         },
+        },
         MyUserDC45028B: { Type: 'AWS::IAM::User' },
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
-        MyRoleF48FFE04:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'test.service' },
-            }],
-             Version: '2012-10-17',
-           },
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
           },
-         },
+        },
       },
     });
   });
@@ -472,7 +441,7 @@ describe('IAM policy', () => {
     createPolicyWithLogicalId(stack, 'Foo');
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyName': 'Foo',
+      PolicyName: 'Foo',
     });
   });
 
@@ -483,7 +452,7 @@ describe('IAM policy', () => {
     createPolicyWithLogicalId(stack, logicalIdOver128);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyName': logicalId128,
+      PolicyName: logicalId128,
     });
 
     function dup(count: number) {
@@ -519,10 +488,12 @@ describe('IAM policy', () => {
   test('force=false, dependency on attached and non-empty Policy can be taken', () => {
     // GIVEN
     const pol = new Policy(stack, 'Pol', { force: false });
-    pol.addStatements(new PolicyStatement({
-      actions: ['s3:*'],
-      resources: ['*'],
-    }));
+    pol.addStatements(
+      new PolicyStatement({
+        actions: ['s3:*'],
+        resources: ['*'],
+      })
+    );
     pol.attachToUser(new User(stack, 'User'));
 
     const res = new CfnResource(stack, 'Resource', {
@@ -555,13 +526,17 @@ describe('IAM policy', () => {
 
   test('fails if policy document is invalid', () => {
     new Policy(stack, 'MyRole', {
-      statements: [new PolicyStatement({
-        actions: ['*'],
-        principals: [new ServicePrincipal('test.service')],
-      })],
+      statements: [
+        new PolicyStatement({
+          actions: ['*'],
+          principals: [new ServicePrincipal('test.service')],
+        }),
+      ],
     });
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+    expect(() => app.synth()).toThrow(
+      /A PolicyStatement used in an identity-based policy cannot specify any IAM principals/
+    );
   });
 
   test('Policies can be granted principal permissions', () => {
@@ -574,9 +549,7 @@ describe('IAM policy', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyPolicyName',
       PolicyDocument: {
-        Statement: [
-          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
-        ],
+        Statement: [{ Action: 'dummy:Action', Effect: 'Allow', Resource: '*' }],
         Version: '2012-10-17',
       },
     });
@@ -592,16 +565,14 @@ describe('IAM policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         throw new Error('should not be called.');
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy');
     Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resource, resourceArns: ['*'] });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyPolicyName',
       PolicyDocument: {
-        Statement: [
-          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
-        ],
+        Statement: [{ Action: 'dummy:Action', Effect: 'Allow', Resource: '*' }],
         Version: '2012-10-17',
       },
     });
@@ -616,7 +587,7 @@ describe('IAM policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         throw new Error('should not be called.');
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
 
     expect(() => {
@@ -633,7 +604,7 @@ describe('IAM policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         throw new Error('should not be called.');
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy');
 
     expect(() => {
@@ -648,9 +619,11 @@ function createPolicyWithLogicalId(stack: Stack, logicalId: string): void {
   cfnPolicy.overrideLogicalId(logicalId); // force a particular logical ID
 
   // add statements & principal to satisfy validation
-  policy.addStatements(new PolicyStatement({
-    actions: ['*'],
-    resources: ['*'],
-  }));
+  policy.addStatements(
+    new PolicyStatement({
+      actions: ['*'],
+      resources: ['*'],
+    })
+  );
   policy.attachToRole(new Role(stack, 'Role', { assumedBy: new AnyPrincipal() }));
 }

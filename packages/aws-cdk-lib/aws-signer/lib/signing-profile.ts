@@ -10,9 +10,7 @@ export class Platform {
   /**
    * Specification of signature format and signing algorithms for AWS IoT Device.
    */
-  public static readonly AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA = Platform.of(
-    'AWSIoTDeviceManagement-SHA256-ECDSA'
-  );
+  public static readonly AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA = Platform.of('AWSIoTDeviceManagement-SHA256-ECDSA');
 
   /**
    * Specification of signature format and signing algorithms for AWS Lambda.

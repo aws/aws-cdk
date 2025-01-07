@@ -16,9 +16,7 @@ describe('Integration test cases', () => {
         version: 'v1.0.0',
         testCases: {
           test1: {
-            stacks: [
-              'test-stack',
-            ],
+            stacks: ['test-stack'],
           },
         },
       }),
@@ -31,9 +29,7 @@ describe('Integration test cases', () => {
     expect(testCases.getStacksWithoutUpdateWorkflow().length).toEqual(0);
     expect(testCases.testSuite).toEqual({
       test1: {
-        stacks: [
-          'test-stack',
-        ],
+        stacks: ['test-stack'],
       },
     });
   });
@@ -49,9 +45,7 @@ describe('Integration test cases', () => {
             stackUpdateWorkflow: false,
             diffAssets: true,
             allowDestroy: ['AWS::IAM::Role'],
-            stacks: [
-              'test-stack',
-            ],
+            stacks: ['test-stack'],
           },
         },
       }),
@@ -67,9 +61,7 @@ describe('Integration test cases', () => {
         stackUpdateWorkflow: false,
         diffAssets: true,
         allowDestroy: ['AWS::IAM::Role'],
-        stacks: [
-          'test-stack',
-        ],
+        stacks: ['test-stack'],
       },
     });
   });
@@ -85,15 +77,11 @@ describe('Integration test cases', () => {
             stackUpdateWorkflow: false,
             diffAssets: true,
             allowDestroy: ['AWS::IAM::Role'],
-            stacks: [
-              'test-stack1',
-            ],
+            stacks: ['test-stack1'],
           },
           test2: {
             diffAssets: false,
-            stacks: [
-              'test-stack2',
-            ],
+            stacks: ['test-stack2'],
           },
         },
       }),
@@ -163,9 +151,7 @@ describe('Legacy Integration test cases', () => {
       test: {
         stackUpdateWorkflow: true,
         diffAssets: false,
-        stacks: [
-          'test-stack',
-        ],
+        stacks: ['test-stack'],
       },
     });
   });
@@ -173,7 +159,8 @@ describe('Legacy Integration test cases', () => {
   test('manifest with pragma', () => {
     // GIVEN
     mockfs({
-      [testsFile]: '/// !cdk-integ test-stack pragma:enable-lookups pragma:disable-update-workflow pragma:include-assets-hashes',
+      [testsFile]:
+        '/// !cdk-integ test-stack pragma:enable-lookups pragma:disable-update-workflow pragma:include-assets-hashes',
     });
     listMock = jest.fn().mockImplementation(() => {
       return 'stackabc';
@@ -196,9 +183,7 @@ describe('Legacy Integration test cases', () => {
       test: {
         stackUpdateWorkflow: false,
         diffAssets: true,
-        stacks: [
-          'test-stack',
-        ],
+        stacks: ['test-stack'],
       },
     });
   });
@@ -229,9 +214,7 @@ describe('Legacy Integration test cases', () => {
       test: {
         stackUpdateWorkflow: true,
         diffAssets: false,
-        stacks: [
-          'stackabc',
-        ],
+        stacks: ['stackabc'],
       },
     });
   });
@@ -270,7 +253,6 @@ describe('Legacy Integration test cases', () => {
     expect(context).toEqual({
       '@aws-cdk/core:newStyleStackSynthesis': 'true',
     });
-
   });
 
   test('invalid pragma context throws', () => {

@@ -6,9 +6,7 @@ const app = new App();
 const stack = new Stack(app, 'InvokeFunctionAssertions');
 
 const targetFunc = new lambda.Function(stack, 'TargetFunc', {
-  code: lambda.Code.fromInline(
-    'exports.handler = async (event, context) => { return { foo: "bar" }; };'
-  ),
+  code: lambda.Code.fromInline('exports.handler = async (event, context) => { return { foo: "bar" }; };'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_LATEST,
 });

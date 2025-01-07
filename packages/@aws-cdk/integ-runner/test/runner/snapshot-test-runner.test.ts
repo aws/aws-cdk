@@ -21,14 +21,26 @@ beforeEach(() => {
   cdkMock.mockAll().list.mockImplementation(() => 'stackabc');
 
   jest.spyOn(child_process, 'spawnSync').mockImplementation();
-  jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
-  jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+  jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(process.stdout, 'write').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(fs, 'moveSync').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(fs, 'removeSync').mockImplementation(() => {
+    return true;
+  });
 
   // fs-extra delegates to the built-in one, this also catches calls done directly
-  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => { return true; });
-  jest.spyOn(builtinFs, 'rmdirSync').mockImplementation(() => { return true; });
+  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(builtinFs, 'rmdirSync').mockImplementation(() => {
+    return true;
+  });
 });
 
 afterEach(() => {
@@ -51,11 +63,15 @@ describe('IntegTest runSnapshotTests', () => {
     const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot.js');
 
     // THEN
-    expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
-      reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: 'xxxxx.test-with-snapshot',
-      message: 'new-test-stack does not exist in snapshot, but does in actual',
-    })]));
+    expect(results.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          reason: DiagnosticReason.SNAPSHOT_FAILED,
+          testName: 'xxxxx.test-with-snapshot',
+          message: 'new-test-stack does not exist in snapshot, but does in actual',
+        }),
+      ])
+    );
   });
 
   test('with defaults and diff', () => {
@@ -63,29 +79,38 @@ describe('IntegTest runSnapshotTests', () => {
     const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot.js', 'xxxxx.test-with-snapshot-diff.js.snapshot');
 
     // THEN
-    expect(results.diagnostics).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        reason: DiagnosticReason.SNAPSHOT_FAILED,
-        testName: 'xxxxx.test-with-snapshot',
-        message: expect.stringContaining('foobar'),
-        config: { diffAssets: true },
-      }),
-    ]));
-    expect(results.destructiveChanges).not.toEqual([{
-      impact: 'WILL_DESTROY',
-      logicalId: 'MyFunction1ServiceRole9852B06B',
-      stackName: 'test-stack',
-    }]);
-    expect(results.destructiveChanges).toEqual([{
-      impact: 'WILL_DESTROY',
-      logicalId: 'MyLambdaFuncServiceRoleDefaultPolicyBEB0E748',
-      stackName: 'test-stack',
-    }]);
+    expect(results.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          reason: DiagnosticReason.SNAPSHOT_FAILED,
+          testName: 'xxxxx.test-with-snapshot',
+          message: expect.stringContaining('foobar'),
+          config: { diffAssets: true },
+        }),
+      ])
+    );
+    expect(results.destructiveChanges).not.toEqual([
+      {
+        impact: 'WILL_DESTROY',
+        logicalId: 'MyFunction1ServiceRole9852B06B',
+        stackName: 'test-stack',
+      },
+    ]);
+    expect(results.destructiveChanges).toEqual([
+      {
+        impact: 'WILL_DESTROY',
+        logicalId: 'MyLambdaFuncServiceRoleDefaultPolicyBEB0E748',
+        stackName: 'test-stack',
+      },
+    ]);
   });
 
   test('dont diff new asset hashes', () => {
     // WHEN
-    const results = cdkMock.snapshotTest('xxxxx.test-with-new-assets-diff.js', 'cdk-integ.out.xxxxx.test-with-new-assets.js.snapshot');
+    const results = cdkMock.snapshotTest(
+      'xxxxx.test-with-new-assets-diff.js',
+      'cdk-integ.out.xxxxx.test-with-new-assets.js.snapshot'
+    );
 
     // THEN
     expect(results.diagnostics).toEqual([]);
@@ -93,70 +118,101 @@ describe('IntegTest runSnapshotTests', () => {
 
   test('diff new asset hashes', () => {
     // WHEN
-    const results = cdkMock.snapshotTest('xxxxx.test-with-new-assets.js', 'cdk-integ.out.xxxxx.test-with-new-assets-diff.js.snapshot');
+    const results = cdkMock.snapshotTest(
+      'xxxxx.test-with-new-assets.js',
+      'cdk-integ.out.xxxxx.test-with-new-assets-diff.js.snapshot'
+    );
 
     // THEN
-    expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
-      reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: 'xxxxx.test-with-new-assets',
-      message: expect.stringContaining('S3Key'),
-      config: { diffAssets: true },
-    }),
-    expect.objectContaining({
-      reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: 'xxxxx.test-with-new-assets',
-      message: expect.stringContaining('TemplateURL'),
-      config: { diffAssets: true },
-    })]));
+    expect(results.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          reason: DiagnosticReason.SNAPSHOT_FAILED,
+          testName: 'xxxxx.test-with-new-assets',
+          message: expect.stringContaining('S3Key'),
+          config: { diffAssets: true },
+        }),
+        expect.objectContaining({
+          reason: DiagnosticReason.SNAPSHOT_FAILED,
+          testName: 'xxxxx.test-with-new-assets',
+          message: expect.stringContaining('TemplateURL'),
+          config: { diffAssets: true },
+        }),
+      ])
+    );
   });
 
   describe('Nested Stacks', () => {
     test('it will compare snapshots for nested stacks', () => {
       // WHEN
-      const results = cdkMock.snapshotTest('xxxxx.test-with-nested-stack.js', 'xxxxx.test-with-nested-stack-changed.js.snapshot');
+      const results = cdkMock.snapshotTest(
+        'xxxxx.test-with-nested-stack.js',
+        'xxxxx.test-with-nested-stack-changed.js.snapshot'
+      );
 
       // THEN
-      expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
-        reason: DiagnosticReason.SNAPSHOT_FAILED,
-        testName: 'xxxxx.test-with-nested-stack',
-        stackName: expect.stringContaining('teststacknested'),
-        message: expect.stringContaining('AWS::SNS::Topic'),
-        config: { diffAssets: false },
-      })]));
+      expect(results.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            reason: DiagnosticReason.SNAPSHOT_FAILED,
+            testName: 'xxxxx.test-with-nested-stack',
+            stackName: expect.stringContaining('teststacknested'),
+            message: expect.stringContaining('AWS::SNS::Topic'),
+            config: { diffAssets: false },
+          }),
+        ])
+      );
     });
 
     test('it will diff assets for nested stacks', () => {
       // WHEN
-      const results = cdkMock.snapshotTest('xxxxx.test-with-nested-stack.js', 'xxxxx.test-with-asset-in-nested-stack.js.snapshot');
+      const results = cdkMock.snapshotTest(
+        'xxxxx.test-with-nested-stack.js',
+        'xxxxx.test-with-asset-in-nested-stack.js.snapshot'
+      );
 
       // THEN
-      expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
-        reason: DiagnosticReason.SNAPSHOT_FAILED,
-        testName: 'xxxxx.test-with-nested-stack',
-        stackName: expect.stringContaining('teststacknested'),
-        message: expect.stringContaining('S3Key'),
-        config: { diffAssets: true },
-      })]));
+      expect(results.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            reason: DiagnosticReason.SNAPSHOT_FAILED,
+            testName: 'xxxxx.test-with-nested-stack',
+            stackName: expect.stringContaining('teststacknested'),
+            message: expect.stringContaining('S3Key'),
+            config: { diffAssets: true },
+          }),
+        ])
+      );
     });
   });
 
   describe('Legacy parameter based assets ', () => {
     test('diff asset hashes', () => {
       // WHEN
-      const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot-assets.js', 'xxxxx.test-with-snapshot-assets-diff.js.snapshot');
+      const results = cdkMock.snapshotTest(
+        'xxxxx.test-with-snapshot-assets.js',
+        'xxxxx.test-with-snapshot-assets-diff.js.snapshot'
+      );
 
       // THEN
-      expect(results.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
-        reason: DiagnosticReason.SNAPSHOT_FAILED,
-        testName: 'xxxxx.test-with-snapshot-assets',
-        message: expect.stringContaining('Parameters'),
-        config: { diffAssets: true },
-      })]));
+      expect(results.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            reason: DiagnosticReason.SNAPSHOT_FAILED,
+            testName: 'xxxxx.test-with-snapshot-assets',
+            message: expect.stringContaining('Parameters'),
+            config: { diffAssets: true },
+          }),
+        ])
+      );
     });
 
     test('dont diff asset hashes', () => {
       // WHEN
-      const results = cdkMock.snapshotTest('xxxxx.test-with-snapshot-assets-diff.js', 'xxxxx.test-with-snapshot-assets.js.snapshot');
+      const results = cdkMock.snapshotTest(
+        'xxxxx.test-with-snapshot-assets-diff.js',
+        'xxxxx.test-with-snapshot-assets.js.snapshot'
+      );
 
       // THEN
       expect(results.diagnostics).toEqual([]);
@@ -176,13 +232,15 @@ describe('IntegTest runSnapshotTests', () => {
       });
 
       // THEN
-      expect(integTest.actualTests()).toEqual(expect.objectContaining({
-        'xxxxx.integ-test1': {
-          diffAssets: false,
-          stackUpdateWorkflow: true,
-          stacks: ['stack1'],
-        },
-      }));
+      expect(integTest.actualTests()).toEqual(
+        expect.objectContaining({
+          'xxxxx.integ-test1': {
+            diffAssets: false,
+            stackUpdateWorkflow: true,
+            stacks: ['stack1'],
+          },
+        })
+      );
       expect(cdkMock.mocks.list).toHaveBeenCalledTimes(0);
     });
 
@@ -198,13 +256,15 @@ describe('IntegTest runSnapshotTests', () => {
       });
 
       // THEN
-      expect(integTest.actualTests()).toEqual(expect.objectContaining({
-        'xxxxx.integ-test2': {
-          diffAssets: false,
-          stackUpdateWorkflow: true,
-          stacks: ['stackabc'],
-        },
-      }));
+      expect(integTest.actualTests()).toEqual(
+        expect.objectContaining({
+          'xxxxx.integ-test2': {
+            diffAssets: false,
+            stackUpdateWorkflow: true,
+            stacks: ['stackabc'],
+          },
+        })
+      );
       expect(cdkMock.mocks.synthFast).toHaveBeenCalledTimes(1);
       expect(cdkMock.mocks.synthFast).toHaveBeenCalledWith({
         execCmd: ['node', 'xxxxx.integ-test2.js'],
@@ -215,6 +275,5 @@ describe('IntegTest runSnapshotTests', () => {
         output: '../../does/not/exist',
       });
     });
-
   });
 });

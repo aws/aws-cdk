@@ -79,8 +79,7 @@ export class GenericLogDriver extends LogDriver {
       logDriver: this.logDriver,
       options: removeEmpty(this.options),
       secretOptions:
-        this.secretOptions &&
-        renderLogDriverSecretOptions(this.secretOptions, _containerDefinition.taskDefinition),
+        this.secretOptions && renderLogDriverSecretOptions(this.secretOptions, _containerDefinition.taskDefinition),
     };
   }
 }

@@ -96,15 +96,17 @@ test('Throws when name is specified incorrectly', () => {
   const stack = new Stack();
 
   // THEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'My Canary',
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
-  }))
-    .toThrow('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
+  expect(
+    () =>
+      new synthetics.Canary(stack, 'Canary', {
+        canaryName: 'My Canary',
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+      })
+  ).toThrow('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
 });
 
 test('Throws when name has more than 255 characters', () => {
@@ -112,15 +114,17 @@ test('Throws when name has more than 255 characters', () => {
   const stack = new Stack();
 
   // THEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'a'.repeat(256),
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
-  }))
-    .toThrow(`Canary name is too large, must be between 1 and 255 characters, but is 256 (got "${'a'.repeat(256)}")`);
+  expect(
+    () =>
+      new synthetics.Canary(stack, 'Canary', {
+        canaryName: 'a'.repeat(256),
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+      })
+  ).toThrow(`Canary name is too large, must be between 1 and 255 characters, but is 256 (got "${'a'.repeat(256)}")`);
 });
 
 test('An existing role can be specified instead of auto-created', () => {
@@ -152,9 +156,11 @@ test('An existing role can be specified instead of auto-created', () => {
 test('An auto-generated bucket can have lifecycle rules', () => {
   // GIVEN
   const stack = new Stack();
-  const lifecycleRules = [{
-    expiration: Duration.days(30),
-  }];
+  const lifecycleRules = [
+    {
+      expiration: Duration.days(30),
+    },
+  ];
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
@@ -265,15 +271,19 @@ test('throws when activeTracing is enabled with an unsupported runtime', () => {
   const stack = new Stack();
 
   // WHEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('# Synthetics handler code'),
-    }),
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
-    activeTracing: true,
-  }))
-    .toThrow('You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.');
+  expect(
+    () =>
+      new synthetics.Canary(stack, 'Canary', {
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('# Synthetics handler code'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+        activeTracing: true,
+      })
+  ).toThrow(
+    'You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.'
+  );
 });
 
 test('environment variables can be specified', () => {
@@ -348,15 +358,17 @@ test('throws when memory is not a multiple of 64 MiB', () => {
   const stack = new Stack();
 
   // WHEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    memory: Size.mebibytes(5),
-  }))
-    .toThrow('\`memory\` must be a multiple of 64 MiB, got 5 MiB.');
+  expect(
+    () =>
+      new synthetics.Canary(stack, 'Canary', {
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        memory: Size.mebibytes(5),
+      })
+  ).toThrow('\`memory\` must be a multiple of 64 MiB, got 5 MiB.');
 });
 
 test.each([64, 6400])('throws when memory is out of range, %d MiB', (memoryInMb: number) => {
@@ -364,15 +376,17 @@ test.each([64, 6400])('throws when memory is out of range, %d MiB', (memoryInMb:
   const stack = new Stack();
 
   // WHEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    memory: Size.mebibytes(memoryInMb),
-  }))
-    .toThrow(`\`memory\` must be between 960 MiB and 3008 MiB, got ${memoryInMb} MiB.`);
+  expect(
+    () =>
+      new synthetics.Canary(stack, 'Canary', {
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        memory: Size.mebibytes(memoryInMb),
+      })
+  ).toThrow(`\`memory\` must be between 960 MiB and 3008 MiB, got ${memoryInMb} MiB.`);
 });
 
 test('timeout can be set', () => {
@@ -397,36 +411,43 @@ test('timeout can be set', () => {
   });
 });
 
-test.each([100, 3100])('throws when timeout is not set as an integer representing seconds , %d milliseconds', (milliseconds: number) => {
-  // GIVEN
-  const stack = new Stack();
+test.each([100, 3100])(
+  'throws when timeout is not set as an integer representing seconds , %d milliseconds',
+  (milliseconds: number) => {
+    // GIVEN
+    const stack = new Stack();
 
-  // WHEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    timeout: Duration.millis(milliseconds),
-  }))
-    .toThrow(`\`timeout\` must be set as an integer representing seconds, got ${milliseconds} milliseconds.`);
-});
+    // WHEN
+    expect(
+      () =>
+        new synthetics.Canary(stack, 'Canary', {
+          runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+          test: synthetics.Test.custom({
+            handler: 'index.handler',
+            code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+          }),
+          timeout: Duration.millis(milliseconds),
+        })
+    ).toThrow(`\`timeout\` must be set as an integer representing seconds, got ${milliseconds} milliseconds.`);
+  }
+);
 
 test.each([2, 900])('throws when timeout is out of range, %d seconds', (seconds: number) => {
   // GIVEN
   const stack = new Stack();
 
   // WHEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    timeout: Duration.seconds(seconds),
-  }))
-    .toThrow(`\`timeout\` must be between 3 seconds and 840 seconds, got ${seconds} seconds.`);
+  expect(
+    () =>
+      new synthetics.Canary(stack, 'Canary', {
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        timeout: Duration.seconds(seconds),
+      })
+  ).toThrow(`\`timeout\` must be between 3 seconds and 840 seconds, got ${seconds} seconds.`);
 });
 
 test('Runtime can be customized', () => {
@@ -553,15 +574,17 @@ test('Throws when rate above 60 minutes', () => {
   const stack = new Stack();
 
   // THEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    schedule: synthetics.Schedule.rate(Duration.minutes(61)),
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
-  }))
-    .toThrow('Schedule duration must be between 1 and 60 minutes');
+  expect(
+    () =>
+      new synthetics.Canary(stack, 'Canary', {
+        schedule: synthetics.Schedule.rate(Duration.minutes(61)),
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+      })
+  ).toThrow('Schedule duration must be between 1 and 60 minutes');
 });
 
 test('Throws when rate above is not a whole number of minutes', () => {
@@ -569,15 +592,17 @@ test('Throws when rate above is not a whole number of minutes', () => {
   const stack = new Stack();
 
   // THEN
-  expect(() => new synthetics.Canary(stack, 'Canary', {
-    schedule: synthetics.Schedule.rate(Duration.seconds(59)),
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
-  }))
-    .toThrow('\'59 seconds\' cannot be converted into a whole number of minutes.');
+  expect(
+    () =>
+      new synthetics.Canary(stack, 'Canary', {
+        schedule: synthetics.Schedule.rate(Duration.seconds(59)),
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
+      })
+  ).toThrow("'59 seconds' cannot be converted into a whole number of minutes.");
 });
 
 test('Can share artifacts bucket between canaries', () => {
@@ -704,7 +729,7 @@ describe('canary in a vpc', () => {
           Ref: Match.anyValue(),
         },
         SecurityGroupIds: Match.anyValue(),
-        SubnetIds: [...vpc.privateSubnets.map(subnet => ({ Ref: Match.stringLikeRegexp(subnet.node.id) }))],
+        SubnetIds: [...vpc.privateSubnets.map((subnet) => ({ Ref: Match.stringLikeRegexp(subnet.node.id) }))],
       },
     });
   });
@@ -769,83 +794,75 @@ test('Role policy generated as expected', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-    Policies: [{
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 's3:ListAllMyBuckets',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 's3:GetBucketLocation',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'CanaryArtifactsBucket4A60D32B',
-                'Arn',
-              ],
+    Policies: [
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:ListAllMyBuckets',
+              Effect: 'Allow',
+              Resource: '*',
             },
-          },
-          {
-            Action: 's3:PutObject',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'CanaryArtifactsBucket4A60D32B',
-                      'Arn',
-                    ],
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          },
-          {
-            Action: 'cloudwatch:PutMetricData',
-            Condition: {
-              StringEquals: {
-                'cloudwatch:namespace': 'CloudWatchSynthetics',
+            {
+              Action: 's3:GetBucketLocation',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['CanaryArtifactsBucket4A60D32B', 'Arn'],
               },
             },
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: [
-              'logs:CreateLogStream',
-              'logs:CreateLogGroup',
-              'logs:PutLogEvents',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':logs:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':log-group:/aws/lambda/cwsyn-*',
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': ['CanaryArtifactsBucket4A60D32B', 'Arn'],
+                    },
+                    '/*',
+                  ],
                 ],
-              ],
+              },
             },
-          },
-        ],
+            {
+              Action: 'cloudwatch:PutMetricData',
+              Condition: {
+                StringEquals: {
+                  'cloudwatch:namespace': 'CloudWatchSynthetics',
+                },
+              },
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:/aws/lambda/cwsyn-*',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
       },
-    }],
+    ],
   });
 });
 
@@ -898,7 +915,9 @@ describe('handler validation', () => {
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
-    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName'/);
+    }).toThrow(
+      /Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName'/
+    );
 
     expect(() => {
       new synthetics.Canary(stack, 'Canary1', {
@@ -991,10 +1010,7 @@ describe('artifact encryption test', () => {
         S3Encryption: {
           EncryptionMode: 'SSE_KMS',
           KmsKeyArn: {
-            'Fn::GetAtt': [
-              'CanaryKey36A631B4',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['CanaryKey36A631B4', 'Arn'],
           },
         },
       },
@@ -1086,6 +1102,8 @@ describe('artifact encryption test', () => {
         }),
         artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
       });
-    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version `syn-nodejs-puppeteer-3.3` or later, got `syn-python-selenium-3.0`.');
+    }).toThrow(
+      'Artifact encryption is only supported for canaries that use Synthetics runtime version `syn-nodejs-puppeteer-3.3` or later, got `syn-python-selenium-3.0`.'
+    );
   });
 });

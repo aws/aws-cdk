@@ -13,35 +13,41 @@ describe('profiling group', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-    const profilingGroup = ProfilingGroup.fromProfilingGroupArn(stack, 'MyProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
+    const profilingGroup = ProfilingGroup.fromProfilingGroupArn(
+      stack,
+      'MyProfilingGroup',
+      'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup'
+    );
     expect(profilingGroup.profilingGroupName).toBe('MyAwesomeProfilingGroup');
-    expect(profilingGroup.profilingGroupArn).toBe('arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
+    expect(profilingGroup.profilingGroupArn).toBe(
+      'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup'
+    );
     expect(profilingGroup.env.region).toBe('us-east-1');
 
     profilingGroup.grantRead(readAppRole);
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'ReadAppRole52FE6317': {
-          'Type': 'AWS::IAM::Role',
-          'Properties': {
-            'AssumeRolePolicyDocument': {
-              'Statement': [
+      Resources: {
+        ReadAppRole52FE6317: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
                 {
-                  'Action': 'sts:AssumeRole',
-                  'Effect': 'Allow',
-                  'Principal': {
-                    'AWS': {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: {
                       'Fn::Join': [
                         '',
                         [
                           'arn:',
                           {
-                            'Ref': 'AWS::Partition',
+                            Ref: 'AWS::Partition',
                           },
                           ':iam::',
                           {
-                            'Ref': 'AWS::AccountId',
+                            Ref: 'AWS::AccountId',
                           },
                           ':root',
                         ],
@@ -50,30 +56,27 @@ describe('profiling group', () => {
                   },
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
           },
         },
-        'ReadAppRoleDefaultPolicy4BB8955C': {
-          'Type': 'AWS::IAM::Policy',
-          'Properties': {
-            'PolicyDocument': {
-              'Statement': [
+        ReadAppRoleDefaultPolicy4BB8955C: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
                 {
-                  'Action': [
-                    'codeguru-profiler:GetProfile',
-                    'codeguru-profiler:DescribeProfilingGroup',
-                  ],
-                  'Effect': 'Allow',
-                  'Resource': 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
+                  Action: ['codeguru-profiler:GetProfile', 'codeguru-profiler:DescribeProfilingGroup'],
+                  Effect: 'Allow',
+                  Resource: 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
-            'PolicyName': 'ReadAppRoleDefaultPolicy4BB8955C',
-            'Roles': [
+            PolicyName: 'ReadAppRoleDefaultPolicy4BB8955C',
+            Roles: [
               {
-                'Ref': 'ReadAppRole52FE6317',
+                Ref: 'ReadAppRole52FE6317',
               },
             ],
           },
@@ -93,27 +96,27 @@ describe('profiling group', () => {
     profilingGroup.grantPublish(publishAppRole);
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'PublishAppRole9FEBD682': {
-          'Type': 'AWS::IAM::Role',
-          'Properties': {
-            'AssumeRolePolicyDocument': {
-              'Statement': [
+      Resources: {
+        PublishAppRole9FEBD682: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
                 {
-                  'Action': 'sts:AssumeRole',
-                  'Effect': 'Allow',
-                  'Principal': {
-                    'AWS': {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: {
                       'Fn::Join': [
                         '',
                         [
                           'arn:',
                           {
-                            'Ref': 'AWS::Partition',
+                            Ref: 'AWS::Partition',
                           },
                           ':iam::',
                           {
-                            'Ref': 'AWS::AccountId',
+                            Ref: 'AWS::AccountId',
                           },
                           ':root',
                         ],
@@ -122,36 +125,33 @@ describe('profiling group', () => {
                   },
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
           },
         },
-        'PublishAppRoleDefaultPolicyCA1E15C3': {
-          'Type': 'AWS::IAM::Policy',
-          'Properties': {
-            'PolicyDocument': {
-              'Statement': [
+        PublishAppRoleDefaultPolicyCA1E15C3: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
                 {
-                  'Action': [
-                    'codeguru-profiler:ConfigureAgent',
-                    'codeguru-profiler:PostAgentProfile',
-                  ],
-                  'Effect': 'Allow',
-                  'Resource': {
+                  Action: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
+                  Effect: 'Allow',
+                  Resource: {
                     'Fn::Join': [
                       '',
                       [
                         'arn:',
                         {
-                          'Ref': 'AWS::Partition',
+                          Ref: 'AWS::Partition',
                         },
                         ':codeguru-profiler:',
                         {
-                          'Ref': 'AWS::Region',
+                          Ref: 'AWS::Region',
                         },
                         ':',
                         {
-                          'Ref': 'AWS::AccountId',
+                          Ref: 'AWS::AccountId',
                         },
                         ':profilingGroup/MyAwesomeProfilingGroup',
                       ],
@@ -159,12 +159,12 @@ describe('profiling group', () => {
                   },
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
-            'PolicyName': 'PublishAppRoleDefaultPolicyCA1E15C3',
-            'Roles': [
+            PolicyName: 'PublishAppRoleDefaultPolicyCA1E15C3',
+            Roles: [
               {
-                'Ref': 'PublishAppRole9FEBD682',
+                Ref: 'PublishAppRole9FEBD682',
               },
             ],
           },
@@ -187,11 +187,11 @@ describe('profiling group', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyProfilingGroup829F0507': {
-          'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
-          'Properties': {
-            'ProfilingGroupName': 'MyAwesomeProfilingGroup',
+      Resources: {
+        MyProfilingGroup829F0507: {
+          Type: 'AWS::CodeGuruProfiler::ProfilingGroup',
+          Properties: {
+            ProfilingGroupName: 'MyAwesomeProfilingGroup',
           },
         },
       },
@@ -206,21 +206,20 @@ describe('profiling group', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeGuruProfiler::ProfilingGroup', {
-      'ComputePlatform': 'AWSLambda',
+      ComputePlatform: 'AWSLambda',
     });
   });
 
   test('default profiling group without name', () => {
     const stack = new Stack();
-    new ProfilingGroup(stack, 'MyProfilingGroup', {
-    });
+    new ProfilingGroup(stack, 'MyProfilingGroup', {});
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyProfilingGroup829F0507': {
-          'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
-          'Properties': {
-            'ProfilingGroupName': 'MyProfilingGroup',
+      Resources: {
+        MyProfilingGroup829F0507: {
+          Type: 'AWS::CodeGuruProfiler::ProfilingGroup',
+          Properties: {
+            ProfilingGroupName: 'MyProfilingGroup',
           },
         },
       },
@@ -229,17 +228,22 @@ describe('profiling group', () => {
 
   test('default profiling group without name when name exceeding limit is generated', () => {
     const stack = new Stack();
-    new ProfilingGroup(stack, 'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSize_InOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharacters_InSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConcatenateThemToGetTheIdentifier', {
-    });
+    new ProfilingGroup(
+      stack,
+      'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSize_InOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharacters_InSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConcatenateThemToGetTheIdentifier',
+      {}
+    );
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca4B39908C': {
-          'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
-          'Properties': {
-            'ProfilingGroupName': 'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGrnTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca2FE009B0',
+      Resources: {
+        MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGreaterThanTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca4B39908C:
+          {
+            Type: 'AWS::CodeGuruProfiler::ProfilingGroup',
+            Properties: {
+              ProfilingGroupName:
+                'MyProfilingGroupWithAReallyLongProfilingGroupNameThatExceedsTheLimitOfProfilingGroupNameSizeInOrderToDoSoTheNameMustBeGrnTwoHundredAndFiftyFiveCharactersInSuchCasesWePickUpTheFirstOneTwentyCharactersFromTheBeginningAndTheEndAndConca2FE009B0',
+            },
           },
-        },
       },
     });
   });
@@ -256,33 +260,33 @@ describe('profiling group', () => {
     profilingGroup.grantPublish(publishAppRole);
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyProfilingGroup829F0507': {
-          'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
-          'Properties': {
-            'ProfilingGroupName': 'MyAwesomeProfilingGroup',
+      Resources: {
+        MyProfilingGroup829F0507: {
+          Type: 'AWS::CodeGuruProfiler::ProfilingGroup',
+          Properties: {
+            ProfilingGroupName: 'MyAwesomeProfilingGroup',
           },
         },
-        'PublishAppRole9FEBD682': {
-          'Type': 'AWS::IAM::Role',
-          'Properties': {
-            'AssumeRolePolicyDocument': {
-              'Statement': [
+        PublishAppRole9FEBD682: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
                 {
-                  'Action': 'sts:AssumeRole',
-                  'Effect': 'Allow',
-                  'Principal': {
-                    'AWS': {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: {
                       'Fn::Join': [
                         '',
                         [
                           'arn:',
                           {
-                            'Ref': 'AWS::Partition',
+                            Ref: 'AWS::Partition',
                           },
                           ':iam::',
                           {
-                            'Ref': 'AWS::AccountId',
+                            Ref: 'AWS::AccountId',
                           },
                           ':root',
                         ],
@@ -291,35 +295,29 @@ describe('profiling group', () => {
                   },
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
           },
         },
-        'PublishAppRoleDefaultPolicyCA1E15C3': {
-          'Type': 'AWS::IAM::Policy',
-          'Properties': {
-            'PolicyDocument': {
-              'Statement': [
+        PublishAppRoleDefaultPolicyCA1E15C3: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
                 {
-                  'Action': [
-                    'codeguru-profiler:ConfigureAgent',
-                    'codeguru-profiler:PostAgentProfile',
-                  ],
-                  'Effect': 'Allow',
-                  'Resource': {
-                    'Fn::GetAtt': [
-                      'MyProfilingGroup829F0507',
-                      'Arn',
-                    ],
+                  Action: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
+                  Effect: 'Allow',
+                  Resource: {
+                    'Fn::GetAtt': ['MyProfilingGroup829F0507', 'Arn'],
                   },
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
-            'PolicyName': 'PublishAppRoleDefaultPolicyCA1E15C3',
-            'Roles': [
+            PolicyName: 'PublishAppRoleDefaultPolicyCA1E15C3',
+            Roles: [
               {
-                'Ref': 'PublishAppRole9FEBD682',
+                Ref: 'PublishAppRole9FEBD682',
               },
             ],
           },
@@ -340,33 +338,33 @@ describe('profiling group', () => {
     profilingGroup.grantRead(readAppRole);
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyProfilingGroup829F0507': {
-          'Type': 'AWS::CodeGuruProfiler::ProfilingGroup',
-          'Properties': {
-            'ProfilingGroupName': 'MyAwesomeProfilingGroup',
+      Resources: {
+        MyProfilingGroup829F0507: {
+          Type: 'AWS::CodeGuruProfiler::ProfilingGroup',
+          Properties: {
+            ProfilingGroupName: 'MyAwesomeProfilingGroup',
           },
         },
-        'ReadAppRole52FE6317': {
-          'Type': 'AWS::IAM::Role',
-          'Properties': {
-            'AssumeRolePolicyDocument': {
-              'Statement': [
+        ReadAppRole52FE6317: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
                 {
-                  'Action': 'sts:AssumeRole',
-                  'Effect': 'Allow',
-                  'Principal': {
-                    'AWS': {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: {
                       'Fn::Join': [
                         '',
                         [
                           'arn:',
                           {
-                            'Ref': 'AWS::Partition',
+                            Ref: 'AWS::Partition',
                           },
                           ':iam::',
                           {
-                            'Ref': 'AWS::AccountId',
+                            Ref: 'AWS::AccountId',
                           },
                           ':root',
                         ],
@@ -375,35 +373,29 @@ describe('profiling group', () => {
                   },
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
           },
         },
-        'ReadAppRoleDefaultPolicy4BB8955C': {
-          'Type': 'AWS::IAM::Policy',
-          'Properties': {
-            'PolicyDocument': {
-              'Statement': [
+        ReadAppRoleDefaultPolicy4BB8955C: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
                 {
-                  'Action': [
-                    'codeguru-profiler:GetProfile',
-                    'codeguru-profiler:DescribeProfilingGroup',
-                  ],
-                  'Effect': 'Allow',
-                  'Resource': {
-                    'Fn::GetAtt': [
-                      'MyProfilingGroup829F0507',
-                      'Arn',
-                    ],
+                  Action: ['codeguru-profiler:GetProfile', 'codeguru-profiler:DescribeProfilingGroup'],
+                  Effect: 'Allow',
+                  Resource: {
+                    'Fn::GetAtt': ['MyProfilingGroup829F0507', 'Arn'],
                   },
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
-            'PolicyName': 'ReadAppRoleDefaultPolicy4BB8955C',
-            'Roles': [
+            PolicyName: 'ReadAppRoleDefaultPolicy4BB8955C',
+            Roles: [
               {
-                'Ref': 'ReadAppRole52FE6317',
+                Ref: 'ReadAppRole52FE6317',
               },
             ],
           },

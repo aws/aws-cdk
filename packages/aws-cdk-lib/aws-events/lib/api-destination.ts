@@ -100,9 +100,7 @@ export class ApiDestination extends Resource implements IApiDestination {
     ).resourceName;
 
     if (!apiDestinationName) {
-      throw new Error(
-        `Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`
-      );
+      throw new Error(`Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
     }
 
     class Import extends Resource implements ApiDestination {

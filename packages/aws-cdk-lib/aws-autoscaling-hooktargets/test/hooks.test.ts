@@ -52,22 +52,17 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'sqs:SendMessage',
-              'sqs:GetQueueAttributes',
-              'sqs:GetQueueUrl',
-            ],
+            Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Queue4A7E3555',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
             },
           },
         ],
@@ -93,7 +88,9 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'TopicBFC7AF6E' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -131,7 +128,9 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
@@ -177,10 +176,7 @@ describe('given an AutoScalingGroup and no role', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
       KmsMasterKeyId: {
-        'Fn::GetAtt': [
-          'keyFEDD6EC0',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -188,15 +184,9 @@ describe('given an AutoScalingGroup and no role', () => {
         Statement: Match.arrayWith([
           {
             Effect: 'Allow',
-            Action: [
-              'kms:Decrypt',
-              'kms:GenerateDataKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
             Resource: {
-              'Fn::GetAtt': [
-                'keyFEDD6EC0',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
             },
           },
         ]),
@@ -251,7 +241,9 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+    });
   });
 
   test('can use topic as hook target with a role', () => {
@@ -269,7 +261,9 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'TopicBFC7AF6E' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -311,7 +305,9 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },

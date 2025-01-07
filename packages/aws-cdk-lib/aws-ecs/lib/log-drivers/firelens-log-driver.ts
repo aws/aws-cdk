@@ -57,8 +57,7 @@ export class FireLensLogDriver extends LogDriver {
       logDriver: 'awsfirelens',
       ...(this.options && { options: removeEmpty(this.options) }),
       secretOptions:
-        this.secretOptions &&
-        renderLogDriverSecretOptions(this.secretOptions, _containerDefinition.taskDefinition),
+        this.secretOptions && renderLogDriverSecretOptions(this.secretOptions, _containerDefinition.taskDefinition),
     };
   }
 }

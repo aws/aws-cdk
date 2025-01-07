@@ -48,16 +48,12 @@ export abstract class StageBase extends Resource implements IStage {
     if (this._apiMapping) {
       throw new Error('Only one ApiMapping allowed per Stage');
     }
-    this._apiMapping = new ApiMapping(
-      this,
-      `${domainMapping.domainName}${domainMapping.mappingKey}`,
-      {
-        api: this.baseApi,
-        domainName: domainMapping.domainName,
-        stage: this,
-        apiMappingKey: domainMapping.mappingKey,
-      }
-    );
+    this._apiMapping = new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
+      api: this.baseApi,
+      domainName: domainMapping.domainName,
+      stage: this,
+      apiMappingKey: domainMapping.mappingKey,
+    });
     // ensure the dependency
     this.node.addDependency(domainMapping.domainName);
   }

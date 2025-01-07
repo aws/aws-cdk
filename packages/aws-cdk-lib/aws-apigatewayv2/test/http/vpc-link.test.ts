@@ -68,22 +68,13 @@ describe('VpcLink', () => {
       ],
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'SG1BA065B6E',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'],
         },
         {
-          'Fn::GetAtt': [
-            'SG20CE3219C',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SG20CE3219C', 'GroupId'],
         },
         {
-          'Fn::GetAtt': [
-            'SG351782A25',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SG351782A25', 'GroupId'],
         },
       ],
     });
@@ -147,22 +138,13 @@ describe('VpcLink', () => {
       ],
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'SG1BA065B6E',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'],
         },
         {
-          'Fn::GetAtt': [
-            'SG20CE3219C',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SG20CE3219C', 'GroupId'],
         },
         {
-          'Fn::GetAtt': [
-            'SG351782A25',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SG351782A25', 'GroupId'],
         },
       ],
     });

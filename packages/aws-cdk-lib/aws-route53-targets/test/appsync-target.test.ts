@@ -34,17 +34,10 @@ test('targets.AppSyncTarget can be used to the default domain of an AppSync Grap
     Type: 'A',
     AliasTarget: {
       DNSName: {
-        'Fn::GetAtt': [
-          'apiDomainNameBBFE36A4',
-          'AppSyncDomainName',
-        ],
+        'Fn::GetAtt': ['apiDomainNameBBFE36A4', 'AppSyncDomainName'],
       },
       HostedZoneId: {
-        'Fn::FindInMap': [
-          'AWSCloudFrontPartitionHostedZoneIdMap',
-          { Ref: 'AWS::Partition' },
-          'zoneId',
-        ],
+        'Fn::FindInMap': ['AWSCloudFrontPartitionHostedZoneIdMap', { Ref: 'AWS::Partition' }, 'zoneId'],
       },
     },
     HostedZoneId: {

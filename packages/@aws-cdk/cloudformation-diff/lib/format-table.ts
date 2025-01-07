@@ -11,9 +11,7 @@ export function formatTable(cells: string[][], columns: number | undefined): str
   return table
     .table(cells, {
       border: TABLE_BORDER_CHARACTERS,
-      columns: buildColumnConfig(
-        columns !== undefined ? calculateColumnWidths(cells, columns) : undefined
-      ),
+      columns: buildColumnConfig(columns !== undefined ? calculateColumnWidths(cells, columns) : undefined),
       drawHorizontalLine: (line) => {
         // Numbering like this: [line 0] [header = row[0]] [line 1] [row 1] [line 2] [content 2] [line 3]
         return line < 2 || line === cells.length || lineBetween(cells[line - 1], cells[line]);
@@ -31,9 +29,7 @@ function lineBetween(rowA: string[], rowB: string[]) {
   return rowA[1] !== rowB[1];
 }
 
-function buildColumnConfig(
-  widths: number[] | undefined
-): { [index: number]: table.ColumnUserConfig } | undefined {
+function buildColumnConfig(widths: number[] | undefined): { [index: number]: table.ColumnUserConfig } | undefined {
   if (widths === undefined) {
     return undefined;
   }
@@ -62,9 +58,7 @@ function calculateColumnWidths(rows: string[][], terminalWidth: number): number[
   terminalWidth = Math.max(terminalWidth, 40);
 
   // use 'string-width' to not count ANSI chars as actual character width
-  const columns = rows[0].map((_, i) =>
-    Math.max(...rows.map((row) => stringWidth(String(row[i]))))
-  );
+  const columns = rows[0].map((_, i) => Math.max(...rows.map((row) => stringWidth(String(row[i])))));
 
   // If we have no terminal width, do nothing
   const contentWidth = terminalWidth - 2 - columns.length * 3;
@@ -87,8 +81,7 @@ function calculateColumnWidths(rows: string[][], terminalWidth: number): number[
       ret.push(requestedWidth);
     } else {
       // Last column gets all remaining, otherwise get fair redist share
-      const width =
-        distributableWidth < 2 * fairDistributable ? distributableWidth : fairDistributable;
+      const width = distributableWidth < 2 * fairDistributable ? distributableWidth : fairDistributable;
       ret.push(width);
       distributableWidth -= width;
     }

@@ -9,7 +9,17 @@ import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodePipelineSource, ShellStep } from '../../lib';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { AppWithOutput, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
+import {
+  AppWithOutput,
+  ModernTestGitHubNpmPipeline,
+  OneStackApp,
+  PIPELINE_ENV,
+  sortByRunOrder,
+  StageWithStackOutput,
+  stringNoLongerThan,
+  TestApp,
+  TwoStackApp,
+} from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -24,38 +34,34 @@ afterEach(() => {
 });
 
 test('can add manual approval after app', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
-    post: [
-      new cdkp.ManualApprovalStep('Approve'),
-    ],
+    post: [new cdkp.ManualApprovalStep('Approve')],
   });
 
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'MyApp',
-      Actions: sortByRunOrder([
-        Match.objectLike({ Name: 'Stack1.Prepare' }),
-        Match.objectLike({ Name: 'Stack1.Deploy' }),
-        Match.objectLike({ Name: 'Stack2.Prepare' }),
-        Match.objectLike({ Name: 'Stack2.Deploy' }),
-        Match.objectLike({ Name: 'Approve' }),
-      ]),
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'MyApp',
+        Actions: sortByRunOrder([
+          Match.objectLike({ Name: 'Stack1.Prepare' }),
+          Match.objectLike({ Name: 'Stack1.Deploy' }),
+          Match.objectLike({ Name: 'Stack2.Prepare' }),
+          Match.objectLike({ Name: 'Stack2.Deploy' }),
+          Match.objectLike({ Name: 'Approve' }),
+        ]),
+      },
+    ]),
   });
 });
 
 test('can add steps to wave', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const wave = pipeline.addWave('MyWave', {
-    post: [
-      new cdkp.ManualApprovalStep('Approve'),
-    ],
+    post: [new cdkp.ManualApprovalStep('Approve')],
   });
   wave.addStage(new OneStackApp(pipelineStack, 'Stage1'));
   wave.addStage(new OneStackApp(pipelineStack, 'Stage2'));
@@ -63,23 +69,24 @@ test('can add steps to wave', () => {
 
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'MyWave',
-      Actions: sortByRunOrder([
-        Match.objectLike({ Name: 'Stage1.Stack.Prepare' }),
-        Match.objectLike({ Name: 'Stage2.Stack.Prepare' }),
-        Match.objectLike({ Name: 'Stage3.Stack.Prepare' }),
-        Match.objectLike({ Name: 'Stage1.Stack.Deploy' }),
-        Match.objectLike({ Name: 'Stage2.Stack.Deploy' }),
-        Match.objectLike({ Name: 'Stage3.Stack.Deploy' }),
-        Match.objectLike({ Name: 'Approve' }),
-      ]),
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'MyWave',
+        Actions: sortByRunOrder([
+          Match.objectLike({ Name: 'Stage1.Stack.Prepare' }),
+          Match.objectLike({ Name: 'Stage2.Stack.Prepare' }),
+          Match.objectLike({ Name: 'Stage3.Stack.Prepare' }),
+          Match.objectLike({ Name: 'Stage1.Stack.Deploy' }),
+          Match.objectLike({ Name: 'Stage2.Stack.Deploy' }),
+          Match.objectLike({ Name: 'Stage3.Stack.Deploy' }),
+          Match.objectLike({ Name: 'Approve' }),
+        ]),
+      },
+    ]),
   });
 });
 
 test('script validation steps can use stack outputs as environment variables', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const myApp = new AppWithOutput(app, 'Alpha');
   pipeline.addStage(myApp, {
@@ -95,30 +102,34 @@ test('script validation steps can use stack outputs as environment variables', (
 
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Alpha',
-      Actions: Match.arrayWith([
-        Match.objectLike({
-          Name: 'Stack.Deploy',
-          Namespace: 'AlphaStack6B3389FA',
-        }),
-        Match.objectLike({
-          Name: 'Approve',
-          Configuration: Match.objectLike({
-            EnvironmentVariables: Match.serializedJson([
-              { name: 'THE_OUTPUT', value: '#{AlphaStack6B3389FA.MyOutput}', type: 'PLAINTEXT' },
-            ]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Alpha',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: 'Stack.Deploy',
+            Namespace: 'AlphaStack6B3389FA',
           }),
-        }),
-      ]),
-    }]),
+          Match.objectLike({
+            Name: 'Approve',
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
+                { name: 'THE_OUTPUT', value: '#{AlphaStack6B3389FA.MyOutput}', type: 'PLAINTEXT' },
+              ]),
+            }),
+          }),
+        ]),
+      },
+    ]),
   });
 });
 
 test('stackOutput generates names limited to 100 characters', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  const stage = new StageWithStackOutput(app, 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild');
+  const stage = new StageWithStackOutput(
+    app,
+    'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild'
+  );
   pipeline.addStage(stage, {
     post: [
       new cdkp.ShellStep('TestOutput', {
@@ -131,20 +142,21 @@ test('stackOutput generates names limited to 100 characters', () => {
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
-      Actions: Match.arrayWith([
-        Match.objectLike({
-          Name: 'Stack.Deploy',
-          Namespace: stringNoLongerThan(100),
-        }),
-      ]),
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: 'Stack.Deploy',
+            Namespace: stringNoLongerThan(100),
+          }),
+        ]),
+      },
+    ]),
   });
 });
 
 test('validation step can run from scripts in source', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new TwoStackApp(app, 'Test'), {
     post: [
@@ -158,41 +170,44 @@ test('validation step can run from scripts in source', () => {
   const sourceArtifact = new Capture();
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Source',
-      Actions: [
-        Match.objectLike({
-          OutputArtifacts: [{ Name: sourceArtifact }],
-        }),
-      ],
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Source',
+        Actions: [
+          Match.objectLike({
+            OutputArtifacts: [{ Name: sourceArtifact }],
+          }),
+        ],
+      },
+    ]),
   });
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Test',
-      Actions: Match.arrayWith([
-        Match.objectLike({
-          Name: 'UseSources',
-          InputArtifacts: [{ Name: sourceArtifact.asString() }],
-        }),
-      ]),
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Test',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: 'UseSources',
+            InputArtifacts: [{ Name: sourceArtifact.asString() }],
+          }),
+        ]),
+      },
+    ]),
   });
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Environment: {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          build: {
-            commands: [
-              'set -eu',
-              'true',
-            ],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            build: {
+              commands: ['set -eu', 'true'],
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
@@ -218,52 +233,54 @@ test('can use additional output artifacts from build', () => {
   const integArtifact = new Capture();
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Build',
-      Actions: [
-        Match.objectLike({
-          Name: 'Synth',
-          OutputArtifacts: [
-            { Name: Match.anyValue() }, // It's not the first output
-            { Name: integArtifact },
-          ],
-        }),
-      ],
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Build',
+        Actions: [
+          Match.objectLike({
+            Name: 'Synth',
+            OutputArtifacts: [
+              { Name: Match.anyValue() }, // It's not the first output
+              { Name: integArtifact },
+            ],
+          }),
+        ],
+      },
+    ]),
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Test',
-      Actions: Match.arrayWith([
-        Match.objectLike({
-          Name: 'UseBuildArtifact',
-          InputArtifacts: [{ Name: integArtifact.asString() }],
-        }),
-      ]),
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Test',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: 'UseBuildArtifact',
+            InputArtifacts: [{ Name: integArtifact.asString() }],
+          }),
+        ]),
+      },
+    ]),
   });
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Environment: {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          build: {
-            commands: [
-              'set -eu',
-              'true',
-            ],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            build: {
+              commands: ['set -eu', 'true'],
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
 
 test('can add policy statements to shell script action', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new TwoStackApp(app, 'Test'), {
@@ -283,10 +300,12 @@ test('can add policy statements to shell script action', () => {
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([Match.objectLike({
-        Action: 's3:Banana',
-        Resource: '*',
-      })]),
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 's3:Banana',
+          Resource: '*',
+        }),
+      ]),
     },
   });
 });
@@ -312,10 +331,12 @@ test('can grant permissions to shell script action', () => {
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([Match.objectLike({
-        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-        Resource: ['arn:aws:s3:::this-particular-bucket', 'arn:aws:s3:::this-particular-bucket/*'],
-      })]),
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          Resource: ['arn:aws:s3:::this-particular-bucket', 'arn:aws:s3:::this-particular-bucket/*'],
+        }),
+      ]),
     },
   });
 });
@@ -329,19 +350,23 @@ test('can run shell script actions in a VPC', () => {
   });
 
   pipeline.addStage(new TwoStackApp(app, 'MyApp-1'), {
-    post: [new cdkp.ShellStep('VpcAction', {
-      commands: ['set -eu', 'true'],
-    })],
+    post: [
+      new cdkp.ShellStep('VpcAction', {
+        commands: ['set -eu', 'true'],
+      }),
+    ],
   });
 
   // Can also explicitly specify a VPC when going to the "full config" class
   const pipeline2 = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-2');
 
   pipeline2.addStage(new TwoStackApp(app, 'MyApp-2'), {
-    post: [new cdkp.CodeBuildStep('VpcAction', {
-      commands: ['set -eu', 'true'],
-      vpc,
-    })],
+    post: [
+      new cdkp.CodeBuildStep('VpcAction', {
+        commands: ['set -eu', 'true'],
+        vpc,
+      }),
+    ],
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
@@ -365,16 +390,15 @@ test('can run shell script actions in a VPC', () => {
       },
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          build: {
-            commands: [
-              'set -eu',
-              'true',
-            ],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            build: {
+              commands: ['set -eu', 'true'],
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
@@ -387,31 +411,32 @@ test('can run shell script actions with a specific SecurityGroup', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   pipeline.addStage(new TwoStackApp(app, 'Test'), {
-    post: [new cdkp.CodeBuildStep('sgAction', {
-      commands: ['set -eu', 'true'],
-      vpc,
-      securityGroups: [sg],
-    })],
+    post: [
+      new cdkp.CodeBuildStep('sgAction', {
+        commands: ['set -eu', 'true'],
+        vpc,
+        securityGroups: [sg],
+      }),
+    ],
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Test',
-      Actions: Match.arrayWith([
-        Match.objectLike({
-          Name: 'sgAction',
-        }),
-      ]),
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Test',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: 'sgAction',
+          }),
+        ]),
+      },
+    ]),
   });
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     VpcConfig: {
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'SGADB53937',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SGADB53937', 'GroupId'],
         },
       ],
       VpcId: {
@@ -422,7 +447,6 @@ test('can run shell script actions with a specific SecurityGroup', () => {
 });
 
 test('can run scripts with specified BuildEnvironment', () => {
-
   // Run all Build jobs with the given image
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
     codeBuildDefaults: {
@@ -433,20 +457,24 @@ test('can run scripts with specified BuildEnvironment', () => {
   });
 
   pipeline.addStage(new TwoStackApp(app, 'Test-1'), {
-    post: [new cdkp.ShellStep('imageAction', {
-      commands: ['true'],
-    })],
+    post: [
+      new cdkp.ShellStep('imageAction', {
+        commands: ['true'],
+      }),
+    ],
   });
 
   const pipeline2 = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-2');
 
   pipeline2.addStage(new TwoStackApp(app, 'Test-2'), {
-    post: [new cdkp.CodeBuildStep('imageAction', {
-      commands: ['true'],
-      buildEnvironment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
-      },
-    })],
+    post: [
+      new cdkp.CodeBuildStep('imageAction', {
+        commands: ['true'],
+        buildEnvironment: {
+          buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+        },
+      }),
+    ],
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
@@ -457,37 +485,40 @@ test('can run scripts with specified BuildEnvironment', () => {
 });
 
 test('can run scripts with magic environment variables', () => {
-
   // Run all Build jobs with the given image
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   pipeline.addStage(new TwoStackApp(app, 'Test'), {
-    post: [new cdkp.ShellStep('imageAction', {
-      commands: ['true'],
-      env: {
-        VERSION: codepipeline.GlobalVariables.executionId,
-      },
-    })],
+    post: [
+      new cdkp.ShellStep('imageAction', {
+        commands: ['true'],
+        env: {
+          VERSION: codepipeline.GlobalVariables.executionId,
+        },
+      }),
+    ],
   });
 
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Test',
-      Actions: Match.arrayWith([
-        Match.objectLike({
-          Name: 'imageAction',
-          Configuration: Match.objectLike({
-            EnvironmentVariables: Match.serializedJson([
-              {
-                name: 'VERSION',
-                type: 'PLAINTEXT',
-                value: '#{codepipeline.PipelineExecutionId}',
-              },
-            ]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Test',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: 'imageAction',
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
+                {
+                  name: 'VERSION',
+                  type: 'PLAINTEXT',
+                  value: '#{codepipeline.PipelineExecutionId}',
+                },
+              ]),
+            }),
           }),
-        }),
-      ]),
-    }]),
+        ]),
+      },
+    ]),
   });
 });

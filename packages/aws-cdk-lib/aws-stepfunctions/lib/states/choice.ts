@@ -86,9 +86,7 @@ export class Choice extends State {
       State.findReachableEndStates(this, { includeErrorHandlers: options.includeErrorHandlers })
     );
     if (options.includeOtherwise && this.defaultChoice) {
-      throw new Error(
-        `'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`
-      );
+      throw new Error(`'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
     }
     if (options.includeOtherwise) {
       endStates.push(new DefaultAsNext(this));

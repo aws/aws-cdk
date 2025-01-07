@@ -34,11 +34,7 @@ export class SecurityGroupRule {
     this.groupId = ruleObject.GroupId || groupRef || '*unknown*'; // In case of an inline rule
 
     this.peer =
-      findFirst(
-        ruleObject,
-        ['CidrIp', 'CidrIpv6'],
-        (ip) => ({ kind: 'cidr-ip', ip }) as CidrIpPeer
-      ) ||
+      findFirst(ruleObject, ['CidrIp', 'CidrIpv6'], (ip) => ({ kind: 'cidr-ip', ip }) as CidrIpPeer) ||
       findFirst(
         ruleObject,
         ['DestinationSecurityGroupId', 'SourceSecurityGroupId'],

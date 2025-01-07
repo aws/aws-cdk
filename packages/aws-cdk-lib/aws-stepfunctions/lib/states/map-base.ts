@@ -186,18 +186,11 @@ export abstract class MapBase extends State implements INextable {
   protected validateState(): string[] {
     const errors: string[] = [];
 
-    if (
-      this.processorConfig?.mode === ProcessorMode.DISTRIBUTED &&
-      !this.processorConfig?.executionType
-    ) {
+    if (this.processorConfig?.mode === ProcessorMode.DISTRIBUTED && !this.processorConfig?.executionType) {
       errors.push('You must specify an execution type for the distributed Map workflow');
     }
 
-    if (
-      this.maxConcurrency &&
-      !Token.isUnresolved(this.maxConcurrency) &&
-      !isPositiveInteger(this.maxConcurrency)
-    ) {
+    if (this.maxConcurrency && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
       errors.push('maxConcurrency has to be a positive integer');
     }
 

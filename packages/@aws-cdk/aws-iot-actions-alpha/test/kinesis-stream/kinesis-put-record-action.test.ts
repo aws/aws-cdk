@@ -11,12 +11,18 @@ test('Default kinesis stream action', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const stream = kinesis.Stream.fromStreamArn(stack, 'MyStream', 'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream');
+  const stream = kinesis.Stream.fromStreamArn(
+    stack,
+    'MyStream',
+    'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream'
+  );
 
   // WHEN
-  topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
-    partitionKey: '${newuuid()}',
-  }));
+  topicRule.addAction(
+    new actions.KinesisPutRecordAction(stream, {
+      partitionKey: '${newuuid()}',
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -62,9 +68,7 @@ test('Default kinesis stream action', () => {
       Version: '2012-10-17',
     },
     PolicyName: 'MyTopicRuleTopicRuleActionRoleDefaultPolicy54A701F7',
-    Roles: [
-      { Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' },
-    ],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
@@ -74,19 +78,23 @@ test('passes undefined to partitionKey if empty string is given', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const stream = kinesis.Stream.fromStreamArn(stack, 'MyStream', 'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream');
+  const stream = kinesis.Stream.fromStreamArn(
+    stack,
+    'MyStream',
+    'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream'
+  );
 
   // WHEN
-  topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
-    partitionKey: '',
-  }));
+  topicRule.addAction(
+    new actions.KinesisPutRecordAction(stream, {
+      partitionKey: '',
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ Kinesis: { PartitionKey: Match.absent() } }),
-      ],
+      Actions: [Match.objectLike({ Kinesis: { PartitionKey: Match.absent() } })],
     },
   });
 });
@@ -97,21 +105,25 @@ test('can set role', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const stream = kinesis.Stream.fromStreamArn(stack, 'MyStream', 'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream');
+  const stream = kinesis.Stream.fromStreamArn(
+    stack,
+    'MyStream',
+    'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream'
+  );
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
-  topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
-    partitionKey: '${newuuid()}',
-    role,
-  }));
+  topicRule.addAction(
+    new actions.KinesisPutRecordAction(stream, {
+      partitionKey: '${newuuid()}',
+      role,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ Kinesis: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
-      ],
+      Actions: [Match.objectLike({ Kinesis: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } })],
     },
   });
 

@@ -2,12 +2,7 @@ import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { InitElement } from './cfn-init-elements';
 import { OperatingSystemType } from './machine-image';
-import {
-  InitBindOptions,
-  InitElementConfig,
-  InitElementType,
-  InitPlatform,
-} from './private/cfn-init-internal';
+import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
 import { UserData } from './user-data';
 import * as iam from '../../aws-iam';
 import { Aws, CfnResource } from '../../core';
@@ -177,10 +172,7 @@ export class CloudFormationInit {
     }
   }
 
-  private bind(
-    scope: Construct,
-    options: AttachInitOptions
-  ): { configData: any; authData: any; assetHash?: any } {
+  private bind(scope: Construct, options: AttachInitOptions): { configData: any; authData: any; assetHash?: any } {
     const nonEmptyConfigs = mapValues(this._configs, (c) => (c.isEmpty() ? undefined : c));
 
     const configNameToBindResult = mapValues(nonEmptyConfigs, (c) => c._bind(scope, options));
@@ -195,9 +187,7 @@ export class CloudFormationInit {
       authData: Object.values(configNameToBindResult)
         .map((c) => c.authentication)
         .reduce(deepMerge, undefined),
-      assetHash: combineAssetHashesOrUndefined(
-        Object.values(configNameToBindResult).map((c) => c.assetHash)
-      ),
+      assetHash: combineAssetHashesOrUndefined(Object.values(configNameToBindResult).map((c) => c.assetHash)),
     };
   }
 }

@@ -27,7 +27,9 @@ describe('vpc endpoint service', () => {
       new Vpc(stack, 'MyVPC');
 
       // WHEN
-      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      const lb = new DummyEndpointLoadBalacer(
+        'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'
+      );
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
@@ -35,7 +37,9 @@ describe('vpc endpoint service', () => {
       });
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
-        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        NetworkLoadBalancerArns: [
+          'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a',
+        ],
         AcceptanceRequired: false,
       });
 
@@ -46,14 +50,15 @@ describe('vpc endpoint service', () => {
         AllowedPrincipals: [],
       });
       expect(Object.keys(servicePermissions).length).toBe(0);
-
     });
     test('create endpoint service with a principal', () => {
       // GIVEN
       const stack = new Stack();
 
       // WHEN
-      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      const lb = new DummyEndpointLoadBalacer(
+        'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'
+      );
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
@@ -62,7 +67,9 @@ describe('vpc endpoint service', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
-        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        NetworkLoadBalancerArns: [
+          'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a',
+        ],
         AcceptanceRequired: false,
       });
 
@@ -72,7 +79,6 @@ describe('vpc endpoint service', () => {
         },
         AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       });
-
     });
 
     test('create endpoint service with a service principal (workaround)', () => {
@@ -80,7 +86,9 @@ describe('vpc endpoint service', () => {
       const stack = new Stack();
 
       // WHEN
-      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      const lb = new DummyEndpointLoadBalacer(
+        'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'
+      );
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
@@ -89,7 +97,9 @@ describe('vpc endpoint service', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
-        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        NetworkLoadBalancerArns: [
+          'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a',
+        ],
         AcceptanceRequired: false,
       });
 
@@ -99,7 +109,6 @@ describe('vpc endpoint service', () => {
         },
         AllowedPrincipals: ['ec2.amazonaws.com'],
       });
-
     });
 
     test('with acceptance required', () => {
@@ -107,7 +116,9 @@ describe('vpc endpoint service', () => {
       const stack = new Stack();
 
       // WHEN
-      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      const lb = new DummyEndpointLoadBalacer(
+        'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'
+      );
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: true,
@@ -116,7 +127,9 @@ describe('vpc endpoint service', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
-        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        NetworkLoadBalancerArns: [
+          'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a',
+        ],
         AcceptanceRequired: true,
       });
 
@@ -126,7 +139,6 @@ describe('vpc endpoint service', () => {
         },
         AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       });
-
     });
 
     test('with contributor insights enabled', () => {
@@ -137,9 +149,11 @@ describe('vpc endpoint service', () => {
       // WHEN
       const lb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
       new VpcEndpointService(stack, 'VpcEndpointService', {
-        vpcEndpointServiceLoadBalancers: [{
-          loadBalancerArn: lb.loadBalancerArn,
-        }],
+        vpcEndpointServiceLoadBalancers: [
+          {
+            loadBalancerArn: lb.loadBalancerArn,
+          },
+        ],
         acceptanceRequired: true,
         contributorInsights: true,
       });
@@ -148,7 +162,6 @@ describe('vpc endpoint service', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         ContributorInsightsEnabled: true,
       });
-
     });
   });
 });

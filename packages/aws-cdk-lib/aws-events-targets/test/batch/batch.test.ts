@@ -46,17 +46,11 @@ describe('Batch job event target', () => {
       Targets: [
         {
           Arn: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'JobQueueArn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'JobQueueArn'],
           },
           Id: 'Target0',
           RoleArn: {
-            'Fn::GetAtt': [
-              'MyJobEventsRoleCF43C336',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyJobEventsRoleCF43C336', 'Arn'],
           },
           BatchParameters: {
             JobDefinition: {
@@ -77,19 +71,14 @@ describe('Batch job event target', () => {
             Resource: [
               { Ref: 'MyJob8719E923' },
               {
-                'Fn::GetAtt': [
-                  'MyQueueE6CA6235',
-                  'JobQueueArn',
-                ],
+                'Fn::GetAtt': ['MyQueueE6CA6235', 'JobQueueArn'],
               },
             ],
           },
         ],
         Version: '2012-10-17',
       },
-      Roles: [
-        { Ref: 'MyJobEventsRoleCF43C336' },
-      ],
+      Roles: [{ Ref: 'MyJobEventsRoleCF43C336' }],
     });
   });
 
@@ -106,33 +95,24 @@ describe('Batch job event target', () => {
       buildspecOverride: 'buildspecs/hourly.yml',
     };
 
-    rule.addTarget(new targets.BatchJob(
-      jobQueue.jobQueueArn,
-      jobQueue,
-      jobDefinition.jobDefinitionArn,
-      jobDefinition, {
+    rule.addTarget(
+      new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition, {
         deadLetterQueue: queue,
         event: events.RuleTargetInput.fromObject(eventInput),
-      },
-    ));
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           Arn: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'JobQueueArn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'JobQueueArn'],
           },
           Id: 'Target0',
           DeadLetterConfig: {
             Arn: {
-              'Fn::GetAtt': [
-                'Queue4A7E3555',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
             },
           },
           Input: JSON.stringify(eventInput),
@@ -157,10 +137,7 @@ describe('Batch job event target', () => {
             Condition: {
               ArnEquals: {
                 'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'Rule4C995B7F',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['Rule4C995B7F', 'Arn'],
                 },
               },
             },
@@ -169,10 +146,7 @@ describe('Batch job event target', () => {
               Service: 'events.amazonaws.com',
             },
             Resource: {
-              'Fn::GetAtt': [
-                'Queue4A7E3555',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
             },
             Sid: 'AllowEventRuleRule',
           },
@@ -200,17 +174,14 @@ describe('Batch job event target', () => {
       buildspecOverride: 'buildspecs/hourly.yml',
     };
 
-    rule.addTarget(new targets.BatchJob(
-      jobQueue.jobQueueArn,
-      jobQueue,
-      jobDefinition.jobDefinitionArn,
-      jobDefinition, {
+    rule.addTarget(
+      new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition, {
         deadLetterQueue: queue,
         event: events.RuleTargetInput.fromObject(eventInput),
         retryAttempts: 2,
         maxEventAge: Duration.hours(2),
-      },
-    ));
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -219,10 +190,7 @@ describe('Batch job event target', () => {
       Targets: [
         {
           Arn: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'JobQueueArn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'JobQueueArn'],
           },
           BatchParameters: {
             JobDefinition: {
@@ -232,10 +200,7 @@ describe('Batch job event target', () => {
           },
           DeadLetterConfig: {
             Arn: {
-              'Fn::GetAtt': [
-                'Queue4A7E3555',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
             },
           },
           Id: 'Target0',
@@ -245,10 +210,7 @@ describe('Batch job event target', () => {
             MaximumRetryAttempts: 2,
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'MyJobEventsRoleCF43C336',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyJobEventsRoleCF43C336', 'Arn'],
           },
         },
       ],
@@ -266,15 +228,12 @@ describe('Batch job event target', () => {
       buildspecOverride: 'buildspecs/hourly.yml',
     };
 
-    rule.addTarget(new targets.BatchJob(
-      jobQueue.jobQueueArn,
-      jobQueue,
-      jobDefinition.jobDefinitionArn,
-      jobDefinition, {
+    rule.addTarget(
+      new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition, {
         event: events.RuleTargetInput.fromObject(eventInput),
         retryAttempts: 0,
-      },
-    ));
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -283,10 +242,7 @@ describe('Batch job event target', () => {
       Targets: [
         {
           Arn: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'JobQueueArn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'JobQueueArn'],
           },
           BatchParameters: {
             JobDefinition: {
@@ -300,10 +256,7 @@ describe('Batch job event target', () => {
             MaximumRetryAttempts: 0,
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'MyJobEventsRoleCF43C336',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyJobEventsRoleCF43C336', 'Arn'],
           },
         },
       ],
@@ -317,28 +270,16 @@ describe('Batch job event target', () => {
 
     expect(() => {
       rule.addTarget(
-        new targets.BatchJob(
-          jobQueue.jobQueueArn,
-          jobQueue,
-          jobDefinition.jobDefinitionArn,
-          jobDefinition,
-          {
-            jobName: '',
-          },
-        ),
+        new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition, {
+          jobName: '',
+        })
       );
     }).toThrow(/must have length between 1 and 128/);
     expect(() => {
       rule.addTarget(
-        new targets.BatchJob(
-          jobQueue.jobQueueArn,
-          jobQueue,
-          jobDefinition.jobDefinitionArn,
-          jobDefinition,
-          {
-            jobName: 'a'.repeat(200),
-          },
-        ),
+        new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition, {
+          jobName: 'a'.repeat(200),
+        })
       );
     }).toThrow(/must have length between 1 and 128/);
   });

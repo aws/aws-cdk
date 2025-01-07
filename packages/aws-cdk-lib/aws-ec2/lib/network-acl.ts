@@ -280,8 +280,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
       networkAclId: this.networkAcl.networkAclId,
       ruleNumber: props.ruleNumber,
       ruleAction: props.ruleAction ?? Action.ALLOW,
-      egress:
-        props.direction !== undefined ? props.direction === TrafficDirection.EGRESS : undefined,
+      egress: props.direction !== undefined ? props.direction === TrafficDirection.EGRESS : undefined,
       ...props.traffic.toTrafficConfig(),
       ...props.cidr.toCidrConfig(),
     });
@@ -336,10 +335,7 @@ export interface SubnetNetworkAclAssociationProps {
  *
  *
  */
-abstract class SubnetNetworkAclAssociationBase
-  extends Resource
-  implements ISubnetNetworkAclAssociation
-{
+abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
 }
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
@@ -349,8 +345,7 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
     subnetNetworkAclAssociationAssociationId: string
   ): ISubnetNetworkAclAssociation {
     class Import extends SubnetNetworkAclAssociationBase {
-      public readonly subnetNetworkAclAssociationAssociationId =
-        subnetNetworkAclAssociationAssociationId;
+      public readonly subnetNetworkAclAssociationAssociationId = subnetNetworkAclAssociationAssociationId;
     }
 
     return new Import(scope, id);

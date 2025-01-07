@@ -23,9 +23,7 @@ export class DynamoEventSource extends StreamEventSource {
       !Token.isUnresolved(this.props.batchSize) &&
       (this.props.batchSize < 1 || this.props.batchSize > 10000)
     ) {
-      throw new Error(
-        `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`
-      );
+      throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
     }
   }
 

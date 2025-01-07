@@ -38,10 +38,7 @@ export class EnvironmentPlaceholders {
   /**
    * Like 'replace', but asynchronous
    */
-  public static async replaceAsync(
-    object: any,
-    provider: IEnvironmentPlaceholderProvider
-  ): Promise<any> {
+  public static async replaceAsync(object: any, provider: IEnvironmentPlaceholderProvider): Promise<any> {
     let needRegion = false;
     let needAccountId = false;
     let needPartition = false;
@@ -66,11 +63,7 @@ export class EnvironmentPlaceholders {
     return this.recurse(object, (value) => {
       value = replaceAll(value, EnvironmentPlaceholders.CURRENT_REGION, region ?? 'WONTHAPPEN');
       value = replaceAll(value, EnvironmentPlaceholders.CURRENT_ACCOUNT, accountId ?? 'WONTHAPPEN');
-      value = replaceAll(
-        value,
-        EnvironmentPlaceholders.CURRENT_PARTITION,
-        partition ?? 'WONTHAPPEN'
-      );
+      value = replaceAll(value, EnvironmentPlaceholders.CURRENT_PARTITION, partition ?? 'WONTHAPPEN');
       return value;
     });
   }

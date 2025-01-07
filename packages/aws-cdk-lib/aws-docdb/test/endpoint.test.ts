@@ -36,8 +36,7 @@ describe('Endpoint', () => {
     }
 
     // THEN
-    expect(createInvalidEnpoint)
-      .toThrow();
+    expect(createInvalidEnpoint).toThrow();
   });
 
   test('throws an exception for port numbers above the maximum', () => {
@@ -50,8 +49,7 @@ describe('Endpoint', () => {
     }
 
     // THEN
-    expect(createInvalidEnpoint)
-      .toThrow();
+    expect(createInvalidEnpoint).toThrow();
   });
 
   test('throws an exception for floating-point port numbers', () => {
@@ -64,8 +62,7 @@ describe('Endpoint', () => {
     }
 
     // THEN
-    expect(createInvalidEnpoint)
-      .toThrow();
+    expect(createInvalidEnpoint).toThrow();
   });
 
   describe('.portAsString()', () => {

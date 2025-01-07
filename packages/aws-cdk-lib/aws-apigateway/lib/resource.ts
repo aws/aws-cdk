@@ -231,9 +231,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (allowMethods.includes('ANY')) {
       if (allowMethods.length > 1) {
-        throw new Error(
-          `ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`
-        );
+        throw new Error(`ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`);
       }
 
       allowMethods = Cors.ALL_METHODS;
@@ -313,9 +311,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
         },
         apiKeyRequired: false,
         authorizationType: AuthorizationType.NONE,
-        methodResponses: [
-          { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
-        ],
+        methodResponses: [{ statusCode: `${statusCode}`, responseParameters: methodResponseParams }],
       }
     );
 
@@ -339,9 +335,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       const condition = origins.map((o) => `$origin == "${o}"`).join(' || ');
 
       template.push(`#if(${condition})`);
-      template.push(
-        '  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)'
-      );
+      template.push('  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)');
       template.push('#end');
 
       return {
@@ -368,9 +362,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (path.startsWith('/')) {
       if (this.path !== '/') {
-        throw new Error(
-          `Path may start with "/" only for the resource, but we are at: ${this.path}`
-        );
+        throw new Error(`Path may start with "/" only for the resource, but we are at: ${this.path}`);
       }
 
       // trim trailing "/"
@@ -423,11 +415,7 @@ export class Resource extends ResourceBase {
   /**
    * Import an existing resource
    */
-  public static fromResourceAttributes(
-    scope: Construct,
-    id: string,
-    attrs: ResourceAttributes
-  ): IResource {
+  public static fromResourceAttributes(scope: Construct, id: string, attrs: ResourceAttributes): IResource {
     class Import extends ResourceBase {
       public readonly api = attrs.restApi;
       public readonly resourceId = attrs.resourceId;
@@ -498,8 +486,7 @@ export class Resource extends ResourceBase {
       ...props.parent.defaultMethodOptions,
       ...props.defaultMethodOptions,
     };
-    this.defaultCorsPreflightOptions =
-      props.defaultCorsPreflightOptions || props.parent.defaultCorsPreflightOptions;
+    this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions || props.parent.defaultCorsPreflightOptions;
 
     if (this.defaultCorsPreflightOptions) {
       this.addCorsPreflight(this.defaultCorsPreflightOptions);

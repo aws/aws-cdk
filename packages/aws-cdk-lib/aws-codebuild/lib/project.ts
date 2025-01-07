@@ -13,11 +13,7 @@ import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
 import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
-import {
-  runScriptLinuxBuildSpec,
-  S3_BUCKET_ENV,
-  S3_KEY_ENV,
-} from './private/run-script-linux-build-spec';
+import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
 import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
@@ -86,11 +82,7 @@ export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOp
   readonly events: ProjectNotificationEvents[];
 }
 
-export interface IProject
-  extends IResource,
-    iam.IGrantable,
-    ec2.IConnectable,
-    notifications.INotificationRuleSource {
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
   /**
    * The ARN of this Project.
    * @attribute
@@ -531,9 +523,7 @@ abstract class ProjectBase extends Resource implements IProject {
     });
   }
 
-  public bindAsNotificationRuleSource(
-    _scope: Construct
-  ): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
     return {
       sourceArn: this.projectArn,
     };
@@ -913,10 +903,7 @@ export class Project extends ProjectBase {
       ret.push(cfnEnvVariable);
 
       // validate that the plain-text environment variables don't contain any secrets in them
-      if (
-        validateNoPlainTextSecrets &&
-        cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT
-      ) {
+      if (validateNoPlainTextSecrets && cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT) {
         const fragments = Tokenization.reverseString(cfnEnvVariable.value);
         for (const token of fragments.tokens) {
           if (token instanceof SecretValue) {
@@ -942,9 +929,7 @@ export class Project extends ProjectBase {
               resource: 'parameter',
               // If the parameter name starts with / the resource name is not separated with a double '/'
               // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
-              resourceName: envVariableValue.startsWith('/')
-                ? envVariableValue.slice(1)
-                : envVariableValue,
+              resourceName: envVariableValue.startsWith('/') ? envVariableValue.slice(1) : envVariableValue,
             })
           );
         }
@@ -958,9 +943,7 @@ export class Project extends ProjectBase {
           if (envVariableValue.startsWith('arn:')) {
             const parsedArn = stack.splitArn(envVariableValue, ArnFormat.COLON_RESOURCE_NAME);
             if (!parsedArn.resourceName) {
-              throw new Error(
-                'SecretManager ARN is missing the name of the secret: ' + envVariableValue
-              );
+              throw new Error('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
             }
 
             // the value of the property can be a complex string, separated by ':';
@@ -1013,10 +996,7 @@ export class Project extends ProjectBase {
               if (Reference.isReference(resolvable)) {
                 // check the Stack the resource owning the reference belongs to
                 const resourceStack = Stack.of(resolvable.target);
-                if (
-                  Token.compareStrings(stack.account, resourceStack.account) ===
-                  TokenComparison.DIFFERENT
-                ) {
+                if (Token.compareStrings(stack.account, resourceStack.account) === TokenComparison.DIFFERENT) {
                   // since this is a cross-account access,
                   // add the appropriate KMS permissions
                   kmsIamResources.add(
@@ -1129,8 +1109,7 @@ export class Project extends ProjectBase {
       });
     this.grantPrincipal = this.role;
 
-    this.buildImage =
-      (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -1155,13 +1134,8 @@ export class Project extends ProjectBase {
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
     const buildSpec = props.buildSpec;
-    if (
-      this.source.type === NO_SOURCE_TYPE &&
-      (buildSpec === undefined || !buildSpec.isImmediate)
-    ) {
-      throw new Error(
-        "If the Project's source is NoSource, you need to provide a concrete buildSpec"
-      );
+    if (this.source.type === NO_SOURCE_TYPE && (buildSpec === undefined || !buildSpec.isImmediate)) {
+      throw new Error("If the Project's source is NoSource, you need to provide a concrete buildSpec");
     }
 
     this._secondarySources = [];
@@ -1184,9 +1158,7 @@ export class Project extends ProjectBase {
 
     if (!Token.isUnresolved(props.autoRetryLimit) && props.autoRetryLimit !== undefined) {
       if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
-        throw new Error(
-          `autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`
-        );
+        throw new Error(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`);
       }
     }
 
@@ -1222,8 +1194,7 @@ export class Project extends ProjectBase {
       logsConfig: this.renderLoggingConfiguration(props.logging),
       buildBatchConfig: Lazy.any({
         produce: () => {
-          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this
-            ._batchServiceRole
+          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this._batchServiceRole
             ? {
                 serviceRole: this._batchServiceRole.roleArn,
               }
@@ -1466,11 +1437,7 @@ export class Project extends ProjectBase {
       } else {
         const statement = new iam.PolicyStatement({
           principals: [new iam.ServicePrincipal('codebuild.amazonaws.com')],
-          actions: [
-            'ecr:GetDownloadUrlForLayer',
-            'ecr:BatchGetImage',
-            'ecr:BatchCheckLayerAvailability',
-          ],
+          actions: ['ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage', 'ecr:BatchCheckLayerAvailability'],
         });
         statement.sid = 'CodeBuild';
         this.buildImage.repository.addToResourcePolicy(statement);
@@ -1498,11 +1465,7 @@ export class Project extends ProjectBase {
       fleet: this.configureFleet(env),
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
-        ? Project.serializeEnvVariables(
-            vars,
-            props.checkSecretsInPlainTextEnvVariables ?? true,
-            this
-          )
+        ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
         : undefined,
     };
   }
@@ -1546,20 +1509,14 @@ export class Project extends ProjectBase {
    */
   private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error(
-        "Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC"
-      );
+      throw new Error("Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC");
     }
 
     if (!props.vpc) {
       return undefined;
     }
 
-    if (
-      props.securityGroups &&
-      props.securityGroups.length > 0 &&
-      props.allowAllOutbound !== undefined
-    ) {
+    if (props.securityGroups && props.securityGroups.length > 0 && props.allowAllOutbound !== undefined) {
       throw new Error("Configure 'allowAllOutbound' directly on the supplied SecurityGroup.");
     }
 
@@ -1583,9 +1540,7 @@ export class Project extends ProjectBase {
     };
   }
 
-  private renderLoggingConfiguration(
-    props: LoggingOptions | undefined
-  ): CfnProject.LogsConfigProperty | undefined {
+  private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
     if (props === undefined) {
       return undefined;
     }
@@ -1608,9 +1563,7 @@ export class Project extends ProjectBase {
       const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
 
       if (status === 'ENABLED' && !cloudWatchLogs.logGroup) {
-        throw new Error(
-          'Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled'
-        );
+        throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
       }
       cloudWatchLogs.logGroup?.grantWrite(this);
 
@@ -1640,9 +1593,7 @@ export class Project extends ProjectBase {
           StringEquals: {
             'ec2:Subnet': props.vpc
               .selectSubnets(props.subnetSelection)
-              .subnetIds.map(
-                (si) => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`
-              ),
+              .subnetIds.map((si) => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
             'ec2:AuthorizedService': 'codebuild.amazonaws.com',
           },
         },
@@ -1688,8 +1639,7 @@ export class Project extends ProjectBase {
     const artifactsType = artifacts.type;
 
     if (
-      (sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
-        artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
+      (sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE || artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
       sourceType !== artifactsType
     ) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
@@ -1697,9 +1647,7 @@ export class Project extends ProjectBase {
   }
 
   private isLambdaBuildImage(buildImage: IBuildImage): boolean {
-    return (
-      buildImage instanceof LinuxLambdaBuildImage || buildImage instanceof LinuxArmLambdaBuildImage
-    );
+    return buildImage instanceof LinuxLambdaBuildImage || buildImage instanceof LinuxArmLambdaBuildImage;
   }
 
   /**
@@ -1919,36 +1867,22 @@ import { LinuxArmBuildImage } from './linux-arm-build-image';
  */
 export class LinuxBuildImage implements IBuildImage {
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
-  public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/standard:1.0'
-  );
+  public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:1.0');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
-  public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/standard:2.0'
-  );
+  public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:2.0');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
-  public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/standard:3.0'
-  );
+  public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
   /**
    * The `aws/codebuild/standard:4.0` build image.
    * @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead.
    * */
-  public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/standard:4.0'
-  );
+  public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:4.0');
   /** The `aws/codebuild/standard:5.0` build image. */
-  public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/standard:5.0'
-  );
+  public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:5.0');
   /** The `aws/codebuild/standard:6.0` build image. */
-  public static readonly STANDARD_6_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/standard:6.0'
-  );
+  public static readonly STANDARD_6_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:6.0');
   /** The `aws/codebuild/standard:7.0` build image. */
-  public static readonly STANDARD_7_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/standard:7.0'
-  );
+  public static readonly STANDARD_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:7.0');
 
   /** @deprecated Use {@link LinuxBuildImage.AMAZON_LINUX_2_5} instead. */
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage(
@@ -2002,9 +1936,7 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
 
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/ubuntu-base:14.04'
-  );
+  public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = LinuxBuildImage.codeBuildImage(
     'aws/codebuild/android-java-8:24.4.1'
@@ -2014,102 +1946,55 @@ export class LinuxBuildImage implements IBuildImage {
     'aws/codebuild/android-java-8:26.1.1'
   );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/docker:17.09.0'
-  );
+  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:17.09.0');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/docker:18.09.0'
-  );
+  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:18.09.0');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/golang:1.10'
-  );
+  public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.10');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/golang:1.11'
-  );
+  public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.11');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/java:openjdk-8'
-  );
+  public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-8');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/java:openjdk-9'
-  );
+  public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-9');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/java:openjdk-11'
-  );
+  public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-11');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/nodejs:10.14.1'
-  );
+  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.14.1');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/nodejs:10.1.0'
-  );
+  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.1.0');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/nodejs:8.11.0'
-  );
+  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:8.11.0');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/nodejs:6.3.1'
-  );
+  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:6.3.1');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_5_6 =
-    LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
+  public static readonly UBUNTU_14_04_PHP_5_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_7_0 =
-    LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
+  public static readonly UBUNTU_14_04_PHP_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_7_1 =
-    LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
+  public static readonly UBUNTU_14_04_PHP_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/python:3.7.1'
-  );
+  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.7.1');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/python:3.6.5'
-  );
+  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.6.5');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/python:3.5.2'
-  );
+  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.5.2');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/python:3.4.5'
-  );
+  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.4.5');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/python:3.3.6'
-  );
+  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.3.6');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/python:2.7.12'
-  );
+  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:2.7.12');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/ruby:2.5.3'
-  );
+  public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.3');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/ruby:2.5.1'
-  );
+  public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.1');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/ruby:2.3.1'
-  );
+  public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.3.1');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/ruby:2.2.5'
-  );
+  public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.2.5');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage(
-    'aws/codebuild/dot-net:core-1'
-  );
+  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-1');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = LinuxBuildImage.codeBuildImage(
     'aws/codebuild/dot-net:core-2.0'
@@ -2141,10 +2026,7 @@ export class LinuxBuildImage implements IBuildImage {
    * @param repository The ECR repository
    * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    */
-  public static fromEcrRepository(
-    repository: ecr.IRepository,
-    tagOrDigest: string = 'latest'
-  ): IBuildImage {
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
     return new LinuxBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2416,13 +2298,8 @@ export class WindowsBuildImage implements IBuildImage {
     }
 
     const unsupportedComputeTypes = [ComputeType.SMALL, ComputeType.X_LARGE, ComputeType.X2_LARGE];
-    if (
-      buildEnvironment.computeType !== undefined &&
-      unsupportedComputeTypes.includes(buildEnvironment.computeType)
-    ) {
-      errors.push(
-        `Windows images do not support the '${buildEnvironment.computeType}' compute type`
-      );
+    if (buildEnvironment.computeType !== undefined && unsupportedComputeTypes.includes(buildEnvironment.computeType)) {
+      errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
 
     if (!buildEnvironment.fleet && this.type === WindowsImageType.SERVER_2022) {
@@ -2506,10 +2383,7 @@ export class MacBuildImage implements IBuildImage {
   /**
    * Makes an ARM MacOS build image from an ECR repository.
    */
-  public static fromEcrRepository(
-    repository: ecr.IRepository,
-    tagOrDigest: string = 'latest'
-  ): IBuildImage {
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
     return new MacBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2655,8 +2529,6 @@ function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
 }
 
 export function isLambdaComputeType(computeType: ComputeType): boolean {
-  const lambdaComputeTypes = Object.values(ComputeType).filter((value) =>
-    value.startsWith('BUILD_LAMBDA')
-  );
+  const lambdaComputeTypes = Object.values(ComputeType).filter((value) => value.startsWith('BUILD_LAMBDA'));
   return lambdaComputeTypes.includes(computeType);
 }

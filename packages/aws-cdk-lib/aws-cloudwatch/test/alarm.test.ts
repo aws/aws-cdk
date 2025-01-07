@@ -214,13 +214,15 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.with({
-      statistic: 'min',
-      period: Duration.seconds(10),
-    }).createAlarm(stack, 'Alarm', {
-      threshold: 1000,
-      evaluationPeriods: 2,
-    });
+    testMetric
+      .with({
+        statistic: 'min',
+        period: Duration.seconds(10),
+      })
+      .createAlarm(stack, 'Alarm', {
+        threshold: 1000,
+        evaluationPeriods: 2,
+      });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -236,7 +238,7 @@ describe('Alarm', () => {
 
   test('EC2 alarm actions with InstanceId dimension', () => {
     // GIVEN
-    const app = new App({ context: { [ ENABLE_PARTITION_LITERALS]: true } });
+    const app = new App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
     const stack = new Stack(app, 'EC2AlarmStack', { env: { region: 'us-west-2', account: '123456789012' } });
 
     // WHEN
@@ -265,7 +267,7 @@ describe('Alarm', () => {
 
   test('EC2 alarm actions without InstanceId dimension', () => {
     // GIVEN
-    const app = new App({ context: { [ ENABLE_PARTITION_LITERALS]: true } });
+    const app = new App({ context: { [ENABLE_PARTITION_LITERALS]: true } });
     const stack = new Stack(app, 'EC2AlarmStack', { env: { region: 'us-west-2', account: '123456789012' } });
 
     // WHEN
@@ -298,12 +300,14 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.with({
-      statistic: 'p99.9',
-    }).createAlarm(stack, 'Alarm', {
-      threshold: 1000,
-      evaluationPeriods: 2,
-    });
+    testMetric
+      .with({
+        statistic: 'p99.9',
+      })
+      .createAlarm(stack, 'Alarm', {
+        threshold: 1000,
+        evaluationPeriods: 2,
+      });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -316,12 +320,14 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.with({
-      statistic: 'tm99.9999999999',
-    }).createAlarm(stack, 'Alarm', {
-      threshold: 1000,
-      evaluationPeriods: 2,
-    });
+    testMetric
+      .with({
+        statistic: 'tm99.9999999999',
+      })
+      .createAlarm(stack, 'Alarm', {
+        threshold: 1000,
+        evaluationPeriods: 2,
+      });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -335,12 +341,14 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.with({
-      statistic: 'TM(10%:90%)',
-    }).createAlarm(stack, 'Alarm', {
-      threshold: 1000,
-      evaluationPeriods: 2,
-    });
+    testMetric
+      .with({
+        statistic: 'TM(10%:90%)',
+      })
+      .createAlarm(stack, 'Alarm', {
+        threshold: 1000,
+        evaluationPeriods: 2,
+      });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -354,12 +362,14 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.with({
-      statistic: Stats.p(99.9),
-    }).createAlarm(stack, 'Alarm', {
-      threshold: 1000,
-      evaluationPeriods: 2,
-    });
+    testMetric
+      .with({
+        statistic: Stats.p(99.9),
+      })
+      .createAlarm(stack, 'Alarm', {
+        threshold: 1000,
+        evaluationPeriods: 2,
+      });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -372,12 +382,14 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.with({
-      statistic: Stats.ts(10, 90),
-    }).createAlarm(stack, 'Alarm', {
-      threshold: 1000,
-      evaluationPeriods: 2,
-    });
+    testMetric
+      .with({
+        statistic: Stats.ts(10, 90),
+      })
+      .createAlarm(stack, 'Alarm', {
+        threshold: 1000,
+        evaluationPeriods: 2,
+      });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -402,7 +414,12 @@ describe('Alarm', () => {
 
     // THEN
     const template = Annotations.fromStack(stack);
-    template.hasWarning('/MyStack/MyAlarm', Match.stringLikeRegexp('Unrecognized statistic.*Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic'));
+    template.hasWarning(
+      '/MyStack/MyAlarm',
+      Match.stringLikeRegexp(
+        'Unrecognized statistic.*Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic'
+      )
+    );
   });
 
   test('metric warnings are added to Alarm for math expressions', () => {
@@ -418,7 +435,10 @@ describe('Alarm', () => {
 
     // THEN
     const template = Annotations.fromStack(stack);
-    template.hasWarning('/MyStack/MyAlarm', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
+    template.hasWarning(
+      '/MyStack/MyAlarm',
+      Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers")
+    );
   });
 
   test('check alarm for p100 statistic', () => {
@@ -447,7 +467,11 @@ describe('Alarm', () => {
   test('imported alarm arn and name generated correctly', () => {
     const stack = new Stack();
 
-    const alarmFromArn = Alarm.fromAlarmArn(stack, 'AlarmFromArn', 'arn:aws:cloudwatch:us-west-2:123456789012:alarm:TestAlarmName');
+    const alarmFromArn = Alarm.fromAlarmArn(
+      stack,
+      'AlarmFromArn',
+      'arn:aws:cloudwatch:us-west-2:123456789012:alarm:TestAlarmName'
+    );
 
     expect(alarmFromArn.alarmName).toEqual('TestAlarmName');
     expect(alarmFromArn.alarmArn).toMatch(/:alarm:TestAlarmName$/);
@@ -460,8 +484,7 @@ describe('Alarm', () => {
 });
 
 class TestAlarmAction implements IAlarmAction {
-  constructor(private readonly arn: string) {
-  }
+  constructor(private readonly arn: string) {}
 
   public bind(_scope: Construct, _alarm: IAlarm) {
     return { alarmActionArn: this.arn };
@@ -469,8 +492,7 @@ class TestAlarmAction implements IAlarmAction {
 }
 
 class Ec2TestAlarmAction implements IAlarmAction {
-  constructor(private readonly arn: string) {
-  }
+  constructor(private readonly arn: string) {}
 
   public bind(_scope: Construct, _alarm: IAlarm) {
     return { alarmActionArn: this.arn };

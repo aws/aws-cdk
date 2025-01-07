@@ -2,10 +2,7 @@
 import * as _eks from '@aws-sdk/client-eks';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as sts from '@aws-sdk/client-sts';
-import {
-  IsCompleteResponse,
-  OnEventResponse,
-} from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
+import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 
@@ -91,25 +88,15 @@ export interface EksClient {
   configureAssumeRole(request: sts.AssumeRoleCommandInput): void;
   createCluster(request: _eks.CreateClusterCommandInput): Promise<_eks.CreateClusterCommandOutput>;
   deleteCluster(request: _eks.DeleteClusterCommandInput): Promise<_eks.DeleteClusterCommandOutput>;
-  describeCluster(
-    request: _eks.DescribeClusterCommandInput
-  ): Promise<_eks.DescribeClusterCommandOutput>;
-  updateClusterConfig(
-    request: _eks.UpdateClusterConfigCommandInput
-  ): Promise<_eks.UpdateClusterConfigCommandOutput>;
-  updateClusterVersion(
-    request: _eks.UpdateClusterVersionCommandInput
-  ): Promise<_eks.UpdateClusterVersionCommandOutput>;
+  describeCluster(request: _eks.DescribeClusterCommandInput): Promise<_eks.DescribeClusterCommandOutput>;
+  updateClusterConfig(request: _eks.UpdateClusterConfigCommandInput): Promise<_eks.UpdateClusterConfigCommandOutput>;
+  updateClusterVersion(request: _eks.UpdateClusterVersionCommandInput): Promise<_eks.UpdateClusterVersionCommandOutput>;
   describeUpdate(req: _eks.DescribeUpdateCommandInput): Promise<_eks.DescribeUpdateCommandOutput>;
-  createFargateProfile(
-    request: _eks.CreateFargateProfileCommandInput
-  ): Promise<_eks.CreateFargateProfileCommandOutput>;
+  createFargateProfile(request: _eks.CreateFargateProfileCommandInput): Promise<_eks.CreateFargateProfileCommandOutput>;
   describeFargateProfile(
     request: _eks.DescribeFargateProfileCommandInput
   ): Promise<_eks.DescribeFargateProfileCommandOutput>;
-  deleteFargateProfile(
-    request: _eks.DeleteFargateProfileCommandInput
-  ): Promise<_eks.DeleteFargateProfileCommandOutput>;
+  deleteFargateProfile(request: _eks.DeleteFargateProfileCommandInput): Promise<_eks.DeleteFargateProfileCommandOutput>;
   tagResource(request: _eks.TagResourceCommandInput): Promise<_eks.TagResourceCommandOutput>;
   untagResource(request: _eks.UntagResourceCommandInput): Promise<_eks.UntagResourceCommandOutput>;
 }

@@ -95,8 +95,7 @@ export abstract class CustomResourceProviderBase extends Construct {
     const assumeRolePolicyDoc = [
       { Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } },
     ];
-    const managedPolicyArn =
-      'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
+    const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
 
     // need to initialize this attribute, but there should never be an instance
     // where config.enabled=true && config.preventSynthesis=true
@@ -251,10 +250,7 @@ export abstract class CustomResourceProviderBase extends Construct {
       });
 
       if (props.useCfnResponseWrapper ?? true) {
-        fs.copyFileSync(
-          ENTRYPOINT_NODEJS_SOURCE,
-          path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`)
-        );
+        fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
         codeHandler = `${ENTRYPOINT_FILENAME}.handler`;
       }
 

@@ -19,14 +19,9 @@ describe('notification rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyCodecommitRepositoryNotifyOnPullRequestCreatedBB14EA32',
       DetailType: 'FULL',
-      EventTypeIds: [
-        'codecommit-repository-pull-request-created',
-      ],
+      EventTypeIds: ['codecommit-repository-pull-request-created'],
       Resource: {
-        'Fn::GetAtt': [
-          'MyCodecommitRepository26DB372B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyCodecommitRepository26DB372B', 'Arn'],
       },
       Targets: [
         {
@@ -41,14 +36,9 @@ describe('notification rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyCodecommitRepositoryNotifyOnPullRequestMerged34A7EDF1',
       DetailType: 'FULL',
-      EventTypeIds: [
-        'codecommit-repository-pull-request-merged',
-      ],
+      EventTypeIds: ['codecommit-repository-pull-request-merged'],
       Resource: {
-        'Fn::GetAtt': [
-          'MyCodecommitRepository26DB372B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyCodecommitRepository26DB372B', 'Arn'],
       },
       Targets: [
         {
@@ -59,6 +49,5 @@ describe('notification rule', () => {
         },
       ],
     });
-
   });
 });

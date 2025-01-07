@@ -2,10 +2,7 @@ import { Construct } from 'constructs';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
-import {
-  BasicTargetTrackingScalingPolicyProps,
-  TargetTrackingScalingPolicy,
-} from './target-tracking-scaling-policy';
+import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
 import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
 
@@ -75,11 +72,7 @@ export interface ScalableTargetProps {
  * Define a scalable target
  */
 export class ScalableTarget extends Resource implements IScalableTarget {
-  public static fromScalableTargetId(
-    scope: Construct,
-    id: string,
-    scalableTargetId: string
-  ): IScalableTarget {
+  public static fromScalableTargetId(scope: Construct, id: string, scalableTargetId: string): IScalableTarget {
     class Import extends Resource implements IScalableTarget {
       public readonly scalableTargetId = scalableTargetId;
     }
@@ -156,9 +149,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    */
   public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
-      throw new Error(
-        `You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`
-      );
+      throw new Error(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`);
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

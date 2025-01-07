@@ -93,22 +93,20 @@ describe('signing profile', () => {
         signingProfileVersion,
       });
 
-      expect(stack.resolve(signingProfile.signingProfileArn)).toStrictEqual(
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':signer:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              `://signing-profiles/${signingProfileName}`,
-            ],
+      expect(stack.resolve(signingProfile.signingProfileArn)).toStrictEqual({
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':signer:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            `://signing-profiles/${signingProfileName}`,
           ],
-        },
-      );
+        ],
+      });
       expect(stack.resolve(signingProfile.signingProfileVersionArn)).toStrictEqual({
         'Fn::Join': [
           '',

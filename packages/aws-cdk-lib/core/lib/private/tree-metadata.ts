@@ -107,9 +107,7 @@ export class TreeMetadata extends Construct {
    */
   private getNodeWithParents(node: Node): Node {
     if (!this._tree) {
-      throw new Error(
-        `attempting to get node branch for ${node.path}, but the tree has not been created yet!`
-      );
+      throw new Error(`attempting to get node branch for ${node.path}, but the tree has not been created yet!`);
     }
     let tree = node;
     if (node.parent) {
@@ -135,10 +133,7 @@ export class TreeMetadata extends Construct {
      * @param currentNodeChild - The previous node which should be the only child of the current node
      * @returns The node with all children removed except for the path to the current node
      */
-    function renderTreeWithSingleChild(
-      currentNode: Mutable<Node>,
-      currentNodeChild: Mutable<Node>
-    ) {
+    function renderTreeWithSingleChild(currentNode: Mutable<Node>, currentNodeChild: Mutable<Node>) {
       currentNode.children = {
         [currentNodeChild.id]: currentNodeChild,
       };
@@ -169,9 +164,7 @@ export class TreeMetadata extends Construct {
    */
   public _getNodeBranch(constructPath: string): Node | undefined {
     if (!this._tree) {
-      throw new Error(
-        `attempting to get node branch for ${constructPath}, but the tree has not been created yet!`
-      );
+      throw new Error(`attempting to get node branch for ${constructPath}, but the tree has not been created yet!`);
     }
     const tree = this._tree[constructPath];
     const treeWithParents = this.getNodeWithParents(tree);

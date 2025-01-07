@@ -1,6 +1,12 @@
 import { Construct } from 'constructs';
 import { CfnResource, Stack } from '../lib';
-import { capitalizePropertyNames, filterUndefined, findLastCommonElement, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
+import {
+  capitalizePropertyNames,
+  filterUndefined,
+  findLastCommonElement,
+  ignoreEmpty,
+  pathToTopLevelStack,
+} from '../lib/util';
 
 describe('util', () => {
   test('capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase', () => {
@@ -10,20 +16,20 @@ describe('util', () => {
     expect(capitalizePropertyNames(c, 12)).toEqual(12);
     expect(capitalizePropertyNames(c, 'hello')).toEqual('hello');
     expect(capitalizePropertyNames(c, ['hello', 88])).toEqual(['hello', 88]);
-    expect(capitalizePropertyNames(c,
-      { Hello: 'world', hey: 'dude' })).toEqual(
-      { Hello: 'world', Hey: 'dude' });
-    expect(capitalizePropertyNames(c,
-      [1, 2, { three: 3 }])).toEqual(
-      [1, 2, { Three: 3 }]);
-    expect(capitalizePropertyNames(c,
-      { Hello: 'world', recursive: { foo: 123, there: { another: ['hello', { world: 123 }] } } })).toEqual(
-      { Hello: 'world', Recursive: { Foo: 123, There: { Another: ['hello', { World: 123 }] } } });
+    expect(capitalizePropertyNames(c, { Hello: 'world', hey: 'dude' })).toEqual({ Hello: 'world', Hey: 'dude' });
+    expect(capitalizePropertyNames(c, [1, 2, { three: 3 }])).toEqual([1, 2, { Three: 3 }]);
+    expect(
+      capitalizePropertyNames(c, {
+        Hello: 'world',
+        recursive: { foo: 123, there: { another: ['hello', { world: 123 }] } },
+      })
+    ).toEqual({ Hello: 'world', Recursive: { Foo: 123, There: { Another: ['hello', { World: 123 }] } } });
 
     // make sure tokens are resolved and result is also capitalized
-    expect(capitalizePropertyNames(c,
-      { hello: { resolve: () => ({ foo: 'bar' }) }, world: new SomeToken() })).toEqual(
-      { Hello: { Foo: 'bar' }, World: 100 });
+    expect(capitalizePropertyNames(c, { hello: { resolve: () => ({ foo: 'bar' }) }, world: new SomeToken() })).toEqual({
+      Hello: { Foo: 'bar' },
+      World: 100,
+    });
   });
 
   describe('ignoreEmpty', () => {
@@ -70,7 +76,7 @@ describe('util', () => {
     });
 
     test('removes undefined, but leaves the rest', () => {
-      expect(filterUndefined({ 'an undefined': undefined, 'yes': true })).toEqual({ yes: true });
+      expect(filterUndefined({ 'an undefined': undefined, yes: true })).toEqual({ yes: true });
     });
   });
 
@@ -83,7 +89,7 @@ describe('util', () => {
     expect(path(aa)).toEqual(['a', 'aa']);
     expect(path(a)).toEqual(['a']);
     function path(s: Stack) {
-      return pathToTopLevelStack(s).map(x => x.node.id);
+      return pathToTopLevelStack(s).map((x) => x.node.id);
     }
   });
 
@@ -116,7 +122,9 @@ describe('util', () => {
 
     function lca(s1: Stack, s2: Stack) {
       const res = findLastCommonElement(pathToTopLevelStack(s1), pathToTopLevelStack(s2));
-      if (!res) { return undefined; }
+      if (!res) {
+        return undefined;
+      }
       return res.node.id;
     }
   });

@@ -39,10 +39,7 @@ describe('auth-token', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'ecr-public:GetAuthorizationToken',
-              'sts:GetServiceBearerToken',
-            ],
+            Action: ['ecr-public:GetAuthorizationToken', 'sts:GetServiceBearerToken'],
             Effect: 'Allow',
             Resource: '*',
           },

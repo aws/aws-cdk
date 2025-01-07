@@ -15,30 +15,36 @@ test('Default property', () => {
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [
-          new actions.ClearTimerAction('MyTimer'),
-        ],
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [new actions.ClearTimerAction('MyTimer')],
+        },
+      ],
     }),
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
     DetectorModelDefinition: {
-      States: [{
-        OnEnter: {
-          Events: [{
-            Actions: [{
-              ClearTimer: {
-                TimerName: 'MyTimer',
+      States: [
+        {
+          OnEnter: {
+            Events: [
+              {
+                Actions: [
+                  {
+                    ClearTimer: {
+                      TimerName: 'MyTimer',
+                    },
+                  },
+                ],
               },
-            }],
-          }],
+            ],
+          },
         },
-      }],
+      ],
     },
   });
 });

@@ -9,7 +9,10 @@ describe('table privileges', () => {
   let cluster: redshift.ICluster;
   const databaseName = 'databaseName';
   let databaseOptions: redshift.DatabaseOptions;
-  const tableColumns = [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }];
+  const tableColumns = [
+    { name: 'col1', dataType: 'varchar(4)' },
+    { name: 'col2', dataType: 'float' },
+  ];
   let table: redshift.ITable;
   let table2: redshift.ITable;
 
@@ -52,27 +55,29 @@ describe('table privileges', () => {
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       username: {
-        'Fn::GetAtt': [
-          'UserFDDCDD17',
-          'username',
-        ],
+        'Fn::GetAtt': ['UserFDDCDD17', 'username'],
       },
-      tablePrivileges: [{ tableName: 'tableName', actions: ['INSERT'] }, { tableName: 'tableName2', actions: ['SELECT', 'DROP'] }],
+      tablePrivileges: [
+        { tableName: 'tableName', actions: ['INSERT'] },
+        { tableName: 'tableName2', actions: ['SELECT', 'DROP'] },
+      ],
     });
   });
 
   it('table privileges are deduplicated', () => {
     const user = new redshift.User(stack, 'User', databaseOptions);
 
-    user.addTablePrivileges(table, redshift.TableAction.INSERT, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
+    user.addTablePrivileges(
+      table,
+      redshift.TableAction.INSERT,
+      redshift.TableAction.INSERT,
+      redshift.TableAction.DELETE
+    );
     user.addTablePrivileges(table, redshift.TableAction.SELECT, redshift.TableAction.DELETE);
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       username: {
-        'Fn::GetAtt': [
-          'UserFDDCDD17',
-          'username',
-        ],
+        'Fn::GetAtt': ['UserFDDCDD17', 'username'],
       },
       tablePrivileges: [{ tableName: 'tableName', actions: ['INSERT', 'DELETE', 'SELECT'] }],
     });
@@ -85,10 +90,7 @@ describe('table privileges', () => {
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       username: {
-        'Fn::GetAtt': [
-          'UserFDDCDD17',
-          'username',
-        ],
+        'Fn::GetAtt': ['UserFDDCDD17', 'username'],
       },
       tablePrivileges: [{ tableName: 'tableName', actions: ['ALL'] }],
     });
@@ -102,12 +104,12 @@ describe('table privileges', () => {
 
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       username: {
-        'Fn::GetAtt': [
-          'UserFDDCDD17',
-          'username',
-        ],
+        'Fn::GetAtt': ['UserFDDCDD17', 'username'],
       },
-      tablePrivileges: [{ tableName: 'tableName', actions: ['UPDATE', 'SELECT'] }, { tableName: 'tableName2', actions: ['DELETE', 'SELECT'] }],
+      tablePrivileges: [
+        { tableName: 'tableName', actions: ['UPDATE', 'SELECT'] },
+        { tableName: 'tableName2', actions: ['DELETE', 'SELECT'] },
+      ],
     });
   });
 });

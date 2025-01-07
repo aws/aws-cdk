@@ -126,10 +126,7 @@ export async function getCredentials(
 /**
  * Formats API response data based on outputPath or outputPaths configured in the SDK call.
  */
-export function formatData(
-  call: AwsSdkCall,
-  flatData: { [key: string]: string }
-): { [key: string]: string } {
+export function formatData(call: AwsSdkCall, flatData: { [key: string]: string }): { [key: string]: string } {
   let outputPaths: string[] | undefined;
   if (call.outputPath) {
     outputPaths = [call.outputPath];

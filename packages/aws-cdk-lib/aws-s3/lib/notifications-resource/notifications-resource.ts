@@ -100,10 +100,7 @@ export class BucketNotifications extends Construct {
         break;
 
       default:
-        throw new Error(
-          'Unsupported notification target type:' +
-            BucketNotificationDestinationType[targetProps.type]
-        );
+        throw new Error('Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type]);
     }
   }
 
@@ -115,8 +112,7 @@ export class BucketNotifications extends Construct {
   private renderNotificationConfiguration(): NotificationConfiguration {
     return {
       EventBridgeConfiguration: this.eventBridgeEnabled ? {} : undefined,
-      LambdaFunctionConfigurations:
-        this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
+      LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
       QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
       TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
     };

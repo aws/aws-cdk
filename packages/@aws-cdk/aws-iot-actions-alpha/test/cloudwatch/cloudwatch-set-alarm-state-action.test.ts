@@ -9,15 +9,23 @@ test('Default cloudwatch alarm action', () => {
   // Given
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, stateReason, stateValue FROM 'device/+/data'"),
+    sql: iot.IotSql.fromStringAsVer20160323(
+      "SELECT topic(2) as device_id, stateReason, stateValue FROM 'device/+/data'"
+    ),
   });
-  const alarm = cloudwatch.Alarm.fromAlarmArn(stack, 'MyAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm');
+  const alarm = cloudwatch.Alarm.fromAlarmArn(
+    stack,
+    'MyAlarm',
+    'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm'
+  );
 
   // When
-  topicRule.addAction(new actions.CloudWatchSetAlarmStateAction(alarm, {
-    reason: 'Test reason',
-    alarmStateToSet: cloudwatch.AlarmState.ALARM,
-  }));
+  topicRule.addAction(
+    new actions.CloudWatchSetAlarmStateAction(alarm, {
+      reason: 'Test reason',
+      alarmStateToSet: cloudwatch.AlarmState.ALARM,
+    })
+  );
 
   // Then
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -72,25 +80,27 @@ test('can set role', () => {
   // Given
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, stateReason, stateValue FROM 'device/+/data'"),
+    sql: iot.IotSql.fromStringAsVer20160323(
+      "SELECT topic(2) as device_id, stateReason, stateValue FROM 'device/+/data'"
+    ),
   });
 
   // When
-  topicRule.addAction(new actions.CloudWatchSetAlarmStateAction(
-    cloudwatch.Alarm.fromAlarmArn(stack, 'MyAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm'),
-    {
-      reason: '${stateReason}',
-      alarmStateToSet: cloudwatch.AlarmState.ALARM,
-      role: iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest'),
-    },
-  ));
+  topicRule.addAction(
+    new actions.CloudWatchSetAlarmStateAction(
+      cloudwatch.Alarm.fromAlarmArn(stack, 'MyAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm'),
+      {
+        reason: '${stateReason}',
+        alarmStateToSet: cloudwatch.AlarmState.ALARM,
+        role: iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest'),
+      }
+    )
+  );
 
   // Then
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ CloudwatchAlarm: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
-      ],
+      Actions: [Match.objectLike({ CloudwatchAlarm: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } })],
     },
   });
 
@@ -104,14 +114,22 @@ test('set default reason', () => {
   // Given
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, stateReason, stateValue FROM 'device/+/data'"),
+    sql: iot.IotSql.fromStringAsVer20160323(
+      "SELECT topic(2) as device_id, stateReason, stateValue FROM 'device/+/data'"
+    ),
   });
-  const alarm = cloudwatch.Alarm.fromAlarmArn(stack, 'MyAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm');
+  const alarm = cloudwatch.Alarm.fromAlarmArn(
+    stack,
+    'MyAlarm',
+    'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm'
+  );
 
   // When
-  topicRule.addAction(new actions.CloudWatchSetAlarmStateAction(alarm, {
-    alarmStateToSet: cloudwatch.AlarmState.ALARM,
-  }));
+  topicRule.addAction(
+    new actions.CloudWatchSetAlarmStateAction(alarm, {
+      alarmStateToSet: cloudwatch.AlarmState.ALARM,
+    })
+  );
 
   // Then
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {

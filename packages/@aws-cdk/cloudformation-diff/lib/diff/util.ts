@@ -30,10 +30,7 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
   }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
-  if (
-    (typeof lvalue === 'string' || typeof rvalue === 'string') &&
-    safeParseFloat(lvalue) === safeParseFloat(rvalue)
-  ) {
+  if ((typeof lvalue === 'string' || typeof rvalue === 'string') && safeParseFloat(lvalue) === safeParseFloat(rvalue)) {
     return true;
   }
   if (typeof lvalue !== typeof rvalue) {

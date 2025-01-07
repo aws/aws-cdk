@@ -81,10 +81,8 @@ export class ClusterResource extends Construct {
           encryptionConfig: props.encryptionConfig,
           kubernetesNetworkConfig: props.kubernetesNetworkConfig,
           resourcesVpcConfig: {
-            subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty)
-              .subnetIds,
-            securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty)
-              .securityGroupIds,
+            subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
+            securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,
             endpointPublicAccess: props.endpointPublicAccess,
             endpointPrivateAccess: props.endpointPrivateAccess,
             publicAccessCidrs: props.publicAccessCidrs,

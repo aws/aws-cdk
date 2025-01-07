@@ -21,7 +21,9 @@ describe('Vpc V2 with full control', () => {
       vpcId: 'vpc-12345',
       vpcCidrBlock: '10.0.0.0/16',
     });
-    expect(importedVpc.vpcArn).toBe(`arn:${cdk.Stack.of(stack).partition}:ec2:${cdk.Stack.of(stack).region}:${cdk.Stack.of(stack).account}:vpc/vpc-12345`);
+    expect(importedVpc.vpcArn).toBe(
+      `arn:${cdk.Stack.of(stack).partition}:ec2:${cdk.Stack.of(stack).region}:${cdk.Stack.of(stack).account}:vpc/vpc-12345`
+    );
   });
 
   test('VpcV2.fromVpcV2Attributes returns an instance of IVpcV2', () => {
@@ -36,13 +38,15 @@ describe('Vpc V2 with full control', () => {
     const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'XXXXXXXXX',
       vpcCidrBlock: '10.1.0.0/16',
-      subnets: [{
-        subnetId: 'subnet-isolated1',
-        availabilityZone: 'us-east-1a',
-        ipv4CidrBlock: '10.0.4.0/24',
-        subnetType: SubnetType.PUBLIC,
-        routeTableId: 'mockRouteTableId',
-      }],
+      subnets: [
+        {
+          subnetId: 'subnet-isolated1',
+          availabilityZone: 'us-east-1a',
+          ipv4CidrBlock: '10.0.4.0/24',
+          subnetType: SubnetType.PUBLIC,
+          routeTableId: 'mockRouteTableId',
+        },
+      ],
     });
     vpc.addInterfaceEndpoint('ec2', {
       service: InterfaceVpcEndpointAwsService.SNS,
@@ -60,24 +64,27 @@ describe('Vpc V2 with full control', () => {
           amazonProvidedIpv6CidrBlock: true,
         },
       ],
-      subnets: [{
-        subnetId: 'subnet-isolated1',
-        subnetName: 'mockisolatedsubnet',
-        availabilityZone: 'us-east-1a',
-        ipv4CidrBlock: '10.0.4.0/24',
-        subnetType: SubnetType.PRIVATE_ISOLATED,
-        routeTableId: 'mockRouteTableId',
-      }, {
-        subnetId: 'subnet-isolated2',
-        subnetName: 'mockisolatedsubnet2',
-        availabilityZone: 'us-east-1b',
-        ipv4CidrBlock: '10.0.5.0/24',
-        subnetType: SubnetType.PRIVATE_ISOLATED,
-        routeTableId: 'mockRouteTableId',
-      }],
+      subnets: [
+        {
+          subnetId: 'subnet-isolated1',
+          subnetName: 'mockisolatedsubnet',
+          availabilityZone: 'us-east-1a',
+          ipv4CidrBlock: '10.0.4.0/24',
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+          routeTableId: 'mockRouteTableId',
+        },
+        {
+          subnetId: 'subnet-isolated2',
+          subnetName: 'mockisolatedsubnet2',
+          availabilityZone: 'us-east-1b',
+          ipv4CidrBlock: '10.0.5.0/24',
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+          routeTableId: 'mockRouteTableId',
+        },
+      ],
     });
 
-    importedVpc.addEgressOnlyInternetGateway({ subnets: [{ subnetType: SubnetType.PRIVATE_ISOLATED }] } );
+    importedVpc.addEgressOnlyInternetGateway({ subnets: [{ subnetType: SubnetType.PRIVATE_ISOLATED }] });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::EgressOnlyInternetGateway', {
       VpcId: 'vpc-12345',
@@ -102,7 +109,7 @@ describe('Vpc V2 with full control', () => {
         },
       ],
     });
-      //Subnet with secondary address
+    //Subnet with secondary address
     new SubnetV2(stack, 'testsubnet', {
       vpc,
       availabilityZone: 'us-west-2a',
@@ -118,13 +125,15 @@ describe('Vpc V2 with full control', () => {
     const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
-      secondaryCidrBlocks: [{
-        ipv4IpamPoolId: 'ipam-pool-0d53ae29b3b8ca8de',
-        ipv4IpamProvisionedCidrs: ['10.2.0.0/16'],
-        cidrBlockName: 'ImportedIpamIpv4',
-      }],
+      secondaryCidrBlocks: [
+        {
+          ipv4IpamPoolId: 'ipam-pool-0d53ae29b3b8ca8de',
+          ipv4IpamProvisionedCidrs: ['10.2.0.0/16'],
+          cidrBlockName: 'ImportedIpamIpv4',
+        },
+      ],
     });
-      //Subnet with secondary address from IPAM range
+    //Subnet with secondary address from IPAM range
     new SubnetV2(stack, 'testsubnet', {
       vpc,
       availabilityZone: 'us-west-2a',
@@ -140,13 +149,15 @@ describe('Vpc V2 with full control', () => {
     const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
-      secondaryCidrBlocks: [{
-        ipv6IpamPoolId: 'ipam-pool-0316c6848898c09e0',
-        ipv6NetmaskLength: 52,
-        cidrBlockName: 'ImportedIpamIpv6',
-      }],
+      secondaryCidrBlocks: [
+        {
+          ipv6IpamPoolId: 'ipam-pool-0316c6848898c09e0',
+          ipv6NetmaskLength: 52,
+          cidrBlockName: 'ImportedIpamIpv6',
+        },
+      ],
     });
-      //will throw error if IPv6 not enabled using IPAM ipv6
+    //will throw error if IPv6 not enabled using IPAM ipv6
     vpc.addEgressOnlyInternetGateway();
 
     //will throw error if IPv6 not enabled using Amazon Provided IPv6
@@ -167,9 +178,11 @@ describe('Vpc V2 with full control', () => {
     const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
-      secondaryCidrBlocks: [{
-        amazonProvidedIpv6CidrBlock: true,
-      }],
+      secondaryCidrBlocks: [
+        {
+          amazonProvidedIpv6CidrBlock: true,
+        },
+      ],
     });
     //will throw error if IPv6 not enabled using Amazon Provided IPv6
     vpc.addEgressOnlyInternetGateway();
@@ -190,9 +203,11 @@ describe('Vpc V2 with full control', () => {
     const vpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
-      secondaryCidrBlocks: [{
-        amazonProvidedIpv6CidrBlock: true,
-      }],
+      secondaryCidrBlocks: [
+        {
+          amazonProvidedIpv6CidrBlock: true,
+        },
+      ],
       ownerAccountId: '123456789012',
       region: 'us-west-2',
     });

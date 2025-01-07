@@ -30,10 +30,7 @@ export async function handler(event: CrossAccountZoneDelegationEvent) {
   }
 }
 
-async function cfnUpdateEventHandler(
-  props: ResourceProperties,
-  oldProps: ResourceProperties | undefined
-) {
+async function cfnUpdateEventHandler(props: ResourceProperties, oldProps: ResourceProperties | undefined) {
   if (oldProps && props.DelegatedZoneName !== oldProps.DelegatedZoneName) {
     await cfnEventHandler(oldProps, true);
   }
@@ -59,9 +56,7 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
   const route53 = new Route53({
     credentials: fromTemporaryCredentials({
       clientConfig: {
-        region:
-          AssumeRoleRegion ??
-          route53Region(process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? ''),
+        region: AssumeRoleRegion ?? route53Region(process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? ''),
       },
       params: {
         RoleArn: AssumeRoleArn,
@@ -101,9 +96,7 @@ async function getHostedZoneIdByName(name: string, route53: Route53): Promise<st
     }) ?? [];
 
   if (matchedZones && matchedZones.length !== 1) {
-    throw Error(
-      `Expected one hosted zone to match the given name but found ${matchedZones.length}`
-    );
+    throw Error(`Expected one hosted zone to match the given name but found ${matchedZones.length}`);
   }
 
   // will always be defined because we throw if length !==1

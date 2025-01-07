@@ -38,7 +38,7 @@ describe('stage', () => {
     expect(acctRegion(new Stack(innerNeither, 'Stack'))).toEqual(['account', 'region']);
   });
 
-  test('The Stage Assembly is in the app Assembly\'s manifest', () => {
+  test("The Stage Assembly is in the app Assembly's manifest", () => {
     // WHEN
     const app = new App();
     const stage = new Stage(app, 'Stage');
@@ -47,7 +47,7 @@ describe('stage', () => {
     // THEN -- app manifest contains a nested cloud assembly
     const appAsm = app.synth();
 
-    const artifact = appAsm.artifacts.find(x => x instanceof cxapi.NestedCloudAssemblyArtifact);
+    const artifact = appAsm.artifacts.find((x) => x instanceof cxapi.NestedCloudAssemblyArtifact);
     expect(artifact).toBeDefined();
   });
 
@@ -60,10 +60,10 @@ describe('stage', () => {
 
     // THEN
     const stageAsm = stage.synth();
-    expect(stageAsm.stacks.map(s => s.stackName)).toEqual([stack2.stackName]);
+    expect(stageAsm.stacks.map((s) => s.stackName)).toEqual([stack2.stackName]);
 
     const appAsm = app.synth();
-    expect(appAsm.stacks.map(s => s.stackName)).toEqual([stack1.stackName]);
+    expect(appAsm.stacks.map((s) => s.stackName)).toEqual([stack1.stackName]);
   });
 
   test('Can nest Stages inside other Stages', () => {
@@ -147,7 +147,9 @@ describe('stage', () => {
 
     // THEN
     expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ThePrefixIsLongEnoughToExceedTheMaxLenght-ReallyReallyLooooomeIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTheStackName1E474FCA');
+    expect(stack.stackName).toEqual(
+      'ThePrefixIsLongEnoughToExceedTheMaxLenght-ReallyReallyLooooomeIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTheStackName1E474FCA'
+    );
   });
 
   test('generated stack names will not exceed 128 characters when using prefixes', () => {
@@ -162,7 +164,9 @@ describe('stage', () => {
 
     // THEN
     expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefix4CA9F65B');
+    expect(stack.stackName).toEqual(
+      'ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefix4CA9F65B'
+    );
   });
 
   test('Can not have dependencies to stacks outside the nested asm', () => {
@@ -190,10 +194,7 @@ describe('stage', () => {
 
     // THEN
     app.synth();
-    expect(aspect.visits.map(c => c.node.path)).toEqual([
-      'MyStage/Stack',
-      'MyStage/Stack/Resource',
-    ]);
+    expect(aspect.visits.map((c) => c.node.path)).toEqual(['MyStage/Stack', 'MyStage/Stack/Resource']);
   });
 
   test('Aspects do not apply inside a Stage', () => {
@@ -208,10 +209,7 @@ describe('stage', () => {
 
     // THEN
     app.synth();
-    expect(aspect.visits.map(c => c.node.path)).toEqual([
-      '',
-      'Tree',
-    ]);
+    expect(aspect.visits.map((c) => c.node.path)).toEqual(['', 'Tree']);
   });
 
   test('Automatic dependencies inside a stage are available immediately after synth', () => {
@@ -235,9 +233,7 @@ describe('stage', () => {
     const asm = stage.synth();
 
     // THEN
-    expect(
-      asm.getStackArtifact(stack2.artifactId).dependencies.map(d => d.id)).toEqual(
-      [stack1.artifactId]);
+    expect(asm.getStackArtifact(stack2.artifactId).dependencies.map((d) => d.id)).toEqual([stack1.artifactId]);
   });
 
   test('Assemblies can be deeply nested', () => {
@@ -294,8 +290,12 @@ describe('stage', () => {
     new Stage(app, 'abcd123-588dfjjk.sss');
     new Stage(app, 'abcd123-588dfjjk.sss_ajsid');
 
-    expect(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid ')).toThrow(/invalid stage name "abcd123-588dfjjk.sss_ajsid "/);
-    expect(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid/dfo')).toThrow(/invalid stage name "abcd123-588dfjjk.sss_ajsid\/dfo"/);
+    expect(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid ')).toThrow(
+      /invalid stage name "abcd123-588dfjjk.sss_ajsid "/
+    );
+    expect(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid/dfo')).toThrow(
+      /invalid stage name "abcd123-588dfjjk.sss_ajsid\/dfo"/
+    );
     expect(() => new Stage(app, '&')).toThrow(/invalid stage name "&"/);
     expect(() => new Stage(app, '45hello')).toThrow(/invalid stage name "45hello"/);
     expect(() => new Stage(app, 'f')).toThrow(/invalid stage name "f"/);
@@ -306,7 +306,9 @@ describe('stage', () => {
     const app = new App();
 
     // THEN
-    expect(() => new Stage(app, 'mystage', { outdir: '/tmp/foo/bar' })).toThrow(/"outdir" cannot be specified for nested stages/);
+    expect(() => new Stage(app, 'mystage', { outdir: '/tmp/foo/bar' })).toThrow(
+      /"outdir" cannot be specified for nested stages/
+    );
   });
 
   test('Stage.isStage indicates that a construct is a stage', () => {

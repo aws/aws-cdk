@@ -4,7 +4,14 @@ import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
-import { EmrContainersStartJobRun, VirtualClusterInput, ReleaseLabel, ApplicationConfiguration, Classification, EmrContainersStartJobRunProps } from '../../lib/emrcontainers/start-job-run';
+import {
+  EmrContainersStartJobRun,
+  VirtualClusterInput,
+  ReleaseLabel,
+  ApplicationConfiguration,
+  Classification,
+  EmrContainersStartJobRunProps,
+} from '../../lib/emrcontainers/start-job-run';
 
 let stack: Stack;
 let clusterId: string;
@@ -77,14 +84,18 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
       ...defaultProps,
       virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
-      executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+      executionRole: iam.Role.fromRoleArn(
+        stack,
+        'Job Execution Role',
+        'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'
+      ),
     });
 
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         'VirtualClusterId.$': '$.ClusterId',
-        'ExecutionRoleArn': 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
+        ExecutionRoleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
       },
     });
   });
@@ -112,33 +123,40 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
       ...defaultProps,
-      applicationConfig: [{
-        classification: Classification.SPARK_DEFAULTS,
-        properties: {
-          'spark.executor.instances': '1',
-          'spark.executor.memory': '512M',
+      applicationConfig: [
+        {
+          classification: Classification.SPARK_DEFAULTS,
+          properties: {
+            'spark.executor.instances': '1',
+            'spark.executor.memory': '512M',
+          },
         },
-      }],
+      ],
     });
 
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         ConfigurationOverrides: {
-          ApplicationConfiguration: [{
-            Classification: Classification.SPARK_DEFAULTS.classificationStatement,
-            Properties: {
-              'spark.executor.instances': '1',
-              'spark.executor.memory': '512M',
+          ApplicationConfiguration: [
+            {
+              Classification: Classification.SPARK_DEFAULTS.classificationStatement,
+              Properties: {
+                'spark.executor.instances': '1',
+                'spark.executor.memory': '512M',
+              },
             },
-          }],
+          ],
         },
       },
     });
   });
 
   test('Application Configuration with nested app config and no properties', () => {
-    const properties: { [key: string]: string } = { HADOOP_DATANODE_HEAPSIZE: '2048', HADOOP_NAMENODE_OPTS: '-XX:GCTimeRatio=19' };
+    const properties: { [key: string]: string } = {
+      HADOOP_DATANODE_HEAPSIZE: '2048',
+      HADOOP_NAMENODE_OPTS: '-XX:GCTimeRatio=19',
+    };
     const struct = { classification: new Classification('export'), properties: properties };
     const appConfigNested: ApplicationConfiguration[] = [struct];
 
@@ -154,16 +172,20 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
         ConfigurationOverrides: {
-          ApplicationConfiguration: [{
-            Classification: 'hadoop-env',
-            Configurations: [{
-              Classification: 'export',
-              Properties: {
-                HADOOP_DATANODE_HEAPSIZE: '2048',
-                HADOOP_NAMENODE_OPTS: '-XX:GCTimeRatio=19',
-              },
-            }],
-          }],
+          ApplicationConfiguration: [
+            {
+              Classification: 'hadoop-env',
+              Configurations: [
+                {
+                  Classification: 'export',
+                  Properties: {
+                    HADOOP_DATANODE_HEAPSIZE: '2048',
+                    HADOOP_NAMENODE_OPTS: '-XX:GCTimeRatio=19',
+                  },
+                },
+              ],
+            },
+          ],
         },
       },
     });
@@ -186,7 +208,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       Parameters: {
         JobDriver: {
           SparkSubmitJobDriver: {
-            'EntryPoint': 'entrypoint',
+            EntryPoint: 'entrypoint',
             'EntryPointArguments.$': '$.entrypointArguments',
           },
         },
@@ -198,7 +220,11 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
       ...defaultProps,
-      executionRole: iam.Role.fromRoleArn(stack, 'Job Execution Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+      executionRole: iam.Role.fromRoleArn(
+        stack,
+        'Job Execution Role',
+        'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'
+      ),
     });
 
     // THEN
@@ -257,20 +283,14 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               Effect: 'Allow',
               Resource: [
                 {
-                  'Fn::GetAtt': [
-                    'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['EMRContainersStartJobRunMonitoringBucket8BB3FC54', 'Arn'],
                 },
                 {
                   'Fn::Join': [
                     '',
                     [
                       {
-                        'Fn::GetAtt': [
-                          'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
-                          'Arn',
-                        ],
+                        'Fn::GetAtt': ['EMRContainersStartJobRunMonitoringBucket8BB3FC54', 'Arn'],
                       },
                       '/*',
                     ],
@@ -279,26 +299,17 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               ],
             },
             {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EMRContainersStartJobRunMonitoringLogGroup882D450C', 'Arn'],
               },
             },
             {
               Action: 'logs:DescribeLogStreams',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EMRContainersStartJobRunMonitoringLogGroup882D450C', 'Arn'],
               },
             },
             {
@@ -369,7 +380,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     test('provided from user', () => {
       // WHEN
       const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Monitoring Group', 'providedloggroup');
-      const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'providedbucket');;
+      const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'providedbucket');
       const prefixName = 'prefix';
 
       const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
@@ -428,10 +439,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               ],
             },
             {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
@@ -528,10 +536,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
           ExecutionRoleArn: {
-            'Fn::GetAtt': [
-              'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['EMRContainersStartJobRunJobExecutionRole40B8DD81', 'Arn'],
           },
         },
       });
@@ -604,7 +609,9 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
           ...defaultProps,
           applicationConfig: [appConfig],
         });
-      }).toThrow(`Application configuration properties must have 100 or fewer entries. Received ${Object.keys(properties).length}`);
+      }).toThrow(
+        `Application configuration properties must have 100 or fewer entries. Received ${Object.keys(properties).length}`
+      );
     });
 
     test('Application Configuration properties is undefined and nested configuration array is undefined', () => {
@@ -681,7 +688,9 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string');
+      }).toThrow(
+        'Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string'
+      );
 
       // THEN
       expect(() => {
@@ -694,7 +703,9 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArgs.value.length}.`);
+      }).toThrow(
+        `Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArgs.value.length}.`
+      );
 
       // THEN
       expect(() => {
@@ -707,7 +718,9 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArgsNone.value.length}.`);
+      }).toThrow(
+        `Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArgsNone.value.length}.`
+      );
     });
 
     test('Spark Submit Parameters is NOT between 1 characters and 102400 characters in length', () => {
@@ -725,7 +738,9 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParam.length}.`);
+      }).toThrow(
+        `Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParam.length}.`
+      );
     });
 
     test('an execution role is undefined and the virtual cluster ID is not a concrete value', () => {
@@ -738,7 +753,9 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
           ...defaultProps,
           virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt(jsonPath)),
         });
-      }).toThrow('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
+      }).toThrow(
+        'Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy'
+      );
     });
   });
 
@@ -753,67 +770,63 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 'emr-containers:StartJobRun',
-          Condition: {
-            StringEquals: {
-              'emr-containers:ExecutionRoleArn': {
-                'Fn::GetAtt': [
-                  'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-                  'Arn',
-                ],
+        Statement: [
+          {
+            Action: 'emr-containers:StartJobRun',
+            Condition: {
+              StringEquals: {
+                'emr-containers:ExecutionRoleArn': {
+                  'Fn::GetAtt': ['EMRContainersStartJobRunJobExecutionRole40B8DD81', 'Arn'],
+                },
               },
             },
-          },
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':emr-containers:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                `:/virtualclusters/${clusterId}`,
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':emr-containers:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  `:/virtualclusters/${clusterId}`,
+                ],
               ],
-            ],
+            },
           },
-        },
-        {
-          Action: [
-            'emr-containers:DescribeJobRun',
-            'emr-containers:CancelJobRun',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':emr-containers:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                `:/virtualclusters/${clusterId}/jobruns/*`,
+          {
+            Action: ['emr-containers:DescribeJobRun', 'emr-containers:CancelJobRun'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':emr-containers:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  `:/virtualclusters/${clusterId}/jobruns/*`,
+                ],
               ],
-            ],
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -833,62 +846,61 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 'emr-containers:StartJobRun',
-          Condition: {
-            StringEquals: {
-              'emr-containers:ExecutionRoleArn': 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
+        Statement: [
+          {
+            Action: 'emr-containers:StartJobRun',
+            Condition: {
+              StringEquals: {
+                'emr-containers:ExecutionRoleArn': 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
+              },
+            },
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':emr-containers:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':/virtualclusters/*',
+                ],
+              ],
             },
           },
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':emr-containers:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':/virtualclusters/*',
+          {
+            Action: ['emr-containers:DescribeJobRun', 'emr-containers:CancelJobRun'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':emr-containers:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':/virtualclusters/*',
+                ],
               ],
-            ],
+            },
           },
-        },
-        {
-          Action: [
-            'emr-containers:DescribeJobRun',
-            'emr-containers:CancelJobRun',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':emr-containers:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':/virtualclusters/*',
-              ],
-            ],
-          },
-        }],
+        ],
       },
     });
   });
@@ -907,40 +919,39 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 'emr-containers:StartJobRun',
-          Condition: {
-            StringEquals: {
-              'emr-containers:ExecutionRoleArn': {
-                'Fn::GetAtt': [
-                  'TaskJobExecutionRole5D5BBA5A',
-                  'Arn',
-                ],
+        Statement: [
+          {
+            Action: 'emr-containers:StartJobRun',
+            Condition: {
+              StringEquals: {
+                'emr-containers:ExecutionRoleArn': {
+                  'Fn::GetAtt': ['TaskJobExecutionRole5D5BBA5A', 'Arn'],
+                },
               },
             },
-          },
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':emr-containers:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                `:/virtualclusters/${clusterId}`,
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':emr-containers:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  `:/virtualclusters/${clusterId}`,
+                ],
               ],
-            ],
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -956,23 +967,23 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
       ServiceToken: {
-        'Fn::GetAtt': [
-          'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['AWS679f53fac002430cb0da5b7982bd22872D164C4C', 'Arn'],
       },
-      Create: '{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"clusterId\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}',
+      Create:
+        '{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"clusterId\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}',
       InstallLatestAwsSdk: false,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 'emr-containers:DescribeVirtualCluster',
-          Effect: 'Allow',
-          Resource: '*',
-        }],
+        Statement: [
+          {
+            Action: 'emr-containers:DescribeVirtualCluster',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
       },
     });
   });
@@ -1010,26 +1021,17 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
                   },
                   ':cluster/',
                   {
-                    'Fn::GetAtt': [
-                      'TaskGetEksClusterInfo2F156985',
-                      'virtualCluster.containerProvider.id',
-                    ],
+                    'Fn::GetAtt': ['TaskGetEksClusterInfo2F156985', 'virtualCluster.containerProvider.id'],
                   },
                 ],
               ],
             },
           },
           {
-            Action: [
-              'iam:GetRole',
-              'iam:UpdateAssumeRolePolicy',
-            ],
+            Action: ['iam:GetRole', 'iam:UpdateAssumeRolePolicy'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'TaskJobExecutionRole5D5BBA5A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['TaskJobExecutionRole5D5BBA5A', 'Arn'],
             },
           },
         ],
@@ -1063,5 +1065,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       },
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
+  );
 });

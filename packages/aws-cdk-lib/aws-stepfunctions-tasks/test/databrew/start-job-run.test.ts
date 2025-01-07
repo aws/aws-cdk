@@ -3,7 +3,6 @@ import * as cdk from '../../../core';
 import { GlueDataBrewStartJobRun } from '../../lib/databrew/start-job-run';
 
 describe('Start Job Run', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -107,7 +106,8 @@ describe('Start Job Run', () => {
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
         name: 'jobName',
       });
-    }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/i);
+    }).toThrow(
+      /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/i
+    );
   });
 });
-

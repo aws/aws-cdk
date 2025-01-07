@@ -29,11 +29,7 @@ export class IntegTestSuite {
    */
   public static fromPath(path: string): IntegTestSuite {
     const reader = IntegManifestReader.fromPath(path);
-    return new IntegTestSuite(
-      reader.tests.enableLookups,
-      reader.tests.testCases,
-      reader.tests.synthContext
-    );
+    return new IntegTestSuite(reader.tests.enableLookups, reader.tests.testCases, reader.tests.synthContext);
   }
 
   public readonly type: TestSuiteType = 'test-suite';
@@ -168,9 +164,7 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
 
     // apply context from set-context pragma
     // usage: pragma:set-context:key=value
-    const ctxPragmas = this.pragmas(integSourceFilePath).filter((p) =>
-      p.startsWith(SET_CONTEXT_PRAGMA_PREFIX)
-    );
+    const ctxPragmas = this.pragmas(integSourceFilePath).filter((p) => p.startsWith(SET_CONTEXT_PRAGMA_PREFIX));
     for (const p of ctxPragmas) {
       const instruction = p.substring(SET_CONTEXT_PRAGMA_PREFIX.length);
       const [key, value] = instruction.split('=');
@@ -258,9 +252,6 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
       synthContext: context,
       enableLookups: this.enableLookups,
     };
-    Manifest.saveIntegManifest(
-      manifest,
-      osPath.join(directory, IntegManifestReader.DEFAULT_FILENAME)
-    );
+    Manifest.saveIntegManifest(manifest, osPath.join(directory, IntegManifestReader.DEFAULT_FILENAME));
   }
 }

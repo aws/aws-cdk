@@ -181,10 +181,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     // validate integrationPattern
     this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
 
-    const supportedPatterns = [
-      sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
-      sfn.ServiceIntegrationPattern.SYNC,
-    ];
+    const supportedPatterns = [sfn.ServiceIntegrationPattern.FIRE_AND_FORGET, sfn.ServiceIntegrationPattern.SYNC];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
       throw new Error(
@@ -242,8 +239,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         JobQueue: this.props.jobQueueArn,
         Parameters: this.props.payload,
 
-        ArrayProperties:
-          this.props.arraySize !== undefined ? { Size: this.props.arraySize } : undefined,
+        ArrayProperties: this.props.arraySize !== undefined ? { Size: this.props.arraySize } : undefined,
 
         ContainerOverrides: this.props.containerOverrides
           ? this.configureContainerOverrides(this.props.containerOverrides)
@@ -256,12 +252,9 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
             }))
           : undefined,
 
-        RetryStrategy:
-          this.props.attempts !== undefined ? { Attempts: this.props.attempts } : undefined,
+        RetryStrategy: this.props.attempts !== undefined ? { Attempts: this.props.attempts } : undefined,
 
-        Timeout: this.props.timeout
-          ? { AttemptDurationSeconds: this.props.timeout.toSeconds() }
-          : undefined,
+        Timeout: this.props.timeout ? { AttemptDurationSeconds: this.props.timeout.toSeconds() } : undefined,
       },
     };
   }

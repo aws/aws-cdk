@@ -158,9 +158,7 @@ class SESEmail extends UserPoolEmail {
     const region = Stack.of(scope).region;
 
     if (Token.isUnresolved(region) && !this.options.sesRegion) {
-      throw new Error(
-        'Your stack region cannot be determined so "sesRegion" is required in SESOptions'
-      );
+      throw new Error('Your stack region cannot be determined so "sesRegion" is required in SESOptions');
     }
 
     let from = encodeAndTest(this.options.fromEmail);

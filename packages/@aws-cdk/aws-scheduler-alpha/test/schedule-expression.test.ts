@@ -4,44 +4,52 @@ import { ScheduleExpression } from '../lib';
 describe('schedule expression', () => {
   test('cron expressions day and dow are mutex: given weekday', () => {
     // Run every 10 minutes Monday through Friday
-    expect('cron(0/10 * ? * MON-FRI *)').toEqual(ScheduleExpression.cron({
-      minute: '0/10',
-      weekDay: 'MON-FRI',
-    }).expressionString);
+    expect('cron(0/10 * ? * MON-FRI *)').toEqual(
+      ScheduleExpression.cron({
+        minute: '0/10',
+        weekDay: 'MON-FRI',
+      }).expressionString
+    );
   });
 
   test('cron expressions day and dow are mutex: given month day', () => {
     // Run at 8:00 am (UTC) every 1st day of the month
-    expect('cron(0 8 1 * ? *)').toEqual(ScheduleExpression.cron({
-      minute: '0',
-      hour: '8',
-      day: '1',
-    }).expressionString);
+    expect('cron(0 8 1 * ? *)').toEqual(
+      ScheduleExpression.cron({
+        minute: '0',
+        hour: '8',
+        day: '1',
+      }).expressionString
+    );
   });
 
   test('cron expressions day and dow are mutex: given neither', () => {
     // Run at 10:00 am (UTC) every day
-    expect('cron(0 10 * * ? *)').toEqual(ScheduleExpression.cron({
-      minute: '0',
-      hour: '10',
-    }).expressionString);
+    expect('cron(0 10 * * ? *)').toEqual(
+      ScheduleExpression.cron({
+        minute: '0',
+        hour: '10',
+      }).expressionString
+    );
   });
 
   test('cron expressions saves timezone', () => {
-    expect(TimeZone.EUROPE_LONDON).toEqual(ScheduleExpression.cron(
-      {
+    expect(TimeZone.EUROPE_LONDON).toEqual(
+      ScheduleExpression.cron({
         minute: '0',
         hour: '10',
         timeZone: TimeZone.EUROPE_LONDON,
-      }).timeZone);
+      }).timeZone
+    );
   });
 
   test('cron expressions timezone is UTC if not specified', () => {
-    expect(TimeZone.ETC_UTC).toEqual(ScheduleExpression.cron(
-      {
+    expect(TimeZone.ETC_UTC).toEqual(
+      ScheduleExpression.cron({
         minute: '0',
         hour: '10',
-      }).timeZone);
+      }).timeZone
+    );
   });
 
   test('rate cannot be 0', () => {
@@ -64,27 +72,19 @@ describe('schedule expression', () => {
   });
 
   test('rate can be in minutes', () => {
-    expect('rate(10 minutes)').toEqual(
-      ScheduleExpression.rate(Duration.minutes(10))
-        .expressionString);
+    expect('rate(10 minutes)').toEqual(ScheduleExpression.rate(Duration.minutes(10)).expressionString);
   });
 
   test('rate can be in days', () => {
-    expect('rate(10 days)').toEqual(
-      ScheduleExpression.rate(Duration.days(10))
-        .expressionString);
+    expect('rate(10 days)').toEqual(ScheduleExpression.rate(Duration.days(10)).expressionString);
   });
 
   test('rate can be in hours', () => {
-    expect('rate(10 hours)').toEqual(
-      ScheduleExpression.rate(Duration.hours(10))
-        .expressionString);
+    expect('rate(10 hours)').toEqual(ScheduleExpression.rate(Duration.hours(10)).expressionString);
   });
 
   test('rate can be in seconds', () => {
-    expect('rate(2 minutes)').toEqual(
-      ScheduleExpression.rate(Duration.seconds(120))
-        .expressionString);
+    expect('rate(2 minutes)').toEqual(ScheduleExpression.rate(Duration.seconds(120)).expressionString);
   });
 
   test('rate must not be in seconds when specified as a token', () => {
@@ -160,13 +160,10 @@ describe('fractional minutes checks', () => {
   });
 
   test('rate can be in minutes', () => {
-    expect('rate(10 minutes)').toEqual(
-      ScheduleExpression.rate(Duration.minutes(10))
-        .expressionString);
+    expect('rate(10 minutes)').toEqual(ScheduleExpression.rate(Duration.minutes(10)).expressionString);
   });
 
   test('literal schedule expression', () => {
-    expect('rate(1 hour)').toEqual(
-      ScheduleExpression.expression('rate(1 hour)').expressionString);
+    expect('rate(1 hour)').toEqual(ScheduleExpression.expression('rate(1 hour)').expressionString);
   });
 });

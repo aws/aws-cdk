@@ -48,10 +48,7 @@ export class MediaConvertCreateJob extends sfn.TaskStateBase {
     super(scope, id, props);
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(
-      this.integrationPattern,
-      MediaConvertCreateJob.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, MediaConvertCreateJob.SUPPORTED_INTEGRATION_PATTERNS);
 
     cdk.requireProperty(props.createJobRequest, 'Role', this);
     cdk.requireProperty(props.createJobRequest, 'Settings', this);

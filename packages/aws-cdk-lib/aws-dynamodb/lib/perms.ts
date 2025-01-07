@@ -17,10 +17,6 @@ export const WRITE_DATA_ACTIONS = [
 ];
 export const KEY_WRITE_ACTIONS = ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'];
 
-export const READ_STREAM_DATA_ACTIONS = [
-  'dynamodb:DescribeStream',
-  'dynamodb:GetRecords',
-  'dynamodb:GetShardIterator',
-];
+export const READ_STREAM_DATA_ACTIONS = ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'];
 
 export const DESCRIBE_TABLE = 'dynamodb:DescribeTable';

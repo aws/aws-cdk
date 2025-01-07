@@ -29,13 +29,15 @@ describe('EventBridge Data Source Configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: [{
-          Action: 'events:PutEvents',
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': ['targetEventBus07F5DAC9', 'Arn'],
+        Statement: [
+          {
+            Action: 'events:PutEvents',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['targetEventBus07F5DAC9', 'Arn'],
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -96,6 +98,6 @@ describe('EventBridge Data Source Configuration', () => {
     };
 
     // THEN
-    expect(when).toThrow('There is already a Construct with name \'ds\' in GraphqlApi [baseApi]');
+    expect(when).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
 });

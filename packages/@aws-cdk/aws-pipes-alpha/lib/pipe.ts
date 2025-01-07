@@ -266,15 +266,12 @@ export class Pipe extends PipeBase {
     };
 
     // Iterate over all the log destinations and add them to the log configuration
-    const logConfiguration = props.logDestinations?.reduce(
-      (currentLogConfiguration, destination) => {
-        const logDestinationConfig = destination.bind(this);
-        destination.grantPush(this.pipeRole);
-        const additionalLogConfiguration = logDestinationConfig.parameters;
-        return { ...currentLogConfiguration, ...additionalLogConfiguration };
-      },
-      initialLogConfiguration
-    );
+    const logConfiguration = props.logDestinations?.reduce((currentLogConfiguration, destination) => {
+      const logDestinationConfig = destination.bind(this);
+      destination.grantPush(this.pipeRole);
+      const additionalLogConfiguration = logDestinationConfig.parameters;
+      return { ...currentLogConfiguration, ...additionalLogConfiguration };
+    }, initialLogConfiguration);
 
     /**
      * Pipe resource

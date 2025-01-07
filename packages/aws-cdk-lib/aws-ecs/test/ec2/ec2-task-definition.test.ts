@@ -34,7 +34,7 @@ describe('ec2 task definition', () => {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
             new iam.ServicePrincipal('ecs.amazonaws.com'),
-            new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+            new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
           ),
         }),
         family: 'ecs-tasks',
@@ -45,21 +45,20 @@ describe('ec2 task definition', () => {
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
-        volumes: [{
-          host: {
-            sourcePath: '/tmp/cache',
+        volumes: [
+          {
+            host: {
+              sourcePath: '/tmp/cache',
+            },
+            name: 'scratch',
           },
-          name: 'scratch',
-        }],
+        ],
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'ExecutionRole605A040B',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'],
         },
         Family: 'ecs-tasks',
         NetworkMode: 'awsvpc',
@@ -71,14 +70,9 @@ describe('ec2 task definition', () => {
             Type: 'memberOf',
           },
         ],
-        RequiresCompatibilities: [
-          'EC2',
-        ],
+        RequiresCompatibilities: ['EC2'],
         TaskRoleArn: {
-          'Fn::GetAtt': [
-            'TaskRole30FC0FBB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'],
         },
         Volumes: [
           {
@@ -175,38 +169,44 @@ describe('ec2 task definition', () => {
         readOnly: true,
       });
 
-      container.addToExecutionPolicy(new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['ecs:*'],
-      }));
+      container.addToExecutionPolicy(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['ecs:*'],
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        ContainerDefinitions: [{
-          Essential: true,
-          Memory: 512,
-          Image: 'amazon/amazon-ecs-sample',
-          Name: 'web',
-          PortMappings: [{
-            ContainerPort: 3000,
-            HostPort: 0,
-            Protocol: Protocol.TCP,
-          }],
-          Ulimits: [
-            {
-              HardLimit: 128,
-              Name: 'rss',
-              SoftLimit: 128,
-            },
-          ],
-          VolumesFrom: [
-            {
-              ReadOnly: true,
-              SourceContainer: 'foo',
-            },
-          ],
-        }],
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Memory: 512,
+            Image: 'amazon/amazon-ecs-sample',
+            Name: 'web',
+            PortMappings: [
+              {
+                ContainerPort: 3000,
+                HostPort: 0,
+                Protocol: Protocol.TCP,
+              },
+            ],
+            Ulimits: [
+              {
+                HardLimit: 128,
+                Name: 'rss',
+                SoftLimit: 128,
+              },
+            ],
+            VolumesFrom: [
+              {
+                ReadOnly: true,
+                SourceContainer: 'foo',
+              },
+            ],
+          },
+        ],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -247,7 +247,9 @@ describe('ec2 task definition', () => {
         dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
         entryPoint: ['/app/node_modules/.bin/cdk'],
         environment: { TEST_ENVIRONMENT_VARIABLE: 'test environment variable value' },
-        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, '..', 'demo-envfiles', 'test-envfile.env'))],
+        environmentFiles: [
+          ecs.EnvironmentFile.fromAsset(path.join(__dirname, '..', 'demo-envfiles', 'test-envfile.env')),
+        ],
         essential: true,
         extraHosts: { EXTRAHOST: 'extra host' },
         healthCheck: {
@@ -279,77 +281,69 @@ describe('ec2 task definition', () => {
         Family: 'Ec2TaskDef',
         ContainerDefinitions: [
           {
-            Command: [
-              'CMD env',
-            ],
+            Command: ['CMD env'],
             Cpu: 256,
             DisableNetworking: true,
-            DnsSearchDomains: [
-              '0.0.0.0',
-            ],
-            DnsServers: [
-              '1.1.1.1',
-            ],
+            DnsSearchDomains: ['0.0.0.0'],
+            DnsServers: ['1.1.1.1'],
             DockerLabels: {
               LABEL: 'label',
             },
-            DockerSecurityOptions: [
-              'ECS_SELINUX_CAPABLE=true',
-            ],
-            EntryPoint: [
-              '/app/node_modules/.bin/cdk',
-            ],
+            DockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
+            EntryPoint: ['/app/node_modules/.bin/cdk'],
             Environment: [
               {
                 Name: 'TEST_ENVIRONMENT_VARIABLE',
                 Value: 'test environment variable value',
               },
             ],
-            EnvironmentFiles: [{
-              Type: 's3',
-              Value: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':s3:::',
-                    {
-                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
-                    },
-                    '/',
-                    {
-                      'Fn::Select': [
-                        0,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    {
-                      'Fn::Select': [
-                        1,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
+            EnvironmentFiles: [
+              {
+                Type: 's3',
+                Value: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
+                      {
+                        Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                      },
+                      '/',
+                      {
+                        'Fn::Select': [
+                          0,
+                          {
+                            'Fn::Split': [
+                              '||',
+                              {
+                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                      {
+                        'Fn::Select': [
+                          1,
+                          {
+                            'Fn::Split': [
+                              '||',
+                              {
+                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
                   ],
-                ],
+                },
               },
-            }],
+            ],
             Essential: true,
             ExtraHosts: [
               {
@@ -358,10 +352,7 @@ describe('ec2 task definition', () => {
               },
             ],
             HealthCheck: {
-              Command: [
-                'CMD-SHELL',
-                'curl localhost:8000',
-              ],
+              Command: ['CMD-SHELL', 'curl localhost:8000'],
               Interval: 20,
               Retries: 5,
               StartPeriod: 10,
@@ -437,16 +428,20 @@ describe('ec2 task definition', () => {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage', {
-          lifecycleRegistryId: '123456789101',
-          lifecycleRules: [{
-            rulePriority: 10,
-            tagPrefixList: ['abc'],
-            maxImageCount: 1,
-          }],
-          removalPolicy: cdk.RemovalPolicy.DESTROY,
-          repositoryName: 'project-a/amazon-ecs-sample',
-        })),
+        image: ecs.ContainerImage.fromEcrRepository(
+          new Repository(stack, 'myECRImage', {
+            lifecycleRegistryId: '123456789101',
+            lifecycleRules: [
+              {
+                rulePriority: 10,
+                tagPrefixList: ['abc'],
+                maxImageCount: 1,
+              },
+            ],
+            removalPolicy: cdk.RemovalPolicy.DESTROY,
+            repositoryName: 'project-a/amazon-ecs-sample',
+          })
+        ),
         memoryLimitMiB: 512,
       });
 
@@ -454,7 +449,8 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
-          LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
+          LifecyclePolicyText:
+            '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
           RegistryId: '123456789101',
         },
         RepositoryName: 'project-a/amazon-ecs-sample',
@@ -462,60 +458,56 @@ describe('ec2 task definition', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        ContainerDefinitions: [{
-          Essential: true,
-          Memory: 512,
-          Image: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  'Fn::Select': [
-                    4,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myECRImage7DEAE474',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.dkr.ecr.',
-                {
-                  'Fn::Select': [
-                    3,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myECRImage7DEAE474',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/',
-                {
-                  Ref: 'myECRImage7DEAE474',
-                },
-                ':latest',
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Memory: 512,
+            Image: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::Select': [
+                      4,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '.dkr.ecr.',
+                  {
+                    'Fn::Select': [
+                      3,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '.',
+                  {
+                    Ref: 'AWS::URLSuffix',
+                  },
+                  '/',
+                  {
+                    Ref: 'myECRImage7DEAE474',
+                  },
+                  ':latest',
+                ],
               ],
-            ],
+            },
+            Name: 'web',
           },
-          Name: 'web',
-        }],
+        ],
       });
     });
 
@@ -532,60 +524,56 @@ describe('ec2 task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [{
-          Essential: true,
-          Memory: 512,
-          Image: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  'Fn::Select': [
-                    4,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myECRImage7DEAE474',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.dkr.ecr.',
-                {
-                  'Fn::Select': [
-                    3,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myECRImage7DEAE474',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/',
-                {
-                  Ref: 'myECRImage7DEAE474',
-                },
-                ':myTag',
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Memory: 512,
+            Image: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::Select': [
+                      4,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '.dkr.ecr.',
+                  {
+                    'Fn::Select': [
+                      3,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '.',
+                  {
+                    Ref: 'AWS::URLSuffix',
+                  },
+                  '/',
+                  {
+                    Ref: 'myECRImage7DEAE474',
+                  },
+                  ':myTag',
+                ],
               ],
-            ],
+            },
+            Name: 'web',
           },
-          Name: 'web',
-        }],
+        ],
       });
     });
 
@@ -596,66 +584,65 @@ describe('ec2 task definition', () => {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage'), 'sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE'),
+        image: ecs.ContainerImage.fromEcrRepository(
+          new Repository(stack, 'myECRImage'),
+          'sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE'
+        ),
         memoryLimitMiB: 512,
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [{
-          Essential: true,
-          Memory: 512,
-          Image: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  'Fn::Select': [
-                    4,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myECRImage7DEAE474',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.dkr.ecr.',
-                {
-                  'Fn::Select': [
-                    3,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myECRImage7DEAE474',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/',
-                {
-                  Ref: 'myECRImage7DEAE474',
-                },
-                '@sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE',
+        ContainerDefinitions: [
+          {
+            Essential: true,
+            Memory: 512,
+            Image: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::Select': [
+                      4,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '.dkr.ecr.',
+                  {
+                    'Fn::Select': [
+                      3,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            'Fn::GetAtt': ['myECRImage7DEAE474', 'Arn'],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  '.',
+                  {
+                    Ref: 'AWS::URLSuffix',
+                  },
+                  '/',
+                  {
+                    Ref: 'myECRImage7DEAE474',
+                  },
+                  '@sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE',
+                ],
               ],
-            ],
+            },
+            Name: 'web',
           },
-          Name: 'web',
-        }],
+        ],
       });
     });
 
@@ -688,7 +675,10 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]");
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/Ec2TaskDef/web',
+        "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]"
+      );
     });
 
     test('warns when setting containers from ECR repository by creating a RepositoryImage class', () => {
@@ -706,7 +696,10 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]");
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/Ec2TaskDef/web',
+        "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]"
+      );
     });
 
     test('correctly sets containers from asset using all props', () => {
@@ -743,21 +736,25 @@ describe('ec2 task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        ContainerDefinitions: [Match.objectLike({
-          MountPoints: [
-            {
-              ContainerPath: './cache',
-              ReadOnly: true,
-              SourceVolume: 'scratch',
+        ContainerDefinitions: [
+          Match.objectLike({
+            MountPoints: [
+              {
+                ContainerPath: './cache',
+                ReadOnly: true,
+                SourceVolume: 'scratch',
+              },
+            ],
+          }),
+        ],
+        Volumes: [
+          {
+            Host: {
+              SourcePath: '/tmp/cache',
             },
-          ],
-        })],
-        Volumes: [{
-          Host: {
-            SourcePath: '/tmp/cache',
+            Name: 'scratch',
           },
-          Name: 'scratch',
-        }],
+        ],
       });
     });
 
@@ -781,34 +778,40 @@ describe('ec2 task definition', () => {
         memoryLimitMiB: 512,
       });
 
-      container.addContainerDependencies({
-        container: dependency1,
-      },
-      {
-        container: dependency2,
-        condition: ecs.ContainerDependencyCondition.SUCCESS,
-      });
+      container.addContainerDependencies(
+        {
+          container: dependency1,
+        },
+        {
+          container: dependency2,
+          condition: ecs.ContainerDependencyCondition.SUCCESS,
+        }
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        ContainerDefinitions: [Match.objectLike({
-          Name: 'dependency1',
-        }),
-        Match.objectLike({
-          Name: 'dependency2',
-        }),
-        Match.objectLike({
-          Name: 'web',
-          DependsOn: [{
-            Condition: 'HEALTHY',
-            ContainerName: 'dependency1',
-          },
-          {
-            Condition: 'SUCCESS',
-            ContainerName: 'dependency2',
-          }],
-        })],
+        ContainerDefinitions: [
+          Match.objectLike({
+            Name: 'dependency1',
+          }),
+          Match.objectLike({
+            Name: 'dependency2',
+          }),
+          Match.objectLike({
+            Name: 'web',
+            DependsOn: [
+              {
+                Condition: 'HEALTHY',
+                ContainerName: 'dependency1',
+              },
+              {
+                Condition: 'SUCCESS',
+                ContainerName: 'dependency2',
+              },
+            ],
+          }),
+        ],
       });
     });
 
@@ -841,10 +844,7 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           Match.objectLike({
-            Links: [
-              'linked1:linked',
-              'linked2',
-            ],
+            Links: ['linked1:linked', 'linked2'],
             Name: 'web',
           }),
           Match.objectLike({
@@ -863,10 +863,12 @@ describe('ec2 task definition', () => {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
-      taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: ['test:SpecialName'],
-        resources: ['*'],
-      }));
+      taskDefinition.addToTaskRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['test:SpecialName'],
+          resources: ['*'],
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -900,14 +902,16 @@ describe('ec2 task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [Match.objectLike({
-          VolumesFrom: [
-            {
-              SourceContainer: 'SourceContainer',
-              ReadOnly: true,
-            },
-          ],
-        })],
+        ContainerDefinitions: [
+          Match.objectLike({
+            VolumesFrom: [
+              {
+                SourceContainer: 'SourceContainer',
+                ReadOnly: true,
+              },
+            ],
+          }),
+        ],
       });
     });
 
@@ -917,10 +921,12 @@ describe('ec2 task definition', () => {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
-      taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
-        actions: ['test:SpecialName'],
-        resources: ['*'],
-      }));
+      taskDefinition.addToExecutionRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['test:SpecialName'],
+          resources: ['*'],
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -967,21 +973,25 @@ describe('ec2 task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        ContainerDefinitions: [Match.objectLike({
-          MountPoints: [
-            {
-              ContainerPath: './cache',
-              ReadOnly: true,
-              SourceVolume: 'scratch',
+        ContainerDefinitions: [
+          Match.objectLike({
+            MountPoints: [
+              {
+                ContainerPath: './cache',
+                ReadOnly: true,
+                SourceVolume: 'scratch',
+              },
+            ],
+          }),
+        ],
+        Volumes: [
+          {
+            Host: {
+              SourcePath: '/tmp/cache',
             },
-          ],
-        })],
-        Volumes: [{
-          Host: {
-            SourcePath: '/tmp/cache',
+            Name: 'scratch',
           },
-          Name: 'scratch',
-        }],
+        ],
       });
     });
 
@@ -989,9 +999,7 @@ describe('ec2 task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        placementConstraints: [
-          ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'),
-        ],
+        placementConstraints: [ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*')],
       });
 
       taskDefinition.addContainer('web', {
@@ -1067,16 +1075,18 @@ describe('ec2 task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        Volumes: [{
-          Name: 'scratch',
-          DockerVolumeConfiguration: {
-            Driver: 'local',
-            Scope: 'task',
-            DriverOpts: {
-              key1: 'value',
+        Volumes: [
+          {
+            Name: 'scratch',
+            DockerVolumeConfiguration: {
+              Driver: 'local',
+              Scope: 'task',
+              DriverOpts: {
+                key1: 'value',
+              },
             },
           },
-        }],
+        ],
       });
     });
 
@@ -1102,12 +1112,14 @@ describe('ec2 task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        Volumes: [{
-          Name: 'scratch',
-          EFSVolumeConfiguration: {
-            FilesystemId: 'local',
+        Volumes: [
+          {
+            Name: 'scratch',
+            EFSVolumeConfiguration: {
+              FilesystemId: 'local',
+            },
           },
-        }],
+        ],
       });
     });
 
@@ -1125,17 +1137,21 @@ describe('ec2 task definition', () => {
       // THEN it should include the AWS_REGION env variable - when no user defined env variables are provided
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.AWS_VPC,
-        ContainerDefinitions: [{
-          Name: 'some-container',
-          Image: 'amazon/amazon-ecs-sample',
-          Memory: 512,
-          Environment: [{
-            Name: 'AWS_REGION',
-            Value: {
-              Ref: 'AWS::Region',
-            },
-          }],
-        }],
+        ContainerDefinitions: [
+          {
+            Name: 'some-container',
+            Image: 'amazon/amazon-ecs-sample',
+            Memory: 512,
+            Environment: [
+              {
+                Name: 'AWS_REGION',
+                Value: {
+                  Ref: 'AWS::Region',
+                },
+              },
+            ],
+          },
+        ],
       });
     });
 
@@ -1156,20 +1172,25 @@ describe('ec2 task definition', () => {
       // THEN it should include the AWS_REGION env variable
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.AWS_VPC,
-        ContainerDefinitions: [{
-          Name: 'some-container',
-          Image: 'amazon/amazon-ecs-sample',
-          Memory: 512,
-          Environment: [{
-            Name: 'SOME_VARIABLE',
-            Value: 'some-value',
-          }, {
-            Name: 'AWS_REGION',
-            Value: {
-              Ref: 'AWS::Region',
-            },
-          }],
-        }],
+        ContainerDefinitions: [
+          {
+            Name: 'some-container',
+            Image: 'amazon/amazon-ecs-sample',
+            Memory: 512,
+            Environment: [
+              {
+                Name: 'SOME_VARIABLE',
+                Value: 'some-value',
+              },
+              {
+                Name: 'AWS_REGION',
+                Value: {
+                  Ref: 'AWS::Region',
+                },
+              },
+            ],
+          },
+        ],
       });
     });
 
@@ -1190,15 +1211,19 @@ describe('ec2 task definition', () => {
       // THEN it should not include the AWS_REGION env variable
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.HOST,
-        ContainerDefinitions: [{
-          Name: 'some-container',
-          Image: 'amazon/amazon-ecs-sample',
-          Memory: 512,
-          Environment: [{
-            Name: 'SOME_VARIABLE',
-            Value: 'some-value',
-          }],
-        }],
+        ContainerDefinitions: [
+          {
+            Name: 'some-container',
+            Image: 'amazon/amazon-ecs-sample',
+            Memory: 512,
+            Environment: [
+              {
+                Name: 'SOME_VARIABLE',
+                Value: 'some-value',
+              },
+            ],
+          },
+        ],
       });
     });
 
@@ -1219,15 +1244,19 @@ describe('ec2 task definition', () => {
       // THEN it should not include the AWS_REGION env variable
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.BRIDGE,
-        ContainerDefinitions: [{
-          Name: 'some-container',
-          Image: 'amazon/amazon-ecs-sample',
-          Memory: 512,
-          Environment: [{
-            Name: 'SOME_VARIABLE',
-            Value: 'some-value',
-          }],
-        }],
+        ContainerDefinitions: [
+          {
+            Name: 'some-container',
+            Image: 'amazon/amazon-ecs-sample',
+            Memory: 512,
+            Environment: [
+              {
+                Name: 'SOME_VARIABLE',
+                Value: 'some-value',
+              },
+            ],
+          },
+        ],
       });
     });
   });
@@ -1236,10 +1265,12 @@ describe('ec2 task definition', () => {
     test('correctly sets inferenceAccelerators using props', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const inferenceAccelerators = [{
-        deviceName: 'device1',
-        deviceType: 'eia2.medium',
-      }];
+      const inferenceAccelerators = [
+        {
+          deviceName: 'device1',
+          deviceType: 'eia2.medium',
+        },
+      ];
 
       // WHEN
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
@@ -1254,20 +1285,23 @@ describe('ec2 task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        InferenceAccelerators: [{
-          DeviceName: 'device1',
-          DeviceType: 'eia2.medium',
-        }],
+        InferenceAccelerators: [
+          {
+            DeviceName: 'device1',
+            DeviceType: 'eia2.medium',
+          },
+        ],
       });
-
     });
     test('correctly sets inferenceAccelerators using props and addInferenceAccelerator method', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const inferenceAccelerators = [{
-        deviceName: 'device1',
-        deviceType: 'eia2.medium',
-      }];
+      const inferenceAccelerators = [
+        {
+          deviceName: 'device1',
+          deviceType: 'eia2.medium',
+        },
+      ];
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         inferenceAccelerators,
@@ -1287,13 +1321,16 @@ describe('ec2 task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        InferenceAccelerators: [{
-          DeviceName: 'device1',
-          DeviceType: 'eia2.medium',
-        }, {
-          DeviceName: 'device2',
-          DeviceType: 'eia2.large',
-        }],
+        InferenceAccelerators: [
+          {
+            DeviceName: 'device1',
+            DeviceType: 'eia2.medium',
+          },
+          {
+            DeviceName: 'device2',
+            DeviceType: 'eia2.large',
+          },
+        ],
       });
     });
   });
@@ -1305,7 +1342,11 @@ describe('ec2 task definition', () => {
       const expectTaskDefinitionArn = 'TD_ARN';
 
       // WHEN
-      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'EC2_TD_ID', expectTaskDefinitionArn);
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(
+        stack,
+        'EC2_TD_ID',
+        expectTaskDefinitionArn
+      );
 
       // THEN
       expect(taskDefinition.taskDefinitionArn).toBe(expectTaskDefinitionArn);
@@ -1360,7 +1401,8 @@ describe('ec2 task definition', () => {
       // THEN
       expect(() => taskDefinition.networkMode).toThrow(
         'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
-        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+          "Add the 'networkMode' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+      );
     });
 
     test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
@@ -1376,9 +1418,12 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(() => { taskDefinition.taskRole; }).toThrow(
+      expect(() => {
+        taskDefinition.taskRole;
+      }).toThrow(
         'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+          "Add the 'taskRole' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+      );
     });
   });
 
@@ -1411,7 +1456,8 @@ describe('ec2 task definition', () => {
     // THEN
     expect(() => {
       new ecs.Ec2TaskDefinition(stack, 'TaskDef', { placementConstraints: [invalidConstraint] });
-    }).toThrow(/Invalid placement constraint\(s\): distinctInstance. Only 'memberOf' is currently supported in the Ec2TaskDefinition class./);
+    }).toThrow(
+      /Invalid placement constraint\(s\): distinctInstance. Only 'memberOf' is currently supported in the Ec2TaskDefinition class./
+    );
   });
-
 });

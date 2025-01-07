@@ -2,7 +2,15 @@ import { capitalizePropertyNames } from './utils';
 import { Size, Stack } from '../..';
 import { Template } from '../../assertions';
 import * as ecs from '../../aws-ecs';
-import { CfnJobDefinitionProps, EksContainerDefinitionProps, EksContainerDefinition, EksJobDefinition, ImagePullPolicy, EksVolume, EmptyDirMediumType } from '../lib';
+import {
+  CfnJobDefinitionProps,
+  EksContainerDefinitionProps,
+  EksContainerDefinition,
+  EksJobDefinition,
+  ImagePullPolicy,
+  EksVolume,
+  EmptyDirMediumType,
+} from '../lib';
 
 // GIVEN
 const defaultContainerProps: EksContainerDefinitionProps = {
@@ -13,9 +21,11 @@ const defaultExpectedProps: CfnJobDefinitionProps = {
   type: 'container',
   eksProperties: {
     podProperties: {
-      containers: [{
-        image: 'amazon/amazon-ecs-sample',
-      }],
+      containers: [
+        {
+          image: 'amazon/amazon-ecs-sample',
+        },
+      ],
     },
   },
 };
@@ -59,10 +69,12 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Args: ['arg1', 'arg2'],
-          }],
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Args: ['arg1', 'arg2'],
+            },
+          ],
         },
       },
     });
@@ -83,10 +95,12 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Command: ['echo', 'bar'],
-          }],
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Command: ['echo', 'bar'],
+            },
+          ],
         },
       },
     });
@@ -107,14 +121,16 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Resources: {
-              Limits: {
-                cpu: 256,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Resources: {
+                Limits: {
+                  cpu: 256,
+                },
               },
             },
-          }],
+          ],
         },
       },
     });
@@ -135,14 +151,16 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Resources: {
-              Requests: {
-                cpu: 256,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Resources: {
+                Requests: {
+                  cpu: 256,
+                },
               },
             },
-          }],
+          ],
         },
       },
     });
@@ -163,14 +181,16 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Resources: {
-              Limits: {
-                memory: '2048Mi',
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Resources: {
+                Limits: {
+                  memory: '2048Mi',
+                },
               },
             },
-          }],
+          ],
         },
       },
     });
@@ -191,14 +211,16 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Resources: {
-              Requests: {
-                memory: '2048Mi',
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Resources: {
+                Requests: {
+                  memory: '2048Mi',
+                },
               },
             },
-          }],
+          ],
         },
       },
     });
@@ -219,14 +241,16 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Resources: {
-              Limits: {
-                'nvidia.com/gpu': 20,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Resources: {
+                Limits: {
+                  'nvidia.com/gpu': 20,
+                },
               },
             },
-          }],
+          ],
         },
       },
     });
@@ -247,14 +271,16 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Resources: {
-              Requests: {
-                'nvidia.com/gpu': 20,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Resources: {
+                Requests: {
+                  'nvidia.com/gpu': 20,
+                },
               },
             },
-          }],
+          ],
         },
       },
     });
@@ -280,21 +306,23 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Resources: {
-              Limits: {
-                'cpu': 256,
-                'memory': '2048Mi',
-                'nvidia.com/gpu': 20,
-              },
-              Requests: {
-                'cpu': 128,
-                'memory': '2048Mi',
-                'nvidia.com/gpu': 10,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Resources: {
+                Limits: {
+                  cpu: 256,
+                  memory: '2048Mi',
+                  'nvidia.com/gpu': 20,
+                },
+                Requests: {
+                  cpu: 128,
+                  memory: '2048Mi',
+                  'nvidia.com/gpu': 10,
+                },
               },
             },
-          }],
+          ],
         },
       },
     });
@@ -318,19 +346,21 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Env: [
-              {
-                Name: 'var',
-                Value: 'val',
-              },
-              {
-                Name: 'boo',
-                Value: 'bah',
-              },
-            ],
-          }],
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Env: [
+                {
+                  Name: 'var',
+                  Value: 'val',
+                },
+                {
+                  Name: 'boo',
+                  Value: 'bah',
+                },
+              ],
+            },
+          ],
         },
       },
     });
@@ -351,10 +381,12 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            ImagePullPolicy: 'Never',
-          }],
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              ImagePullPolicy: 'Never',
+            },
+          ],
         },
       },
     });
@@ -375,10 +407,12 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            Name: 'myContainerName',
-          }],
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              Name: 'myContainerName',
+            },
+          ],
         },
       },
     });
@@ -399,12 +433,14 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            SecurityContext: {
-              Privileged: true,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              SecurityContext: {
+                Privileged: true,
+              },
             },
-          }],
+          ],
         },
       },
     });
@@ -425,12 +461,14 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            SecurityContext: {
-              ReadOnlyRootFilesystem: true,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              SecurityContext: {
+                ReadOnlyRootFilesystem: true,
+              },
             },
-          }],
+          ],
         },
       },
     });
@@ -451,12 +489,14 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            SecurityContext: {
-              RunAsGroup: 1,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              SecurityContext: {
+                RunAsGroup: 1,
+              },
             },
-          }],
+          ],
         },
       },
     });
@@ -477,12 +517,14 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            SecurityContext: {
-              RunAsNonRoot: false,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              SecurityContext: {
+                RunAsNonRoot: false,
+              },
             },
-          }],
+          ],
         },
       },
     });
@@ -503,12 +545,14 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            SecurityContext: {
-              RunAsUser: 90,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              SecurityContext: {
+                RunAsUser: 90,
+              },
             },
-          }],
+          ],
         },
       },
     });
@@ -537,21 +581,27 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            VolumeMounts: [{
-              MountPath: '/mount/path',
-              Name: 'emptyDirName',
-              ReadOnly: false,
-            }],
-          }],
-          Volumes: [{
-            Name: 'emptyDirName',
-            EmptyDir: {
-              Medium: '',
-              SizeLimit: '2048Mi',
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              VolumeMounts: [
+                {
+                  MountPath: '/mount/path',
+                  Name: 'emptyDirName',
+                  ReadOnly: false,
+                },
+              ],
             },
-          }],
+          ],
+          Volumes: [
+            {
+              Name: 'emptyDirName',
+              EmptyDir: {
+                Medium: '',
+                SizeLimit: '2048Mi',
+              },
+            },
+          ],
         },
       },
     });
@@ -562,12 +612,14 @@ describe('eks container', () => {
     new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
-        volumes: [EksVolume.hostPath({
-          name: 'hostPathName',
-          hostPath: 'hostPathPath',
-          mountPath: '/mount/path',
-          readonly: true,
-        })],
+        volumes: [
+          EksVolume.hostPath({
+            name: 'hostPathName',
+            hostPath: 'hostPathPath',
+            mountPath: '/mount/path',
+            readonly: true,
+          }),
+        ],
       }),
     });
 
@@ -577,20 +629,26 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            VolumeMounts: [{
-              MountPath: '/mount/path',
-              Name: 'hostPathName',
-              ReadOnly: true,
-            }],
-          }],
-          Volumes: [{
-            Name: 'hostPathName',
-            HostPath: {
-              Path: 'hostPathPath',
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              VolumeMounts: [
+                {
+                  MountPath: '/mount/path',
+                  Name: 'hostPathName',
+                  ReadOnly: true,
+                },
+              ],
             },
-          }],
+          ],
+          Volumes: [
+            {
+              Name: 'hostPathName',
+              HostPath: {
+                Path: 'hostPathPath',
+              },
+            },
+          ],
         },
       },
     });
@@ -601,12 +659,14 @@ describe('eks container', () => {
     new EksJobDefinition(stack, 'EksJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
-        volumes: [EksVolume.secret({
-          name: 'secretVolumeName',
-          secretName: 'myKubeSecret',
-          mountPath: '/mount/path',
-          readonly: true,
-        })],
+        volumes: [
+          EksVolume.secret({
+            name: 'secretVolumeName',
+            secretName: 'myKubeSecret',
+            mountPath: '/mount/path',
+            readonly: true,
+          }),
+        ],
       }),
     });
 
@@ -616,20 +676,26 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            VolumeMounts: [{
-              MountPath: '/mount/path',
-              ReadOnly: true,
-            }],
-          }],
-          Volumes: [{
-            Name: 'secretVolumeName',
-            Secret: {
-              SecretName: 'myKubeSecret',
-              Optional: true,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              VolumeMounts: [
+                {
+                  MountPath: '/mount/path',
+                  ReadOnly: true,
+                },
+              ],
             },
-          }],
+          ],
+          Volumes: [
+            {
+              Name: 'secretVolumeName',
+              Secret: {
+                SecretName: 'myKubeSecret',
+                Optional: true,
+              },
+            },
+          ],
         },
       },
     });
@@ -644,13 +710,15 @@ describe('eks container', () => {
     });
 
     // WHEN
-    jobDefn.container.addVolume(EksVolume.emptyDir({
-      name: 'emptyDirName',
-      medium: EmptyDirMediumType.DISK,
-      mountPath: '/mount/path',
-      readonly: false,
-      sizeLimit: Size.mebibytes(2048),
-    }));
+    jobDefn.container.addVolume(
+      EksVolume.emptyDir({
+        name: 'emptyDirName',
+        medium: EmptyDirMediumType.DISK,
+        mountPath: '/mount/path',
+        readonly: false,
+        sizeLimit: Size.mebibytes(2048),
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
@@ -658,21 +726,27 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            VolumeMounts: [{
-              MountPath: '/mount/path',
-              Name: 'emptyDirName',
-              ReadOnly: false,
-            }],
-          }],
-          Volumes: [{
-            Name: 'emptyDirName',
-            EmptyDir: {
-              Medium: '',
-              SizeLimit: '2048Mi',
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              VolumeMounts: [
+                {
+                  MountPath: '/mount/path',
+                  Name: 'emptyDirName',
+                  ReadOnly: false,
+                },
+              ],
             },
-          }],
+          ],
+          Volumes: [
+            {
+              Name: 'emptyDirName',
+              EmptyDir: {
+                Medium: '',
+                SizeLimit: '2048Mi',
+              },
+            },
+          ],
         },
       },
     });
@@ -687,12 +761,14 @@ describe('eks container', () => {
     });
 
     // WHEN
-    jobDefn.container.addVolume(EksVolume.hostPath({
-      name: 'hostPathName',
-      hostPath: 'hostPathPath',
-      mountPath: '/mount/path',
-      readonly: true,
-    }));
+    jobDefn.container.addVolume(
+      EksVolume.hostPath({
+        name: 'hostPathName',
+        hostPath: 'hostPathPath',
+        mountPath: '/mount/path',
+        readonly: true,
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
@@ -700,20 +776,26 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            VolumeMounts: [{
-              MountPath: '/mount/path',
-              Name: 'hostPathName',
-              ReadOnly: true,
-            }],
-          }],
-          Volumes: [{
-            Name: 'hostPathName',
-            HostPath: {
-              Path: 'hostPathPath',
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              VolumeMounts: [
+                {
+                  MountPath: '/mount/path',
+                  Name: 'hostPathName',
+                  ReadOnly: true,
+                },
+              ],
             },
-          }],
+          ],
+          Volumes: [
+            {
+              Name: 'hostPathName',
+              HostPath: {
+                Path: 'hostPathPath',
+              },
+            },
+          ],
         },
       },
     });
@@ -728,13 +810,15 @@ describe('eks container', () => {
     });
 
     // WHEN
-    jobDefn.container.addVolume(EksVolume.secret({
-      name: 'secretVolumeName',
-      secretName: 'secretName',
-      optional: false,
-      mountPath: '/mount/path',
-      readonly: true,
-    }));
+    jobDefn.container.addVolume(
+      EksVolume.secret({
+        name: 'secretVolumeName',
+        secretName: 'secretName',
+        optional: false,
+        mountPath: '/mount/path',
+        readonly: true,
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
@@ -742,21 +826,27 @@ describe('eks container', () => {
       EksProperties: {
         PodProperties: {
           ...pascalCaseExpectedProps.EksProperties.PodProperties,
-          Containers: [{
-            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
-            VolumeMounts: [{
-              MountPath: '/mount/path',
-              Name: 'secretVolumeName',
-              ReadOnly: true,
-            }],
-          }],
-          Volumes: [{
-            Name: 'secretVolumeName',
-            Secret: {
-              SecretName: 'secretName',
-              Optional: false,
+          Containers: [
+            {
+              ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+              VolumeMounts: [
+                {
+                  MountPath: '/mount/path',
+                  Name: 'secretVolumeName',
+                  ReadOnly: true,
+                },
+              ],
             },
-          }],
+          ],
+          Volumes: [
+            {
+              Name: 'secretVolumeName',
+              Secret: {
+                SecretName: 'secretName',
+                Optional: false,
+              },
+            },
+          ],
         },
       },
     });

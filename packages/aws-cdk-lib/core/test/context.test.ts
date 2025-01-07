@@ -10,7 +10,6 @@ describe('context', () => {
     const azs = stack.availabilityZones;
 
     expect(azs).toEqual(['dummy1a', 'dummy1b', 'dummy1c']);
-
   });
 
   test('AvailabilityZoneProvider will return context list if available', () => {
@@ -35,9 +34,7 @@ describe('context', () => {
 
     stack.node.setContext(key, 'not-a-list');
 
-    expect(
-      () => stack.availabilityZones,
-    ).toThrow();
+    expect(() => stack.availabilityZones).toThrow();
   });
 
   test('ContextProvider consistently generates a key', () => {
@@ -156,7 +153,7 @@ describe('context', () => {
     });
 
     // THEN
-    const error = construct.node.metadata.find(m => m.type === 'aws:cdk:error');
+    const error = construct.node.metadata.find((m) => m.type === 'aws:cdk:error');
     expect(error && error.data).toEqual('I had a boo-boo');
   });
 

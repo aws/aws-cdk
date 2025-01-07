@@ -91,9 +91,7 @@ export class ItemBatcher {
     }
 
     if (this.props.maxInputBytesPerBatch && this.props.maxInputBytesPerBatchPath) {
-      errors.push(
-        'Provide either `maxInputBytesPerBatch` or `maxInputBytesPerBatchPath`, but not both'
-      );
+      errors.push('Provide either `maxInputBytesPerBatch` or `maxInputBytesPerBatchPath`, but not both');
     }
 
     if (

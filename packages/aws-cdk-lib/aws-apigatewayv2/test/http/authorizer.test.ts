@@ -1,8 +1,6 @@
 import { Template } from '../../../assertions';
 import { Stack } from '../../../core';
-import {
-  HttpApi, HttpAuthorizer, HttpAuthorizerType,
-} from '../../lib';
+import { HttpApi, HttpAuthorizer, HttpAuthorizerType } from '../../lib';
 
 describe('HttpAuthorizer', () => {
   test('default', () => {

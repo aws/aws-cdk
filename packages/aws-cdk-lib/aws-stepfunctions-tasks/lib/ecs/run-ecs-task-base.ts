@@ -73,8 +73,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: EcsRunTaskBaseProps) {
-    this.integrationPattern =
-      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -83,16 +82,12 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(
-        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`
-      );
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
     }
 
     if (
       this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN &&
-      !sfn.FieldUtils.containsTaskToken(
-        props.containerOverrides?.map((override) => override.environment)
-      )
+      !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map((override) => override.environment))
     ) {
       throw new Error(
         'Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.'
@@ -104,9 +99,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
-          throw new Error(
-            `Overrides mention container with name '${name}', but no such container in task definition`
-          );
+          throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
         }
       }
     }
@@ -153,8 +146,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     this.networkConfiguration = {
       AwsvpcConfiguration: {
-        AssignPublicIp:
-          assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
+        AssignPublicIp: assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: vpc.selectSubnets(subnetSelection).subnetIds,
         SecurityGroups: cdk.Lazy.list({ produce: () => [this.securityGroup!.securityGroupId] }),
       },

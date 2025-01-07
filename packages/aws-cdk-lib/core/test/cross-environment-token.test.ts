@@ -183,7 +183,8 @@ describe('cross environment', () => {
 
     // THEN
     expect(() => toCloudFormation(stack2)).toThrow(
-      /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
+      /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/
+    );
   });
 
   test('can reference a deploy-time physical name across regions, when crossRegionReferences=true', () => {
@@ -216,31 +217,28 @@ describe('cross environment', () => {
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
     expect(template1?.Resources).toMatchObject({
-      'ExportsWriterbermudatriangle42E59594276156AC73': {
-        'DeletionPolicy': 'Delete',
-        'Properties': {
-          'WriterProps': {
-            'exports': {
+      ExportsWriterbermudatriangle42E59594276156AC73: {
+        DeletionPolicy: 'Delete',
+        Properties: {
+          WriterProps: {
+            exports: {
               '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887': {
-                'Ref': 'MyResource6073B41F',
+                Ref: 'MyResource6073B41F',
               },
             },
-            'region': 'bermuda-triangle-42',
+            region: 'bermuda-triangle-42',
           },
-          'ServiceToken': {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-              'Arn',
-            ],
+          ServiceToken: {
+            'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
           },
         },
-        'Type': 'Custom::CrossRegionExportWriter',
-        'UpdateReplacePolicy': 'Delete',
+        Type: 'Custom::CrossRegionExportWriter',
+        UpdateReplacePolicy: 'Delete',
       },
     });
     expect(template2?.Outputs).toEqual({
-      'Output': {
-        'Value': {
+      Output: {
+        Value: {
           'Fn::GetAtt': [
             'ExportsReader8B249524',
             '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887',
@@ -276,7 +274,8 @@ describe('cross environment', () => {
 
     // THEN
     expect(() => toCloudFormation(stack2)).toThrow(
-      /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
+      /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/
+    );
   });
 
   test('cross environment when stack is a substack', () => {
@@ -321,7 +320,7 @@ describe('cross environment', () => {
   });
 });
 
-test.each([undefined, 'SomeName'])('stack.exportValue() on name attributes with PhysicalName=%s', physicalName => {
+test.each([undefined, 'SomeName'])('stack.exportValue() on name attributes with PhysicalName=%s', (physicalName) => {
   // Check that automatic exports and manual exports look the same
   // GIVEN - auto
   const appA = new App();
@@ -398,14 +397,17 @@ class MyResourceWithConstructedArnAttribute extends Resource {
     });
 
     this.name = this.getResourceNameAttribute(res.ref.toString());
-    this.arn = this.getResourceArnAttribute(Stack.of(this).formatArn({
-      resource: 'my-resource',
-      resourceName: res.ref.toString(),
-      service: 'myservice',
-    }), {
-      resource: 'my-resource',
-      resourceName: this.physicalName,
-      service: 'myservice',
-    });
+    this.arn = this.getResourceArnAttribute(
+      Stack.of(this).formatArn({
+        resource: 'my-resource',
+        resourceName: res.ref.toString(),
+        service: 'myservice',
+      }),
+      {
+        resource: 'my-resource',
+        resourceName: this.physicalName,
+        service: 'myservice',
+      }
+    );
   }
 }

@@ -68,9 +68,11 @@ describe('with basic auth connection', () => {
 
   test('with header parameter', () => {
     // WHEN
-    rule.addTarget(new targets.ApiDestination(destination, {
-      headerParameters: { headerName: 'headerValue' },
-    }));
+    rule.addTarget(
+      new targets.ApiDestination(destination, {
+        headerParameters: { headerName: 'headerValue' },
+      })
+    );
 
     // THEN
     const template = Template.fromStack(stack);
@@ -88,9 +90,11 @@ describe('with basic auth connection', () => {
 
   test('with query parameter', () => {
     // WHEN
-    rule.addTarget(new targets.ApiDestination(destination, {
-      queryStringParameters: { queryName: 'queryValue' },
-    }));
+    rule.addTarget(
+      new targets.ApiDestination(destination, {
+        queryStringParameters: { queryName: 'queryValue' },
+      })
+    );
 
     // THEN
     const template = Template.fromStack(stack);
@@ -108,9 +112,11 @@ describe('with basic auth connection', () => {
 
   test('with path parameter', () => {
     // WHEN
-    rule.addTarget(new targets.ApiDestination(destination, {
-      pathParameterValues: ['pathValue'],
-    }));
+    rule.addTarget(
+      new targets.ApiDestination(destination, {
+        pathParameterValues: ['pathValue'],
+      })
+    );
 
     // THEN
     const template = Template.fromStack(stack);

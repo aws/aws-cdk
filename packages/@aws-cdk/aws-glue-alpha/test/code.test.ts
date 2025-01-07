@@ -40,11 +40,7 @@ describe('Code', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-              ],
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
               Effect: 'Allow',
               Resource: [
                 {
@@ -101,7 +97,7 @@ describe('Code', () => {
         }),
       });
 
-      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadata.find((m) => m.type === 'aws:cdk:asset')).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           ScriptLocation: {
@@ -149,11 +145,7 @@ describe('Code', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-              ],
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
               Effect: 'Allow',
               Resource: [
                 {
@@ -200,8 +192,7 @@ describe('Code', () => {
     });
 
     test('with an unsupported directory path throws', () => {
-      expect(() => glue.Code.fromAsset(directoryPath))
-        .toThrow(/Only files are supported/);
+      expect(() => glue.Code.fromAsset(directoryPath)).toThrow(/Only files are supported/);
     });
 
     test('used in more than 1 job in the same stack should be reused', () => {
@@ -258,17 +249,14 @@ describe('Code', () => {
         ],
       };
 
-      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadata.find((m) => m.type === 'aws:cdk:asset')).toBeDefined();
       // Job1 and Job2 use reuse the asset
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           ScriptLocation,
         },
         Role: {
-          'Fn::GetAtt': [
-            'Job1ServiceRole7AF34CCA',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Job1ServiceRole7AF34CCA', 'Arn'],
         },
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
@@ -276,10 +264,7 @@ describe('Code', () => {
           ScriptLocation,
         },
         Role: {
-          'Fn::GetAtt': [
-            'Job2ServiceRole5D2B98FE',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Job2ServiceRole5D2B98FE', 'Arn'],
         },
       });
     });
@@ -294,13 +279,16 @@ describe('Code', () => {
       });
       const differentStack = new cdk.Stack();
 
-      expect(() => new glue.Job(differentStack, 'Job2', {
-        executable: glue.JobExecutable.pythonShell({
-          glueVersion: glue.GlueVersion.V1_0,
-          pythonVersion: glue.PythonVersion.THREE,
-          script: script,
-        }),
-      })).toThrow(/associated with another stack/);
+      expect(
+        () =>
+          new glue.Job(differentStack, 'Job2', {
+            executable: glue.JobExecutable.pythonShell({
+              glueVersion: glue.GlueVersion.V1_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script: script,
+            }),
+          })
+      ).toThrow(/associated with another stack/);
     });
   });
 });

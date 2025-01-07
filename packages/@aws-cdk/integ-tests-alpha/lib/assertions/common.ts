@@ -8,10 +8,7 @@ export abstract class ActualResult {
   /**
    * Get the actual results from a CustomResource
    */
-  public static fromCustomResource(
-    customResource: CustomResource,
-    attribute: string
-  ): ActualResult {
+  public static fromCustomResource(customResource: CustomResource, attribute: string): ActualResult {
     return {
       result: customResource.getAttString(attribute),
     };

@@ -46,14 +46,14 @@ testDeprecated('custom resource created', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AWS679f53fac002430cb0da5b7982bd22872D164C4C', 'Arn'],
     },
-    Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
-    Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
-    Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
+    Create:
+      '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
+    Update:
+      '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
+    Delete:
+      '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -91,9 +91,12 @@ testDeprecated('custom resource created with specific name', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
-    Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
-    Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
-    Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig"}}',
+    Create:
+      '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
+    Update:
+      '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
+    Delete:
+      '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig"}}',
   });
 });
 
@@ -120,7 +123,9 @@ testDeprecated('fail with unallowed characters in name', () => {
     deploymentConfigName: 'my name',
   });
 
-  expect(() => app.synth()).toThrow('Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
+  expect(() => app.synth()).toThrow(
+    'Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).'
+  );
 });
 
 testDeprecated('can create linear custom config', () => {
@@ -179,9 +184,6 @@ testDeprecated('dependency on the config exists to ensure ordering', () => {
     Properties: {
       DeploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
     },
-    DependsOn: [
-      'CustomConfigDeploymentConfigCustomResourcePolicy0426B684',
-      'CustomConfigDeploymentConfigE9E1F384',
-    ],
+    DependsOn: ['CustomConfigDeploymentConfigCustomResourcePolicy0426B684', 'CustomConfigDeploymentConfigE9E1F384'],
   });
 });

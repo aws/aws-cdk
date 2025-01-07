@@ -36,10 +36,15 @@ testDeprecated('type cannot be specified as AWS_EC2_IMAGE_ID', () => {
   const stack = new cdk.Stack();
 
   // THEN
-  expect(() => new ssm.StringParameter(stack, 'myParam', {
-    stringValue: 'myValue',
-    type: ssm.ParameterType.AWS_EC2_IMAGE_ID,
-  })).toThrow('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?');
+  expect(
+    () =>
+      new ssm.StringParameter(stack, 'myParam', {
+        stringValue: 'myValue',
+        type: ssm.ParameterType.AWS_EC2_IMAGE_ID,
+      })
+  ).toThrow(
+    'The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?'
+  );
 });
 
 test('dataType can be specified', () => {
@@ -84,7 +89,8 @@ test('String SSM Parameter rejects invalid values', () => {
 
   // THEN
   expect(() => new ssm.StringParameter(stack, 'Parameter', { allowedPattern: '^Bar$', stringValue: 'FooBar' })).toThrow(
-    /does not match the specified allowedPattern/);
+    /does not match the specified allowedPattern/
+  );
 });
 
 test('String SSM Parameter allows unresolved tokens', () => {
@@ -130,7 +136,8 @@ test('String SSM Parameter throws on long descriptions', () => {
   expect(() => {
     new ssm.StringParameter(stack, 'Parameter', {
       stringValue: 'Foo',
-      description: '1024+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+      description:
+        '1024+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
       Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
       nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
       massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
@@ -152,7 +159,8 @@ test('String SSM Parameter throws on long names', () => {
   expect(() => {
     new ssm.StringParameter(stack, 'Parameter', {
       stringValue: 'Foo',
-      parameterName: '2048+ character long name: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+      parameterName:
+        '2048+ character long name: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
       Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
       nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
       massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
@@ -175,19 +183,18 @@ test('String SSM Parameter throws on long names', () => {
   }).toThrow(/name cannot be longer than 2048 characters./);
 });
 
-test.each([
-  '/parameter/with spaces',
-  'charactersOtherThan^allowed',
-  'trying;this',
-])('String SSM Parameter throws on invalid name %s', (parameterName) => {
-  // GIVEN
-  const stack = new cdk.Stack();
+test.each(['/parameter/with spaces', 'charactersOtherThan^allowed', 'trying;this'])(
+  'String SSM Parameter throws on invalid name %s',
+  (parameterName) => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-  // THEN
-  expect(() => {
-    new ssm.StringParameter(stack, 'Parameter', { stringValue: 'Foo', parameterName });
-  }).toThrow(/name must only contain letters, numbers, and the following 4 symbols.*/);
-});
+    // THEN
+    expect(() => {
+      new ssm.StringParameter(stack, 'Parameter', { stringValue: 'Foo', parameterName });
+    }).toThrow(/name must only contain letters, numbers, and the following 4 symbols.*/);
+  }
+);
 
 test('StringList SSM Parameter throws on long descriptions', () => {
   // GIVEN
@@ -197,7 +204,8 @@ test('StringList SSM Parameter throws on long descriptions', () => {
   expect(() => {
     new ssm.StringListParameter(stack, 'Parameter', {
       stringListValue: ['Foo', 'Bar'],
-      description: '1024+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+      description:
+        '1024+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
       Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
       nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
       massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
@@ -219,7 +227,8 @@ test('StringList SSM Parameter throws on long names', () => {
   expect(() => {
     new ssm.StringListParameter(stack, 'Parameter', {
       stringListValue: ['Foo', 'Bar'],
-      parameterName: '2048+ character long name: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+      parameterName:
+        '2048+ character long name: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
       Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
       nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
       massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
@@ -242,19 +251,18 @@ test('StringList SSM Parameter throws on long names', () => {
   }).toThrow(/name cannot be longer than 2048 characters./);
 });
 
-test.each([
-  '/parameter/with spaces',
-  'charactersOtherThan^allowed',
-  'trying;this',
-])('StringList SSM Parameter throws on invalid name %s', (parameterName) => {
-  // GIVEN
-  const stack = new cdk.Stack();
+test.each(['/parameter/with spaces', 'charactersOtherThan^allowed', 'trying;this'])(
+  'StringList SSM Parameter throws on invalid name %s',
+  (parameterName) => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-  // THEN
-  expect(() => {
-    new ssm.StringListParameter(stack, 'Parameter', { stringListValue: ['Foo'], parameterName });
-  }).toThrow(/name must only contain letters, numbers, and the following 4 symbols.*/);
-});
+    // THEN
+    expect(() => {
+      new ssm.StringListParameter(stack, 'Parameter', { stringListValue: ['Foo'], parameterName });
+    }).toThrow(/name must only contain letters, numbers, and the following 4 symbols.*/);
+  }
+);
 
 test('StringList SSM Parameter values cannot contain commas', () => {
   // GIVEN
@@ -262,7 +270,8 @@ test('StringList SSM Parameter values cannot contain commas', () => {
 
   // THEN
   expect(() => new ssm.StringListParameter(stack, 'Parameter', { stringListValue: ['Foo,Bar'] })).toThrow(
-    /cannot contain the ',' character/);
+    /cannot contain the ',' character/
+  );
 });
 
 test('StringList SSM Parameter rejects invalid values', () => {
@@ -270,8 +279,13 @@ test('StringList SSM Parameter rejects invalid values', () => {
   const stack = new cdk.Stack();
 
   // THEN
-  expect(() => new ssm.StringListParameter(stack, 'Parameter', { allowedPattern: '^(Foo|Bar)$', stringListValue: ['Foo', 'FooBar'] })).toThrow(
-    /does not match the specified allowedPattern/);
+  expect(
+    () =>
+      new ssm.StringListParameter(stack, 'Parameter', {
+        allowedPattern: '^(Foo|Bar)$',
+        stringListValue: ['Foo', 'FooBar'],
+      })
+  ).toThrow(/does not match the specified allowedPattern/);
 });
 
 test('StringList SSM Parameter allows unresolved tokens', () => {
@@ -279,10 +293,13 @@ test('StringList SSM Parameter allows unresolved tokens', () => {
   const stack = new cdk.Stack();
 
   // THEN
-  expect(() => new ssm.StringListParameter(stack, 'Parameter', {
-    allowedPattern: '^(Foo|Bar)$',
-    stringListValue: ['Foo', cdk.Lazy.string({ produce: () => 'Baz!' })],
-  })).not.toThrow();
+  expect(
+    () =>
+      new ssm.StringListParameter(stack, 'Parameter', {
+        allowedPattern: '^(Foo|Bar)$',
+        stringListValue: ['Foo', cdk.Lazy.string({ produce: () => 'Baz!' })],
+      })
+  ).not.toThrow();
 });
 
 test('parameterArn is crafted correctly', () => {
@@ -292,16 +309,19 @@ test('parameterArn is crafted correctly', () => {
 
   // THEN
   expect(stack.resolve(param.parameterArn)).toEqual({
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':ssm:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':parameter/',
-      { Ref: 'Parameter9E1B4FBA' },
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/',
+        { Ref: 'Parameter9E1B4FBA' },
+      ],
+    ],
   });
 });
 
@@ -310,15 +330,23 @@ test('parameterName that includes a "/" must be fully qualified (i.e. begin with
   const stack = new cdk.Stack();
 
   // THEN
-  expect(() => new ssm.StringParameter(stack, 'myParam', {
-    stringValue: 'myValue',
-    parameterName: 'path/to/parameter',
-  })).toThrow(/Parameter names must be fully qualified/);
+  expect(
+    () =>
+      new ssm.StringParameter(stack, 'myParam', {
+        stringValue: 'myValue',
+        parameterName: 'path/to/parameter',
+      })
+  ).toThrow(/Parameter names must be fully qualified/);
 
-  expect(() => new ssm.StringListParameter(stack, 'myParam2', {
-    stringListValue: ['foo', 'bar'],
-    parameterName: 'path/to/parameter2',
-  })).toThrow(/Parameter names must be fully qualified \(if they include \"\/\" they must also begin with a \"\/\"\)\: path\/to\/parameter2/);
+  expect(
+    () =>
+      new ssm.StringListParameter(stack, 'myParam2', {
+        stringListValue: ['foo', 'bar'],
+        parameterName: 'path/to/parameter2',
+      })
+  ).toThrow(
+    /Parameter names must be fully qualified \(if they include \"\/\" they must also begin with a \"\/\"\)\: path\/to\/parameter2/
+  );
 });
 
 test('StringParameter.fromStringParameterName', () => {
@@ -330,15 +358,18 @@ test('StringParameter.fromStringParameterName', () => {
 
   // THEN
   expect(stack.resolve(param.parameterArn)).toEqual({
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':ssm:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':parameter/MyParamName',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName',
+      ],
+    ],
   });
   expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
   expect(stack.resolve(param.parameterType)).toEqual('String');
@@ -431,7 +462,10 @@ test('fromStringParameterArn emits an annotation when stack region is unresolved
   ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sameRegionArn);
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('/Stack', 'Cross-account references will only work within the same region [ack: aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion]');
+  Annotations.fromStack(stack).hasWarning(
+    '/Stack',
+    'Cross-account references will only work within the same region [ack: aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion]'
+  );
 });
 
 test('StringParameter.fromStringParameterAttributes', () => {
@@ -446,15 +480,18 @@ test('StringParameter.fromStringParameterAttributes', () => {
 
   // THEN
   expect(stack.resolve(param.parameterArn)).toEqual({
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':ssm:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':parameter/MyParamName',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName',
+      ],
+    ],
   });
   expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
   expect(stack.resolve(param.parameterType)).toEqual('String');
@@ -473,24 +510,23 @@ test('StringParameter.fromStringParameterAttributes with version from token', ()
 
   // THEN
   expect(stack.resolve(param.parameterArn)).toEqual({
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':ssm:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':parameter/MyParamName',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName',
+      ],
+    ],
   });
   expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
   expect(stack.resolve(param.parameterType)).toEqual('String');
   expect(stack.resolve(param.stringValue)).toEqual({
-    'Fn::Join': ['', [
-      '{{resolve:ssm:MyParamName:',
-      { Ref: 'version' },
-      '}}',
-    ]],
+    'Fn::Join': ['', ['{{resolve:ssm:MyParamName:', { Ref: 'version' }, '}}']],
   });
 });
 
@@ -506,15 +542,18 @@ test('StringParameter.fromSecureStringParameterAttributes', () => {
 
   // THEN
   expect(stack.resolve(param.parameterArn)).toEqual({
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':ssm:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':parameter/MyParamName',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName',
+      ],
+    ],
   });
   expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
   expect(stack.resolve(param.parameterType)).toEqual('SecureString');
@@ -533,24 +572,23 @@ test('StringParameter.fromSecureStringParameterAttributes with version from toke
 
   // THEN
   expect(stack.resolve(param.parameterArn)).toEqual({
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':ssm:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':parameter/MyParamName',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName',
+      ],
+    ],
   });
   expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
   expect(stack.resolve(param.parameterType)).toEqual('SecureString');
   expect(stack.resolve(param.stringValue)).toEqual({
-    'Fn::Join': ['', [
-      '{{resolve:ssm-secure:MyParamName:',
-      { Ref: 'version' },
-      '}}',
-    ]],
+    'Fn::Join': ['', ['{{resolve:ssm-secure:MyParamName:', { Ref: 'version' }, '}}']],
   });
 });
 
@@ -580,12 +618,7 @@ test('StringParameter.fromSecureStringParameterAttributes with encryption key cr
           Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz',
         },
         {
-          Action: [
-            'ssm:DescribeParameters',
-            'ssm:GetParameters',
-            'ssm:GetParameter',
-            'ssm:GetParameterHistory',
-          ],
+          Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
           Effect: 'Allow',
           Resource: {
             'Fn::Join': [
@@ -635,11 +668,7 @@ test('StringParameter.fromSecureStringParameterAttributes with encryption key cr
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'kms:Encrypt',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-          ],
+          Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
           Effect: 'Allow',
           Resource: 'arn:aws:kms:us-east-1:123456789012:key/xyz',
         },
@@ -695,15 +724,18 @@ test('StringListParameter.fromName', () => {
 
   // THEN
   expect(stack.resolve(param.parameterArn)).toEqual({
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':ssm:',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':parameter/MyParamName',
-    ]],
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/MyParamName',
+      ],
+    ],
   });
   expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
   expect(stack.resolve(param.parameterType)).toEqual('StringList');
@@ -917,7 +949,6 @@ describe('from string list parameter', () => {
       },
     });
   });
-
 });
 
 describe('valueForStringParameter', () => {
@@ -937,7 +968,9 @@ describe('valueForStringParameter', () => {
         },
       },
     });
-    expect(stack.resolve(value)).toEqual({ Ref: 'SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter' });
+    expect(stack.resolve(value)).toEqual({
+      Ref: 'SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter',
+    });
   });
 
   test('de-dup based on parameter name', () => {
@@ -978,9 +1011,50 @@ describe('valueForStringParameter', () => {
 test('rendering of parameter arns', () => {
   const stack = new cdk.Stack();
   const param = new cdk.CfnParameter(stack, 'param');
-  const expectedA = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam']] };
-  const expectedB = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'param' }]] };
-  const expectedC = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'param' }]] };
+  const expectedA = {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/bam',
+      ],
+    ],
+  };
+  const expectedB = {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/',
+        { Ref: 'param' },
+      ],
+    ],
+  };
+  const expectedC = {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter',
+        { Ref: 'param' },
+      ],
+    ],
+  };
   let i = 0;
 
   // WHEN
@@ -988,10 +1062,23 @@ test('rendering of parameter arns', () => {
   const case2 = ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, '/bam');
   const case4 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam' });
   const case5 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam' });
-  const case6 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, simpleName: true });
-  const case7 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: 'bam', version: 10 });
-  const case8 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: '/bam', version: 10 });
-  const case9 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 10, simpleName: false });
+  const case6 = ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, {
+    parameterName: param.valueAsString,
+    simpleName: true,
+  });
+  const case7 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, {
+    parameterName: 'bam',
+    version: 10,
+  });
+  const case8 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, {
+    parameterName: '/bam',
+    version: 10,
+  });
+  const case9 = ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, {
+    parameterName: param.valueAsString,
+    version: 10,
+    simpleName: false,
+  });
 
   // auto-generated name is always generated as a "simple name" (not/a/path)
   const case10 = new ssm.StringParameter(stack, `p${i++}`, { stringValue: 'value' });
@@ -1001,8 +1088,14 @@ test('rendering of parameter arns', () => {
   const case12 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: 'simple-name', stringValue: 'hello' });
 
   const case13 = new ssm.StringListParameter(stack, `p${i++}`, { stringListValue: ['hello', 'world'] });
-  const case14 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: '/not/simple', stringListValue: ['hello', 'world'] });
-  const case15 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: 'simple', stringListValue: ['hello', 'world'] });
+  const case14 = new ssm.StringListParameter(stack, `p${i++}`, {
+    parameterName: '/not/simple',
+    stringListValue: ['hello', 'world'],
+  });
+  const case15 = new ssm.StringListParameter(stack, `p${i++}`, {
+    parameterName: 'simple',
+    stringListValue: ['hello', 'world'],
+  });
 
   // THEN
   expect(stack.resolve(case1.parameterArn)).toEqual(expectedA);
@@ -1015,12 +1108,96 @@ test('rendering of parameter arns', () => {
   expect(stack.resolve(case9.parameterArn)).toEqual(expectedC);
 
   // new ssm.Parameters determine if "/" is needed based on the posture of `parameterName`.
-  expect(stack.resolve(case10.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p81BB0F6FE' }]] });
-  expect(stack.resolve(case11.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p97A508212' }]] });
-  expect(stack.resolve(case12.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p107D6B8AB0' }]] });
-  expect(stack.resolve(case13.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p118A9CB02C' }]] });
-  expect(stack.resolve(case14.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p129BE4CE91' }]] });
-  expect(stack.resolve(case15.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p1326A2AEC4' }]] });
+  expect(stack.resolve(case10.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/',
+        { Ref: 'p81BB0F6FE' },
+      ],
+    ],
+  });
+  expect(stack.resolve(case11.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter',
+        { Ref: 'p97A508212' },
+      ],
+    ],
+  });
+  expect(stack.resolve(case12.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/',
+        { Ref: 'p107D6B8AB0' },
+      ],
+    ],
+  });
+  expect(stack.resolve(case13.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/',
+        { Ref: 'p118A9CB02C' },
+      ],
+    ],
+  });
+  expect(stack.resolve(case14.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter',
+        { Ref: 'p129BE4CE91' },
+      ],
+    ],
+  });
+  expect(stack.resolve(case15.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/',
+        { Ref: 'p1326A2AEC4' },
+      ],
+    ],
+  });
 });
 
 test('if parameterName is a token separator must be specified', () => {
@@ -1030,14 +1207,68 @@ test('if parameterName is a token separator must be specified', () => {
   let i = 0;
 
   // WHEN
-  const p1 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', simpleName: true });
-  const p2 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', simpleName: false });
-  const p3 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringListValue: ['foo'], simpleName: false });
+  const p1 = new ssm.StringParameter(stack, `p${i++}`, {
+    parameterName: param.valueAsString,
+    stringValue: 'foo',
+    simpleName: true,
+  });
+  const p2 = new ssm.StringParameter(stack, `p${i++}`, {
+    parameterName: param.valueAsString,
+    stringValue: 'foo',
+    simpleName: false,
+  });
+  const p3 = new ssm.StringListParameter(stack, `p${i++}`, {
+    parameterName: param.valueAsString,
+    stringListValue: ['foo'],
+    simpleName: false,
+  });
 
   // THEN
-  expect(stack.resolve(p1.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p0B02A8F65' }]] });
-  expect(stack.resolve(p2.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p1E43AD5AC' }]] });
-  expect(stack.resolve(p3.parameterArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p2C1903AEB' }]] });
+  expect(stack.resolve(p1.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter/',
+        { Ref: 'p0B02A8F65' },
+      ],
+    ],
+  });
+  expect(stack.resolve(p2.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter',
+        { Ref: 'p1E43AD5AC' },
+      ],
+    ],
+  });
+  expect(stack.resolve(p3.parameterArn)).toEqual({
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter',
+        { Ref: 'p2C1903AEB' },
+      ],
+    ],
+  });
 });
 
 test('fails if name is a token and no explicit separator', () => {
@@ -1047,11 +1278,21 @@ test('fails if name is a token and no explicit separator', () => {
   let i = 0;
 
   // THEN
-  const expected = /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly/;
+  const expected =
+    /Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly/;
   expect(() => ssm.StringParameter.fromStringParameterName(stack, `p${i++}`, param.valueAsString)).toThrow(expected);
-  expect(() => ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, { parameterName: param.valueAsString, version: 1 })).toThrow(expected);
-  expect(() => new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo' })).toThrow(expected);
-  expect(() => new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo' })).toThrow(expected);
+  expect(() =>
+    ssm.StringParameter.fromSecureStringParameterAttributes(stack, `p${i++}`, {
+      parameterName: param.valueAsString,
+      version: 1,
+    })
+  ).toThrow(expected);
+  expect(
+    () => new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo' })
+  ).toThrow(expected);
+  expect(
+    () => new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo' })
+  ).toThrow(expected);
 });
 
 test('fails if simpleName is wrong based on a concrete physical name', () => {
@@ -1060,8 +1301,16 @@ test('fails if simpleName is wrong based on a concrete physical name', () => {
   let i = 0;
 
   // THEN
-  expect(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'simple', simpleName: false })).toThrow(/Parameter name "simple" is a simple name, but "simpleName" was explicitly set to false. Either omit it or set it to true/);
-  expect(() => ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/foo/bar', simpleName: true })).toThrow(/Parameter name "\/foo\/bar" is not a simple name, but "simpleName" was explicitly set to true. Either omit it or set it to false/);
+  expect(() =>
+    ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: 'simple', simpleName: false })
+  ).toThrow(
+    /Parameter name "simple" is a simple name, but "simpleName" was explicitly set to false. Either omit it or set it to true/
+  );
+  expect(() =>
+    ssm.StringParameter.fromStringParameterAttributes(stack, `p${i++}`, { parameterName: '/foo/bar', simpleName: true })
+  ).toThrow(
+    /Parameter name "\/foo\/bar" is not a simple name, but "simpleName" was explicitly set to true. Either omit it or set it to false/
+  );
 });
 
 test('fails if parameterName is undefined and simpleName is "false"', () => {
@@ -1069,7 +1318,9 @@ test('fails if parameterName is undefined and simpleName is "false"', () => {
   const stack = new cdk.Stack();
 
   // THEN
-  expect(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' })).toThrow(/If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/);
+  expect(() => new ssm.StringParameter(stack, 'p', { simpleName: false, stringValue: 'foo' })).toThrow(
+    /If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names/
+  );
 });
 
 test('When a parameter name contains a CFn intrinsic, use dynamic reference instead', () => {

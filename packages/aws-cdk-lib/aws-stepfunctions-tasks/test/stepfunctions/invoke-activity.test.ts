@@ -17,11 +17,14 @@ test('Activity can be used in a Task', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
-      'Fn::Join': ['', [
-        '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
-        { Ref: 'Activity04690B0A' },
-        '"}}}',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+          { Ref: 'Activity04690B0A' },
+          '"}}}',
+        ],
+      ],
     },
   });
 });

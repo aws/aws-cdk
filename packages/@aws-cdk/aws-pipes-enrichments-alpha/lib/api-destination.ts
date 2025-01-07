@@ -1,9 +1,4 @@
-import {
-  EnrichmentParametersConfig,
-  IEnrichment,
-  IPipe,
-  InputTransformation,
-} from '@aws-cdk/aws-pipes-alpha';
+import { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
 import { IApiDestination } from 'aws-cdk-lib/aws-events';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';

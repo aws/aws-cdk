@@ -13,9 +13,9 @@ describe('CodeDeploy DeploymentConfig', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
-      'MinimumHealthyHosts': {
-        'Type': 'HOST_COUNT',
-        'Value': 1,
+      MinimumHealthyHosts: {
+        Type: 'HOST_COUNT',
+        Value: 1,
       },
     });
   });
@@ -28,9 +28,9 @@ describe('CodeDeploy DeploymentConfig', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
-      'MinimumHealthyHosts': {
-        'Type': 'FLEET_PERCENT',
-        'Value': 75,
+      MinimumHealthyHosts: {
+        Type: 'FLEET_PERCENT',
+        Value: 75,
       },
     });
   });
@@ -62,7 +62,9 @@ describe('CodeDeploy DeploymentConfig', () => {
       deploymentConfigName: 'my name',
     });
 
-    expect(() => app.synth()).toThrow('Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
+    expect(() => app.synth()).toThrow(
+      'Deployment config name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).'
+    );
   });
 
   describe('zonal configuration', () => {
@@ -74,11 +76,9 @@ describe('CodeDeploy DeploymentConfig', () => {
         zonalConfig: {},
       });
 
-      Template.fromStack(stack).hasResourceProperties(
-        'AWS::CodeDeploy::DeploymentConfig', {
-          'ZonalConfig': {},
-        },
-      );
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
+        ZonalConfig: {},
+      });
     });
 
     test('configure optional properties', () => {
@@ -93,18 +93,16 @@ describe('CodeDeploy DeploymentConfig', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties(
-        'AWS::CodeDeploy::DeploymentConfig', {
-          'ZonalConfig': {
-            MonitorDurationInSeconds: 600,
-            FirstZoneMonitorDurationInSeconds: 3600,
-            MinimumHealthyHostsPerZone: {
-              Type: 'HOST_COUNT',
-              Value: 2,
-            },
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
+        ZonalConfig: {
+          MonitorDurationInSeconds: 600,
+          FirstZoneMonitorDurationInSeconds: 3600,
+          MinimumHealthyHostsPerZone: {
+            Type: 'HOST_COUNT',
+            Value: 2,
           },
         },
-      );
+      });
     });
 
     test('throw error for invalid monitorDuration', () => {

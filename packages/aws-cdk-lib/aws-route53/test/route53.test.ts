@@ -11,7 +11,6 @@ describe('route53', () => {
       Template.fromStack(app.stack).hasResourceProperties('AWS::Route53::HostedZone', {
         Name: 'test.public.',
       });
-
     });
     test('private hosted zone', () => {
       const app = new TestApp();
@@ -19,10 +18,12 @@ describe('route53', () => {
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetwork });
       Template.fromStack(app.stack).hasResourceProperties('AWS::Route53::HostedZone', {
         Name: 'test.private.',
-        VPCs: [{
-          VPCId: { Ref: 'VPCB9E5F0B4' },
-          VPCRegion: 'bermuda-triangle',
-        }],
+        VPCs: [
+          {
+            VPCId: { Ref: 'VPCB9E5F0B4' },
+            VPCRegion: 'bermuda-triangle',
+          },
+        ],
       });
     });
 
@@ -30,18 +31,21 @@ describe('route53', () => {
       const app = new TestApp();
       const vpcNetworkA = new ec2.Vpc(app.stack, 'VPC1');
       const vpcNetworkB = new ec2.Vpc(app.stack, 'VPC2');
-      new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetworkA })
-        .addVpc(vpcNetworkB);
+      new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetworkA }).addVpc(
+        vpcNetworkB
+      );
       Template.fromStack(app.stack).hasResourceProperties('AWS::Route53::HostedZone', {
         Name: 'test.private.',
-        VPCs: [{
-          VPCId: { Ref: 'VPC17DE2CF87' },
-          VPCRegion: 'bermuda-triangle',
-        },
-        {
-          VPCId: { Ref: 'VPC2C1F0E711' },
-          VPCRegion: 'bermuda-triangle',
-        }],
+        VPCs: [
+          {
+            VPCId: { Ref: 'VPC17DE2CF87' },
+            VPCRegion: 'bermuda-triangle',
+          },
+          {
+            VPCId: { Ref: 'VPC2C1F0E711' },
+            VPCRegion: 'bermuda-triangle',
+          },
+        ],
       });
     });
   });
@@ -171,9 +175,7 @@ describe('route53', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Type: 'CAA',
       Name: 'protected.com.',
-      ResourceRecords: [
-        '0 issue "amazon.com"',
-      ],
+      ResourceRecords: ['0 issue "amazon.com"'],
     });
   });
 });

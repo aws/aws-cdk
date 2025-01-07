@@ -318,23 +318,17 @@ export class Table extends TableBase {
       );
     }
     if (!distKeyColumn && distStyle === TableDistStyle.KEY) {
-      throw new Error(
-        'distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.'
-      );
+      throw new Error('distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.');
     }
   }
 
   private validateSortStyle(sortStyle: TableSortStyle, columns: Column[]): void {
     const sortKeyColumns = getSortKeyColumns(columns);
     if (sortKeyColumns.length === 0 && sortStyle !== TableSortStyle.AUTO) {
-      throw new Error(
-        `sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`
-      );
+      throw new Error(`sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`);
     }
     if (sortKeyColumns.length > 0 && sortStyle === TableSortStyle.AUTO) {
-      throw new Error(
-        `sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`
-      );
+      throw new Error(`sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
     }
   }
 

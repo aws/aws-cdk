@@ -219,12 +219,7 @@ class StorageUnit {
   }
 }
 
-function convert(
-  amount: number,
-  fromUnit: StorageUnit,
-  toUnit: StorageUnit,
-  options: SizeConversionOptions = {}
-) {
+function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, options: SizeConversionOptions = {}) {
   const rounding = options.rounding ?? SizeRoundingBehavior.FAIL;
   if (fromUnit.inBytes === toUnit.inBytes) {
     return amount;
@@ -245,9 +240,7 @@ function convert(
     default:
     case SizeRoundingBehavior.FAIL:
       if (!Number.isInteger(value)) {
-        throw new Error(
-          `'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`
-        );
+        throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
       }
       return value;
   }

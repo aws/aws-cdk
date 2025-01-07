@@ -416,9 +416,7 @@ export interface ITable extends IResource {
    * @param props properties of a metric
    *
    */
-  metricSystemErrorsForOperations(
-    props?: SystemErrorsForOperationsMetricOptions
-  ): cloudwatch.IMetric;
+  metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
 
   /**
    * Metric for the user errors

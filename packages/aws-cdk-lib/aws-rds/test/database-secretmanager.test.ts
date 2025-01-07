@@ -55,10 +55,7 @@ describe('database secret manager', () => {
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {
-            'Fn::GetAtt': [
-              'ServerlessDatabaseSecurityGroupB00D8C0F',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['ServerlessDatabaseSecurityGroupB00D8C0F', 'GroupId'],
           },
         ],
       },

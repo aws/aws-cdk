@@ -19,9 +19,12 @@ describe('health check', () => {
     const [min, max] = [5000, 300000];
 
     // WHEN
-    const toThrow = (millis: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http2({
-      healthCheck: appmesh.HealthCheck.http2({ interval: cdk.Duration.millis(millis) }),
-    }));
+    const toThrow = (millis: number) =>
+      getNode(stack).addListener(
+        appmesh.VirtualNodeListener.http2({
+          healthCheck: appmesh.HealthCheck.http2({ interval: cdk.Duration.millis(millis) }),
+        })
+      );
 
     // THEN
     expect(() => toThrow(min)).not.toThrow();
@@ -36,9 +39,12 @@ describe('health check', () => {
     const [min, max] = [2000, 60000];
 
     // WHEN
-    const toThrow = (millis: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http2({
-      healthCheck: appmesh.HealthCheck.http2({ timeout: cdk.Duration.millis(millis) }),
-    }));
+    const toThrow = (millis: number) =>
+      getNode(stack).addListener(
+        appmesh.VirtualNodeListener.http2({
+          healthCheck: appmesh.HealthCheck.http2({ timeout: cdk.Duration.millis(millis) }),
+        })
+      );
 
     // THEN
     expect(() => toThrow(min)).not.toThrow();
@@ -53,9 +59,12 @@ describe('health check', () => {
     const [min, max] = [2, 10];
 
     // WHEN
-    const toThrow = (healthyThreshold: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http({
-      healthCheck: appmesh.HealthCheck.http({ healthyThreshold }),
-    }));
+    const toThrow = (healthyThreshold: number) =>
+      getNode(stack).addListener(
+        appmesh.VirtualNodeListener.http({
+          healthCheck: appmesh.HealthCheck.http({ healthyThreshold }),
+        })
+      );
 
     // THEN
     expect(() => toThrow(min)).not.toThrow();
@@ -70,9 +79,12 @@ describe('health check', () => {
     const [min, max] = [2, 10];
 
     // WHEN
-    const toThrow = (unhealthyThreshold: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http({
-      healthCheck: appmesh.HealthCheck.http({ unhealthyThreshold }),
-    }));
+    const toThrow = (unhealthyThreshold: number) =>
+      getNode(stack).addListener(
+        appmesh.VirtualNodeListener.http({
+          healthCheck: appmesh.HealthCheck.http({ unhealthyThreshold }),
+        })
+      );
 
     // THEN
     expect(() => toThrow(min)).not.toThrow();

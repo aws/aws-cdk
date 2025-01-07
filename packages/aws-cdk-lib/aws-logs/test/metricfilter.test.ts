@@ -21,11 +21,13 @@ describe('metric filter', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
-      MetricTransformations: [{
-        MetricNamespace: 'AWS/Test',
-        MetricName: 'Latency',
-        MetricValue: '$.latency',
-      }],
+      MetricTransformations: [
+        {
+          MetricNamespace: 'AWS/Test',
+          MetricName: 'Latency',
+          MetricValue: '$.latency',
+        },
+      ],
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
       FilterName: 'FooBazBar',
@@ -51,17 +53,19 @@ describe('metric filter', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
-      MetricTransformations: [{
-        MetricNamespace: 'AWS/Test',
-        MetricName: 'Latency',
-        MetricValue: '$.latency',
-        Dimensions: [
-          {
-            Key: 'Foo',
-            Value: 'Bar',
-          },
-        ],
-      }],
+      MetricTransformations: [
+        {
+          MetricNamespace: 'AWS/Test',
+          MetricName: 'Latency',
+          MetricValue: '$.latency',
+          Dimensions: [
+            {
+              Key: 'Foo',
+              Value: 'Bar',
+            },
+          ],
+        },
+      ],
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
     });
@@ -73,19 +77,22 @@ describe('metric filter', () => {
     const logGroup = new LogGroup(stack, 'LogGroup');
 
     // WHEN
-    expect(() => new MetricFilter(stack, 'Subscription', {
-      logGroup,
-      metricNamespace: 'AWS/Test',
-      metricName: 'Latency',
-      metricValue: '$.latency',
-      filterPattern: FilterPattern.exists('$.latency'),
-      dimensions: {
-        Foo: 'Bar',
-        Bar: 'Baz',
-        Baz: 'Qux',
-        Qux: 'Quux',
-      },
-    })).toThrow(/MetricFilter only supports a maximum of 3 dimensions but received/);
+    expect(
+      () =>
+        new MetricFilter(stack, 'Subscription', {
+          logGroup,
+          metricNamespace: 'AWS/Test',
+          metricName: 'Latency',
+          metricValue: '$.latency',
+          filterPattern: FilterPattern.exists('$.latency'),
+          dimensions: {
+            Foo: 'Bar',
+            Bar: 'Baz',
+            Baz: 'Qux',
+            Qux: 'Quux',
+          },
+        })
+    ).toThrow(/MetricFilter only supports a maximum of 3 dimensions but received/);
   });
 
   test('metric filter exposes metric', () => {
@@ -105,11 +112,13 @@ describe('metric filter', () => {
     const metric = mf.metric();
 
     // THEN
-    expect(metric).toEqual(new Metric({
-      metricName: 'Latency',
-      namespace: 'AWS/Test',
-      statistic: 'avg',
-    }));
+    expect(metric).toEqual(
+      new Metric({
+        metricName: 'Latency',
+        namespace: 'AWS/Test',
+        statistic: 'avg',
+      })
+    );
   });
 
   test('metric filter exposes metric with custom statistic', () => {
@@ -129,11 +138,13 @@ describe('metric filter', () => {
     const metric = mf.metric({ statistic: 'maximum' });
 
     // THEN
-    expect(metric).toEqual(new Metric({
-      metricName: 'Latency',
-      namespace: 'AWS/Test',
-      statistic: 'maximum',
-    }));
+    expect(metric).toEqual(
+      new Metric({
+        metricName: 'Latency',
+        namespace: 'AWS/Test',
+        statistic: 'maximum',
+      })
+    );
   });
 
   test('with unit', () => {
@@ -156,18 +167,20 @@ describe('metric filter', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
-      MetricTransformations: [{
-        MetricNamespace: 'AWS/Test',
-        MetricName: 'Latency',
-        MetricValue: '$.latency',
-        Dimensions: [
-          {
-            Key: 'Foo',
-            Value: 'Bar',
-          },
-        ],
-        Unit: 'Milliseconds',
-      }],
+      MetricTransformations: [
+        {
+          MetricNamespace: 'AWS/Test',
+          MetricName: 'Latency',
+          MetricValue: '$.latency',
+          Dimensions: [
+            {
+              Key: 'Foo',
+              Value: 'Bar',
+            },
+          ],
+          Unit: 'Milliseconds',
+        },
+      ],
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
     });
@@ -192,17 +205,19 @@ describe('metric filter', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
-      MetricTransformations: [{
-        MetricNamespace: 'AWS/Test',
-        MetricName: 'Latency',
-        MetricValue: '$.latency',
-        Dimensions: [
-          {
-            Key: 'Foo',
-            Value: 'Bar',
-          },
-        ],
-      }],
+      MetricTransformations: [
+        {
+          MetricNamespace: 'AWS/Test',
+          MetricName: 'Latency',
+          MetricValue: '$.latency',
+          Dimensions: [
+            {
+              Key: 'Foo',
+              Value: 'Bar',
+            },
+          ],
+        },
+      ],
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
     });

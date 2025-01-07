@@ -38,9 +38,7 @@ export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarge
         !Token.isUnresolved(props.messageGroupId) &&
         (props.messageGroupId.length < 1 || props.messageGroupId.length > 128)
       ) {
-        throw new Error(
-          `messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`
-        );
+        throw new Error(`messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`);
       }
       if (!queue.fifo) {
         throw new Error('target must be a FIFO queue if messageGroupId is specified');

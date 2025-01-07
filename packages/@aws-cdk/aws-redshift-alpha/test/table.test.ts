@@ -148,10 +148,12 @@ describe('cluster table', () => {
         { id: 'col1', name: 'col2', dataType: 'float' },
       ];
 
-      expect(() => new redshift.Table(stack, 'Table', {
-        ...databaseOptions,
-        tableColumns: updatedTableColumns,
-      }),
+      expect(
+        () =>
+          new redshift.Table(stack, 'Table', {
+            ...databaseOptions,
+            tableColumns: updatedTableColumns,
+          })
       ).toThrow("Column id 'col1' is not unique.");
     });
 
@@ -226,10 +228,11 @@ describe('cluster table', () => {
       ];
 
       expect(
-        () => new redshift.Table(stack, 'Table', {
-          ...databaseOptions,
-          tableColumns: updatedTableColumns,
-        }),
+        () =>
+          new redshift.Table(stack, 'Table', {
+            ...databaseOptions,
+            tableColumns: updatedTableColumns,
+          })
       ).toThrow(/Only one column can be configured as distKey./);
     });
 
@@ -240,21 +243,25 @@ describe('cluster table', () => {
       ];
 
       expect(
-        () => new redshift.Table(stack, 'Table', {
-          ...databaseOptions,
-          tableColumns: updatedTableColumns,
-          distStyle: redshift.TableDistStyle.EVEN,
-        }),
-      ).toThrow(`Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${redshift.TableDistStyle.EVEN}`);
+        () =>
+          new redshift.Table(stack, 'Table', {
+            ...databaseOptions,
+            tableColumns: updatedTableColumns,
+            distStyle: redshift.TableDistStyle.EVEN,
+          })
+      ).toThrow(
+        `Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${redshift.TableDistStyle.EVEN}`
+      );
     });
 
     it('throws if KEY distStyle is configired with no distKey column', () => {
       expect(
-        () => new redshift.Table(stack, 'Table', {
-          ...databaseOptions,
-          tableColumns,
-          distStyle: redshift.TableDistStyle.KEY,
-        }),
+        () =>
+          new redshift.Table(stack, 'Table', {
+            ...databaseOptions,
+            tableColumns,
+            distStyle: redshift.TableDistStyle.KEY,
+          })
       ).toThrow('distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.');
     });
   });
@@ -297,12 +304,15 @@ describe('cluster table', () => {
 
     it('throws if sortStlye other than AUTO is passed with no configured sortKeys', () => {
       expect(
-        () => new redshift.Table(stack, 'Table', {
-          ...databaseOptions,
-          tableColumns,
-          sortStyle: redshift.TableSortStyle.COMPOUND,
-        }),
-      ).toThrow(`sortStyle of '${redshift.TableSortStyle.COMPOUND}' can only be configured when sortKey is also configured.`);
+        () =>
+          new redshift.Table(stack, 'Table', {
+            ...databaseOptions,
+            tableColumns,
+            sortStyle: redshift.TableSortStyle.COMPOUND,
+          })
+      ).toThrow(
+        `sortStyle of '${redshift.TableSortStyle.COMPOUND}' can only be configured when sortKey is also configured.`
+      );
     });
 
     it('throws if sortStlye of AUTO is passed with some configured sortKeys', () => {
@@ -314,11 +324,12 @@ describe('cluster table', () => {
 
       // THEN
       expect(
-        () => new redshift.Table(stack, 'Table', {
-          ...databaseOptions,
-          tableColumns: tableColumnsWithSortKey,
-          sortStyle: redshift.TableSortStyle.AUTO,
-        }),
+        () =>
+          new redshift.Table(stack, 'Table', {
+            ...databaseOptions,
+            tableColumns: tableColumnsWithSortKey,
+            sortStyle: redshift.TableSortStyle.AUTO,
+          })
       ).toThrow(`sortStyle of '${redshift.TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
     });
   });
@@ -342,19 +353,25 @@ describe('cluster table', () => {
     });
 
     test('throw error for timeout being too short', () => {
-      expect(() => new redshift.Table(stack, 'Table', {
-        ...databaseOptions,
-        tableColumns,
-        timeout: cdk.Duration.millis(999),
-      })).toThrow('The timeout for the handler must be BETWEEN 1 second and 15 minutes, got 999 milliseconds.');
+      expect(
+        () =>
+          new redshift.Table(stack, 'Table', {
+            ...databaseOptions,
+            tableColumns,
+            timeout: cdk.Duration.millis(999),
+          })
+      ).toThrow('The timeout for the handler must be BETWEEN 1 second and 15 minutes, got 999 milliseconds.');
     });
 
     test('throw error for timeout being too long', () => {
-      expect(() => new redshift.Table(stack, 'Table', {
-        ...databaseOptions,
-        tableColumns,
-        timeout: cdk.Duration.minutes(16),
-      })).toThrow('The timeout for the handler must be between 1 second and 15 minutes, got 960 seconds.');
+      expect(
+        () =>
+          new redshift.Table(stack, 'Table', {
+            ...databaseOptions,
+            tableColumns,
+            timeout: cdk.Duration.minutes(16),
+          })
+      ).toThrow('The timeout for the handler must be between 1 second and 15 minutes, got 960 seconds.');
     });
   });
 });

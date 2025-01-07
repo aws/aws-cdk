@@ -181,7 +181,6 @@ test('creates a secret with a custom excludeCharacters', () => {
 });
 
 describe('node count', () => {
-
   test('Single Node Clusters do not define node count', () => {
     // WHEN
     new Cluster(stack, 'Redshift', {
@@ -324,11 +323,9 @@ describe('parameter group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
     });
-
   });
 
   test('Adding to the cluster parameter group on a cluster not instantiated with a parameter group', () => {
-
     // WHEN
     const cluster = new Cluster(stack, 'Redshift', {
       clusterName: 'foobar',
@@ -358,7 +355,6 @@ describe('parameter group', () => {
   });
 
   test('Adding to the cluster parameter group on a cluster instantiated with a parameter group', () => {
-
     // WHEN
     const group = new ClusterParameterGroup(stack, 'Params', {
       description: 'lorem ipsum',
@@ -413,7 +409,6 @@ describe('parameter group', () => {
       // THEN
       .toThrow('Cannot add a parameter to an imported parameter group');
   });
-
 });
 
 test('publicly accessible cluster', () => {
@@ -449,21 +444,21 @@ test('availability zone relocation enabled', () => {
   });
 });
 
-test.each([
-  NodeType.DC1_8XLARGE,
-  NodeType.DC2_LARGE,
-])('throw error when availability zone relocation is enabled for invalid node type %s', (nodeType) => {
-  expect(() => {
-    new Cluster(stack, 'Redshift', {
-      masterUser: {
-        masterUsername: 'admin',
-      },
-      vpc,
-      availabilityZoneRelocation: true,
-      nodeType,
-    });
-  }).toThrow(`Availability zone relocation is supported for only RA3 node types, got: ${nodeType}`);
-});
+test.each([NodeType.DC1_8XLARGE, NodeType.DC2_LARGE])(
+  'throw error when availability zone relocation is enabled for invalid node type %s',
+  (nodeType) => {
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        availabilityZoneRelocation: true,
+        nodeType,
+      });
+    }).toThrow(`Availability zone relocation is supported for only RA3 node types, got: ${nodeType}`);
+  }
+);
 
 test('imported cluster with imported security group honors allowAllOutbound', () => {
   // GIVEN
@@ -512,22 +507,21 @@ test('can create a cluster with logging enabled', () => {
   });
 });
 
-test.each([
-  ResourceAction.PAUSE_CLUSTER,
-  ResourceAction.RESUME_CLUSTER,
-  ResourceAction.FAILOVER_PRIMARY_COMPUTE,
-])('specify resource action %s', (resourceAction) => {
-  // WHEN
-  new Cluster(stack, 'Redshift', {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc,
-    resourceAction,
-    nodeType: NodeType.RA3_XLPLUS,
-    multiAz: true,
-  });
-});
+test.each([ResourceAction.PAUSE_CLUSTER, ResourceAction.RESUME_CLUSTER, ResourceAction.FAILOVER_PRIMARY_COMPUTE])(
+  'specify resource action %s',
+  (resourceAction) => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      resourceAction,
+      nodeType: NodeType.RA3_XLPLUS,
+      multiAz: true,
+    });
+  }
+);
 
 test.each([false, undefined])('throw error for failover primary compute action with single AZ cluster', (multiAz) => {
   expect(() => {
@@ -556,7 +550,6 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   expect(() => {
     cluster.addRotationSingleUser();
   }).toThrow();
-
 });
 
 test('throws validation error when trying to set encryptionKey without enabling encryption', () => {
@@ -577,7 +570,6 @@ test('throws validation error when trying to set encryptionKey without enabling 
   expect(() => {
     new Cluster(stack, 'Redshift', props);
   }).toThrow();
-
 });
 
 test('throws when trying to add single user rotation multiple times', () => {
@@ -751,9 +743,7 @@ describe('multi AZ cluster', () => {
       DBName: 'default_db',
       PubliclyAccessible: false,
       ClusterSubnetGroupName: { Ref: 'RedshiftSubnetsDFE70E0A' },
-      VpcSecurityGroupIds: [
-        { 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] },
-      ],
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['RedshiftSecurityGroup796D74A7', 'GroupId'] }],
       MultiAZ: true,
     });
   });
@@ -906,22 +896,23 @@ describe('reboot for Parameter Changes', () => {
     //THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::RedshiftClusterRebooter', {
-      ParametersString: JSON.stringify(
-        {
-          foo: 'bar',
-          lorem: 'ipsum',
-        },
-      ),
+      ParametersString: JSON.stringify({
+        foo: 'bar',
+        lorem: 'ipsum',
+      }),
     });
   });
 });
 
 describe('default IAM role', () => {
-
   test('Default role not in role list', () => {
     // GIVEN
-    const clusterRole1 = new iam.Role(stack, 'clusterRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
-    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
+    const clusterRole1 = new iam.Role(stack, 'clusterRole1', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
 
     expect(() => {
       new Cluster(stack, 'Redshift', {
@@ -936,7 +927,9 @@ describe('default IAM role', () => {
   });
 
   test('throws error when default role not attached to cluster when adding default role post creation', () => {
-    const defaultRole1 = new iam.Role(stack, 'defaultRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });
+    const defaultRole1 = new iam.Role(stack, 'defaultRole1', {
+      assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+    });
     const cluster = new Cluster(stack, 'Redshift', {
       masterUser: {
         masterUsername: 'admin',
@@ -967,9 +960,7 @@ describe('IAM role', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
       Properties: {
-        IamRoles: Match.arrayEquals([
-          { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
-        ]),
+        IamRoles: Match.arrayEquals([{ 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] }]),
       },
     });
   });
@@ -992,9 +983,7 @@ describe('IAM role', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
       Properties: {
-        IamRoles: Match.arrayEquals([
-          { 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] },
-        ]),
+        IamRoles: Match.arrayEquals([{ 'Fn::GetAtt': [Match.stringLikeRegexp('Role*'), 'Arn'] }]),
       },
     });
   });
@@ -1008,7 +997,9 @@ describe('IAM role', () => {
       vpc,
     });
 
-    const newTestStack = new cdk.Stack(stack, 'NewTestStack', { env: { account: stack.account, region: stack.region } });
+    const newTestStack = new cdk.Stack(stack, 'NewTestStack', {
+      env: { account: stack.account, region: stack.region },
+    });
     const role = new iam.Role(newTestStack, 'Role', {
       assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
     });
@@ -1039,9 +1030,10 @@ describe('IAM role', () => {
       roles: [role],
     });
 
-    expect(() =>
-      // WHEN
-      cluster.addIamRole(role),
+    expect(
+      () =>
+        // WHEN
+        cluster.addIamRole(role)
       // THEN
     ).toThrow(`Role '${role.roleArn}' is already attached to the cluster`);
   });

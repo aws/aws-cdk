@@ -155,11 +155,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    * @param id the resource id.
    * @param endpointConfigArn the ARN of the endpoint configuration.
    */
-  public static fromEndpointConfigArn(
-    scope: Construct,
-    id: string,
-    endpointConfigArn: string
-  ): IEndpointConfig {
+  public static fromEndpointConfigArn(scope: Construct, id: string, endpointConfigArn: string): IEndpointConfig {
     const endpointConfigName = cdk.Stack.of(scope).splitArn(
       endpointConfigArn,
       cdk.ArnFormat.SLASH_RESOURCE_NAME
@@ -181,11 +177,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    * @param id the resource id.
    * @param endpointConfigName the name of the endpoint configuration.
    */
-  public static fromEndpointConfigName(
-    scope: Construct,
-    id: string,
-    endpointConfigName: string
-  ): IEndpointConfig {
+  public static fromEndpointConfigName(scope: Construct, id: string, endpointConfigName: string): IEndpointConfig {
     const endpointConfigArn = cdk.Stack.of(scope).formatArn({
       service: 'sagemaker',
       resource: 'endpoint-config',
@@ -211,8 +203,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   public readonly endpointConfigName: string;
 
-  private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } =
-    {};
+  private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } = {};
 
   constructor(scope: Construct, id: string, props: EndpointConfigProps = {}) {
     super(scope, id, {

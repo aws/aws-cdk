@@ -3,12 +3,7 @@ import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import {
-  AddToPrincipalPolicyResult,
-  IGrantable,
-  IPrincipal,
-  PrincipalPolicyFragment,
-} from './principals';
+import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
@@ -113,11 +108,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * For this managed policy, you only need to know the name to be able to use it.
    *
    */
-  public static fromManagedPolicyName(
-    scope: Construct,
-    id: string,
-    managedPolicyName: string
-  ): IManagedPolicy {
+  public static fromManagedPolicyName(scope: Construct, id: string, managedPolicyName: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = Stack.of(scope).formatArn({
         service: 'iam',
@@ -149,11 +140,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * @param id construct id
    * @param managedPolicyArn the ARN of the managed policy to import
    */
-  public static fromManagedPolicyArn(
-    scope: Construct,
-    id: string,
-    managedPolicyArn: string
-  ): IManagedPolicy {
+  public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = managedPolicyArn;
     }

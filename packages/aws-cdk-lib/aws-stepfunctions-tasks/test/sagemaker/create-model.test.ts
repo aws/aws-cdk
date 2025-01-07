@@ -44,11 +44,10 @@ test('create basic model', () => {
       PrimaryContainer: {
         'Image.$': '$.Model.imageName',
         'ModelDataUrl.$': '$.TrainingJob.ModelArtifacts.S3ModelArtifacts',
-        'Mode': 'SingleModel',
+        Mode: 'SingleModel',
       },
     },
-  },
-  );
+  });
 });
 
 test('create complex model', () => {
@@ -58,9 +57,7 @@ test('create complex model', () => {
   securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-    managedPolicies: [
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
-    ],
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')],
   });
 
   const task = new tasks.SageMakerCreateModel(stack, 'SagemakerModel', {
@@ -72,10 +69,12 @@ test('create complex model', () => {
     }),
     enableNetworkIsolation: true,
     role,
-    tags: sfn.TaskInput.fromObject([{
-      Key: 'Project',
-      Value: 'ML',
-    }]),
+    tags: sfn.TaskInput.fromObject([
+      {
+        Key: 'Project',
+        Value: 'ML',
+      },
+    ]),
     vpc,
   });
   task.addSecurityGroup(securityGroup);
@@ -97,30 +96,24 @@ test('create complex model', () => {
     },
     End: true,
     Parameters: {
-      'ExecutionRoleArn': { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+      ExecutionRoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
       'ModelName.$': '$.ModelName',
-      'PrimaryContainer': {
+      PrimaryContainer: {
         'Image.$': '$.Model.imageName',
         'ModelDataUrl.$': '$.TrainingJob.ModelArtifacts.S3ModelArtifacts',
-        'Mode': 'MultiModel',
+        Mode: 'MultiModel',
       },
-      'EnableNetworkIsolation': true,
-      'Tags': [
-        { Key: 'Project', Value: 'ML' },
-      ],
-      'VpcConfig': {
+      EnableNetworkIsolation: true,
+      Tags: [{ Key: 'Project', Value: 'ML' }],
+      VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
           { 'Fn::GetAtt': ['SagemakerModelModelSecurityGroup4D2A2C36', 'GroupId'] },
         ],
-        Subnets: [
-          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-        ],
+        Subnets: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
       },
     },
-  },
-  );
+  });
 });
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
@@ -134,5 +127,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
         modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
       }),
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/i
+  );
 });

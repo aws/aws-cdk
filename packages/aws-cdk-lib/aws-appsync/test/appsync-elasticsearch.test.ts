@@ -31,25 +31,35 @@ describeDeprecated('Appsync Elasticsearch integration', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Version: '2012-10-17',
-          Statement: [{
-            Action: [
-              'es:ESHttpGet',
-              'es:ESHttpHead',
-              'es:ESHttpDelete',
-              'es:ESHttpPost',
-              'es:ESHttpPut',
-              'es:ESHttpPatch',
-            ],
-            Effect: 'Allow',
-            Resource: [{
-              'Fn::GetAtt': ['EsDomain1213C634', 'Arn'],
-            },
+          Statement: [
             {
-              'Fn::Join': ['', [{
-                'Fn::GetAtt': ['EsDomain1213C634', 'Arn'],
-              }, '/*']],
-            }],
-          }],
+              Action: [
+                'es:ESHttpGet',
+                'es:ESHttpHead',
+                'es:ESHttpDelete',
+                'es:ESHttpPost',
+                'es:ESHttpPut',
+                'es:ESHttpPatch',
+              ],
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::GetAtt': ['EsDomain1213C634', 'Arn'],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': ['EsDomain1213C634', 'Arn'],
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
         },
       });
     });
@@ -62,9 +72,15 @@ describeDeprecated('Appsync Elasticsearch integration', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
         ElasticsearchConfig: {
           Endpoint: {
-            'Fn::Join': ['', ['https://', {
-              'Fn::GetAtt': ['EsDomain1213C634', 'DomainEndpoint'],
-            }]],
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Fn::GetAtt': ['EsDomain1213C634', 'DomainEndpoint'],
+                },
+              ],
+            ],
           },
         },
       });
@@ -117,7 +133,7 @@ describeDeprecated('Appsync Elasticsearch integration', () => {
       };
 
       // THEN
-      expect(when).toThrow('There is already a Construct with name \'ds\' in GraphqlApi [baseApi]');
+      expect(when).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
     });
   });
 

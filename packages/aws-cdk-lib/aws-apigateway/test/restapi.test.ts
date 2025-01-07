@@ -68,7 +68,16 @@ describe('restapi', () => {
               Version: '2012-10-17',
             },
             ManagedPolicyArns: [
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs']] },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs',
+                  ],
+                ],
+              },
             ],
           },
         },
@@ -84,17 +93,20 @@ describe('restapi', () => {
       Outputs: {
         myapiEndpoint3628AFE3: {
           Value: {
-            'Fn::Join': ['', [
-              'https://',
-              { Ref: 'myapi4C7BF186' },
-              '.execute-api.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/',
-              { Ref: 'myapiDeploymentStageprod298F01AF' },
-              '/',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                { Ref: 'myapi4C7BF186' },
+                '.execute-api.',
+                { Ref: 'AWS::Region' },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+                '/',
+                { Ref: 'myapiDeploymentStageprod298F01AF' },
+                '/',
+              ],
+            ],
           },
         },
       },
@@ -231,10 +243,7 @@ describe('restapi', () => {
           Type: 'AWS::ApiGateway::Resource',
           Properties: {
             ParentId: {
-              'Fn::GetAtt': [
-                'restapiC5611D27',
-                'RootResourceId',
-              ],
+              'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'],
             },
             PathPart: 'r1',
             RestApiId: {
@@ -263,10 +272,7 @@ describe('restapi', () => {
           Properties: {
             HttpMethod: 'GET',
             ResourceId: {
-              'Fn::GetAtt': [
-                'restapiC5611D27',
-                'RootResourceId',
-              ],
+              'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'],
             },
             RestApiId: {
               Ref: 'restapiC5611D27',
@@ -320,10 +326,13 @@ describe('restapi', () => {
     const stack = new Stack();
 
     // THEN
-    expect(() => new apigw.RestApi(stack, 'myapi', {
-      deploy: false,
-      deployOptions: { cachingEnabled: true },
-    })).toThrow(/Cannot set 'deployOptions' if 'deploy' is disabled/);
+    expect(
+      () =>
+        new apigw.RestApi(stack, 'myapi', {
+          deploy: false,
+          deployOptions: { cachingEnabled: true },
+        })
+    ).toThrow(/Cannot set 'deployOptions' if 'deploy' is disabled/);
   });
 
   test('uses correct description for Deployment from "deployOptions"', () => {
@@ -380,30 +389,36 @@ describe('restapi', () => {
 
     // THEN
     expect(stack.resolve(api.url)).toEqual({
-      'Fn::Join':
-        ['',
-          ['https://',
-            { Ref: 'apiC8550315' },
-            '.execute-api.',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
-            '/',
-            { Ref: 'apiDeploymentStageprod896C8101' },
-            '/']],
+      'Fn::Join': [
+        '',
+        [
+          'https://',
+          { Ref: 'apiC8550315' },
+          '.execute-api.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/',
+          { Ref: 'apiDeploymentStageprod896C8101' },
+          '/',
+        ],
+      ],
     });
     expect(stack.resolve(api.urlForPath('/foo/bar'))).toEqual({
-      'Fn::Join':
-        ['',
-          ['https://',
-            { Ref: 'apiC8550315' },
-            '.execute-api.',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
-            '/',
-            { Ref: 'apiDeploymentStageprod896C8101' },
-            '/foo/bar']],
+      'Fn::Join': [
+        '',
+        [
+          'https://',
+          { Ref: 'apiC8550315' },
+          '.execute-api.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/',
+          { Ref: 'apiDeploymentStageprod896C8101' },
+          '/foo/bar',
+        ],
+      ],
     });
   });
 
@@ -414,8 +429,12 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(() => api.url).toThrow(/Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/);
-    expect(() => api.urlForPath('/foo')).toThrow(/Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/);
+    expect(() => api.url).toThrow(
+      /Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/
+    );
+    expect(() => api.urlForPath('/foo')).toThrow(
+      /Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/
+    );
   });
 
   test('"urlForPath" requires that path will begin with "/"', () => {
@@ -439,17 +458,20 @@ describe('restapi', () => {
 
     // THEN
     expect(stack.resolve(arn)).toEqual({
-      'Fn::Join':
-        ['',
-          ['arn:',
-            { Ref: 'AWS::Partition' },
-            ':execute-api:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':',
-            { Ref: 'apiC8550315' },
-            '/stage/method/path']],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'apiC8550315' },
+          '/stage/method/path',
+        ],
+      ],
     });
   });
 
@@ -460,7 +482,9 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(() => api.arnForExecuteApi('method', 'hey-path', 'stage')).toThrow(/"path" must begin with a "\/": 'hey-path'/);
+    expect(() => api.arnForExecuteApi('method', 'hey-path', 'stage')).toThrow(
+      /"path" must begin with a "\/": 'hey-path'/
+    );
   });
 
   test('"executeApiArn" path can be a token', () => {
@@ -470,7 +494,7 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(() => api.arnForExecuteApi('method', Lazy.string(({ produce: () => 'path' })), 'stage')).not.toThrow();
+    expect(() => api.arnForExecuteApi('method', Lazy.string({ produce: () => 'path' }), 'stage')).not.toThrow();
   });
 
   test('"executeApiArn" will convert ANY to "*"', () => {
@@ -482,19 +506,22 @@ describe('restapi', () => {
 
     // THEN
     expect(stack.resolve(method.methodArn)).toEqual({
-      'Fn::Join':
-        ['',
-          ['arn:',
-            { Ref: 'AWS::Partition' },
-            ':execute-api:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':',
-            { Ref: 'apiC8550315' },
-            '/',
-            { Ref: 'apiDeploymentStageprod896C8101' },
-            '/*/']],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'apiC8550315' },
+          '/',
+          { Ref: 'apiDeploymentStageprod896C8101' },
+          '/*/',
+        ],
+      ],
     });
   });
 
@@ -512,10 +539,7 @@ describe('restapi', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
-        Types: [
-          'EDGE',
-          'PRIVATE',
-        ],
+        Types: ['EDGE', 'PRIVATE'],
       },
     });
   });
@@ -561,14 +585,8 @@ describe('restapi', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
-        Types: [
-          'EDGE',
-          'PRIVATE',
-        ],
-        VpcEndpointIds: [
-          'vpcEndpoint',
-          'vpcEndpoint2',
-        ],
+        Types: ['EDGE', 'PRIVATE'],
+        VpcEndpointIds: ['vpcEndpoint', 'vpcEndpoint2'],
       },
     });
   });
@@ -578,13 +596,16 @@ describe('restapi', () => {
     const stack = new Stack();
 
     // THEN
-    expect(() => new apigw.RestApi(stack, 'api', {
-      endpointConfiguration: {
-        types: [apigw.EndpointType.PRIVATE],
-        vpcEndpoints: [GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')],
-      },
-      endpointTypes: [apigw.EndpointType.PRIVATE],
-    })).toThrow(/Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
+    expect(
+      () =>
+        new apigw.RestApi(stack, 'api', {
+          endpointConfiguration: {
+            types: [apigw.EndpointType.PRIVATE],
+            vpcEndpoints: [GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')],
+          },
+          endpointTypes: [apigw.EndpointType.PRIVATE],
+        })
+    ).toThrow(/Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
   });
 
   test('"cloneFrom" can be used to clone an existing API', () => {
@@ -947,10 +968,13 @@ describe('restapi', () => {
     const stack = new Stack(app);
 
     // THEN
-    expect(() => new apigw.RestApi(stack, 'RestApi', {
-      minCompressionSize: Size.bytes(500),
-      minimumCompressionSize: 1024,
-    })).toThrow(/both properties minCompressionSize and minimumCompressionSize cannot be set at once./);
+    expect(
+      () =>
+        new apigw.RestApi(stack, 'RestApi', {
+          minCompressionSize: Size.bytes(500),
+          minimumCompressionSize: 1024,
+        })
+    ).toThrow(/both properties minCompressionSize and minimumCompressionSize cannot be set at once./);
   });
 
   test('can specify CloudWatch Role and Account removal policy', () => {
@@ -1093,10 +1117,7 @@ describe('SpecRestApi', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
-        Types: [
-          'EDGE',
-          'PRIVATE',
-        ],
+        Types: ['EDGE', 'PRIVATE'],
       },
     });
   });
@@ -1369,11 +1390,9 @@ describe('SpecRestApi', () => {
       api.root.addMethod('GET');
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties(
-        'AWS::ApiGateway::RestApi',
-        {
-          Description: 'My API',
-        });
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Description: 'My API',
+      });
     });
 
     test('description is not set', () => {
@@ -1385,8 +1404,7 @@ describe('SpecRestApi', () => {
       api.root.addMethod('GET');
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties(
-        'AWS::ApiGateway::RestApi', {});
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {});
     });
   });
 
@@ -1402,9 +1420,9 @@ describe('SpecRestApi', () => {
       paths: {
         '/pets': {
           get: {
-            'summary': 'Test Method',
-            'operationId': 'testMethod',
-            'responses': {
+            summary: 'Test Method',
+            operationId: 'testMethod',
+            responses: {
               200: {
                 description: 'A paged array of pets',
                 content: {

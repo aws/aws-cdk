@@ -19,10 +19,7 @@ test('creates a subnet group from minimal properties', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterSubnetGroup', {
     Description: 'MyGroup',
-    SubnetIds: [
-      { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-      { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-    ],
+    SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
   });
 });
 
@@ -35,10 +32,7 @@ describe('subnet selection', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterSubnetGroup', {
       Description: 'MyGroup',
-      SubnetIds: [
-        { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-        { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-      ],
+      SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
     });
   });
 
@@ -51,10 +45,7 @@ describe('subnet selection', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterSubnetGroup', {
       Description: 'MyGroup',
-      SubnetIds: [
-        { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-        { Ref: 'VPCPublicSubnet2Subnet74179F39' },
-      ],
+      SubnetIds: [{ Ref: 'VPCPublicSubnet1SubnetB4246D30' }, { Ref: 'VPCPublicSubnet2Subnet74179F39' }],
     });
   });
 });

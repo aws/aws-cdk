@@ -197,9 +197,7 @@ export class PolicyStatement {
   public addPrincipals(...principals: IPrincipal[]) {
     this.assertNotFrozen('addPrincipals');
     if (principals.length > 0 && this._notPrincipals.length > 0) {
-      throw new Error(
-        "Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added"
-      );
+      throw new Error("Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added");
     }
     for (const principal of principals) {
       this.validatePolicyPrincipal(principal);
@@ -224,9 +222,7 @@ export class PolicyStatement {
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
     this.assertNotFrozen('addNotPrincipals');
     if (notPrincipals.length > 0 && this._principals.length > 0) {
-      throw new Error(
-        "Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added"
-      );
+      throw new Error("Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added");
     }
     for (const notPrincipal of notPrincipals) {
       this.validatePolicyPrincipal(notPrincipal);
@@ -254,9 +250,7 @@ export class PolicyStatement {
 
   private validatePolicyPrincipal(principal: IPrincipal) {
     if (principal instanceof Group) {
-      throw new Error(
-        "Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy"
-      );
+      throw new Error("Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy");
     }
   }
 
@@ -336,9 +330,7 @@ export class PolicyStatement {
   public addResources(...arns: string[]) {
     this.assertNotFrozen('addResources');
     if (arns.length > 0 && this._notResource.length > 0) {
-      throw new Error(
-        "Cannot add 'Resources' to policy statement if 'NotResources' have been added"
-      );
+      throw new Error("Cannot add 'Resources' to policy statement if 'NotResources' have been added");
     }
     this._resource.push(...arns);
   }
@@ -354,9 +346,7 @@ export class PolicyStatement {
   public addNotResources(...arns: string[]) {
     this.assertNotFrozen('addNotResources');
     if (arns.length > 0 && this._resource.length > 0) {
-      throw new Error(
-        "Cannot add 'NotResources' to policy statement if 'Resources' have been added"
-      );
+      throw new Error("Cannot add 'NotResources' to policy statement if 'Resources' have been added");
     }
     this._notResource.push(...arns);
   }
@@ -563,9 +553,7 @@ export class PolicyStatement {
   public validateForResourcePolicy(): string[] {
     const errors = this.validateForAnyPolicy();
     if (this._principals.length === 0 && this._notPrincipals.length === 0) {
-      errors.push(
-        'A PolicyStatement used in a resource-based policy must specify at least one IAM principal.'
-      );
+      errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
     }
     return errors;
   }
@@ -578,14 +566,10 @@ export class PolicyStatement {
   public validateForIdentityPolicy(): string[] {
     const errors = this.validateForAnyPolicy();
     if (this._principals.length > 0 || this._notPrincipals.length > 0) {
-      errors.push(
-        'A PolicyStatement used in an identity-based policy cannot specify any IAM principals.'
-      );
+      errors.push('A PolicyStatement used in an identity-based policy cannot specify any IAM principals.');
     }
     if (this._resource.length === 0 && this._notResource.length === 0) {
-      errors.push(
-        'A PolicyStatement used in an identity-based policy must specify at least one resource.'
-      );
+      errors.push('A PolicyStatement used in an identity-based policy must specify at least one resource.');
     }
     return errors;
   }
@@ -693,11 +677,7 @@ export class PolicyStatement {
         ret +=
           key.length +
           5 /* quotes, colon, brackets */ +
-          sum(
-            values.map(
-              (v) => (cdk.Token.isUnresolved(v) ? tokenSize : v.length) + 3 /* quotes, separator */
-            )
-          );
+          sum(values.map((v) => (cdk.Token.isUnresolved(v) ? tokenSize : v.length) + 3 /* quotes, separator */));
       }
     }
   }
@@ -884,8 +864,7 @@ export interface EstimateSizeOptions {
  */
 export function deriveEstimateSizeOptions(scope: IConstruct): EstimateSizeOptions {
   const actionEstimate = 20;
-  const arnEstimate =
-    scope.node.tryGetContext(ARN_SIZE_ESTIMATE_CONTEXT_KEY) ?? DEFAULT_ARN_SIZE_ESTIMATE;
+  const arnEstimate = scope.node.tryGetContext(ARN_SIZE_ESTIMATE_CONTEXT_KEY) ?? DEFAULT_ARN_SIZE_ESTIMATE;
   if (typeof arnEstimate !== 'number') {
     throw new Error(
       `Context value ${ARN_SIZE_ESTIMATE_CONTEXT_KEY} should be a number, got ${JSON.stringify(arnEstimate)}`

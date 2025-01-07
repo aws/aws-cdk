@@ -134,8 +134,7 @@ export class PrefixList extends PrefixListBase {
       physicalName:
         props?.prefixListName ??
         Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, { maxLength: 255, allowedSpecialCharacters: '.-_' }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 255, allowedSpecialCharacters: '.-_' }),
         }),
     });
 

@@ -1,12 +1,6 @@
 import { Construct } from 'constructs';
 import { DailyAutomaticBackupStartTime } from './daily-automatic-backup-start-time';
-import {
-  FileSystemAttributes,
-  FileSystemBase,
-  FileSystemProps,
-  IFileSystem,
-  StorageType,
-} from './file-system';
+import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem, StorageType } from './file-system';
 import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
@@ -258,11 +252,7 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * Import an existing FSx for Lustre file system from the given properties.
    */
-  public static fromLustreFileSystemAttributes(
-    scope: Construct,
-    id: string,
-    attrs: FileSystemAttributes
-  ): IFileSystem {
+  public static fromLustreFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
     class Import extends FileSystemBase {
       public readonly dnsName = attrs.dnsName;
       public readonly fileSystemId = attrs.fileSystemId;
@@ -331,11 +321,9 @@ export class LustreFileSystem extends FileSystemBase {
 
     const updatedLustureProps = {
       importedFileChunkSize: props.lustreConfiguration.importedFileChunkSizeMiB,
-      weeklyMaintenanceStartTime:
-        props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
+      weeklyMaintenanceStartTime: props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
       automaticBackupRetentionDays: props.lustreConfiguration.automaticBackupRetention?.toDays(),
-      dailyAutomaticBackupStartTime:
-        props.lustreConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
+      dailyAutomaticBackupStartTime: props.lustreConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
       driveCacheType:
         props.lustreConfiguration.driveCacheType ??
         (props.storageType === StorageType.HDD ? DriveCacheType.NONE : undefined),
@@ -349,10 +337,7 @@ export class LustreFileSystem extends FileSystemBase {
       });
     securityGroup.addIngressRule(
       securityGroup,
-      Port.tcpRange(
-        LustreFileSystem.DEFAULT_PORT_RANGE.startPort,
-        LustreFileSystem.DEFAULT_PORT_RANGE.endPort
-      )
+      Port.tcpRange(LustreFileSystem.DEFAULT_PORT_RANGE.startPort, LustreFileSystem.DEFAULT_PORT_RANGE.endPort)
     );
     this.connections = LustreFileSystem.configureConnections(securityGroup);
 
@@ -387,38 +372,18 @@ export class LustreFileSystem extends FileSystemBase {
     this.validateExportPath(lustreConfiguration.exportPath, lustreConfiguration.importPath);
 
     this.validateImportedFileChunkSize(lustreConfiguration.importedFileChunkSizeMiB);
-    this.validateAutoImportPolicy(
-      deploymentType,
-      lustreConfiguration.importPath,
-      lustreConfiguration.autoImportPolicy
-    );
+    this.validateAutoImportPolicy(deploymentType, lustreConfiguration.importPath, lustreConfiguration.autoImportPolicy);
 
-    this.validateAutomaticBackupRetention(
-      deploymentType,
-      lustreConfiguration.automaticBackupRetention
-    );
+    this.validateAutomaticBackupRetention(deploymentType, lustreConfiguration.automaticBackupRetention);
 
     this.validateDailyAutomaticBackupStartTime(
       lustreConfiguration.automaticBackupRetention,
       lustreConfiguration.dailyAutomaticBackupStartTime
     );
-    this.validatePerUnitStorageThroughput(
-      deploymentType,
-      perUnitStorageThroughput,
-      props.storageType
-    );
-    this.validateStorageCapacity(
-      deploymentType,
-      props.storageCapacityGiB,
-      props.storageType,
-      perUnitStorageThroughput
-    );
+    this.validatePerUnitStorageThroughput(deploymentType, perUnitStorageThroughput, props.storageType);
+    this.validateStorageCapacity(deploymentType, props.storageCapacityGiB, props.storageType, perUnitStorageThroughput);
     this.validateStorageType(deploymentType, props.storageType);
-    this.validateDriveCacheType(
-      deploymentType,
-      props.storageType,
-      lustreConfiguration.driveCacheType
-    );
+    this.validateDriveCacheType(deploymentType, props.storageType, lustreConfiguration.driveCacheType);
     this.validateFiileSystemTypeVersion(deploymentType, props.fileSystemTypeVersion);
   }
 
@@ -442,16 +407,11 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * Validates if the storage type corresponds to the appropriate deployment type.
    */
-  private validateStorageType(
-    deploymentType: LustreDeploymentType,
-    storageType?: StorageType
-  ): void {
+  private validateStorageType(deploymentType: LustreDeploymentType, storageType?: StorageType): void {
     if (!storageType) return;
 
     if (storageType === StorageType.HDD && deploymentType !== LustreDeploymentType.PERSISTENT_1) {
-      throw new Error(
-        `Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`
-      );
+      throw new Error(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
     }
   }
 
@@ -467,13 +427,8 @@ export class LustreFileSystem extends FileSystemBase {
     }
 
     if (fileSystemTypeVersion === FileSystemTypeVersion.V_2_10) {
-      if (
-        !deploymentType.startsWith('SCRATCH') &&
-        deploymentType !== LustreDeploymentType.PERSISTENT_1
-      ) {
-        throw new Error(
-          'fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types'
-        );
+      if (!deploymentType.startsWith('SCRATCH') && deploymentType !== LustreDeploymentType.PERSISTENT_1) {
+        throw new Error('fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types');
       }
     }
 
@@ -515,9 +470,7 @@ export class LustreFileSystem extends FileSystemBase {
     }
 
     if (Token.isUnresolved(importPath) !== Token.isUnresolved(exportPath)) {
-      throw new Error(
-        'The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix'
-      );
+      throw new Error('The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix');
     }
     if (!exportPath.startsWith(importPath)) {
       throw new Error(
@@ -525,9 +478,7 @@ export class LustreFileSystem extends FileSystemBase {
       );
     }
     if (exportPath.length > 900) {
-      throw new Error(
-        `The export path "${exportPath}" exceeds the maximum length of 900 characters`
-      );
+      throw new Error(`The export path "${exportPath}" exceeds the maximum length of 900 characters`);
     }
   }
 
@@ -562,9 +513,7 @@ export class LustreFileSystem extends FileSystemBase {
       );
     }
     if (importPath.length > 900) {
-      throw new Error(
-        `The import path "${importPath}" exceeds the maximum length of 900 characters`
-      );
+      throw new Error(`The import path "${importPath}" exceeds the maximum length of 900 characters`);
     }
   }
 
@@ -582,10 +531,7 @@ export class LustreFileSystem extends FileSystemBase {
       return;
     }
 
-    if (
-      deploymentType !== LustreDeploymentType.PERSISTENT_1 &&
-      deploymentType !== LustreDeploymentType.PERSISTENT_2
-    ) {
+    if (deploymentType !== LustreDeploymentType.PERSISTENT_1 && deploymentType !== LustreDeploymentType.PERSISTENT_2) {
       throw new Error(
         'perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types, received: ' +
           deploymentType
@@ -637,10 +583,7 @@ export class LustreFileSystem extends FileSystemBase {
       }
     }
 
-    if (
-      deploymentType === LustreDeploymentType.PERSISTENT_2 ||
-      deploymentType === LustreDeploymentType.SCRATCH_2
-    ) {
+    if (deploymentType === LustreDeploymentType.PERSISTENT_2 || deploymentType === LustreDeploymentType.SCRATCH_2) {
       if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
         throw new Error(
           `storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for SCRATCH_2 and PERSISTENT_2 deployment types, got ${storageCapacity}`

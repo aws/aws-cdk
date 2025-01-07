@@ -20,66 +20,46 @@ describe('cross environment', () => {
     test('metric attached to stack1 will not render region and account in stack1', () => {
       // GIVEN
       const graph = new GraphWidget({
-        left: [
-          a.attachTo(stack1),
-        ],
+        left: [a.attachTo(stack1)],
       });
 
       // THEN
-      graphMetricsAre(stack1, graph, [
-        ['Test', 'ACount'],
-      ]);
-
+      graphMetricsAre(stack1, graph, [['Test', 'ACount']]);
     });
 
     test('metric attached to stack1 will render region and account in stack2', () => {
       // GIVEN
       const graph = new GraphWidget({
-        left: [
-          a.attachTo(stack1),
-        ],
+        left: [a.attachTo(stack1)],
       });
 
       // THEN
-      graphMetricsAre(stack2, graph, [
-        ['Test', 'ACount', { region: 'pluto', accountId: '1234' }],
-      ]);
-
+      graphMetricsAre(stack2, graph, [['Test', 'ACount', { region: 'pluto', accountId: '1234' }]]);
     });
 
     test('metric with explicit account and region will render in environment agnostic stack', () => {
       // GIVEN
       const graph = new GraphWidget({
-        left: [
-          a.with({ account: '1234', region: 'us-north-5' }),
-        ],
+        left: [a.with({ account: '1234', region: 'us-north-5' })],
       });
 
       // THEN
-      graphMetricsAre(new Stack(), graph, [
-        ['Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
-      ]);
-
+      graphMetricsAre(new Stack(), graph, [['Test', 'ACount', { accountId: '1234', region: 'us-north-5' }]]);
     });
 
     test('metric attached to agnostic stack will not render in agnostic stack', () => {
       // GIVEN
       const graph = new GraphWidget({
-        left: [
-          a.attachTo(new Stack()),
-        ],
+        left: [a.attachTo(new Stack())],
       });
 
       // THEN
-      graphMetricsAre(new Stack(), graph, [
-        ['Test', 'ACount'],
-      ]);
-
+      graphMetricsAre(new Stack(), graph, [['Test', 'ACount']]);
     });
 
     test('math expressions with explicit account and region will render in environment agnostic stack', () => {
       // GIVEN
-      const expression = 'SEARCH(\'MetricName="ACount"\', \'Sum\', 300)';
+      const expression = "SEARCH('MetricName=\"ACount\"', 'Sum', 300)";
 
       const b = new MathExpression({
         expression,
@@ -90,19 +70,19 @@ describe('cross environment', () => {
       });
 
       const graph = new GraphWidget({
-        left: [
-          b,
-        ],
+        left: [b],
       });
 
       // THEN
       graphMetricsAre(new Stack(), graph, [
-        [{
-          expression,
-          accountId: '5678',
-          region: 'mars',
-          label: 'Test label',
-        }],
+        [
+          {
+            expression,
+            accountId: '5678',
+            region: 'mars',
+            label: 'Test label',
+          },
+        ],
       ]);
     });
   });
@@ -525,16 +505,17 @@ describe('cross environment', () => {
 });
 
 function graphMetricsAre(stack: Stack, w: IWidget, metrics: any[]) {
-  expect(stack.resolve(w.toJson())).toEqual([{
-    type: 'metric',
-    width: 6,
-    height: 6,
-    properties:
+  expect(stack.resolve(w.toJson())).toEqual([
     {
-      view: 'timeSeries',
-      region: { Ref: 'AWS::Region' },
-      metrics,
-      yAxis: {},
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        region: { Ref: 'AWS::Region' },
+        metrics,
+        yAxis: {},
+      },
     },
-  }]);
+  ]);
 }

@@ -6,15 +6,7 @@ import * as iam from '../../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
-import {
-  CfnResource,
-  ContextProvider,
-  IResource,
-  Lazy,
-  Resource,
-  Stack,
-  Token,
-} from '../../../core';
+import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
@@ -135,10 +127,7 @@ export abstract class BaseLoadBalancer extends Resource {
    * Queries the load balancer context provider for load balancer info.
    * @internal
    */
-  protected static _queryContextProvider(
-    scope: Construct,
-    options: LoadBalancerQueryContextProviderOptions
-  ) {
+  protected static _queryContextProvider(scope: Construct, options: LoadBalancerQueryContextProviderOptions) {
     if (
       Token.isUnresolved(options.userOptions.loadBalancerArn) ||
       Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
@@ -234,22 +223,14 @@ export abstract class BaseLoadBalancer extends Resource {
    */
   private readonly attributes: Attributes = {};
 
-  constructor(
-    scope: Construct,
-    id: string,
-    baseProps: BaseLoadBalancerProps,
-    additionalProps: any
-  ) {
+  constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
     super(scope, id, {
       physicalName: baseProps.loadBalancerName,
     });
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
-    const vpcSubnets = ifUndefined(
-      baseProps.vpcSubnets,
-      internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {}
-    );
+    const vpcSubnets = ifUndefined(baseProps.vpcSubnets, internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {});
     const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
@@ -267,26 +248,17 @@ export abstract class BaseLoadBalancer extends Resource {
       name: this.physicalName,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: Lazy.any(
-        { produce: () => renderAttributes(this.attributes) },
-        { omitEmptyArray: true }
-      ),
+      loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
       ...additionalProps,
     });
     if (internetFacing) {
       resource.node.addDependency(internetConnectivityEstablished);
     }
 
-    this.setAttribute(
-      'deletion_protection.enabled',
-      baseProps.deletionProtection ? 'true' : 'false'
-    );
+    this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
 
     if (baseProps.crossZoneEnabled !== undefined) {
-      this.setAttribute(
-        'load_balancing.cross_zone.enabled',
-        baseProps.crossZoneEnabled === true ? 'true' : 'false'
-      );
+      this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
     if (baseProps.denyAllIgwTraffic !== undefined) {
@@ -326,18 +298,14 @@ export abstract class BaseLoadBalancer extends Resource {
       new PolicyStatement({
         actions: ['s3:PutObject'],
         principals: [this.resourcePolicyPrincipal()],
-        resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
-        ],
+        resources: [bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`)],
       })
     );
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
         principals: [logsDeliveryServicePrincipal],
-        resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
-        ],
+        resources: [bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`)],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
         },
@@ -356,12 +324,7 @@ export abstract class BaseLoadBalancer extends Resource {
     // and https://github.com/aws/aws-cdk/issues/27928)
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
-    if (
-      lb &&
-      bucketPolicy &&
-      CfnResource.isCfnResource(lb) &&
-      CfnResource.isCfnResource(bucketPolicy)
-    ) {
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
       lb.addDependency(bucketPolicy);
     }
   }
@@ -414,9 +377,7 @@ export abstract class BaseLoadBalancer extends Resource {
         ret.push(`Load balancer name: "${loadBalancerName}" must not begin or end with a hyphen.`);
       }
       if (!/^[0-9a-z-]+$/i.test(loadBalancerName)) {
-        ret.push(
-          `Load balancer name: "${loadBalancerName}" must contain only alphanumeric characters or hyphens.`
-        );
+        ret.push(`Load balancer name: "${loadBalancerName}" must contain only alphanumeric characters or hyphens.`);
       }
     }
 

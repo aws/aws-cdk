@@ -289,11 +289,7 @@ export class Task extends State implements INextable {
     }
   }
 
-  private taskMetric(
-    prefix: string | undefined,
-    suffix: string,
-    props?: cloudwatch.MetricOptions
-  ): cloudwatch.Metric {
+  private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {
       throw new Error('This Task Resource does not expose metrics');
     }

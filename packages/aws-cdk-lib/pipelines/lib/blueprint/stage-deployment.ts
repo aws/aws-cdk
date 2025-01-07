@@ -56,9 +56,7 @@ export class StageDeployment {
     if (assembly.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
       // error will be thrown come deployment time.
-      throw new Error(
-        `The given Stage construct ('${stage.node.path}') should contain at least one Stack`
-      );
+      throw new Error(`The given Stage construct ('${stage.node.path}') should contain at least one Stack`);
     }
 
     const stepFromArtifact = new Map<CloudFormationStackArtifact, StackDeployment>();
@@ -76,15 +74,9 @@ export class StageDeployment {
         const stackArtifact = assembly.getStackArtifact(stackstep.stack.artifactId);
         const thisStep = stepFromArtifact.get(stackArtifact);
         if (!thisStep) {
-          throw new Error(
-            'Logic error: we just added a step for this artifact but it disappeared.'
-          );
+          throw new Error('Logic error: we just added a step for this artifact but it disappeared.');
         }
-        thisStep.addStackSteps(
-          stackstep.pre ?? [],
-          stackstep.changeSet ?? [],
-          stackstep.post ?? []
-        );
+        thisStep.addStackSteps(stackstep.pre ?? [], stackstep.changeSet ?? [], stackstep.post ?? []);
       }
     }
 
@@ -98,9 +90,7 @@ export class StageDeployment {
       for (const dep of stackDependencies) {
         const depStep = stepFromArtifact.get(dep);
         if (!depStep) {
-          throw new Error(
-            `Stack '${artifact.id}' depends on stack not found in same Stage: '${dep.id}'`
-          );
+          throw new Error(`Stack '${artifact.id}' depends on stack not found in same Stage: '${dep.id}'`);
         }
         thisStep.addStackDependency(depStep);
       }

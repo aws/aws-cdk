@@ -22,7 +22,7 @@ afterEach(() => {
 });
 
 test('read notification arns from artifact properties', () => {
-// GIVEN
+  // GIVEN
   const NOTIFICATION_ARNS = ['arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic'];
   builder.addArtifact('Stack', {
     ...stackBase,
@@ -77,7 +77,9 @@ test('stack tags get uppercased when written to Cloud Assembly', () => {
   const assembly = builder.buildAssembly();
 
   // THEN
-  const manifestStructure = JSON.parse(fs.readFileSync(path.join(assembly.directory, 'manifest.json'), { encoding: 'utf-8' }));
+  const manifestStructure = JSON.parse(
+    fs.readFileSync(path.join(assembly.directory, 'manifest.json'), { encoding: 'utf-8' })
+  );
   expect(manifestStructure.artifacts.Stack.metadata['/Stack']).toEqual([
     {
       type: 'aws:cdk:stack-tags',
@@ -111,7 +113,9 @@ test('already uppercased stack tags get left alone', () => {
   const assembly = builder.buildAssembly();
 
   // THEN
-  const manifestStructure = JSON.parse(fs.readFileSync(path.join(assembly.directory, 'manifest.json'), { encoding: 'utf-8' }));
+  const manifestStructure = JSON.parse(
+    fs.readFileSync(path.join(assembly.directory, 'manifest.json'), { encoding: 'utf-8' })
+  );
   expect(manifestStructure.artifacts.Stack.metadata['/Stack']).toEqual([
     {
       type: 'aws:cdk:stack-tags',

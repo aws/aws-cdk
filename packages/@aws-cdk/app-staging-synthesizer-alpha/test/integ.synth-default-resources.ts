@@ -56,9 +56,7 @@ new lambda.Function(stack, 'lambda-ecr-two', {
   runtime: lambda.Runtime.FROM_IMAGE,
 });
 
-const defaultStagingStack = app.node.tryFindChild(
-  `StagingStack-${APP_ID_MAX}-ACCOUNT-REGION`
-) as Stack;
+const defaultStagingStack = app.node.tryFindChild(`StagingStack-${APP_ID_MAX}-ACCOUNT-REGION`) as Stack;
 if (!defaultStagingStack) {
   throw new Error('Default Staging Stack not found');
 }

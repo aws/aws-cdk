@@ -94,10 +94,7 @@ export class SecretValue extends Intrinsic {
    * @param secretId The ID or ARN of the secret
    * @param options Options
    */
-  public static secretsManager(
-    secretId: string,
-    options: SecretsManagerSecretOptions = {}
-  ): SecretValue {
+  public static secretsManager(secretId: string, options: SecretsManagerSecretOptions = {}): SecretValue {
     if (!secretId) {
       throw new Error('secretId cannot be empty');
     }
@@ -120,10 +117,7 @@ export class SecretValue extends Intrinsic {
       options.versionId || '',
     ];
 
-    const dyref = new CfnDynamicReference(
-      CfnDynamicReferenceService.SECRETS_MANAGER,
-      parts.join(':')
-    );
+    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
     return this.cfnDynamicReference(dyref);
   }
 
@@ -182,11 +176,7 @@ export class SecretValue extends Intrinsic {
    */
   public static resourceAttribute(attr: string) {
     const resolved = Tokenization.reverseCompleteString(attr);
-    if (
-      !resolved ||
-      !CfnReference.isCfnReference(resolved) ||
-      !CfnResource.isCfnResource(resolved.target)
-    ) {
+    if (!resolved || !CfnReference.isCfnReference(resolved) || !CfnResource.isCfnResource(resolved.target)) {
       throw new Error('SecretValue.resourceAttribute() must be used with a resource attribute');
     }
 

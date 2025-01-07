@@ -265,17 +265,11 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     super(scope, id);
 
     if (baseProps.deregistrationDelay !== undefined) {
-      this.setAttribute(
-        'deregistration_delay.timeout_seconds',
-        baseProps.deregistrationDelay.toSeconds().toString()
-      );
+      this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toSeconds().toString());
     }
 
     if (baseProps.crossZoneEnabled !== undefined) {
-      this.setAttribute(
-        'load_balancing.cross_zone.enabled',
-        baseProps.crossZoneEnabled === true ? 'true' : 'false'
-      );
+      this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
     this.healthCheck = baseProps.healthCheck || {};
@@ -291,8 +285,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       targetType: cdk.Lazy.string({ produce: () => this.targetType }),
       targets: cdk.Lazy.any({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
       vpcId: cdk.Lazy.string({
-        produce: () =>
-          this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined,
+        produce: () => (this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined),
       }),
 
       // HEALTH CHECK
@@ -314,8 +307,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       }),
       matcher: cdk.Lazy.any({
         produce: () =>
-          this.healthCheck?.healthyHttpCodes !== undefined ||
-          this.healthCheck?.healthyGrpcCodes !== undefined
+          this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined
             ? {
                 grpcCode: this.healthCheck.healthyGrpcCodes,
                 httpCode: this.healthCheck.healthyHttpCodes,
@@ -405,9 +397,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
         ret.push(`Target group name: "${targetGroupName}" must not begin or end with a hyphen.`);
       }
       if (!/^[0-9a-z-]+$/i.test(targetGroupName)) {
-        ret.push(
-          `Target group name: "${targetGroupName}" must contain only alphanumeric characters or hyphens.`
-        );
+        ret.push(`Target group name: "${targetGroupName}" must contain only alphanumeric characters or hyphens.`);
       }
     }
 

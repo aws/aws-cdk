@@ -52,10 +52,7 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(
-    statement: iam.PolicyStatement,
-    allowNoOp?: boolean
-  ): iam.AddToResourcePolicyResult;
+  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -160,10 +157,7 @@ abstract class KeyBase extends Resource implements IKey {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  public addToResourcePolicy(
-    statement: iam.PolicyStatement,
-    allowNoOp = true
-  ): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true): iam.AddToResourcePolicyResult {
     const stack = Stack.of(this);
 
     if (!this.policy) {
@@ -310,9 +304,7 @@ abstract class KeyBase extends Resource implements IKey {
     if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
       // if two compared stacks have the same region, this should return 'false' since it's from the
       // same region; if two stacks have different region, then compare env.region
-      return (
-        bucketStack.region !== identityStack.region && this.env.region !== identityStack.region
-      );
+      return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
     }
     return bucketStack.region !== identityStack.region;
   }
@@ -327,9 +319,7 @@ abstract class KeyBase extends Resource implements IKey {
     if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
       // if two compared stacks have the same region, this should return 'false' since it's from the
       // same region; if two stacks have different region, then compare env.account
-      return (
-        bucketStack.account !== identityStack.account && this.env.account !== identityStack.account
-      );
+      return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
     }
     return bucketStack.account !== identityStack.account;
   }
@@ -639,10 +629,7 @@ export class Key extends KeyBase {
       }
     }
 
-    const keyResourceName = Stack.of(scope).splitArn(
-      keyArn,
-      ArnFormat.SLASH_RESOURCE_NAME
-    ).resourceName;
+    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!keyResourceName) {
       throw new Error(
         `KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`
@@ -764,10 +751,7 @@ export class Key extends KeyBase {
 
     return new Import(
       attributes.keyId,
-      Arn.format(
-        { resource: 'key', service: 'kms', resourceName: attributes.keyId },
-        Stack.of(scope)
-      )
+      Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope))
     );
   }
 
@@ -850,9 +834,7 @@ export class Key extends KeyBase {
 
     if (props.rotationPeriod) {
       if (props.enableKeyRotation === false) {
-        throw new Error(
-          "'rotationPeriod' cannot be specified when 'enableKeyRotation' is disabled"
-        );
+        throw new Error("'rotationPeriod' cannot be specified when 'enableKeyRotation' is disabled");
       }
       if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
         throw new Error(
@@ -865,9 +847,7 @@ export class Key extends KeyBase {
       }
     }
 
-    const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(
-      cxapi.KMS_DEFAULT_KEY_POLICIES
-    );
+    const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
 
     this.policy = props.policy ?? new iam.PolicyDocument();
     if (defaultKeyPoliciesFeatureEnabled) {
@@ -895,9 +875,7 @@ export class Key extends KeyBase {
     if (props.pendingWindow) {
       pendingWindowInDays = props.pendingWindow.toDays();
       if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
-        throw new Error(
-          `'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`
-        );
+        throw new Error(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`);
       }
     }
 

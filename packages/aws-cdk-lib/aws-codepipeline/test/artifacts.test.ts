@@ -43,7 +43,9 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error).toMatch(/Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline/);
+      expect(error).toMatch(
+        /Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline/
+      );
     });
 
     test('with a name, when used as an input without being used as an output first - should fail validation', () => {
@@ -76,7 +78,9 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error).toMatch(/Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline/);
+      expect(error).toMatch(
+        /Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline/
+      );
     });
 
     test('without a name, when used as an output multiple times - should fail validation', () => {
@@ -109,7 +113,9 @@ describe('artifacts', () => {
       const errors = validate(stack);
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error).toMatch(/Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once./);
+      expect(error).toMatch(
+        /Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once./
+      );
     });
 
     test("an Action's output can be used as input for an Action in the same Stage with a higher runOrder", () => {
@@ -204,7 +210,9 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error).toMatch(/Stage 2 Action 2 \('Build'\/'build2'\) is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 \('Build'\/'build1'\)/);
+      expect(error).toMatch(
+        /Stage 2 Action 2 \('Build'\/'build2'\) is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 \('Build'\/'build1'\)/
+      );
     });
 
     test('without a name, sanitize the auto stage-action derived name', () => {
@@ -235,26 +243,22 @@ describe('artifacts', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source.@',
-            'Actions': [
+            Name: 'Source.@',
+            Actions: [
               {
-                'Name': 'source1',
-                'OutputArtifacts': [
-                  { 'Name': 'Artifact_Source_source1' },
-                ],
+                Name: 'source1',
+                OutputArtifacts: [{ Name: 'Artifact_Source_source1' }],
               },
             ],
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'build1',
-                'InputArtifacts': [
-                  { 'Name': 'Artifact_Source_source1' },
-                ],
+                Name: 'build1',
+                InputArtifacts: [{ Name: 'Artifact_Source_source1' }],
               },
             ],
           },

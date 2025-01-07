@@ -129,11 +129,7 @@ export class InstanceDrainHook extends Construct {
     // Restrict to the ECS Cluster
     fn.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: [
-          'ecs:ListContainerInstances',
-          'ecs:SubmitContainerStateChange',
-          'ecs:SubmitTaskStateChange',
-        ],
+        actions: ['ecs:ListContainerInstances', 'ecs:SubmitContainerStateChange', 'ecs:SubmitTaskStateChange'],
         resources: [props.cluster.clusterArn],
       })
     );

@@ -7,7 +7,9 @@ describe('condition', () => {
     const stack = new cdk.Stack();
     const param = new cdk.CfnParameter(stack, 'Param1', { type: 'String' });
     const cond1 = new cdk.CfnCondition(stack, 'Condition1', { expression: cdk.Fn.conditionEquals('a', 'b') });
-    const cond2 = new cdk.CfnCondition(stack, 'Condition2', { expression: cdk.Fn.conditionContains(['a', 'b', 'c'], 'c') });
+    const cond2 = new cdk.CfnCondition(stack, 'Condition2', {
+      expression: cdk.Fn.conditionContains(['a', 'b', 'c'], 'c'),
+    });
     const cond3 = new cdk.CfnCondition(stack, 'Condition3', { expression: cdk.Fn.conditionEquals(param, 'hello') });
 
     // WHEN
@@ -74,7 +76,7 @@ describe('condition', () => {
       cdk.Fn.conditionEquals('h', '8'),
       cdk.Fn.conditionEquals('i', '9'),
       cdk.Fn.conditionEquals('j', '10'),
-      cdk.Fn.conditionEquals('k', '11'),
+      cdk.Fn.conditionEquals('k', '11')
     );
 
     // WHEN
@@ -123,7 +125,7 @@ describe('condition', () => {
       cdk.Fn.conditionEquals('i', '9'),
       cdk.Fn.conditionEquals('j', '10'),
       cdk.Fn.conditionEquals('k', '11'),
-      cdk.Fn.conditionEquals('l', '12'),
+      cdk.Fn.conditionEquals('l', '12')
     );
 
     // WHEN
@@ -149,10 +151,7 @@ describe('condition', () => {
               ],
             },
             {
-              'Fn::And': [
-                { 'Fn::Equals': ['k', '11'] },
-                { 'Fn::Equals': ['l', '12'] },
-              ],
+              'Fn::And': [{ 'Fn::Equals': ['k', '11'] }, { 'Fn::Equals': ['l', '12'] }],
             },
           ],
         },
@@ -174,7 +173,7 @@ describe('condition', () => {
       cdk.Fn.conditionEquals('h', '8'),
       cdk.Fn.conditionEquals('i', '9'),
       cdk.Fn.conditionEquals('j', '10'),
-      cdk.Fn.conditionEquals('k', '11'),
+      cdk.Fn.conditionEquals('k', '11')
     );
 
     // WHEN
@@ -223,7 +222,7 @@ describe('condition', () => {
       cdk.Fn.conditionEquals('i', '9'),
       cdk.Fn.conditionEquals('j', '10'),
       cdk.Fn.conditionEquals('k', '11'),
-      cdk.Fn.conditionEquals('l', '12'),
+      cdk.Fn.conditionEquals('l', '12')
     );
 
     // WHEN
@@ -249,10 +248,7 @@ describe('condition', () => {
               ],
             },
             {
-              'Fn::Or': [
-                { 'Fn::Equals': ['k', '11'] },
-                { 'Fn::Equals': ['l', '12'] },
-              ],
+              'Fn::Or': [{ 'Fn::Equals': ['k', '11'] }, { 'Fn::Equals': ['l', '12'] }],
             },
           ],
         },

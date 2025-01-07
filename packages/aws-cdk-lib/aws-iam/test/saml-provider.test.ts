@@ -30,8 +30,11 @@ test('SAML provider name', () => {
 });
 
 test('throws with invalid name', () => {
-  expect(() => new SamlProvider(stack, 'Provider', {
-    name: 'invalid name',
-    metadataDocument: SamlMetadataDocument.fromXml('document'),
-  })).toThrow(/Invalid SAML provider name/);
+  expect(
+    () =>
+      new SamlProvider(stack, 'Provider', {
+        name: 'invalid name',
+        metadataDocument: SamlMetadataDocument.fromXml('document'),
+      })
+  ).toThrow(/Invalid SAML provider name/);
 });

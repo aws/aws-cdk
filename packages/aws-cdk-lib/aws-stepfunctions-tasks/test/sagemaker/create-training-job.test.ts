@@ -26,13 +26,19 @@ test('create basic training job', () => {
         channelName: 'train',
         dataSource: {
           s3DataSource: {
-            s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath'),
+            s3Location: tasks.S3Location.fromBucket(
+              s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'),
+              'mytrainpath'
+            ),
           },
         },
       },
     ],
     outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+      s3OutputLocation: tasks.S3Location.fromBucket(
+        s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'),
+        'myoutputpath'
+      ),
     },
   });
 
@@ -64,7 +70,10 @@ test('create basic training job', () => {
             S3DataSource: {
               S3DataType: 'S3Prefix',
               S3Uri: {
-                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']],
+                'Fn::Join': [
+                  '',
+                  ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath'],
+                ],
               },
             },
           },
@@ -72,7 +81,10 @@ test('create basic training job', () => {
       ],
       OutputDataConfig: {
         S3OutputPath: {
-          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
+          'Fn::Join': [
+            '',
+            ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath'],
+          ],
         },
       },
       ResourceConfig: {
@@ -97,7 +109,10 @@ test('create basic training job without inputDataConfig', () => {
       algorithmName: 'BlazingText',
     },
     outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+      s3OutputLocation: tasks.S3Location.fromBucket(
+        s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'),
+        'myoutputpath'
+      ),
     },
   });
 
@@ -124,7 +139,10 @@ test('create basic training job without inputDataConfig', () => {
       },
       OutputDataConfig: {
         S3OutputPath: {
-          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
+          'Fn::Join': [
+            '',
+            ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath'],
+          ],
         },
       },
       ResourceConfig: {
@@ -154,16 +172,24 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
           channelName: 'train',
           dataSource: {
             s3DataSource: {
-              s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath'),
+              s3Location: tasks.S3Location.fromBucket(
+                s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'),
+                'mytrainpath'
+              ),
             },
           },
         },
       ],
       outputDataConfig: {
-        s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+        s3OutputLocation: tasks.S3Location.fromBucket(
+          s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'),
+          'myoutputpath'
+        ),
       },
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/i);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/i
+  );
 });
 
 test('create complex training job', () => {
@@ -175,9 +201,7 @@ test('create complex training job', () => {
 
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-    managedPolicies: [
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
-    ],
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')],
   });
 
   const trainTask = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
@@ -189,7 +213,8 @@ test('create complex training job', () => {
       trainingInputMode: tasks.InputMode.FAST_FILE,
       metricDefinitions: [
         {
-          name: 'mymetric', regex: 'regex_pattern',
+          name: 'mymetric',
+          regex: 'regex_pattern',
         },
       ],
     },
@@ -207,7 +232,10 @@ test('create complex training job', () => {
           s3DataSource: {
             attributeNames: ['source-ref', 'class'],
             s3DataType: tasks.S3DataType.S3_PREFIX,
-            s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketA', 'mybucket'), 'mytrainpath'),
+            s3Location: tasks.S3Location.fromBucket(
+              s3.Bucket.fromBucketName(stack, 'InputBucketA', 'mybucket'),
+              'mytrainpath'
+            ),
           },
         },
       },
@@ -220,13 +248,19 @@ test('create complex training job', () => {
           s3DataSource: {
             attributeNames: ['source-ref', 'class'],
             s3DataType: tasks.S3DataType.S3_PREFIX,
-            s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketB', 'mybucket'), 'mytestpath'),
+            s3Location: tasks.S3Location.fromBucket(
+              s3.Bucket.fromBucketName(stack, 'InputBucketB', 'mybucket'),
+              'mytestpath'
+            ),
           },
         },
       },
     ],
     outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+      s3OutputLocation: tasks.S3Location.fromBucket(
+        s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'),
+        'myoutputpath'
+      ),
       encryptionKey: kmsKey,
     },
     resourceConfig: {
@@ -272,9 +306,7 @@ test('create complex training job', () => {
       AlgorithmSpecification: {
         TrainingInputMode: 'FastFile',
         AlgorithmName: 'BlazingText',
-        MetricDefinitions: [
-          { Name: 'mymetric', Regex: 'regex_pattern' },
-        ],
+        MetricDefinitions: [{ Name: 'mymetric', Regex: 'regex_pattern' }],
       },
       EnableNetworkIsolation: true,
       HyperParameters: {
@@ -291,7 +323,10 @@ test('create complex training job', () => {
               AttributeNames: ['source-ref', 'class'],
               S3DataType: 'S3Prefix',
               S3Uri: {
-                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']],
+                'Fn::Join': [
+                  '',
+                  ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath'],
+                ],
               },
             },
           },
@@ -306,7 +341,10 @@ test('create complex training job', () => {
               AttributeNames: ['source-ref', 'class'],
               S3DataType: 'S3Prefix',
               S3Uri: {
-                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytestpath']],
+                'Fn::Join': [
+                  '',
+                  ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytestpath'],
+                ],
               },
             },
           },
@@ -314,7 +352,10 @@ test('create complex training job', () => {
       ],
       OutputDataConfig: {
         S3OutputPath: {
-          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
+          'Fn::Join': [
+            '',
+            ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath'],
+          ],
         },
         KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
@@ -327,18 +368,13 @@ test('create complex training job', () => {
       StoppingCondition: {
         MaxRuntimeInSeconds: 3600,
       },
-      Tags: [
-        { Key: 'Project', Value: 'MyProject' },
-      ],
+      Tags: [{ Key: 'Project', Value: 'MyProject' }],
       VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['TrainSagemakerTrainJobSecurityGroup7C858EB9', 'GroupId'] },
           { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
         ],
-        Subnets: [
-          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-        ],
+        Subnets: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
       },
       Environment: {
         SOMEVAR: 'myvalue',
@@ -351,9 +387,7 @@ test('pass param to training job', () => {
   // WHEN
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-    managedPolicies: [
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
-    ],
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')],
   });
 
   const task = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {
@@ -375,7 +409,10 @@ test('pass param to training job', () => {
       },
     ],
     outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
+      s3OutputLocation: tasks.S3Location.fromBucket(
+        s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'),
+        'myoutputpath'
+      ),
     },
     resourceConfig: {
       instanceCount: 1,
@@ -405,33 +442,36 @@ test('pass param to training job', () => {
     End: true,
     Parameters: {
       'TrainingJobName.$': '$.JobName',
-      'RoleArn': { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
-      'AlgorithmSpecification': {
+      RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+      AlgorithmSpecification: {
         TrainingInputMode: 'File',
         AlgorithmName: 'BlazingText',
       },
-      'InputDataConfig': [
+      InputDataConfig: [
         {
           ChannelName: 'train',
           DataSource: {
             S3DataSource: {
-              'S3DataType': 'S3Prefix',
+              S3DataType: 'S3Prefix',
               'S3Uri.$': '$.S3Bucket',
             },
           },
         },
       ],
-      'OutputDataConfig': {
+      OutputDataConfig: {
         S3OutputPath: {
-          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
+          'Fn::Join': [
+            '',
+            ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath'],
+          ],
         },
       },
-      'ResourceConfig': {
-        'InstanceCount': 1,
+      ResourceConfig: {
+        InstanceCount: 1,
         'InstanceType.$': '$.TrainingJob.InstanceType',
-        'VolumeSizeInGB': 50,
+        VolumeSizeInGB: 50,
       },
-      'StoppingCondition': {
+      StoppingCondition: {
         MaxRuntimeInSeconds: 3600,
       },
     },
@@ -439,56 +479,63 @@ test('pass param to training job', () => {
 });
 
 test('Cannot create a SageMaker train task with both algorithm name and image name missing', () => {
-
-  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
-    trainingJobName: 'myTrainJob',
-    algorithmSpecification: {},
-    inputDataConfig: [
-      {
-        channelName: 'train',
-        dataSource: {
-          s3DataSource: {
-            s3DataType: tasks.S3DataType.S3_PREFIX,
-            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+  expect(
+    () =>
+      new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+        trainingJobName: 'myTrainJob',
+        algorithmSpecification: {},
+        inputDataConfig: [
+          {
+            channelName: 'train',
+            dataSource: {
+              s3DataSource: {
+                s3DataType: tasks.S3DataType.S3_PREFIX,
+                s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+              },
+            },
           },
+        ],
+        outputDataConfig: {
+          s3OutputLocation: tasks.S3Location.fromBucket(
+            s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'),
+            'myoutputpath/'
+          ),
         },
-      },
-    ],
-    outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
-    },
-  }))
-    .toThrow(/Must define either an algorithm name or training image URI in the algorithm specification/);
+      })
+  ).toThrow(/Must define either an algorithm name or training image URI in the algorithm specification/);
 });
 
 test('Cannot create a SageMaker train task with both algorithm name and image name defined', () => {
-
-  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
-    trainingJobName: 'myTrainJob',
-    algorithmSpecification: {
-      algorithmName: 'BlazingText',
-      trainingImage: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Training.imageName')),
-    },
-    inputDataConfig: [
-      {
-        channelName: 'train',
-        dataSource: {
-          s3DataSource: {
-            s3DataType: tasks.S3DataType.S3_PREFIX,
-            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
-          },
+  expect(
+    () =>
+      new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+        trainingJobName: 'myTrainJob',
+        algorithmSpecification: {
+          algorithmName: 'BlazingText',
+          trainingImage: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Training.imageName')),
         },
-      },
-    ],
-    outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
-    },
-  }))
-    .toThrow(/Cannot define both an algorithm name and training image URI in the algorithm specification/);
+        inputDataConfig: [
+          {
+            channelName: 'train',
+            dataSource: {
+              s3DataSource: {
+                s3DataType: tasks.S3DataType.S3_PREFIX,
+                s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+              },
+            },
+          },
+        ],
+        outputDataConfig: {
+          s3OutputLocation: tasks.S3Location.fromBucket(
+            s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'),
+            'myoutputpath/'
+          ),
+        },
+      })
+  ).toThrow(/Cannot define both an algorithm name and training image URI in the algorithm specification/);
 });
 
 test('create a SageMaker train task with trainingImage', () => {
-
   const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -506,7 +553,10 @@ test('create a SageMaker train task with trainingImage', () => {
       },
     ],
     outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+      s3OutputLocation: tasks.S3Location.fromBucket(
+        s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'),
+        'myoutputpath/'
+      ),
     },
   });
 
@@ -515,14 +565,13 @@ test('create a SageMaker train task with trainingImage', () => {
     Parameters: {
       AlgorithmSpecification: {
         'TrainingImage.$': '$.Training.imageName',
-        'TrainingInputMode': 'File',
+        TrainingInputMode: 'File',
       },
     },
   });
 });
 
 test('create a SageMaker train task with image URI algorithmName', () => {
-
   const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -540,7 +589,10 @@ test('create a SageMaker train task with image URI algorithmName', () => {
       },
     ],
     outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
+      s3OutputLocation: tasks.S3Location.fromBucket(
+        s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'),
+        'myoutputpath/'
+      ),
     },
   });
 
@@ -555,51 +607,59 @@ test('create a SageMaker train task with image URI algorithmName', () => {
 });
 
 test('Cannot create a SageMaker train task when algorithmName length is 171 or more', () => {
-
-  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
-    trainingJobName: 'myTrainJob',
-    algorithmSpecification: {
-      algorithmName: 'a'.repeat(171), // maximum length is 170
-    },
-    inputDataConfig: [
-      {
-        channelName: 'train',
-        dataSource: {
-          s3DataSource: {
-            s3DataType: tasks.S3DataType.S3_PREFIX,
-            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
-          },
+  expect(
+    () =>
+      new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+        trainingJobName: 'myTrainJob',
+        algorithmSpecification: {
+          algorithmName: 'a'.repeat(171), // maximum length is 170
         },
-      },
-    ],
-    outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
-    },
-  }))
-    .toThrow(/Algorithm name length must be between 1 and 170, but got 171/);
+        inputDataConfig: [
+          {
+            channelName: 'train',
+            dataSource: {
+              s3DataSource: {
+                s3DataType: tasks.S3DataType.S3_PREFIX,
+                s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+              },
+            },
+          },
+        ],
+        outputDataConfig: {
+          s3OutputLocation: tasks.S3Location.fromBucket(
+            s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'),
+            'myoutputpath/'
+          ),
+        },
+      })
+  ).toThrow(/Algorithm name length must be between 1 and 170, but got 171/);
 });
 
 test('Cannot create a SageMaker train task with incorrect algorithmName', () => {
-
-  expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
-    trainingJobName: 'myTrainJob',
-    algorithmSpecification: {
-      algorithmName: 'Blazing_Text', // underscores are not allowed
-    },
-    inputDataConfig: [
-      {
-        channelName: 'train',
-        dataSource: {
-          s3DataSource: {
-            s3DataType: tasks.S3DataType.S3_PREFIX,
-            s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
-          },
+  expect(
+    () =>
+      new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
+        trainingJobName: 'myTrainJob',
+        algorithmSpecification: {
+          algorithmName: 'Blazing_Text', // underscores are not allowed
         },
-      },
-    ],
-    outputDataConfig: {
-      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
-    },
-  }))
-    .toThrow(/Expected algorithm name to match pattern/);
+        inputDataConfig: [
+          {
+            channelName: 'train',
+            dataSource: {
+              s3DataSource: {
+                s3DataType: tasks.S3DataType.S3_PREFIX,
+                s3Location: tasks.S3Location.fromJsonExpression('$.S3Bucket'),
+              },
+            },
+          },
+        ],
+        outputDataConfig: {
+          s3OutputLocation: tasks.S3Location.fromBucket(
+            s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'),
+            'myoutputpath/'
+          ),
+        },
+      })
+  ).toThrow(/Expected algorithm name to match pattern/);
 });

@@ -26,7 +26,7 @@ afterEach(() => invokeFunctionSpy.mockClear());
 test('async flow: isComplete returns true only after 3 times', async () => {
   let isCompleteCalls = 0;
 
-  mocks.onEventImplMock = async event => {
+  mocks.onEventImplMock = async (event) => {
     expect(event.RequestType).toEqual('Create');
     expect(event.ResourceProperties).toStrictEqual(MOCK_PROPS);
     expect(event.PhysicalResourceId).toBeUndefined(); // physical ID in CREATE
@@ -38,7 +38,7 @@ test('async flow: isComplete returns true only after 3 times', async () => {
     };
   };
 
-  mocks.isCompleteImplMock = async event => {
+  mocks.isCompleteImplMock = async (event) => {
     isCompleteCalls++;
     expect((event as any).ArbitraryField).toEqual(1234); // any field is passed through
     expect(event.PhysicalResourceId).toEqual(MOCK_PHYSICAL_ID); // physical ID returned from onEvent is passed to "isComplete"
@@ -80,7 +80,9 @@ test('async flow: isComplete returns true only after 3 times', async () => {
 test('isComplete throws in the first invocation', async () => {
   // GIVEN
   mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
-  mocks.isCompleteImplMock = async () => { throw new Error('Some failure'); };
+  mocks.isCompleteImplMock = async () => {
+    throw new Error('Some failure');
+  };
 
   // WHEN
   await simulateEvent({
@@ -93,7 +95,9 @@ test('isComplete throws in the first invocation', async () => {
 
 test('fails gracefully if "onEvent" throws an error', async () => {
   // GIVEN
-  mocks.onEventImplMock = async () => { throw new Error('error thrown during onEvent'); };
+  mocks.onEventImplMock = async () => {
+    throw new Error('error thrown during onEvent');
+  };
   mocks.isCompleteImplMock = async () => ({ IsComplete: true });
 
   // WHEN
@@ -107,9 +111,7 @@ test('fails gracefully if "onEvent" throws an error', async () => {
 });
 
 describe('PhysicalResourceId', () => {
-
   describe('if not omitted from onEvent result', () => {
-
     it('defaults to RequestId for CREATE', async () => {
       // WHEN
       mocks.onEventImplMock = async () => undefined;
@@ -202,9 +204,10 @@ describe('PhysicalResourceId', () => {
 
     // THEN
     expectNoWaiter();
-    expectCloudFormationFailed('DELETE: cannot change the physical resource ID from "CurrentPhysicalId" to "NewPhysicalId" during deletion');
+    expectCloudFormationFailed(
+      'DELETE: cannot change the physical resource ID from "CurrentPhysicalId" to "NewPhysicalId" during deletion'
+    );
   });
-
 });
 
 test('isComplete always returns "false" and then a timeout occurs', async () => {
@@ -318,10 +321,11 @@ test('fails if user handler returns a non-object response', async () => {
 });
 
 describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
-
   it('FAILED response sets PhysicalResourceId to a special marker', async () => {
     // WHEN
-    mocks.onEventImplMock = async () => { throw new Error('CREATE FAILED'); };
+    mocks.onEventImplMock = async () => {
+      throw new Error('CREATE FAILED');
+    };
 
     // THEN
     await simulateEvent({
@@ -346,7 +350,6 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
     // THEN
     expectCloudFormationSuccess();
   });
-
 });
 
 describe('ResponseURL is passed to user function', () => {
@@ -361,9 +364,11 @@ describe('ResponseURL is passed to user function', () => {
 
     // THEN
     expect(invokeFunctionSpy).toHaveBeenCalledTimes(1);
-    expect(invokeFunctionSpy).toHaveBeenCalledWith(expect.objectContaining({
-      Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
-    }));
+    expect(invokeFunctionSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
+      })
+    );
   });
 
   test('for isComplete', async () => {
@@ -378,9 +383,11 @@ describe('ResponseURL is passed to user function', () => {
 
     // THEN
     expect(invokeFunctionSpy).toHaveBeenCalledTimes(2);
-    expect(invokeFunctionSpy).toHaveBeenLastCalledWith(expect.objectContaining({
-      Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
-    }));
+    expect(invokeFunctionSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        Payload: expect.stringContaining(`"ResponseURL":"${mocks.MOCK_REQUEST.ResponseURL}"`),
+      })
+    );
   });
 });
 
@@ -435,7 +442,10 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
   }
 }
 
-function expectCloudFormationFailed(expectedReason: string, resp?: Partial<AWSLambda.CloudFormationCustomResourceResponse>) {
+function expectCloudFormationFailed(
+  expectedReason: string,
+  resp?: Partial<AWSLambda.CloudFormationCustomResourceResponse>
+) {
   expectCloudFormationResponse({
     Status: 'FAILED',
     Reason: expectedReason,

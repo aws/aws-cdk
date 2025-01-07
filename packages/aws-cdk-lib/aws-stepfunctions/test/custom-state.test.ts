@@ -44,36 +44,36 @@ describe('Custom State', () => {
     // WHEN
     const definition = new sfn.CustomState(stack, 'Custom', {
       stateJson,
-    }).next(new sfn.Pass(stack, 'MyPass', {
-      stateName: 'my-pass-state',
-    }));
+    }).next(
+      new sfn.Pass(stack, 'MyPass', {
+        stateName: 'my-pass-state',
+      })
+    );
 
     // THEN
-    expect(render(stack, definition)).toStrictEqual(
-      {
-        StartAt: 'Custom',
-        States: {
-          'Custom': {
-            Next: 'my-pass-state',
-            Type: 'Task',
-            Resource: 'arn:aws:states:::dynamodb:putItem',
-            Parameters: {
-              TableName: 'MyTable',
-              Item: {
-                id: {
-                  S: 'MyEntry',
-                },
+    expect(render(stack, definition)).toStrictEqual({
+      StartAt: 'Custom',
+      States: {
+        Custom: {
+          Next: 'my-pass-state',
+          Type: 'Task',
+          Resource: 'arn:aws:states:::dynamodb:putItem',
+          Parameters: {
+            TableName: 'MyTable',
+            Item: {
+              id: {
+                S: 'MyEntry',
               },
             },
-            ResultPath: null,
           },
-          'my-pass-state': {
-            Type: 'Pass',
-            End: true,
-          },
+          ResultPath: null,
+        },
+        'my-pass-state': {
+          Type: 'Pass',
+          End: true,
         },
       },
-    );
+    });
   });
 
   test('can add a catch state', () => {
@@ -91,36 +91,36 @@ describe('Custom State', () => {
     custom.addCatch(failure);
 
     // THEN
-    expect(render(stack, chain)).toStrictEqual(
-      {
-        StartAt: 'Custom',
-        States: {
-          Custom: {
-            Type: 'Task',
-            Resource: 'arn:aws:states:::dynamodb:putItem',
-            Parameters: {
-              TableName: 'MyTable',
-              Item: {
-                id: {
-                  S: 'MyEntry',
-                },
+    expect(render(stack, chain)).toStrictEqual({
+      StartAt: 'Custom',
+      States: {
+        Custom: {
+          Type: 'Task',
+          Resource: 'arn:aws:states:::dynamodb:putItem',
+          Parameters: {
+            TableName: 'MyTable',
+            Item: {
+              id: {
+                S: 'MyEntry',
               },
             },
-            ResultPath: null,
-            Catch: [{
+          },
+          ResultPath: null,
+          Catch: [
+            {
               ErrorEquals: ['States.ALL'],
               Next: 'failed',
-            }],
-            End: true,
-          },
-          failed: {
-            Type: 'Fail',
-            Error: 'DidNotWork',
-            Cause: 'We got stuck',
-          },
+            },
+          ],
+          End: true,
+        },
+        failed: {
+          Type: 'Fail',
+          Error: 'DidNotWork',
+          Cause: 'We got stuck',
         },
       },
-    );
+    });
   });
 
   test('can add a retry state', () => {
@@ -138,32 +138,32 @@ describe('Custom State', () => {
     });
 
     // THEN
-    expect(render(stack, chain)).toStrictEqual(
-      {
-        StartAt: 'Custom',
-        States: {
-          Custom: {
-            Type: 'Task',
-            Resource: 'arn:aws:states:::dynamodb:putItem',
-            Parameters: {
-              TableName: 'MyTable',
-              Item: {
-                id: {
-                  S: 'MyEntry',
-                },
+    expect(render(stack, chain)).toStrictEqual({
+      StartAt: 'Custom',
+      States: {
+        Custom: {
+          Type: 'Task',
+          Resource: 'arn:aws:states:::dynamodb:putItem',
+          Parameters: {
+            TableName: 'MyTable',
+            Item: {
+              id: {
+                S: 'MyEntry',
               },
             },
-            ResultPath: null,
-            Retry: [{
+          },
+          ResultPath: null,
+          Retry: [
+            {
               ErrorEquals: ['States.ALL'],
               IntervalSeconds: 10,
               MaxAttempts: 5,
-            }],
-            End: true,
-          },
+            },
+          ],
+          End: true,
         },
       },
-    );
+    });
   });
 
   test('respect the Retry field in the stateJson', () => {
@@ -205,44 +205,42 @@ describe('Custom State', () => {
     });
 
     // THEN
-    expect(render(stack, chain)).toStrictEqual(
-      {
-        StartAt: 'Custom',
-        States: {
-          Custom: {
-            Type: 'Task',
-            Resource: 'arn:aws:states:::dynamodb:putItem',
-            Parameters: {
-              TableName: 'MyTable',
-              Item: {
-                id: {
-                  S: 'MyEntry',
-                },
+    expect(render(stack, chain)).toStrictEqual({
+      StartAt: 'Custom',
+      States: {
+        Custom: {
+          Type: 'Task',
+          Resource: 'arn:aws:states:::dynamodb:putItem',
+          Parameters: {
+            TableName: 'MyTable',
+            Item: {
+              id: {
+                S: 'MyEntry',
               },
             },
-            ResultPath: null,
-            Retry: [
-              {
-                ErrorEquals: ['States.Permissions'],
-                IntervalSeconds: 10,
-                MaxAttempts: 5,
-              },
-              {
-                ErrorEquals: ['States.Timeout'],
-                IntervalSeconds: 20,
-                MaxAttempts: 2,
-              },
-              {
-                ErrorEquals: ['States.ResultPathMatchFailure'],
-                IntervalSeconds: 20,
-                MaxAttempts: 2,
-              },
-            ],
-            End: true,
           },
+          ResultPath: null,
+          Retry: [
+            {
+              ErrorEquals: ['States.Permissions'],
+              IntervalSeconds: 10,
+              MaxAttempts: 5,
+            },
+            {
+              ErrorEquals: ['States.Timeout'],
+              IntervalSeconds: 20,
+              MaxAttempts: 2,
+            },
+            {
+              ErrorEquals: ['States.ResultPathMatchFailure'],
+              IntervalSeconds: 20,
+              MaxAttempts: 2,
+            },
+          ],
+          End: true,
         },
       },
-    );
+    });
   });
 
   test('expect retry to not fail when specifying strategy inline', () => {
@@ -277,39 +275,37 @@ describe('Custom State', () => {
     const chain = sfn.Chain.start(custom);
 
     // THEN
-    expect(render(stack, chain)).toStrictEqual(
-      {
-        StartAt: 'Custom',
-        States: {
-          Custom: {
-            Type: 'Task',
-            Resource: 'arn:aws:states:::dynamodb:putItem',
-            Parameters: {
-              TableName: 'MyTable',
-              Item: {
-                id: {
-                  S: 'MyEntry',
-                },
+    expect(render(stack, chain)).toStrictEqual({
+      StartAt: 'Custom',
+      States: {
+        Custom: {
+          Type: 'Task',
+          Resource: 'arn:aws:states:::dynamodb:putItem',
+          Parameters: {
+            TableName: 'MyTable',
+            Item: {
+              id: {
+                S: 'MyEntry',
               },
             },
-            ResultPath: null,
-            Retry: [
-              {
-                ErrorEquals: [
-                  'Lambda.ServiceException',
-                  'Lambda.AWSLambdaException',
-                  'Lambda.SdkClientException',
-                  'Lambda.TooManyRequestsException',
-                ],
-                IntervalSeconds: 20,
-                MaxAttempts: 2,
-              },
-            ],
-            End: true,
           },
+          ResultPath: null,
+          Retry: [
+            {
+              ErrorEquals: [
+                'Lambda.ServiceException',
+                'Lambda.AWSLambdaException',
+                'Lambda.SdkClientException',
+                'Lambda.TooManyRequestsException',
+              ],
+              IntervalSeconds: 20,
+              MaxAttempts: 2,
+            },
+          ],
+          End: true,
         },
       },
-    );
+    });
   });
 
   test('expect retry to merge when specifying strategy inline and through construct', () => {
@@ -317,43 +313,43 @@ describe('Custom State', () => {
     const custom = new sfn.CustomState(stack, 'Custom', {
       stateJson: {
         ...stateJson,
-        Retry: [{
-          ErrorEquals: ['States.TaskFailed'],
-        }],
+        Retry: [
+          {
+            ErrorEquals: ['States.TaskFailed'],
+          },
+        ],
       },
     }).addRetry({ errors: [Errors.TIMEOUT] });
     const chain = sfn.Chain.start(custom);
 
     // THEN
-    expect(render(stack, chain)).toStrictEqual(
-      {
-        StartAt: 'Custom',
-        States: {
-          Custom: {
-            Type: 'Task',
-            Resource: 'arn:aws:states:::dynamodb:putItem',
-            Parameters: {
-              TableName: 'MyTable',
-              Item: {
-                id: {
-                  S: 'MyEntry',
-                },
+    expect(render(stack, chain)).toStrictEqual({
+      StartAt: 'Custom',
+      States: {
+        Custom: {
+          Type: 'Task',
+          Resource: 'arn:aws:states:::dynamodb:putItem',
+          Parameters: {
+            TableName: 'MyTable',
+            Item: {
+              id: {
+                S: 'MyEntry',
               },
             },
-            ResultPath: null,
-            Retry: [
-              {
-                ErrorEquals: ['States.Timeout'],
-              },
-              {
-                ErrorEquals: ['States.TaskFailed'],
-              },
-            ],
-            End: true,
           },
+          ResultPath: null,
+          Retry: [
+            {
+              ErrorEquals: ['States.Timeout'],
+            },
+            {
+              ErrorEquals: ['States.TaskFailed'],
+            },
+          ],
+          End: true,
         },
       },
-    );
+    });
   });
 
   test('expect catch to not fail when specifying strategy inline', () => {
@@ -361,40 +357,42 @@ describe('Custom State', () => {
     const custom = new sfn.CustomState(stack, 'Custom', {
       stateJson: {
         ...stateJson,
-        Catch: [{
-          ErrorEquals: ['States.TaskFailed'],
-          Next: 'Failed',
-        }],
+        Catch: [
+          {
+            ErrorEquals: ['States.TaskFailed'],
+            Next: 'Failed',
+          },
+        ],
       },
     });
     const chain = sfn.Chain.start(custom);
 
     // THEN
-    expect(render(stack, chain)).toStrictEqual(
-      {
-        StartAt: 'Custom',
-        States: {
-          Custom: {
-            Type: 'Task',
-            Resource: 'arn:aws:states:::dynamodb:putItem',
-            Parameters: {
-              TableName: 'MyTable',
-              Item: {
-                id: {
-                  S: 'MyEntry',
-                },
+    expect(render(stack, chain)).toStrictEqual({
+      StartAt: 'Custom',
+      States: {
+        Custom: {
+          Type: 'Task',
+          Resource: 'arn:aws:states:::dynamodb:putItem',
+          Parameters: {
+            TableName: 'MyTable',
+            Item: {
+              id: {
+                S: 'MyEntry',
               },
             },
-            ResultPath: null,
-            Catch: [{
+          },
+          ResultPath: null,
+          Catch: [
+            {
               ErrorEquals: ['States.TaskFailed'],
               Next: 'Failed',
-            }],
-            End: true,
-          },
+            },
+          ],
+          End: true,
         },
       },
-    );
+    });
   });
 
   test('expect catch to merge when specifying strategy inline and through construct', () => {
@@ -407,50 +405,51 @@ describe('Custom State', () => {
     const custom = new sfn.CustomState(stack, 'Custom', {
       stateJson: {
         ...stateJson,
-        Catch: [{
-          ErrorEquals: ['States.TaskFailed'],
-          Next: 'Failed',
-        }],
+        Catch: [
+          {
+            ErrorEquals: ['States.TaskFailed'],
+            Next: 'Failed',
+          },
+        ],
       },
     }).addCatch(failure, { errors: [Errors.TIMEOUT] });
     const chain = sfn.Chain.start(custom);
 
     // THEN
-    expect(render(stack, chain)).toStrictEqual(
-      {
-        StartAt: 'Custom',
-        States: {
-          Custom: {
-            Type: 'Task',
-            Resource: 'arn:aws:states:::dynamodb:putItem',
-            Parameters: {
-              TableName: 'MyTable',
-              Item: {
-                id: {
-                  S: 'MyEntry',
-                },
+    expect(render(stack, chain)).toStrictEqual({
+      StartAt: 'Custom',
+      States: {
+        Custom: {
+          Type: 'Task',
+          Resource: 'arn:aws:states:::dynamodb:putItem',
+          Parameters: {
+            TableName: 'MyTable',
+            Item: {
+              id: {
+                S: 'MyEntry',
               },
             },
-            ResultPath: null,
-            Catch: [
-              {
-                ErrorEquals: ['States.Timeout'],
-                Next: 'Failed',
-              }, {
-                ErrorEquals: ['States.TaskFailed'],
-                Next: 'Failed',
-              },
-            ],
-            End: true,
           },
-          Failed: {
-            Type: 'Fail',
-            Error: 'DidNotWork',
-            Cause: 'We got stuck',
-          },
+          ResultPath: null,
+          Catch: [
+            {
+              ErrorEquals: ['States.Timeout'],
+              Next: 'Failed',
+            },
+            {
+              ErrorEquals: ['States.TaskFailed'],
+              Next: 'Failed',
+            },
+          ],
+          End: true,
+        },
+        Failed: {
+          Type: 'Fail',
+          Error: 'DidNotWork',
+          Cause: 'We got stuck',
         },
       },
-    );
+    });
   });
 
   test('expect warning message to be emitted when retries specified both in stateJson and through addRetry()', () => {
@@ -466,9 +465,11 @@ describe('Custom State', () => {
             },
           },
         },
-        Retry: [{
-          ErrorEquals: ['States.TaskFailed'],
-        }],
+        Retry: [
+          {
+            ErrorEquals: ['States.TaskFailed'],
+          },
+        ],
       },
     });
 
@@ -483,7 +484,10 @@ describe('Custom State', () => {
       timeout: cdk.Duration.seconds(30),
     });
 
-    Annotations.fromStack(stack).hasWarning('/Default/my custom task', Match.stringLikeRegexp('CustomState constructs can configure state retries'));
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/my custom task',
+      Match.stringLikeRegexp('CustomState constructs can configure state retries')
+    );
   });
 
   test('expect warning message to be emitted when catchers specified both in stateJson and through addCatch()', () => {
@@ -520,6 +524,9 @@ describe('Custom State', () => {
       timeout: cdk.Duration.seconds(30),
     });
 
-    Annotations.fromStack(stack).hasWarning('/Default/my custom task', Match.stringLikeRegexp('CustomState constructs can configure state catchers'));
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/my custom task',
+      Match.stringLikeRegexp('CustomState constructs can configure state catchers')
+    );
   });
 });

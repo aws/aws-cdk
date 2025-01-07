@@ -90,10 +90,7 @@ export class RotationSchedule extends Resource {
   constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
 
-    if (
-      (!props.rotationLambda && !props.hostedRotation) ||
-      (props.rotationLambda && props.hostedRotation)
-    ) {
+    if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
       throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');
     }
 
@@ -107,9 +104,7 @@ export class RotationSchedule extends Resource {
         );
       }
 
-      const grant = props.rotationLambda.grantInvoke(
-        new iam.ServicePrincipal('secretsmanager.amazonaws.com')
-      );
+      const grant = props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
       grant.applyBefore(this);
 
       props.rotationLambda.addToRolePolicy(
@@ -120,11 +115,7 @@ export class RotationSchedule extends Resource {
             'secretsmanager:PutSecretValue',
             'secretsmanager:UpdateSecretVersionStage',
           ],
-          resources: [
-            props.secret.secretFullArn
-              ? props.secret.secretFullArn
-              : `${props.secret.secretArn}-??????`,
-          ],
+          resources: [props.secret.secretFullArn ? props.secret.secretFullArn : `${props.secret.secretArn}-??????`],
         })
       );
       props.rotationLambda.addToRolePolicy(
@@ -247,11 +238,7 @@ export class HostedRotation implements ec2.IConnectable {
 
   /** PostgreSQL Multi User */
   public static postgreSqlMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation(
-      HostedRotationType.POSTGRESQL_MULTI_USER,
-      options,
-      options.masterSecret
-    );
+    return new HostedRotation(HostedRotationType.POSTGRESQL_MULTI_USER, options, options.masterSecret);
   }
 
   /** Oracle Single User */
@@ -281,11 +268,7 @@ export class HostedRotation implements ec2.IConnectable {
 
   /** SQL Server Multi User */
   public static sqlServerMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation(
-      HostedRotationType.SQLSERVER_MULTI_USER,
-      options,
-      options.masterSecret
-    );
+    return new HostedRotation(HostedRotationType.SQLSERVER_MULTI_USER, options, options.masterSecret);
   }
 
   /** Redshift Single User */
@@ -295,11 +278,7 @@ export class HostedRotation implements ec2.IConnectable {
 
   /** Redshift Multi User */
   public static redshiftMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation(
-      HostedRotationType.REDSHIFT_MULTI_USER,
-      options,
-      options.masterSecret
-    );
+    return new HostedRotation(HostedRotationType.REDSHIFT_MULTI_USER, options, options.masterSecret);
   }
 
   /** MongoDB Single User */
@@ -368,9 +347,7 @@ export class HostedRotation implements ec2.IConnectable {
       masterSecretArn: masterSecretArn,
       masterSecretKmsKeyArn: this.masterSecret?.encryptionKey?.keyArn,
       rotationLambdaName: this.props.functionName,
-      vpcSecurityGroupIds: this._connections?.securityGroups
-        ?.map((s) => s.securityGroupId)
-        .join(','),
+      vpcSecurityGroupIds: this._connections?.securityGroups?.map((s) => s.securityGroupId).join(','),
       vpcSubnetIds: this.props.vpc?.selectSubnets(this.props.vpcSubnets).subnetIds.join(','),
       excludeCharacters: this.props.excludeCharacters ?? defaultExcludeCharacters,
     };
@@ -386,9 +363,7 @@ export class HostedRotation implements ec2.IConnectable {
 
     // If we are in a vpc and bind() has been called _connections should be defined
     if (!this._connections) {
-      throw new Error(
-        'Cannot use connections for a hosted rotation that has not been bound to a secret'
-      );
+      throw new Error('Cannot use connections for a hosted rotation that has not been bound to a secret');
     }
 
     return this._connections;
@@ -409,10 +384,7 @@ export class HostedRotationType {
   public static readonly POSTGRESQL_SINGLE_USER = new HostedRotationType('PostgreSQLSingleUser');
 
   /** PostgreSQL Multi User */
-  public static readonly POSTGRESQL_MULTI_USER = new HostedRotationType(
-    'PostgreSQLMultiUser',
-    true
-  );
+  public static readonly POSTGRESQL_MULTI_USER = new HostedRotationType('PostgreSQLMultiUser', true);
 
   /** Oracle Single User */
   public static readonly ORACLE_SINGLE_USER = new HostedRotationType('OracleSingleUser');

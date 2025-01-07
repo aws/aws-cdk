@@ -42,24 +42,24 @@ describe('Github source action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
+            Name: 'Source',
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'Build',
-                'Configuration': {
-                  'EnvironmentVariables': '[{"name":"CommitUrl","type":"PLAINTEXT","value":"#{Source_Source_NS.CommitUrl}"}]',
+                Name: 'Build',
+                Configuration: {
+                  EnvironmentVariables:
+                    '[{"name":"CommitUrl","type":"PLAINTEXT","value":"#{Source_Source_NS.CommitUrl}"}]',
                 },
               },
             ],
           },
         ],
       });
-
     });
 
     test('always renders the customer-supplied namespace, even if none of the variables are used', () => {
@@ -95,21 +95,19 @@ describe('Github source action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
-            'Actions': [
+            Name: 'Source',
+            Actions: [
               {
-                'Name': 'Source',
-                'Namespace': 'MyNamespace',
+                Name: 'Source',
+                Namespace: 'MyNamespace',
               },
             ],
           },
-          {
-          },
+          {},
         ],
       });
-
     });
 
     test('fails if a variable from an action without a namespace set that is not part of a pipeline is referenced', () => {
@@ -128,13 +126,15 @@ describe('Github source action', () => {
         stages: [
           {
             stageName: 'Source',
-            actions: [new cpactions.GitHubSourceAction({
-              actionName: 'Source1',
-              owner: 'aws',
-              repo: 'aws-cdk',
-              output: sourceOutput,
-              oauthToken: SecretValue.unsafePlainText('secret'),
-            })],
+            actions: [
+              new cpactions.GitHubSourceAction({
+                actionName: 'Source1',
+                owner: 'aws',
+                repo: 'aws-cdk',
+                output: sourceOutput,
+                oauthToken: SecretValue.unsafePlainText('secret'),
+              }),
+            ],
           },
           {
             stageName: 'Build',
@@ -144,7 +144,7 @@ describe('Github source action', () => {
                 project: new codebuild.PipelineProject(stack, 'MyProject'),
                 input: sourceOutput,
                 environmentVariables: {
-                  'VAR1': { value: unusedSourceAction.variables.authorDate },
+                  VAR1: { value: unusedSourceAction.variables.authorDate },
                 },
               }),
             ],
@@ -155,7 +155,6 @@ describe('Github source action', () => {
       expect(() => {
         App.of(stack)!.synth();
       }).toThrow(/Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
-
     });
 
     test('fails if a variable from an action with a namespace set that is not part of a pipeline is referenced', () => {
@@ -175,13 +174,15 @@ describe('Github source action', () => {
         stages: [
           {
             stageName: 'Source',
-            actions: [new cpactions.GitHubSourceAction({
-              actionName: 'Source1',
-              owner: 'aws',
-              repo: 'aws-cdk',
-              output: sourceOutput,
-              oauthToken: SecretValue.unsafePlainText('secret'),
-            })],
+            actions: [
+              new cpactions.GitHubSourceAction({
+                actionName: 'Source1',
+                owner: 'aws',
+                repo: 'aws-cdk',
+                output: sourceOutput,
+                oauthToken: SecretValue.unsafePlainText('secret'),
+              }),
+            ],
           },
           {
             stageName: 'Build',
@@ -191,7 +192,7 @@ describe('Github source action', () => {
                 project: new codebuild.PipelineProject(stack, 'MyProject'),
                 input: sourceOutput,
                 environmentVariables: {
-                  'VAR1': { value: unusedSourceAction.variables.authorDate },
+                  VAR1: { value: unusedSourceAction.variables.authorDate },
                 },
               }),
             ],
@@ -202,7 +203,6 @@ describe('Github source action', () => {
       expect(() => {
         App.of(stack)!.synth();
       }).toThrow(/Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
-
     });
   });
 });

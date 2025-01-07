@@ -30,10 +30,7 @@ describe('serverless cluster from snapshot', () => {
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {
-            'Fn::GetAtt': [
-              'ServerlessDatabaseSecurityGroupB00D8C0F',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['ServerlessDatabaseSecurityGroupB00D8C0F', 'GroupId'],
           },
         ],
       },
@@ -60,11 +57,14 @@ describe('serverless cluster from snapshot', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       MasterUsername: Match.absent(),
       MasterUserPassword: {
-        'Fn::Join': ['', [
-          '{{resolve:secretsmanager:',
-          { Ref: 'ServerlessDatabaseSecret813910E98ee0a797cad8a68dbeb85f8698cdb5bb' },
-          ':SecretString:password::}}',
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            { Ref: 'ServerlessDatabaseSecret813910E98ee0a797cad8a68dbeb85f8698cdb5bb' },
+            ':SecretString:password::}}',
+          ],
+        ],
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
@@ -109,12 +109,15 @@ describe('serverless cluster from snapshot', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    expect(() => new ServerlessClusterFromSnapshot(stack, 'ServerlessDatabase', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      vpc,
-      snapshotIdentifier: 'mySnapshot',
-      credentials: { generatePassword: true },
-    })).toThrow(/`credentials` `username` must be specified when `generatePassword` is set to true/);
+    expect(
+      () =>
+        new ServerlessClusterFromSnapshot(stack, 'ServerlessDatabase', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          snapshotIdentifier: 'mySnapshot',
+          credentials: { generatePassword: true },
+        })
+    ).toThrow(/`credentials` `username` must be specified when `generatePassword` is set to true/);
   });
 
   test('can set a new snapshot password from an existing SecretValue', () => {

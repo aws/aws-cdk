@@ -70,8 +70,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
     private readonly lambdaFunction: lambda.IFunction,
     private readonly props: RunLambdaTaskProps = {}
   ) {
-    this.integrationPattern =
-      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -88,9 +87,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
       this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN &&
       !sfn.FieldUtils.containsTaskToken(props.payload)
     ) {
-      throw new Error(
-        'Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)'
-      );
+      throw new Error('Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)');
     }
   }
 
@@ -108,9 +105,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
       metricDimensions: { LambdaFunctionArn: this.lambdaFunction.functionArn },
       parameters: {
         FunctionName: this.lambdaFunction.functionName,
-        Payload: this.props.payload
-          ? this.props.payload.value
-          : sfn.TaskInput.fromJsonPathAt('$').value,
+        Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromJsonPathAt('$').value,
         InvocationType: this.props.invocationType,
         ClientContext: this.props.clientContext,
         Qualifier: this.props.qualifier,

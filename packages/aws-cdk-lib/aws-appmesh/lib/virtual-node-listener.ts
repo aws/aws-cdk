@@ -219,16 +219,11 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port })
-          .virtualNodeHealthCheck,
+        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualNodeHealthCheck,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
         tls: renderListenerTlsOptions(scope, this.tls),
-        outlierDetection: this.outlierDetection
-          ? this.renderOutlierDetection(this.outlierDetection)
-          : undefined,
-        connectionPool: this.connectionPool
-          ? this.renderConnectionPool(this.connectionPool)
-          : undefined,
+        outlierDetection: this.outlierDetection ? this.renderOutlierDetection(this.outlierDetection) : undefined,
+        connectionPool: this.connectionPool ? this.renderConnectionPool(this.connectionPool) : undefined,
       },
     };
   }
@@ -254,9 +249,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     };
   }
 
-  private renderOutlierDetection(
-    outlierDetection: OutlierDetection
-  ): CfnVirtualNode.OutlierDetectionProperty {
+  private renderOutlierDetection(outlierDetection: OutlierDetection): CfnVirtualNode.OutlierDetectionProperty {
     return {
       baseEjectionDuration: {
         unit: 'ms',
@@ -271,19 +264,13 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     };
   }
 
-  private renderConnectionPool(
-    connectionPool: ConnectionPoolConfig
-  ): CfnVirtualNode.VirtualNodeConnectionPoolProperty {
+  private renderConnectionPool(connectionPool: ConnectionPoolConfig): CfnVirtualNode.VirtualNodeConnectionPoolProperty {
     return {
       [this.protocol]: {
-        maxRequests:
-          connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
-        maxConnections:
-          connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
+        maxRequests: connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
+        maxConnections: connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
         maxPendingRequests:
-          connectionPool?.maxPendingRequests !== undefined
-            ? connectionPool.maxPendingRequests
-            : undefined,
+          connectionPool?.maxPendingRequests !== undefined ? connectionPool.maxPendingRequests : undefined,
       },
     };
   }

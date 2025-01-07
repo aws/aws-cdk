@@ -109,21 +109,13 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   /**
    * Imports a parameter group
    */
-  public static fromParameterGroupName(
-    scope: Construct,
-    id: string,
-    parameterGroupName: string
-  ): IParameterGroup {
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Resource implements IParameterGroup {
-      public bindToCluster(
-        _options: ParameterGroupClusterBindOptions
-      ): ParameterGroupClusterConfig {
+      public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
         return { parameterGroupName };
       }
 
-      public bindToInstance(
-        _options: ParameterGroupInstanceBindOptions
-      ): ParameterGroupInstanceConfig {
+      public bindToInstance(_options: ParameterGroupInstanceBindOptions): ParameterGroupInstanceConfig {
         return { parameterGroupName };
       }
 
@@ -149,9 +141,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
     const family = props.engine.parameterGroupFamily;
     if (!family) {
-      throw new Error(
-        "ParameterGroup cannot be used with an engine that doesn't specify a version"
-      );
+      throw new Error("ParameterGroup cannot be used with an engine that doesn't specify a version");
     }
     this.family = family;
     this.description = props.description;

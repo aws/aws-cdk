@@ -8,13 +8,14 @@ import * as entrypoint from '../lib/nodejs-entrypoint';
 
 describe('nodejs entrypoint', () => {
   describe('handler return value is sent back to cloudformation as a success response', () => {
-
     test('physical resource id (ref)', async () => {
       // GIVEN
       const createEvent = makeEvent({ RequestType: 'Create' });
 
       // WHEN
-      const { response } = await invokeHandler(createEvent, async _ => ({ PhysicalResourceId: 'returned-from-handler' }));
+      const { response } = await invokeHandler(createEvent, async (_) => ({
+        PhysicalResourceId: 'returned-from-handler',
+      }));
 
       // THEN
       expect(response.Status).toEqual('SUCCESS');
@@ -26,7 +27,7 @@ describe('nodejs entrypoint', () => {
       const createEvent = makeEvent({ RequestType: 'Create' });
 
       // WHEN
-      const { response } = await invokeHandler(createEvent, async _ => {
+      const { response } = await invokeHandler(createEvent, async (_) => {
         return {
           Data: {
             Attribute1: 'hello',
@@ -53,7 +54,7 @@ describe('nodejs entrypoint', () => {
       const createEvent = makeEvent({ RequestType: 'Create' });
 
       // WHEN
-      const { response } = await invokeHandler(createEvent, async _ => ({ NoEcho: true }));
+      const { response } = await invokeHandler(createEvent, async (_) => ({ NoEcho: true }));
 
       // THEN
       expect(response.Status).toEqual('SUCCESS');
@@ -65,7 +66,7 @@ describe('nodejs entrypoint', () => {
       const createEvent = makeEvent({ RequestType: 'Create' });
 
       // WHEN
-      const { response } = await invokeHandler(createEvent, async _ => ({ Reason: 'hello, reason' }));
+      const { response } = await invokeHandler(createEvent, async (_) => ({ Reason: 'hello, reason' }));
 
       // THEN
       expect(response.Status).toEqual('SUCCESS');
@@ -75,14 +76,14 @@ describe('nodejs entrypoint', () => {
     test('utf8 is supported', async () => {
       // GIVEN
       const createEvent = makeEvent({ RequestType: 'Create' });
-      const { request: emptyDataRequest } = await invokeHandler(createEvent, async _ => ({
+      const { request: emptyDataRequest } = await invokeHandler(createEvent, async (_) => ({
         Data: {
           Attribute: '', // 0 bytes
         },
       }));
 
       // WHEN
-      const { request: utf8DataRequest } = await invokeHandler(createEvent, async _ => ({
+      const { request: utf8DataRequest } = await invokeHandler(createEvent, async (_) => ({
         Data: {
           Attribute: 'ÅÄÖ', // 6 bytes
         },
@@ -100,7 +101,7 @@ describe('nodejs entrypoint', () => {
     const createEvent = makeEvent({ RequestType: 'Create' });
 
     // WHEN
-    const { response } = await invokeHandler(createEvent, async _ => {
+    const { response } = await invokeHandler(createEvent, async (_) => {
       throw new Error('this is an error');
     });
 
@@ -120,7 +121,7 @@ describe('nodejs entrypoint', () => {
     const event = makeEvent({ RequestType: 'Delete' });
 
     // WHEN
-    const { response } = await invokeHandler(event, async _ => ({
+    const { response } = await invokeHandler(event, async (_) => ({
       PhysicalResourceId: 'Changed',
     }));
 
@@ -143,7 +144,7 @@ describe('nodejs entrypoint', () => {
     });
 
     // WHEN
-    const { response } = await invokeHandler(event, async _ => {
+    const { response } = await invokeHandler(event, async (_) => {
       throw new Error('handler should not be called');
     });
 
@@ -159,7 +160,9 @@ describe('nodejs entrypoint', () => {
   });
 });
 
-function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): AWSLambda.CloudFormationCustomResourceEvent {
+function makeEvent(
+  req: Partial<AWSLambda.CloudFormationCustomResourceEvent>
+): AWSLambda.CloudFormationCustomResourceEvent {
   return {
     LogicalResourceId: '<LogicalResourceId>',
     RequestId: '<RequestId>',
@@ -212,4 +215,3 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
     request: actualRequest as https.RequestOptions,
   };
 }
-

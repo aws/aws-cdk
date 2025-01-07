@@ -53,11 +53,7 @@ export class EmrCancelStep extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn(
-        'elasticmapreduce',
-        'cancelStep',
-        sfn.IntegrationPattern.REQUEST_RESPONSE
-      ),
+      Resource: integrationResourceArn('elasticmapreduce', 'cancelStep', sfn.IntegrationPattern.REQUEST_RESPONSE),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         StepId: this.props.stepId,

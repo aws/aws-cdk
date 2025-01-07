@@ -15,9 +15,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
   role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-    managedPolicies: [
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
-    ],
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')],
   });
 });
 
@@ -93,7 +91,9 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
         s3OutputPath: 's3://outputbucket/prefix',
       },
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
+  );
 });
 
 test('create complex transform job', () => {
@@ -176,9 +176,7 @@ test('create complex transform job', () => {
         InstanceType: 'ml.p3.2xlarge',
         VolumeKmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
-      Tags: [
-        { Key: 'Project', Value: 'MyProject' },
-      ],
+      Tags: [{ Key: 'Project', Value: 'MyProject' }],
       MaxConcurrentTransforms: 3,
       MaxPayloadInMB: 100,
       Environment: {
@@ -231,7 +229,7 @@ test('pass param to transform job', () => {
     Parameters: {
       'TransformJobName.$': '$.TransformJobName',
       'ModelName.$': '$.ModelName',
-      'TransformInput': {
+      TransformInput: {
         DataSource: {
           S3DataSource: {
             S3Uri: 's3://inputbucket/prefix',
@@ -239,10 +237,10 @@ test('pass param to transform job', () => {
           },
         },
       },
-      'TransformOutput': {
+      TransformOutput: {
         S3OutputPath: 's3://outputbucket/prefix',
       },
-      'TransformResources': {
+      TransformResources: {
         InstanceCount: 1,
         InstanceType: 'ml.p3.2xlarge',
       },
@@ -302,7 +300,7 @@ test('create transform job with instance type supplied as JsonPath', () => {
         S3OutputPath: 's3://outputbucket/prefix',
       },
       TransformResources: {
-        'InstanceCount': 1,
+        InstanceCount: 1,
         'InstanceType.$': '$.InstanceType',
       },
     },
@@ -336,11 +334,7 @@ test('required permissions are granted to service role if RUN_JOB is supplied as
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'sagemaker:CreateTransformJob',
-            'sagemaker:DescribeTransformJob',
-            'sagemaker:StopTransformJob',
-          ],
+          Action: ['sagemaker:CreateTransformJob', 'sagemaker:DescribeTransformJob', 'sagemaker:StopTransformJob'],
           Effect: 'Allow',
           Resource: {
             'Fn::Join': [
@@ -377,18 +371,11 @@ test('required permissions are granted to service role if RUN_JOB is supplied as
           },
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'TransformTaskSagemakerTransformRoleEB12FAC2',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['TransformTaskSagemakerTransformRoleEB12FAC2', 'Arn'],
           },
         },
         {
-          Action: [
-            'events:PutTargets',
-            'events:PutRule',
-            'events:DescribeRule',
-          ],
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
           Effect: 'Allow',
           Resource: {
             'Fn::Join': [
@@ -468,11 +455,7 @@ test('required permissions are granted to service role if REQUEST_RESPONSE is su
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'sagemaker:CreateTransformJob',
-            'sagemaker:DescribeTransformJob',
-            'sagemaker:StopTransformJob',
-          ],
+          Action: ['sagemaker:CreateTransformJob', 'sagemaker:DescribeTransformJob', 'sagemaker:StopTransformJob'],
           Effect: 'Allow',
           Resource: {
             'Fn::Join': [
@@ -509,10 +492,7 @@ test('required permissions are granted to service role if REQUEST_RESPONSE is su
           },
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'TransformTaskSagemakerTransformRoleEB12FAC2',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['TransformTaskSagemakerTransformRoleEB12FAC2', 'Arn'],
           },
         },
       ],

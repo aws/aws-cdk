@@ -12,11 +12,7 @@ export abstract class ApiDefinition {
   /**
    * Creates an API definition from a specification file in an S3 bucket
    */
-  public static fromBucket(
-    bucket: s3.IBucket,
-    key: string,
-    objectVersion?: string
-  ): S3ApiDefinition {
+  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3ApiDefinition {
     return new S3ApiDefinition(bucket, key, objectVersion);
   }
 

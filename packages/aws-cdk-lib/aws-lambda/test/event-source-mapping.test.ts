@@ -38,35 +38,47 @@ describe('event source mapping', () => {
   });
 
   test('throws if maxBatchingWindow > 300 seconds', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      maxBatchingWindow: cdk.Duration.seconds(301),
-    })).toThrow(/maxBatchingWindow cannot be over 300 seconds/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          maxBatchingWindow: cdk.Duration.seconds(301),
+        })
+    ).toThrow(/maxBatchingWindow cannot be over 300 seconds/);
   });
 
   test('throws if maxConcurrency < 2 concurrent instances', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      maxConcurrency: 1,
-    })).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          maxConcurrency: 1,
+        })
+    ).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
 
   test('throws if maxConcurrency > 1000 concurrent instances', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      maxConcurrency: 1001,
-    })).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          maxConcurrency: 1001,
+        })
+    ).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
 
   test('does not throw if maxConcurrency is a token', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      maxConcurrency: cdk.Token.asNumber({ Ref: 'abc' }),
-    })).not.toThrow();
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          maxConcurrency: cdk.Token.asNumber({ Ref: 'abc' }),
+        })
+    ).not.toThrow();
   });
 
   test('maxConcurrency appears in stack', () => {
@@ -82,35 +94,47 @@ describe('event source mapping', () => {
   });
 
   test('throws if maxRecordAge is below 60 seconds', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      maxRecordAge: cdk.Duration.seconds(59),
-    })).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          maxRecordAge: cdk.Duration.seconds(59),
+        })
+    ).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
   });
 
   test('throws if maxRecordAge is over 7 days', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      maxRecordAge: cdk.Duration.seconds(604801),
-    })).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          maxRecordAge: cdk.Duration.seconds(604801),
+        })
+    ).toThrow(/maxRecordAge must be between 60 seconds and 7 days inclusive/);
   });
 
   test('throws if retryAttempts is negative', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      retryAttempts: -1,
-    })).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          retryAttempts: -1,
+        })
+    ).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got -1/);
   });
 
   test('throws if retryAttempts is over 10000', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      retryAttempts: 10001,
-    })).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got 10001/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          retryAttempts: 10001,
+        })
+    ).toThrow(/retryAttempts must be between 0 and 10000 inclusive, got 10001/);
   });
 
   test('accepts if retryAttempts is a token', () => {
@@ -122,19 +146,25 @@ describe('event source mapping', () => {
   });
 
   test('throws if parallelizationFactor is below 1', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      parallelizationFactor: 0,
-    })).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 0/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          parallelizationFactor: 0,
+        })
+    ).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 0/);
   });
 
   test('throws if parallelizationFactor is over 10', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      parallelizationFactor: 11,
-    })).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 11/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          parallelizationFactor: 11,
+        })
+    ).toThrow(/parallelizationFactor must be between 1 and 10 inclusive, got 11/);
   });
 
   test('accepts if parallelizationFactor is a token', () => {
@@ -147,11 +177,17 @@ describe('event source mapping', () => {
 
   test('import event source mapping', () => {
     const stack2 = new cdk.Stack(undefined, undefined, { stackName: 'test-stack' });
-    const imported = EventSourceMapping.fromEventSourceMappingId(stack2, 'imported', '14e0db71-5d35-4eb5-b481-8945cf9d10c2');
+    const imported = EventSourceMapping.fromEventSourceMappingId(
+      stack2,
+      'imported',
+      '14e0db71-5d35-4eb5-b481-8945cf9d10c2'
+    );
 
     expect(imported.eventSourceMappingId).toEqual('14e0db71-5d35-4eb5-b481-8945cf9d10c2');
     expect(imported.stack.stackName).toEqual('test-stack');
-    expect(imported.eventSourceMappingArn.endsWith(':event-source-mapping:14e0db71-5d35-4eb5-b481-8945cf9d10c2')).toBeTruthy();
+    expect(
+      imported.eventSourceMappingArn.endsWith(':event-source-mapping:14e0db71-5d35-4eb5-b481-8945cf9d10c2')
+    ).toBeTruthy();
   });
 
   test('accepts if kafkaTopic is a parameter', () => {
@@ -166,79 +202,113 @@ describe('event source mapping', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      Topics: [{
-        Ref: 'TopicNameParam',
-      }],
+      Topics: [
+        {
+          Ref: 'TopicNameParam',
+        },
+      ],
     });
   });
 
   test('throws if neither eventSourceArn nor kafkaBootstrapServers are set', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-    })).toThrow(/Either eventSourceArn or kafkaBootstrapServers must be set/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+        })
+    ).toThrow(/Either eventSourceArn or kafkaBootstrapServers must be set/);
   });
 
   test('throws if both eventSourceArn and kafkaBootstrapServers are set', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: '',
-      kafkaBootstrapServers: [],
-      target: fn,
-    })).toThrow(/eventSourceArn and kafkaBootstrapServers are mutually exclusive/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          eventSourceArn: '',
+          kafkaBootstrapServers: [],
+          target: fn,
+        })
+    ).toThrow(/eventSourceArn and kafkaBootstrapServers are mutually exclusive/);
   });
 
   test('throws if both kafkaBootstrapServers is set but empty', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      kafkaBootstrapServers: [],
-      target: fn,
-    })).toThrow(/kafkaBootStrapServers must not be empty if set/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          kafkaBootstrapServers: [],
+          target: fn,
+        })
+    ).toThrow(/kafkaBootStrapServers must not be empty if set/);
   });
 
   test('throws if kafkaConsumerGroupId is invalid', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
-      kafkaConsumerGroupId: 'some invalid',
-      target: fn,
-    })).toThrow('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          eventSourceArn:
+            'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+          kafkaConsumerGroupId: 'some invalid',
+          target: fn,
+        })
+    ).toThrow('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
   });
 
   test('throws if kafkaConsumerGroupId is too long', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
-      kafkaConsumerGroupId: 'x'.repeat(201),
-      target: fn,
-    })).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          eventSourceArn:
+            'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+          kafkaConsumerGroupId: 'x'.repeat(201),
+          target: fn,
+        })
+    ).toThrow('kafkaConsumerGroupId must be a valid string between 1 and 200 characters');
   });
 
   test('not throws if kafkaConsumerGroupId is empty', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
-      kafkaConsumerGroupId: '',
-      target: fn,
-    })).not.toThrow();
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          eventSourceArn:
+            'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+          kafkaConsumerGroupId: '',
+          target: fn,
+        })
+    ).not.toThrow();
   });
 
   test('not throws if kafkaConsumerGroupId is token', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
-      kafkaConsumerGroupId: cdk.Lazy.string({ produce: () => 'test' }),
-      target: fn,
-    })).not.toThrow();
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          eventSourceArn:
+            'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+          kafkaConsumerGroupId: cdk.Lazy.string({ produce: () => 'test' }),
+          target: fn,
+        })
+    ).not.toThrow();
   });
 
   test('not throws if kafkaConsumerGroupId is valid for amazon managed kafka', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
-      kafkaConsumerGroupId: 'someValidConsumerGroupId',
-      target: fn,
-    })).not.toThrow();
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          eventSourceArn:
+            'arn:aws:kafka:us-east-1:123456789012:cluster/vpc-2priv-2pub/751d2973-a626-431c-9d4e-d7975eb44dd7-2',
+          kafkaConsumerGroupId: 'someValidConsumerGroupId',
+          target: fn,
+        })
+    ).not.toThrow();
   });
 
   test('not throws if kafkaConsumerGroupId is valid for self managed kafka', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      kafkaBootstrapServers: ['kafka-broker-1:9092', 'kafka-broker-2:9092'],
-      kafkaConsumerGroupId: 'someValidConsumerGroupId',
-      target: fn,
-    })).not.toThrow();
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          kafkaBootstrapServers: ['kafka-broker-1:9092', 'kafka-broker-2:9092'],
+          kafkaConsumerGroupId: 'someValidConsumerGroupId',
+          target: fn,
+        })
+    ).not.toThrow();
   });
 
   test('eventSourceArn appears in stack', () => {
@@ -331,11 +401,7 @@ describe('event source mapping', () => {
 
     let eventSourceArn = 'some-arn';
 
-    const myKey = Key.fromKeyArn(
-      stack,
-      'SourceBucketEncryptionKey',
-      'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
-    );
+    const myKey = Key.fromKeyArn(stack, 'SourceBucketEncryptionKey', 'arn:aws:kms:us-east-1:123456789012:key/<key-id>');
 
     // WHEN
     new EventSourceMapping(stack, 'test', {
@@ -368,7 +434,6 @@ describe('event source mapping', () => {
       },
       KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
     });
-
   });
 
   test('adding filter criteria encryption without filter criteria', () => {
@@ -378,18 +443,17 @@ describe('event source mapping', () => {
 
     let eventSourceArn = 'some-arn';
 
-    const myKey = Key.fromKeyArn(
-      stack,
-      'SourceBucketEncryptionKey',
-      'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
-    );
+    const myKey = Key.fromKeyArn(stack, 'SourceBucketEncryptionKey', 'arn:aws:kms:us-east-1:123456789012:key/<key-id>');
 
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: eventSourceArn,
-      kafkaTopic: topicNameParam.valueAsString,
-      filterEncryption: myKey,
-    })).toThrow(/filter criteria must be provided to enable setting filter criteria encryption/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: eventSourceArn,
+          kafkaTopic: topicNameParam.valueAsString,
+          filterEncryption: myKey,
+        })
+    ).toThrow(/filter criteria must be provided to enable setting filter criteria encryption/);
   });
 
   test('kafkaBootstrapServers appears in stack', () => {
@@ -410,11 +474,14 @@ describe('event source mapping', () => {
   });
 
   test('throws if tumblingWindow > 900 seconds', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      tumblingWindow: cdk.Duration.seconds(901),
-    })).toThrow(/tumblingWindow cannot be over 900 seconds/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          tumblingWindow: cdk.Duration.seconds(901),
+        })
+    ).toThrow(/tumblingWindow cannot be over 900 seconds/);
   });
 
   test('accepts if tumblingWindow is a token', () => {
@@ -477,20 +544,26 @@ describe('event source mapping', () => {
   });
 
   test('startingPositionTimestamp missing throws error', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      startingPosition: StartingPosition.AT_TIMESTAMP,
-    })).toThrow(/startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          startingPosition: StartingPosition.AT_TIMESTAMP,
+        })
+    ).toThrow(/startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP/);
   });
 
   test('startingPositionTimestamp without AT_TIMESTAMP throws error', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      startingPosition: StartingPosition.LATEST,
-      startingPositionTimestamp: 1640995200,
-    })).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          startingPosition: StartingPosition.LATEST,
+          startingPositionTimestamp: 1640995200,
+        })
+    ).toThrow(/startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP/);
   });
 
   test('adding metrics config', () => {
@@ -555,52 +628,64 @@ describe('event source mapping', () => {
   });
 
   test('minimum provisioned poller is out of limit', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      startingPosition: StartingPosition.AT_TIMESTAMP,
-      startingPositionTimestamp: 1640995200,
-      provisionedPollerConfig: {
-        minimumPollers: 0,
-      },
-    })).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          startingPosition: StartingPosition.AT_TIMESTAMP,
+          startingPositionTimestamp: 1640995200,
+          provisionedPollerConfig: {
+            minimumPollers: 0,
+          },
+        })
+    ).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
   });
 
   test('maximum provisioned poller is out of limit', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      startingPosition: StartingPosition.AT_TIMESTAMP,
-      startingPositionTimestamp: 1640995200,
-      provisionedPollerConfig: {
-        maximumPollers: 2001,
-      },
-    })).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          startingPosition: StartingPosition.AT_TIMESTAMP,
+          startingPositionTimestamp: 1640995200,
+          provisionedPollerConfig: {
+            maximumPollers: 2001,
+          },
+        })
+    ).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
   });
 
   test('only maximum provisioned poller is out of limit', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      startingPosition: StartingPosition.AT_TIMESTAMP,
-      startingPositionTimestamp: 1640995200,
-      provisionedPollerConfig: {
-        minimumPollers: 1,
-        maximumPollers: 2001,
-      },
-    })).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          startingPosition: StartingPosition.AT_TIMESTAMP,
+          startingPositionTimestamp: 1640995200,
+          provisionedPollerConfig: {
+            minimumPollers: 1,
+            maximumPollers: 2001,
+          },
+        })
+    ).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
   });
 
   test('Minimum provisioned poller greater than maximum provisioned poller', () => {
-    expect(() => new EventSourceMapping(stack, 'test', {
-      target: fn,
-      eventSourceArn: '',
-      startingPosition: StartingPosition.AT_TIMESTAMP,
-      startingPositionTimestamp: 1640995200,
-      provisionedPollerConfig: {
-        minimumPollers: 3,
-        maximumPollers: 2,
-      },
-    })).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    expect(
+      () =>
+        new EventSourceMapping(stack, 'test', {
+          target: fn,
+          eventSourceArn: '',
+          startingPosition: StartingPosition.AT_TIMESTAMP,
+          startingPositionTimestamp: 1640995200,
+          provisionedPollerConfig: {
+            minimumPollers: 3,
+            maximumPollers: 2,
+          },
+        })
+    ).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
   });
 });

@@ -6,10 +6,7 @@ import { handler as manageTable } from './table';
 import { handler as manageUser } from './user';
 
 const HANDLERS: {
-  [key in HandlerName]: (
-    props: any,
-    event: AWSLambda.CloudFormationCustomResourceEvent
-  ) => Promise<any>;
+  [key in HandlerName]: (props: any, event: AWSLambda.CloudFormationCustomResourceEvent) => Promise<any>;
 } = {
   [HandlerName.Table]: manageTable,
   [HandlerName.User]: manageUser,

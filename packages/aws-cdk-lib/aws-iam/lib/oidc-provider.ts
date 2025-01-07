@@ -153,10 +153,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     });
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
-    this.openIdConnectProviderIssuer = Arn.extractResourceName(
-      this.openIdConnectProviderArn,
-      'oidc-provider'
-    );
+    this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
     this.openIdConnectProviderthumbprints = Token.asString(resource.getAtt('Thumbprints'));
   }
 

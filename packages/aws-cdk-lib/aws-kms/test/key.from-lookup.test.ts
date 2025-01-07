@@ -16,11 +16,14 @@ test('requires concrete values', () => {
 });
 
 test('return correct key', () => {
-  const previous = mockKeyContextProviderWith({
-    keyId: '12345678-1234-1234-1234-123456789012',
-  }, options => {
-    expect(options.aliasName).toEqual('alias/foo');
-  });
+  const previous = mockKeyContextProviderWith(
+    {
+      keyId: '12345678-1234-1234-1234-123456789012',
+    },
+    (options) => {
+      expect(options.aliasName).toEqual('alias/foo');
+    }
+  );
 
   const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
   const key = Key.fromLookup(stack, 'Key', {
@@ -29,11 +32,10 @@ test('return correct key', () => {
 
   expect(key.keyId).toEqual('12345678-1234-1234-1234-123456789012');
   expect(stack.resolve(key.keyArn)).toEqual({
-    'Fn::Join': ['', [
-      'arn:',
-      { Ref: 'AWS::Partition' },
-      ':kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012',
-    ]],
+    'Fn::Join': [
+      '',
+      ['arn:', { Ref: 'AWS::Partition' }, ':kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012'],
+    ],
   });
 
   restoreContextProvider(previous);
@@ -68,11 +70,14 @@ test('return dummy key if returnDummyKeyOnMissing is true', () => {
 
 describe('isLookupDummy method', () => {
   test('return false if the lookup key is not a dummy key', () => {
-    const previous = mockKeyContextProviderWith({
-      keyId: '12345678-1234-1234-1234-123456789012',
-    }, options => {
-      expect(options.aliasName).toEqual('alias/foo');
-    });
+    const previous = mockKeyContextProviderWith(
+      {
+        keyId: '12345678-1234-1234-1234-123456789012',
+      },
+      (options) => {
+        expect(options.aliasName).toEqual('alias/foo');
+      }
+    );
 
     const app = new App();
     const stack = new Stack(app, 'MyStack', { env: { region: 'us-east-1', account: '123456789012' } });
@@ -104,7 +109,8 @@ interface MockKeyContextResponse {
 
 function mockKeyContextProviderWith(
   response: MockKeyContextResponse,
-  paramValidator?: (options: cxschema.KeyContextQuery) => void) {
+  paramValidator?: (options: cxschema.KeyContextQuery) => void
+) {
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks
@@ -123,6 +129,8 @@ function mockKeyContextProviderWith(
   return previous;
 }
 
-function restoreContextProvider(previous: (scope: Construct, options: GetContextValueOptions) => GetContextValueResult): void {
+function restoreContextProvider(
+  previous: (scope: Construct, options: GetContextValueOptions) => GetContextValueResult
+): void {
   ContextProvider.getValue = previous;
 }

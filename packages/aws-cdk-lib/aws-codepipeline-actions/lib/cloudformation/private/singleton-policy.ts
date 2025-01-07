@@ -33,11 +33,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     this.grantPrincipal = role;
   }
 
-  public grantExecuteChangeSet(props: {
-    stackName: string;
-    changeSetName: string;
-    region?: string;
-  }): void {
+  public grantExecuteChangeSet(props: { stackName: string; changeSetName: string; region?: string }): void {
     this.statementFor({
       actions: [
         'cloudformation:DescribeStacks',
@@ -49,11 +45,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     }).addResources(this.stackArnFromProps(props));
   }
 
-  public grantCreateReplaceChangeSet(props: {
-    stackName: string;
-    changeSetName: string;
-    region?: string;
-  }): void {
+  public grantCreateReplaceChangeSet(props: { stackName: string; changeSetName: string; region?: string }): void {
     this.statementFor({
       actions: [
         'cloudformation:CreateChangeSet',
@@ -65,11 +57,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     }).addResources(this.stackArnFromProps(props));
   }
 
-  public grantCreateUpdateStack(props: {
-    stackName: string;
-    replaceOnFailure?: boolean;
-    region?: string;
-  }): void {
+  public grantCreateUpdateStack(props: { stackName: string; replaceOnFailure?: boolean; region?: string }): void {
     const actions = [
       'cloudformation:DescribeStack*',
       'cloudformation:CreateStack',
@@ -104,9 +92,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
   }
 
   public grantPassRole(role: iam.IRole | string): void {
-    this.statementFor({ actions: ['iam:PassRole'] }).addResources(
-      typeof role === 'string' ? role : role.roleArn
-    );
+    this.statementFor({ actions: ['iam:PassRole'] }).addResources(typeof role === 'string' ? role : role.roleArn);
   }
 
   private statementFor(template: StatementTemplate): iam.PolicyStatement {
@@ -169,9 +155,7 @@ export interface StatementTemplate {
 
 export type StatementCondition = { [op: string]: { [attribute: string]: string } };
 
-export function parseCapabilities(
-  capabilities: cdk.CfnCapabilities[] | undefined
-): string | undefined {
+export function parseCapabilities(capabilities: cdk.CfnCapabilities[] | undefined): string | undefined {
   if (capabilities === undefined) {
     return undefined;
   } else if (capabilities.length === 1) {

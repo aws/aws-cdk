@@ -300,9 +300,7 @@ export class Trigger {
     };
   }
 
-  private renderPushFilter(
-    pushFilter?: GitPushFilter[]
-  ): CfnPipeline.GitPushFilterProperty[] | undefined {
+  private renderPushFilter(pushFilter?: GitPushFilter[]): CfnPipeline.GitPushFilterProperty[] | undefined {
     return pushFilter?.map((filter) => {
       const tags: CfnPipeline.GitTagFilterCriteriaProperty | undefined = {
         // set to undefined if empty array because CloudFormation does not accept empty array

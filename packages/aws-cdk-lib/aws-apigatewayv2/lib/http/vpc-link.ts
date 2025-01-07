@@ -71,11 +71,7 @@ export class VpcLink extends Resource implements IVpcLink {
   /**
    * Import a VPC Link by specifying its attributes.
    */
-  public static fromVpcLinkAttributes(
-    scope: Construct,
-    id: string,
-    attrs: VpcLinkAttributes
-  ): IVpcLink {
+  public static fromVpcLinkAttributes(scope: Construct, id: string, attrs: VpcLinkAttributes): IVpcLink {
     class Import extends Resource implements IVpcLink {
       public vpcLinkId = attrs.vpcLinkId;
       public vpc = attrs.vpc;
@@ -102,9 +98,7 @@ export class VpcLink extends Resource implements IVpcLink {
 
     this.vpcLinkId = cfnResource.ref;
 
-    const { subnets } = props.vpc.selectSubnets(
-      props.subnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }
-    );
+    const { subnets } = props.vpc.selectSubnets(props.subnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
     this.addSubnets(...subnets);
 
     if (props.securityGroups) {

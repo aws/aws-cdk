@@ -80,10 +80,7 @@ describe('cluster', () => {
         },
         SecurityGroups: [
           {
-            'Fn::GetAtt': [
-              'EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231', 'GroupId'],
           },
         ],
         UserData: {
@@ -165,33 +162,20 @@ describe('cluster', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'ecs:DeregisterContainerInstance',
-                'ecs:RegisterContainerInstance',
-                'ecs:Submit*',
-              ],
+              Action: ['ecs:DeregisterContainerInstance', 'ecs:RegisterContainerInstance', 'ecs:Submit*'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'EcsCluster97242B84',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
               },
             },
             {
-              Action: [
-                'ecs:Poll',
-                'ecs:StartTelemetrySession',
-              ],
+              Action: ['ecs:Poll', 'ecs:StartTelemetrySession'],
               Effect: 'Allow',
               Resource: '*',
               Condition: {
                 ArnEquals: {
                   'ecs:cluster': {
-                    'Fn::GetAtt': [
-                      'EcsCluster97242B84',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
                   },
                 },
               },
@@ -249,10 +233,7 @@ describe('cluster', () => {
         },
         SecurityGroups: [
           {
-            'Fn::GetAtt': [
-              'EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231', 'GroupId'],
           },
         ],
         UserData: {
@@ -334,33 +315,20 @@ describe('cluster', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'ecs:DeregisterContainerInstance',
-                'ecs:RegisterContainerInstance',
-                'ecs:Submit*',
-              ],
+              Action: ['ecs:DeregisterContainerInstance', 'ecs:RegisterContainerInstance', 'ecs:Submit*'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'EcsCluster97242B84',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
               },
             },
             {
-              Action: [
-                'ecs:Poll',
-                'ecs:StartTelemetrySession',
-              ],
+              Action: ['ecs:Poll', 'ecs:StartTelemetrySession'],
               Effect: 'Allow',
               Resource: '*',
               Condition: {
                 ArnEquals: {
                   'ecs:cluster': {
-                    'Fn::GetAtt': [
-                      'EcsCluster97242B84',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
                   },
                 },
               },
@@ -379,7 +347,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
     });
 
     testDeprecated('multiple clusters with default capacity', () => {
@@ -394,7 +361,6 @@ describe('cluster', () => {
           instanceType: new ec2.InstanceType('m3.medium'),
         });
       }
-
     });
 
     testDeprecated('lifecycle hook is automatically added', () => {
@@ -473,49 +439,30 @@ describe('cluster', () => {
               },
             },
             {
-              Action: [
-                'ecs:DescribeContainerInstances',
-                'ecs:DescribeTasks',
-              ],
+              Action: ['ecs:DescribeContainerInstances', 'ecs:DescribeTasks'],
               Effect: 'Allow',
               Resource: '*',
               Condition: {
                 ArnEquals: {
                   'ecs:cluster': {
-                    'Fn::GetAtt': [
-                      'EcsCluster97242B84',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
                   },
                 },
               },
             },
             {
-              Action: [
-                'ecs:ListContainerInstances',
-                'ecs:SubmitContainerStateChange',
-                'ecs:SubmitTaskStateChange',
-              ],
+              Action: ['ecs:ListContainerInstances', 'ecs:SubmitContainerStateChange', 'ecs:SubmitTaskStateChange'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'EcsCluster97242B84',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
               },
             },
             {
-              Action: [
-                'ecs:UpdateContainerInstancesState',
-                'ecs:ListTasks',
-              ],
+              Action: ['ecs:UpdateContainerInstancesState', 'ecs:ListTasks'],
               Condition: {
                 ArnEquals: {
                   'ecs:cluster': {
-                    'Fn::GetAtt': [
-                      'EcsCluster97242B84',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
                   },
                 },
               },
@@ -532,7 +479,6 @@ describe('cluster', () => {
           },
         ],
       });
-
     });
 
     testDeprecated('lifecycle hook with encrypted SNS is added correctly', () => {
@@ -553,13 +499,9 @@ describe('cluster', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         KmsMasterKeyId: {
-          'Fn::GetAtt': [
-            'Key961B73FD',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Key961B73FD', 'Arn'],
         },
       });
-
     });
 
     testDeprecated('with capacity and cloudmap namespace properties set', () => {
@@ -609,10 +551,7 @@ describe('cluster', () => {
         },
         SecurityGroups: [
           {
-            'Fn::GetAtt': [
-              'EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231', 'GroupId'],
           },
         ],
         UserData: {
@@ -694,33 +633,20 @@ describe('cluster', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'ecs:DeregisterContainerInstance',
-                'ecs:RegisterContainerInstance',
-                'ecs:Submit*',
-              ],
+              Action: ['ecs:DeregisterContainerInstance', 'ecs:RegisterContainerInstance', 'ecs:Submit*'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'EcsCluster97242B84',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
               },
             },
             {
-              Action: [
-                'ecs:Poll',
-                'ecs:StartTelemetrySession',
-              ],
+              Action: ['ecs:Poll', 'ecs:StartTelemetrySession'],
               Effect: 'Allow',
               Resource: '*',
               Condition: {
                 ArnEquals: {
                   'ecs:cluster': {
-                    'Fn::GetAtt': [
-                      'EcsCluster97242B84',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'],
                   },
                 },
               },
@@ -739,7 +665,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
     });
   });
 
@@ -757,7 +682,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       InstanceType: 'm3.large',
     });
-
   });
 
   testDeprecated('allows specifying cluster size', () => {
@@ -775,7 +699,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MaxSize: '3',
     });
-
   });
 
   testDeprecated('configures userdata with powershell if windows machine image is specified', () => {
@@ -802,10 +725,7 @@ describe('cluster', () => {
       },
       SecurityGroups: [
         {
-          'Fn::GetAtt': [
-            'EcsClusterWindowsAutoScalingGroupInstanceSecurityGroupDA468DF1',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['EcsClusterWindowsAutoScalingGroupInstanceSecurityGroupDA468DF1', 'GroupId'],
         },
       ],
       UserData: {
@@ -817,7 +737,7 @@ describe('cluster', () => {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
+              '", "Machine")\n[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")\n[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", \'["json-file","awslogs"]\', "Machine")\n[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")\nInitialize-ECSAgent -Cluster \'',
               {
                 Ref: 'EcsCluster97242B84',
               },
@@ -827,7 +747,6 @@ describe('cluster', () => {
         },
       },
     });
-
   });
 
   /*
@@ -857,12 +776,12 @@ describe('cluster', () => {
     });
 
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
-      },
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter:
+        {
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
+        },
     });
-
   });
 
   testDeprecated('errors if amazon linux given with special HW type', () => {
@@ -882,7 +801,6 @@ describe('cluster', () => {
         }),
       });
     }).toThrow(/Amazon Linux does not support special hardware type/);
-
   });
 
   testDeprecated('allows specifying windows image', () => {
@@ -903,12 +821,12 @@ describe('cluster', () => {
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
-      },
+      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter:
+        {
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
+        },
     });
-
   });
 
   testDeprecated('errors if windows given with special HW type', () => {
@@ -928,7 +846,6 @@ describe('cluster', () => {
         }),
       });
     }).toThrow(/Windows Server does not support special hardware type/);
-
   });
 
   testDeprecated('errors if windowsVersion and linux generation are set', () => {
@@ -948,7 +865,6 @@ describe('cluster', () => {
         }),
       });
     }).toThrow(/"windowsVersion" and Linux image "generation" cannot be both set/);
-
   });
 
   testDeprecated('allows returning the correct image for windows for EcsOptimizedAmi', () => {
@@ -959,7 +875,6 @@ describe('cluster', () => {
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.WINDOWS);
-
   });
 
   testDeprecated('allows returning the correct image for linux for EcsOptimizedAmi', () => {
@@ -970,7 +885,6 @@ describe('cluster', () => {
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
-
   });
 
   testDeprecated('allows returning the correct image for linux 2 for EcsOptimizedAmi', () => {
@@ -981,7 +895,6 @@ describe('cluster', () => {
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
-
   });
 
   testDeprecated('allows returning the correct image for linux 2023 for EcsOptimizedAmi', () => {
@@ -992,25 +905,20 @@ describe('cluster', () => {
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
-
   });
 
   test('allows returning the correct image for linux for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    expect(ecs.EcsOptimizedImage.amazonLinux().getImage(stack).osType).toEqual(
-      ec2.OperatingSystemType.LINUX);
-
+    expect(ecs.EcsOptimizedImage.amazonLinux().getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
   });
 
   test('allows returning the correct image for linux 2 for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    expect(ecs.EcsOptimizedImage.amazonLinux2().getImage(stack).osType).toEqual(
-      ec2.OperatingSystemType.LINUX);
-
+    expect(ecs.EcsOptimizedImage.amazonLinux2().getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
   });
 
   test('allows returning the correct image for linux 2 for EcsOptimizedImage with ARM hardware', () => {
@@ -1018,8 +926,8 @@ describe('cluster', () => {
     const stack = new cdk.Stack();
 
     expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM).getImage(stack).osType).toEqual(
-      ec2.OperatingSystemType.LINUX);
-
+      ec2.OperatingSystemType.LINUX
+    );
   });
 
   test('allows returning the correct image for linux 2 for EcsOptimizedImage with Neuron hardware', () => {
@@ -1027,17 +935,15 @@ describe('cluster', () => {
     const stack = new cdk.Stack();
 
     expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON).getImage(stack).osType).toEqual(
-      ec2.OperatingSystemType.LINUX);
-
+      ec2.OperatingSystemType.LINUX
+    );
   });
 
   test('allows returning the correct image for linux 2023 for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    expect(ecs.EcsOptimizedImage.amazonLinux2023().getImage(stack).osType).toEqual(
-      ec2.OperatingSystemType.LINUX);
-
+    expect(ecs.EcsOptimizedImage.amazonLinux2023().getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
   });
 
   test('allows returning the correct image for linux 2023 for EcsOptimizedImage with ARM hardware', () => {
@@ -1045,8 +951,8 @@ describe('cluster', () => {
     const stack = new cdk.Stack();
 
     expect(ecs.EcsOptimizedImage.amazonLinux2023(ecs.AmiHardwareType.ARM).getImage(stack).osType).toEqual(
-      ec2.OperatingSystemType.LINUX);
-
+      ec2.OperatingSystemType.LINUX
+    );
   });
 
   test('allows returning the correct image for windows for EcsOptimizedImage', () => {
@@ -1054,8 +960,8 @@ describe('cluster', () => {
     const stack = new cdk.Stack();
 
     expect(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType).toEqual(
-      ec2.OperatingSystemType.WINDOWS);
-
+      ec2.OperatingSystemType.WINDOWS
+    );
   });
 
   test('correct SSM parameter is set for amazon linux 2 Neuron AMI', () => {
@@ -1221,12 +1127,12 @@ describe('cluster', () => {
     });
 
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
-      },
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter:
+        {
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
+        },
     });
-
   });
 
   testDeprecated('allows specifying Amazon Linux v1 AMI', () => {
@@ -1251,12 +1157,12 @@ describe('cluster', () => {
     });
 
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id',
-      },
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter:
+        {
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id',
+        },
     });
-
   });
 
   testDeprecated('allows specifying windows image v2', () => {
@@ -1275,12 +1181,12 @@ describe('cluster', () => {
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
-      },
+      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter:
+        {
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
+        },
     });
-
   });
 
   testDeprecated('allows specifying spot fleet', () => {
@@ -1298,7 +1204,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       SpotPrice: '0.31',
     });
-
   });
 
   testDeprecated('allows specifying drain time', () => {
@@ -1316,7 +1221,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
       HeartbeatTimeout: 60,
     });
-
   });
 
   testDeprecated('allows specifying automated spot draining', () => {
@@ -1348,7 +1252,6 @@ describe('cluster', () => {
         },
       },
     });
-
   });
 
   testDeprecated('allows containers access to instance metadata service', () => {
@@ -1379,7 +1282,6 @@ describe('cluster', () => {
         },
       },
     });
-
   });
 
   testDeprecated('allows adding default service discovery namespace', () => {
@@ -1404,7 +1306,6 @@ describe('cluster', () => {
         Ref: 'MyVpcF9F0CA6F',
       },
     });
-
   });
 
   testDeprecated('allows adding public service discovery namespace', () => {
@@ -1429,7 +1330,6 @@ describe('cluster', () => {
     });
 
     expect(cluster.defaultCloudMapNamespace!.type).toEqual(cloudmap.NamespaceType.DNS_PUBLIC);
-
   });
 
   testDeprecated('throws if default service discovery namespace added more than once', () => {
@@ -1453,7 +1353,6 @@ describe('cluster', () => {
         name: 'foo.com',
       });
     }).toThrow(/Can only add default namespace once./);
-
   });
 
   test('export/import of a cluster with a namespace', () => {
@@ -1485,7 +1384,6 @@ describe('cluster', () => {
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
     cluster2.vpc.selectSubnets();
-
   });
 
   test('imported cluster with imported security groups honors allowAllOutbound', () => {
@@ -1511,7 +1409,6 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 1);
-
   });
 
   test('Security groups are optonal for imported clusters', () => {
@@ -1585,7 +1482,6 @@ describe('cluster', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
   });
 
   testDeprecated('ASG with a public VPC without NAT Gateways', () => {
@@ -1593,9 +1489,7 @@ describe('cluster', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyPublicVpc', {
       natGateways: 0,
-      subnetConfiguration: [
-        { cidrMask: 24, name: 'ingress', subnetType: ec2.SubnetType.PUBLIC },
-      ],
+      subnetConfiguration: [{ cidrMask: 24, name: 'ingress', subnetType: ec2.SubnetType.PUBLIC }],
     });
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1636,10 +1530,7 @@ describe('cluster', () => {
       },
       SecurityGroups: [
         {
-          'Fn::GetAtt': [
-            'EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231', 'GroupId'],
         },
       ],
       UserData: {
@@ -1703,7 +1594,6 @@ describe('cluster', () => {
     });
 
     // THEN
-
   });
 
   test('enable container insights', () => {
@@ -1722,7 +1612,6 @@ describe('cluster', () => {
         },
       ],
     });
-
   });
 
   test('disable container insights', () => {
@@ -1741,7 +1630,6 @@ describe('cluster', () => {
         },
       ],
     });
-
   });
 
   test('default container insights is undefined', () => {
@@ -1758,9 +1646,8 @@ describe('cluster', () => {
 
     expect(
       template.Resources.EcsCluster97242B84.Properties === undefined ||
-      template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
+        template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined
     ).toEqual(true);
-
   });
 
   test('enable fargate ephemeral storage encryption on cluster with random name', () => {
@@ -1801,7 +1688,7 @@ describe('cluster', () => {
             Action: 'kms:CreateGrant',
             Principal: { Service: 'fargate.amazonaws.com' },
             Condition: {
-              'StringEquals': {
+              StringEquals: {
                 'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
               },
               'ForAllValues:StringEquals': {
@@ -1819,7 +1706,10 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
-    new ecs.Cluster(stack, 'EcsCluster', { clusterName: 'cluster-name', managedStorageConfiguration: { fargateEphemeralStorageKmsKey: key } });
+    new ecs.Cluster(stack, 'EcsCluster', {
+      clusterName: 'cluster-name',
+      managedStorageConfiguration: { fargateEphemeralStorageKmsKey: key },
+    });
 
     // THEN
     const output = Template.fromStack(stack);
@@ -1853,7 +1743,7 @@ describe('cluster', () => {
             Action: 'kms:CreateGrant',
             Principal: { Service: 'fargate.amazonaws.com' },
             Condition: {
-              'StringEquals': {
+              StringEquals: {
                 'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
                 'kms:EncryptionContext:aws:ecs:clusterName': ['cluster-name'],
               },
@@ -1878,15 +1768,18 @@ describe('cluster', () => {
     // THEN
     const assembly = app.synth();
     const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-    expect(Object.entries(parameters).some(
-      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
-        (v as any).Default.includes('/bottlerocket/'),
-    )).toEqual(true);
-    expect(Object.entries(parameters).some(
-      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
-        (v as any).Default.includes('/aws-ecs-1/'),
-    )).toEqual(true);
-
+    expect(
+      Object.entries(parameters).some(
+        ([k, v]) =>
+          k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') && (v as any).Default.includes('/bottlerocket/')
+      )
+    ).toEqual(true);
+    expect(
+      Object.entries(parameters).some(
+        ([k, v]) =>
+          k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') && (v as any).Default.includes('/aws-ecs-1/')
+      )
+    ).toEqual(true);
   });
 
   describe('isBottleRocketImage() returns', () => {
@@ -2009,10 +1902,13 @@ describe('cluster', () => {
       },
     });
 
-    Template.fromStack(stack).hasParameter('SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter', {
-      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-      Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
-    });
+    Template.fromStack(stack).hasParameter(
+      'SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      {
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+        Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
+      }
+    );
   });
 
   testDeprecated('throws when machineImage and machineImageType both specified', () => {
@@ -2043,7 +1939,6 @@ describe('cluster', () => {
         },
       },
     });
-
   });
 
   testDeprecated('updatePolicy set when passed without updateType', () => {
@@ -2200,7 +2095,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE_SPOT'],
     });
-
   });
 
   test('allows specifying Fargate capacityProviders', () => {
@@ -2221,7 +2115,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     });
-
   });
 
   test('allows specifying capacityProviders (alternate method)', () => {
@@ -2241,7 +2134,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     });
-
   });
 
   testDeprecated('allows adding capacityProviders post-construction (deprecated)', () => {
@@ -2262,7 +2154,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE'],
     });
-
   });
 
   testDeprecated('allows adding capacityProviders post-construction', () => {
@@ -2283,7 +2174,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE'],
     });
-
   });
 
   testDeprecated('throws for unsupported capacity providers', () => {
@@ -2296,7 +2186,6 @@ describe('cluster', () => {
     expect(() => {
       cluster.addCapacityProvider('HONK');
     }).toThrow(/CapacityProvider not supported/);
-
   });
 
   describe('creates ASG capacity providers ', () => {
@@ -2342,7 +2231,9 @@ describe('cluster', () => {
         new ecs.AsgCapacityProvider(stack, 'provider', {
           autoScalingGroup,
         });
-      }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.');
+      }).toThrow(
+        'Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.'
+      );
     });
 
     test('with IAutoScalingGroup should not throw an error if Managed Termination Protection is disabled.', () => {
@@ -2516,7 +2407,9 @@ describe('cluster', () => {
         autoScalingGroup,
         enableManagedScaling: false,
       });
-    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow(
+      'Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.'
+    );
   });
 
   test('throws error, when Managed Scaling is disabled and Managed Termination Protection is enabled.', () => {
@@ -2537,7 +2430,9 @@ describe('cluster', () => {
         enableManagedScaling: false,
         enableManagedTerminationProtection: true,
       });
-    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow(
+      'Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.'
+    );
   });
 
   test('capacity provider enables ASG new instance scale-in protection by default', () => {
@@ -2560,7 +2455,6 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       NewInstancesProtectedFromScaleIn: true,
     });
-
   });
 
   test('capacity provider disables ASG new instance scale-in protection', () => {
@@ -2625,7 +2519,6 @@ describe('cluster', () => {
       ],
       DefaultCapacityProviderStrategy: [],
     });
-
   });
 
   test('throws when calling Cluster.addAsgCapacityProvider with an AsgCapacityProvider created with an imported ASG', () => {
@@ -2654,10 +2547,10 @@ describe('cluster', () => {
     expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         enableFargateCapacityProviders: true,
-      }).addDefaultCapacityProviderStrategy([
-        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
-      ]);
-    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.');
+      }).addDefaultCapacityProviderStrategy([{ capacityProvider: 'test capacityProvider', base: 10, weight: 50 }]);
+    }).toThrow(
+      'Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.'
+    );
   });
 
   test('should throw an error when capacity providers is length 0 and default capacity provider startegy specified', () => {
@@ -2668,10 +2561,10 @@ describe('cluster', () => {
     expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         enableFargateCapacityProviders: false,
-      }).addDefaultCapacityProviderStrategy([
-        { capacityProvider: 'test capacityProvider', base: 10, weight: 50 },
-      ]);
-    }).toThrow('Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.');
+      }).addDefaultCapacityProviderStrategy([{ capacityProvider: 'test capacityProvider', base: 10, weight: 50 }]);
+    }).toThrow(
+      'Capacity provider test capacityProvider must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.'
+    );
   });
 
   test('should throw an error when more than 1 default capacity provider have base specified', () => {
@@ -2714,7 +2607,9 @@ describe('cluster', () => {
         { capacityProvider: 'FARGATE_SPOT' },
         { capacityProvider: capacityProvider.capacityProviderName },
       ]);
-    }).toThrow(/A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again./);
+    }).toThrow(
+      /A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again./
+    );
   });
 
   test('should throw an error if addDefaultCapacityProviderStrategy is called more than once', () => {
@@ -2806,9 +2701,7 @@ describe('cluster', () => {
 
     cluster.addAsgCapacityProvider(capacityProvider);
 
-    cluster.addDefaultCapacityProviderStrategy([
-      { capacityProvider: capacityProvider.capacityProviderName },
-    ]);
+    cluster.addDefaultCapacityProviderStrategy([{ capacityProvider: capacityProvider.capacityProviderName }]);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
@@ -2865,10 +2758,7 @@ describe('cluster', () => {
       Configuration: {
         ExecuteCommandConfiguration: {
           KmsKeyId: {
-            'Fn::GetAtt': [
-              'KmsKey46693ADD',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['KmsKey46693ADD', 'Arn'],
           },
           LogConfiguration: {
             CloudWatchEncryptionEnabled: true,
@@ -2885,7 +2775,6 @@ describe('cluster', () => {
         },
       },
     });
-
   });
 
   test('throws when no log configuration is provided when logging is set to OVERRIDE', () => {
@@ -2901,7 +2790,6 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/Execute command log configuration must only be specified when logging is OVERRIDE./);
-
   });
 
   test('throws when log configuration provided but logging is set to DEFAULT', () => {
@@ -2922,7 +2810,6 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/Execute command log configuration must only be specified when logging is OVERRIDE./);
-
   });
 
   test('throws when CloudWatchEncryptionEnabled without providing CloudWatch Logs log group name', () => {
@@ -2940,8 +2827,9 @@ describe('cluster', () => {
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }).toThrow(/You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption./);
-
+    }).toThrow(
+      /You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption./
+    );
   });
 
   test('throws when S3EncryptionEnabled without providing S3 Bucket name', () => {
@@ -2960,7 +2848,6 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption./);
-
   });
 
   test('When importing ECS Cluster via Arn', () => {
@@ -2969,7 +2856,11 @@ describe('cluster', () => {
     const clusterName = 'my-cluster';
     const region = 'service-region';
     const account = 'service-account';
-    const cluster = ecs.Cluster.fromClusterArn(stack, 'Cluster', `arn:aws:ecs:${region}:${account}:cluster/${clusterName}`);
+    const cluster = ecs.Cluster.fromClusterArn(
+      stack,
+      'Cluster',
+      `arn:aws:ecs:${region}:${account}:cluster/${clusterName}`
+    );
 
     // THEN
     expect(cluster.clusterName).toEqual(clusterName);
@@ -3032,7 +2923,6 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
   Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
     ImageId: {
       Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
-
     },
     UserData: {
       'Fn::Base64': {
@@ -3063,7 +2953,6 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
             '#!/bin/bash\necho ECS_CLUSTER=',
             {
               Ref: 'EcsCluster97242B84',
-
             },
             ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
           ],
@@ -3088,7 +2977,6 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
     },
     DefaultCapacityProviderStrategy: [],
   });
-
 });
 
 test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or fargate', () => {
@@ -3114,7 +3002,9 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
     });
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
-  }).toThrow(/Invalid Capacity Provider Name: awscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+  }).toThrow(
+    /Invalid Capacity Provider Name: awscp, If a name is specified, it cannot start with aws, ecs, or fargate./
+  );
 
   expect(() => {
     // WHEN Capacity Provider define capacityProviderName start with ecs.
@@ -3125,7 +3015,9 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
     });
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
-  }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+  }).toThrow(
+    /Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./
+  );
 });
 
 test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
@@ -3149,7 +3041,6 @@ test('throws when ASG Capacity Provider with no capacityProviderName but stack n
     });
 
     cluster.addAsgCapacityProvider(capacityProvider);
-
   }).not.toThrow();
 });
 
@@ -3202,7 +3093,6 @@ test('throws when InstanceWarmupPeriod is greater than 10000', () => {
 });
 
 describe('Accessing container instance role', function () {
-
   const addUserDataMock = jest.fn();
 
   function getAutoScalingGroup(stack: cdk.Stack): autoscaling.AutoScalingGroup {
@@ -3236,7 +3126,9 @@ describe('Accessing container instance role', function () {
     cluster.addAsgCapacityProvider(capacityProvider);
 
     // THEN
-    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith(
+      'sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP'
+    );
     expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
     expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
@@ -3258,9 +3150,13 @@ describe('Accessing container instance role', function () {
     });
 
     // THEN
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith(
+      'sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP'
+    );
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith(
+      'echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config'
+    );
   });
 
   test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on AsgCapacityProvider instantiation', () => {
@@ -3279,9 +3175,13 @@ describe('Accessing container instance role', function () {
     cluster.addAsgCapacityProvider(capacityProvider);
 
     // THEN
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith(
+      'sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP'
+    );
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith(
+      'echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config'
+    );
   });
 
   test('allow ecs accessing metadata service when canContainersAccessInstanceRole is set on constructor and method', () => {
@@ -3302,9 +3202,13 @@ describe('Accessing container instance role', function () {
     });
 
     // THEN
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith(
+      'sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP'
+    );
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith(
+      'echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config'
+    );
   });
 
   test('block ecs from accessing metadata service when canContainersAccessInstanceRole set on constructor and not set on method', () => {
@@ -3325,7 +3229,9 @@ describe('Accessing container instance role', function () {
     });
 
     // THEN
-    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).toHaveBeenCalledWith(
+      'sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP'
+    );
     expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('sudo service iptables save');
     expect(autoScalingGroup.addUserData).toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
@@ -3348,8 +3254,12 @@ describe('Accessing container instance role', function () {
     });
 
     // THEN
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith(
+      'sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP'
+    );
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
-    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+    expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith(
+      'echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config'
+    );
   });
 });

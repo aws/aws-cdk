@@ -16,7 +16,9 @@ describeDeprecated('staging', () => {
 
     expect(staging.assetHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     expect(staging.sourcePath).toEqual(sourcePath);
-    expect(staging.relativeStagedPath(stack)).toEqual('asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(staging.relativeStagedPath(stack)).toEqual(
+      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00'
+    );
   });
 
   test('staging can be disabled through context', () => {

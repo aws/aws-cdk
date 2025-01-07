@@ -89,7 +89,9 @@ describe('aspect', () => {
     });
     app.synth();
     expect(root.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied [ack: @aws-cdk/core:ignoredAspect]');
+    expect(root.node.metadata[0].data).toEqual(
+      'We detected an Aspect was added via another Aspect, and will not be applied [ack: @aws-cdk/core:ignoredAspect]'
+    );
     // warning is not added to child construct
     expect(child.node.metadata.length).toEqual(0);
   });
@@ -220,10 +222,12 @@ describe('aspect', () => {
     // THEN - both Aspects are successfully applied, new logging bucket is added with versioning enabled
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'my-new-logging-bucket-from-aspect',
-      Tags: [{
-        Key: 'TestKey',
-        Value: 'TestValue',
-      }],
+      Tags: [
+        {
+          Key: 'TestKey',
+          Value: 'TestValue',
+        },
+      ],
     });
   });
 
@@ -241,14 +245,16 @@ describe('aspect', () => {
     // THEN - both Aspects A and C are invoked on the new node created by Aspect B as a child of the root.
     Template.fromStack(root).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'my-new-logging-bucket-from-aspect',
-      Tags: [{
-        Key: 'AspectA',
-        Value: 'Visited',
-      },
-      {
-        Key: 'AspectC',
-        Value: 'Visited',
-      }],
+      Tags: [
+        {
+          Key: 'AspectA',
+          Value: 'Visited',
+        },
+        {
+          Key: 'AspectC',
+          Value: 'Visited',
+        },
+      ],
     });
   });
 
@@ -280,7 +286,9 @@ describe('aspect', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Cannot invoke Aspect Tag with priority 0 on node My-Stack: an Aspect Tag with a lower priority (10) was already invoked on this node.');
+    }).toThrow(
+      'Cannot invoke Aspect Tag with priority 0 on node My-Stack: an Aspect Tag with a lower priority (10) was already invoked on this node.'
+    );
   });
 
   test('Infinitely recursing Aspect is caught with error', () => {
@@ -310,23 +318,23 @@ describe('aspect', () => {
     }
   }
 
-  test.each([
-    { stabilization: true },
-    { stabilization: false },
-  ])('Error is not thrown if Aspects.applied does not exist (stabilization: $stabilization)', ({ stabilization }) => {
-    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': stabilization } });
-    const root = new Stack(app, 'My-Stack');
+  test.each([{ stabilization: true }, { stabilization: false }])(
+    'Error is not thrown if Aspects.applied does not exist (stabilization: $stabilization)',
+    ({ stabilization }) => {
+      const app = new App({ context: { '@aws-cdk/core:aspectStabilization': stabilization } });
+      const root = new Stack(app, 'My-Stack');
 
-    Aspects.of(root).add(new Tag('AspectA', 'Visited'));
+      Aspects.of(root).add(new Tag('AspectA', 'Visited'));
 
-    // "Monkey patching" - Override `applied` to simulate its absence
-    Object.defineProperty(Aspects.prototype, 'applied', {
-      value: undefined,
-      configurable: true,
-    });
+      // "Monkey patching" - Override `applied` to simulate its absence
+      Object.defineProperty(Aspects.prototype, 'applied', {
+        value: undefined,
+        configurable: true,
+      });
 
-    expect(() => {
-      app.synth();
-    }).not.toThrow();
-  });
+      expect(() => {
+        app.synth();
+      }).not.toThrow();
+    }
+  );
 });

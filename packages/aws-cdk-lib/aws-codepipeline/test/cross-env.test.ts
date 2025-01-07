@@ -22,7 +22,7 @@ describe.each([
   beforeEach(() => {
     app = new App({
       context: {
-        ...synthesisStyle === 'modern' ? { '@aws-cdk/core:newStyleStackSynthesis': true } : undefined,
+        ...(synthesisStyle === 'modern' ? { '@aws-cdk/core:newStyleStackSynthesis': true } : undefined),
       },
     });
     stackScope = inStage ? new CdkStage(app, 'MyStage') : app;
@@ -32,17 +32,21 @@ describe.each([
     initialStages = [
       {
         stageName: 'Source',
-        actions: [new FakeSourceAction({
-          actionName: 'Source',
-          output: sourceArtifact,
-        })],
+        actions: [
+          new FakeSourceAction({
+            actionName: 'Source',
+            output: sourceArtifact,
+          }),
+        ],
       },
       {
         stageName: 'Build',
-        actions: [new FakeBuildAction({
-          actionName: 'Build',
-          input: sourceArtifact,
-        })],
+        actions: [
+          new FakeBuildAction({
+            actionName: 'Build',
+            input: sourceArtifact,
+          }),
+        ],
       },
     ];
   });
@@ -73,36 +77,42 @@ describe.each([
       test('by role', () => {
         // WHEN
         expect(() => {
-          stage.addAction(new FakeBuildAction({
-            actionName: 'Deploy',
-            input: sourceArtifact,
-            role: iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::1111:role/some-role'),
-          }));
+          stage.addAction(
+            new FakeBuildAction({
+              actionName: 'Deploy',
+              input: sourceArtifact,
+              role: iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::1111:role/some-role'),
+            })
+          );
         }).toThrow(expectedError);
       });
 
       test('by resource', () => {
         // WHEN
         expect(() => {
-          stage.addAction(new FakeBuildAction({
-            actionName: 'Deploy',
-            input: sourceArtifact,
-            resource: s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-              bucketName: 'foo',
-              account: '1111',
-            }),
-          }));
+          stage.addAction(
+            new FakeBuildAction({
+              actionName: 'Deploy',
+              input: sourceArtifact,
+              resource: s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
+                bucketName: 'foo',
+                account: '1111',
+              }),
+            })
+          );
         }).toThrow(expectedError);
       });
 
       test('by declared account', () => {
         // WHEN
         expect(() => {
-          stage.addAction(new FakeBuildAction({
-            actionName: 'Deploy',
-            input: sourceArtifact,
-            account: '1111',
-          }));
+          stage.addAction(
+            new FakeBuildAction({
+              actionName: 'Deploy',
+              input: sourceArtifact,
+              account: '1111',
+            })
+          );
         }).toThrow(expectedError);
       });
     });
@@ -115,12 +125,14 @@ describe.each([
 
       test('when making a support stack', () => {
         // WHEN
-        stage.addAction(new FakeBuildAction({
-          actionName: 'Deploy',
-          input: sourceArtifact,
-          // No resource to grab onto forces creating a fresh support stack
-          region: 'eu-west-1',
-        }));
+        stage.addAction(
+          new FakeBuildAction({
+            actionName: 'Deploy',
+            input: sourceArtifact,
+            // No resource to grab onto forces creating a fresh support stack
+            region: 'eu-west-1',
+          })
+        );
 
         // THEN
         let asm = app.synth();
@@ -143,11 +155,13 @@ describe.each([
         const stack2 = new Stack(stackScope, 'Stack2', { env: { account: '2222', region: 'eu-west-1' } });
 
         // WHEN
-        stage.addAction(new FakeBuildAction({
-          actionName: 'Deploy',
-          input: sourceArtifact,
-          resource: new iam.User(stack2, 'DoesntMatterWhatThisIs'),
-        }));
+        stage.addAction(
+          new FakeBuildAction({
+            actionName: 'Deploy',
+            input: sourceArtifact,
+            resource: new iam.User(stack2, 'DoesntMatterWhatThisIs'),
+          })
+        );
 
         // THEN
         Template.fromStack(stack2).resourceCountIs('AWS::KMS::Key', 0);
@@ -213,11 +227,14 @@ describe('cross-environment CodePipeline', function () {
             {
               Name: 'Build',
               RoleArn: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':iam::456:role/pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':iam::456:role/pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
+                  ],
+                ],
               },
             },
           ],

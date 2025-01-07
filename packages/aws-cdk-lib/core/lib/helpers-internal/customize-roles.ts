@@ -4,12 +4,7 @@ import { Construct } from 'constructs';
 import { Annotations } from '../annotations';
 import { attachCustomSynthesis } from '../app';
 import { Reference } from '../reference';
-import {
-  IResolvable,
-  StringConcat,
-  DefaultTokenResolver,
-  IFragmentConcatenator,
-} from '../resolvable';
+import { IResolvable, StringConcat, DefaultTokenResolver, IFragmentConcatenator } from '../resolvable';
 import { ISynthesisSession } from '../stack-synthesizers';
 import { Token, Tokenization } from '../token';
 
@@ -211,10 +206,7 @@ export class PolicySynthesizer extends Construct {
 
   private createJsonReport(): PolicyReport {
     return Object.entries(this.roleReport).reduce((acc, [key, value]) => {
-      const { policyArns, policyStatements } = this.renderManagedPoliciesForRole(
-        key,
-        value.managedPolicies
-      );
+      const { policyArns, policyStatements } = this.renderManagedPoliciesForRole(key, value.managedPolicies);
       acc = {
         roles: [
           ...(acc.roles ?? []),
@@ -511,8 +503,7 @@ export const CUSTOMIZE_ROLES_CONTEXT_KEY = '@aws-cdk/iam:customizeRoles';
 export function getCustomizeRolesConfig(scope: Construct): CustomizeRoleConfig {
   const customizeRolesContext = scope.node.tryGetContext(CUSTOMIZE_ROLES_CONTEXT_KEY);
   return {
-    preventSynthesis:
-      customizeRolesContext !== undefined && customizeRolesContext.preventSynthesis !== false,
+    preventSynthesis: customizeRolesContext !== undefined && customizeRolesContext.preventSynthesis !== false,
     enabled: customizeRolesContext !== undefined,
   };
 }

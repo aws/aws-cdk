@@ -74,9 +74,7 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
  *
  * Not in the list ==> no built-in data for that region.
  */
-export const AWS_REGIONS = AWS_REGIONS_AND_RULES.filter(
-  (x) => typeof x === 'string'
-).sort() as readonly string[];
+export const AWS_REGIONS = AWS_REGIONS_AND_RULES.filter((x) => typeof x === 'string').sort() as readonly string[];
 
 /**
  * Whether or not a region predates a given rule (or region).

@@ -6,31 +6,19 @@ const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-ivs');
 
-const advancedChannelWithoutPresetSetting = new ivs.Channel(
-  stack,
-  'AdvancedChannelWithoutPresetSetting',
-  {
-    type: ivs.ChannelType.ADVANCED_SD,
-  }
-);
+const advancedChannelWithoutPresetSetting = new ivs.Channel(stack, 'AdvancedChannelWithoutPresetSetting', {
+  type: ivs.ChannelType.ADVANCED_SD,
+});
 
-const advancedChannelWithPresetSetting = new ivs.Channel(
-  stack,
-  'AdvancedChannelWithPresetSetting',
-  {
-    type: ivs.ChannelType.ADVANCED_HD,
-    preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
-  }
-);
+const advancedChannelWithPresetSetting = new ivs.Channel(stack, 'AdvancedChannelWithPresetSetting', {
+  type: ivs.ChannelType.ADVANCED_HD,
+  preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
+});
 
-const standardChannelWithPresetSetting = new ivs.Channel(
-  stack,
-  'StandardChannelWithPresetSetting',
-  {
-    type: ivs.ChannelType.STANDARD,
-    preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
-  }
-);
+const standardChannelWithPresetSetting = new ivs.Channel(stack, 'StandardChannelWithPresetSetting', {
+  type: ivs.ChannelType.STANDARD,
+  preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
+});
 
 const test = new integ.IntegTest(app, 'ivs-test', {
   testCases: [stack],

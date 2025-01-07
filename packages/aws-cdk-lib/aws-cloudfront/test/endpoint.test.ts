@@ -65,21 +65,23 @@ describe('Endpoint', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: [
-            'kinesis:DescribeStreamSummary',
-            'kinesis:DescribeStream',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
-          Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
-        }, {
-          Action: 'kms:GenerateDataKey',
-          Resource: { 'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'] },
-        }],
+        Statement: [
+          {
+            Action: [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:DescribeStream',
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ],
+            Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
+          },
+          {
+            Action: 'kms:GenerateDataKey',
+            Resource: { 'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'] },
+          },
+        ],
         Version: '2012-10-17',
       },
     });
   });
-
 });

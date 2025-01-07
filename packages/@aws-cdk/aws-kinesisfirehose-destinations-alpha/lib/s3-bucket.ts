@@ -45,8 +45,7 @@ export class S3Bucket implements firehose.IDestination {
         streamId: 'S3Destination',
       }) ?? {};
 
-    const { backupConfig, dependables: backupDependables } =
-      createBackupConfig(scope, role, this.props.s3Backup) ?? {};
+    const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
@@ -54,10 +53,7 @@ export class S3Bucket implements firehose.IDestination {
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
-        bufferingHints: createBufferingHints(
-          this.props.bufferingInterval,
-          this.props.bufferingSize
-        ),
+        bufferingHints: createBufferingHints(this.props.bufferingInterval, this.props.bufferingSize),
         bucketArn: this.bucket.bucketArn,
         compressionFormat: this.props.compression?.value,
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
@@ -69,8 +65,6 @@ export class S3Bucket implements firehose.IDestination {
   }
 
   private getS3BackupMode(): string | undefined {
-    return this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL
-      ? 'Enabled'
-      : undefined;
+    return this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL ? 'Enabled' : undefined;
   }
 }

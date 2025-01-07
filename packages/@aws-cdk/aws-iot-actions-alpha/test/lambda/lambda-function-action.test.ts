@@ -26,10 +26,7 @@ test('create a topic rule with lambda action and a lambda permission to be invok
         {
           Lambda: {
             FunctionArn: {
-              'Fn::GetAtt': [
-                'MyFunction3BAA72D1',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyFunction3BAA72D1', 'Arn'],
             },
           },
         },
@@ -40,18 +37,12 @@ test('create a topic rule with lambda action and a lambda permission to be invok
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
-      'Fn::GetAtt': [
-        'MyFunction3BAA72D1',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyFunction3BAA72D1', 'Arn'],
     },
     Principal: 'iot.amazonaws.com',
     SourceAccount: { Ref: 'AWS::AccountId' },
     SourceArn: {
-      'Fn::GetAtt': [
-        'MyTopicRule4EC2091C',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyTopicRule4EC2091C', 'Arn'],
     },
   });
 });

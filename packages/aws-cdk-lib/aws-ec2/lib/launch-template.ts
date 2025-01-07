@@ -495,10 +495,7 @@ export interface LaunchTemplateAttributes {
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html
  */
-export class LaunchTemplate
-  extends Resource
-  implements ILaunchTemplate, iam.IGrantable, IConnectable
-{
+export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGrantable, IConnectable {
   /**
    * Import an existing LaunchTemplate.
    */
@@ -516,8 +513,7 @@ export class LaunchTemplate
     }
 
     class Import extends Resource implements ILaunchTemplate {
-      public readonly versionNumber =
-        attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
+      public readonly versionNumber = attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
     }
@@ -612,9 +608,7 @@ export class LaunchTemplate
     const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });
     if (spotDuration !== undefined && (spotDuration < 1 || spotDuration > 6)) {
       // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#fixed-duration-spot-instances
-      Annotations.of(this).addError(
-        'Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.'
-      );
+      Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
     }
 
     // Basic validation of the provided httpPutResponseHopLimit
@@ -706,10 +700,7 @@ export class LaunchTemplate
         },
       };
       // Remove SpotOptions if there are none.
-      if (
-        Object.keys(marketOptions.spotOptions).filter((k) => marketOptions.spotOptions[k]).length ==
-        0
-      ) {
+      if (Object.keys(marketOptions.spotOptions).filter((k) => marketOptions.spotOptions[k]).length == 0) {
         marketOptions.spotOptions = undefined;
       }
     }
@@ -788,9 +779,7 @@ export class LaunchTemplate
       versionDescription: props?.versionDescription,
       launchTemplateData: {
         blockDeviceMappings:
-          props?.blockDevices !== undefined
-            ? launchTemplateBlockDeviceMappings(this, props.blockDevices)
-            : undefined,
+          props?.blockDevices !== undefined ? launchTemplateBlockDeviceMappings(this, props.blockDevices) : undefined,
         creditSpecification:
           props?.cpuCredits !== undefined
             ? {
@@ -894,21 +883,11 @@ export class LaunchTemplate
     }
     if (requireMetadataOptions) {
       return {
-        httpEndpoint:
-          props.httpEndpoint === true
-            ? 'enabled'
-            : props.httpEndpoint === false
-              ? 'disabled'
-              : undefined,
+        httpEndpoint: props.httpEndpoint === true ? 'enabled' : props.httpEndpoint === false ? 'disabled' : undefined,
         httpProtocolIpv6:
-          props.httpProtocolIpv6 === true
-            ? 'enabled'
-            : props.httpProtocolIpv6 === false
-              ? 'disabled'
-              : undefined,
+          props.httpProtocolIpv6 === true ? 'enabled' : props.httpProtocolIpv6 === false ? 'disabled' : undefined,
         httpPutResponseHopLimit: props.httpPutResponseHopLimit,
-        httpTokens:
-          props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
+        httpTokens: props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
         instanceMetadataTags:
           props.instanceMetadataTags === true
             ? 'enabled'
@@ -956,9 +935,7 @@ export class LaunchTemplate
    */
   public get grantPrincipal(): iam.IPrincipal {
     if (!this._grantPrincipal) {
-      throw new Error(
-        'LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.'
-      );
+      throw new Error('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.');
     }
     return this._grantPrincipal;
   }

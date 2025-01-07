@@ -48,7 +48,7 @@ describe('tag manager', () => {
   describe('when a tag does not exist', () => {
     test('#removeTag() does not throw an error', () => {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
-      expect(() => (mgr.removeTag('dne', 0))).not.toThrow();
+      expect(() => mgr.removeTag('dne', 0)).not.toThrow();
     });
 
     test('#setTag() creates the tag', () => {
@@ -129,13 +129,9 @@ describe('tag manager', () => {
     const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
     mgr.setTag('key', 'myVal', 2);
     mgr.setTag('key', 'newVal', 1);
-    expect(mgr.renderTags()).toEqual([
-      { key: 'key', value: 'myVal' },
-    ]);
+    expect(mgr.renderTags()).toEqual([{ key: 'key', value: 'myVal' }]);
     mgr.removeTag('key', 1);
-    expect(mgr.renderTags()).toEqual([
-      { key: 'key', value: 'myVal' },
-    ]);
+    expect(mgr.renderTags()).toEqual([{ key: 'key', value: 'myVal' }]);
     mgr.removeTag('key', 2);
     expect(mgr.renderTags()).toEqual(undefined);
   });
@@ -165,9 +161,7 @@ describe('tag manager', () => {
 
     // WHEN
     mgr.setTag('key', 'value');
-    const rendered = mgr.renderTags([
-      { key: 'key2', value: 'value2' },
-    ]);
+    const rendered = mgr.renderTags([{ key: 'key2', value: 'value2' }]);
 
     // THEN
     expect(rendered).toEqual([
@@ -198,9 +192,11 @@ describe('tag manager', () => {
     const mgr = new TagManager(TagType.MAP, 'AWS::Resource::Type', { initial: 'tag' });
 
     // WHEN
-    expect(() => mgr.renderTags({
-      external: 'tag',
-    })).toThrow(/not both/);
+    expect(() =>
+      mgr.renderTags({
+        external: 'tag',
+      })
+    ).toThrow(/not both/);
   });
 
   test('it is safe to call renderTags multiple times with external tags', () => {

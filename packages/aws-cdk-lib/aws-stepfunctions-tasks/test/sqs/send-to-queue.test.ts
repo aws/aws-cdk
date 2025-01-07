@@ -15,7 +15,7 @@ beforeEach(() => {
 
 describeDeprecated('SendToQueue', () => {
   test('Send message to queue', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Send', {
       task: new tasks.SendToQueue(queue, {
         messageBody: sfn.TaskInput.fromText('Send this message'),
@@ -40,15 +40,15 @@ describeDeprecated('SendToQueue', () => {
       },
       End: true,
       Parameters: {
-        'QueueUrl': { Ref: 'Queue4A7E3555' },
-        'MessageBody': 'Send this message',
+        QueueUrl: { Ref: 'Queue4A7E3555' },
+        MessageBody: 'Send this message',
         'MessageDeduplicationId.$': '$.deduping',
       },
     });
   });
 
   test('Send message to SQS queue with task token', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Send', {
       task: new tasks.SendToQueue(queue, {
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -78,7 +78,7 @@ describeDeprecated('SendToQueue', () => {
       Parameters: {
         QueueUrl: { Ref: 'Queue4A7E3555' },
         MessageBody: {
-          'Input': 'Send this message',
+          Input: 'Send this message',
           'Token.$': '$$.Task.Token',
         },
       },
@@ -87,19 +87,19 @@ describeDeprecated('SendToQueue', () => {
 
   test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not included in messageBody', () => {
     expect(() => {
-    // WHEN
+      // WHEN
       new sfn.Task(stack, 'Send', {
         task: new tasks.SendToQueue(queue, {
           integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
           messageBody: sfn.TaskInput.fromText('Send this message'),
         }),
       });
-    // THEN
+      // THEN
     }).toThrow(/Task Token is missing in messageBody/i);
   });
 
   test('Message body can come from state', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Send', {
       task: new tasks.SendToQueue(queue, {
         messageBody: sfn.TaskInput.fromJsonPathAt('$.theMessage'),
@@ -123,14 +123,14 @@ describeDeprecated('SendToQueue', () => {
       },
       End: true,
       Parameters: {
-        'QueueUrl': { Ref: 'Queue4A7E3555' },
+        QueueUrl: { Ref: 'Queue4A7E3555' },
         'MessageBody.$': '$.theMessage',
       },
     });
   });
 
   test('Message body can be an object', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Send', {
       task: new tasks.SendToQueue(queue, {
         messageBody: sfn.TaskInput.fromObject({
@@ -159,7 +159,7 @@ describeDeprecated('SendToQueue', () => {
       Parameters: {
         QueueUrl: { Ref: 'Queue4A7E3555' },
         MessageBody: {
-          'literal': 'literal',
+          literal: 'literal',
           'SomeInput.$': '$.theMessage',
         },
       },
@@ -167,7 +167,7 @@ describeDeprecated('SendToQueue', () => {
   });
 
   test('Message body object can contain references', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Send', {
       task: new tasks.SendToQueue(queue, {
         messageBody: sfn.TaskInput.fromObject({

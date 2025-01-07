@@ -133,9 +133,7 @@ class LiteralMatch extends Matcher {
     }
 
     if (typeof this.pattern === 'object') {
-      return new ObjectMatch(this.name, this.pattern, { partial: this.partialObjects }).test(
-        actual
-      );
+      return new ObjectMatch(this.name, this.pattern, { partial: this.partialObjects }).test(actual);
     }
 
     const result = new MatchResult(actual);
@@ -424,9 +422,7 @@ class SerializedJson extends Matcher {
       }
     }
 
-    const matcher = Matcher.isMatcher(this.pattern)
-      ? this.pattern
-      : new LiteralMatch(this.name, this.pattern);
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
     const innerResult = matcher.test(parsed);
     if (innerResult.hasFailed()) {
       innerResult.recordFailure({
@@ -448,9 +444,7 @@ class NotMatch extends Matcher {
   }
 
   public test(actual: any): MatchResult {
-    const matcher = Matcher.isMatcher(this.pattern)
-      ? this.pattern
-      : new LiteralMatch(this.name, this.pattern);
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
 
     const innerResult = matcher.test(actual);
     const result = new MatchResult(actual);

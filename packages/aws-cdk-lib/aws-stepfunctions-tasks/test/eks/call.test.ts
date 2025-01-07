@@ -47,16 +47,10 @@ test('Call an EKS endpoint', () => {
         Ref: 'Cluster9EE0221C',
       },
       CertificateAuthority: {
-        'Fn::GetAtt': [
-          'Cluster9EE0221C',
-          'CertificateAuthorityData',
-        ],
+        'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
       },
       Endpoint: {
-        'Fn::GetAtt': [
-          'Cluster9EE0221C',
-          'Endpoint',
-        ],
+        'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'],
       },
       Method: 'GET',
       Path: 'path',
@@ -97,16 +91,10 @@ test('Call an EKS endpoint with requestBody as a string', () => {
         Ref: 'Cluster9EE0221C',
       },
       CertificateAuthority: {
-        'Fn::GetAtt': [
-          'Cluster9EE0221C',
-          'CertificateAuthorityData',
-        ],
+        'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
       },
       Endpoint: {
-        'Fn::GetAtt': [
-          'Cluster9EE0221C',
-          'Endpoint',
-        ],
+        'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'],
       },
       Method: 'GET',
       Path: 'path',
@@ -141,23 +129,17 @@ test('Call an EKS endpoint with requestBody supply through path', () => {
     },
     End: true,
     Parameters: {
-      'ClusterName': {
+      ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
-      'CertificateAuthority': {
-        'Fn::GetAtt': [
-          'Cluster9EE0221C',
-          'CertificateAuthorityData',
-        ],
+      CertificateAuthority: {
+        'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
       },
-      'Endpoint': {
-        'Fn::GetAtt': [
-          'Cluster9EE0221C',
-          'Endpoint',
-        ],
+      Endpoint: {
+        'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'],
       },
-      'Method': 'GET',
-      'Path': 'path',
+      Method: 'GET',
+      Path: 'path',
       'RequestBody.$': '$.Request.Body',
     },
   });
@@ -174,9 +156,7 @@ test('Task throws if RUN_JOB is supplied as service integration pattern', () => 
       }),
       integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     });
-  }).toThrow(
-    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: RUN_JOB/,
-  );
+  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: RUN_JOB/);
 });
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
@@ -191,7 +171,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
   }).toThrow(
-    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/,
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/
   );
 });
 
@@ -209,9 +189,7 @@ test('Task throws if cluster supplied does not have clusterEndpoint configured',
         RequestBody: 'requestBody',
       }),
     });
-  }).toThrow(
-    /The "clusterEndpoint" property must be specified when using an imported Cluster./,
-  );
+  }).toThrow(/The "clusterEndpoint" property must be specified when using an imported Cluster./);
 });
 
 test('Task throws if cluster supplied does not have clusterCertificateAuthorityData configured', () => {
@@ -228,7 +206,5 @@ test('Task throws if cluster supplied does not have clusterCertificateAuthorityD
         RequestBody: 'requestBody',
       }),
     });
-  }).toThrow(
-    /The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster./,
-  );
+  }).toThrow(/The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster./);
 });

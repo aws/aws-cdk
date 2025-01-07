@@ -6,14 +6,7 @@ import { CfnConfigurationProfile, CfnHostedConfigurationVersion } from './appcon
 import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';
-import {
-  ActionPoint,
-  IEventDestination,
-  ExtensionOptions,
-  IExtension,
-  IExtensible,
-  ExtensibleBase,
-} from './extension';
+import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import * as cp from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -225,11 +218,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  public on(
-    actionPoint: ActionPoint,
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ) {
+  public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.on(actionPoint, eventDestination, options);
   }
 
@@ -240,10 +229,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  public preCreateHostedConfigurationVersion(
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ) {
+  public preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.preCreateHostedConfigurationVersion(eventDestination, options);
   }
 
@@ -669,12 +655,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       );
       const bucketPolicy = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: [
-          's3:GetBucketLocation',
-          's3:GetBucketVersioning',
-          's3:ListBucket',
-          's3:ListBucketVersions',
-        ],
+        actions: ['s3:GetBucketLocation', 's3:GetBucketVersioning', 's3:ListBucket', 's3:ListBucketVersions'],
         resources: [
           Stack.of(this).formatArn({
             region: '',
@@ -914,11 +895,7 @@ export abstract class ConfigurationSource {
    * @param objectKey The path to the configuration
    * @param key The KMS Key that the bucket is encrypted with
    */
-  public static fromBucket(
-    bucket: s3.IBucket,
-    objectKey: string,
-    key?: kms.IKey
-  ): ConfigurationSource {
+  public static fromBucket(bucket: s3.IBucket, objectKey: string, key?: kms.IKey): ConfigurationSource {
     return {
       locationUri: bucket.s3UrlForObject(objectKey),
       type: ConfigurationSourceType.S3,

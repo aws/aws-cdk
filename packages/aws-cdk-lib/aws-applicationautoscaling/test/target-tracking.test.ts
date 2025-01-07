@@ -23,9 +23,7 @@ describe('target tracking', () => {
         PredefinedMetricSpecification: { PredefinedMetricType: 'EC2SpotFleetRequestAverageCPUUtilization' },
         TargetValue: 30,
       },
-
     });
-
   });
 
   test('test setup target tracking on predefined metric for lambda', () => {
@@ -46,9 +44,7 @@ describe('target tracking', () => {
         PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
         TargetValue: 0.9,
       },
-
     });
-
   });
 
   test('test setup target tracking on predefined metric for DYNAMODB_WRITE_CAPACITY_UTILIZATION', () => {
@@ -105,7 +101,9 @@ describe('target tracking', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       TargetTrackingScalingPolicyConfiguration: {
-        PredefinedMetricSpecification: { PredefinedMetricType: 'SageMakerVariantConcurrentRequestsPerModelHighResolution' },
+        PredefinedMetricSpecification: {
+          PredefinedMetricType: 'SageMakerVariantConcurrentRequestsPerModelHighResolution',
+        },
         TargetValue: 0.5,
       },
     });
@@ -118,14 +116,17 @@ describe('target tracking', () => {
 
     // WHEN
     target.scaleToTrackMetric('Tracking', {
-      predefinedMetric: appscaling.PredefinedMetric.SAGEMAKER_INFERENCE_COMPONENT_CONCURRENT_REQUESTS_PER_COPY_HIGH_RESOLUTION,
+      predefinedMetric:
+        appscaling.PredefinedMetric.SAGEMAKER_INFERENCE_COMPONENT_CONCURRENT_REQUESTS_PER_COPY_HIGH_RESOLUTION,
       targetValue: 0.5,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       TargetTrackingScalingPolicyConfiguration: {
-        PredefinedMetricSpecification: { PredefinedMetricType: 'SageMakerInferenceComponentConcurrentRequestsPerCopyHighResolution' },
+        PredefinedMetricSpecification: {
+          PredefinedMetricType: 'SageMakerInferenceComponentConcurrentRequestsPerCopyHighResolution',
+        },
         TargetValue: 0.5,
       },
     });
@@ -173,8 +174,6 @@ describe('target tracking', () => {
         },
         TargetValue: 30,
       },
-
     });
-
   });
 });

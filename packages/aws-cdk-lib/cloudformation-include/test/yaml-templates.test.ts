@@ -19,29 +19,27 @@ describe('CDK Include', () => {
   test('can ingest a template with all long-form CloudFormation functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-vpc.yaml');
 
-    Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('long-form-vpc.yaml'),
-    );
+    Template.fromStack(stack).templateMatches(loadTestFileToJsObject('long-form-vpc.yaml'));
   });
 
   test('can ingest a template with year-month-date parsed as string instead of Date', () => {
     includeTestTemplate(stack, 'year-month-date-as-strings.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "AWSTemplateFormatVersion": "2010-09-09",
-      "Resources": {
-        "Role": {
-          "Type": "AWS::IAM::Role",
-          "Properties": {
-            "AssumeRolePolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
+      AWSTemplateFormatVersion: '2010-09-09',
+      Resources: {
+        Role: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Version: '2012-10-17',
+              Statement: [
                 {
-                  "Effect": "Allow",
-                  "Principal": {
-                    "Service": ["ec2.amazonaws.com"],
+                  Effect: 'Allow',
+                  Principal: {
+                    Service: ['ec2.amazonaws.com'],
                   },
-                  "Action": ["sts:AssumeRole"],
+                  Action: ['sts:AssumeRole'],
                 },
               ],
             },
@@ -55,12 +53,12 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-base64.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Resources": {
-        "Base64Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::Base64": "NonBase64BucketName",
+      Resources: {
+        Base64Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::Base64': 'NonBase64BucketName',
             },
           },
         },
@@ -72,28 +70,20 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-cidr.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Resources": {
-        "CidrVpc1": {
-          "Type": "AWS::EC2::VPC",
-          "Properties": {
-            "CidrBlock": {
-              "Fn::Cidr": [
-                "192.168.1.1/24",
-                2,
-                5,
-              ],
+      Resources: {
+        CidrVpc1: {
+          Type: 'AWS::EC2::VPC',
+          Properties: {
+            CidrBlock: {
+              'Fn::Cidr': ['192.168.1.1/24', 2, 5],
             },
           },
         },
-        "CidrVpc2": {
-          "Type": "AWS::EC2::VPC",
-          "Properties": {
-            "CidrBlock": {
-              "Fn::Cidr": [
-                "192.168.1.1/24",
-                "2",
-                "5",
-              ],
+        CidrVpc2: {
+          Type: 'AWS::EC2::VPC',
+          Properties: {
+            CidrBlock: {
+              'Fn::Cidr': ['192.168.1.1/24', '2', '5'],
             },
           },
         },
@@ -105,36 +95,28 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-find-in-map.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Mappings": {
-        "RegionMap": {
-          "region-1": {
-            "HVM64": "name1",
-            "HVMG2": "name2",
+      Mappings: {
+        RegionMap: {
+          'region-1': {
+            HVM64: 'name1',
+            HVMG2: 'name2',
           },
         },
       },
-      "Resources": {
-        "Bucket1": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::FindInMap": [
-                "RegionMap",
-                "region-1",
-                "HVM64",
-              ],
+      Resources: {
+        Bucket1: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::FindInMap': ['RegionMap', 'region-1', 'HVM64'],
             },
           },
         },
-        "Bucket2": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::FindInMap": [
-                "RegionMap",
-                "region-1",
-                "HVMG2",
-              ],
+        Bucket2: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::FindInMap': ['RegionMap', 'region-1', 'HVMG2'],
             },
           },
         },
@@ -146,38 +128,36 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-get-att.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Resources": {
-        "ELB": {
-          "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-          "Properties": {
-            "AvailabilityZones": [
-              "us-east-1a",
-            ],
-            "Listeners": [
+      Resources: {
+        ELB: {
+          Type: 'AWS::ElasticLoadBalancing::LoadBalancer',
+          Properties: {
+            AvailabilityZones: ['us-east-1a'],
+            Listeners: [
               {
-                "LoadBalancerPort": "80",
-                "InstancePort": "80",
-                "Protocol": "HTTP",
+                LoadBalancerPort: '80',
+                InstancePort: '80',
+                Protocol: 'HTTP',
               },
             ],
           },
         },
-        "Bucket0": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": { "BucketName": "some-bucket" },
+        Bucket0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'some-bucket' },
         },
-        "Bucket1": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": { "Fn::GetAtt": "Bucket0.Arn" },
-            "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
+        Bucket1: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: { 'Fn::GetAtt': 'Bucket0.Arn' },
+            AccessControl: { 'Fn::GetAtt': ['ELB', 'SourceSecurityGroup.GroupName'] },
           },
         },
-        "Bucket2": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": { "Fn::GetAtt": ["Bucket1", "Arn"] },
-            "AccessControl": { "Fn::GetAtt": "ELB.SourceSecurityGroup.GroupName" },
+        Bucket2: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: { 'Fn::GetAtt': ['Bucket1', 'Arn'] },
+            AccessControl: { 'Fn::GetAtt': 'ELB.SourceSecurityGroup.GroupName' },
           },
         },
       },
@@ -188,28 +168,28 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-select.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Resources": {
-        "Subnet1": {
-          "Type": "AWS::EC2::Subnet",
-          "Properties": {
-            "VpcId": {
-              "Fn::Select": [0, { "Fn::GetAZs": "" }],
+      Resources: {
+        Subnet1: {
+          Type: 'AWS::EC2::Subnet',
+          Properties: {
+            VpcId: {
+              'Fn::Select': [0, { 'Fn::GetAZs': '' }],
             },
-            "CidrBlock": "10.0.0.0/24",
-            "AvailabilityZone": {
-              "Fn::Select": ["0", { "Fn::GetAZs": "eu-west-2" }],
+            CidrBlock: '10.0.0.0/24',
+            AvailabilityZone: {
+              'Fn::Select': ['0', { 'Fn::GetAZs': 'eu-west-2' }],
             },
           },
         },
-        "Subnet2": {
-          "Type": "AWS::EC2::Subnet",
-          "Properties": {
-            "VpcId": {
-              "Ref": "Subnet1",
+        Subnet2: {
+          Type: 'AWS::EC2::Subnet',
+          Properties: {
+            VpcId: {
+              Ref: 'Subnet1',
             },
-            "CidrBlock": "10.0.0.0/24",
-            "AvailabilityZone": {
-              "Fn::Select": [0, { "Fn::GetAZs": "eu-west-2" }],
+            CidrBlock: '10.0.0.0/24',
+            AvailabilityZone: {
+              'Fn::Select': [0, { 'Fn::GetAZs': 'eu-west-2' }],
             },
           },
         },
@@ -221,12 +201,12 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-import-value.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Resources": {
-        "Bucket1": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::ImportValue": "SomeSharedValue",
+      Resources: {
+        Bucket1: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::ImportValue': 'SomeSharedValue',
             },
           },
         },
@@ -238,15 +218,12 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-join.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Resources": {
-        "Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::Join": [' ', [
-                "NamePart1 ",
-                { "Fn::ImportValue": "SomeSharedValue" },
-              ]],
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::Join': [' ', ['NamePart1 ', { 'Fn::ImportValue': 'SomeSharedValue' }]],
             },
           },
         },
@@ -258,24 +235,30 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-split.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Resources": {
-        "Bucket1": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::Split": [' ', {
-                "Fn::ImportValue": "SomeSharedBucketName",
-              }],
+      Resources: {
+        Bucket1: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::Split': [
+                ' ',
+                {
+                  'Fn::ImportValue': 'SomeSharedBucketName',
+                },
+              ],
             },
           },
         },
-        "Bucket2": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::Split": [' ', {
-                "Fn::ImportValue": "SomeSharedBucketName",
-              }],
+        Bucket2: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::Split': [
+                ' ',
+                {
+                  'Fn::ImportValue': 'SomeSharedBucketName',
+                },
+              ],
             },
           },
         },
@@ -288,16 +271,16 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'invalid/short-form-transform.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Resources": {
-        "Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::Transform": {
-                "Name": "SomeMacroName",
-                "Parameters": {
-                  "key1": "value1",
-                  "key2": "value2",
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::Transform': {
+                Name: 'SomeMacroName',
+                Parameters: {
+                  key1: 'value1',
+                  key2: 'value2',
                 },
               },
             },
@@ -311,33 +294,27 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-conditionals.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Conditions": {
-        "AlwaysTrueCond": {
-          "Fn::And": [
+      Conditions: {
+        AlwaysTrueCond: {
+          'Fn::And': [
             {
-              "Fn::Not": [
-                { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region"] },
-              ],
+              'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'AWS::Region' }, 'completely-made-up-region'] }],
             },
             {
-              "Fn::Or": [
-                { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region"] },
-                { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region"] },
+              'Fn::Or': [
+                { 'Fn::Equals': [{ Ref: 'AWS::Region' }, 'completely-made-up-region'] },
+                { 'Fn::Equals': [{ Ref: 'AWS::Region' }, 'completely-made-up-region'] },
               ],
             },
           ],
         },
       },
-      "Resources": {
-        "Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::If": [
-                "AlwaysTrueCond",
-                "MyBucketName",
-                { "Ref": "AWS::NoValue" },
-              ],
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::If': ['AlwaysTrueCond', 'MyBucketName', { Ref: 'AWS::NoValue' }],
             },
           },
         },
@@ -349,40 +326,30 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'short-form-conditions.yaml');
 
     Template.fromStack(stack).templateMatches({
-      "Conditions": {
-        "AlwaysTrueCond": {
-          "Fn::Not": [
-            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region1"] },
-          ],
+      Conditions: {
+        AlwaysTrueCond: {
+          'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'AWS::Region' }, 'completely-made-up-region1'] }],
         },
-        "AnotherAlwaysTrueCond": {
-          "Fn::Not": [
-            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region2"] },
-          ],
+        AnotherAlwaysTrueCond: {
+          'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'AWS::Region' }, 'completely-made-up-region2'] }],
         },
-        "ThirdAlwaysTrueCond": {
-          "Fn::Not": [
-            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region3"] },
-          ],
+        ThirdAlwaysTrueCond: {
+          'Fn::Not': [{ 'Fn::Equals': [{ Ref: 'AWS::Region' }, 'completely-made-up-region3'] }],
         },
-        "CombinedCond": {
-          "Fn::Or": [
-            { "Condition": "AlwaysTrueCond" },
-            { "Condition": "AnotherAlwaysTrueCond" },
-            { "Condition": "ThirdAlwaysTrueCond" },
+        CombinedCond: {
+          'Fn::Or': [
+            { Condition: 'AlwaysTrueCond' },
+            { Condition: 'AnotherAlwaysTrueCond' },
+            { Condition: 'ThirdAlwaysTrueCond' },
           ],
         },
       },
-      "Resources": {
-        "Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": {
-              "Fn::If": [
-                "CombinedCond",
-                "MyBucketName",
-                { "Ref": "AWS::NoValue" },
-              ],
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketName: {
+              'Fn::If': ['CombinedCond', 'MyBucketName', { Ref: 'AWS::NoValue' }],
             },
           },
         },
@@ -393,25 +360,19 @@ describe('CDK Include', () => {
   test('can ingest a yaml with long-form functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-subnet.yaml');
 
-    Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('long-form-subnet.yaml'),
-    );
+    Template.fromStack(stack).templateMatches(loadTestFileToJsObject('long-form-subnet.yaml'));
   });
 
   test('can ingest a YAML template with Fn::Sub in string form and output it unchanged', () => {
     includeTestTemplate(stack, 'short-form-fnsub-string.yaml');
 
-    Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('short-form-fnsub-string.yaml'),
-    );
+    Template.fromStack(stack).templateMatches(loadTestFileToJsObject('short-form-fnsub-string.yaml'));
   });
 
   test('can ingest a YAML template with Fn::Sub in map form and output it unchanged', () => {
     includeTestTemplate(stack, 'short-form-sub-map.yaml');
 
-    Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('short-form-sub-map.yaml'),
-    );
+    Template.fromStack(stack).templateMatches(loadTestFileToJsObject('short-form-sub-map.yaml'));
   });
 
   test('can correctly substitute values inside a string containing JSON passed to Fn::Sub', () => {
@@ -423,17 +384,17 @@ describe('CDK Include', () => {
     // we need to resolve the Fn::Sub expression to get to its argument
     const resolvedDashboardBody = stack.resolve(dashboard.dashboardBody)['Fn::Sub'];
     expect(JSON.parse(resolvedDashboardBody)).toStrictEqual({
-      "widgets": [
+      widgets: [
         {
-          "type": "text",
-          "properties": {
-            "markdown": "test test",
+          type: 'text',
+          properties: {
+            markdown: 'test test',
           },
         },
         {
-          "type": "text",
-          "properties": {
-            "markdown": "test test",
+          type: 'text',
+          properties: {
+            markdown: 'test test',
           },
         },
       ],
@@ -447,7 +408,11 @@ describe('CDK Include', () => {
   });
 });
 
-function includeTestTemplate(scope: constructs.Construct, testTemplate: string, parameters?: { [key: string]: string }): inc.CfnInclude {
+function includeTestTemplate(
+  scope: constructs.Construct,
+  testTemplate: string,
+  parameters?: { [key: string]: string }
+): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
     parameters,

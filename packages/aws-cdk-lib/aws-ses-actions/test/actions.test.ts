@@ -19,10 +19,12 @@ beforeEach(() => {
 });
 
 test('add header action', () => {
-  rule.addAction(new actions.AddHeader({
-    name: 'X-My-Header',
-    value: 'value',
-  }));
+  rule.addAction(
+    new actions.AddHeader({
+      name: 'X-My-Header',
+      value: 'value',
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
@@ -40,26 +42,36 @@ test('add header action', () => {
 });
 
 test('add header action with invalid header name', () => {
-  expect(() => rule.addAction(new actions.AddHeader({
-    name: 'He@der',
-    value: 'value',
-  }))).toThrow(/`name`/);
+  expect(() =>
+    rule.addAction(
+      new actions.AddHeader({
+        name: 'He@der',
+        value: 'value',
+      })
+    )
+  ).toThrow(/`name`/);
 });
 
 test('add header action with invalid header value', () => {
-  expect(() => rule.addAction(new actions.AddHeader({
-    name: 'Header',
-    value: `va
+  expect(() =>
+    rule.addAction(
+      new actions.AddHeader({
+        name: 'Header',
+        value: `va
     lu`,
-  }))).toThrow(/`value`/);
+      })
+    )
+  ).toThrow(/`value`/);
 });
 
 test('add bounce action', () => {
-  rule.addAction(new actions.Bounce({
-    sender: 'noreply@aws.com',
-    template: actions.BounceTemplate.MESSAGE_CONTENT_REJECTED,
-    topic,
-  }));
+  rule.addAction(
+    new actions.Bounce({
+      sender: 'noreply@aws.com',
+      template: actions.BounceTemplate.MESSAGE_CONTENT_REJECTED,
+      topic,
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
@@ -88,11 +100,13 @@ test('add lambda action', () => {
     runtime: lambda.Runtime.NODEJS_LATEST,
   });
 
-  rule.addAction(new actions.Lambda({
-    function: fn,
-    invocationType: actions.LambdaInvocationType.REQUEST_RESPONSE,
-    topic,
-  }));
+  rule.addAction(
+    new actions.Lambda({
+      function: fn,
+      invocationType: actions.LambdaInvocationType.REQUEST_RESPONSE,
+      topic,
+    })
+  );
 
   Template.fromStack(stack).hasResource('AWS::SES::ReceiptRule', {
     Properties: {
@@ -101,10 +115,7 @@ test('add lambda action', () => {
           {
             LambdaAction: {
               FunctionArn: {
-                'Fn::GetAtt': [
-                  'Function76856677',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Function76856677', 'Arn'],
               },
               InvocationType: 'RequestResponse',
               TopicArn: {
@@ -119,18 +130,13 @@ test('add lambda action', () => {
         Ref: 'RuleSetE30C6C48',
       },
     },
-    DependsOn: [
-      'FunctionAllowSes1829904A',
-    ],
+    DependsOn: ['FunctionAllowSes1829904A'],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
-      'Fn::GetAtt': [
-        'Function76856677',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['Function76856677', 'Arn'],
     },
     Principal: 'ses.amazonaws.com',
     SourceAccount: {
@@ -143,12 +149,14 @@ test('add s3 action', () => {
   const bucket = new s3.Bucket(stack, 'Bucket');
   const kmsKey = new kms.Key(stack, 'Key');
 
-  rule.addAction(new actions.S3({
-    bucket,
-    kmsKey,
-    objectKeyPrefix: 'emails/',
-    topic,
-  }));
+  rule.addAction(
+    new actions.S3({
+      bucket,
+      kmsKey,
+      objectKeyPrefix: 'emails/',
+      topic,
+    })
+  );
 
   Template.fromStack(stack).hasResource('AWS::SES::ReceiptRule', {
     Properties: {
@@ -160,10 +168,7 @@ test('add s3 action', () => {
                 Ref: 'Bucket83908E77',
               },
               KmsKeyArn: {
-                'Fn::GetAtt': [
-                  'Key961B73FD',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Key961B73FD', 'Arn'],
               },
               ObjectKeyPrefix: 'emails/',
               TopicArn: {
@@ -204,10 +209,7 @@ test('add s3 action', () => {
               '',
               [
                 {
-                  'Fn::GetAtt': [
-                    'Bucket83908E77',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['Bucket83908E77', 'Arn'],
                 },
                 '/emails/*',
               ],
@@ -221,37 +223,38 @@ test('add s3 action', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: Match.arrayWith([{
-        Action: [
-          'kms:Encrypt',
-          'kms:GenerateDataKey',
-        ],
-        Condition: {
-          Null: {
-            'kms:EncryptionContext:aws:ses:rule-name': 'false',
-            'kms:EncryptionContext:aws:ses:message-id': 'false',
-          },
-          StringEquals: {
-            'kms:EncryptionContext:aws:ses:source-account': {
-              Ref: 'AWS::AccountId',
+      Statement: Match.arrayWith([
+        {
+          Action: ['kms:Encrypt', 'kms:GenerateDataKey'],
+          Condition: {
+            Null: {
+              'kms:EncryptionContext:aws:ses:rule-name': 'false',
+              'kms:EncryptionContext:aws:ses:message-id': 'false',
+            },
+            StringEquals: {
+              'kms:EncryptionContext:aws:ses:source-account': {
+                Ref: 'AWS::AccountId',
+              },
             },
           },
+          Effect: 'Allow',
+          Principal: {
+            Service: 'ses.amazonaws.com',
+          },
+          Resource: '*',
         },
-        Effect: 'Allow',
-        Principal: {
-          Service: 'ses.amazonaws.com',
-        },
-        Resource: '*',
-      }]),
+      ]),
     },
   });
 });
 
 test('add sns action', () => {
-  rule.addAction(new actions.Sns({
-    encoding: actions.EmailEncoding.BASE64,
-    topic,
-  }));
+  rule.addAction(
+    new actions.Sns({
+      encoding: actions.EmailEncoding.BASE64,
+      topic,
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
@@ -271,9 +274,11 @@ test('add sns action', () => {
 });
 
 test('add stop action', () => {
-  rule.addAction(new actions.Stop({
-    topic,
-  }));
+  rule.addAction(
+    new actions.Stop({
+      topic,
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
@@ -293,10 +298,12 @@ test('add stop action', () => {
 });
 
 test('add workmail action', () => {
-  rule.addAction(new actions.WorkMail({
-    organizationArn: 'arn:aws:workmail:us-east-1:123456789012:organization/m-organizationid',
-    topic,
-  }));
+  rule.addAction(
+    new actions.WorkMail({
+      organizationArn: 'arn:aws:workmail:us-east-1:123456789012:organization/m-organizationid',
+      topic,
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {

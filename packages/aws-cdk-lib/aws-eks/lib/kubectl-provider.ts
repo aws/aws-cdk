@@ -126,9 +126,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     const cluster = props.cluster;
 
     if (!cluster.kubectlRole) {
-      throw new Error(
-        '"kubectlRole" is not defined, cannot issue kubectl commands against this cluster'
-      );
+      throw new Error('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster');
     }
 
     if (cluster.kubectlPrivateSubnets && !cluster.kubectlSecurityGroup) {
@@ -151,12 +149,8 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
       securityGroups:
-        cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup
-          ? [cluster.kubectlSecurityGroup]
-          : undefined,
-      vpcSubnets: cluster.kubectlPrivateSubnets
-        ? { subnets: cluster.kubectlPrivateSubnets }
-        : undefined,
+        cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
     // allow user to customize the layers with the tools we need
@@ -181,9 +175,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     }
 
     // For OCI helm chart authorization.
-    this.handlerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly')
-    );
+    this.handlerRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     /**
      * For OCI helm chart public ECR authorization. As ECR public is only available in `aws` partition,
@@ -198,18 +190,13 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       'ConditionalPolicyArn',
       Fn.conditionIf(
         hasEcrPublicCondition.logicalId,
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly')
-          .managedPolicyArn,
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly').managedPolicyArn,
         Aws.NO_VALUE
       ).toString()
     );
 
     this.handlerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromManagedPolicyArn(
-        this,
-        'conditionalPolicy',
-        conditionalPolicy.managedPolicyArn
-      )
+      iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn)
     );
 
     // allow this handler to assume the kubectl role
@@ -218,13 +205,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      vpcSubnets: cluster.kubectlPrivateSubnets
-        ? { subnets: cluster.kubectlPrivateSubnets }
-        : undefined,
+      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
       securityGroups:
-        cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup
-          ? [cluster.kubectlSecurityGroup]
-          : undefined,
+        cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
     });
 
     this.serviceToken = provider.serviceToken;

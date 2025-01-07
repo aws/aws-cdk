@@ -29,39 +29,40 @@ describe('Fail State', () => {
   });
 
   test('can add a fail state to the chain with custom state name', () => {
-  // WHEN
+    // WHEN
     const definition = new stepfunctions.CustomState(stack, 'Custom1', {
       stateJson,
-    }).next(new stepfunctions.Pass(stack, 'MyPass'))
-      .next(new stepfunctions.Fail(stack, 'Fail', {
-        stateName: 'my-fail-state',
-        comment: 'failing state',
-        errorPath: stepfunctions.JsonPath.stringAt('$.error'),
-        causePath: stepfunctions.JsonPath.stringAt('$.cause'),
-      }));
+    })
+      .next(new stepfunctions.Pass(stack, 'MyPass'))
+      .next(
+        new stepfunctions.Fail(stack, 'Fail', {
+          stateName: 'my-fail-state',
+          comment: 'failing state',
+          errorPath: stepfunctions.JsonPath.stringAt('$.error'),
+          causePath: stepfunctions.JsonPath.stringAt('$.cause'),
+        })
+      );
 
     // THEN
-    expect(render(stack, definition)).toStrictEqual(
-      {
-        StartAt: 'Custom1',
-        States: {
-          'Custom1': {
-            Next: 'MyPass',
-            Type: 'Task',
-            ...stateJson,
-          },
-          'MyPass': {
-            Type: 'Pass',
-            Next: 'my-fail-state',
-          },
-          'my-fail-state': {
-            Comment: 'failing state',
-            Type: 'Fail',
-            CausePath: '$.cause',
-            ErrorPath: '$.error',
-          },
+    expect(render(stack, definition)).toStrictEqual({
+      StartAt: 'Custom1',
+      States: {
+        Custom1: {
+          Next: 'MyPass',
+          Type: 'Task',
+          ...stateJson,
+        },
+        MyPass: {
+          Type: 'Pass',
+          Next: 'my-fail-state',
+        },
+        'my-fail-state': {
+          Comment: 'failing state',
+          Type: 'Fail',
+          CausePath: '$.cause',
+          ErrorPath: '$.error',
         },
       },
-    );
+    });
   });
 });

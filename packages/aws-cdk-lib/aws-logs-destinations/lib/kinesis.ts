@@ -29,10 +29,7 @@ export class KinesisDestination implements logs.ILogSubscriptionDestination {
     private readonly props: KinesisDestinationProps = {}
   ) {}
 
-  public bind(
-    scope: Construct,
-    _sourceLogGroup: logs.ILogGroup
-  ): logs.LogSubscriptionDestinationConfig {
+  public bind(scope: Construct, _sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
     // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
     // Create a role to be assumed by CWL that can write to this stream and pass itself.
     const id = 'CloudWatchLogsCanPutRecords';

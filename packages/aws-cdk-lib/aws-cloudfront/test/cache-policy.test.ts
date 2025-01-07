@@ -88,7 +88,9 @@ describe('CachePolicy', () => {
 
   test('throws on long policy names over 128 characters', () => {
     const errorMessage = /'cachePolicyName' cannot be longer than 128 characters/;
-    expect(() => new CachePolicy(stack, 'CachePolicy1', { cachePolicyName: 'FooBarBaz'.repeat(15) })).toThrow(errorMessage);
+    expect(() => new CachePolicy(stack, 'CachePolicy1', { cachePolicyName: 'FooBarBaz'.repeat(15) })).toThrow(
+      errorMessage
+    );
   });
 
   test('throws if cachePolicyName contains invalid characters', () => {
@@ -103,9 +105,12 @@ describe('CachePolicy', () => {
   });
 
   test('does not throw if cachePolicyName is a token', () => {
-    expect(() => new CachePolicy(stack, 'CachePolicy', {
-      cachePolicyName: Aws.STACK_NAME,
-    })).not.toThrow();
+    expect(
+      () =>
+        new CachePolicy(stack, 'CachePolicy', {
+          cachePolicyName: Aws.STACK_NAME,
+        })
+    ).not.toThrow();
   });
 
   test('throws on long comment over 128 characters', () => {
@@ -194,7 +199,9 @@ describe('CachePolicy', () => {
 
 test('managed policies are provided', () => {
   expect(CachePolicy.CACHING_OPTIMIZED.cachePolicyId).toEqual('658327ea-f89d-4fab-a63d-7e88639e58f6');
-  expect(CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS.cachePolicyId).toEqual('b2884449-e4de-46a7-ac36-70bc7f1ddd6d');
+  expect(CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS.cachePolicyId).toEqual(
+    'b2884449-e4de-46a7-ac36-70bc7f1ddd6d'
+  );
   expect(CachePolicy.CACHING_DISABLED.cachePolicyId).toEqual('4135ea2d-6df8-44a3-9df3-4b5a84be39ad');
   expect(CachePolicy.ELEMENTAL_MEDIA_PACKAGE.cachePolicyId).toEqual('08627262-05a9-4f76-9ded-b50ca2e3a84f');
 });
@@ -239,7 +246,6 @@ describe.each([
   test('denyList() throws if list is empty', () => {
     expect(() => clazz.denyList()).toThrow(new RegExp(`At least one ${type} to deny must be provided`));
   });
-
 });
 
 describe('HeaderBehavior', () => {

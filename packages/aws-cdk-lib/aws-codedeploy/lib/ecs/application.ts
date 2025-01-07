@@ -50,11 +50,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
    * @param ecsApplicationName the name of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
-  public static fromEcsApplicationName(
-    scope: Construct,
-    id: string,
-    ecsApplicationName: string
-  ): IEcsApplication {
+  public static fromEcsApplicationName(scope: Construct, id: string, ecsApplicationName: string): IEcsApplication {
     class Import extends Resource implements IEcsApplication {
       public applicationArn = arnForApplication(Stack.of(scope), ecsApplicationName);
       public applicationName = ecsApplicationName;
@@ -71,11 +67,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
    * @param ecsApplicationArn the ARN of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
-  public static fromEcsApplicationArn(
-    scope: Construct,
-    id: string,
-    ecsApplicationArn: string
-  ): IEcsApplication {
+  public static fromEcsApplicationArn(scope: Construct, id: string, ecsApplicationArn: string): IEcsApplication {
     return new (class extends Resource implements IEcsApplication {
       public applicationArn = ecsApplicationArn;
       public applicationName =
@@ -97,15 +89,12 @@ export class EcsApplication extends Resource implements IEcsApplication {
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(
-      arnForApplication(Stack.of(scope), resource.ref),
-      {
-        service: 'codedeploy',
-        resource: 'application',
-        resourceName: this.physicalName,
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      }
-    );
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(scope), resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
 
     this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }

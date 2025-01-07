@@ -5,10 +5,8 @@ import { httpRequest } from './outbound';
 import { log, withRetries } from './util';
 import { OnEventResponse } from '../types';
 
-export const CREATE_FAILED_PHYSICAL_ID_MARKER =
-  'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED';
-export const MISSING_PHYSICAL_ID_MARKER =
-  'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';
+export const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED';
+export const MISSING_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';
 
 export interface CloudFormationResponseOptions {
   readonly reason?: string;
@@ -75,10 +73,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
     // ignore DELETE event when the physical resource ID is the marker that
     // indicates that this DELETE is a subsequent DELETE to a failed CREATE
     // operation.
-    if (
-      event.RequestType === 'Delete' &&
-      event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER
-    ) {
+    if (event.RequestType === 'Delete' && event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER) {
       log('ignoring DELETE event caused by a failed CREATE event');
       await submitResponse('SUCCESS', event);
       return;

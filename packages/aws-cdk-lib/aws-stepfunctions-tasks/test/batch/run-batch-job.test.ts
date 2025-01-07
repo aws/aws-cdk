@@ -17,9 +17,7 @@ beforeEach(() => {
 
   batchJobDefinition = new batch.EcsJobDefinition(stack, 'JobDefinition', {
     container: new batch.EcsEc2ContainerDefinition(stack, 'Container', {
-      image: ecs.ContainerImage.fromAsset(
-        path.join(__dirname, 'batchjob-image'),
-      ),
+      image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'batchjob-image')),
       cpu: 256,
       memory: cdk.Size.mebibytes(2048),
     }),
@@ -39,7 +37,7 @@ beforeEach(() => {
 
 describeDeprecated('RunBatchJob', () => {
   test('Task with only the required parameters', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
         jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
@@ -68,17 +66,14 @@ describeDeprecated('RunBatchJob', () => {
         JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
         JobName: 'JobName',
         JobQueue: {
-          'Fn::GetAtt': [
-            'JobQueueEE3AD499',
-            'JobQueueArn',
-          ],
+          'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
         },
       },
     });
   });
 
   test('Task with all the parameters', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
         jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
@@ -123,10 +118,7 @@ describeDeprecated('RunBatchJob', () => {
         JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
         JobName: 'JobName',
         JobQueue: {
-          'Fn::GetAtt': [
-            'JobQueueEE3AD499',
-            'JobQueueArn',
-          ],
+          'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
         },
         ArrayProperties: { Size: 15 },
         ContainerOverrides: {
@@ -146,7 +138,7 @@ describeDeprecated('RunBatchJob', () => {
   });
 
   test('supports tokens', () => {
-  // WHEN
+    // WHEN
     const task = new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
         jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
@@ -175,21 +167,18 @@ describeDeprecated('RunBatchJob', () => {
       },
       End: true,
       Parameters: {
-        'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
+        JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
         'JobName.$': '$.jobName',
-        'JobQueue': {
-          'Fn::GetAtt': [
-            'JobQueueEE3AD499',
-            'JobQueueArn',
-          ],
+        JobQueue: {
+          'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'],
         },
-        'ArrayProperties': {
+        ArrayProperties: {
           'Size.$': '$.arraySize',
         },
-        'RetryStrategy': {
+        RetryStrategy: {
           'Attempts.$': '$.attempts',
         },
-        'Timeout': {
+        Timeout: {
           'AttemptDurationSeconds.$': '$.timeout',
         },
       },
@@ -206,9 +195,7 @@ describeDeprecated('RunBatchJob', () => {
           integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
         }),
       });
-    }).toThrow(
-      /Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call RunBatchJob./i,
-    );
+    }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call RunBatchJob./i);
   });
 
   test('Task throws if environment in containerOverrides contain env with name starting with AWS_BATCH', () => {
@@ -224,7 +211,7 @@ describeDeprecated('RunBatchJob', () => {
         }),
       });
     }).toThrow(
-      /Invalid environment variable name: AWS_BATCH_MY_NAME. Environment variable names starting with 'AWS_BATCH' are reserved./i,
+      /Invalid environment variable name: AWS_BATCH_MY_NAME. Environment variable names starting with 'AWS_BATCH' are reserved./i
     );
   });
 
@@ -238,9 +225,7 @@ describeDeprecated('RunBatchJob', () => {
           arraySize: 1,
         }),
       });
-    }).toThrow(
-      /arraySize must be between 2 and 10,000/,
-    );
+    }).toThrow(/arraySize must be between 2 and 10,000/);
 
     expect(() => {
       new sfn.Task(stack, 'Task', {
@@ -251,9 +236,7 @@ describeDeprecated('RunBatchJob', () => {
           arraySize: 10001,
         }),
       });
-    }).toThrow(
-      /arraySize must be between 2 and 10,000/,
-    );
+    }).toThrow(/arraySize must be between 2 and 10,000/);
   });
 
   test('Task throws if dependencies exceeds 20', () => {
@@ -263,15 +246,13 @@ describeDeprecated('RunBatchJob', () => {
           jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
           jobName: 'JobName',
           jobQueueArn: batchJobQueue.jobQueueArn,
-          dependsOn: [...Array(21).keys()].map(i => ({
+          dependsOn: [...Array(21).keys()].map((i) => ({
             jobId: `${i}`,
             type: `some_type-${i}`,
           })),
         }),
       });
-    }).toThrow(
-      /dependencies must be 20 or less/,
-    );
+    }).toThrow(/dependencies must be 20 or less/);
   });
 
   test('Task throws if attempts is out of limits 1-10', () => {
@@ -284,9 +265,7 @@ describeDeprecated('RunBatchJob', () => {
           attempts: 0,
         }),
       });
-    }).toThrow(
-      /attempts must be between 1 and 10/,
-    );
+    }).toThrow(/attempts must be between 1 and 10/);
 
     expect(() => {
       new sfn.Task(stack, 'Task', {
@@ -297,9 +276,7 @@ describeDeprecated('RunBatchJob', () => {
           attempts: 11,
         }),
       });
-    }).toThrow(
-      /attempts must be between 1 and 10/,
-    );
+    }).toThrow(/attempts must be between 1 and 10/);
   });
 
   test('Task throws if timeout is less than 60 sec', () => {
@@ -312,8 +289,6 @@ describeDeprecated('RunBatchJob', () => {
           timeout: cdk.Duration.seconds(59),
         }),
       });
-    }).toThrow(
-      /timeout must be greater than 60 seconds/,
-    );
+    }).toThrow(/timeout must be greater than 60 seconds/);
   });
 });

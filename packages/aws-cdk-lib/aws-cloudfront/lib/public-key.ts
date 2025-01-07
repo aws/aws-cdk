@@ -56,10 +56,7 @@ export class PublicKey extends Resource implements IPublicKey {
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
 
-    if (
-      !Token.isUnresolved(props.encodedKey) &&
-      !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)
-    ) {
+    if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
       throw new Error(
         `Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`
       );

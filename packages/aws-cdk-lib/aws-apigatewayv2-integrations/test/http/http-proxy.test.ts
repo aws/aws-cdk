@@ -1,5 +1,15 @@
 import { Template } from '../../../assertions';
-import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '../../../aws-apigatewayv2';
+import {
+  HttpApi,
+  HttpIntegration,
+  HttpIntegrationType,
+  HttpMethod,
+  HttpRoute,
+  HttpRouteKey,
+  MappingValue,
+  ParameterMapping,
+  PayloadFormatVersion,
+} from '../../../aws-apigatewayv2';
 import { Duration, Stack } from '../../../core';
 import { HttpUrlIntegration } from './../../lib/http/http-proxy';
 

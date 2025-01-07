@@ -568,10 +568,8 @@ export class LogGroup extends LogGroupBase {
 
     class Import extends LogGroupBase {
       public readonly logGroupArn = `${baseLogGroupArn}:*`;
-      public readonly logGroupName = Stack.of(scope).splitArn(
-        baseLogGroupArn,
-        ArnFormat.COLON_RESOURCE_NAME
-      ).resourceName!;
+      public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME)
+        .resourceName!;
     }
 
     return new Import(scope, id, {
@@ -621,11 +619,7 @@ export class LogGroup extends LogGroupBase {
       retentionInDays = undefined;
     }
 
-    if (
-      retentionInDays !== undefined &&
-      !Token.isUnresolved(retentionInDays) &&
-      retentionInDays <= 0
-    ) {
+    if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 

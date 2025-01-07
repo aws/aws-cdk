@@ -54,10 +54,7 @@ test('task policies are generated', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'elasticmapreduce:DescribeCluster',
-            'elasticmapreduce:TerminateJobFlows',
-          ],
+          Action: ['elasticmapreduce:DescribeCluster', 'elasticmapreduce:TerminateJobFlows'],
           Effect: 'Allow',
           Resource: {
             'Fn::Join': [
@@ -81,11 +78,7 @@ test('task policies are generated', () => {
           },
         },
         {
-          Action: [
-            'events:PutTargets',
-            'events:PutRule',
-            'events:DescribeRule',
-          ],
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
           Effect: 'Allow',
           Resource: {
             'Fn::Join': [
@@ -177,5 +170,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       clusterId: 'ClusterId',
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
+  );
 });

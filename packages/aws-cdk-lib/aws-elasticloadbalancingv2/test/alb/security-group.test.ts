@@ -36,11 +36,13 @@ describe('tests', () => {
     fixture.listener.addTargetGroups('Rule', {
       priority: 10,
       conditions: [elbv2.ListenerCondition.hostHeaders(['example.com'])],
-      targetGroups: [new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup2', {
-        vpc: fixture.vpc,
-        port: 8008,
-        targets: [target2],
-      })],
+      targetGroups: [
+        new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup2', {
+          vpc: fixture.vpc,
+          port: 8008,
+          targets: [target2],
+        }),
+      ],
     });
 
     // THEN
@@ -165,9 +167,12 @@ describe('tests', () => {
     fixture.listener.addTargets('default', { port: 80 });
 
     // WHEN
-    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack2, 'SecurityGroup',
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+      stack2,
+      'SecurityGroup',
       fixture.listener.connections.securityGroups[0].securityGroupId,
-      { allowAllOutbound: false });
+      { allowAllOutbound: false }
+    );
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
       defaultPort: 8008,
       listenerArn: fixture.listener.listenerArn,
@@ -232,7 +237,9 @@ describe('tests', () => {
 });
 
 const LB_SECURITY_GROUP = { 'Fn::GetAtt': ['LBSecurityGroup8A41EA2B', 'GroupId'] };
-const IMPORTED_LB_SECURITY_GROUP = { 'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttLBSecurityGroup8A41EA2BGroupId851EE1F6' };
+const IMPORTED_LB_SECURITY_GROUP = {
+  'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttLBSecurityGroup8A41EA2BGroupId851EE1F6',
+};
 
 function expectSameStackSGRules(stack: cdk.Stack) {
   expectSGRules(stack, LB_SECURITY_GROUP);
@@ -283,7 +290,9 @@ class TestFixture {
   }
 
   public get listener(): elbv2.ApplicationListener {
-    if (this._listener === undefined) { throw new Error('Did not create a listener'); }
+    if (this._listener === undefined) {
+      throw new Error('Did not create a listener');
+    }
     return this._listener;
   }
 }

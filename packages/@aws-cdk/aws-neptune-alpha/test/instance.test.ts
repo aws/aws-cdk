@@ -49,11 +49,7 @@ describe('DatabaseInstance', () => {
       Value: {
         'Fn::Join': [
           '',
-          [
-            { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint'] },
-            ':',
-            { 'Fn::GetAtt': ['InstanceC1063A87', 'Port'] },
-          ],
+          [{ 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint'] }, ':', { 'Fn::GetAtt': ['InstanceC1063A87', 'Port'] }],
         ],
       },
     });
@@ -132,13 +128,7 @@ describe('DatabaseInstance', () => {
     const instanceType = new cdk.CfnParameter(stack, 'NeptuneInstaneType', {
       description: 'Instance type of graph database Neptune',
       type: 'String',
-      allowedValues: [
-        'db.r5.xlarge',
-        'db.r5.2xlarge',
-        'db.r5.4xlarge',
-        'db.r5.8xlarge',
-        'db.r5.12xlarge',
-      ],
+      allowedValues: ['db.r5.xlarge', 'db.r5.2xlarge', 'db.r5.4xlarge', 'db.r5.8xlarge', 'db.r5.12xlarge'],
       default: 'db.r5.8xlarge',
     });
     // WHEN
@@ -156,7 +146,9 @@ describe('DatabaseInstance', () => {
   });
 
   test('instance type from string throws if missing db prefix', () => {
-    expect(() => { InstanceType.of('r5.xlarge');}).toThrow(/instance type must start with 'db.'/);
+    expect(() => {
+      InstanceType.of('r5.xlarge');
+    }).toThrow(/instance type must start with 'db.'/);
   });
 
   test('metric - constructs metric with correct namespace and dimension and inputs', () => {
@@ -177,13 +169,15 @@ describe('DatabaseInstance', () => {
     });
 
     // THEN
-    expect(metric).toEqual(new cloudwatch.Metric({
-      namespace: 'AWS/Neptune',
-      dimensionsMap: {
-        DBInstanceIdentifier: instance.instanceIdentifier,
-      },
-      metricName: 'SparqlRequestsPerSec',
-    }));
+    expect(metric).toEqual(
+      new cloudwatch.Metric({
+        namespace: 'AWS/Neptune',
+        dimensionsMap: {
+          DBInstanceIdentifier: instance.instanceIdentifier,
+        },
+        metricName: 'SparqlRequestsPerSec',
+      })
+    );
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Neptune',
       MetricName: 'SparqlRequestsPerSec',

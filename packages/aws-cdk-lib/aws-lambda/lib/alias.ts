@@ -182,12 +182,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
     this.qualifier = extractQualifierFromArn(alias.ref);
 
-    if (
-      props.onFailure ||
-      props.onSuccess ||
-      props.maxEventAge ||
-      props.retryAttempts !== undefined
-    ) {
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       this.configureAsyncInvoke({
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,

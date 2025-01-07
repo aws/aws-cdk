@@ -59,10 +59,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
   ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(
-      this.integrationPattern,
-      SageMakerCreateEndpointConfig.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, SageMakerCreateEndpointConfig.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.validateProductionVariants();
     this.taskPolicies = this.makePolicyStatements();
@@ -73,11 +70,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn(
-        'sagemaker',
-        'createEndpointConfig',
-        this.integrationPattern
-      ),
+      Resource: integrationResourceArn('sagemaker', 'createEndpointConfig', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
     };
   }

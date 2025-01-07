@@ -135,11 +135,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
    * @param id The construct's name
    * @param profilingGroupName Profiling Group Name
    */
-  public static fromProfilingGroupName(
-    scope: Construct,
-    id: string,
-    profilingGroupName: string
-  ): IProfilingGroup {
+  public static fromProfilingGroupName(scope: Construct, id: string, profilingGroupName: string): IProfilingGroup {
     const stack = Stack.of(scope);
 
     return this.fromProfilingGroupArn(
@@ -160,16 +156,10 @@ export class ProfilingGroup extends ProfilingGroupBase {
    * @param id The construct's name
    * @param profilingGroupArn Profiling Group ARN
    */
-  public static fromProfilingGroupArn(
-    scope: Construct,
-    id: string,
-    profilingGroupArn: string
-  ): IProfilingGroup {
+  public static fromProfilingGroupArn(scope: Construct, id: string, profilingGroupArn: string): IProfilingGroup {
     class Import extends ProfilingGroupBase {
-      public readonly profilingGroupName = Stack.of(scope).splitArn(
-        profilingGroupArn,
-        ArnFormat.SLASH_RESOURCE_NAME
-      ).resourceName!;
+      public readonly profilingGroupName = Stack.of(scope).splitArn(profilingGroupArn, ArnFormat.SLASH_RESOURCE_NAME)
+        .resourceName!;
       public readonly profilingGroupArn = profilingGroupArn;
     }
 
@@ -194,8 +184,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
 
   constructor(scope: Construct, id: string, props: ProfilingGroupProps = {}) {
     super(scope, id, {
-      physicalName:
-        props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
+      physicalName: props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {

@@ -43,13 +43,22 @@ describe('When import an ECS Service', () => {
 
   test('throws an expection if not using cluster arn format on fromServiceArnWithCluster', () => {
     expect(() => {
-      ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', 'arn:aws:ecs:service-region:service-account:service/my-http-service');
+      ecs.BaseService.fromServiceArnWithCluster(
+        stack,
+        'Service',
+        'arn:aws:ecs:service-region:service-account:service/my-http-service'
+      );
     }).toThrow(/is not using the ARN cluster format/);
   });
 
   test('skip validation for tokenized values', () => {
-    expect(() => ecs.BaseService.fromServiceArnWithCluster(stack, 'Service',
-      cdk.Lazy.string({ produce: () => 'arn:aws:ecs:service-region:service-account:service' }))).not.toThrow();
+    expect(() =>
+      ecs.BaseService.fromServiceArnWithCluster(
+        stack,
+        'Service',
+        cdk.Lazy.string({ produce: () => 'arn:aws:ecs:service-region:service-account:service' })
+      )
+    ).not.toThrow();
   });
 
   test('should add a dependency on task role', () => {
@@ -60,10 +69,12 @@ describe('When import an ECS Service', () => {
     taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     });
-    taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: ['test:SpecialName'],
-      resources: ['*'],
-    }));
+    taskDefinition.addToTaskRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['test:SpecialName'],
+        resources: ['*'],
+      })
+    );
 
     // WHEN
     new ecs.FargateService(stack, 'FargateService', {
@@ -73,10 +84,7 @@ describe('When import an ECS Service', () => {
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::ECS::Service', {
-      DependsOn: [
-        'FargateTaskDefTaskRoleDefaultPolicy8EB25BBD',
-        'FargateTaskDefTaskRole0B257552',
-      ],
+      DependsOn: ['FargateTaskDefTaskRoleDefaultPolicy8EB25BBD', 'FargateTaskDefTaskRole0B257552'],
     });
   });
 });
@@ -89,44 +97,53 @@ describe('For alarm-based rollbacks', () => {
   });
 
   test.each([
-    [true, {
-      Alarms: Match.absent(),
-    }],
-    [false, {
-      Alarms: {
-        AlarmNames: [],
-        Enable: false,
-        Rollback: false,
+    [
+      true,
+      {
+        Alarms: Match.absent(),
       },
-    }],
-  ])('deploymentAlarms is (not set)/(set) by default for ECS deployment controller when feature flag is enabled/disabled', (flag, settings) => {
-    // GIVEN
-    const app = new cdk.App({ context: { [cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: flag } });
-    stack = new cdk.Stack(app);
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-    });
-
-    // WHEN
-    new ecs.FargateService(stack, 'FargateService', {
-      cluster,
-      taskDefinition,
-      deploymentController: {
-        type: ecs.DeploymentControllerType.ECS,
+    ],
+    [
+      false,
+      {
+        Alarms: {
+          AlarmNames: [],
+          Enable: false,
+          Rollback: false,
+        },
       },
-      minHealthyPercent: 100,
-      maxHealthyPercent: 200,
-    });
+    ],
+  ])(
+    'deploymentAlarms is (not set)/(set) by default for ECS deployment controller when feature flag is enabled/disabled',
+    (flag, settings) => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: flag } });
+      stack = new cdk.Stack(app);
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
 
-    const template = Template.fromStack(stack);
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DeploymentConfiguration: settings,
-    });
-  });
+      // WHEN
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.ECS,
+        },
+        minHealthyPercent: 100,
+        maxHealthyPercent: 200,
+      });
+
+      const template = Template.fromStack(stack);
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: settings,
+      });
+    }
+  );
 
   test('deploymentAlarms is set by default when deployment controller is not specified', () => {
     // GIVEN
@@ -284,34 +301,37 @@ test.each([
   /* Flag on => value never present */
   [false, true, false],
   [true, true, false],
-])('circuitbreaker is %p /\\ flag is %p => DeploymentController in output: %p', (circuitBreaker, flagValue, controllerInTemplate) => {
-  // GIVEN
-  const app = new App({
-    context: {
-      '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker': flagValue,
-    },
-  });
-  const stack = new Stack(app, 'Stack');
-  const vpc = new ec2.Vpc(stack, 'Vpc');
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-  taskDefinition.addContainer('web', {
-    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-  });
+])(
+  'circuitbreaker is %p /\\ flag is %p => DeploymentController in output: %p',
+  (circuitBreaker, flagValue, controllerInTemplate) => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker': flagValue,
+      },
+    });
+    const stack = new Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
 
-  // WHEN
-  new ecs.FargateService(stack, 'FargateService', {
-    cluster,
-    taskDefinition,
-    circuitBreaker: circuitBreaker ? { } : undefined,
-  });
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      circuitBreaker: circuitBreaker ? {} : undefined,
+    });
 
-  // THEN
-  const template = Template.fromStack(stack);
-  template.hasResourceProperties('AWS::ECS::Service', {
-    DeploymentController: controllerInTemplate ? { Type: 'ECS' } : Match.absent(),
-  });
-});
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      DeploymentController: controllerInTemplate ? { Type: 'ECS' } : Match.absent(),
+    });
+  }
+);
 
 test.each([
   [true, true],

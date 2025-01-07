@@ -120,12 +120,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
     lookupRoleExternalId?: string,
     lookupRoleAdditionalOptions?: { [key: string]: any }
   ): FileAssetSource {
-    this.boundStack._synthesizeTemplate(
-      session,
-      lookupRoleArn,
-      lookupRoleExternalId,
-      lookupRoleAdditionalOptions
-    );
+    this.boundStack._synthesizeTemplate(session, lookupRoleArn, lookupRoleExternalId, lookupRoleAdditionalOptions);
     return stackTemplateFileAsset(this.boundStack, session);
   }
 
@@ -137,11 +132,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    *
    * @deprecated Use `emitArtifact` instead
    */
-  protected emitStackArtifact(
-    stack: Stack,
-    session: ISynthesisSession,
-    options: SynthesizeStackArtifactOptions = {}
-  ) {
+  protected emitStackArtifact(stack: Stack, session: ISynthesisSession, options: SynthesizeStackArtifactOptions = {}) {
     addStackArtifactToAssembly(session, stack, options ?? {}, options.additionalDependencies ?? []);
   }
 
@@ -153,12 +144,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    * CloudFormation deployment.
    */
   protected emitArtifact(session: ISynthesisSession, options: SynthesizeStackArtifactOptions = {}) {
-    addStackArtifactToAssembly(
-      session,
-      this.boundStack,
-      options ?? {},
-      options.additionalDependencies ?? []
-    );
+    addStackArtifactToAssembly(session, this.boundStack, options ?? {}, options.additionalDependencies ?? []);
   }
 
   /**
@@ -166,10 +152,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    *
    * This will modify the template, so must be called before the stack is synthesized.
    */
-  protected addBootstrapVersionRule(
-    requiredVersion: number,
-    bootstrapStackVersionSsmParameter: string
-  ) {
+  protected addBootstrapVersionRule(requiredVersion: number, bootstrapStackVersionSsmParameter: string) {
     addBootstrapVersionRule(this.boundStack, requiredVersion, bootstrapStackVersionSsmParameter);
   }
 
@@ -180,9 +163,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    */
   protected get boundStack(): Stack {
     if (!this._boundStack) {
-      throw new Error(
-        'The StackSynthesizer must be bound to a Stack first before boundStack() can be called'
-      );
+      throw new Error('The StackSynthesizer must be bound to a Stack first before boundStack() can be called');
     }
     return this._boundStack;
   }
@@ -192,13 +173,9 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    *
    * If any of the fields contain placeholders, the result will be wrapped in a `Fn.sub`.
    */
-  protected cloudFormationLocationFromFileAsset(
-    location: cxschema.FileDestination
-  ): FileAssetLocation {
+  protected cloudFormationLocationFromFileAsset(location: cxschema.FileDestination): FileAssetLocation {
     const { region, urlSuffix } = stackLocationOrInstrinsics(this.boundStack);
-    const httpUrl = cfnify(
-      `https://s3.${region}.${urlSuffix}/${location.bucketName}/${location.objectKey}`
-    );
+    const httpUrl = cfnify(`https://s3.${region}.${urlSuffix}/${location.bucketName}/${location.objectKey}`);
     const s3ObjectUrlWithPlaceholders = `s3://${location.bucketName}/${location.objectKey}`;
 
     // Return CFN expression
@@ -231,9 +208,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
     // Return CFN expression
     return {
       repositoryName: cfnify(dest.repositoryName),
-      imageUri: cfnify(
-        `${account}.dkr.ecr.${region}.${urlSuffix}/${dest.repositoryName}:${dest.imageTag}`
-      ),
+      imageUri: cfnify(`${account}.dkr.ecr.${region}.${urlSuffix}/${dest.repositoryName}:${dest.imageTag}`),
       imageTag: cfnify(dest.imageTag),
     };
   }
@@ -355,11 +330,7 @@ function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileA
  * The CLI normally checks this, but in a pipeline the CLI is not involved
  * so we encode this rule into the template in a way that CloudFormation will check it.
  */
-function addBootstrapVersionRule(
-  stack: Stack,
-  requiredVersion: number,
-  bootstrapStackVersionSsmParameter: string
-) {
+function addBootstrapVersionRule(stack: Stack, requiredVersion: number, bootstrapStackVersionSsmParameter: string) {
   // Because of https://github.com/aws/aws-cdk/blob/main/packages/assert-internal/lib/synth-utils.ts#L74
   // synthesize() may be called more than once on a stack in unit tests, and the below would break
   // if we execute it a second time. Guard against the constructs already existing.

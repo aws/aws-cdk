@@ -415,8 +415,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       throw new Error('Either fleetId or fleetArn must be provided in FleetAttributes');
     }
     const fleetId =
-      attrs.fleetId ??
-      cdk.Stack.of(scope).splitArn(attrs.fleetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+      attrs.fleetId ?? cdk.Stack.of(scope).splitArn(attrs.fleetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!fleetId) {
       throw new Error(`No fleet identifier found in ARN: '${attrs.fleetArn}'`);
@@ -587,8 +586,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
   ): CfnFleet.ResourceCreationLimitPolicyProperty | undefined {
     if (
       !props.resourceCreationLimitPolicy ||
-      (!props.resourceCreationLimitPolicy.newGameSessionsPerCreator &&
-        !props.resourceCreationLimitPolicy.policyPeriod)
+      (!props.resourceCreationLimitPolicy.newGameSessionsPerCreator && !props.resourceCreationLimitPolicy.policyPeriod)
     ) {
       return undefined;
     }
@@ -616,9 +614,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     }
   }
 
-  protected parseLocationCapacity(
-    capacity?: LocationCapacity
-  ): CfnFleet.LocationCapacityProperty | undefined {
+  protected parseLocationCapacity(capacity?: LocationCapacity): CfnFleet.LocationCapacityProperty | undefined {
     if (!capacity || (!capacity.desiredCapacity && !capacity.minSize && !capacity.maxSize)) {
       return undefined;
     }
@@ -630,9 +626,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     };
   }
 
-  protected parseRuntimeConfiguration(
-    props: FleetProps
-  ): CfnFleet.RuntimeConfigurationProperty | undefined {
+  protected parseRuntimeConfiguration(props: FleetProps): CfnFleet.RuntimeConfigurationProperty | undefined {
     if (
       !props.runtimeConfiguration ||
       (!props.runtimeConfiguration.gameSessionActivationTimeout &&
@@ -642,10 +636,8 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       return undefined;
     }
     return {
-      gameSessionActivationTimeoutSeconds:
-        props.runtimeConfiguration.gameSessionActivationTimeout?.toSeconds(),
-      maxConcurrentGameSessionActivations:
-        props.runtimeConfiguration.maxConcurrentGameSessionActivations,
+      gameSessionActivationTimeoutSeconds: props.runtimeConfiguration.gameSessionActivationTimeout?.toSeconds(),
+      maxConcurrentGameSessionActivations: props.runtimeConfiguration.maxConcurrentGameSessionActivations,
       serverProcesses: props.runtimeConfiguration.serverProcesses.map(parseServerProcess),
     };
 

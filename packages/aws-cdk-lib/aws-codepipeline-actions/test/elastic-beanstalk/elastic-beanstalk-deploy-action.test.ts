@@ -32,10 +32,7 @@ describe('elastic beanstalk deploy action tests', () => {
                 },
               ],
               RoleArn: {
-                'Fn::GetAtt': [
-                  'MyPipelineSourceCodePipelineActionRoleAA05D76F',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyPipelineSourceCodePipelineActionRoleAA05D76F', 'Arn'],
               },
               RunOrder: 1,
             },
@@ -62,10 +59,7 @@ describe('elastic beanstalk deploy action tests', () => {
               ],
               Name: 'Deploy',
               RoleArn: {
-                'Fn::GetAtt': [
-                  'MyPipelineDeployCodePipelineActionRole742BD48A',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyPipelineDeployCodePipelineActionRole742BD48A', 'Arn'],
               },
               RunOrder: 1,
             },
@@ -76,10 +70,7 @@ describe('elastic beanstalk deploy action tests', () => {
       ArtifactStore: {
         EncryptionKey: {
           Id: {
-            'Fn::GetAtt': [
-              'MyPipelineArtifactsBucketEncryptionKey8BF0A7F3',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyPipelineArtifactsBucketEncryptionKey8BF0A7F3', 'Arn'],
           },
           Type: 'KMS',
         },

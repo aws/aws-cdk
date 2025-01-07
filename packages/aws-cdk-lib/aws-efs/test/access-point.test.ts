@@ -64,19 +64,23 @@ test('allow client token to be set for AccessPoint', () => {
 });
 
 test('throw when client token has a length that is less than 1', () => {
-  expect(() => new AccessPoint(stack, 'MyAccessPoint', {
-    fileSystem,
-    clientToken: '',
-  },
-  )).toThrow(/The length of \'clientToken\' must range from 1 to 64 characters, got: 0 characters/);
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyAccessPoint', {
+        fileSystem,
+        clientToken: '',
+      })
+  ).toThrow(/The length of \'clientToken\' must range from 1 to 64 characters, got: 0 characters/);
 });
 
 test('throw when client token has a length that is greater than 64', () => {
-  expect(() => new AccessPoint(stack, 'MyAccessPoint', {
-    fileSystem,
-    clientToken: 'a'.repeat(65),
-  },
-  )).toThrow(/The length of \'clientToken\' must range from 1 to 64 characters, got: 65 characters/);
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyAccessPoint', {
+        fileSystem,
+        clientToken: 'a'.repeat(65),
+      })
+  ).toThrow(/The length of \'clientToken\' must range from 1 to 64 characters, got: 65 characters/);
 });
 
 test('import an AccessPoint using fromAccessPointId', () => {
@@ -96,7 +100,9 @@ test('import an AccessPoint using fromAccessPointId throws when accessing fileSy
   });
   const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
   // THEN
-  expect(() => imported.fileSystem).toThrow(/fileSystem is only available if 'fromAccessPointAttributes\(\)' is used and a fileSystem is passed in as an attribute./);
+  expect(() => imported.fileSystem).toThrow(
+    /fileSystem is only available if 'fromAccessPointAttributes\(\)' is used and a fileSystem is passed in as an attribute./
+  );
 });
 
 test('import an AccessPoint using fromAccessPointAttributes and the accessPointId', () => {
@@ -151,11 +157,13 @@ test('throw when import using accessPointArn and accessPointId', () => {
   });
 
   // THEN
-  expect(() => AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
-    accessPointArn: ap.accessPointArn,
-    accessPointId: ap.accessPointId,
-    fileSystem: fileSystem,
-  })).toThrow(/Only one of accessPointId or AccessPointArn can be provided!/);
+  expect(() =>
+    AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
+      accessPointArn: ap.accessPointArn,
+      accessPointId: ap.accessPointId,
+      fileSystem: fileSystem,
+    })
+  ).toThrow(/Only one of accessPointId or AccessPointArn can be provided!/);
 });
 
 test('throw when import without accessPointArn or accessPointId', () => {
@@ -165,9 +173,11 @@ test('throw when import without accessPointArn or accessPointId', () => {
   });
 
   // THEN
-  expect(() => AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
-    fileSystem: fileSystem,
-  })).toThrow(/One of accessPointId or AccessPointArn is required!/);
+  expect(() =>
+    AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
+      fileSystem: fileSystem,
+    })
+  ).toThrow(/One of accessPointId or AccessPointArn is required!/);
 });
 
 test('custom access point is created correctly', () => {
@@ -183,12 +193,8 @@ test('custom access point is created correctly', () => {
     posixUser: {
       gid: '1000',
       uid: '1000',
-      secondaryGids: [
-        '1001',
-        '1002',
-      ],
+      secondaryGids: ['1001', '1002'],
     },
-
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::AccessPoint', {
@@ -197,10 +203,7 @@ test('custom access point is created correctly', () => {
     },
     PosixUser: {
       Gid: '1000',
-      SecondaryGids: [
-        '1001',
-        '1002',
-      ],
+      SecondaryGids: ['1001', '1002'],
       Uid: '1000',
     },
     RootDirectory: {

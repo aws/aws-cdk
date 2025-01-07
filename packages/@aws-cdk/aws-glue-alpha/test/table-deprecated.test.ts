@@ -15,10 +15,12 @@ test('unpartitioned JSON table', () => {
   const tableStack = new cdk.Stack(app, 'table');
   const table = new glue.Table(tableStack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
@@ -83,14 +85,18 @@ test('partitioned JSON table', () => {
   const tableStack = new cdk.Stack(app, 'table');
   const table = new glue.Table(tableStack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-      name: 'year',
-      type: glue.Schema.SMALL_INT,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
+    partitionKeys: [
+      {
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
   });
   expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
@@ -155,10 +161,12 @@ test('compressed table', () => {
 
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -219,10 +227,12 @@ test('table.node.defaultChild', () => {
   // WHEN
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -237,10 +247,12 @@ test('encrypted table: SSE-S3', () => {
 
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.S3_MANAGED,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -312,10 +324,12 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
 
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.KMS,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -332,10 +346,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
         {
           ServerSideEncryptionByDefault: {
             KMSMasterKeyID: {
-              'Fn::GetAtt': [
-                'TableBucketKey3E9F984A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['TableBucketKey3E9F984A', 'Arn'],
             },
             SSEAlgorithm: 'aws:kms',
           },
@@ -399,10 +410,12 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
 
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.KMS,
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
@@ -421,10 +434,7 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
         {
           ServerSideEncryptionByDefault: {
             KMSMasterKeyID: {
-              'Fn::GetAtt': [
-                'MyKey6AB29FA6',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
             },
             SSEAlgorithm: 'aws:kms',
           },
@@ -485,10 +495,12 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
 
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.KMS_MANAGED,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -560,10 +572,12 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
 
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     dataFormat: glue.DataFormat.JSON,
   });
@@ -628,10 +642,12 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
 
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
@@ -700,10 +716,12 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
 
   const table = new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     bucket,
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     encryptionKey,
@@ -774,10 +792,12 @@ test('explicit s3 bucket and prefix', () => {
     database,
     bucket,
     s3Prefix: 'prefix/',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
   });
 
@@ -838,10 +858,12 @@ test('explicit s3 bucket and with empty prefix', () => {
     database,
     bucket,
     s3Prefix: '',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
   });
 
@@ -898,17 +920,21 @@ describe('add partition index', () => {
 
     const table = new glue.Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       dataFormat: glue.DataFormat.JSON,
     });
 
-    expect(() => table.addPartitionIndex({
-      indexName: 'my-part',
-      keyNames: ['part'],
-    })).toThrow(/The table must have partition keys to create a partition index/);
+    expect(() =>
+      table.addPartitionIndex({
+        indexName: 'my-part',
+        keyNames: ['part'],
+      })
+    ).toThrow(/The table must have partition keys to create a partition index/);
   });
 
   test('fails if partition index does not match partition keys', () => {
@@ -917,21 +943,27 @@ describe('add partition index', () => {
 
     const table = new glue.Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      partitionKeys: [{
-        name: 'part',
-        type: glue.Schema.SMALL_INT,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
+      partitionKeys: [
+        {
+          name: 'part',
+          type: glue.Schema.SMALL_INT,
+        },
+      ],
       dataFormat: glue.DataFormat.JSON,
     });
 
-    expect(() => table.addPartitionIndex({
-      indexName: 'my-part',
-      keyNames: ['not-part'],
-    })).toThrow(/All index keys must also be partition keys/);
+    expect(() =>
+      table.addPartitionIndex({
+        indexName: 'my-part',
+        keyNames: ['not-part'],
+      })
+    ).toThrow(/All index keys must also be partition keys/);
   });
 
   test('fails with index name < 1 character', () => {
@@ -940,54 +972,72 @@ describe('add partition index', () => {
 
     const table = new glue.Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      partitionKeys: [{
-        name: 'part',
-        type: glue.Schema.SMALL_INT,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
+      partitionKeys: [
+        {
+          name: 'part',
+          type: glue.Schema.SMALL_INT,
+        },
+      ],
       dataFormat: glue.DataFormat.JSON,
     });
 
-    expect(() => table.addPartitionIndex({
-      indexName: '',
-      keyNames: ['part'],
-    })).toThrow(/Index name must be between 1 and 255 characters, but got 0/);
+    expect(() =>
+      table.addPartitionIndex({
+        indexName: '',
+        keyNames: ['part'],
+      })
+    ).toThrow(/Index name must be between 1 and 255 characters, but got 0/);
   });
 
   test('fails with > 3 indexes', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
 
-    const indexes: PartitionIndex[] = [{
-      indexName: 'ind1',
-      keyNames: ['part'],
-    }, {
-      indexName: 'ind2',
-      keyNames: ['part'],
-    }, {
-      indexName: 'ind3',
-      keyNames: ['part'],
-    }, {
-      indexName: 'ind4',
-      keyNames: ['part'],
-    }];
+    const indexes: PartitionIndex[] = [
+      {
+        indexName: 'ind1',
+        keyNames: ['part'],
+      },
+      {
+        indexName: 'ind2',
+        keyNames: ['part'],
+      },
+      {
+        indexName: 'ind3',
+        keyNames: ['part'],
+      },
+      {
+        indexName: 'ind4',
+        keyNames: ['part'],
+      },
+    ];
 
-    expect(() => new glue.Table(stack, 'Table', {
-      database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      partitionKeys: [{
-        name: 'part',
-        type: glue.Schema.SMALL_INT,
-      }],
-      partitionIndexes: indexes,
-      dataFormat: glue.DataFormat.JSON,
-    })).toThrow('Maximum number of partition indexes allowed is 3');
+    expect(
+      () =>
+        new glue.Table(stack, 'Table', {
+          database,
+          columns: [
+            {
+              name: 'col',
+              type: glue.Schema.STRING,
+            },
+          ],
+          partitionKeys: [
+            {
+              name: 'part',
+              type: glue.Schema.SMALL_INT,
+            },
+          ],
+          partitionIndexes: indexes,
+          dataFormat: glue.DataFormat.JSON,
+        })
+    ).toThrow('Maximum number of partition indexes allowed is 3');
   });
 });
 
@@ -999,10 +1049,12 @@ describe('grants', () => {
 
     const table = new glue.Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
     });
@@ -1062,10 +1114,12 @@ describe('grants', () => {
 
     const table = new glue.Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
     });
@@ -1115,28 +1169,18 @@ describe('grants', () => {
             },
           },
           {
-            Action: [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
-            ],
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
                     },
                     '/*',
                   ],
@@ -1163,10 +1207,12 @@ describe('grants', () => {
 
     const table = new glue.Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
     });
@@ -1226,20 +1272,14 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
                     },
                     '/*',
                   ],
@@ -1266,10 +1306,12 @@ describe('grants', () => {
 
     const table = new glue.Table(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
     });
@@ -1339,20 +1381,14 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::GetAtt': [
-                  'TableBucketDA42407C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'TableBucketDA42407C',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['TableBucketDA42407C', 'Arn'],
                     },
                     '/*',
                   ],
@@ -1380,66 +1416,76 @@ describe('validate', () => {
         columns: [],
       });
     }).toThrow('you must specify at least one column for the table');
-
   });
 
   test('unique column names', () => {
     expect(() => {
       createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }, {
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
       });
     }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
-
   });
 
   test('unique partition keys', () => {
     expect(() => {
       createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
-        partitionKeys: [{
-          name: 'p1',
-          type: glue.Schema.STRING,
-        }, {
-          name: 'p1',
-          type: glue.Schema.STRING,
-        }],
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        partitionKeys: [
+          {
+            name: 'p1',
+            type: glue.Schema.STRING,
+          },
+          {
+            name: 'p1',
+            type: glue.Schema.STRING,
+          },
+        ],
       });
     }).toThrow("column names and partition keys must be unique, but 'p1' is duplicated");
-
   });
 
   test('column names and partition keys are all unique', () => {
     expect(() => {
       createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
-        partitionKeys: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        partitionKeys: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
       });
     }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
-
   });
 
   test('can not specify an explicit bucket and encryption', () => {
     expect(() => {
       createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: glue.TableEncryption.KMS,
       });
@@ -1447,36 +1493,48 @@ describe('validate', () => {
   });
 
   test('can explicitly pass bucket if Encryption undefined', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: undefined,
-    })).not.toThrow();
+    expect(() =>
+      createTable({
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: undefined,
+      })
+    ).not.toThrow();
   });
 
   test('can explicitly pass bucket if encryption is not set', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: undefined,
-    })).not.toThrow();
+    expect(() =>
+      createTable({
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: undefined,
+      })
+    ).not.toThrow();
   });
 
   test('can explicitly pass bucket if ClientSideKms', () => {
-    expect(() => createTable({
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-    })).not.toThrow();
+    expect(() =>
+      createTable({
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
+      })
+    ).not.toThrow();
   });
 
   test('unique storage descriptor parameters', () => {
@@ -1484,20 +1542,25 @@ describe('validate', () => {
     const stack = new cdk.Stack(app, 'Stack');
     const database = new glue.Database(stack, 'Database');
 
-    expect(() => new glue.Table(stack, 'Table', {
-      database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      dataFormat: glue.DataFormat.JSON,
-      storageParameters: [
-        glue.StorageParameter.skipHeaderLineCount(2),
-        glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
-        glue.StorageParameter.custom('foo', 'bar'),
-        glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'),
-      ],
-    })).toThrow('Duplicate storage parameter key: compression_type');
+    expect(
+      () =>
+        new glue.Table(stack, 'Table', {
+          database,
+          columns: [
+            {
+              name: 'col',
+              type: glue.Schema.STRING,
+            },
+          ],
+          dataFormat: glue.DataFormat.JSON,
+          storageParameters: [
+            glue.StorageParameter.skipHeaderLineCount(2),
+            glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+            glue.StorageParameter.custom('foo', 'bar'),
+            glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'),
+          ],
+        })
+    ).toThrow('Duplicate storage parameter key: compression_type');
   });
 });
 
@@ -1524,14 +1587,18 @@ test.each([
   const tableStack = new cdk.Stack(app, 'table');
   new glue.Table(tableStack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-      name: 'year',
-      type: glue.Schema.SMALL_INT,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
+    partitionKeys: [
+      {
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     enablePartitionFiltering: enabled,
   });
@@ -1547,8 +1614,8 @@ test.each([
       Name: 'tabletable8fff2c2b',
       Description: 'tabletable8fff2c2b generated by CDK',
       Parameters: {
-        'classification': 'json',
-        'has_encrypted_data': true,
+        classification: 'json',
+        has_encrypted_data: true,
         'partition_filtering.enabled': enabled,
       },
       PartitionKeys: Match.anyValue(),
@@ -1566,14 +1633,18 @@ test('Partition filtering on table is not defined (default behavior)', () => {
   const tableStack = new cdk.Stack(app, 'table');
   new glue.Table(tableStack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-      name: 'year',
-      type: glue.Schema.SMALL_INT,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
+    partitionKeys: [
+      {
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     enablePartitionFiltering: undefined,
   });
@@ -1606,10 +1677,12 @@ test('can specify a physical name', () => {
   new glue.Table(stack, 'Table', {
     database,
     tableName: 'my_table',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
   });
 
@@ -1627,10 +1700,12 @@ test('storage descriptor parameters', () => {
   const database = new glue.Database(stack, 'Database');
   new glue.Table(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     storageParameters: [
       glue.StorageParameter.skipHeaderLineCount(2),
@@ -1645,16 +1720,18 @@ test('storage descriptor parameters', () => {
       StorageDescriptor: {
         Parameters: {
           'skip.header.line.count': '2',
-          'separatorChar': ',',
-          'foo': 'bar',
-          'compression_type': 'gzip',
+          separatorChar: ',',
+          foo: 'bar',
+          compression_type: 'gzip',
         },
       },
     },
   });
 });
 
-function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {
+function createTable(
+  props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>
+): void {
   const stack = new cdk.Stack();
   new glue.Table(stack, 'table', {
     ...props,

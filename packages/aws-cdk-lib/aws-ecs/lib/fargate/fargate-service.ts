@@ -105,11 +105,7 @@ export class FargateService extends BaseService implements IFargateService {
   /**
    * Imports from the specified service ARN.
    */
-  public static fromFargateServiceArn(
-    scope: Construct,
-    id: string,
-    fargateServiceArn: string
-  ): IFargateService {
+  public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
@@ -190,10 +186,7 @@ export class FargateService extends BaseService implements IFargateService {
       securityGroups = props.securityGroups;
     }
 
-    if (
-      !props.deploymentController ||
-      props.deploymentController.type !== DeploymentControllerType.EXTERNAL
-    ) {
+    if (!props.deploymentController || props.deploymentController.type !== DeploymentControllerType.EXTERNAL) {
       this.configureAwsVpcNetworkingWithSecurityGroups(
         props.cluster.vpc,
         props.assignPublicIp,
@@ -213,9 +206,7 @@ export class FargateService extends BaseService implements IFargateService {
 
     this.node.addValidation({
       validate: () =>
-        !this.taskDefinition.defaultContainer
-          ? ['A TaskDefinition must have at least one essential container']
-          : [],
+        !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
     });
   }
 }

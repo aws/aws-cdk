@@ -19,9 +19,10 @@ beforeEach(() => {
 });
 
 describe('InitCommand', () => {
-
   test('throws error on empty argv command', () => {
-    expect(() => { ec2.InitCommand.argvCommand([]); }).toThrow();
+    expect(() => {
+      ec2.InitCommand.argvCommand([]);
+    }).toThrow();
   });
 
   test('auto-generates an indexed command key if none is provided', () => {
@@ -131,11 +132,9 @@ describe('InitCommand', () => {
       command._bind(defaultOptions(InitPlatform.LINUX));
     }).toThrow(/'waitAfterCompletion' is only valid for Windows/);
   });
-
 });
 
 describe('InitFile', () => {
-
   test('fromString creates inline content', () => {
     // GIVEN
     const file = ec2.InitFile.fromString('/tmp/foo', 'My content');
@@ -339,8 +338,7 @@ describe('InitFile', () => {
     // WHEN
     new ec2.Instance(myStack, 'FirstInstance', {
       vpc,
-      instanceType:
-        ec2.InstanceType.of(ec2.InstanceClass.T3A, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3A, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage({
         generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
@@ -352,7 +350,7 @@ describe('InitFile', () => {
           default: new ec2.InitConfig([
             ec2.InitFile.fromAsset(
               '/target/path/config.json',
-              path.join(__dirname, 'init-configs', 'configFileForFirstInstance.json'),
+              path.join(__dirname, 'init-configs', 'configFileForFirstInstance.json')
             ),
           ]),
         },
@@ -361,11 +359,9 @@ describe('InitFile', () => {
 
     // THEN
     expect(() => {
-
       new ec2.Instance(myStack, 'SecondInstance', {
         vpc,
-        instanceType:
-        ec2.InstanceType.of(ec2.InstanceClass.T3A, ec2.InstanceSize.MICRO),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3A, ec2.InstanceSize.MICRO),
         machineImage: new ec2.AmazonLinuxImage({
           generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
         }),
@@ -377,20 +373,17 @@ describe('InitFile', () => {
             default: new ec2.InitConfig([
               ec2.InitFile.fromAsset(
                 '/target/path/config.json',
-                path.join(__dirname, 'init-configs', 'configFileForSecondInstance.json'),
+                path.join(__dirname, 'init-configs', 'configFileForSecondInstance.json')
               ),
             ]),
           },
         }),
       });
-
     }).not.toThrow();
   });
-
 });
 
 describe('InitGroup', () => {
-
   test('renders without a group id', () => {
     // GIVEN
     const group = ec2.InitGroup.fromName('amazon');
@@ -422,11 +415,9 @@ describe('InitGroup', () => {
       group._bind(defaultOptions(InitPlatform.WINDOWS));
     }).toThrow('Init groups are not supported on Windows');
   });
-
 });
 
 describe('InitUser', () => {
-
   test('fromName accepts just a name to create a user', () => {
     // GIVEN
     const group = ec2.InitUser.fromName('sysuser1');
@@ -468,11 +459,9 @@ describe('InitUser', () => {
       group._bind(defaultOptions(InitPlatform.WINDOWS));
     }).toThrow('Init users are not supported on Windows');
   });
-
 });
 
 describe('InitPackage', () => {
-
   test('rpm auto-generates a name if none is provided', () => {
     // GIVEN
     const pkg = ec2.InitPackage.rpm('https://example.com/rpm/mypkg.rpm');
@@ -529,8 +518,7 @@ describe('InitPackage', () => {
     expect(rendered).toEqual({
       [pkgType]: { httpd: [] },
     });
-  },
-  );
+  });
 
   test.each([
     ['yum', ec2.InitPackage.yum],
@@ -548,8 +536,7 @@ describe('InitPackage', () => {
     expect(rendered).toEqual({
       [pkgType]: { httpd: ['1.0', '2.0'] },
     });
-  },
-  );
+  });
 
   test.each([
     ['yum', ec2.InitPackage.yum],
@@ -563,8 +550,7 @@ describe('InitPackage', () => {
     expect(() => {
       pkg._bind(defaultOptions(InitPlatform.WINDOWS));
     }).toThrow('Windows only supports the MSI package type');
-  },
-  );
+  });
 
   test('msi auto-generates a name if none is provided', () => {
     // GIVEN
@@ -605,11 +591,9 @@ describe('InitPackage', () => {
       pkg._bind(defaultOptions(InitPlatform.LINUX));
     }).toThrow('MSI installers are only supported on Windows systems.');
   });
-
 });
 
 describe('InitService', () => {
-
   test.each([
     ['Linux', 'sysvinit', InitPlatform.LINUX],
     ['Windows', 'windows', InitPlatform.WINDOWS],
@@ -759,7 +743,6 @@ describe('InitService', () => {
 });
 
 describe('InitSource', () => {
-
   test('fromUrl renders correctly', () => {
     // GIVEN
     const source = ec2.InitSource.fromUrl('/tmp/foo', 'https://example.com/archive.zip');
@@ -812,7 +795,6 @@ describe('InitSource', () => {
       '/tmp/foo': expect.stringContaining('/mybucket/myKey'),
     });
   });
-
 });
 
 function getElementConfig(element: ec2.InitElement, platform: InitPlatform) {

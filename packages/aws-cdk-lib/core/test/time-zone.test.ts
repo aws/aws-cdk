@@ -364,4 +364,3 @@ describe('Time Zone tests', () => {
     expect(newTimeZone.timezoneName).toEqual(totallyRealPlace);
   });
 });
-

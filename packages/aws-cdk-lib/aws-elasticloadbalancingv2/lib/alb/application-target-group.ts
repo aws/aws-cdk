@@ -22,11 +22,7 @@ import {
   TargetGroupLoadBalancingAlgorithmType,
 } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
-import {
-  determineProtocolAndPort,
-  parseLoadBalancerFullName,
-  parseTargetGroupFullName,
-} from '../shared/util';
+import { determineProtocolAndPort, parseLoadBalancerFullName, parseTargetGroupFullName } from '../shared/util';
 
 /**
  * Properties for defining an Application Target Group
@@ -323,11 +319,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @deprecated Use `fromTargetGroupAttributes` instead
    */
-  public static import(
-    scope: Construct,
-    id: string,
-    props: TargetGroupImportProps
-  ): IApplicationTargetGroup {
+  public static import(scope: Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
     return ApplicationTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
@@ -379,16 +371,12 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
           (props.slowStart.toSeconds() < 30 && props.slowStart.toSeconds() !== 0) ||
           props.slowStart.toSeconds() > 900
         ) {
-          throw new Error(
-            'Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.'
-          );
+          throw new Error('Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.');
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
 
         if (isWeightedRandomAlgorithm) {
-          throw new Error(
-            'The weighted random routing algorithm can not be used with slow start mode.'
-          );
+          throw new Error('The weighted random routing algorithm can not be used with slow start mode.');
         }
       }
 
@@ -409,21 +397,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
             'Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.'
           );
         }
-        this.setAttribute(
-          'load_balancing.algorithm.anomaly_mitigation',
-          props.enableAnomalyMitigation ? 'on' : 'off'
-        );
+        this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
       }
     }
   }
 
   public get metrics(): IApplicationTargetGroupMetrics {
     if (!this._metrics) {
-      this._metrics = new ApplicationTargetGroupMetrics(
-        this,
-        this.targetGroupFullName,
-        this.firstLoadBalancerFullName
-      );
+      this._metrics = new ApplicationTargetGroupMetrics(this, this.targetGroupFullName, this.firstLoadBalancerFullName);
     }
     return this._metrics;
   }
@@ -452,16 +433,12 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public enableCookieStickiness(duration: Duration, cookieName?: string) {
     if (duration.toSeconds() < 1 || duration.toSeconds() > 604800) {
-      throw new Error(
-        'Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).'
-      );
+      throw new Error('Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).');
     }
     if (cookieName !== undefined) {
       if (
         !Token.isUnresolved(cookieName) &&
-        (cookieName.startsWith('AWSALB') ||
-          cookieName.startsWith('AWSALBAPP') ||
-          cookieName.startsWith('AWSALBTG'))
+        (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG'))
       ) {
         throw new Error(
           "App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer."
@@ -518,9 +495,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public get firstLoadBalancerFullName(): string {
     if (this.listeners.length === 0) {
-      throw new Error(
-        'The TargetGroup needs to be attached to a LoadBalancer before you can call this method'
-      );
+      throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
@@ -722,10 +697,7 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 /**
  * An imported application target group
  */
-class ImportedApplicationTargetGroup
-  extends ImportedTargetGroupBase
-  implements IApplicationTargetGroup
-{
+class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
   private readonly _metrics?: IApplicationTargetGroupMetrics;
 
   public constructor(scope: Construct, id: string, props: TargetGroupAttributes) {
@@ -733,11 +705,7 @@ class ImportedApplicationTargetGroup
     if (this.loadBalancerArns != Aws.NO_VALUE) {
       const targetGroupFullName = parseTargetGroupFullName(this.targetGroupArn);
       const firstLoadBalancerFullName = parseLoadBalancerFullName(this.loadBalancerArns);
-      this._metrics = new ApplicationTargetGroupMetrics(
-        this,
-        targetGroupFullName,
-        firstLoadBalancerFullName
-      );
+      this._metrics = new ApplicationTargetGroupMetrics(this, targetGroupFullName, firstLoadBalancerFullName);
     }
   }
 
@@ -749,10 +717,7 @@ class ImportedApplicationTargetGroup
     );
   }
 
-  public registerConnectable(
-    _connectable: ec2.IConnectable,
-    _portRange?: ec2.Port | undefined
-  ): void {
+  public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
     Annotations.of(this).addWarningV2(
       '@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterConnectable',
       'Cannot register connectable on imported target group -- security groups might need to be updated manually'

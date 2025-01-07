@@ -109,7 +109,6 @@ describe('gateway route', () => {
           },
         },
       });
-
     });
 
     test('should throw an exception if you start an http prefix match not with a /', () => {
@@ -123,13 +122,14 @@ describe('gateway route', () => {
       const virtualService = new appmesh.VirtualService(stack, 'testVirtualService', {
         virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
-      expect(() => appmesh.GatewayRouteSpec.http({
-        routeTarget: virtualService,
-        match: {
-          path: appmesh.HttpRoutePathMatch.startsWith('wrong'),
-        },
-      }).bind(stack)).toThrow(/Prefix Path for the match must start with \'\/\', got: wrong/);
-
+      expect(() =>
+        appmesh.GatewayRouteSpec.http({
+          routeTarget: virtualService,
+          match: {
+            path: appmesh.HttpRoutePathMatch.startsWith('wrong'),
+          },
+        }).bind(stack)
+      ).toThrow(/Prefix Path for the match must start with \'\/\', got: wrong/);
     });
 
     describe('with shared service mesh', () => {
@@ -142,8 +142,11 @@ describe('gateway route', () => {
         // Creating stack in Account 9987654321
         const stack = new cdk.Stack(app, 'mySharedStack', { env: gatewayRouteEnv });
         // Mesh is in Account 1234567899
-        const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
-          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`);
+        const sharedMesh = appmesh.Mesh.fromMeshArn(
+          stack,
+          'shared-mesh',
+          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`
+        );
         const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
           listeners: [appmesh.VirtualGatewayListener.http()],
           mesh: sharedMesh,
@@ -428,7 +431,9 @@ describe('gateway route', () => {
             }),
             gatewayRouteName: 'gateway-http2-route',
           });
-        }).toThrow(/When prefix path for the rewrite is specified, prefix path for the match must end with \'\/\', got: \/test/);
+        }).toThrow(
+          /When prefix path for the rewrite is specified, prefix path for the match must end with \'\/\', got: \/test/
+        );
       });
 
       test("should throw an error if the custom prefix does not start and end with '/'", () => {
@@ -760,8 +765,7 @@ describe('gateway route', () => {
               routeTarget: virtualService,
               match: {
                 // size 0 array
-                metadata: [
-                ],
+                metadata: [],
               },
             }),
             gatewayRouteName: 'gateway-grpc-route',
@@ -1060,7 +1064,9 @@ describe('gateway route', () => {
             }),
             gatewayRouteName: 'gateway-http-route',
           });
-        }).toThrow(/Exact Path for the rewrite cannot be empty. Unlike startsWith\(\) method, no automatic rewrite on whole path match/);
+        }).toThrow(
+          /Exact Path for the rewrite cannot be empty. Unlike startsWith\(\) method, no automatic rewrite on whole path match/
+        );
       });
     });
 
@@ -1089,9 +1095,7 @@ describe('gateway route', () => {
           routeSpec: appmesh.GatewayRouteSpec.http({
             routeTarget: virtualService,
             match: {
-              queryParameters: [
-                appmesh.QueryParameterMatch.valueIs('query-field', 'value'),
-              ],
+              queryParameters: [appmesh.QueryParameterMatch.valueIs('query-field', 'value')],
             },
           }),
           gatewayRouteName: 'gateway-http-route',
@@ -1143,8 +1147,7 @@ describe('gateway route', () => {
       virtualGateway.addGatewayRoute('gateway-http-route', {
         routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
-          match: {
-          },
+          match: {},
         }),
         gatewayRouteName: 'gateway-http-route',
       });
@@ -1187,8 +1190,7 @@ describe('gateway route', () => {
       virtualGateway.addGatewayRoute('gateway-http-route', {
         routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
-          match: {
-          },
+          match: {},
           priority: 100,
         }),
         gatewayRouteName: 'gateway-http-route',
@@ -1260,7 +1262,6 @@ describe('gateway route', () => {
     expect(gatewayRoute.gatewayRouteName).toEqual(gatewayRouteName);
     expect(gatewayRoute.virtualGateway.virtualGatewayName).toEqual(virtualGatewayName);
     expect(gatewayRoute.virtualGateway.mesh.meshName).toEqual(meshName);
-
   });
   test('Can import Gateway Routes using attributes', () => {
     const app = new cdk.App();
@@ -1284,7 +1285,6 @@ describe('gateway route', () => {
     // THEN
     expect(gatewayRoute.gatewayRouteName).toEqual(gatewayRouteName);
     expect(gatewayRoute.virtualGateway.mesh.meshName).toEqual(meshName);
-
   });
 });
 
@@ -1398,5 +1398,7 @@ test('throws error when port not included when VirtualGateway has multuple liste
     gatewayRouteName: 'gateway-http-route',
   });
 
-  expect(() => app.synth()).toThrow(/Gateway route must define a match port if the parent Virtual Gateway has multiple listeners./);
+  expect(() => app.synth()).toThrow(
+    /Gateway route must define a match port if the parent Virtual Gateway has multiple listeners./
+  );
 });

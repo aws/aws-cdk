@@ -4,9 +4,20 @@ import { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { Duration, Stack } from '../../../core';
 import {
-  CorsHttpMethod, DomainName,
-  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  CorsHttpMethod,
+  DomainName,
+  HttpApi,
+  HttpAuthorizer,
+  HttpIntegrationType,
+  HttpMethod,
+  HttpRouteAuthorizerBindOptions,
+  HttpRouteAuthorizerConfig,
+  HttpRouteIntegrationBindOptions,
+  HttpRouteIntegrationConfig,
+  IHttpRouteAuthorizer,
+  HttpRouteIntegration,
+  HttpNoneAuthorizer,
+  PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -33,7 +44,10 @@ describe('HttpApi', () => {
 
   test('import', () => {
     const stack = new Stack();
-    const imported = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'http-1234', apiEndpoint: 'api-endpoint' });
+    const imported = HttpApi.fromHttpApiAttributes(stack, 'imported', {
+      httpApiId: 'http-1234',
+      apiEndpoint: 'api-endpoint',
+    });
 
     expect(imported.apiId).toEqual('http-1234');
     expect(imported.apiEndpoint).toEqual('api-endpoint');
@@ -107,7 +121,13 @@ describe('HttpApi', () => {
       new HttpApi(stack, 'HttpApi', {
         corsPreflight: {
           allowHeaders: ['Authorization'],
-          allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.HEAD, CorsHttpMethod.OPTIONS, CorsHttpMethod.POST, CorsHttpMethod.ANY],
+          allowMethods: [
+            CorsHttpMethod.GET,
+            CorsHttpMethod.HEAD,
+            CorsHttpMethod.OPTIONS,
+            CorsHttpMethod.POST,
+            CorsHttpMethod.ANY,
+          ],
           allowOrigins: ['*'],
           maxAge: Duration.seconds(36400),
         },
@@ -134,12 +154,15 @@ describe('HttpApi', () => {
 
     test('errors when allowConfiguration is specified along with origin "*"', () => {
       const stack = new Stack();
-      expect(() => new HttpApi(stack, 'HttpApi', {
-        corsPreflight: {
-          allowCredentials: true,
-          allowOrigins: ['*'],
-        },
-      })).toThrow(/allowCredentials is not supported/);
+      expect(
+        () =>
+          new HttpApi(stack, 'HttpApi', {
+            corsPreflight: {
+              allowCredentials: true,
+              allowOrigins: ['*'],
+            },
+          })
+      ).toThrow(/allowCredentials is not supported/);
     });
 
     test('get metric', () => {
@@ -185,7 +208,7 @@ describe('HttpApi', () => {
         expect(metric.dimensions).toEqual({ ApiId: apiId });
         expect(metric.color).toEqual(color);
       }
-      const metricNames = metrics.map(m => m.metricName);
+      const metricNames = metrics.map((m) => m.metricName);
       expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
     });
 
@@ -294,9 +317,13 @@ describe('HttpApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-1',
     });
-    expect(Object.keys(Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
-      Name: 'Link-2',
-    })).length).toEqual(0);
+    expect(
+      Object.keys(
+        Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
+          Name: 'Link-2',
+        })
+      ).length
+    ).toEqual(0);
   });
 
   test('apiEndpoint is exported', () => {
@@ -390,7 +417,7 @@ describe('HttpApi', () => {
     });
 
     expect(() => api.apiEndpoint).toThrow(
-      /apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true./,
+      /apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true./
     );
   });
 
@@ -416,9 +443,7 @@ describe('HttpApi', () => {
     });
 
     expect(stack.resolve(api.defaultStage?.domainUrl)).toEqual({
-      'Fn::Join': ['', [
-        'https://', { Ref: 'DNFDC76583' }, '/',
-      ]],
+      'Fn::Join': ['', ['https://', { Ref: 'DNFDC76583' }, '/']],
     });
   });
 
@@ -560,17 +585,20 @@ describe('HttpApi', () => {
     const api = new HttpApi(stack, 'api');
 
     expect(stack.resolve(api.arnForExecuteApi('method', '/path', 'stage'))).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        stack.resolve(api.apiId),
-        '/stage/method/path',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          stack.resolve(api.apiId),
+          '/stage/method/path',
+        ],
+      ],
     });
   });
 
@@ -579,17 +607,20 @@ describe('HttpApi', () => {
     const api = new HttpApi(stack, 'api');
 
     expect(stack.resolve(api.arnForExecuteApi())).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        stack.resolve(api.apiId),
-        '/*/*/*',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          stack.resolve(api.apiId),
+          '/*/*/*',
+        ],
+      ],
     });
   });
 
@@ -598,17 +629,20 @@ describe('HttpApi', () => {
     const api = new HttpApi(stack, 'api');
 
     expect(stack.resolve(api.arnForExecuteApi('ANY', '/path', 'stage'))).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        stack.resolve(api.apiId),
-        '/stage/*/path',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          stack.resolve(api.apiId),
+          '/stage/*/path',
+        ],
+      ],
     });
   });
 
@@ -616,8 +650,7 @@ describe('HttpApi', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api');
 
-    expect(() => api.arnForExecuteApi('method', 'path', 'stage'))
-      .toThrow("Path must start with '/': path");
+    expect(() => api.arnForExecuteApi('method', 'path', 'stage')).toThrow("Path must start with '/': path");
   });
 });
 

@@ -1,11 +1,7 @@
 import { Construct } from 'constructs';
 import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import {
-  ApplicationListenerRule,
-  FixedResponse,
-  RedirectResponse,
-} from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import {
   ApplicationTargetGroup,
@@ -215,9 +211,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     options: ApplicationListenerLookupOptions
   ): IApplicationListener {
     if (Token.isUnresolved(options.listenerArn)) {
-      throw new Error(
-        'All arguments to look up a load balancer listener must be concrete (no Tokens)'
-      );
+      throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
     }
 
     let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
@@ -295,8 +289,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       sslPolicy: props.sslPolicy,
       mutualAuthentication: props.mutualAuthentication
         ? {
-            ignoreClientCertificateExpiry:
-              props.mutualAuthentication?.ignoreClientCertificateExpiry,
+            ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
             mode: props.mutualAuthentication?.mutualAuthenticationMode,
             trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
           }
@@ -336,15 +329,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     if (props.open !== false) {
-      this.connections.allowDefaultPortFrom(
-        ec2.Peer.anyIpv4(),
-        `Allow from anyone on port ${port}`
-      );
+      this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
       if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK) {
-        this.connections.allowDefaultPortFrom(
-          ec2.Peer.anyIpv6(),
-          `Allow from anyone on port ${port}`
-        );
+        this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv6(), `Allow from anyone on port ${port}`);
       }
     }
   }
@@ -822,8 +809,7 @@ class ImportedApplicationListener extends ExternalApplicationListener {
     super(scope, id);
 
     this.listenerArn = props.listenerArn;
-    const defaultPort =
-      props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
+    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
       securityGroups: [props.securityGroup],
@@ -845,11 +831,7 @@ class LookedUpApplicationListener extends ExternalApplicationListener {
     });
 
     for (const securityGroupId of props.securityGroupIds) {
-      const securityGroup = ec2.SecurityGroup.fromLookupById(
-        this,
-        `SecurityGroup-${securityGroupId}`,
-        securityGroupId
-      );
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
   }
@@ -1094,9 +1076,7 @@ function checkAddRuleProps(props: AddRuleProps) {
     props.pathPatterns !== undefined;
   const hasPriority = props.priority !== undefined;
   if (hasAnyConditions !== hasPriority) {
-    throw new Error(
-      "Setting 'conditions', 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa"
-    );
+    throw new Error("Setting 'conditions', 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa");
   }
 }
 
@@ -1109,16 +1089,11 @@ function validateMutualAuthentication(mutualAuthentication?: MutualAuthenticatio
 
   if (currentMode === MutualAuthenticationMode.VERIFY) {
     if (!mutualAuthentication.trustStore) {
-      throw new Error(
-        `You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`
-      );
+      throw new Error(`You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`);
     }
   }
 
-  if (
-    currentMode === MutualAuthenticationMode.OFF ||
-    currentMode === MutualAuthenticationMode.PASS_THROUGH
-  ) {
+  if (currentMode === MutualAuthenticationMode.OFF || currentMode === MutualAuthenticationMode.PASS_THROUGH) {
     if (mutualAuthentication.trustStore) {
       throw new Error(
         `You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`

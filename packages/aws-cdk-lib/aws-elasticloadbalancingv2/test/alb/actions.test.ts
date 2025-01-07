@@ -72,12 +72,15 @@ describe('tests', () => {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
-      defaultAction: elbv2.ListenerAction.weightedForward([
-        { targetGroup: group1, weight: 10 },
-        { targetGroup: group2, weight: 50 },
-      ], {
-        stickinessDuration: cdk.Duration.hours(1),
-      }),
+      defaultAction: elbv2.ListenerAction.weightedForward(
+        [
+          { targetGroup: group1, weight: 10 },
+          { targetGroup: group2, weight: 50 },
+        ],
+        {
+          stickinessDuration: cdk.Duration.hours(1),
+        }
+      ),
     });
 
     // THEN
@@ -322,17 +325,13 @@ describe('tests', () => {
         {
           Field: 'host-header',
           HostHeaderConfig: {
-            Values: [
-              'example.com',
-            ],
+            Values: ['example.com'],
           },
         },
         {
           Field: 'source-ip',
           SourceIpConfig: {
-            Values: [
-              '1.1.1.1/32',
-            ],
+            Values: ['1.1.1.1/32'],
           },
         },
       ],
@@ -351,6 +350,6 @@ describe('tests', () => {
           path: 'example',
         }),
       });
-    }).toThrow('Redirect path must start with a \'/\', got: example');
+    }).toThrow("Redirect path must start with a '/', got: example");
   });
 });

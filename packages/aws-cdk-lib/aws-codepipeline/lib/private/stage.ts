@@ -91,19 +91,13 @@ export class Stage implements IStage {
 
     // check for duplicate Actions and names
     if (this._actions.find((a) => a.actionName === actionName)) {
-      throw new Error(
-        `Stage ${this.stageName} already contains an action with name '${actionName}'`
-      );
+      throw new Error(`Stage ${this.stageName} already contains an action with name '${actionName}'`);
     }
 
     this._actions.push(this.attachActionToPipeline(action));
   }
 
-  public onStateChange(
-    name: string,
-    target?: events.IRuleTarget,
-    options?: events.RuleProps
-  ): events.Rule {
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
     const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
@@ -165,9 +159,7 @@ export class Stage implements IStage {
     // may do this to maintain construct tree compatibility between versions).
     //
     // If so, we simply reuse it.
-    let actionScope = Node.of(this.scope).tryFindChild(action.actionProperties.actionName) as
-      | Construct
-      | undefined;
+    let actionScope = Node.of(this.scope).tryFindChild(action.actionProperties.actionName) as Construct | undefined;
     if (!actionScope) {
       let id = action.actionProperties.actionName;
       if (Token.isUnresolved(id)) {

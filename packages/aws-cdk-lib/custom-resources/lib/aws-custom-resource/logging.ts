@@ -63,8 +63,6 @@ export abstract class Logging {
     if (isLogApiResponseDataFeatureFlagSet && this.logApiResponseData === undefined) {
       this.logApiResponseData = true;
     }
-    return this.logApiResponseData !== undefined
-      ? { logApiResponseData: this.logApiResponseData }
-      : {};
+    return this.logApiResponseData !== undefined ? { logApiResponseData: this.logApiResponseData } : {};
   }
 }

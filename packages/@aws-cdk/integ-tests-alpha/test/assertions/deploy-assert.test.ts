@@ -5,7 +5,6 @@ import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 import { IntegTest } from '../../lib/test-case';
 
 describe('DeployAssert', () => {
-
   test('of', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
@@ -85,7 +84,7 @@ describe('DeployAssert', () => {
       deplossert.expect(
         'MyAssertion',
         ExpectedResult.stringLikeRegexp('foo'),
-        ActualResult.fromAwsApiCall(query, 'att'),
+        ActualResult.fromAwsApiCall(query, 'att')
       );
 
       // THEN
@@ -93,10 +92,7 @@ describe('DeployAssert', () => {
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
         expected: JSON.stringify({ $StringLike: 'foo' }),
         actual: {
-          'Fn::GetAtt': [
-            'AwsApiCallMyServiceMyApi',
-            'apiCallResponse.att',
-          ],
+          'Fn::GetAtt': ['AwsApiCallMyServiceMyApi', 'apiCallResponse.att'],
         },
       });
     });
@@ -111,7 +107,7 @@ describe('DeployAssert', () => {
       deplossert.expect(
         'MyAssertion',
         ExpectedResult.objectLike({ foo: 'bar' }),
-        ActualResult.fromAwsApiCall(query, 'att'),
+        ActualResult.fromAwsApiCall(query, 'att')
       );
 
       // THEN
@@ -119,10 +115,7 @@ describe('DeployAssert', () => {
       template.hasResourceProperties('Custom::DeployAssert@AssertEquals', {
         expected: JSON.stringify({ $ObjectLike: { foo: 'bar' } }),
         actual: {
-          'Fn::GetAtt': [
-            'AwsApiCallMyServiceMyApi',
-            'apiCallResponse.att',
-          ],
+          'Fn::GetAtt': ['AwsApiCallMyServiceMyApi', 'apiCallResponse.att'],
         },
       });
     });
@@ -210,7 +203,7 @@ describe('DeployAssert', () => {
           service: '@aws-sdk/client-ssm',
           api: 'GetParameterCommand',
         },
-        1,
+        1
       );
     });
 
@@ -220,9 +213,7 @@ describe('DeployAssert', () => {
 
       // WHEN
       const deplossert = new DeployAssert(app);
-      deplossert.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand').expect(
-        ExpectedResult.objectLike({}),
-      );;
+      deplossert.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand').expect(ExpectedResult.objectLike({}));
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
@@ -234,7 +225,7 @@ describe('DeployAssert', () => {
           service: '@aws-sdk/client-ssm',
           api: 'GetParameterCommand',
         },
-        1,
+        1
       );
       template.hasOutput('AssertionResultsAwsApiCallawssdkclientssmGetParameterCommand', {
         Value: {
@@ -254,18 +245,20 @@ describe('DeployAssert', () => {
       deplossert.httpApiCall('https://example.com/test/123');
 
       // THEN
-      Template.fromStack(deplossert.scope).templateMatches(Match.objectLike({
-        Resources: Match.objectLike({
-          HttpApiCallexamplecomtest1235ffa3a1b41e83da401e71706d1d9bc9a: {
-            Type: 'Custom::DeployAssert@HttpCallexamplecomtest123',
-            Properties: Match.objectLike({
-              parameters: {
-                url: 'https://example.com/test/123',
-              },
-            }),
-          },
-        }),
-      }));
+      Template.fromStack(deplossert.scope).templateMatches(
+        Match.objectLike({
+          Resources: Match.objectLike({
+            HttpApiCallexamplecomtest1235ffa3a1b41e83da401e71706d1d9bc9a: {
+              Type: 'Custom::DeployAssert@HttpCallexamplecomtest123',
+              Properties: Match.objectLike({
+                parameters: {
+                  url: 'https://example.com/test/123',
+                },
+              }),
+            },
+          }),
+        })
+      );
     });
 
     test('expect creates a valid CfnOutput', () => {
@@ -285,7 +278,7 @@ describe('DeployAssert', () => {
           Value: {
             'Fn::GetAtt': ['HttpApiCallexamplecomtest1237c0018be9f253e38cad30092c2fa2a91', 'assertion'],
           },
-        },
+        }
       );
     });
 
@@ -337,24 +330,26 @@ describe('DeployAssert', () => {
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
-      template.templateMatches(Match.objectLike({
-        Resources: Match.objectLike({
-          HttpApiCallexamplecomtest1234ed1aca271c61baebedbb58ac2be8cea: {
-            Type: 'Custom::DeployAssert@HttpCallexamplecomtest123',
-            Properties: Match.objectLike({
-              parameters: {
-                url: 'https://example.com/test/123',
-                fetchOptions: {
-                  body: JSON.stringify({ param: 'value' }),
-                  headers: { header1: 'value/value1' },
-                  method: 'POST',
-                  port: 8443,
+      template.templateMatches(
+        Match.objectLike({
+          Resources: Match.objectLike({
+            HttpApiCallexamplecomtest1234ed1aca271c61baebedbb58ac2be8cea: {
+              Type: 'Custom::DeployAssert@HttpCallexamplecomtest123',
+              Properties: Match.objectLike({
+                parameters: {
+                  url: 'https://example.com/test/123',
+                  fetchOptions: {
+                    body: JSON.stringify({ param: 'value' }),
+                    headers: { header1: 'value/value1' },
+                    method: 'POST',
+                    port: 8443,
+                  },
                 },
-              },
-            }),
-          },
-        }),
-      }));
+              }),
+            },
+          }),
+        })
+      );
       template.resourceCountIs('AWS::Lambda::Function', 1);
     });
 

@@ -39,16 +39,12 @@ describe('service', () => {
             },
             Name: 'service',
             NamespaceId: {
-              'Fn::GetAtt': [
-                'MyNamespaceD0BB8558',
-                'Id',
-              ],
+              'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
             },
           },
         },
       },
     });
-
   });
 
   test('Service for HTTP namespace with health check', () => {
@@ -88,16 +84,12 @@ describe('service', () => {
             },
             Name: 'service',
             NamespaceId: {
-              'Fn::GetAtt': [
-                'MyNamespaceD0BB8558',
-                'Id',
-              ],
+              'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
             },
           },
         },
       },
     });
-
   });
 
   test('Service for Public DNS namespace', () => {
@@ -137,10 +129,7 @@ describe('service', () => {
                 },
               ],
               NamespaceId: {
-                'Fn::GetAtt': [
-                  'MyNamespaceD0BB8558',
-                  'Id',
-                ],
+                'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
               },
               RoutingPolicy: 'MULTIVALUE',
             },
@@ -149,16 +138,12 @@ describe('service', () => {
             },
             Name: 'service',
             NamespaceId: {
-              'Fn::GetAtt': [
-                'MyNamespaceD0BB8558',
-                'Id',
-              ],
+              'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
             },
           },
         },
       },
     });
-
   });
 
   test('Service for Public DNS namespace with A and AAAA records', () => {
@@ -197,24 +182,17 @@ describe('service', () => {
                 },
               ],
               NamespaceId: {
-                'Fn::GetAtt': [
-                  'MyNamespaceD0BB8558',
-                  'Id',
-                ],
+                'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
               },
               RoutingPolicy: 'MULTIVALUE',
             },
             NamespaceId: {
-              'Fn::GetAtt': [
-                'MyNamespaceD0BB8558',
-                'Id',
-              ],
+              'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
             },
           },
         },
       },
     });
-
   });
 
   test('Defaults to WEIGHTED routing policy for CNAME', () => {
@@ -249,24 +227,17 @@ describe('service', () => {
                 },
               ],
               NamespaceId: {
-                'Fn::GetAtt': [
-                  'MyNamespaceD0BB8558',
-                  'Id',
-                ],
+                'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
               },
               RoutingPolicy: 'WEIGHTED',
             },
             NamespaceId: {
-              'Fn::GetAtt': [
-                'MyNamespaceD0BB8558',
-                'Id',
-              ],
+              'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
             },
           },
         },
       },
     });
-
   });
 
   test('Throws when specifying both healthCheckConfig and healthCheckCustomConfig on PublicDnsNamespace', () => {
@@ -288,7 +259,6 @@ describe('service', () => {
         },
       });
     }).toThrow(/`healthCheckConfig`.+`healthCheckCustomConfig`/);
-
   });
 
   test('Throws when specifying healthCheckConfig on PrivateDnsNamespace', () => {
@@ -312,7 +282,6 @@ describe('service', () => {
         },
       });
     }).toThrow(/`healthCheckConfig`.+`healthCheckCustomConfig`/);
-
   });
 
   test('Throws when using CNAME and Multivalue routing policy', () => {
@@ -331,7 +300,6 @@ describe('service', () => {
         routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE,
       });
     }).toThrow(/Cannot use `CNAME` record when routing policy is `Multivalue`./);
-
   });
 
   test('Throws when specifying resourcePath with TCP', () => {
@@ -352,7 +320,6 @@ describe('service', () => {
         },
       });
     }).toThrow(/`resourcePath`.+`TCP`/);
-
   });
 
   test('Throws when specifying loadbalancer with wrong DnsRecordType', () => {
@@ -370,7 +337,6 @@ describe('service', () => {
         loadBalancer: true,
       });
     }).toThrow(/Must support `A` or `AAAA` records to register loadbalancers/);
-
   });
 
   test('Throws when specifying loadbalancer with Multivalue routing Policy', () => {
@@ -388,7 +354,6 @@ describe('service', () => {
         routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE,
       });
     }).toThrow(/Cannot register loadbalancers when routing policy is `Multivalue`./);
-
   });
 
   test('Throws when specifying discovery type of DNS within a HttpNamespace', () => {
@@ -406,7 +371,6 @@ describe('service', () => {
         discoveryType: DiscoveryType.DNS_AND_API,
       });
     }).toThrow(/Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace./);
-
   });
 
   test('Service for Private DNS namespace', () => {
@@ -439,22 +403,15 @@ describe('service', () => {
           },
         ],
         NamespaceId: {
-          'Fn::GetAtt': [
-            'MyNamespaceD0BB8558',
-            'Id',
-          ],
+          'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
         },
         RoutingPolicy: 'MULTIVALUE',
       },
       Name: 'service',
       NamespaceId: {
-        'Fn::GetAtt': [
-          'MyNamespaceD0BB8558',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
       },
     });
-
   });
 
   test('Service for DNS namespace with API only discovery', () => {
@@ -482,13 +439,9 @@ describe('service', () => {
       Description: 'service description',
       Name: 'service',
       NamespaceId: {
-        'Fn::GetAtt': [
-          'MyNamespaceD0BB8558',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyNamespaceD0BB8558', 'Id'],
       },
       Type: 'HTTP',
     });
-
   });
 });

@@ -34,7 +34,8 @@ describe('callable expression', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope);\n  }\n}';
+    const expected =
+      '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope);\n  }\n}';
     expect(result).toEqual(expected);
   });
 
@@ -48,7 +49,8 @@ describe('callable expression', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope);\n    fqn.secondCallableExpr(scope);\n  }\n}';
+    const expected =
+      '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope);\n    fqn.secondCallableExpr(scope);\n  }\n}';
     expect(result).toEqual(expected);
   });
 
@@ -62,7 +64,8 @@ describe('callable expression', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope, arg2);\n  }\n}';
+    const expected =
+      '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope, arg2);\n  }\n}';
     expect(result).toEqual(expected);
   });
 });
@@ -108,9 +111,7 @@ abstract class HandlerFrameworkTestClass extends ClassType {
         const _method = this.addMethod({
           name: 'testMethod',
         });
-        _method.addBody(
-          testModule.callableExpr1.call(expr.ident('scope')),
-        );
+        _method.addBody(testModule.callableExpr1.call(expr.ident('scope')));
       }
     })();
   }
@@ -128,7 +129,7 @@ abstract class HandlerFrameworkTestClass extends ClassType {
         });
         _method.addBody(
           testModule.callableExpr1.call(expr.ident('scope')),
-          testModule.callableExpr2.call(expr.ident('scope')),
+          testModule.callableExpr2.call(expr.ident('scope'))
         );
       }
     })();
@@ -145,9 +146,7 @@ abstract class HandlerFrameworkTestClass extends ClassType {
         const _method = this.addMethod({
           name: 'testMethod',
         });
-        _method.addBody(
-          testModule.callableExpr1.call(expr.ident('scope'), expr.ident('arg2')),
-        );
+        _method.addBody(testModule.callableExpr1.call(expr.ident('scope'), expr.ident('arg2')));
       }
     })();
   }

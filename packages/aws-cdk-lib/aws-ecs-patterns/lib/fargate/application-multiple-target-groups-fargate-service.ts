@@ -51,11 +51,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsFargateService class.
    */
-  constructor(
-    scope: Construct,
-    id: string,
-    props: ApplicationMultipleTargetGroupsFargateServiceProps = {}
-  ) {
+  constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsFargateServiceProps = {}) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp ?? false;
@@ -119,9 +115,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     }
   }
 
-  private createFargateService(
-    props: ApplicationMultipleTargetGroupsFargateServiceProps
-  ): FargateService {
+  private createFargateService(props: ApplicationMultipleTargetGroupsFargateServiceProps): FargateService {
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
       ? this.internalDesiredCount
       : this.desiredCount;

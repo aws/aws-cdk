@@ -130,7 +130,9 @@ describe('CallApiGatewayRestApiEndpoint', () => {
         stageName: 'dev',
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       });
-    }).toThrow(/Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token./);
+    }).toThrow(
+      /Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token./
+    );
   });
 
   test('unsupported integration pattern - RUN_JOB', () => {

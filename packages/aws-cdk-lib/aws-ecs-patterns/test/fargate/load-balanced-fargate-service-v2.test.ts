@@ -7,7 +7,12 @@ import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elas
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
-import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
+import {
+  ApplicationLoadBalancedFargateService,
+  ApplicationMultipleTargetGroupsFargateService,
+  NetworkLoadBalancedFargateService,
+  NetworkMultipleTargetGroupsFargateService,
+} from '../../lib';
 
 const enableExecuteCommandPermissions = {
   Statement: [
@@ -27,11 +32,7 @@ const enableExecuteCommandPermissions = {
       Resource: '*',
     },
     {
-      Action: [
-        'logs:CreateLogStream',
-        'logs:DescribeLogStreams',
-        'logs:PutLogEvents',
-      ],
+      Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
       Effect: 'Allow',
       Resource: '*',
     },
@@ -101,17 +102,12 @@ describe('Application Load Balancer', () => {
         ],
         Cpu: '256',
         ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'ServiceTaskDefExecutionRole919F7BE3',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ServiceTaskDefExecutionRole919F7BE3', 'Arn'],
         },
         Family: 'ServiceTaskDef79D79521',
         Memory: '512',
         NetworkMode: 'awsvpc',
-        RequiresCompatibilities: [
-          'FARGATE',
-        ],
+        RequiresCompatibilities: ['FARGATE'],
       });
     });
 
@@ -199,17 +195,12 @@ describe('Application Load Balancer', () => {
         ],
         Cpu: '256',
         ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'ServiceTaskDefExecutionRole919F7BE3',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ServiceTaskDefExecutionRole919F7BE3', 'Arn'],
         },
         Family: 'ServiceTaskDef79D79521',
         Memory: '512',
         NetworkMode: 'awsvpc',
-        RequiresCompatibilities: [
-          'FARGATE',
-        ],
+        RequiresCompatibilities: ['FARGATE'],
       });
     });
 
@@ -239,7 +230,7 @@ describe('Application Load Balancer', () => {
             path: '/',
             assumedBy: new CompositePrincipal(
               new ServicePrincipal('ecs.amazonaws.com'),
-              new ServicePrincipal('ecs-tasks.amazonaws.com'),
+              new ServicePrincipal('ecs-tasks.amazonaws.com')
             ),
           }),
           taskRole: new Role(stack, 'TaskRole', {
@@ -298,10 +289,7 @@ describe('Application Load Balancer', () => {
             AssignPublicIp: 'ENABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'ServiceSecurityGroupEEA09B68',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['ServiceSecurityGroupEEA09B68', 'GroupId'],
               },
             ],
             Subnets: [
@@ -379,22 +367,14 @@ describe('Application Load Balancer', () => {
           SizeInGiB: 50,
         },
         ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'ExecutionRole605A040B',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'],
         },
         Family: 'Ec2TaskDef',
         Memory: '512',
         NetworkMode: 'awsvpc',
-        RequiresCompatibilities: [
-          'FARGATE',
-        ],
+        RequiresCompatibilities: ['FARGATE'],
         TaskRoleArn: {
-          'Fn::GetAtt': [
-            'TaskRole30FC0FBB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'],
         },
       });
     });
@@ -849,17 +829,12 @@ describe('Network Load Balancer', () => {
         ],
         Cpu: '256',
         ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'ServiceTaskDefExecutionRole919F7BE3',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ServiceTaskDefExecutionRole919F7BE3', 'Arn'],
         },
         Family: 'ServiceTaskDef79D79521',
         Memory: '512',
         NetworkMode: 'awsvpc',
-        RequiresCompatibilities: [
-          'FARGATE',
-        ],
+        RequiresCompatibilities: ['FARGATE'],
       });
     });
 
@@ -889,7 +864,7 @@ describe('Network Load Balancer', () => {
             path: '/',
             assumedBy: new CompositePrincipal(
               new ServicePrincipal('ecs.amazonaws.com'),
-              new ServicePrincipal('ecs-tasks.amazonaws.com'),
+              new ServicePrincipal('ecs-tasks.amazonaws.com')
             ),
           }),
           taskRole: new Role(stack, 'TaskRole', {
@@ -944,10 +919,7 @@ describe('Network Load Balancer', () => {
             AssignPublicIp: 'ENABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'ServiceSecurityGroupEEA09B68',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['ServiceSecurityGroupEEA09B68', 'GroupId'],
               },
             ],
             Subnets: [
@@ -1013,22 +985,14 @@ describe('Network Load Balancer', () => {
           SizeInGiB: 80,
         },
         ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'ExecutionRole605A040B',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'],
         },
         Family: 'Ec2TaskDef',
         Memory: '512',
         NetworkMode: 'awsvpc',
-        RequiresCompatibilities: [
-          'FARGATE',
-        ],
+        RequiresCompatibilities: ['FARGATE'],
         TaskRoleArn: {
-          'Fn::GetAtt': [
-            'TaskRole30FC0FBB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'],
         },
       });
     });
@@ -1059,7 +1023,7 @@ describe('Network Load Balancer', () => {
             path: '/',
             assumedBy: new CompositePrincipal(
               new ServicePrincipal('ecs.amazonaws.com'),
-              new ServicePrincipal('ecs-tasks.amazonaws.com'),
+              new ServicePrincipal('ecs-tasks.amazonaws.com')
             ),
           }),
           taskRole: new Role(stack, 'TaskRole', {
@@ -1171,14 +1135,14 @@ describe('Network Load Balancer', () => {
         loadBalancers: [
           {
             name: 'lb1',
-            listeners: [
-              { name: 'listener1', port: 8181 },
-            ],
+            listeners: [{ name: 'listener1', port: 8181 }],
           },
         ],
-        targetGroups: [{
-          containerPort: 81,
-        }],
+        targetGroups: [
+          {
+            containerPort: 81,
+          },
+        ],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -1200,10 +1164,12 @@ describe('Network Load Balancer', () => {
 
       taskDefinition.addContainer('MainContainer', {
         image: ecs.ContainerImage.fromRegistry('test'),
-        portMappings: [{
-          containerPort: ContainerDefinition.CONTAINER_PORT_USE_RANGE,
-          containerPortRange: '8080-8081',
-        }],
+        portMappings: [
+          {
+            containerPort: ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+            containerPortRange: '8080-8081',
+          },
+        ],
       });
       // THEN
       expect(() => {

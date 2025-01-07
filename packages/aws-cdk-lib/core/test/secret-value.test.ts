@@ -1,5 +1,14 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack, Token, App, CfnResource } from '../lib';
+import {
+  CfnDynamicReference,
+  CfnDynamicReferenceService,
+  CfnParameter,
+  SecretValue,
+  Stack,
+  Token,
+  App,
+  CfnResource,
+} from '../lib';
 
 describe('secret value', () => {
   testDeprecated('plainText', () => {
@@ -73,14 +82,7 @@ describe('secret value', () => {
 
     // THEN
     expect(stack.resolve(v)).toEqual({
-      'Fn::Join': [
-        '',
-        [
-          '{{resolve:secretsmanager:',
-          { Ref: 'secret-id' },
-          ':SecretString:json-key:version-stage:}}',
-        ],
-      ],
+      'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'secret-id' }, ':SecretString:json-key:version-stage:}}']],
     });
   });
 
@@ -104,14 +106,7 @@ describe('secret value', () => {
 
     // THEN
     expect(stack.resolve(v)).toEqual({
-      'Fn::Join': [
-        '',
-        [
-          '{{resolve:secretsmanager:',
-          { Ref: 'secret-id' },
-          ':SecretString:::}}',
-        ],
-      ],
+      'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'secret-id' }, ':SecretString:::}}']],
     });
   });
 
@@ -121,11 +116,10 @@ describe('secret value', () => {
 
   test('secretsManager with versionStage and versionId', () => {
     expect(() => {
-      SecretValue.secretsManager('secret-id',
-        {
-          versionStage: 'version-stage',
-          versionId: 'version-id',
-        });
+      SecretValue.secretsManager('secret-id', {
+        versionStage: 'version-stage',
+        versionId: 'version-id',
+      });
     }).toThrow(/were both provided but only one is allowed/);
   });
 

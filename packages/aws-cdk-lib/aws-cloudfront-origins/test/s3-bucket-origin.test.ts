@@ -51,10 +51,7 @@ describe('S3BucketOrigin', () => {
               PolicyDocument: {
                 Statement: [
                   {
-                    Action: [
-                      's3:PutObject',
-                      's3:GetObject',
-                    ],
+                    Action: ['s3:PutObject', 's3:GetObject'],
                     Condition: {
                       StringEquals: {
                         'AWS:SourceArn': {
@@ -87,10 +84,7 @@ describe('S3BucketOrigin', () => {
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'MyBucketF68F3FF0',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                           },
                           '/*',
                         ],
@@ -131,17 +125,11 @@ describe('S3BucketOrigin', () => {
                     ConnectionAttempts: 2,
                     ConnectionTimeout: 10,
                     DomainName: {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'RegionalDomainName',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'RegionalDomainName'],
                     },
                     Id: 'originIdA',
                     OriginAccessControlId: {
-                      'Fn::GetAtt': [
-                        'MyOacAA788594',
-                        'Id',
-                      ],
+                      'Fn::GetAtt': ['MyOacAA788594', 'Id'],
                     },
                     OriginCustomHeaders: [
                       {
@@ -252,10 +240,7 @@ describe('S3BucketOrigin', () => {
                   {
                     ServerSideEncryptionByDefault: {
                       KMSMasterKeyID: {
-                        'Fn::GetAtt': [
-                          'myKey441A1E73',
-                          'Arn',
-                        ],
+                        'Fn::GetAtt': ['myKey441A1E73', 'Arn'],
                       },
                       SSEAlgorithm: 'aws:kms',
                     },
@@ -315,10 +300,7 @@ describe('S3BucketOrigin', () => {
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'myEncryptedBucket939A51C0',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['myEncryptedBucket939A51C0', 'Arn'],
                           },
                           '/*',
                         ],
@@ -357,17 +339,11 @@ describe('S3BucketOrigin', () => {
                 Origins: [
                   {
                     DomainName: {
-                      'Fn::GetAtt': [
-                        'myEncryptedBucket939A51C0',
-                        'RegionalDomainName',
-                      ],
+                      'Fn::GetAtt': ['myEncryptedBucket939A51C0', 'RegionalDomainName'],
                     },
                     Id: 'MyDistributionAOrigin11BE8FF8C',
                     OriginAccessControlId: {
-                      'Fn::GetAtt': [
-                        'MyDistributionAOrigin1S3OriginAccessControlE2649D73',
-                        'Id',
-                      ],
+                      'Fn::GetAtt': ['MyDistributionAOrigin1S3OriginAccessControlE2649D73', 'Id'],
                     },
                     S3OriginConfig: {
                       OriginAccessIdentity: '',
@@ -378,11 +354,13 @@ describe('S3BucketOrigin', () => {
             },
           },
         });
-        Annotations.fromStack(stack).hasWarning('/Default',
+        Annotations.fromStack(stack).hasWarning(
+          '/Default',
           'To avoid a circular dependency between the KMS key, Bucket, and Distribution during the initial deployment, ' +
-          'a wildcard is used in the Key policy condition to match all Distribution IDs.\n' +
-          'After deploying once, it is strongly recommended to further scope down the policy for best security practices by ' +
-          'following the guidance in the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]');
+            'a wildcard is used in the Key policy condition to match all Distribution IDs.\n' +
+            'After deploying once, it is strongly recommended to further scope down the policy for best security practices by ' +
+            'following the guidance in the "Using OAC for a SSE-KMS encrypted S3 origin" section in the module README. [ack: @aws-cdk/aws-cloudfront-origins:wildcardKeyPolicyForOac]'
+        );
       });
 
       it('should allow users to use escape hatch to scope down KMS key policy to specific distribution id', () => {
@@ -473,9 +451,11 @@ describe('S3BucketOrigin', () => {
         new cloudfront.Distribution(stack, 'MyDistributionA', {
           defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(bucket) },
         });
-        Annotations.fromStack(stack).hasWarning('/Default/MyDistributionA/Origin1',
+        Annotations.fromStack(stack).hasWarning(
+          '/Default/MyDistributionA/Origin1',
           'Cannot update key policy of an imported key. You will need to update the policy manually instead.\n' +
-          'See the "Updating imported key policies" section of the module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedKeyPolicyOac]');
+            'See the "Updating imported key policies" section of the module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedKeyPolicyOac]'
+        );
       });
     });
 
@@ -549,10 +529,7 @@ describe('S3BucketOrigin', () => {
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'MyBucketF68F3FF0',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                           },
                           '/*',
                         ],
@@ -593,10 +570,7 @@ describe('S3BucketOrigin', () => {
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'MyBucketF68F3FF0',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                           },
                           '/*',
                         ],
@@ -635,17 +609,11 @@ describe('S3BucketOrigin', () => {
                 Origins: [
                   {
                     DomainName: {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'RegionalDomainName',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'RegionalDomainName'],
                     },
                     Id: 'MyDistributionAOrigin11BE8FF8C',
                     OriginAccessControlId: {
-                      'Fn::GetAtt': [
-                        'MyDistributionAOrigin1S3OriginAccessControlE2649D73',
-                        'Id',
-                      ],
+                      'Fn::GetAtt': ['MyDistributionAOrigin1S3OriginAccessControlE2649D73', 'Id'],
                     },
                     S3OriginConfig: {
                       OriginAccessIdentity: '',
@@ -671,17 +639,11 @@ describe('S3BucketOrigin', () => {
                 Origins: [
                   {
                     DomainName: {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'RegionalDomainName',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'RegionalDomainName'],
                     },
                     Id: 'MyDistributionBOrigin12F11A471',
                     OriginAccessControlId: {
-                      'Fn::GetAtt': [
-                        'MyDistributionAOrigin1S3OriginAccessControlE2649D73',
-                        'Id',
-                      ],
+                      'Fn::GetAtt': ['MyDistributionAOrigin1S3OriginAccessControlE2649D73', 'Id'],
                     },
                     S3OriginConfig: {
                       OriginAccessIdentity: '',
@@ -714,9 +676,11 @@ describe('S3BucketOrigin', () => {
       });
 
       it('should warn user bucket policy is not updated', () => {
-        Annotations.fromStack(stack).hasWarning('/Default/MyDistributionA/Origin1',
+        Annotations.fromStack(stack).hasWarning(
+          '/Default/MyDistributionA/Origin1',
           'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
-          'See the "Setting up OAC with imported S3 buckets" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOac]');
+            'See the "Setting up OAC with imported S3 buckets" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOac]'
+        );
       });
 
       it('should match expected template resources', () => {
@@ -764,10 +728,7 @@ describe('S3BucketOrigin', () => {
                     },
                     Id: 'MyDistributionAOrigin11BE8FF8C',
                     OriginAccessControlId: {
-                      'Fn::GetAtt': [
-                        'MyDistributionAOrigin1S3OriginAccessControlE2649D73',
-                        'Id',
-                      ],
+                      'Fn::GetAtt': ['MyDistributionAOrigin1S3OriginAccessControlE2649D73', 'Id'],
                     },
                     S3OriginConfig: {
                       OriginAccessIdentity: '',
@@ -786,7 +747,11 @@ describe('S3BucketOrigin', () => {
         const stack = new Stack();
         const bucket = new s3.Bucket(stack, 'MyBucket');
         const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
-          originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
+          originAccessLevels: [
+            cloudfront.AccessLevel.READ,
+            cloudfront.AccessLevel.WRITE,
+            cloudfront.AccessLevel.DELETE,
+          ],
         });
         new cloudfront.Distribution(stack, 'MyDistribution', {
           defaultBehavior: { origin },
@@ -795,11 +760,7 @@ describe('S3BucketOrigin', () => {
           PolicyDocument: {
             Statement: [
               {
-                Action: [
-                  's3:GetObject',
-                  's3:PutObject',
-                  's3:DeleteObject',
-                ],
+                Action: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'],
                 Effect: 'Allow',
                 Principal: {
                   Service: 'cloudfront.amazonaws.com',
@@ -832,10 +793,7 @@ describe('S3BucketOrigin', () => {
                     '',
                     [
                       {
-                        'Fn::GetAtt': [
-                          'MyBucketF68F3FF0',
-                          'Arn',
-                        ],
+                        'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                       },
                       '/*',
                     ],
@@ -897,10 +855,7 @@ describe('S3BucketOrigin', () => {
                     Effect: 'Allow',
                     Principal: {
                       CanonicalUser: {
-                        'Fn::GetAtt': [
-                          'MyOAID7163411',
-                          'S3CanonicalUserId',
-                        ],
+                        'Fn::GetAtt': ['MyOAID7163411', 'S3CanonicalUserId'],
                       },
                     },
                     Resource: {
@@ -908,10 +863,7 @@ describe('S3BucketOrigin', () => {
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'MyBucketF68F3FF0',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                           },
                           '/*',
                         ],
@@ -949,10 +901,7 @@ describe('S3BucketOrigin', () => {
                     ConnectionAttempts: 2,
                     ConnectionTimeout: 10,
                     DomainName: {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'RegionalDomainName',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'RegionalDomainName'],
                     },
                     Id: 'originIdA',
                     OriginCustomHeaders: [
@@ -1029,10 +978,7 @@ describe('S3BucketOrigin', () => {
                     Effect: 'Allow',
                     Principal: {
                       CanonicalUser: {
-                        'Fn::GetAtt': [
-                          'MyDistributionAOrigin1S3Origin8C75F420',
-                          'S3CanonicalUserId',
-                        ],
+                        'Fn::GetAtt': ['MyDistributionAOrigin1S3Origin8C75F420', 'S3CanonicalUserId'],
                       },
                     },
                     Resource: {
@@ -1040,10 +986,7 @@ describe('S3BucketOrigin', () => {
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'MyBucketF68F3FF0',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                           },
                           '/*',
                         ],
@@ -1079,10 +1022,7 @@ describe('S3BucketOrigin', () => {
                 Origins: [
                   {
                     DomainName: {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'RegionalDomainName',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'RegionalDomainName'],
                     },
                     Id: 'MyDistributionAOrigin11BE8FF8C',
                     S3OriginConfig: {
@@ -1119,10 +1059,7 @@ describe('S3BucketOrigin', () => {
                 Origins: [
                   {
                     DomainName: {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'RegionalDomainName',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'RegionalDomainName'],
                     },
                     Id: 'MyDistributionBOrigin12F11A471',
                     S3OriginConfig: {
@@ -1166,9 +1103,11 @@ describe('S3BucketOrigin', () => {
       });
 
       it('should warn user bucket policy is not updated', () => {
-        Annotations.fromStack(distributionStack).hasWarning('/distributionStack/MyDistributionA/Origin1',
+        Annotations.fromStack(distributionStack).hasWarning(
+          '/distributionStack/MyDistributionA/Origin1',
           'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
-          'See the "Setting up OAI with imported S3 buckets (legacy)" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOai]');
+            'See the "Setting up OAI with imported S3 buckets (legacy)" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOai]'
+        );
       });
 
       it('should create OAI in bucket stack and output it, then reference the output in the distribution stack', () => {
@@ -1233,7 +1172,8 @@ describe('S3BucketOrigin', () => {
                           [
                             'origin-access-identity/cloudfront/',
                             {
-                              'Fn::ImportValue': 'bucketStack:ExportsOutputRefdistributionStackMyDistributionAOrigin15F199CD4S3OriginD88C4A64BA6320AC',
+                              'Fn::ImportValue':
+                                'bucketStack:ExportsOutputRefdistributionStackMyDistributionAOrigin15F199CD4S3OriginD88C4A64BA6320AC',
                             },
                           ],
                         ],

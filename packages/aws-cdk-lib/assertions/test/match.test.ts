@@ -32,13 +32,23 @@ describe('Matchers', () => {
       expectFailure(matcher, ['bar', 3], [/Expected foo but received bar at \/0/]);
       expectFailure(matcher, ['foo', 5], [/Expected 3 but received 5 at \/1/]);
 
-      matcher = Match.exact([{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }]);
-      expectPass(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'fred', wobble: 'flob' }]);
-      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }], [/Not enough elements in array/]);
-      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'flob', wobble: 'fred' }], [
-        'Expected fred but received flob at /1/waldo',
-        'Expected flob but received fred at /1/wobble',
+      matcher = Match.exact([
+        { foo: 'bar', baz: 'qux' },
+        { waldo: 'fred', wobble: 'flob' },
       ]);
+      expectPass(matcher, [
+        { foo: 'bar', baz: 'qux' },
+        { waldo: 'fred', wobble: 'flob' },
+      ]);
+      expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }], [/Not enough elements in array/]);
+      expectFailure(
+        matcher,
+        [
+          { foo: 'bar', baz: 'qux' },
+          { waldo: 'flob', wobble: 'fred' },
+        ],
+        ['Expected fred but received flob at /1/waldo', 'Expected flob but received fred at /1/wobble']
+      );
       expectFailure(matcher, [{ foo: 'bar', baz: 'qux' }, { waldo: 'fred' }], [/Missing key.*at \/1\/wobble/]);
     });
 
@@ -47,10 +57,7 @@ describe('Matchers', () => {
       expectPass(matcher, { foo: 'bar' });
       expectFailure(matcher, 5, [/Expected type object but received number/]);
       expectFailure(matcher, ['3', 5], [/Expected type object but received array/]);
-      expectFailure(matcher, { baz: 'qux' }, [
-        'Unexpected key baz at /baz',
-        /Missing key.*at \/foo/,
-      ]);
+      expectFailure(matcher, { baz: 'qux' }, ['Unexpected key baz at /baz', /Missing key.*at \/foo/]);
 
       matcher = Match.exact({ foo: 'bar', baz: 5 });
       expectFailure(matcher, { foo: 'bar', baz: '5' }, [/Expected type number but received string at \/baz/]);
@@ -58,10 +65,7 @@ describe('Matchers', () => {
 
       matcher = Match.exact({ foo: [2, 3], bar: 'baz' });
       expectPass(matcher, { foo: [2, 3], bar: 'baz' });
-      expectFailure(matcher, {}, [
-        /Missing key.*at \/foo/,
-        /Missing key.*at \/bar/,
-      ]);
+      expectFailure(matcher, {}, [/Missing key.*at \/foo/, /Missing key.*at \/bar/]);
       expectFailure(matcher, { bar: [2, 3], foo: 'baz' }, [
         'Expected type array but received string at /foo',
         'Expected type string but received array at /bar',
@@ -236,11 +240,7 @@ describe('Matchers', () => {
       expectPass(matcher, { foo: 'baz' });
       expectPass(matcher, { bar: 'foo' });
 
-      const msg = [
-        'Found unexpected match: {',
-        '  "foo": "bar"',
-        '}',
-      ].join('\n');
+      const msg = ['Found unexpected match: {', '  "foo": "bar"', '}'].join('\n');
       expectFailure(matcher, { foo: 'bar' }, [msg]);
     });
 
@@ -251,12 +251,7 @@ describe('Matchers', () => {
       expectPass(matcher, ['bar']);
       expectPass(matcher, ['foo', 3]);
 
-      const msg = [
-        'Found unexpected match: [',
-        '  "foo",',
-        '  "bar"',
-        ']',
-      ].join('\n');
+      const msg = ['Found unexpected match: [', '  "foo",', '  "bar"', ']'].join('\n');
       expectFailure(matcher, ['foo', 'bar'], [msg]);
     });
 
@@ -272,15 +267,14 @@ describe('Matchers', () => {
         foo: { bar: ['baz'] },
       });
 
-      const msg = [
-        'Found unexpected match: [',
-        '  1,',
-        '  2',
-        '] at /foo/bar',
-      ].join('\n');
-      expectFailure(matcher, {
-        foo: { bar: [1, 2] },
-      }, [msg]);
+      const msg = ['Found unexpected match: [', '  1,', '  2', '] at /foo/bar'].join('\n');
+      expectFailure(
+        matcher,
+        {
+          foo: { bar: [1, 2] },
+        },
+        [msg]
+      );
     });
 
     test('with nested matcher', () => {
@@ -303,9 +297,13 @@ describe('Matchers', () => {
         '  }',
         '}',
       ].join('\n');
-      expectFailure(matcher, {
-        foo: { bar: [1, 2] },
-      }, [msg]);
+      expectFailure(
+        matcher,
+        {
+          foo: { bar: [1, 2] },
+        },
+        [msg]
+      );
     });
   });
 
@@ -354,8 +352,14 @@ describe('Matchers', () => {
       matcher = Match.serializedJson({ Foo: 'Bar' });
       expectPass(matcher, '{ "Foo": "Bar" }');
 
-      expectFailure(matcher, '{ "Foo": "Baz" }', [/Encoded JSON value does not match/, 'Expected Bar but received Baz at /Foo']);
-      expectFailure(matcher, '{ "Foo": 4 }', [/Encoded JSON value does not match/, 'Expected type string but received number at /Foo']);
+      expectFailure(matcher, '{ "Foo": "Baz" }', [
+        /Encoded JSON value does not match/,
+        'Expected Bar but received Baz at /Foo',
+      ]);
+      expectFailure(matcher, '{ "Foo": 4 }', [
+        /Encoded JSON value does not match/,
+        'Expected type string but received number at /Foo',
+      ]);
       expectFailure(matcher, '{ "Bar": "Baz" }', [
         /Encoded JSON value does not match/,
         'Unexpected key Bar at /Bar',
@@ -364,9 +368,11 @@ describe('Matchers', () => {
     });
 
     test('nested matcher', () => {
-      matcher = Match.serializedJson(Match.objectLike({
-        Foo: Match.arrayWith(['Bar']),
-      }));
+      matcher = Match.serializedJson(
+        Match.objectLike({
+          Foo: Match.arrayWith(['Bar']),
+        })
+      );
 
       expectPass(matcher, '{ "Foo": ["Bar"] }');
       expectPass(matcher, '{ "Foo": ["Bar", "Baz"] }');
@@ -432,9 +438,12 @@ function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp
   expect(result.failCount).toBeGreaterThan(0);
   const actual = result.toHumanStrings();
 
-  const notFound = expected.filter(needle => !actual.some(haystack => {
-    return typeof needle === 'string' ? haystack.includes(needle) : haystack.match(needle);
-  }));
+  const notFound = expected.filter(
+    (needle) =>
+      !actual.some((haystack) => {
+        return typeof needle === 'string' ? haystack.includes(needle) : haystack.match(needle);
+      })
+  );
 
   if (notFound.length > 0) {
     throw new Error(`Patterns: ${notFound}\nMissing from error:\n${actual.join('\n')}`);

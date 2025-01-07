@@ -121,6 +121,8 @@ describe('Lambda caching config', () => {
           ttl: Duration.seconds(300),
         },
       });
-    }).toThrow(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${invalidCachingKeys}`);
+    }).toThrow(
+      `Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${invalidCachingKeys}`
+    );
   });
 });

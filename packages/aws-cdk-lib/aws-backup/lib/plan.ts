@@ -80,11 +80,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Daily and monthly with 1 year retention
    */
-  public static dailyMonthly1YearRetention(
-    scope: Construct,
-    id: string,
-    backupVault?: IBackupVault
-  ) {
+  public static dailyMonthly1YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
     const plan = new BackupPlan(scope, id, { backupVault });
     plan.addRule(BackupPlanRule.daily());
     plan.addRule(BackupPlanRule.monthly1Year());
@@ -94,11 +90,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Daily, weekly and monthly with 5 year retention
    */
-  public static dailyWeeklyMonthly5YearRetention(
-    scope: Construct,
-    id: string,
-    backupVault?: IBackupVault
-  ) {
+  public static dailyWeeklyMonthly5YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
     const plan = new BackupPlan(scope, id, { backupVault });
     plan.addRule(BackupPlanRule.daily());
     plan.addRule(BackupPlanRule.weekly());
@@ -109,11 +101,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Daily, weekly and monthly with 7 year retention
    */
-  public static dailyWeeklyMonthly7YearRetention(
-    scope: Construct,
-    id: string,
-    backupVault?: IBackupVault
-  ) {
+  public static dailyWeeklyMonthly7YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
     const plan = new BackupPlan(scope, id, { backupVault });
     plan.addRule(BackupPlanRule.daily());
     plan.addRule(BackupPlanRule.weekly());
@@ -210,9 +198,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     });
   }
 
-  private planCopyActions(
-    props: BackupPlanCopyActionProps
-  ): CfnBackupPlan.CopyActionResourceTypeProperty {
+  private planCopyActions(props: BackupPlanCopyActionProps): CfnBackupPlan.CopyActionResourceTypeProperty {
     return {
       destinationBackupVaultArn: props.destinationBackupVault.backupVaultArn,
       lifecycle: (props.deleteAfter || props.moveToColdStorageAfter) && {

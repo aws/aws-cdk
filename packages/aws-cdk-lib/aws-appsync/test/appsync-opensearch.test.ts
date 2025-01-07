@@ -28,25 +28,35 @@ describe('OpenSearch Data Source Configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: [{
-          Action: [
-            'es:ESHttpGet',
-            'es:ESHttpHead',
-            'es:ESHttpDelete',
-            'es:ESHttpPost',
-            'es:ESHttpPut',
-            'es:ESHttpPatch',
-          ],
-          Effect: 'Allow',
-          Resource: [{
-            'Fn::GetAtt': ['OsDomain5D09FC6A', 'Arn'],
-          },
+        Statement: [
           {
-            'Fn::Join': ['', [{
-              'Fn::GetAtt': ['OsDomain5D09FC6A', 'Arn'],
-            }, '/*']],
-          }],
-        }],
+            Action: [
+              'es:ESHttpGet',
+              'es:ESHttpHead',
+              'es:ESHttpDelete',
+              'es:ESHttpPost',
+              'es:ESHttpPut',
+              'es:ESHttpPatch',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': ['OsDomain5D09FC6A', 'Arn'],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': ['OsDomain5D09FC6A', 'Arn'],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
       },
     });
   });
@@ -59,9 +69,15 @@ describe('OpenSearch Data Source Configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       OpenSearchServiceConfig: {
         Endpoint: {
-          'Fn::Join': ['', ['https://', {
-            'Fn::GetAtt': ['OsDomain5D09FC6A', 'DomainEndpoint'],
-          }]],
+          'Fn::Join': [
+            '',
+            [
+              'https://',
+              {
+                'Fn::GetAtt': ['OsDomain5D09FC6A', 'DomainEndpoint'],
+              },
+            ],
+          ],
         },
       },
     });
@@ -114,7 +130,7 @@ describe('OpenSearch Data Source Configuration', () => {
     };
 
     // THEN
-    expect(when).toThrow('There is already a Construct with name \'ds\' in GraphqlApi [baseApi]');
+    expect(when).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
 });
 

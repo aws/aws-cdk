@@ -77,7 +77,6 @@ describe('security group', () => {
         },
       ],
     });
-
   });
 
   test('no new outbound rule is added if we are allowing all traffic anyway', () => {
@@ -99,7 +98,6 @@ describe('security group', () => {
         },
       ],
     });
-
   });
 
   test('security group disallow outbound traffic by default', () => {
@@ -122,7 +120,6 @@ describe('security group', () => {
         },
       ],
     });
-
   });
 
   test('bogus outbound rule disappears if another rule is added', () => {
@@ -210,19 +207,43 @@ describe('security group', () => {
 
   describe('Inline Rule Control', () => {
     //Not inlined
-    describe('When props.disableInlineRules is true', () => { testRulesAreNotInlined(undefined, true); });
-    describe('When context.disableInlineRules is true', () => { testRulesAreNotInlined(true, undefined); });
-    describe('When context.disableInlineRules is true and props.disableInlineRules is true', () => { testRulesAreNotInlined(true, true); });
-    describe('When context.disableInlineRules is false and props.disableInlineRules is true', () => { testRulesAreNotInlined(false, true); });
-    describe('When props.disableInlineRules is true and context.disableInlineRules is null', () => { testRulesAreNotInlined(null, true); });
+    describe('When props.disableInlineRules is true', () => {
+      testRulesAreNotInlined(undefined, true);
+    });
+    describe('When context.disableInlineRules is true', () => {
+      testRulesAreNotInlined(true, undefined);
+    });
+    describe('When context.disableInlineRules is true and props.disableInlineRules is true', () => {
+      testRulesAreNotInlined(true, true);
+    });
+    describe('When context.disableInlineRules is false and props.disableInlineRules is true', () => {
+      testRulesAreNotInlined(false, true);
+    });
+    describe('When props.disableInlineRules is true and context.disableInlineRules is null', () => {
+      testRulesAreNotInlined(null, true);
+    });
     //Inlined
-    describe('When context.disableInlineRules is false and props.disableInlineRules is false', () => { testRulesAreInlined(false, false); });
-    describe('When context.disableInlineRules is true and props.disableInlineRules is false', () => { testRulesAreInlined(true, false); });
-    describe('When context.disableInlineRules is false', () => { testRulesAreInlined(false, undefined); });
-    describe('When props.disableInlineRules is false', () => { testRulesAreInlined(undefined, false); });
-    describe('When neither props.disableInlineRules nor context.disableInlineRules are defined', () => { testRulesAreInlined(undefined, undefined); });
-    describe('When props.disableInlineRules is undefined and context.disableInlineRules is null', () => { testRulesAreInlined(null, undefined); });
-    describe('When props.disableInlineRules is false and context.disableInlineRules is null', () => { testRulesAreInlined(null, false); });
+    describe('When context.disableInlineRules is false and props.disableInlineRules is false', () => {
+      testRulesAreInlined(false, false);
+    });
+    describe('When context.disableInlineRules is true and props.disableInlineRules is false', () => {
+      testRulesAreInlined(true, false);
+    });
+    describe('When context.disableInlineRules is false', () => {
+      testRulesAreInlined(false, undefined);
+    });
+    describe('When props.disableInlineRules is false', () => {
+      testRulesAreInlined(undefined, false);
+    });
+    describe('When neither props.disableInlineRules nor context.disableInlineRules are defined', () => {
+      testRulesAreInlined(undefined, undefined);
+    });
+    describe('When props.disableInlineRules is undefined and context.disableInlineRules is null', () => {
+      testRulesAreInlined(null, undefined);
+    });
+    describe('When props.disableInlineRules is false and context.disableInlineRules is null', () => {
+      testRulesAreInlined(null, false);
+    });
   });
 
   test('peer between all types of peers and port range types', () => {
@@ -264,7 +285,6 @@ describe('security group', () => {
     }
 
     // THEN -- no crash
-
   });
 
   test('can add multiple rules using tokens on same security group', () => {
@@ -317,7 +337,6 @@ describe('security group', () => {
     for (const range of ports) {
       expect(range.canInlineRule).toEqual(false);
     }
-
   });
 
   describe('Peer IP CIDR validation', () => {
@@ -329,7 +348,6 @@ describe('security group', () => {
       for (const cidrIp of cidrIps) {
         expect(Peer.ipv4(cidrIp).uniqueId).toEqual(cidrIp);
       }
-
     });
 
     test('passes with unresolved IP CIDR token', () => {
@@ -337,7 +355,6 @@ describe('security group', () => {
       Token.asString(new Intrinsic('ip'));
 
       // THEN: don't throw
-
     });
 
     test('throws if invalid IPv4 CIDR block', () => {
@@ -345,14 +362,12 @@ describe('security group', () => {
       expect(() => {
         Peer.ipv4('invalid');
       }).toThrow(/Invalid IPv4 CIDR/);
-
     });
 
     test('throws if missing mask in IPv4 CIDR block', () => {
       expect(() => {
         Peer.ipv4('0.0.0.0');
       }).toThrow(/CIDR mask is missing in IPv4/);
-
     });
 
     test('passes with valid IPv6 CIDR block', () => {
@@ -368,7 +383,6 @@ describe('security group', () => {
       for (const cidrIp of cidrIps) {
         expect(Peer.ipv6(cidrIp).uniqueId).toEqual(cidrIp);
       }
-
     });
 
     test('throws if invalid IPv6 CIDR block', () => {
@@ -376,14 +390,12 @@ describe('security group', () => {
       expect(() => {
         Peer.ipv6('invalid');
       }).toThrow(/Invalid IPv6 CIDR/);
-
     });
 
     test('throws if missing mask in IPv6 CIDR block', () => {
       expect(() => {
         Peer.ipv6('::');
       }).toThrow(/IDR mask is missing in IPv6/);
-
     });
   });
 
@@ -428,7 +440,6 @@ describe('security group', () => {
       expect(() => {
         Peer.securityGroupId('invalid');
       }).toThrow(/Invalid security group ID/);
-
     });
 
     test('throws if invalid source security group id', () => {
@@ -451,13 +462,15 @@ describe('security group', () => {
 
       //THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
-        SecurityGroupIngress: [{
-          SourceSecurityGroupId: 'sg-123456789',
-          Description: 'no owner id property',
-          FromPort: 0,
-          ToPort: 65535,
-          IpProtocol: 'tcp',
-        }],
+        SecurityGroupIngress: [
+          {
+            SourceSecurityGroupId: 'sg-123456789',
+            Description: 'no owner id property',
+            FromPort: 0,
+            ToPort: 65535,
+            IpProtocol: 'tcp',
+          },
+        ],
       });
     });
 
@@ -468,18 +481,24 @@ describe('security group', () => {
       const sg = new SecurityGroup(stack, 'SG', { vpc });
 
       //WHEN
-      sg.addIngressRule(Peer.securityGroupId('sg-123456789', '000000000000'), Port.allTcp(), 'contains owner id property');
+      sg.addIngressRule(
+        Peer.securityGroupId('sg-123456789', '000000000000'),
+        Port.allTcp(),
+        'contains owner id property'
+      );
 
       //THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
-        SecurityGroupIngress: [{
-          SourceSecurityGroupId: 'sg-123456789',
-          SourceSecurityGroupOwnerId: '000000000000',
-          Description: 'contains owner id property',
-          FromPort: 0,
-          ToPort: 65535,
-          IpProtocol: 'tcp',
-        }],
+        SecurityGroupIngress: [
+          {
+            SourceSecurityGroupId: 'sg-123456789',
+            SourceSecurityGroupOwnerId: '000000000000',
+            Description: 'contains owner id property',
+            FromPort: 0,
+            ToPort: 65535,
+            IpProtocol: 'tcp',
+          },
+        ],
       });
     });
 
@@ -494,13 +513,15 @@ describe('security group', () => {
 
       //THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
-        SecurityGroupEgress: [{
-          DestinationSecurityGroupId: 'sg-123456789',
-          Description: 'no owner id property',
-          FromPort: 0,
-          ToPort: 65535,
-          IpProtocol: 'tcp',
-        }],
+        SecurityGroupEgress: [
+          {
+            DestinationSecurityGroupId: 'sg-123456789',
+            Description: 'no owner id property',
+            FromPort: 0,
+            ToPort: 65535,
+            IpProtocol: 'tcp',
+          },
+        ],
       });
     });
 
@@ -526,7 +547,6 @@ describe('security group lookup', () => {
 
     expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
-
   });
 
   test('can look up a security group by id', () => {
@@ -545,7 +565,6 @@ describe('security group lookup', () => {
     // THEN
     expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
-
   });
 
   test('can look up a security group by name and vpc', () => {
@@ -569,7 +588,6 @@ describe('security group lookup', () => {
     // THEN
     expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
-
   });
 
   test('can look up a security group by id and vpc', () => {
@@ -593,7 +611,6 @@ describe('security group lookup', () => {
     // THEN
     expect(securityGroup.securityGroupId).toEqual('sg-12345678');
     expect(securityGroup.allowAllOutbound).toEqual(true);
-
   });
 
   test('can look up a security group and use it as a peer', () => {
@@ -634,7 +651,6 @@ describe('security group lookup', () => {
     expect(() => {
       SecurityGroup.fromLookupById(stack, 'stack', Lazy.string({ produce: () => 'sg-12345' }));
     }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
-
   });
 
   test('throws if securityGroupName is tokenized', () => {
@@ -651,7 +667,6 @@ describe('security group lookup', () => {
     expect(() => {
       SecurityGroup.fromLookupById(stack, 'stack', Lazy.string({ produce: () => 'my-security-group' }));
     }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
-
   });
 
   test('throws if vpc id is tokenized', () => {
@@ -673,13 +688,13 @@ describe('security group lookup', () => {
     expect(() => {
       SecurityGroup.fromLookupByName(stack, 'stack', 'my-security-group', vpc);
     }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
-
   });
-
 });
 
-function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | null, optionsDisableInlineRules: boolean | undefined) {
-
+function testRulesAreInlined(
+  contextDisableInlineRules: boolean | undefined | null,
+  optionsDisableInlineRules: boolean | undefined
+) {
   describe('When allowAllOutbound', () => {
     test('new SecurityGroup will create an inline SecurityGroupEgress rule to allow all traffic', () => {
       // GIVEN
@@ -704,7 +719,6 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
       });
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 0);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
-
     });
 
     test('addEgressRule rule will not modify egress rules', () => {
@@ -732,7 +746,6 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
 
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 0);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
-
     });
 
     test('addIngressRule will add a new ingress rule', () => {
@@ -766,7 +779,6 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
           },
         ],
       });
-
     });
   });
 
@@ -796,7 +808,6 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
       });
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
-
     });
     test('addEgressRule rule will add a new inline egress rule and remove the denyAllTraffic rule', () => {
       // GIVEN
@@ -825,7 +836,6 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
 
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 0);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
-
     });
 
     test('addIngressRule will add a new ingress rule', () => {
@@ -864,14 +874,14 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
 
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 0);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
-
     });
   });
+}
 
-};
-
-function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined | null, optionsDisableInlineRules: boolean | undefined) {
-
+function testRulesAreNotInlined(
+  contextDisableInlineRules: boolean | undefined | null,
+  optionsDisableInlineRules: boolean | undefined
+) {
   describe('When allowAllOutbound', () => {
     test('new SecurityGroup will create an external SecurityGroupEgress rule', () => {
       // GIVEN
@@ -894,7 +904,6 @@ function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined |
         IpProtocol: '-1',
       });
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
-
     });
 
     test('addIngressRule rule will not remove external allowAllOutbound rule', () => {
@@ -921,7 +930,6 @@ function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined |
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
-
     });
 
     test('addIngressRule rule will not add a new egress rule', () => {
@@ -980,7 +988,6 @@ function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined |
         Description: 'Allow all outbound traffic by default',
         IpProtocol: '-1',
       });
-
     });
   });
 
@@ -1008,7 +1015,6 @@ function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined |
         FromPort: 252,
         ToPort: 86,
       });
-
     });
 
     test('addEgressRule rule will remove the rule that denies all traffic if another egress rule is added', () => {
@@ -1060,7 +1066,6 @@ function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined |
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupIngress', 0);
-
     });
 
     test('addIngressRule will add a new external ingress rule even if it could have been inlined', () => {
@@ -1096,8 +1101,6 @@ function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined |
         FromPort: 252,
         ToPort: 86,
       });
-
     });
   });
-
 }

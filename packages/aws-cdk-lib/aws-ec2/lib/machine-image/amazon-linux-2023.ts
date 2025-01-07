@@ -44,8 +44,7 @@ export class AmazonLinux2023Kernel {
 /**
  * Properties specific to al2023 images
  */
-export interface AmazonLinux2023ImageSsmParameterProps
-  extends AmazonLinuxImageSsmParameterCommonOptions {
+export interface AmazonLinux2023ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
    * What kernel version of Amazon Linux to use
    *

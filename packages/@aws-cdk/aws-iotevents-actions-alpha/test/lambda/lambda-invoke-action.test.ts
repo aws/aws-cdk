@@ -21,28 +21,36 @@ test('Default property', () => {
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [new actions.LambdaInvokeAction(func)],
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [new actions.LambdaInvokeAction(func)],
+        },
+      ],
     }),
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
     DetectorModelDefinition: {
-      States: [{
-        OnEnter: {
-          Events: [{
-            Actions: [{
-              Lambda: {
-                FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+      States: [
+        {
+          OnEnter: {
+            Events: [
+              {
+                Actions: [
+                  {
+                    Lambda: {
+                      FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+                    },
+                  },
+                ],
               },
-            }],
-          }],
+            ],
+          },
         },
-      }],
+      ],
     },
     RoleArn: {
       'Fn::GetAtt': ['MyDetectorModelDetectorModelRoleF2FB4D88', 'Arn'],
@@ -51,14 +59,21 @@ test('Default property', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
-        Action: 'lambda:InvokeFunction',
-        Effect: 'Allow',
-        Resource: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn:*'],
-      }],
+      Statement: [
+        {
+          Action: 'lambda:InvokeFunction',
+          Effect: 'Allow',
+          Resource: [
+            'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+            'arn:aws:lambda:us-east-1:123456789012:function:MyFn:*',
+          ],
+        },
+      ],
     },
-    Roles: [{
-      Ref: 'MyDetectorModelDetectorModelRoleF2FB4D88',
-    }],
+    Roles: [
+      {
+        Ref: 'MyDetectorModelDetectorModelRoleF2FB4D88',
+      },
+    ],
   });
 });

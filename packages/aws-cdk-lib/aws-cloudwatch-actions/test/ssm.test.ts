@@ -122,4 +122,3 @@ test('can use SSM Incident as alarm action', () => {
     ],
   });
 });
-

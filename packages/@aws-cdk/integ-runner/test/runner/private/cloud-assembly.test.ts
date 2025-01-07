@@ -14,7 +14,7 @@ describe('cloud assembly manifest reader', () => {
       [manifestFile]: JSON.stringify({
         version: '17.0.0',
         artifacts: {
-          'Tree': {
+          Tree: {
             type: 'cdk:tree',
             properties: {
               file: 'tree.json',
@@ -32,20 +32,14 @@ describe('cloud assembly manifest reader', () => {
                 {
                   type: 'aws:cdk:logicalId',
                   data: 'MyFunction1ServiceRole9852B06B',
-                  trace: [
-                    'some trace',
-                    'some more trace',
-                  ],
+                  trace: ['some trace', 'some more trace'],
                 },
               ],
               '/test-stack/MyFunction1/Resource': [
                 {
                   type: 'aws:cdk:logicalId',
                   data: 'MyFunction12A744C2E',
-                  trace: [
-                    'some trace',
-                    'some more trace',
-                  ],
+                  trace: ['some trace', 'some more trace'],
                 },
               ],
             },
@@ -79,20 +73,14 @@ describe('cloud assembly manifest reader', () => {
                 {
                   type: 'aws:cdk:logicalId',
                   data: 'MyFunction1ServiceRole9852B06B',
-                  trace: [
-                    'some trace',
-                    'some more trace',
-                  ],
+                  trace: ['some trace', 'some more trace'],
                 },
               ],
               '/test-stack/MyFunction1/Resource': [
                 {
                   type: 'aws:cdk:logicalId',
                   data: 'MyFunction12A744C2E',
-                  trace: [
-                    'some trace',
-                    'some more trace',
-                  ],
+                  trace: ['some trace', 'some more trace'],
                 },
               ],
             },
@@ -149,7 +137,7 @@ describe('cloud assembly manifest reader', () => {
     expect(newManifest).toEqual({
       version: expect.any(String),
       artifacts: expect.objectContaining({
-        'Tree': {
+        Tree: {
           type: 'cdk:tree',
           properties: {
             file: 'tree.json',
@@ -185,18 +173,14 @@ describe('cloud assembly manifest reader', () => {
   test('can add stack trace', () => {
     // WHEN
     const manifest = AssemblyManifestReader.fromFile(manifestFile);
-    manifest.recordTrace(new Map([
-      ['test-stack', new Map([
-        ['MyFunction12A744C2E', 'some trace'],
-      ])],
-    ]));
+    manifest.recordTrace(new Map([['test-stack', new Map([['MyFunction12A744C2E', 'some trace']])]]));
 
     // THEN
     const newManifest = Manifest.loadAssetManifest(manifestFile);
     expect(newManifest).toEqual({
       version: expect.any(String),
       artifacts: expect.objectContaining({
-        'Tree': {
+        Tree: {
           type: 'cdk:tree',
           properties: {
             file: 'tree.json',
@@ -233,18 +217,14 @@ describe('cloud assembly manifest reader', () => {
   test('can add stack trace for old resource', () => {
     // WHEN
     const manifest = AssemblyManifestReader.fromFile(manifestFile);
-    manifest.recordTrace(new Map([
-      ['test-stack', new Map([
-        ['MyFunction', 'some trace'],
-      ])],
-    ]));
+    manifest.recordTrace(new Map([['test-stack', new Map([['MyFunction', 'some trace']])]]));
 
     // THEN
     const newManifest = Manifest.loadAssetManifest(manifestFile);
     expect(newManifest).toEqual({
       version: expect.any(String),
       artifacts: expect.objectContaining({
-        'Tree': {
+        Tree: {
           type: 'cdk:tree',
           properties: {
             file: 'tree.json',
@@ -270,7 +250,7 @@ describe('cloud assembly manifest reader', () => {
                 data: 'MyFunction12A744C2E',
               },
             ],
-            'MyFunction': [
+            MyFunction: [
               {
                 type: 'aws:cdk:logicalId',
                 data: 'MyFunction',
@@ -290,8 +270,6 @@ describe('cloud assembly manifest reader', () => {
     const assets = manifest.getAssetLocationsForStack('test-stack2');
 
     // THEN
-    expect(assets).toEqual([
-      'asset.a820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91',
-    ]);
+    expect(assets).toEqual(['asset.a820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91']);
   });
 });

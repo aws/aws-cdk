@@ -2,11 +2,7 @@ import { Construct } from 'constructs';
 import { NetworkListenerAction } from './network-listener-action';
 import { NetworkListenerCertificate } from './network-listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
-import {
-  INetworkLoadBalancerTarget,
-  INetworkTargetGroup,
-  NetworkTargetGroup,
-} from './network-target-group';
+import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
@@ -128,11 +124,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Looks up a network listener
    */
-  public static fromLookup(
-    scope: Construct,
-    id: string,
-    options: NetworkListenerLookupOptions
-  ): INetworkListener {
+  public static fromLookup(scope: Construct, id: string, options: NetworkListenerLookupOptions): INetworkListener {
     let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
     if (options.listenerProtocol) {
       validateNetworkProtocol(options.listenerProtocol);
@@ -169,11 +161,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static fromNetworkListenerArn(
-    scope: Construct,
-    id: string,
-    networkListenerArn: string
-  ): INetworkListener {
+  public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
     class Import extends Resource implements INetworkListener {
       public listenerArn = networkListenerArn;
     }

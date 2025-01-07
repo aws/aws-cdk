@@ -50,21 +50,19 @@ test('bundling', () => {
         GOARCH: 'amd64',
         GOOS: 'linux',
       },
-      command: [
-        'bash', '-c',
-        [
-          'go build -o "/asset-output/bootstrap" ./cmd/api',
-        ].join(' && '),
-      ],
+      command: ['bash', '-c', ['go build -o "/asset-output/bootstrap" ./cmd/api'].join(' && ')],
     }),
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-go-alpha\/lib$/), expect.objectContaining({
-    buildArgs: expect.objectContaining({
-      IMAGE: expect.stringMatching(/build-go/),
-    }),
-    platform: 'linux/amd64',
-  }));
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+    expect.stringMatching(/aws-lambda-go-alpha\/lib$/),
+    expect.objectContaining({
+      buildArgs: expect.objectContaining({
+        IMAGE: expect.stringMatching(/build-go/),
+      }),
+      platform: 'linux/amd64',
+    })
+  );
 });
 
 test('bundling with file as entry', () => {
@@ -78,12 +76,7 @@ test('bundling with file as entry', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'go build -o "/asset-output/bootstrap" ./main.go',
-        ].join(' && '),
-      ],
+      command: ['bash', '-c', ['go build -o "/asset-output/bootstrap" ./main.go'].join(' && ')],
     }),
   });
 });
@@ -99,12 +92,7 @@ test('bundling with file in subdirectory as entry', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'go build -o "/asset-output/bootstrap" ./cmd/api/main.go',
-        ].join(' && '),
-      ],
+      command: ['bash', '-c', ['go build -o "/asset-output/bootstrap" ./cmd/api/main.go'].join(' && ')],
     }),
   });
 });
@@ -120,12 +108,7 @@ test('bundling with file other than main.go in subdirectory as entry', () => {
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'go build -o "/asset-output/bootstrap" ./cmd/api/api.go',
-        ].join(' && '),
-      ],
+      command: ['bash', '-c', ['go build -o "/asset-output/bootstrap" ./cmd/api/api.go'].join(' && ')],
     }),
   });
 });
@@ -140,14 +123,15 @@ test('go with Windows paths', () => {
     forcedDockerBundling: true,
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
-    assetHashType: AssetHashType.OUTPUT,
-    bundling: expect.objectContaining({
-      command: expect.arrayContaining([
-        expect.stringContaining('cmd/api'),
-      ]),
-    }),
-  }));
+  expect(Code.fromAsset).toHaveBeenCalledWith(
+    expect.any(String),
+    expect.objectContaining({
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: expect.objectContaining({
+        command: expect.arrayContaining([expect.stringContaining('cmd/api')]),
+      }),
+    })
+  );
   osPlatformMock.mockRestore();
 });
 
@@ -162,11 +146,14 @@ test('with Docker build args', () => {
       HELLO: 'WORLD',
     },
   });
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-go-alpha\/lib$/), expect.objectContaining({
-    buildArgs: expect.objectContaining({
-      HELLO: 'WORLD',
-    }),
-  }));
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+    expect.stringMatching(/aws-lambda-go-alpha\/lib$/),
+    expect.objectContaining({
+      buildArgs: expect.objectContaining({
+        HELLO: 'WORLD',
+      }),
+    })
+  );
 });
 
 test('Local bundling', () => {
@@ -200,7 +187,7 @@ test('Local bundling', () => {
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
       cwd: expect.stringContaining('/project'),
-    }),
+    })
   );
 
   // Docker image is not built
@@ -262,12 +249,7 @@ test('Go build flags can be passed', () => {
         GOARCH: 'amd64',
         GOOS: 'linux',
       },
-      command: [
-        'bash', '-c',
-        [
-          'go build -o "/asset-output/bootstrap" -ldflags "-s -w" ./cmd/api',
-        ].join(' && '),
-      ],
+      command: ['bash', '-c', ['go build -o "/asset-output/bootstrap" -ldflags "-s -w" ./cmd/api'].join(' && ')],
     }),
   });
 });
@@ -294,12 +276,7 @@ test('AssetHashType can be specified', () => {
         GOARCH: 'amd64',
         GOOS: 'linux',
       },
-      command: [
-        'bash', '-c',
-        [
-          'go build -o "/asset-output/bootstrap" ./cmd/api',
-        ].join(' && '),
-      ],
+      command: ['bash', '-c', ['go build -o "/asset-output/bootstrap" ./cmd/api'].join(' && ')],
     }),
   });
 });
@@ -312,10 +289,7 @@ test('with command hooks', () => {
     architecture: Architecture.X86_64,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
-        return [
-          `echo hello > ${inputDir}/a.txt`,
-          `cp ${inputDir}/a.txt ${outputDir}`,
-        ];
+        return [`echo hello > ${inputDir}/a.txt`, `cp ${inputDir}/a.txt ${outputDir}`];
       },
       afterBundling(inputDir: string, outputDir: string): string[] {
         return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
@@ -327,8 +301,11 @@ test('with command hooks', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
-        expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+        'bash',
+        '-c',
+        expect.stringMatching(
+          /^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/
+        ),
       ],
     }),
   });

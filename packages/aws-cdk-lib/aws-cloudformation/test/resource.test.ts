@@ -63,74 +63,64 @@ testDeprecated('custom resource is added twice, lambda is added once', () => {
 
   // THEN
   Template.fromStack(stack).templateMatches({
-    'Resources': {
-      'SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C': {
-        'Type': 'AWS::IAM::Role',
-        'Properties': {
-          'AssumeRolePolicyDocument': {
-            'Statement': [
+    Resources: {
+      SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C: {
+        Type: 'AWS::IAM::Role',
+        Properties: {
+          AssumeRolePolicyDocument: {
+            Statement: [
               {
-                'Action': 'sts:AssumeRole',
-                'Effect': 'Allow',
-                'Principal': {
-                  'Service': 'lambda.amazonaws.com',
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'lambda.amazonaws.com',
                 },
               },
             ],
-            'Version': '2012-10-17',
+            Version: '2012-10-17',
           },
-          'ManagedPolicyArns': [
+          ManagedPolicyArns: [
             {
-              'Fn::Join': ['', [
-                'arn:', { 'Ref': 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-              ]],
+              'Fn::Join': [
+                '',
+                ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+              ],
             },
           ],
         },
       },
-      'SingletonLambdaTestCustomResourceProviderA9255269': {
-        'Type': 'AWS::Lambda::Function',
-        'Properties': {
-          'Code': {
-            'ZipFile': 'def hello(): pass',
+      SingletonLambdaTestCustomResourceProviderA9255269: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            ZipFile: 'def hello(): pass',
           },
-          'Handler': 'index.hello',
-          'Role': {
-            'Fn::GetAtt': [
-              'SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C',
-              'Arn',
-            ],
+          Handler: 'index.hello',
+          Role: {
+            'Fn::GetAtt': ['SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C', 'Arn'],
           },
-          'Runtime': 'python3.9',
-          'Timeout': 300,
+          Runtime: 'python3.9',
+          Timeout: 300,
         },
-        'DependsOn': [
-          'SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C',
-        ],
+        DependsOn: ['SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C'],
       },
-      'Custom1D319B237': {
-        'Type': 'AWS::CloudFormation::CustomResource',
-        'DeletionPolicy': 'Delete',
-        'UpdateReplacePolicy': 'Delete',
-        'Properties': {
-          'ServiceToken': {
-            'Fn::GetAtt': [
-              'SingletonLambdaTestCustomResourceProviderA9255269',
-              'Arn',
-            ],
+      Custom1D319B237: {
+        Type: 'AWS::CloudFormation::CustomResource',
+        DeletionPolicy: 'Delete',
+        UpdateReplacePolicy: 'Delete',
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': ['SingletonLambdaTestCustomResourceProviderA9255269', 'Arn'],
           },
         },
       },
-      'Custom2DD5FB44D': {
-        'Type': 'AWS::CloudFormation::CustomResource',
-        'DeletionPolicy': 'Delete',
-        'UpdateReplacePolicy': 'Delete',
-        'Properties': {
-          'ServiceToken': {
-            'Fn::GetAtt': [
-              'SingletonLambdaTestCustomResourceProviderA9255269',
-              'Arn',
-            ],
+      Custom2DD5FB44D: {
+        Type: 'AWS::CloudFormation::CustomResource',
+        DeletionPolicy: 'Delete',
+        UpdateReplacePolicy: 'Delete',
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': ['SingletonLambdaTestCustomResourceProviderA9255269', 'Arn'],
           },
         },
       },

@@ -59,9 +59,7 @@ export class IntegManifestReader {
       throw new Error(`Cannot read integ manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
-      return IntegManifestReader.fromFile(
-        path.join(filePath, IntegManifestReader.DEFAULT_FILENAME)
-      );
+      return IntegManifestReader.fromFile(path.join(filePath, IntegManifestReader.DEFAULT_FILENAME));
     }
     return IntegManifestReader.fromFile(filePath);
   }

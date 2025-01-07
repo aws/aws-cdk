@@ -101,11 +101,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
   /**
    * Import an existing option group.
    */
-  public static fromOptionGroupName(
-    scope: Construct,
-    id: string,
-    optionGroupName: string
-  ): IOptionGroup {
+  public static fromOptionGroupName(scope: Construct, id: string, optionGroupName: string): IOptionGroup {
     class Import extends Resource {
       public readonly optionGroupName = optionGroupName;
       public addConfiguration(_: OptionConfiguration) {
@@ -140,8 +136,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
       engineName: props.engine.engineType,
       majorEngineVersion,
-      optionGroupDescription:
-        props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
+      optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
       optionConfigurations: Lazy.any({
         produce: () => this.renderConfigurations(this.configurations),
       }),
@@ -180,9 +175,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
   /**
    * Renders the option configurations specifications.
    */
-  private renderConfigurations(
-    configurations: OptionConfiguration[]
-  ): CfnOptionGroup.OptionConfigurationProperty[] {
+  private renderConfigurations(configurations: OptionConfiguration[]): CfnOptionGroup.OptionConfigurationProperty[] {
     const configs: CfnOptionGroup.OptionConfigurationProperty[] = [];
     for (const config of configurations) {
       const securityGroups = config.vpc
@@ -191,9 +184,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
       configs.push({
         optionName: config.name,
-        optionSettings:
-          config.settings &&
-          Object.entries(config.settings).map(([name, value]) => ({ name, value })),
+        optionSettings: config.settings && Object.entries(config.settings).map(([name, value]) => ({ name, value })),
         optionVersion: config.version,
         port: config.port,
         vpcSecurityGroupMemberships: securityGroups,

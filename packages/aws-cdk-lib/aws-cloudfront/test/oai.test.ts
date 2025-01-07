@@ -9,20 +9,18 @@ describe('Origin Access Identity', () => {
 
     new OriginAccessIdentity(stack, 'OAI');
 
-    Template.fromStack(stack).templateMatches(
-      {
-        Resources: {
-          OAIE1EFC67F: {
-            Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
-            Properties: {
-              CloudFrontOriginAccessIdentityConfig: {
-                Comment: 'Allows CloudFront to reach the bucket',
-              },
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        OAIE1EFC67F: {
+          Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
+          Properties: {
+            CloudFrontOriginAccessIdentityConfig: {
+              Comment: 'Allows CloudFront to reach the bucket',
             },
           },
         },
       },
-    );
+    });
   });
 
   test('With provided comment', () => {
@@ -32,32 +30,32 @@ describe('Origin Access Identity', () => {
       comment: 'test comment',
     });
 
-    Template.fromStack(stack).templateMatches(
-      {
-        Resources: {
-          OAIE1EFC67F: {
-            Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
-            Properties: {
-              CloudFrontOriginAccessIdentityConfig: {
-                Comment: 'test comment',
-              },
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        OAIE1EFC67F: {
+          Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
+          Properties: {
+            CloudFrontOriginAccessIdentityConfig: {
+              Comment: 'test comment',
             },
           },
         },
       },
-    );
+    });
   });
 
   test('Truncates long comments', () => {
     const stack = new cdk.Stack();
 
     new OriginAccessIdentity(stack, 'OAI', {
-      comment: 'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and that will break',
+      comment:
+        'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and that will break',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
       CloudFrontOriginAccessIdentityConfig: {
-        Comment: 'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and t',
+        Comment:
+          'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and t',
       },
     });
   });
@@ -67,7 +65,9 @@ describe('Origin Access Identity', () => {
 
     const oai = OriginAccessIdentity.fromOriginAccessIdentityName(stack, 'OAI', 'OAITest');
 
-    expect(oai.grantPrincipal.policyFragment.principalJson.AWS[0]).toMatch(/:iam::cloudfront:user\/CloudFront Origin Access Identity OAITest$/);
+    expect(oai.grantPrincipal.policyFragment.principalJson.AWS[0]).toMatch(
+      /:iam::cloudfront:user\/CloudFront Origin Access Identity OAITest$/
+    );
   });
 
   test('Builds ARN of CloudFront user for fromOriginAccessIdentityId', () => {
@@ -75,6 +75,8 @@ describe('Origin Access Identity', () => {
 
     const oai = OriginAccessIdentity.fromOriginAccessIdentityId(stack, 'OAI', 'OAITest');
 
-    expect(oai.grantPrincipal.policyFragment.principalJson.AWS[0]).toMatch(/:iam::cloudfront:user\/CloudFront Origin Access Identity OAITest$/);
+    expect(oai.grantPrincipal.policyFragment.principalJson.AWS[0]).toMatch(
+      /:iam::cloudfront:user\/CloudFront Origin Access Identity OAITest$/
+    );
   });
 });

@@ -40,10 +40,7 @@ export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      GlueDataBrewStartJobRun.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, GlueDataBrewStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
 
     const actions = ['databrew:startJobRun'];
 

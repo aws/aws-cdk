@@ -20,23 +20,20 @@ describe('log retention', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': [
-              'logs:PutRetentionPolicy',
-              'logs:DeleteRetentionPolicy',
-            ],
-            'Effect': 'Allow',
-            'Resource': '*',
+            Action: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+            Effect: 'Allow',
+            Resource: '*',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
-      'Roles': [
+      PolicyName: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      Roles: [
         {
-          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+          Ref: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
         },
       ],
     });
@@ -55,14 +52,11 @@ describe('log retention', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-      'ServiceToken': {
-        'Fn::GetAtt': [
-          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-          'Arn',
-        ],
+      ServiceToken: {
+        'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
       },
-      'LogGroupName': 'group',
-      'RetentionInDays': 30,
+      LogGroupName: 'group',
+      RetentionInDays: 30,
     });
   });
 
@@ -79,34 +73,31 @@ describe('log retention', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': [
-              'logs:PutRetentionPolicy',
-              'logs:DeleteRetentionPolicy',
-            ],
-            'Effect': 'Allow',
-            'Resource': '*',
+            Action: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+            Effect: 'Allow',
+            Resource: '*',
           },
           {
-            'Action': 'logs:DeleteLogGroup',
-            'Effect': 'Allow',
-            'Resource': {
+            Action: 'logs:DeleteLogGroup',
+            Effect: 'Allow',
+            Resource: {
               'Fn::Join': [
                 '',
                 [
                   'arn:',
                   {
-                    'Ref': 'AWS::Partition',
+                    Ref: 'AWS::Partition',
                   },
                   ':logs:',
                   {
-                    'Ref': 'AWS::Region',
+                    Ref: 'AWS::Region',
                   },
                   ':',
                   {
-                    'Ref': 'AWS::AccountId',
+                    Ref: 'AWS::AccountId',
                   },
                   ':log-group:group:*',
                 ],
@@ -114,26 +105,23 @@ describe('log retention', () => {
             },
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
-      'Roles': [
+      PolicyName: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      Roles: [
         {
-          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+          Ref: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
         },
       ],
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-      'ServiceToken': {
-        'Fn::GetAtt': [
-          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-          'Arn',
-        ],
+      ServiceToken: {
+        'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
       },
-      'LogGroupName': 'group',
-      'RetentionInDays': 1,
-      'RemovalPolicy': 'destroy',
+      LogGroupName: 'group',
+      RetentionInDays: 1,
+      RemovalPolicy: 'destroy',
     });
   });
 
@@ -150,37 +138,31 @@ describe('log retention', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': [
-              'logs:PutRetentionPolicy',
-              'logs:DeleteRetentionPolicy',
-            ],
-            'Effect': 'Allow',
-            'Resource': '*',
+            Action: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+            Effect: 'Allow',
+            Resource: '*',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
-      'Roles': [
+      PolicyName: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+      Roles: [
         {
-          'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+          Ref: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
         },
       ],
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-      'ServiceToken': {
-        'Fn::GetAtt': [
-          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-          'Arn',
-        ],
+      ServiceToken: {
+        'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
       },
-      'LogGroupName': 'group',
-      'RetentionInDays': 1,
-      'RemovalPolicy': 'retain',
+      LogGroupName: 'group',
+      RetentionInDays: 1,
+      RemovalPolicy: 'retain',
     });
   });
 
@@ -204,34 +186,31 @@ describe('log retention', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': [
-                'logs:PutRetentionPolicy',
-                'logs:DeleteRetentionPolicy',
-              ],
-              'Effect': 'Allow',
-              'Resource': '*',
+              Action: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+              Effect: 'Allow',
+              Resource: '*',
             },
             {
-              'Action': 'logs:DeleteLogGroup',
-              'Effect': 'Allow',
-              'Resource': {
+              Action: 'logs:DeleteLogGroup',
+              Effect: 'Allow',
+              Resource: {
                 'Fn::Join': [
                   '',
                   [
                     'arn:',
                     {
-                      'Ref': 'AWS::Partition',
+                      Ref: 'AWS::Partition',
                     },
                     ':logs:',
                     {
-                      'Ref': 'AWS::Region',
+                      Ref: 'AWS::Region',
                     },
                     ':',
                     {
-                      'Ref': 'AWS::AccountId',
+                      Ref: 'AWS::AccountId',
                     },
                     ':log-group:group1:*',
                   ],
@@ -239,23 +218,23 @@ describe('log retention', () => {
               },
             },
             {
-              'Action': 'logs:DeleteLogGroup',
-              'Effect': 'Allow',
-              'Resource': {
+              Action: 'logs:DeleteLogGroup',
+              Effect: 'Allow',
+              Resource: {
                 'Fn::Join': [
                   '',
                   [
                     'arn:',
                     {
-                      'Ref': 'AWS::Partition',
+                      Ref: 'AWS::Partition',
                     },
                     ':logs:',
                     {
-                      'Ref': 'AWS::Region',
+                      Ref: 'AWS::Region',
                     },
                     ':',
                     {
-                      'Ref': 'AWS::AccountId',
+                      Ref: 'AWS::AccountId',
                     },
                     ':log-group:group2:*',
                   ],
@@ -263,38 +242,32 @@ describe('log retention', () => {
               },
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
-        'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
-        'Roles': [
+        PolicyName: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+        Roles: [
           {
-            'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+            Ref: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
           },
         ],
       });
 
       Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-        'ServiceToken': {
-          'Fn::GetAtt': [
-            'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-            'Arn',
-          ],
+        ServiceToken: {
+          'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
         },
-        'LogGroupName': 'group1',
-        'RetentionInDays': 1,
-        'RemovalPolicy': 'destroy',
+        LogGroupName: 'group1',
+        RetentionInDays: 1,
+        RemovalPolicy: 'destroy',
       });
 
       Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-        'ServiceToken': {
-          'Fn::GetAtt': [
-            'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-            'Arn',
-          ],
+        ServiceToken: {
+          'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
         },
-        'LogGroupName': 'group2',
-        'RetentionInDays': 1,
-        'RemovalPolicy': 'destroy',
+        LogGroupName: 'group2',
+        RetentionInDays: 1,
+        RemovalPolicy: 'destroy',
       });
     });
 
@@ -317,34 +290,31 @@ describe('log retention', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': [
-                'logs:PutRetentionPolicy',
-                'logs:DeleteRetentionPolicy',
-              ],
-              'Effect': 'Allow',
-              'Resource': '*',
+              Action: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+              Effect: 'Allow',
+              Resource: '*',
             },
             {
-              'Action': 'logs:DeleteLogGroup',
-              'Effect': 'Allow',
-              'Resource': {
+              Action: 'logs:DeleteLogGroup',
+              Effect: 'Allow',
+              Resource: {
                 'Fn::Join': [
                   '',
                   [
                     'arn:',
                     {
-                      'Ref': 'AWS::Partition',
+                      Ref: 'AWS::Partition',
                     },
                     ':logs:',
                     {
-                      'Ref': 'AWS::Region',
+                      Ref: 'AWS::Region',
                     },
                     ':',
                     {
-                      'Ref': 'AWS::AccountId',
+                      Ref: 'AWS::AccountId',
                     },
                     ':log-group:group1:*',
                   ],
@@ -352,38 +322,32 @@ describe('log retention', () => {
               },
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
-        'PolicyName': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
-        'Roles': [
+        PolicyName: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB',
+        Roles: [
           {
-            'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
+            Ref: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
           },
         ],
       });
 
       Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-        'ServiceToken': {
-          'Fn::GetAtt': [
-            'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-            'Arn',
-          ],
+        ServiceToken: {
+          'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
         },
-        'LogGroupName': 'group1',
-        'RetentionInDays': 1,
-        'RemovalPolicy': 'destroy',
+        LogGroupName: 'group1',
+        RetentionInDays: 1,
+        RemovalPolicy: 'destroy',
       });
 
       Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-        'ServiceToken': {
-          'Fn::GetAtt': [
-            'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-            'Arn',
-          ],
+        ServiceToken: {
+          'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
         },
-        'LogGroupName': 'group2',
-        'RetentionInDays': 1,
-        'RemovalPolicy': 'retain',
+        LogGroupName: 'group2',
+        RetentionInDays: 1,
+        RemovalPolicy: 'retain',
       });
     });
   });
@@ -400,14 +364,11 @@ describe('log retention', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-      'ServiceToken': {
-        'Fn::GetAtt': [
-          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-          'Arn',
-        ],
+      ServiceToken: {
+        'Fn::GetAtt': ['LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A', 'Arn'],
       },
-      'LogGroupName': 'group',
-      'RetentionInDays': 1,
+      LogGroupName: 'group',
+      RetentionInDays: 1,
     });
   });
 
@@ -425,23 +386,18 @@ describe('log retention', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': [
-              'logs:PutRetentionPolicy',
-              'logs:DeleteRetentionPolicy',
-            ],
-            'Effect': 'Allow',
-            'Resource': '*',
+            Action: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+            Effect: 'Allow',
+            Resource: '*',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'PolicyName': 'RolePolicy72E7D967',
-      'Roles': [
-        'CoolRole',
-      ],
+      PolicyName: 'RolePolicy72E7D967',
+      Roles: ['CoolRole'],
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
@@ -525,7 +481,15 @@ describe('log retention', () => {
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
 
-    const assetLocation = path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-logs', 'log-retention-handler');
+    const assetLocation = path.join(
+      __dirname,
+      '..',
+      '..',
+      'custom-resource-handlers',
+      'dist',
+      'aws-logs',
+      'log-retention-handler'
+    );
 
     // WHEN
     new LogRetention(stack, 'MyLambda', {

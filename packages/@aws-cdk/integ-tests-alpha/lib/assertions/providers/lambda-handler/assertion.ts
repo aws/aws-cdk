@@ -10,9 +10,7 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
     const expected = decodeCall(request.expected);
     let result: AssertionResult;
     const matcher = new MatchCreator(expected).getMatcher();
-    console.log(
-      `Testing equality between ${JSON.stringify(request.actual)} and ${JSON.stringify(request.expected)}`
-    );
+    console.log(`Testing equality between ${JSON.stringify(request.actual)} and ${JSON.stringify(request.expected)}`);
 
     const matchResult = matcher.test(actual);
     matchResult.finished();

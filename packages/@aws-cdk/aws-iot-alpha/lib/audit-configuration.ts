@@ -182,11 +182,7 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
    * @param id The construct's name
    * @param accountId The account ID
    */
-  public static fromAccountId(
-    scope: Construct,
-    id: string,
-    accountId: string
-  ): IAccountAuditConfiguration {
+  public static fromAccountId(scope: Construct, id: string, accountId: string): IAccountAuditConfiguration {
     class Import extends Resource implements IAccountAuditConfiguration {
       public readonly accountId = accountId;
     }
@@ -206,17 +202,13 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
 
     const auditRole = new iam.Role(this, 'AuditRole', {
       assumedBy: new iam.ServicePrincipal('iot.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSIoTDeviceDefenderAudit'),
-      ],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSIoTDeviceDefenderAudit')],
     });
 
     new iot.CfnAccountAuditConfiguration(this, 'Resource', {
       accountId: this.accountId,
       auditCheckConfigurations: this.renderAuditCheckConfigurations(props?.checkConfiguration),
-      auditNotificationTargetConfigurations: this.renderAuditNotificationTargetConfigurations(
-        props?.targetTopic
-      ),
+      auditNotificationTargetConfigurations: this.renderAuditNotificationTargetConfigurations(props?.targetTopic),
       roleArn: auditRole.roleArn,
     });
   }
@@ -264,15 +256,11 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
       authenticatedCognitoRoleOverlyPermissiveCheck: this.renderAuditCheckConfiguration(
         checkConfiguration?.authenticatedCognitoRoleOverlyPermissiveCheck
       ),
-      caCertificateExpiringCheck: this.renderAuditCheckConfiguration(
-        checkConfiguration?.caCertificateExpiringCheck
-      ),
+      caCertificateExpiringCheck: this.renderAuditCheckConfiguration(checkConfiguration?.caCertificateExpiringCheck),
       caCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(
         checkConfiguration?.caCertificateKeyQualityCheck
       ),
-      conflictingClientIdsCheck: this.renderAuditCheckConfiguration(
-        checkConfiguration?.conflictingClientIdsCheck
-      ),
+      conflictingClientIdsCheck: this.renderAuditCheckConfiguration(checkConfiguration?.conflictingClientIdsCheck),
       deviceCertificateExpiringCheck: this.renderAuditCheckConfiguration(
         checkConfiguration?.deviceCertificateExpiringCheck
       ),
@@ -297,9 +285,7 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
       iotRoleAliasOverlyPermissiveCheck: this.renderAuditCheckConfiguration(
         checkConfiguration?.iotRoleAliasOverlyPermissiveCheck
       ),
-      loggingDisabledCheck: this.renderAuditCheckConfiguration(
-        checkConfiguration?.loggingDisabledCheck
-      ),
+      loggingDisabledCheck: this.renderAuditCheckConfiguration(checkConfiguration?.loggingDisabledCheck),
       revokedCaCertificateStillActiveCheck: this.renderAuditCheckConfiguration(
         checkConfiguration?.revokedCaCertificateStillActiveCheck
       ),

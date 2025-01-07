@@ -302,9 +302,7 @@ export class LoadBalancer extends Resource implements IConnectable {
     if (listener.sslCertificateArn && listener.sslCertificateId) {
       throw new Error('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.');
     }
-    const protocol = ifUndefinedLazy(listener.externalProtocol, () =>
-      wellKnownProtocol(listener.externalPort)
-    );
+    const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
     const sslCertificateArn = listener.sslCertificateArn || listener.sslCertificateId;
     const instanceProtocol = ifUndefined(

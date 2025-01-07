@@ -438,21 +438,14 @@ export abstract class ListenerConfig {
   /**
    * Create a config for adding target group to NLB listener.
    */
-  public static networkListener(
-    listener: elbv2.NetworkListener,
-    props?: elbv2.AddNetworkTargetsProps
-  ): ListenerConfig {
+  public static networkListener(listener: elbv2.NetworkListener, props?: elbv2.AddNetworkTargetsProps): ListenerConfig {
     return new NetworkListenerConfig(listener, props);
   }
 
   /**
    * Create and attach a target group to listener.
    */
-  public abstract addTargets(
-    id: string,
-    target: LoadBalancerTargetOptions,
-    service: BaseService
-  ): void;
+  public abstract addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService): void;
 }
 
 /**
@@ -539,11 +532,7 @@ export abstract class BaseService
    * The format is the "new" format "arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name".
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
    */
-  public static fromServiceArnWithCluster(
-    scope: Construct,
-    id: string,
-    serviceArn: string
-  ): IBaseService {
+  public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
     const stack = Stack.of(scope);
     const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = Arn.extractResourceName(serviceArn, 'service');
@@ -687,8 +676,7 @@ export abstract class BaseService
         ? undefined
         : props.launchType;
 
-    const propagateTagsFromSource =
-      props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
+    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
     const deploymentController = this.getDeploymentController(props);
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -705,8 +693,7 @@ export abstract class BaseService
           : undefined,
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
       },
-      propagateTags:
-        propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
+      propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
       deploymentController: deploymentController,
       launchType: launchType,
@@ -714,22 +701,10 @@ export abstract class BaseService
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: Lazy.any(
-        { produce: () => this.networkConfiguration },
-        { omitEmptyArray: true }
-      ),
-      serviceRegistries: Lazy.any(
-        { produce: () => this.serviceRegistries },
-        { omitEmptyArray: true }
-      ),
-      serviceConnectConfiguration: Lazy.any(
-        { produce: () => this._serviceConnectConfig },
-        { omitEmptyArray: true }
-      ),
-      volumeConfigurations: Lazy.any(
-        { produce: () => this.renderVolumes() },
-        { omitEmptyArray: true }
-      ),
+      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
+      serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
+      serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
+      volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       ...additionalProps,
     });
 
@@ -742,21 +717,11 @@ export abstract class BaseService
       );
     }
 
-    if (
-      props.circuitBreaker &&
-      deploymentController &&
-      deploymentController.type !== DeploymentControllerType.ECS
-    ) {
-      Annotations.of(this).addError(
-        'Deployment circuit breaker requires the ECS deployment controller.'
-      );
+    if (props.circuitBreaker && deploymentController && deploymentController.type !== DeploymentControllerType.ECS) {
+      Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
     }
 
-    if (
-      props.deploymentAlarms &&
-      deploymentController &&
-      deploymentController.type !== DeploymentControllerType.ECS
-    ) {
+    if (props.deploymentAlarms && deploymentController && deploymentController.type !== DeploymentControllerType.ECS) {
       throw new Error('Deployment alarms requires the ECS deployment controller.');
     }
 
@@ -765,9 +730,7 @@ export abstract class BaseService
       props.taskDefinitionRevision &&
       props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
     ) {
-      throw new Error(
-        'CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision'
-      );
+      throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
     }
 
     if (props.minHealthyPercent === undefined) {
@@ -815,8 +778,7 @@ export abstract class BaseService
     if (props.enableExecuteCommand) {
       this.enableExecuteCommand();
 
-      const logging =
-        this.cluster.executeCommandConfiguration?.logging ?? ExecuteCommandLogging.DEFAULT;
+      const logging = this.cluster.executeCommandConfiguration?.logging ?? ExecuteCommandLogging.DEFAULT;
 
       if (this.cluster.executeCommandConfiguration?.kmsKey) {
         this.enableExecuteCommandEncryption(logging);
@@ -828,9 +790,7 @@ export abstract class BaseService
 
     if (props.deploymentAlarms) {
       if (props.deploymentAlarms.alarmNames.length === 0) {
-        throw new Error(
-          'at least one alarm name is required when specifying deploymentAlarms, received empty array'
-        );
+        throw new Error('at least one alarm name is required when specifying deploymentAlarms, received empty array');
       }
       this.deploymentAlarms = {
         alarmNames: props.deploymentAlarms.alarmNames,
@@ -839,8 +799,7 @@ export abstract class BaseService
       };
       // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
     } else if (
-      (!props.deploymentController ||
-        props.deploymentController?.type === DeploymentControllerType.ECS) &&
+      (!props.deploymentController || props.deploymentController?.type === DeploymentControllerType.ECS) &&
       this.deploymentAlarmsAvailableInRegion()
     ) {
       // Only set default deployment alarms settings when feature flag is not enabled.
@@ -865,14 +824,10 @@ export abstract class BaseService
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
     if (this.volumes.length > 1) {
-      throw new Error(
-        `Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`
-      );
+      throw new Error(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`);
     }
     return this.volumes.map(renderVolume);
-    function renderVolume(
-      spec: ServiceManagedVolume
-    ): CfnService.ServiceVolumeConfigurationProperty {
+    function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
       const tagSpecifications = spec.config?.tagSpecifications?.map((ebsTagSpec) => {
         return {
           resourceType: 'volume',
@@ -992,9 +947,7 @@ export abstract class BaseService
      * 2. Client alias enumeration
      */
     const services = cfg.services?.map((svc) => {
-      const containerPort = this.taskDefinition.findPortMappingByName(
-        svc.portMappingName
-      )?.containerPort;
+      const containerPort = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
       if (!containerPort) {
         throw new Error(`Port mapping with name ${svc.portMappingName} does not exist.`);
       }
@@ -1032,16 +985,12 @@ export abstract class BaseService
    */
   private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
     if (!this.taskDefinition.defaultContainer) {
-      throw new Error(
-        'Task definition must have at least one container to enable service connect.'
-      );
+      throw new Error('Task definition must have at least one container to enable service connect.');
     }
 
     // Check the implicit enable case; when config isn't specified or namespace isn't specified, we need to check that there is a namespace on the cluster.
     if ((!config || !config.namespace) && !this.cluster.defaultCloudMapNamespace) {
-      throw new Error(
-        'Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace'
-      );
+      throw new Error('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace');
     }
 
     // When config isn't specified, return.
@@ -1062,12 +1011,9 @@ export abstract class BaseService
       }
 
       // Check that no two service connect services use the same discovery name.
-      const discoveryName =
-        serviceConnectService.discoveryName || serviceConnectService.portMappingName;
+      const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
       if (portNames.get(serviceConnectService.portMappingName)?.includes(discoveryName)) {
-        throw new Error(
-          `Cannot create multiple services with the discoveryName '${discoveryName}'.`
-        );
+        throw new Error(`Cannot create multiple services with the discoveryName '${discoveryName}'.`);
       }
 
       let currentDiscoveries = portNames.get(serviceConnectService.portMappingName);
@@ -1079,13 +1025,8 @@ export abstract class BaseService
       }
 
       // IngressPortOverride should be within the valid port range if it exists.
-      if (
-        serviceConnectService.ingressPortOverride &&
-        !this.isValidPort(serviceConnectService.ingressPortOverride)
-      ) {
-        throw new Error(
-          `ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`
-        );
+      if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
+        throw new Error(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`);
       }
 
       // clientAlias.port should be within the valid port range
@@ -1102,12 +1043,7 @@ export abstract class BaseService
    * @returns boolean whether the port is valid
    */
   private isValidPort(port?: number): boolean {
-    return !!(
-      port &&
-      Number.isInteger(port) &&
-      port >= BaseService.MIN_PORT &&
-      port <= BaseService.MAX_PORT
-    );
+    return !!(port && Number.isInteger(port) && port >= BaseService.MIN_PORT && port <= BaseService.MAX_PORT);
   }
 
   /**
@@ -1139,9 +1075,7 @@ export abstract class BaseService
   }
 
   private executeCommandLogConfiguration() {
-    const reducePermissions = FeatureFlags.of(this).isEnabled(
-      cxapi.REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS
-    );
+    const reducePermissions = FeatureFlags.of(this).isEnabled(cxapi.REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS);
     const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
 
     // When Feature Flag is false, keep the previous behaviour for non-breaking changes.
@@ -1202,9 +1136,7 @@ export abstract class BaseService
       new iam.PolicyStatement({
         actions: ['kms:*'],
         resources: ['*'],
-        principals: [
-          new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.env.account}:root`),
-        ],
+        principals: [new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.env.account}:root`)],
       })
     );
 
@@ -1214,13 +1146,7 @@ export abstract class BaseService
     ) {
       this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(
         new iam.PolicyStatement({
-          actions: [
-            'kms:Encrypt*',
-            'kms:Decrypt*',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-            'kms:Describe*',
-          ],
+          actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
           resources: ['*'],
           principals: [new iam.ServicePrincipal(`logs.${this.env.region}.amazonaws.com`)],
           conditions: {
@@ -1239,9 +1165,7 @@ export abstract class BaseService
    * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
-  public attachToApplicationTargetGroup(
-    targetGroup: elbv2.IApplicationTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.defaultLoadBalancerTarget.attachToApplicationTargetGroup(targetGroup);
   }
 
@@ -1281,35 +1205,16 @@ export abstract class BaseService
     const target = this.taskDefinition._validateTarget(options);
     const connections = self.connections;
     return {
-      attachToApplicationTargetGroup(
-        targetGroup: elbv2.ApplicationTargetGroup
-      ): elbv2.LoadBalancerTargetProps {
-        targetGroup.registerConnectable(
-          self,
-          self.taskDefinition._portRangeFromPortMapping(target.portMapping)
-        );
-        return self.attachToELBv2(
-          targetGroup,
-          target.containerName,
-          target.portMapping.containerPort!
-        );
+      attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+        targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
       },
-      attachToNetworkTargetGroup(
-        targetGroup: elbv2.NetworkTargetGroup
-      ): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(
-          targetGroup,
-          target.containerName,
-          target.portMapping.containerPort!
-        );
+      attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-        return self.attachToELB(
-          loadBalancer,
-          target.containerName,
-          target.portMapping.containerPort!
-        );
+        return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort!);
       },
     };
   }
@@ -1355,9 +1260,7 @@ export abstract class BaseService
    * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
-  public attachToNetworkTargetGroup(
-    targetGroup: elbv2.INetworkTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.defaultLoadBalancerTarget.attachToNetworkTargetGroup(targetGroup);
   }
 
@@ -1386,9 +1289,7 @@ export abstract class BaseService
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = options.cloudMapNamespace ?? this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
-      throw new Error(
-        'Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.'
-      );
+      throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
     }
 
     if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
@@ -1398,9 +1299,7 @@ export abstract class BaseService
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
     if (networkMode === NetworkMode.NONE) {
-      throw new Error(
-        'Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.'
-      );
+      throw new Error('Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
     }
 
     // Bridge or host network mode requires SRV records
@@ -1571,20 +1470,12 @@ export abstract class BaseService
   /**
    * Shared logic for attaching to an ELB
    */
-  private attachToELB(
-    loadBalancer: elb.LoadBalancer,
-    containerName: string,
-    containerPort: number
-  ): void {
+  private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number): void {
     if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      throw new Error(
-        'Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.'
-      );
+      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.');
     }
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error(
-        'Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.'
-      );
+      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.');
     }
 
     this.loadBalancers.push({
@@ -1603,9 +1494,7 @@ export abstract class BaseService
     containerPort: number
   ): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error(
-        'Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.'
-      );
+      throw new Error('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
     }
 
     this.loadBalancers.push({
@@ -1619,9 +1508,7 @@ export abstract class BaseService
     this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
     const targetType =
-      this.taskDefinition.networkMode === NetworkMode.AWS_VPC
-        ? elbv2.TargetType.IP
-        : elbv2.TargetType.INSTANCE;
+      this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
   }
 
@@ -1668,9 +1555,7 @@ export abstract class BaseService
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
     return Lazy.any({
-      produce: () =>
-        providedHealthCheckGracePeriod?.toSeconds() ??
-        (this.loadBalancers.length > 0 ? 60 : undefined),
+      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
     });
   }
 
@@ -1926,8 +1811,7 @@ function determineContainerNameAndPort(options: DetermineContainerNameAndPortOpt
 
     return {
       containerName: container.containerName,
-      containerPort:
-        options.containerPort ?? options.taskDefinition.defaultContainer!.containerPort,
+      containerPort: options.containerPort ?? options.taskDefinition.defaultContainer!.containerPort,
     };
   }
 

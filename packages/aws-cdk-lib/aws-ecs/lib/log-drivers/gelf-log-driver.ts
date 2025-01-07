@@ -1,12 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
-import {
-  ensureInRange,
-  ensurePositiveInteger,
-  renderCommonLogDriverOptions,
-  stringifyOptions,
-} from './utils';
+import { ensureInRange, ensurePositiveInteger, renderCommonLogDriverOptions, stringifyOptions } from './utils';
 import { Duration } from '../../../core';
 import { ContainerDefinition } from '../container-definition';
 
@@ -98,8 +93,7 @@ export class GelfLogDriver extends LogDriver {
         'gelf-compression-type': this.props.compressionType,
         'gelf-compression-level': this.props.compressionLevel,
         'gelf-tcp-max-reconnect': this.props.tcpMaxReconnect,
-        'gelf-tcp-reconnect-delay':
-          this.props.tcpReconnectDelay && this.props.tcpReconnectDelay.toSeconds(),
+        'gelf-tcp-reconnect-delay': this.props.tcpReconnectDelay && this.props.tcpReconnectDelay.toSeconds(),
         ...renderCommonLogDriverOptions(this.props),
       }),
     };

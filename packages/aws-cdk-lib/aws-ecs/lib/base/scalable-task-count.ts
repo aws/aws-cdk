@@ -65,8 +65,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scales in or out to achieve a target Application Load Balancer request count per target.
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps) {
-    const resourceLabel =
-      props.targetGroup.firstLoadBalancerFullName + '/' + props.targetGroup.targetGroupFullName;
+    const resourceLabel = props.targetGroup.firstLoadBalancerFullName + '/' + props.targetGroup.targetGroupFullName;
 
     return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,

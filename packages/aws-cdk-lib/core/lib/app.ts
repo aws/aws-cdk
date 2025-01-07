@@ -179,10 +179,7 @@ export class App extends Stage {
     }
 
     if (props.defaultStackSynthesizer) {
-      this.node.setContext(
-        PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER,
-        props.defaultStackSynthesizer
-      );
+      this.node.setContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER, props.defaultStackSynthesizer);
     }
 
     const analyticsReporting = props.analyticsReporting ?? props.runtimeInfo;
@@ -201,10 +198,7 @@ export class App extends Stage {
     this._treeMetadata = props.treeMetadata ?? true;
   }
 
-  private loadContext(
-    defaults: { [key: string]: string } = {},
-    final: { [key: string]: string } = {}
-  ) {
+  private loadContext(defaults: { [key: string]: string } = {}, final: { [key: string]: string } = {}) {
     // prime with defaults passed through constructor
     for (const [k, v] of Object.entries(defaults)) {
       this.node.setContext(k, v);

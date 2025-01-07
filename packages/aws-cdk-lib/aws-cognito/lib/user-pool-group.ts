@@ -87,11 +87,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
   constructor(scope: Construct, id: string, props: UserPoolGroupProps) {
     super(scope, id);
 
-    if (
-      props.description !== undefined &&
-      !Token.isUnresolved(props.description) &&
-      props.description.length > 2048
-    ) {
+    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 2048) {
       throw new Error(
         `\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`
       );

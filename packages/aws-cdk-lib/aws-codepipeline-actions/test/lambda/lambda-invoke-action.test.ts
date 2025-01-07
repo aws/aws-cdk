@@ -17,20 +17,23 @@ describe('', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
-        'Stages': [
-          {},
-          {
-            'Actions': [
-              {
-                'Configuration': {
-                  'UserParameters': '{"key":1234}',
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::CodePipeline::Pipeline',
+        Match.objectLike({
+          Stages: [
+            {},
+            {
+              Actions: [
+                {
+                  Configuration: {
+                    UserParameters: '{"key":1234}',
+                  },
                 },
-              },
-            ],
-          },
-        ],
-      }));
+              ],
+            },
+          ],
+        })
+      );
     });
 
     test('properly resolves any Tokens passed in userParameters', () => {
@@ -39,31 +42,34 @@ describe('', () => {
           key: Lazy.string({ produce: () => Aws.REGION }),
         },
       });
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
-        'Stages': [
-          {},
-          {
-            'Actions': [
-              {
-                'Configuration': {
-                  'UserParameters': {
-                    'Fn::Join': [
-                      '',
-                      [
-                        '{"key":"',
-                        {
-                          'Ref': 'AWS::Region',
-                        },
-                        '"}',
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::CodePipeline::Pipeline',
+        Match.objectLike({
+          Stages: [
+            {},
+            {
+              Actions: [
+                {
+                  Configuration: {
+                    UserParameters: {
+                      'Fn::Join': [
+                        '',
+                        [
+                          '{"key":"',
+                          {
+                            Ref: 'AWS::Region',
+                          },
+                          '"}',
+                        ],
                       ],
-                    ],
+                    },
                   },
                 },
-              },
-            ],
-          },
-        ],
-      }));
+              ],
+            },
+          ],
+        })
+      );
     });
 
     test('properly resolves any stringified Tokens passed in userParameters', () => {
@@ -73,20 +79,23 @@ describe('', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
-        'Stages': [
-          {},
-          {
-            'Actions': [
-              {
-                'Configuration': {
-                  'UserParameters': '{"key":null}',
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::CodePipeline::Pipeline',
+        Match.objectLike({
+          Stages: [
+            {},
+            {
+              Actions: [
+                {
+                  Configuration: {
+                    UserParameters: '{"key":null}',
+                  },
                 },
-              },
-            ],
-          },
-        ],
-      }));
+              ],
+            },
+          ],
+        })
+      );
     });
 
     test('properly assings userParametersString to UserParameters', () => {
@@ -94,29 +103,34 @@ describe('', () => {
         userParamsString: '**/*.template.json',
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
-        'Stages': [
-          {},
-          {
-            'Actions': [
-              {
-                'Configuration': {
-                  'UserParameters': '**/*.template.json',
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::CodePipeline::Pipeline',
+        Match.objectLike({
+          Stages: [
+            {},
+            {
+              Actions: [
+                {
+                  Configuration: {
+                    UserParameters: '**/*.template.json',
+                  },
                 },
-              },
-            ],
-          },
-        ],
-      }));
+              ],
+            },
+          ],
+        })
+      );
     });
 
     test('throws if both userParameters and userParametersString are supplied', () => {
-      expect(() => stackIncludingLambdaInvokeCodePipeline({
-        userParams: {
-          key: Token.asString(null),
-        },
-        userParamsString: '**/*.template.json',
-      })).toThrow(/Only one of userParameters or userParametersString can be specified/);
+      expect(() =>
+        stackIncludingLambdaInvokeCodePipeline({
+          userParams: {
+            key: Token.asString(null),
+          },
+          userParamsString: '**/*.template.json',
+        })
+      ).toThrow(/Only one of userParameters or userParametersString can be specified/);
     });
 
     test("assigns the Action's Role with read permissions to the Bucket if it has only inputs", () => {
@@ -124,36 +138,32 @@ describe('', () => {
         lambdaInput: new codepipeline.Artifact(),
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
-        'PolicyDocument': {
-          'Statement': [
-            {
-              'Action': 'lambda:ListFunctions',
-              'Resource': '*',
-              'Effect': 'Allow',
-            },
-            {
-              'Action': 'lambda:InvokeFunction',
-              'Effect': 'Allow',
-            },
-            {
-              'Action': [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-              ],
-              'Effect': 'Allow',
-            },
-            {
-              'Action': [
-                'kms:Decrypt',
-                'kms:DescribeKey',
-              ],
-              'Effect': 'Allow',
-            },
-          ],
-        },
-      }));
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        Match.objectLike({
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'lambda:ListFunctions',
+                Resource: '*',
+                Effect: 'Allow',
+              },
+              {
+                Action: 'lambda:InvokeFunction',
+                Effect: 'Allow',
+              },
+              {
+                Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+                Effect: 'Allow',
+              },
+              {
+                Action: ['kms:Decrypt', 'kms:DescribeKey'],
+                Effect: 'Allow',
+              },
+            ],
+          },
+        })
+      );
     });
 
     test("assigns the Action's Role with write permissions to the Bucket if it has only outputs", () => {
@@ -164,19 +174,19 @@ describe('', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'PipelineInvokeLambdaCodePipelineActionRoleDefaultPolicy103F34DA',
-        'PolicyDocument': Match.objectLike({
-          'Statement': [
+        PolicyDocument: Match.objectLike({
+          Statement: [
             {
-              'Action': 'lambda:ListFunctions',
-              'Resource': '*',
-              'Effect': 'Allow',
+              Action: 'lambda:ListFunctions',
+              Resource: '*',
+              Effect: 'Allow',
             },
             {
-              'Action': 'lambda:InvokeFunction',
-              'Effect': 'Allow',
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
             },
             {
-              'Action': [
+              Action: [
                 's3:DeleteObject*',
                 's3:PutObject',
                 's3:PutObjectLegalHold',
@@ -185,16 +195,11 @@ describe('', () => {
                 's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
-              'Effect': 'Allow',
+              Effect: 'Allow',
             },
             {
-              'Action': [
-                'kms:Encrypt',
-                'kms:ReEncrypt*',
-                'kms:GenerateDataKey*',
-                'kms:Decrypt',
-              ],
-              'Effect': 'Allow',
+              Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Decrypt'],
+              Effect: 'Allow',
             },
           ],
         }),
@@ -209,34 +214,27 @@ describe('', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'PipelineInvokeLambdaCodePipelineActionRoleDefaultPolicy103F34DA',
-        'PolicyDocument': Match.objectLike({
-          'Statement': [
+        PolicyDocument: Match.objectLike({
+          Statement: [
             {
-              'Action': 'lambda:ListFunctions',
-              'Resource': '*',
-              'Effect': 'Allow',
+              Action: 'lambda:ListFunctions',
+              Resource: '*',
+              Effect: 'Allow',
             },
             {
-              'Action': 'lambda:InvokeFunction',
-              'Effect': 'Allow',
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
             },
             {
-              'Action': [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-              ],
-              'Effect': 'Allow',
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              Effect: 'Allow',
             },
             {
-              'Action': [
-                'kms:Decrypt',
-                'kms:DescribeKey',
-              ],
-              'Effect': 'Allow',
+              Action: ['kms:Decrypt', 'kms:DescribeKey'],
+              Effect: 'Allow',
             },
             {
-              'Action': [
+              Action: [
                 's3:DeleteObject*',
                 's3:PutObject',
                 's3:PutObjectLegalHold',
@@ -245,16 +243,11 @@ describe('', () => {
                 's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
-              'Effect': 'Allow',
+              Effect: 'Allow',
             },
             {
-              'Action': [
-                'kms:Encrypt',
-                'kms:ReEncrypt*',
-                'kms:GenerateDataKey*',
-                'kms:Decrypt',
-              ],
-              'Effect': 'Allow',
+              Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Decrypt'],
+              Effect: 'Allow',
             },
           ],
         }),
@@ -269,7 +262,11 @@ describe('', () => {
       const sourceOutput = new codepipeline.Artifact();
       const lambdaInvokeAction = new cpactions.LambdaInvokeAction({
         actionName: 'LambdaInvoke',
-        lambda: lambda.Function.fromFunctionArn(stack, 'Func', 'arn:aws:lambda:us-east-1:123456789012:function:some-func'),
+        lambda: lambda.Function.fromFunctionArn(
+          stack,
+          'Func',
+          'arn:aws:lambda:us-east-1:123456789012:function:some-func'
+        ),
       });
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
@@ -299,28 +296,31 @@ describe('', () => {
         ],
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
-        'Stages': [
-          {
-            'Name': 'Source',
-          },
-          {
-            'Name': 'Invoke',
-            'Actions': [
-              {
-                'Name': 'LambdaInvoke',
-                'Namespace': 'Invoke_LambdaInvoke_NS',
-              },
-              {
-                'Name': 'Approve',
-                'Configuration': {
-                  'CustomData': '#{Invoke_LambdaInvoke_NS.SomeVar}',
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::CodePipeline::Pipeline',
+        Match.objectLike({
+          Stages: [
+            {
+              Name: 'Source',
+            },
+            {
+              Name: 'Invoke',
+              Actions: [
+                {
+                  Name: 'LambdaInvoke',
+                  Namespace: 'Invoke_LambdaInvoke_NS',
                 },
-              },
-            ],
-          },
-        ],
-      }));
+                {
+                  Name: 'Approve',
+                  Configuration: {
+                    CustomData: '#{Invoke_LambdaInvoke_NS.SomeVar}',
+                  },
+                },
+              ],
+            },
+          ],
+        })
+      );
     });
   });
 });

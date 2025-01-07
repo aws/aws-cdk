@@ -129,11 +129,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   /**
    * Imports from the specified service ARN.
    */
-  public static fromEc2ServiceArn(
-    scope: Construct,
-    id: string,
-    ec2ServiceArn: string
-  ): IEc2Service {
+  public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
@@ -144,11 +140,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   /**
    * Imports from the specified service attributes.
    */
-  public static fromEc2ServiceAttributes(
-    scope: Construct,
-    id: string,
-    attrs: Ec2ServiceAttributes
-  ): IBaseService {
+  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IBaseService {
     return fromServiceAttributes(scope, id, attrs);
   }
 
@@ -161,9 +153,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
    */
   constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
-      throw new Error(
-        "Daemon mode launches one task on every instance. Don't supply desiredCount."
-      );
+      throw new Error("Daemon mode launches one task on every instance. Don't supply desiredCount.");
     }
 
     if (props.daemon && props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
@@ -192,10 +182,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
       {
         ...props,
         desiredCount: props.desiredCount,
-        maxHealthyPercent:
-          props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
-        minHealthyPercent:
-          props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
+        maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
+        minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
         launchType: LaunchType.EC2,
         enableECSManagedTags: props.enableECSManagedTags,
       },
@@ -240,9 +228,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       // In that case, reference the same security groups but make sure new rules are
       // created in the current scope (i.e., this stack)
       validateNoNetworkingProps(props);
-      this.connections.addSecurityGroup(
-        ...securityGroupsInThisStack(this, props.cluster.connections.securityGroups)
-      );
+      this.connections.addSecurityGroup(...securityGroupsInThisStack(this, props.cluster.connections.securityGroups));
     }
 
     if (props.placementConstraints) {
@@ -252,9 +238,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
 
     this.node.addValidation({
       validate: () =>
-        !this.taskDefinition.defaultContainer
-          ? ['A TaskDefinition must have at least one essential container']
-          : [],
+        !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
     });
 
     this.node.addValidation({ validate: this.validateEc2Service.bind(this) });
@@ -298,9 +282,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   private validateEc2Service(): string[] {
     const ret = new Array<string>();
     if (!this.daemon && !this.cluster.hasEc2Capacity) {
-      ret.push(
-        'Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.'
-      );
+      ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }
     return ret;
   }
@@ -316,9 +298,7 @@ function validateNoNetworkingProps(props: Ec2ServiceProps) {
     props.securityGroups !== undefined ||
     props.assignPublicIp
   ) {
-    throw new Error(
-      'vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode'
-    );
+    throw new Error('vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode');
   }
 }
 
@@ -330,10 +310,7 @@ function validateNoNetworkingProps(props: Ec2ServiceProps) {
  * but new Ingress and Egress rule resources will be added in the current stack instead of the
  * other one.
  */
-function securityGroupsInThisStack(
-  scope: Construct,
-  groups: ec2.ISecurityGroup[]
-): ec2.ISecurityGroup[] {
+function securityGroupsInThisStack(scope: Construct, groups: ec2.ISecurityGroup[]): ec2.ISecurityGroup[] {
   const thisStack = Stack.of(scope);
 
   let i = 1;
@@ -342,15 +319,10 @@ function securityGroupsInThisStack(
       return group;
     } // Simple case, just return the original one
 
-    return ec2.SecurityGroup.fromSecurityGroupId(
-      scope,
-      `SecurityGroup${i++}`,
-      group.securityGroupId,
-      {
-        allowAllOutbound: group.allowAllOutbound,
-        mutable: true,
-      }
-    );
+    return ec2.SecurityGroup.fromSecurityGroupId(scope, `SecurityGroup${i++}`, group.securityGroupId, {
+      allowAllOutbound: group.allowAllOutbound,
+      mutable: true,
+    });
   });
 }
 

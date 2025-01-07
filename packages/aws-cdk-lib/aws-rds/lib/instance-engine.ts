@@ -143,10 +143,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineFamily = props.engineFamily;
   }
 
-  public bindToInstance(
-    _scope: Construct,
-    options: InstanceEngineBindOptions
-  ): InstanceEngineConfig {
+  public bindToInstance(_scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone && !this.supportsTimezone) {
       throw new Error(`timezone property can not be configured for ${this.engineType}`);
     }
@@ -613,10 +610,8 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
   constructor(version?: MariaDbEngineVersion) {
     super({
       engineType: 'mariadb',
-      singleUserRotationApplication:
-        secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER,
-      multiUserRotationApplication:
-        secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER,
       version: version
         ? {
             fullVersion: version.mariaDbFullVersion,
@@ -627,10 +622,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(
-    scope: Construct,
-    options: InstanceEngineBindOptions
-  ): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
       throw new Error(`domain property cannot be configured for ${this.engineType}`);
     }
@@ -865,20 +857,11 @@ export class MysqlEngineVersion {
   /** Version "5.7.44". */
   public static readonly VER_5_7_44 = MysqlEngineVersion.of('5.7.44', '5.7');
   /** Version "5.7.44-rds.20240408". */
-  public static readonly VER_5_7_44_RDS_20240408 = MysqlEngineVersion.of(
-    '5.7.44-rds.20240408',
-    '5.7'
-  );
+  public static readonly VER_5_7_44_RDS_20240408 = MysqlEngineVersion.of('5.7.44-rds.20240408', '5.7');
   /** Version "5.7.44-rds.20240529". */
-  public static readonly VER_5_7_44_RDS_20240529 = MysqlEngineVersion.of(
-    '5.7.44-rds.20240529',
-    '5.7'
-  );
+  public static readonly VER_5_7_44_RDS_20240529 = MysqlEngineVersion.of('5.7.44-rds.20240529', '5.7');
   /** Version "5.7.44-rds.20240808". */
-  public static readonly VER_5_7_44_RDS_20240808 = MysqlEngineVersion.of(
-    '5.7.44-rds.20240808',
-    '5.7'
-  );
+  public static readonly VER_5_7_44_RDS_20240808 = MysqlEngineVersion.of('5.7.44-rds.20240808', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -1019,10 +1002,8 @@ class MySqlInstanceEngine extends InstanceEngineBase {
   constructor(version?: MysqlEngineVersion) {
     super({
       engineType: 'mysql',
-      singleUserRotationApplication:
-        secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
-      multiUserRotationApplication:
-        secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
       version: version
         ? {
             fullVersion: version.mysqlFullVersion,
@@ -1560,35 +1541,31 @@ export class PostgresEngineVersion {
   /**
    * Version "11.22-rds.20240418"
    */
-  public static readonly VER_11_22_RDS_20240418 = PostgresEngineVersion.of(
-    '11.22-rds.20240418',
-    '11',
-    { s3Import: true, s3Export: true }
-  );
+  public static readonly VER_11_22_RDS_20240418 = PostgresEngineVersion.of('11.22-rds.20240418', '11', {
+    s3Import: true,
+    s3Export: true,
+  });
   /**
    * Version "11.22-rds.20240509"
    */
-  public static readonly VER_11_22_RDS_20240509 = PostgresEngineVersion.of(
-    '11.22-rds.20240509',
-    '11',
-    { s3Import: true, s3Export: true }
-  );
+  public static readonly VER_11_22_RDS_20240509 = PostgresEngineVersion.of('11.22-rds.20240509', '11', {
+    s3Import: true,
+    s3Export: true,
+  });
   /**
    * Version "11.22-rds.20240808"
    */
-  public static readonly VER_11_22_RDS_20240808 = PostgresEngineVersion.of(
-    '11.22-RDS.20240808',
-    '11',
-    { s3Import: true, s3Export: true }
-  );
+  public static readonly VER_11_22_RDS_20240808 = PostgresEngineVersion.of('11.22-RDS.20240808', '11', {
+    s3Import: true,
+    s3Export: true,
+  });
   /**
    * Version "11.22-RDS.20241121"
    */
-  public static readonly VER_11_22_RDS_20241121 = PostgresEngineVersion.of(
-    '11.22-RDS.20241121',
-    '11',
-    { s3Import: true, s3Export: true }
-  );
+  public static readonly VER_11_22_RDS_20241121 = PostgresEngineVersion.of('11.22-RDS.20241121', '11', {
+    s3Import: true,
+    s3Export: true,
+  });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -2130,10 +2107,8 @@ class PostgresInstanceEngine extends InstanceEngineBase {
   constructor(version?: PostgresEngineVersion) {
     super({
       engineType: 'postgres',
-      singleUserRotationApplication:
-        secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
-      multiUserRotationApplication:
-        secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER,
       version: version
         ? {
             fullVersion: version.postgresFullVersion,
@@ -2208,10 +2183,7 @@ export class OracleLegacyEngineVersion {
   /** Version "11.2.0.4.v25". */
   public static readonly VER_11_2_0_4_V25 = OracleLegacyEngineVersion.of('11.2.0.4.v25', '11.2');
 
-  private static of(
-    oracleLegacyFullVersion: string,
-    oracleLegacyMajorVersion: string
-  ): OracleLegacyEngineVersion {
+  private static of(oracleLegacyFullVersion: string, oracleLegacyMajorVersion: string): OracleLegacyEngineVersion {
     return new OracleLegacyEngineVersion(oracleLegacyFullVersion, oracleLegacyMajorVersion);
   }
 
@@ -2395,114 +2367,72 @@ export class OracleEngineVersion {
    * Version "12.2.0.1.ru-2018-10.rur-2018-10.r1"
    * @deprecated Oracle 12.2.0.1.ru-2018-10.rur-2018-10.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2018_10_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2018-10.rur-2018-10.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2018_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2018-10.rur-2018-10.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2019-01.rur-2019-01.r1"
    * @deprecated Oracle 12.2.0.1.ru-2019-01.rur-2019-01.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2019_01_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2019-01.rur-2019-01.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2019_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-01.rur-2019-01.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2019-04.rur-2019-04.r1"
    * @deprecated Oracle 12.2.0.1.ru-2019-04.rur-2019-04.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2019_04_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2019-04.rur-2019-04.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2019_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-04.rur-2019-04.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2019-07.rur-2019-07.r1"
    * @deprecated Oracle 12.2.0.1.ru-2019-07.rur-2019-07.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2019_07_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2019-07.rur-2019-07.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2019_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-07.rur-2019-07.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2019-10.rur-2019-10.r1"
    * @deprecated Oracle 12.2.0.1.ru-2019-10.rur-2019-10.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2019_10_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2019-10.rur-2019-10.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2019_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-10.rur-2019-10.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2020-01.rur-2020-01.r1"
    * @deprecated Oracle 12.2.0.1.ru-2020-01.rur-2020-01.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2020_01_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2020-01.rur-2020-01.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2020_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-01.rur-2020-01.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2020-04.rur-2020-04.r1"
    * @deprecated Oracle 12.2.0.1.ru-2020-04.rur-2020-04.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2020_04_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2020-04.rur-2020-04.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2020_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-04.rur-2020-04.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2020-07.rur-2020-07.r1"
    * @deprecated Oracle 12.2.0.1.ru-2020-07.rur-2020-07.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2020_07_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2020-07.rur-2020-07.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2020_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-07.rur-2020-07.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2021-10.rur-2020-10.r1"
    * @deprecated Oracle 12.2.0.1.ru-2021-10.rur-2020-10.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2020_10_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2020-10.rur-2020-10.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2020_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-10.rur-2020-10.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2021-01.rur-2021-01.r1"
    * @deprecated Oracle 12.2.0.1.ru-2021-01.rur-2021-01.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2021_01_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2021-01.rur-2021-01.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2021_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-01.rur-2021-01.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2021-04.rur-2021-04.r1"
    * @deprecated Oracle 12.2.0.1.ru-2021-04.rur-2021-04.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2021_04_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2021-04.rur-2021-04.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2021_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-04.rur-2021-04.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2021-07.rur-2021-07.r1"
    * @deprecated Oracle 12.2.0.1.ru-2021-07.rur-2021-07.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2021_07_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2021-07.rur-2021-07.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2021_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-07.rur-2021-07.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2021-10.rur-2021-10.r1"
    * @deprecated Oracle 12.2.0.1.ru-2021-10.rur-2021-10.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2021_10_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2021-10.rur-2021-10.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2021_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-10.rur-2021-10.r1', '12.2');
   /**
    * Version "12.2.0.1.ru-2022-01.rur-2022-01.r1"
    * @deprecated Oracle 12.2.0.1.ru-2022-01.rur-2022-01.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_2_0_1_2022_01_R1 = OracleEngineVersion.of(
-    '12.2.0.1.ru-2022-01.rur-2022-01.r1',
-    '12.2'
-  );
+  public static readonly VER_12_2_0_1_2022_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2022-01.rur-2022-01.r1', '12.2');
 
   /**
    * Version "18" (only a major version, without a specific minor version).
@@ -2513,257 +2443,122 @@ export class OracleEngineVersion {
    * Version "18.0.0.0.ru-2019-07.rur-2019-07.r1"
    * @deprecated Oracle 18.0.0.0.ru-2019-07.rur-2019-07.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_18_0_0_0_2019_07_R1 = OracleEngineVersion.of(
-    '18.0.0.0.ru-2019-07.rur-2019-07.r1',
-    '18'
-  );
+  public static readonly VER_18_0_0_0_2019_07_R1 = OracleEngineVersion.of('18.0.0.0.ru-2019-07.rur-2019-07.r1', '18');
   /**
    * Version "18.0.0.0.ru-2019-10.rur-2019-10.r1"
    * @deprecated Oracle 18.0.0.0.ru-2019-10.rur-2019-10.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_18_0_0_0_2019_10_R1 = OracleEngineVersion.of(
-    '18.0.0.0.ru-2019-10.rur-2019-10.r1',
-    '18'
-  );
+  public static readonly VER_18_0_0_0_2019_10_R1 = OracleEngineVersion.of('18.0.0.0.ru-2019-10.rur-2019-10.r1', '18');
   /**
    * Version "18.0.0.0.ru-2020-01.rur-2020-01.r1"
    * @deprecated Oracle 18.0.0.0.ru-2020-01.rur-2020-01.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_18_0_0_0_2020_01_R1 = OracleEngineVersion.of(
-    '18.0.0.0.ru-2020-01.rur-2020-01.r1',
-    '18'
-  );
+  public static readonly VER_18_0_0_0_2020_01_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-01.rur-2020-01.r1', '18');
   /**
    * Version "18.0.0.0.ru-2020-04.rur-2020-04.r1"
    * @deprecated Oracle 18.0.0.0.ru-2020-04.rur-2020-04.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_18_0_0_0_2020_04_R1 = OracleEngineVersion.of(
-    '18.0.0.0.ru-2020-04.rur-2020-04.r1',
-    '18'
-  );
+  public static readonly VER_18_0_0_0_2020_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-04.rur-2020-04.r1', '18');
   /**
    * Version "18.0.0.0.ru-2020-07.rur-2020-07.r1"
    * @deprecated Oracle 18.0.0.0.ru-2020-07.rur-2020-07.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_18_0_0_0_2020_07_R1 = OracleEngineVersion.of(
-    '18.0.0.0.ru-2020-07.rur-2020-07.r1',
-    '18'
-  );
+  public static readonly VER_18_0_0_0_2020_07_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-07.rur-2020-07.r1', '18');
   /**
    * Version "18.0.0.0.ru-2020-10.rur-2020-10.r1"
    * @deprecated Oracle 18.0.0.0.ru-2020-10.rur-2020-10.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_18_0_0_0_2020_10_R1 = OracleEngineVersion.of(
-    '18.0.0.0.ru-2020-10.rur-2020-10.r1',
-    '18'
-  );
+  public static readonly VER_18_0_0_0_2020_10_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-10.rur-2020-10.r1', '18');
   /**
    * Version "18.0.0.0.ru-2021-01.rur-2021-01.r1"
    * @deprecated Oracle 18.0.0.0.ru-2021-01.rur-2021-01.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_18_0_0_0_2021_01_R1 = OracleEngineVersion.of(
-    '18.0.0.0.ru-2021-01.rur-2021-01.r1',
-    '18'
-  );
+  public static readonly VER_18_0_0_0_2021_01_R1 = OracleEngineVersion.of('18.0.0.0.ru-2021-01.rur-2021-01.r1', '18');
   /**
    * Version "18.0.0.0.ru-2021-04.rur-2021-04.r1"
    * @deprecated Oracle 18.0.0.0.ru-2021-04.rur-2021-04.r1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_18_0_0_0_2021_04_R1 = OracleEngineVersion.of(
-    '18.0.0.0.ru-2021-04.rur-2021-04.r1',
-    '18'
-  );
+  public static readonly VER_18_0_0_0_2021_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2021-04.rur-2021-04.r1', '18');
 
   /** Version "19" (only a major version, without a specific minor version). */
   public static readonly VER_19 = OracleEngineVersion.of('19', '19');
   /** Version "19.0.0.0.ru-2019-07.rur-2019-07.r1". */
-  public static readonly VER_19_0_0_0_2019_07_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2019-07.rur-2019-07.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2019_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2019-07.rur-2019-07.r1', '19');
   /** Version "19.0.0.0.ru-2019-10.rur-2019-10.r1". */
-  public static readonly VER_19_0_0_0_2019_10_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2019-10.rur-2019-10.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2019_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2019-10.rur-2019-10.r1', '19');
   /** Version "19.0.0.0.ru-2020-01.rur-2020-01.r1". */
-  public static readonly VER_19_0_0_0_2020_01_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2020-01.rur-2020-01.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2020_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-01.rur-2020-01.r1', '19');
   /** Version "19.0.0.0.ru-2020-04.rur-2020-04.r1". */
-  public static readonly VER_19_0_0_0_2020_04_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2020-04.rur-2020-04.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2020_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-04.rur-2020-04.r1', '19');
   /** Version "19.0.0.0.ru-2020-07.rur-2020-07.r1". */
-  public static readonly VER_19_0_0_0_2020_07_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2020-07.rur-2020-07.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2020_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-07.rur-2020-07.r1', '19');
   /** Version "19.0.0.0.ru-2020-07.rur-2020-10.r1". */
-  public static readonly VER_19_0_0_0_2020_10_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2020-10.rur-2020-10.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2020_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-10.rur-2020-10.r1', '19');
   /** Version "19.0.0.0.ru-2021-01.rur-2021-01.r1". */
-  public static readonly VER_19_0_0_0_2021_01_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2021-01.rur-2021-01.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2021_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-01.rur-2021-01.r1', '19');
   /** Version "19.0.0.0.ru-2021-01.rur-2021-01.r2". */
-  public static readonly VER_19_0_0_0_2021_01_R2 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2021-01.rur-2021-01.r2',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2021_01_R2 = OracleEngineVersion.of('19.0.0.0.ru-2021-01.rur-2021-01.r2', '19');
   /** Version "19.0.0.0.ru-2021-01.rur-2021-04.r1". */
-  public static readonly VER_19_0_0_0_2021_04_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2021-04.rur-2021-04.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2021_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-04.rur-2021-04.r1', '19');
   /** Version "19.0.0.0.ru-2021-07.rur-2021-07.r1". */
-  public static readonly VER_19_0_0_0_2021_07_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2021-07.rur-2021-07.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2021_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-07.rur-2021-07.r1', '19');
   /** Version "19.0.0.0.ru-2021-10.rur-2021-10.r1". */
-  public static readonly VER_19_0_0_0_2021_10_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2021-10.rur-2021-10.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2021_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2021-10.rur-2021-10.r1', '19');
   /** Version "19.0.0.0.ru-2022-01.rur-2022-01.r1". */
-  public static readonly VER_19_0_0_0_2022_01_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2022-01.rur-2022-01.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2022_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-01.rur-2022-01.r1', '19');
   /** Version "19.0.0.0.ru-2022-04.rur-2022-04.r1". */
-  public static readonly VER_19_0_0_0_2022_04_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2022-04.rur-2022-04.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2022_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-04.rur-2022-04.r1', '19');
   /** Version "19.0.0.0.ru-2022-07.rur-2022-07.r1". */
-  public static readonly VER_19_0_0_0_2022_07_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2022-07.rur-2022-07.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2022_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-07.rur-2022-07.r1', '19');
   /** Version "19.0.0.0.ru-2022-10.rur-2022-10.r1". */
-  public static readonly VER_19_0_0_0_2022_10_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2022-10.rur-2022-10.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2022_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-10.rur-2022-10.r1', '19');
   /** Version "19.0.0.0.ru-2023-01.rur-2023-01.r1". */
-  public static readonly VER_19_0_0_0_2023_01_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2023-01.rur-2023-01.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2023_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-01.rur-2023-01.r1', '19');
   /** Version "19.0.0.0.ru-2023-01.rur-2023-01.r2". */
-  public static readonly VER_19_0_0_0_2023_01_R2 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2023-01.rur-2023-01.r2',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2023_01_R2 = OracleEngineVersion.of('19.0.0.0.ru-2023-01.rur-2023-01.r2', '19');
   /** Version "19.0.0.0.ru-2023-04.rur-2023-04.r1". */
-  public static readonly VER_19_0_0_0_2023_04_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2023-04.rur-2023-04.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2023_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-04.rur-2023-04.r1', '19');
   /** Version "19.0.0.0.ru-2023-07.rur-2023-07.r1"  */
-  public static readonly VER_19_0_0_0_2023_07_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2023-07.rur-2023-07.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2023_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-07.rur-2023-07.r1', '19');
   /** Version "19.0.0.0.ru-2023-10.rur-2023-10.r1"  */
-  public static readonly VER_19_0_0_0_2023_10_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2023-10.rur-2023-10.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2023_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-10.rur-2023-10.r1', '19');
   /** Version "19.0.0.0.ru-2024-01.rur-2024-01.r1". */
-  public static readonly VER_19_0_0_0_2024_01_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2024-01.rur-2024-01.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2024_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-01.rur-2024-01.r1', '19');
   /** Version "19.0.0.0.ru-2024-04.rur-2024-04.r1". */
-  public static readonly VER_19_0_0_0_2024_04_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2024-04.rur-2024-04.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2024_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-04.rur-2024-04.r1', '19');
   /** Version "19.0.0.0.ru-2024-07.rur-2024-07.r1". */
-  public static readonly VER_19_0_0_0_2024_07_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2024-07.rur-2024-07.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2024_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-07.rur-2024-07.r1', '19');
   /** Version "19.0.0.0.ru-2024-10.rur-2024-10.r1". */
-  public static readonly VER_19_0_0_0_2024_10_R1 = OracleEngineVersion.of(
-    '19.0.0.0.ru-2024-10.rur-2024-10.r1',
-    '19'
-  );
+  public static readonly VER_19_0_0_0_2024_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-10.rur-2024-10.r1', '19');
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
   /** Version "21.0.0.0.ru-2022-01.rur-2022-01.r1". */
-  public static readonly VER_21_0_0_0_2022_01_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2022-01.rur-2022-01.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2022_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-01.rur-2022-01.r1', '21');
   /** Version "21.0.0.0.ru-2022-04.rur-2022-04.r1". */
-  public static readonly VER_21_0_0_0_2022_04_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2022-04.rur-2022-04.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2022_04_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-04.rur-2022-04.r1', '21');
   /** Version "21.0.0.0.ru-2022-07.rur-2022-07.r1". */
-  public static readonly VER_21_0_0_0_2022_07_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2022-07.rur-2022-07.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2022_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-07.rur-2022-07.r1', '21');
   /** Version "21.0.0.0.ru-2022-10.rur-2022-10.r1". */
-  public static readonly VER_21_0_0_0_2022_10_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2022-10.rur-2022-10.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2022_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-10.rur-2022-10.r1', '21');
   /** Version "21.0.0.0.ru-2023-01.rur-2023-01.r1". */
-  public static readonly VER_21_0_0_0_2023_01_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2023-01.rur-2023-01.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2023_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-01.rur-2023-01.r1', '21');
   /** Version "21.0.0.0.ru-2023-01.rur-2023-01.r2". */
-  public static readonly VER_21_0_0_0_2023_01_R2 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2023-01.rur-2023-01.r2',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2023_01_R2 = OracleEngineVersion.of('21.0.0.0.ru-2023-01.rur-2023-01.r2', '21');
   /** Version "21.0.0.0.ru-2023-04.rur-2023-04.r1". */
-  public static readonly VER_21_0_0_0_2023_04_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2023-04.rur-2023-04.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2023_04_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-04.rur-2023-04.r1', '21');
   /** Version "21.0.0.0.ru-2023-07.rur-2023-07.r1". */
-  public static readonly VER_21_0_0_0_2023_07_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2023-07.rur-2023-07.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2023_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-07.rur-2023-07.r1', '21');
   /** Version "21.0.0.0.ru-2023-10.rur-2023-10.r1". */
-  public static readonly VER_21_0_0_0_2023_10_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2023-10.rur-2023-10.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2023_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-10.rur-2023-10.r1', '21');
   /** Version "21.0.0.0.ru-2024-01.rur-2024-01.r1". */
-  public static readonly VER_21_0_0_0_2024_01_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2024-01.rur-2024-01.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2024_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-01.rur-2024-01.r1', '21');
   /** Version "21.0.0.0.ru-2024-04.rur-2024-04.r1". */
-  public static readonly VER_21_0_0_0_2024_04_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2024-04.rur-2024-04.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2024_04_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-04.rur-2024-04.r1', '21');
   /** Version "21.0.0.0.ru-2024-07.rur-2024-07.r1". */
-  public static readonly VER_21_0_0_0_2024_07_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2024-07.rur-2024-07.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2024_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-07.rur-2024-07.r1', '21');
   /** Version "21.0.0.0.ru-2024-10.rur-2024-10.r1". */
-  public static readonly VER_21_0_0_0_2024_10_R1 = OracleEngineVersion.of(
-    '21.0.0.0.ru-2024-10.rur-2024-10.r1',
-    '21'
-  );
+  public static readonly VER_21_0_0_0_2024_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-10.rur-2024-10.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -2797,13 +2592,9 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
   constructor(props: OracleInstanceEngineBaseProps) {
     super({
       ...props,
-      singleUserRotationApplication:
-        secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER,
-      multiUserRotationApplication:
-        secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER,
-      parameterGroupFamily: props.version
-        ? `${props.engineType}-${props.version.majorVersion}`
-        : undefined,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER,
+      parameterGroupFamily: props.version ? `${props.engineType}-${props.version.majorVersion}` : undefined,
       features: {
         s3Import: 'S3_INTEGRATION',
         s3Export: 'S3_INTEGRATION',
@@ -2811,10 +2602,7 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(
-    scope: Construct,
-    options: InstanceEngineBindOptions
-  ): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;
@@ -2996,42 +2784,27 @@ export class SqlServerEngineVersion {
    * Version "11.00.5058.0.v1".
    * @deprecated SQL Server 11.00.5058.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_11_00_5058_0_V1 = SqlServerEngineVersion.of(
-    '11.00.5058.0.v1',
-    '11.00'
-  );
+  public static readonly VER_11_00_5058_0_V1 = SqlServerEngineVersion.of('11.00.5058.0.v1', '11.00');
   /**
    * Version "11.00.6020.0.v1".
    * @deprecated SQL Server 11.00.6020.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_11_00_6020_0_V1 = SqlServerEngineVersion.of(
-    '11.00.6020.0.v1',
-    '11.00'
-  );
+  public static readonly VER_11_00_6020_0_V1 = SqlServerEngineVersion.of('11.00.6020.0.v1', '11.00');
   /**
    * Version "11.00.6594.0.v1".
    * @deprecated SQL Server 11.00.6594.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_11_00_6594_0_V1 = SqlServerEngineVersion.of(
-    '11.00.6594.0.v1',
-    '11.00'
-  );
+  public static readonly VER_11_00_6594_0_V1 = SqlServerEngineVersion.of('11.00.6594.0.v1', '11.00');
   /**
    * Version "11.00.7462.6.v1".
    * @deprecated SQL Server 11.00.7462.6.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_11_00_7462_6_V1 = SqlServerEngineVersion.of(
-    '11.00.7462.6.v1',
-    '11.00'
-  );
+  public static readonly VER_11_00_7462_6_V1 = SqlServerEngineVersion.of('11.00.7462.6.v1', '11.00');
   /**
    * Version "11.00.7493.4.v1".
    * @deprecated SQL Server 11.00.7493.4.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_11_00_7493_4_V1 = SqlServerEngineVersion.of(
-    '11.00.7493.4.v1',
-    '11.00'
-  );
+  public static readonly VER_11_00_7493_4_V1 = SqlServerEngineVersion.of('11.00.7493.4.v1', '11.00');
 
   /**
    * Version "12.00" (only a major version, without a specific minor version).
@@ -3042,82 +2815,52 @@ export class SqlServerEngineVersion {
    * Version "12.00.4422.0.v1"
    * @deprecated SQL Server 12.00.4422.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_4422_0_V1 = SqlServerEngineVersion.of(
-    '12.00.4422.0.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_4422_0_V1 = SqlServerEngineVersion.of('12.00.4422.0.v1', '12.00');
   /**
    * Version "12.00.5000.0.v1".
    * @deprecated SQL Server 12.00.5000.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_5000_0_V1 = SqlServerEngineVersion.of(
-    '12.00.5000.0.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_5000_0_V1 = SqlServerEngineVersion.of('12.00.5000.0.v1', '12.00');
   /**
    * Version "12.00.5546.0.v1".
    * @deprecated SQL Server 12.00.5546.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_5546_0_V1 = SqlServerEngineVersion.of(
-    '12.00.5546.0.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_5546_0_V1 = SqlServerEngineVersion.of('12.00.5546.0.v1', '12.00');
   /**
    * Version "12.00.5571.0.v1".
    * @deprecated SQL Server 12.00.5571.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_5571_0_V1 = SqlServerEngineVersion.of(
-    '12.00.5571.0.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_5571_0_V1 = SqlServerEngineVersion.of('12.00.5571.0.v1', '12.00');
   /**
    * Version "12.00.6293.0.v1".
    * @deprecated SQL Server 12.00.6293.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_6293_0_V1 = SqlServerEngineVersion.of(
-    '12.00.6293.0.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_6293_0_V1 = SqlServerEngineVersion.of('12.00.6293.0.v1', '12.00');
   /**
    * Version "12.00.6329.1.v1".
    * @deprecated SQL Server 12.00.6329.1.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_6329_1_V1 = SqlServerEngineVersion.of(
-    '12.00.6329.1.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_6329_1_V1 = SqlServerEngineVersion.of('12.00.6329.1.v1', '12.00');
   /**
    * Version "12.00.6433.1.v1".
    * @deprecated SQL Server 12.00.6433.1.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_6433_1_V1 = SqlServerEngineVersion.of(
-    '12.00.6433.1.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_6433_1_V1 = SqlServerEngineVersion.of('12.00.6433.1.v1', '12.00');
   /**
    * Version "12.00.6439.10.v1".
    * @deprecated SQL Server 12.00.6439.10.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_6439_10_V1 = SqlServerEngineVersion.of(
-    '12.00.6439.10.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_6439_10_V1 = SqlServerEngineVersion.of('12.00.6439.10.v1', '12.00');
   /**
    * Version "12.00.6444.4.v1".
    * @deprecated SQL Server 12.00.6444.4.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_6444_4_V1 = SqlServerEngineVersion.of(
-    '12.00.6444.4.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_6444_4_V1 = SqlServerEngineVersion.of('12.00.6444.4.v1', '12.00');
   /**
    * Version "12.00.6449.1.v1".
    * @deprecated SQL Server 12.00.6449.1.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_12_00_6449_1_V1 = SqlServerEngineVersion.of(
-    '12.00.6449.1.v1',
-    '12.00'
-  );
+  public static readonly VER_12_00_6449_1_V1 = SqlServerEngineVersion.of('12.00.6449.1.v1', '12.00');
 
   /** Version "13.00" (only a major version, without a specific minor version). */
   public static readonly VER_13 = SqlServerEngineVersion.of('13.00', '13.00');
@@ -3125,146 +2868,83 @@ export class SqlServerEngineVersion {
    * Version "13.00.2164.0.v1".
    * @deprecated SQL Server 13.00.2164.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_2164_0_V1 = SqlServerEngineVersion.of(
-    '13.00.2164.0.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_2164_0_V1 = SqlServerEngineVersion.of('13.00.2164.0.v1', '13.00');
   /**
    * Version "13.00.4422.0.v1".
    * @deprecated SQL Server 13.00.4422.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_4422_0_V1 = SqlServerEngineVersion.of(
-    '13.00.4422.0.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_4422_0_V1 = SqlServerEngineVersion.of('13.00.4422.0.v1', '13.00');
   /**
    * Version "13.00.4451.0.v1".
    * @deprecated SQL Server 13.00.4451.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_4451_0_V1 = SqlServerEngineVersion.of(
-    '13.00.4451.0.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_4451_0_V1 = SqlServerEngineVersion.of('13.00.4451.0.v1', '13.00');
   /**
    * Version "13.00.4466.4.v1".
    * @deprecated SQL Server 13.00.4466.4.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_4466_4_V1 = SqlServerEngineVersion.of(
-    '13.00.4466.4.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_4466_4_V1 = SqlServerEngineVersion.of('13.00.4466.4.v1', '13.00');
   /**
    * Version "13.00.4522.0.v1".
    * @deprecated SQL Server 13.00.4522.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_4522_0_V1 = SqlServerEngineVersion.of(
-    '13.00.4522.0.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_4522_0_V1 = SqlServerEngineVersion.of('13.00.4522.0.v1', '13.00');
   /**
    * Version "13.00.5216.0.v1".
    * @deprecated SQL Server 13.00.5216.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_5216_0_V1 = SqlServerEngineVersion.of(
-    '13.00.5216.0.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_5216_0_V1 = SqlServerEngineVersion.of('13.00.5216.0.v1', '13.00');
   /**
    * Version "13.00.5292.0.v1".
    * @deprecated SQL Server 13.00.5292.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_5292_0_V1 = SqlServerEngineVersion.of(
-    '13.00.5292.0.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_5292_0_V1 = SqlServerEngineVersion.of('13.00.5292.0.v1', '13.00');
   /**
    * Version "13.00.5366.0.v1".
    * @deprecated SQL Server 13.00.5366.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_5366_0_V1 = SqlServerEngineVersion.of(
-    '13.00.5366.0.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_5366_0_V1 = SqlServerEngineVersion.of('13.00.5366.0.v1', '13.00');
   /**
    * Version "13.00.5426.0.v1".
    * @deprecated SQL Server 13.00.5426.0.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_5426_0_V1 = SqlServerEngineVersion.of(
-    '13.00.5426.0.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_5426_0_V1 = SqlServerEngineVersion.of('13.00.5426.0.v1', '13.00');
   /**
    * Version "13.00.5598.27.v1".
    * @deprecated SQL Server 13.00.5598.27.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_5598_27_V1 = SqlServerEngineVersion.of(
-    '13.00.5598.27.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_5598_27_V1 = SqlServerEngineVersion.of('13.00.5598.27.v1', '13.00');
   /**
    * Version "13.00.5820.21.v1".
    * @deprecated SQL Server 13.00.5820.21.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_5820_21_V1 = SqlServerEngineVersion.of(
-    '13.00.5820.21.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_5820_21_V1 = SqlServerEngineVersion.of('13.00.5820.21.v1', '13.00');
   /**
    * Version "13.00.5850.14.v1".
    * @deprecated SQL Server 13.00.5850.14.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_5850_14_V1 = SqlServerEngineVersion.of(
-    '13.00.5850.14.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_5850_14_V1 = SqlServerEngineVersion.of('13.00.5850.14.v1', '13.00');
   /**
    * Version "13.00.5882.1.v1".
    * @deprecated SQL Server 13.00.5882.1.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_13_00_5882_1_V1 = SqlServerEngineVersion.of(
-    '13.00.5882.1.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_5882_1_V1 = SqlServerEngineVersion.of('13.00.5882.1.v1', '13.00');
   /** Version "13.00.6300.2.v1". */
-  public static readonly VER_13_00_6300_2_V1 = SqlServerEngineVersion.of(
-    '13.00.6300.2.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_6300_2_V1 = SqlServerEngineVersion.of('13.00.6300.2.v1', '13.00');
   /** Version "13.00.6419.1.v1". */
-  public static readonly VER_13_00_6419_1_V1 = SqlServerEngineVersion.of(
-    '13.00.6419.1.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_6419_1_V1 = SqlServerEngineVersion.of('13.00.6419.1.v1', '13.00');
   /** Version "13.00.6430.49.v1". */
-  public static readonly VER_13_00_6430_49_V1 = SqlServerEngineVersion.of(
-    '13.00.6430.49.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_6430_49_V1 = SqlServerEngineVersion.of('13.00.6430.49.v1', '13.00');
   /** Version "13.00.6435.1.v1". */
-  public static readonly VER_13_00_6435_1_V1 = SqlServerEngineVersion.of(
-    '13.00.6435.1.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_6435_1_V1 = SqlServerEngineVersion.of('13.00.6435.1.v1', '13.00');
   /** Version "13.00.6441.1.v1". */
-  public static readonly VER_13_00_6441_1_V1 = SqlServerEngineVersion.of(
-    '13.00.6441.1.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_6441_1_V1 = SqlServerEngineVersion.of('13.00.6441.1.v1', '13.00');
   /** Version "13.00.6445.1.v1". */
-  public static readonly VER_13_00_6445_1_V1 = SqlServerEngineVersion.of(
-    '13.00.6445.1.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_6445_1_V1 = SqlServerEngineVersion.of('13.00.6445.1.v1', '13.00');
   /** Version "13.00.6450.1.v1". */
-  public static readonly VER_13_00_6450_1_V1 = SqlServerEngineVersion.of(
-    '13.00.6450.1.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_6450_1_V1 = SqlServerEngineVersion.of('13.00.6450.1.v1', '13.00');
   /** Version "13.00.6455.2.v1". */
-  public static readonly VER_13_00_6455_2_V1 = SqlServerEngineVersion.of(
-    '13.00.6455.2.v1',
-    '13.00'
-  );
+  public static readonly VER_13_00_6455_2_V1 = SqlServerEngineVersion.of('13.00.6455.2.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -3272,274 +2952,127 @@ export class SqlServerEngineVersion {
    * Version "14.00.1000.169.v1".
    * @deprecated SQL Server 14.00.1000.169.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_14_00_1000_169_V1 = SqlServerEngineVersion.of(
-    '14.00.1000.169.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_1000_169_V1 = SqlServerEngineVersion.of('14.00.1000.169.v1', '14.00');
   /**
    * Version "14.00.3015.40.v1".
    * @deprecated SQL Server 14.00.3015.40.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_14_00_3015_40_V1 = SqlServerEngineVersion.of(
-    '14.00.3015.40.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3015_40_V1 = SqlServerEngineVersion.of('14.00.3015.40.v1', '14.00');
   /**
    * Version "14.00.3035.2.v1".
    * @deprecated SQL Server 14.00.3035.2.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_14_00_3035_2_V1 = SqlServerEngineVersion.of(
-    '14.00.3035.2.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3035_2_V1 = SqlServerEngineVersion.of('14.00.3035.2.v1', '14.00');
   /**
    * Version "14.00.3049.1.v1".
    * @deprecated SQL Server 14.00.3049.1.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_14_00_3049_1_V1 = SqlServerEngineVersion.of(
-    '14.00.3049.1.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3049_1_V1 = SqlServerEngineVersion.of('14.00.3049.1.v1', '14.00');
   /**
    * Version "14.00.3192.2.v1".
    * @deprecated SQL Server 14.00.3192.2.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_14_00_3192_2_V1 = SqlServerEngineVersion.of(
-    '14.00.3192.2.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3192_2_V1 = SqlServerEngineVersion.of('14.00.3192.2.v1', '14.00');
   /**
    * Version "14.00.3223.3.v1".
    * @deprecated SQL Server 14.00.3223.3.v1 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_14_00_3223_3_V1 = SqlServerEngineVersion.of(
-    '14.00.3223.3.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3223_3_V1 = SqlServerEngineVersion.of('14.00.3223.3.v1', '14.00');
   /** Version "14.00.3281.6.v1". */
-  public static readonly VER_14_00_3281_6_V1 = SqlServerEngineVersion.of(
-    '14.00.3281.6.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3281_6_V1 = SqlServerEngineVersion.of('14.00.3281.6.v1', '14.00');
   /** Version "14.00.3294.2.v1". */
-  public static readonly VER_14_00_3294_2_V1 = SqlServerEngineVersion.of(
-    '14.00.3294.2.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3294_2_V1 = SqlServerEngineVersion.of('14.00.3294.2.v1', '14.00');
   /** Version "14.00.3356.20.v1". */
-  public static readonly VER_14_00_3356_20_V1 = SqlServerEngineVersion.of(
-    '14.00.3356.20.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3356_20_V1 = SqlServerEngineVersion.of('14.00.3356.20.v1', '14.00');
   /** Version "14.00.3381.3.v1". */
-  public static readonly VER_14_00_3381_3_V1 = SqlServerEngineVersion.of(
-    '14.00.3381.3.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3381_3_V1 = SqlServerEngineVersion.of('14.00.3381.3.v1', '14.00');
   /** Version "14.00.3401.7.v1". */
-  public static readonly VER_14_00_3401_7_V1 = SqlServerEngineVersion.of(
-    '14.00.3401.7.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3401_7_V1 = SqlServerEngineVersion.of('14.00.3401.7.v1', '14.00');
   /** Version "14.00.3421.10.v1". */
-  public static readonly VER_14_00_3421_10_V1 = SqlServerEngineVersion.of(
-    '14.00.3421.10.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3421_10_V1 = SqlServerEngineVersion.of('14.00.3421.10.v1', '14.00');
   /** Version "14.00.3451.2.v1". */
-  public static readonly VER_14_00_3451_2_V1 = SqlServerEngineVersion.of(
-    '14.00.3451.2.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3451_2_V1 = SqlServerEngineVersion.of('14.00.3451.2.v1', '14.00');
   /** Version "14.00.3460.9.v1". */
-  public static readonly VER_14_00_3460_9_V1 = SqlServerEngineVersion.of(
-    '14.00.3460.9.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3460_9_V1 = SqlServerEngineVersion.of('14.00.3460.9.v1', '14.00');
   /** Version "14.00.3465.1.v1". */
-  public static readonly VER_14_00_3465_1_V1 = SqlServerEngineVersion.of(
-    '14.00.3465.1.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3465_1_V1 = SqlServerEngineVersion.of('14.00.3465.1.v1', '14.00');
   /** Version "14.00.3471.2.v1 ". */
-  public static readonly VER_14_00_3471_2_V1 = SqlServerEngineVersion.of(
-    '14.00.3471.2.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3471_2_V1 = SqlServerEngineVersion.of('14.00.3471.2.v1', '14.00');
   /** Version "14.00.3475.1.v1 ". */
-  public static readonly VER_14_00_3475_1_V1 = SqlServerEngineVersion.of(
-    '14.00.3475.1.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3475_1_V1 = SqlServerEngineVersion.of('14.00.3475.1.v1', '14.00');
   /** Version "14.00.3480.1.v1 ". */
-  public static readonly VER_14_00_3480_1_V1 = SqlServerEngineVersion.of(
-    '14.00.3480.1.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3480_1_V1 = SqlServerEngineVersion.of('14.00.3480.1.v1', '14.00');
   /** Version "14.00.3485.1.v1 ". */
-  public static readonly VER_14_00_3485_1_V1 = SqlServerEngineVersion.of(
-    '14.00.3485.1.v1',
-    '14.00'
-  );
+  public static readonly VER_14_00_3485_1_V1 = SqlServerEngineVersion.of('14.00.3485.1.v1', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
   /** Version "15.00.4043.16.v1". */
-  public static readonly VER_15_00_4043_16_V1 = SqlServerEngineVersion.of(
-    '15.00.4043.16.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4043_16_V1 = SqlServerEngineVersion.of('15.00.4043.16.v1', '15.00');
   /** Version "15.00.4355.3.v1". */
-  public static readonly VER_15_00_4355_3_V1 = SqlServerEngineVersion.of(
-    '15.00.4355.3.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4355_3_V1 = SqlServerEngineVersion.of('15.00.4355.3.v1', '15.00');
   /**
    * Version "15.00.4043.23.v1".
    * @deprecated This version is erroneous. You might be looking for `SqlServerEngineVersion.VER_15_00_4073_23_V1`, instead.
    */
-  public static readonly VER_15_00_4043_23_V1 = SqlServerEngineVersion.of(
-    '15.00.4043.23.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4043_23_V1 = SqlServerEngineVersion.of('15.00.4043.23.v1', '15.00');
   /** Version "15.00.4073.23.v1". */
-  public static readonly VER_15_00_4073_23_V1 = SqlServerEngineVersion.of(
-    '15.00.4073.23.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4073_23_V1 = SqlServerEngineVersion.of('15.00.4073.23.v1', '15.00');
   /** Version "15.00.4153.1.v1". */
-  public static readonly VER_15_00_4153_1_V1 = SqlServerEngineVersion.of(
-    '15.00.4153.1.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4153_1_V1 = SqlServerEngineVersion.of('15.00.4153.1.v1', '15.00');
   /** Version "15.00.4198.2.v1". */
-  public static readonly VER_15_00_4198_2_V1 = SqlServerEngineVersion.of(
-    '15.00.4198.2.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4198_2_V1 = SqlServerEngineVersion.of('15.00.4198.2.v1', '15.00');
   /** Version "15.00.4236.7.v1". */
-  public static readonly VER_15_00_4236_7_V1 = SqlServerEngineVersion.of(
-    '15.00.4236.7.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4236_7_V1 = SqlServerEngineVersion.of('15.00.4236.7.v1', '15.00');
   /** Version "15.00.4312.2.v1". */
-  public static readonly VER_15_00_4312_2_V1 = SqlServerEngineVersion.of(
-    '15.00.4312.2.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4312_2_V1 = SqlServerEngineVersion.of('15.00.4312.2.v1', '15.00');
   /** Version "15.00.4316.3.v1". */
-  public static readonly VER_15_00_4316_3_V1 = SqlServerEngineVersion.of(
-    '15.00.4316.3.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4316_3_V1 = SqlServerEngineVersion.of('15.00.4316.3.v1', '15.00');
   /** Version "15.00.4322.2.v1". */
-  public static readonly VER_15_00_4322_2_V1 = SqlServerEngineVersion.of(
-    '15.00.4322.2.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4322_2_V1 = SqlServerEngineVersion.of('15.00.4322.2.v1', '15.00');
   /** Version "15.00.4335.1.v1". */
-  public static readonly VER_15_00_4335_1_V1 = SqlServerEngineVersion.of(
-    '15.00.4335.1.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4335_1_V1 = SqlServerEngineVersion.of('15.00.4335.1.v1', '15.00');
   /** Version "15.00.4345.5.v1". */
-  public static readonly VER_15_00_4345_5_V1 = SqlServerEngineVersion.of(
-    '15.00.4345.5.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4345_5_V1 = SqlServerEngineVersion.of('15.00.4345.5.v1', '15.00');
   /** Version "15.00.4365.2.v1". */
-  public static readonly VER_15_00_4365_2_V1 = SqlServerEngineVersion.of(
-    '15.00.4365.2.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4365_2_V1 = SqlServerEngineVersion.of('15.00.4365.2.v1', '15.00');
   /** Version "15.00.4375.4.v1". */
-  public static readonly VER_15_00_4375_4_V1 = SqlServerEngineVersion.of(
-    '15.00.4375.4.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4375_4_V1 = SqlServerEngineVersion.of('15.00.4375.4.v1', '15.00');
   /** Version "15.00.4382.1.v1". */
-  public static readonly VER_15_00_4382_1_V1 = SqlServerEngineVersion.of(
-    '15.00.4382.1.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4382_1_V1 = SqlServerEngineVersion.of('15.00.4382.1.v1', '15.00');
   /** Version "15.00.4385.2.v1". */
-  public static readonly VER_15_00_4385_2_V1 = SqlServerEngineVersion.of(
-    '15.00.4385.2.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4385_2_V1 = SqlServerEngineVersion.of('15.00.4385.2.v1', '15.00');
   /** Version "15.00.4390.2.v1". */
-  public static readonly VER_15_00_4390_2_V1 = SqlServerEngineVersion.of(
-    '15.00.4390.2.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4390_2_V1 = SqlServerEngineVersion.of('15.00.4390.2.v1', '15.00');
   /** Version "15.00.4395.2.v1". */
-  public static readonly VER_15_00_4395_2_V1 = SqlServerEngineVersion.of(
-    '15.00.4395.2.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4395_2_V1 = SqlServerEngineVersion.of('15.00.4395.2.v1', '15.00');
   /** Version "15.00.4410.1.v1". */
-  public static readonly VER_15_00_4410_1_V1 = SqlServerEngineVersion.of(
-    '15.00.4410.1.v1',
-    '15.00'
-  );
+  public static readonly VER_15_00_4410_1_V1 = SqlServerEngineVersion.of('15.00.4410.1.v1', '15.00');
 
   /** Version "16.00" (only a major version, without a specific minor version). */
   public static readonly VER_16 = SqlServerEngineVersion.of('16.00', '16.00');
   /** Version "16.00.4085.2.v1". */
-  public static readonly VER_16_00_4085_2_V1 = SqlServerEngineVersion.of(
-    '16.00.4085.2.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4085_2_V1 = SqlServerEngineVersion.of('16.00.4085.2.v1', '16.00');
   /** Version "16.00.4095.4.v1". */
-  public static readonly VER_16_00_4095_4_V1 = SqlServerEngineVersion.of(
-    '16.00.4095.4.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4095_4_V1 = SqlServerEngineVersion.of('16.00.4095.4.v1', '16.00');
   /** Version "16.00.4105.2.v1". */
-  public static readonly VER_16_00_4105_2_V1 = SqlServerEngineVersion.of(
-    '16.00.4105.2.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4105_2_V1 = SqlServerEngineVersion.of('16.00.4105.2.v1', '16.00');
   /** Version "16.00.4115.5.v1". */
-  public static readonly VER_16_00_4115_5_V1 = SqlServerEngineVersion.of(
-    '16.00.4115.5.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4115_5_V1 = SqlServerEngineVersion.of('16.00.4115.5.v1', '16.00');
   /** Version "16.00.4120.1.v1". */
-  public static readonly VER_16_00_4120_1_V1 = SqlServerEngineVersion.of(
-    '16.00.4120.1.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4120_1_V1 = SqlServerEngineVersion.of('16.00.4120.1.v1', '16.00');
   /** Version "16.00.4125.3.v1". */
-  public static readonly VER_16_00_4125_3_V1 = SqlServerEngineVersion.of(
-    '16.00.4125.3.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4125_3_V1 = SqlServerEngineVersion.of('16.00.4125.3.v1', '16.00');
   /** Version "16.00.4131.2.v1". */
-  public static readonly VER_16_00_4131_2_V1 = SqlServerEngineVersion.of(
-    '16.00.4131.2.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4131_2_V1 = SqlServerEngineVersion.of('16.00.4131.2.v1', '16.00');
   /** Version "16.00.4135.4.v1". */
-  public static readonly VER_16_00_4135_4_V1 = SqlServerEngineVersion.of(
-    '16.00.4135.4.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4135_4_V1 = SqlServerEngineVersion.of('16.00.4135.4.v1', '16.00');
   /** Version "16.00.4140.3.v1". */
-  public static readonly VER_16_00_4140_3_V1 = SqlServerEngineVersion.of(
-    '16.00.4140.3.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4140_3_V1 = SqlServerEngineVersion.of('16.00.4140.3.v1', '16.00');
   /** Version "16.00.4150.1.v1". */
-  public static readonly VER_16_00_4150_1_V1 = SqlServerEngineVersion.of(
-    '16.00.4150.1.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4150_1_V1 = SqlServerEngineVersion.of('16.00.4150.1.v1', '16.00');
   /** Version "16.00.4165.4.v1". */
-  public static readonly VER_16_00_4165_4_V1 = SqlServerEngineVersion.of(
-    '16.00.4165.4.v1',
-    '16.00'
-  );
+  public static readonly VER_16_00_4165_4_V1 = SqlServerEngineVersion.of('16.00.4165.4.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
@@ -3549,10 +3082,7 @@ export class SqlServerEngineVersion {
    * @param sqlServerMajorVersion the major version of the engine,
    *   for example "15.00"
    */
-  public static of(
-    sqlServerFullVersion: string,
-    sqlServerMajorVersion: string
-  ): SqlServerEngineVersion {
+  public static of(sqlServerFullVersion: string, sqlServerMajorVersion: string): SqlServerEngineVersion {
     return new SqlServerEngineVersion(sqlServerFullVersion, sqlServerMajorVersion);
   }
 
@@ -3581,10 +3111,8 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
   constructor(props: SqlServerInstanceEngineBaseProps) {
     super({
       ...props,
-      singleUserRotationApplication:
-        secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER,
-      multiUserRotationApplication:
-        secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.SQLSERVER_ROTATION_MULTI_USER,
       version: props.version
         ? {
             fullVersion: props.version.sqlServerFullVersion,
@@ -3608,20 +3136,13 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(
-    scope: Construct,
-    options: InstanceEngineBindOptions
-  ): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;
     const s3Role = options.s3ImportRole ?? options.s3ExportRole;
     if (s3Role) {
-      if (
-        options.s3ImportRole &&
-        options.s3ExportRole &&
-        options.s3ImportRole !== options.s3ExportRole
-      ) {
+      if (options.s3ImportRole && options.s3ExportRole && options.s3ImportRole !== options.s3ExportRole) {
         throw new Error('S3 import and export roles must be the same for SQL Server engines');
       }
 

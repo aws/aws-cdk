@@ -7,11 +7,7 @@ export function instanceBlockDeviceMappings(
   construct: Construct,
   blockDevices: BlockDevice[]
 ): CfnInstance.BlockDeviceMappingProperty[] {
-  return synthesizeBlockDeviceMappings<CfnInstance.BlockDeviceMappingProperty, object>(
-    construct,
-    blockDevices,
-    {}
-  );
+  return synthesizeBlockDeviceMappings<CfnInstance.BlockDeviceMappingProperty, object>(construct, blockDevices, {});
 }
 
 export function launchTemplateBlockDeviceMappings(
@@ -46,9 +42,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(
 
       if (throughput) {
         if (volumeType !== EbsDeviceVolumeType.GP3) {
-          throw new Error(
-            `'throughput' requires 'volumeType': ${EbsDeviceVolumeType.GP3}, got: ${volumeType}.`
-          );
+          throw new Error(`'throughput' requires 'volumeType': ${EbsDeviceVolumeType.GP3}, got: ${volumeType}.`);
         }
 
         if (!Number.isInteger(throughput)) {

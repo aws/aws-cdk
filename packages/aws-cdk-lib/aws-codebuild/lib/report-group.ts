@@ -42,9 +42,7 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
 
   public grantWrite(identity: iam.IGrantable): iam.Grant {
     const typeAction =
-      this.type === ReportGroupType.CODE_COVERAGE
-        ? 'codebuild:BatchPutCodeCoverages'
-        : 'codebuild:BatchPutTestCases';
+      this.type === ReportGroupType.CODE_COVERAGE ? 'codebuild:BatchPutCodeCoverages' : 'codebuild:BatchPutTestCases';
     const ret = iam.Grant.addToPrincipal({
       grantee: identity,
       actions: ['codebuild:CreateReport', 'codebuild:UpdateReport', typeAction],
@@ -136,11 +134,7 @@ export class ReportGroup extends ReportGroupBase {
    * defined outside of the CDK code,
    * by name.
    */
-  public static fromReportGroupName(
-    scope: Construct,
-    id: string,
-    reportGroupName: string
-  ): IReportGroup {
+  public static fromReportGroupName(scope: Construct, id: string, reportGroupName: string): IReportGroup {
     class Import extends ReportGroupBase {
       public readonly reportGroupName = reportGroupName;
       public readonly reportGroupArn = renderReportGroupArn(scope, reportGroupName);
@@ -180,10 +174,7 @@ export class ReportGroup extends ReportGroupBase {
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: cdk.RemovalPolicy.RETAIN,
     });
-    this.reportGroupArn = this.getResourceArnAttribute(
-      resource.attrArn,
-      reportGroupArnComponents(this.physicalName)
-    );
+    this.reportGroupArn = this.getResourceArnAttribute(resource.attrArn, reportGroupArnComponents(this.physicalName));
     this.reportGroupName = this.getResourceNameAttribute(
       // there is no separate name attribute,
       // so use Fn::Select + Fn::Split to make one

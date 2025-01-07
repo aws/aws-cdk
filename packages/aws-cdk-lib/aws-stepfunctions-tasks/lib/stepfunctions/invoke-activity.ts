@@ -40,12 +40,8 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   ) {
     super(scope, id, props);
 
-    if (
-      this.props.activity.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration
-    ) {
-      this.taskPolicies = this.createPolicyStatements(
-        this.props.activity.encryptionConfiguration.kmsKey
-      );
+    if (this.props.activity.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
+      this.taskPolicies = this.createPolicyStatements(this.props.activity.encryptionConfiguration.kmsKey);
     }
     this.taskMetrics = {
       metricDimensions: { ActivityArn: this.props.activity.activityArn },
@@ -60,9 +56,7 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   protected _renderTask(): any {
     return {
       Resource: this.props.activity.activityArn,
-      Parameters: this.props.parameters
-        ? sfn.FieldUtils.renderObject(this.props.parameters)
-        : undefined,
+      Parameters: this.props.parameters ? sfn.FieldUtils.renderObject(this.props.parameters) : undefined,
     };
   }
 

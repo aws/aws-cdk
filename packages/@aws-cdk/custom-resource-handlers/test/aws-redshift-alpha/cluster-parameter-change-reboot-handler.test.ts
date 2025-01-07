@@ -16,7 +16,6 @@ jest.setTimeout(35_000);
 import { handler } from '../../lib/aws-redshift-alpha/cluster-parameter-change-reboot-handler';
 
 describe('cluster-parameter-change-reboot-handler', () => {
-
   beforeEach(() => {
     jest.spyOn(global, 'setTimeout');
   });
@@ -29,12 +28,16 @@ describe('cluster-parameter-change-reboot-handler', () => {
     // GIVEN
     mockDescribeClusters.mockImplementation(() => {
       return {
-        Clusters: [{
-          ClusterParameterGroups: [{
-            ParameterGroupName: 'parameter-group-name',
-            ParameterApplyStatus: 'pending-reboot',
-          }],
-        }],
+        Clusters: [
+          {
+            ClusterParameterGroups: [
+              {
+                ParameterGroupName: 'parameter-group-name',
+                ParameterApplyStatus: 'pending-reboot',
+              },
+            ],
+          },
+        ],
       };
     });
 
@@ -58,12 +61,16 @@ describe('cluster-parameter-change-reboot-handler', () => {
     // GIVEN
     mockDescribeClusters.mockImplementation(() => {
       return {
-        Clusters: [{
-          ClusterParameterGroups: [{
-            ParameterGroupName: 'parameter-group-name',
-            ParameterApplyStatus: 'apply-deferred',
-          }],
-        }],
+        Clusters: [
+          {
+            ClusterParameterGroups: [
+              {
+                ParameterGroupName: 'parameter-group-name',
+                ParameterApplyStatus: 'apply-deferred',
+              },
+            ],
+          },
+        ],
       };
     });
 
@@ -87,12 +94,16 @@ describe('cluster-parameter-change-reboot-handler', () => {
     // GIVEN
     mockDescribeClusters.mockImplementation(() => {
       return {
-        Clusters: [{
-          ClusterParameterGroups: [{
-            ParameterGroupName: 'parameter-group-name',
-            ParameterApplyStatus: 'apply-deferred',
-          }],
-        }],
+        Clusters: [
+          {
+            ClusterParameterGroups: [
+              {
+                ParameterGroupName: 'parameter-group-name',
+                ParameterApplyStatus: 'apply-deferred',
+              },
+            ],
+          },
+        ],
       };
     });
 
@@ -117,21 +128,30 @@ describe('cluster-parameter-change-reboot-handler', () => {
     mockDescribeClusters
       .mockImplementationOnce(() => {
         return {
-          Clusters: [{
-            ClusterParameterGroups: [{
-              ParameterGroupName: 'parameter-group-name',
-              ParameterApplyStatus: 'applying',
-            }],
-          }],
+          Clusters: [
+            {
+              ClusterParameterGroups: [
+                {
+                  ParameterGroupName: 'parameter-group-name',
+                  ParameterApplyStatus: 'applying',
+                },
+              ],
+            },
+          ],
         };
-      }).mockImplementationOnce(() => {
+      })
+      .mockImplementationOnce(() => {
         return {
-          Clusters: [{
-            ClusterParameterGroups: [{
-              ParameterGroupName: 'parameter-group-name',
-              ParameterApplyStatus: 'pending-reboot',
-            }],
-          }],
+          Clusters: [
+            {
+              ClusterParameterGroups: [
+                {
+                  ParameterGroupName: 'parameter-group-name',
+                  ParameterApplyStatus: 'pending-reboot',
+                },
+              ],
+            },
+          ],
         };
       });
 
@@ -158,21 +178,30 @@ describe('cluster-parameter-change-reboot-handler', () => {
     mockDescribeClusters
       .mockImplementationOnce(() => {
         return {
-          Clusters: [{
-            ClusterParameterGroups: [{
-              ParameterGroupName: 'parameter-group-name',
-              ParameterApplyStatus: 'retry',
-            }],
-          }],
+          Clusters: [
+            {
+              ClusterParameterGroups: [
+                {
+                  ParameterGroupName: 'parameter-group-name',
+                  ParameterApplyStatus: 'retry',
+                },
+              ],
+            },
+          ],
         };
-      }).mockImplementationOnce(() => {
+      })
+      .mockImplementationOnce(() => {
         return {
-          Clusters: [{
-            ClusterParameterGroups: [{
-              ParameterGroupName: 'parameter-group-name',
-              ParameterApplyStatus: 'pending-reboot',
-            }],
-          }],
+          Clusters: [
+            {
+              ClusterParameterGroups: [
+                {
+                  ParameterGroupName: 'parameter-group-name',
+                  ParameterApplyStatus: 'pending-reboot',
+                },
+              ],
+            },
+          ],
         };
       });
 
@@ -198,12 +227,16 @@ describe('cluster-parameter-change-reboot-handler', () => {
     // GIVEN
     mockDescribeClusters.mockImplementation(() => {
       return {
-        Clusters: [{
-          ClusterParameterGroups: [{
-            ParameterGroupName: 'parameter-group-name',
-            ParameterApplyStatus: 'pending-reboot',
-          }],
-        }],
+        Clusters: [
+          {
+            ClusterParameterGroups: [
+              {
+                ParameterGroupName: 'parameter-group-name',
+                ParameterApplyStatus: 'pending-reboot',
+              },
+            ],
+          },
+        ],
       };
     });
     mockRebootCluster
@@ -235,12 +268,16 @@ describe('cluster-parameter-change-reboot-handler', () => {
     // GIVEN
     mockDescribeClusters.mockImplementation(() => {
       return {
-        Clusters: [{
-          ClusterParameterGroups: [{
-            ParameterGroupName: 'parameter-group-name',
-            ParameterApplyStatus: 'pending-reboot',
-          }],
-        }],
+        Clusters: [
+          {
+            ClusterParameterGroups: [
+              {
+                ParameterGroupName: 'parameter-group-name',
+                ParameterApplyStatus: 'pending-reboot',
+              },
+            ],
+          },
+        ],
       };
     });
     mockRebootCluster.mockImplementation(async () => {
@@ -280,20 +317,25 @@ describe('cluster-parameter-change-reboot-handler', () => {
 
     // WHEN
     // THEN
-    await expect(() =>invokeHandler(event))
-      .rejects.toThrow(/Unable to find any Parameter Groups associated with ClusterId "cluster-id"./);
+    await expect(() => invokeHandler(event)).rejects.toThrow(
+      /Unable to find any Parameter Groups associated with ClusterId "cluster-id"./
+    );
   });
 
   test('fails if cannot find cluster parameter group', async () => {
     // GIVEN
     mockDescribeClusters.mockImplementation(() => {
       return {
-        Clusters: [{
-          ClusterParameterGroups: [{
-            ParameterGroupName: 'unknown',
-            ParameterApplyStatus: 'pending-reboot',
-          }],
-        }],
+        Clusters: [
+          {
+            ClusterParameterGroups: [
+              {
+                ParameterGroupName: 'unknown',
+                ParameterApplyStatus: 'pending-reboot',
+              },
+            ],
+          },
+        ],
       };
     });
 
@@ -308,8 +350,9 @@ describe('cluster-parameter-change-reboot-handler', () => {
 
     // WHEN
     // THEN
-    await expect(() =>invokeHandler(event))
-      .rejects.toThrow(/Unable to find Parameter Group named "parameter-group-name" associated with ClusterId "cluster-id"./);
+    await expect(() => invokeHandler(event)).rejects.toThrow(
+      /Unable to find Parameter Group named "parameter-group-name" associated with ClusterId "cluster-id"./
+    );
   });
 
   test('does not reboot if request type is Delete', async () => {
@@ -334,12 +377,16 @@ describe('cluster-parameter-change-reboot-handler', () => {
     // GIVEN
     mockDescribeClusters.mockImplementation(() => {
       return {
-        Clusters: [{
-          ClusterParameterGroups: [{
-            ParameterGroupName: 'parameter-group-name',
-            ParameterApplyStatus: 'other-status',
-          }],
-        }],
+        Clusters: [
+          {
+            ClusterParameterGroups: [
+              {
+                ParameterGroupName: 'parameter-group-name',
+                ParameterApplyStatus: 'other-status',
+              },
+            ],
+          },
+        ],
       };
     });
 

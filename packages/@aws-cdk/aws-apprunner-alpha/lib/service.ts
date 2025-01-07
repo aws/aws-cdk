@@ -140,28 +140,8 @@ export class Memory {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-memory
    */
   public static of(unit: string): Memory {
-    const numericPatterns = [
-      '512',
-      '1024',
-      '2048',
-      '3072',
-      '4096',
-      '6144',
-      '8192',
-      '10240',
-      '12288',
-    ];
-    const unitPatterns = [
-      '0.5 GB',
-      '1 GB',
-      '2 GB',
-      '3 GB',
-      '4 GB',
-      '6 GB',
-      '8 GB',
-      '10 GB',
-      '12 GB',
-    ];
+    const numericPatterns = ['512', '1024', '2048', '3072', '4096', '6144', '8192', '10240', '12288'];
+    const unitPatterns = ['0.5 GB', '1 GB', '2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '10 GB', '12 GB'];
     const allowedPatterns = numericPatterns.concat(unitPatterns);
     const isValidValue = allowedPatterns.some((pattern) => pattern === unit);
     if (!isValidValue) {
@@ -1046,14 +1026,10 @@ export class HealthCheck {
       throw new Error(`healthyThreshold must be between 1 and 20, got ${this.healthyThreshold}`);
     }
     if (this.unhealthyThreshold < 1 || this.unhealthyThreshold > 20) {
-      throw new Error(
-        `unhealthyThreshold must be between 1 and 20, got ${this.unhealthyThreshold}`
-      );
+      throw new Error(`unhealthyThreshold must be between 1 and 20, got ${this.unhealthyThreshold}`);
     }
     if (this.interval.toSeconds() < 1 || this.interval.toSeconds() > 20) {
-      throw new Error(
-        `interval must be between 1 and 20 seconds, got ${this.interval.toSeconds()}`
-      );
+      throw new Error(`interval must be between 1 and 20 seconds, got ${this.interval.toSeconds()}`);
     }
     if (this.timeout.toSeconds() < 1 || this.timeout.toSeconds() > 20) {
       throw new Error(`timeout must be between 1 and 20 seconds, got ${this.timeout.toSeconds()}`);
@@ -1221,11 +1197,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
   /**
    * Import from service attributes.
    */
-  public static fromServiceAttributes(
-    scope: Construct,
-    id: string,
-    attrs: ServiceAttributes
-  ): IService {
+  public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
     const serviceArn = attrs.serviceArn;
     const serviceName = attrs.serviceName;
     const serviceUrl = attrs.serviceUrl;
@@ -1319,13 +1291,10 @@ export class Service extends cdk.Resource implements iam.IGrantable {
         : undefined;
 
     if (
-      this.source.codeRepository?.codeConfiguration.configurationSource ==
-        ConfigurationSourceType.REPOSITORY &&
+      this.source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
       this.source.codeRepository?.codeConfiguration.configurationValues
     ) {
-      throw new Error(
-        'configurationValues cannot be provided if the ConfigurationSource is Repository'
-      );
+      throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
     }
 
     if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
@@ -1356,9 +1325,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           ? this.renderImageRepository(this.source.imageRepository!)
           : undefined,
         codeRepository: this.source.codeRepository
-          ? this.renderCodeConfiguration(
-              this.source.codeRepository!.codeConfiguration.configurationValues!
-            )
+          ? this.renderCodeConfiguration(this.source.codeRepository!.codeConfiguration.configurationValues!)
           : undefined,
       },
       encryptionConfiguration: this.props.kmsKey
@@ -1373,17 +1340,14 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
         ingressConfiguration:
-          props.isPubliclyAccessible !== undefined
-            ? { isPubliclyAccessible: props.isPubliclyAccessible }
-            : undefined,
+          props.isPubliclyAccessible !== undefined ? { isPubliclyAccessible: props.isPubliclyAccessible } : undefined,
         ipAddressType: this.props.ipAddressType,
       },
       healthCheckConfiguration: this.props.healthCheck ? this.props.healthCheck.bind() : undefined,
       observabilityConfiguration: props.observabilityConfiguration
         ? {
             observabilityEnabled: true,
-            observabilityConfigurationArn:
-              props.observabilityConfiguration.observabilityConfigurationArn,
+            observabilityConfigurationArn: props.observabilityConfiguration.observabilityConfigurationArn,
           }
         : undefined,
     });
@@ -1422,9 +1386,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
    */
   public addEnvironmentVariable(name: string, value: string) {
     if (name.startsWith('AWSAPPRUNNER')) {
-      throw new Error(
-        `Environment variable key ${name} with a prefix of AWSAPPRUNNER is not allowed`
-      );
+      throw new Error(`Environment variable key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
     }
     this.variables.push({ name: name, value: value });
   }
@@ -1434,9 +1396,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
    */
   public addSecret(name: string, secret: Secret) {
     if (name.startsWith('AWSAPPRUNNER')) {
-      throw new Error(
-        `Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`
-      );
+      throw new Error(`Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
     }
     secret.grantRead(this.instanceRole);
     this.secrets.push({ name: name, value: secret.arn });

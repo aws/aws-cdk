@@ -9,7 +9,13 @@ import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps, OneStackApp } from '../testhelpers';
+import {
+  PIPELINE_ENV,
+  TestApp,
+  ModernTestGitHubNpmPipeline,
+  ModernTestGitHubNpmPipelineProps,
+  OneStackApp,
+} from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -31,7 +37,6 @@ afterEach(() => {
 });
 
 test('synth takes arrays of commands', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     installCommands: ['install1', 'install2'],
     commands: ['build1', 'build2', 'test1', 'test2', 'cdk synth'],
@@ -43,31 +48,23 @@ test('synth takes arrays of commands', () => {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: [
-              'install1',
-              'install2',
-            ],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: ['install1', 'install2'],
+            },
+            build: {
+              commands: ['build1', 'build2', 'test1', 'test2', 'cdk synth'],
+            },
           },
-          build: {
-            commands: [
-              'build1',
-              'build2',
-              'test1',
-              'test2',
-              'cdk synth',
-            ],
-          },
-        },
-      })),
+        })
+      ),
     },
   });
 });
 
 test('synth sets artifact base-directory to cdk.out', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   // THEN
@@ -76,17 +73,18 @@ test('synth sets artifact base-directory to cdk.out', () => {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        artifacts: {
-          'base-directory': 'cdk.out',
-        },
-      })),
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          artifacts: {
+            'base-directory': 'cdk.out',
+          },
+        })
+      ),
     },
   });
 });
 
 test('synth supports setting subdirectory', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     installCommands: ['cd subdir'],
     commands: ['true'],
@@ -98,22 +96,23 @@ test('synth supports setting subdirectory', () => {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: Match.arrayWith(['cd subdir']),
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: Match.arrayWith(['cd subdir']),
+            },
           },
-        },
-        artifacts: {
-          'base-directory': 'subdir/cdk.out',
-        },
-      })),
+          artifacts: {
+            'base-directory': 'subdir/cdk.out',
+          },
+        })
+      ),
     },
   });
 });
 
 test('npm synth sets, or allows setting, UNSAFE_PERM=true', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     env: {
       NPM_CONFIG_UNSAFE_PERM: 'true',
@@ -135,7 +134,6 @@ test('npm synth sets, or allows setting, UNSAFE_PERM=true', () => {
 });
 
 test('Magic CodePipeline variables passed to synth envvars must be rendered in the action', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     env: {
       VERSION: codepipeline.GlobalVariables.executionId,
@@ -144,23 +142,27 @@ test('Magic CodePipeline variables passed to synth envvars must be rendered in t
 
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Build',
-      Actions: [
-        Match.objectLike({
-          Name: 'Synth',
-          Configuration: Match.objectLike({
-            EnvironmentVariables: Match.serializedJson(Match.arrayWith([
-              {
-                name: 'VERSION',
-                type: 'PLAINTEXT',
-                value: '#{codepipeline.PipelineExecutionId}',
-              },
-            ])),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Build',
+        Actions: [
+          Match.objectLike({
+            Name: 'Synth',
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson(
+                Match.arrayWith([
+                  {
+                    name: 'VERSION',
+                    type: 'PLAINTEXT',
+                    value: '#{codepipeline.PipelineExecutionId}',
+                  },
+                ])
+              ),
+            }),
           }),
-        }),
-      ],
-    }]),
+        ],
+      },
+    ]),
   });
 });
 
@@ -170,10 +172,7 @@ test('CodeBuild: environment variables specified in multiple places are correctl
       env: {
         SOME_ENV_VAR: 'SomeValue',
       },
-      installCommands: [
-        'install1',
-        'install2',
-      ],
+      installCommands: ['install1', 'install2'],
       commands: ['synth'],
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
       primaryOutputDirectory: 'cdk.out',
@@ -193,10 +192,7 @@ test('CodeBuild: environment variables specified in multiple places are correctl
       env: {
         SOME_ENV_VAR: 'SomeValue',
       },
-      installCommands: [
-        'install1',
-        'install2',
-      ],
+      installCommands: ['install1', 'install2'],
       commands: ['synth'],
       buildEnvironment: {
         environmentVariables: {
@@ -225,16 +221,18 @@ test('CodeBuild: environment variables specified in multiple places are correctl
       ]),
     }),
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: ['install1', 'install2'],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: ['install1', 'install2'],
+            },
+            build: {
+              commands: ['synth'],
+            },
           },
-          build: {
-            commands: ['synth'],
-          },
-        },
-      })),
+        })
+      ),
     },
   });
 
@@ -256,16 +254,18 @@ test('CodeBuild: environment variables specified in multiple places are correctl
       ]),
     }),
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: ['install1', 'install2'],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: ['install1', 'install2'],
+            },
+            build: {
+              commands: ['synth'],
+            },
           },
-          build: {
-            commands: ['synth'],
-          },
-        },
-      })),
+        })
+      ),
     },
   });
 });
@@ -282,19 +282,20 @@ test('install command can be overridden/specified', () => {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: ['/bin/true'],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: ['/bin/true'],
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
 
 test('Synth can output additional artifacts', () => {
-
   // WHEN
   const synth = new cdkp.ShellStep('Synth', {
     input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
@@ -311,20 +312,22 @@ test('Synth can output additional artifacts', () => {
       Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId,
     },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        artifacts: {
-          'secondary-artifacts': {
-            Synth_Output: {
-              'base-directory': 'cdk.out',
-              'files': '**/*',
-            },
-            Synth_test: {
-              'base-directory': 'test',
-              'files': '**/*',
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          artifacts: {
+            'secondary-artifacts': {
+              Synth_Output: {
+                'base-directory': 'cdk.out',
+                files: '**/*',
+              },
+              Synth_test: {
+                'base-directory': 'test',
+                files: '**/*',
+              },
             },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
@@ -339,9 +342,7 @@ test('Synth can be made to run in a VPC', () => {
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     VpcConfig: {
-      SecurityGroupIds: [
-        { 'Fn::GetAtt': ['CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2', 'GroupId'] },
-      ],
+      SecurityGroupIds: [{ 'Fn::GetAtt': ['CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2', 'GroupId'] }],
       Subnets: [
         { Ref: 'NpmSynthTestVpcPrivateSubnet1Subnet81E3AA56' },
         { Ref: 'NpmSynthTestVpcPrivateSubnet2SubnetC1CA3EF0' },
@@ -352,15 +353,15 @@ test('Synth can be made to run in a VPC', () => {
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-    Roles: [
-      { Ref: 'CdkPipelineBuildSynthCdkBuildProjectRole5E173C62' },
-    ],
+    Roles: [{ Ref: 'CdkPipelineBuildSynthCdkBuildProjectRole5E173C62' }],
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
-        Effect: 'Allow',
-        Resource: '*',
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ]),
     },
   });
 });
@@ -374,9 +375,7 @@ test('Modern, using the synthCodeBuildDefaults', () => {
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     VpcConfig: {
-      SecurityGroupIds: [
-        { 'Fn::GetAtt': ['CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2', 'GroupId'] },
-      ],
+      SecurityGroupIds: [{ 'Fn::GetAtt': ['CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2', 'GroupId'] }],
       Subnets: [
         { Ref: 'NpmSynthTestVpcPrivateSubnet1Subnet81E3AA56' },
         { Ref: 'NpmSynthTestVpcPrivateSubnet2SubnetC1CA3EF0' },
@@ -387,15 +386,15 @@ test('Modern, using the synthCodeBuildDefaults', () => {
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-    Roles: [
-      { Ref: 'CdkPipelineBuildSynthCdkBuildProjectRole5E173C62' },
-    ],
+    Roles: [{ Ref: 'CdkPipelineBuildSynthCdkBuildProjectRole5E173C62' }],
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
-        Effect: 'Allow',
-        Resource: '*',
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ]),
     },
   });
 });
@@ -417,9 +416,7 @@ test('Modern, using CodeBuildStep', () => {
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     VpcConfig: {
-      SecurityGroupIds: [
-        { 'Fn::GetAtt': ['CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2', 'GroupId'] },
-      ],
+      SecurityGroupIds: [{ 'Fn::GetAtt': ['CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2', 'GroupId'] }],
       Subnets: [
         { Ref: 'NpmSynthTestVpcPrivateSubnet1Subnet81E3AA56' },
         { Ref: 'NpmSynthTestVpcPrivateSubnet2SubnetC1CA3EF0' },
@@ -430,15 +427,15 @@ test('Modern, using CodeBuildStep', () => {
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
-    Roles: [
-      { Ref: 'CdkPipelineBuildSynthCdkBuildProjectRole5E173C62' },
-    ],
+    Roles: [{ Ref: 'CdkPipelineBuildSynthCdkBuildProjectRole5E173C62' }],
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
-        Effect: 'Allow',
-        Resource: '*',
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ]),
     },
   });
 });
@@ -491,23 +488,25 @@ function modernSynthWithAction(cb: () => ModernTestGitHubNpmPipelineProps) {
 function captureProjectConfigHash(_pipelineStack: Stack) {
   const theHash = new Capture();
   Template.fromStack(_pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Build',
-      Actions: [
-        Match.objectLike({
-          Name: 'Synth',
-          Configuration: Match.objectLike({
-            EnvironmentVariables: Match.serializedJson([
-              {
-                name: '_PROJECT_CONFIG_HASH',
-                type: 'PLAINTEXT',
-                value: theHash,
-              },
-            ]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Build',
+        Actions: [
+          Match.objectLike({
+            Name: 'Synth',
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
+                {
+                  name: '_PROJECT_CONFIG_HASH',
+                  type: 'PLAINTEXT',
+                  value: theHash,
+                },
+              ]),
+            }),
           }),
-        }),
-      ],
-    }]),
+        ],
+      },
+    ]),
   });
 
   return theHash.asString();
@@ -526,16 +525,17 @@ test('Synth CodeBuild project role can be granted permissions', () => {
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([Match.objectLike({
-        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-        Resource: ['arn:aws:s3:::this-particular-bucket', 'arn:aws:s3:::this-particular-bucket/*'],
-      })]),
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          Resource: ['arn:aws:s3:::this-particular-bucket', 'arn:aws:s3:::this-particular-bucket/*'],
+        }),
+      ]),
     },
   });
 });
 
 test('Synth can reference an imported ECR repo', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synth: new cdkp.CodeBuildStep('Synth', {
       commands: ['build'],
@@ -543,7 +543,7 @@ test('Synth can reference an imported ECR repo', () => {
       primaryOutputDirectory: 'cdk.out',
       buildEnvironment: {
         buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
-          ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
+          ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name')
         ),
       },
     }),
@@ -554,7 +554,6 @@ test('Synth can reference an imported ECR repo', () => {
 });
 
 test('CodeBuild: Can specify additional policy statements', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synth: new cdkp.CodeBuildStep('Synth', {
@@ -572,19 +571,17 @@ test('CodeBuild: Can specify additional policy statements', () => {
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([Match.objectLike({
-        Action: [
-          'codeartifact:*',
-          'sts:GetServiceBearerToken',
-        ],
-        Resource: 'arn:my:arn',
-      })]),
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: ['codeartifact:*', 'sts:GetServiceBearerToken'],
+          Resource: 'arn:my:arn',
+        }),
+      ]),
     },
   });
 });
 
 test('Multiple input sources in side-by-side directories', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synth: new cdkp.ShellStep('Synth', {
@@ -592,7 +589,7 @@ test('Multiple input sources in side-by-side directories', () => {
       commands: ['false'],
       additionalInputs: {
         '../sibling': cdkp.CodePipelineSource.gitHub('foo/bar', 'main'),
-        'sub': new cdkp.ShellStep('Prebuild', {
+        sub: new cdkp.ShellStep('Prebuild', {
           input: cdkp.CodePipelineSource.gitHub('pre/build', 'main'),
           commands: ['true'],
           primaryOutputDirectory: 'built',
@@ -632,27 +629,26 @@ test('Multiple input sources in side-by-side directories', () => {
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          install: {
-            commands: [
-              '[ ! -d "../sibling" ] || { echo \'additionalInputs: "../sibling" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
-              '[ ! -d "sub" ] || { echo \'additionalInputs: "sub" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
-            ],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            install: {
+              commands: [
+                '[ ! -d "../sibling" ] || { echo \'additionalInputs: "../sibling" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
+                '[ ! -d "sub" ] || { echo \'additionalInputs: "sub" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
+              ],
+            },
+            build: {
+              commands: ['false'],
+            },
           },
-          build: {
-            commands: [
-              'false',
-            ],
-          },
-        },
-      })),
+        })
+      ),
     },
   });
 });
 
 test('Can easily switch on privileged mode for synth', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     dockerEnabledForSynth: true,
@@ -664,21 +660,20 @@ test('Can easily switch on privileged mode for synth', () => {
       PrivilegedMode: true,
     }),
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          build: {
-            commands: [
-              'LookAtMe',
-            ],
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            build: {
+              commands: ['LookAtMe'],
+            },
           },
-        },
-      })),
+        })
+      ),
     },
   });
 });
 
 test('can provide custom BuildSpec that is merged with generated one', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synth: new cdkp.CodeBuildStep('Synth', {
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
@@ -691,10 +686,7 @@ test('can provide custom BuildSpec that is merged with generated one', () => {
         },
         privileged: true,
       },
-      installCommands: [
-        'install1',
-        'install2',
-      ],
+      installCommands: ['install1', 'install2'],
       commands: ['synth'],
       partialBuildSpec: cbuild.BuildSpec.fromObject({
         env: {
@@ -727,24 +719,26 @@ test('can provide custom BuildSpec that is merged with generated one', () => {
       ]),
     }),
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        env: {
-          variables: {
-            FOO: 'bar',
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          env: {
+            variables: {
+              FOO: 'bar',
+            },
           },
-        },
-        phases: {
-          pre_build: {
-            commands: Match.arrayWith(['installCustom']),
+          phases: {
+            pre_build: {
+              commands: Match.arrayWith(['installCustom']),
+            },
+            build: {
+              commands: ['synth'],
+            },
           },
-          build: {
-            commands: ['synth'],
+          cache: {
+            paths: ['node_modules'],
           },
-        },
-        cache: {
-          paths: ['node_modules'],
-        },
-      })),
+        })
+      ),
     },
   });
 });

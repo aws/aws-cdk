@@ -11,11 +11,7 @@ export class S3Destination implements lambda.IDestination {
   /**
    * Returns a destination configuration
    */
-  public bind(
-    _scope: Construct,
-    fn: lambda.IFunction,
-    _options?: lambda.DestinationOptions
-  ): lambda.DestinationConfig {
+  public bind(_scope: Construct, fn: lambda.IFunction, _options?: lambda.DestinationOptions): lambda.DestinationConfig {
     // grant read and putObject permissions
     this.bucket.grantRead(fn);
     this.bucket.grantPut(fn);

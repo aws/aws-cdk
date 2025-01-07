@@ -26,13 +26,9 @@ beforeEach(() => {
   autoScalingRole.assumeRolePolicy?.addStatements(
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      principals: [
-        new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
-      ],
-      actions: [
-        'sts:AssumeRole',
-      ],
-    }),
+      principals: [new iam.ServicePrincipal('application-autoscaling.amazonaws.com')],
+      actions: ['sts:AssumeRole'],
+    })
   );
 });
 
@@ -165,17 +161,17 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
     End: true,
     Parameters: {
       'Name.$': '$.ClusterName',
-      'Instances': {
+      Instances: {
         KeepJobFlowAliveWhenNoSteps: true,
       },
-      'VisibleToAllUsers': true,
-      'JobFlowRole': {
+      VisibleToAllUsers: true,
+      JobFlowRole: {
         Ref: 'ClusterRoleD9CA7471',
       },
-      'ServiceRole': {
+      ServiceRole: {
         Ref: 'ServiceRole4288B192',
       },
-      'AutoScalingRole': {
+      AutoScalingRole: {
         Ref: 'AutoScalingRole015ADA0A',
       },
     },
@@ -219,45 +215,54 @@ describe('Cluster with StepConcurrencyLevel', () => {
     // THEN
     expect(stack.resolve(task.toStateJson())).toMatchObject({
       Parameters: {
-        'Name': 'Cluster',
+        Name: 'Cluster',
         'StepConcurrencyLevel.$': '$.foo.bar',
       },
     });
   });
 
   test('throws if < 1 or > 256', async () => {
-    expect(() => new EmrCreateCluster(stack, 'Task1', {
-      instances: {},
-      clusterRole,
-      name: 'Cluster',
-      serviceRole,
-      autoScalingRole,
-      stepConcurrencyLevel: 0,
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-    })).toThrow('Step concurrency level must be in range [1, 256], but got 0.');
+    expect(
+      () =>
+        new EmrCreateCluster(stack, 'Task1', {
+          instances: {},
+          clusterRole,
+          name: 'Cluster',
+          serviceRole,
+          autoScalingRole,
+          stepConcurrencyLevel: 0,
+          integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+        })
+    ).toThrow('Step concurrency level must be in range [1, 256], but got 0.');
 
-    expect(() => new EmrCreateCluster(stack, 'Task2', {
-      instances: {},
-      clusterRole,
-      name: 'Cluster',
-      serviceRole,
-      autoScalingRole,
-      stepConcurrencyLevel: 257,
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-    })).toThrow('Step concurrency level must be in range [1, 256], but got 257.');
+    expect(
+      () =>
+        new EmrCreateCluster(stack, 'Task2', {
+          instances: {},
+          clusterRole,
+          name: 'Cluster',
+          serviceRole,
+          autoScalingRole,
+          stepConcurrencyLevel: 257,
+          integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+        })
+    ).toThrow('Step concurrency level must be in range [1, 256], but got 257.');
   });
 
   test('throws if EMR release label below 5.28 and StepConcurrencyLevel !== 1', async () => {
-    expect(() => new EmrCreateCluster(stack, 'Task2', {
-      instances: {},
-      clusterRole,
-      name: 'Cluster',
-      serviceRole,
-      autoScalingRole,
-      releaseLabel: 'emr-5.14.0',
-      stepConcurrencyLevel: 2,
-      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-    })).toThrow('Step concurrency is only supported in EMR release version 5.28.0 and above but got emr-5.14.0.');
+    expect(
+      () =>
+        new EmrCreateCluster(stack, 'Task2', {
+          instances: {},
+          clusterRole,
+          name: 'Cluster',
+          serviceRole,
+          autoScalingRole,
+          releaseLabel: 'emr-5.14.0',
+          stepConcurrencyLevel: 2,
+          integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+        })
+    ).toThrow('Step concurrency is only supported in EMR release version 5.28.0 and above but got emr-5.14.0.');
   });
 
   test('does not throw if EMR release label below 5.28 and StepConcurrencyLevel === 1', async () => {
@@ -275,38 +280,47 @@ describe('Cluster with StepConcurrencyLevel', () => {
 });
 
 test('Cluster with invalid release label will throw', async () => {
-  expect(() => new EmrCreateCluster(stack, 'Task1', {
-    instances: {},
-    clusterRole,
-    name: 'Cluster',
-    serviceRole,
-    autoScalingRole,
-    releaseLabel: 'emra-5.14.0',
-    stepConcurrencyLevel: 1,
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emra-5.14.0');
+  expect(
+    () =>
+      new EmrCreateCluster(stack, 'Task1', {
+        instances: {},
+        clusterRole,
+        name: 'Cluster',
+        serviceRole,
+        autoScalingRole,
+        releaseLabel: 'emra-5.14.0',
+        stepConcurrencyLevel: 1,
+        integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+      })
+  ).toThrow("The release label must be in the format 'emr-x.x.x' but got emra-5.14.0");
 
-  expect(() => new EmrCreateCluster(stack, 'Task2', {
-    instances: {},
-    clusterRole,
-    name: 'Cluster',
-    serviceRole,
-    autoScalingRole,
-    releaseLabel: 'emr-5.14.a',
-    stepConcurrencyLevel: 1,
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.a');
+  expect(
+    () =>
+      new EmrCreateCluster(stack, 'Task2', {
+        instances: {},
+        clusterRole,
+        name: 'Cluster',
+        serviceRole,
+        autoScalingRole,
+        releaseLabel: 'emr-5.14.a',
+        stepConcurrencyLevel: 1,
+        integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+      })
+  ).toThrow("The release label must be in the format 'emr-x.x.x' but got emr-5.14.a");
 
-  expect(() => new EmrCreateCluster(stack, 'Task3', {
-    instances: {},
-    clusterRole,
-    name: 'Cluster',
-    serviceRole,
-    autoScalingRole,
-    releaseLabel: 'emr-5.14.0.0',
-    stepConcurrencyLevel: 1,
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.0.0');
+  expect(
+    () =>
+      new EmrCreateCluster(stack, 'Task3', {
+        instances: {},
+        clusterRole,
+        name: 'Cluster',
+        serviceRole,
+        autoScalingRole,
+        releaseLabel: 'emr-5.14.0.0',
+        stepConcurrencyLevel: 1,
+        integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+      })
+  ).toThrow("The release label must be in the format 'emr-x.x.x' but got emr-5.14.0.0");
 });
 
 test('Create Cluster with Tags', () => {
@@ -354,10 +368,12 @@ test('Create Cluster with Tags', () => {
       AutoScalingRole: {
         Ref: 'AutoScalingRole015ADA0A',
       },
-      Tags: [{
-        Key: 'key',
-        Value: 'value',
-      }],
+      Tags: [
+        {
+          Key: 'key',
+          Value: 'value',
+        },
+      ],
     },
   });
 });
@@ -424,13 +440,15 @@ test('Create Cluster with Bootstrap Actions', () => {
     name: 'Cluster',
     serviceRole,
     autoScalingRole,
-    bootstrapActions: [{
-      name: 'Bootstrap',
-      scriptBootstrapAction: {
-        path: 's3://null',
-        args: ['Arg'],
+    bootstrapActions: [
+      {
+        name: 'Bootstrap',
+        scriptBootstrapAction: {
+          path: 's3://null',
+          args: ['Arg'],
+        },
       },
-    }],
+    ],
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -465,13 +483,15 @@ test('Create Cluster with Bootstrap Actions', () => {
       AutoScalingRole: {
         Ref: 'AutoScalingRole015ADA0A',
       },
-      BootstrapActions: [{
-        Name: 'Bootstrap',
-        ScriptBootstrapAction: {
-          Path: 's3://null',
-          Args: ['Arg'],
+      BootstrapActions: [
+        {
+          Name: 'Bootstrap',
+          ScriptBootstrapAction: {
+            Path: 's3://null',
+            Args: ['Arg'],
+          },
         },
-      }],
+      ],
     },
   });
 });
@@ -484,12 +504,14 @@ test('Create Cluster with Configurations', () => {
     name: 'Cluster',
     serviceRole,
     autoScalingRole,
-    configurations: [{
-      classification: 'classification',
-      properties: {
-        Key: 'Value',
+    configurations: [
+      {
+        classification: 'classification',
+        properties: {
+          Key: 'Value',
+        },
       },
-    }],
+    ],
     integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   });
 
@@ -524,12 +546,14 @@ test('Create Cluster with Configurations', () => {
       AutoScalingRole: {
         Ref: 'AutoScalingRole015ADA0A',
       },
-      Configurations: [{
-        Classification: 'classification',
-        Properties: {
-          Key: 'Value',
+      Configurations: [
+        {
+          Classification: 'classification',
+          Properties: {
+            Key: 'Value',
+          },
         },
-      }],
+      ],
     },
   });
 });
@@ -764,42 +788,46 @@ test('Create Cluster with AmazonEMRServicePolicy_v2 managed policies', () => {
     ],
   });
 
-  expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::elasticmapreduce:createCluster.sync',
+  expect(stack.resolve(task.toStateJson())).toEqual(
+    expect.objectContaining({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::elasticmapreduce:createCluster.sync',
+          ],
         ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: 'Cluster',
-      Tags: [{
-        Key: 'for-use-with-amazon-emr-managed-policies',
-        Value: 'true',
-      }],
-      VisibleToAllUsers: true,
-      JobFlowRole: {
-        Ref: 'TaskInstanceRoleB72072BF',
       },
-      ServiceRole: {
-        Ref: 'TaskServiceRoleBF55F61E',
+      End: true,
+      Parameters: {
+        Name: 'Cluster',
+        Tags: [
+          {
+            Key: 'for-use-with-amazon-emr-managed-policies',
+            Value: 'true',
+          },
+        ],
+        VisibleToAllUsers: true,
+        JobFlowRole: {
+          Ref: 'TaskInstanceRoleB72072BF',
+        },
+        ServiceRole: {
+          Ref: 'TaskServiceRoleBF55F61E',
+        },
+        AutoScalingRole: {
+          Ref: 'TaskAutoScalingRoleD06F8423',
+        },
+        Instances: {
+          KeepJobFlowAliveWhenNoSteps: true,
+        },
       },
-      AutoScalingRole: {
-        Ref: 'TaskAutoScalingRoleD06F8423',
-      },
-      Instances: {
-        KeepJobFlowAliveWhenNoSteps: true,
-      },
-    },
-  }));
+    })
+  );
 });
 
 test('Create Cluster with Instances configuration', () => {
@@ -892,41 +920,49 @@ test.each([
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        instanceTypeConfigs: [{
-          bidPrice: '1',
-          configurations: [{
-            classification: 'Classification',
-            properties: {
-              Key: 'Value',
-            },
-          }],
-          ebsConfiguration: {
-            ebsBlockDeviceConfigs: [{
-              volumeSpecification: {
-                iops: 1,
-                volumeSize: cdk.Size.gibibytes(1),
-                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          instanceTypeConfigs: [
+            {
+              bidPrice: '1',
+              configurations: [
+                {
+                  classification: 'Classification',
+                  properties: {
+                    Key: 'Value',
+                  },
+                },
+              ],
+              ebsConfiguration: {
+                ebsBlockDeviceConfigs: [
+                  {
+                    volumeSpecification: {
+                      iops: 1,
+                      volumeSize: cdk.Size.gibibytes(1),
+                      volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+                    },
+                    volumesPerInstance: 1,
+                  },
+                ],
+                ebsOptimized: true,
               },
-              volumesPerInstance: 1,
-            }],
-            ebsOptimized: true,
+              instanceType: 'm5.xlarge',
+              weightedCapacity: 1,
+            },
+          ],
+          launchSpecifications: {
+            spotSpecification: {
+              allocationStrategy: strategy,
+              blockDurationMinutes: 1,
+              timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+              timeout: cdk.Duration.minutes(5),
+            },
           },
-          instanceType: 'm5.xlarge',
-          weightedCapacity: 1,
-        }],
-        launchSpecifications: {
-          spotSpecification: {
-            allocationStrategy: strategy,
-            blockDurationMinutes: 1,
-            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeout: cdk.Duration.minutes(5),
-          },
+          name: 'Main',
+          targetSpotCapacity: 1,
         },
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -954,41 +990,49 @@ test.each([
       Name: 'Cluster',
       Instances: {
         KeepJobFlowAliveWhenNoSteps: true,
-        InstanceFleets: [{
-          InstanceFleetType: 'MASTER',
-          InstanceTypeConfigs: [{
-            BidPrice: '1',
-            Configurations: [{
-              Classification: 'Classification',
-              Properties: {
-                Key: 'Value',
-              },
-            }],
-            EbsConfiguration: {
-              EbsBlockDeviceConfigs: [{
-                VolumeSpecification: {
-                  Iops: 1,
-                  SizeInGB: 1,
-                  VolumeType: 'standard',
+        InstanceFleets: [
+          {
+            InstanceFleetType: 'MASTER',
+            InstanceTypeConfigs: [
+              {
+                BidPrice: '1',
+                Configurations: [
+                  {
+                    Classification: 'Classification',
+                    Properties: {
+                      Key: 'Value',
+                    },
+                  },
+                ],
+                EbsConfiguration: {
+                  EbsBlockDeviceConfigs: [
+                    {
+                      VolumeSpecification: {
+                        Iops: 1,
+                        SizeInGB: 1,
+                        VolumeType: 'standard',
+                      },
+                      VolumesPerInstance: 1,
+                    },
+                  ],
+                  EbsOptimized: true,
                 },
-                VolumesPerInstance: 1,
-              }],
-              EbsOptimized: true,
+                InstanceType: 'm5.xlarge',
+                WeightedCapacity: 1,
+              },
+            ],
+            LaunchSpecifications: {
+              SpotSpecification: {
+                AllocationStrategy: expected,
+                BlockDurationMinutes: 1,
+                TimeoutAction: 'TERMINATE_CLUSTER',
+                TimeoutDurationMinutes: 5,
+              },
             },
-            InstanceType: 'm5.xlarge',
-            WeightedCapacity: 1,
-          }],
-          LaunchSpecifications: {
-            SpotSpecification: {
-              AllocationStrategy: expected,
-              BlockDurationMinutes: 1,
-              TimeoutAction: 'TERMINATE_CLUSTER',
-              TimeoutDurationMinutes: 5,
-            },
+            Name: 'Main',
+            TargetSpotCapacity: 1,
           },
-          Name: 'Main',
-          TargetSpotCapacity: 1,
-        }],
+        ],
       },
       VisibleToAllUsers: true,
       JobFlowRole: {
@@ -1005,40 +1049,48 @@ test('Create Cluster with InstanceFleet for Spot instances', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        instanceTypeConfigs: [{
-          bidPrice: '1',
-          configurations: [{
-            classification: 'Classification',
-            properties: {
-              Key: 'Value',
-            },
-          }],
-          ebsConfiguration: {
-            ebsBlockDeviceConfigs: [{
-              volumeSpecification: {
-                iops: 1,
-                volumeSize: cdk.Size.gibibytes(1),
-                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          instanceTypeConfigs: [
+            {
+              bidPrice: '1',
+              configurations: [
+                {
+                  classification: 'Classification',
+                  properties: {
+                    Key: 'Value',
+                  },
+                },
+              ],
+              ebsConfiguration: {
+                ebsBlockDeviceConfigs: [
+                  {
+                    volumeSpecification: {
+                      iops: 1,
+                      volumeSize: cdk.Size.gibibytes(1),
+                      volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+                    },
+                    volumesPerInstance: 1,
+                  },
+                ],
+                ebsOptimized: true,
               },
-              volumesPerInstance: 1,
-            }],
-            ebsOptimized: true,
+              instanceType: 'm5.xlarge',
+              weightedCapacity: 1,
+            },
+          ],
+          launchSpecifications: {
+            spotSpecification: {
+              blockDurationMinutes: 1,
+              timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+              timeout: cdk.Duration.minutes(5),
+            },
           },
-          instanceType: 'm5.xlarge',
-          weightedCapacity: 1,
-        }],
-        launchSpecifications: {
-          spotSpecification: {
-            blockDurationMinutes: 1,
-            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeout: cdk.Duration.minutes(5),
-          },
+          name: 'Main',
+          targetSpotCapacity: 1,
         },
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1066,40 +1118,48 @@ test('Create Cluster with InstanceFleet for Spot instances', () => {
       Name: 'Cluster',
       Instances: {
         KeepJobFlowAliveWhenNoSteps: true,
-        InstanceFleets: [{
-          InstanceFleetType: 'MASTER',
-          InstanceTypeConfigs: [{
-            BidPrice: '1',
-            Configurations: [{
-              Classification: 'Classification',
-              Properties: {
-                Key: 'Value',
-              },
-            }],
-            EbsConfiguration: {
-              EbsBlockDeviceConfigs: [{
-                VolumeSpecification: {
-                  Iops: 1,
-                  SizeInGB: 1,
-                  VolumeType: 'standard',
+        InstanceFleets: [
+          {
+            InstanceFleetType: 'MASTER',
+            InstanceTypeConfigs: [
+              {
+                BidPrice: '1',
+                Configurations: [
+                  {
+                    Classification: 'Classification',
+                    Properties: {
+                      Key: 'Value',
+                    },
+                  },
+                ],
+                EbsConfiguration: {
+                  EbsBlockDeviceConfigs: [
+                    {
+                      VolumeSpecification: {
+                        Iops: 1,
+                        SizeInGB: 1,
+                        VolumeType: 'standard',
+                      },
+                      VolumesPerInstance: 1,
+                    },
+                  ],
+                  EbsOptimized: true,
                 },
-                VolumesPerInstance: 1,
-              }],
-              EbsOptimized: true,
+                InstanceType: 'm5.xlarge',
+                WeightedCapacity: 1,
+              },
+            ],
+            LaunchSpecifications: {
+              SpotSpecification: {
+                BlockDurationMinutes: 1,
+                TimeoutAction: 'TERMINATE_CLUSTER',
+                TimeoutDurationMinutes: 5,
+              },
             },
-            InstanceType: 'm5.xlarge',
-            WeightedCapacity: 1,
-          }],
-          LaunchSpecifications: {
-            SpotSpecification: {
-              BlockDurationMinutes: 1,
-              TimeoutAction: 'TERMINATE_CLUSTER',
-              TimeoutDurationMinutes: 5,
-            },
+            Name: 'Main',
+            TargetSpotCapacity: 1,
           },
-          Name: 'Main',
-          TargetSpotCapacity: 1,
-        }],
+        ],
       },
       VisibleToAllUsers: true,
       JobFlowRole: {
@@ -1116,38 +1176,46 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        instanceTypeConfigs: [{
-          bidPrice: '1',
-          configurations: [{
-            classification: 'Classification',
-            properties: {
-              Key: 'Value',
-            },
-          }],
-          ebsConfiguration: {
-            ebsBlockDeviceConfigs: [{
-              volumeSpecification: {
-                iops: 1,
-                volumeSize: cdk.Size.gibibytes(1),
-                volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          instanceTypeConfigs: [
+            {
+              bidPrice: '1',
+              configurations: [
+                {
+                  classification: 'Classification',
+                  properties: {
+                    Key: 'Value',
+                  },
+                },
+              ],
+              ebsConfiguration: {
+                ebsBlockDeviceConfigs: [
+                  {
+                    volumeSpecification: {
+                      iops: 1,
+                      volumeSize: cdk.Size.gibibytes(1),
+                      volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+                    },
+                    volumesPerInstance: 1,
+                  },
+                ],
+                ebsOptimized: true,
               },
-              volumesPerInstance: 1,
-            }],
-            ebsOptimized: true,
+              instanceType: 'm5.xlarge',
+              weightedCapacity: 1,
+            },
+          ],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+            },
           },
-          instanceType: 'm5.xlarge',
-          weightedCapacity: 1,
-        }],
-        launchSpecifications: {
-          onDemandSpecification: {
-            allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
-          },
+          name: 'Main',
+          targetOnDemandCapacity: 1,
         },
-        name: 'Main',
-        targetOnDemandCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1175,38 +1243,46 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
       Name: 'Cluster',
       Instances: {
         KeepJobFlowAliveWhenNoSteps: true,
-        InstanceFleets: [{
-          InstanceFleetType: 'MASTER',
-          InstanceTypeConfigs: [{
-            BidPrice: '1',
-            Configurations: [{
-              Classification: 'Classification',
-              Properties: {
-                Key: 'Value',
-              },
-            }],
-            EbsConfiguration: {
-              EbsBlockDeviceConfigs: [{
-                VolumeSpecification: {
-                  Iops: 1,
-                  SizeInGB: 1,
-                  VolumeType: 'standard',
+        InstanceFleets: [
+          {
+            InstanceFleetType: 'MASTER',
+            InstanceTypeConfigs: [
+              {
+                BidPrice: '1',
+                Configurations: [
+                  {
+                    Classification: 'Classification',
+                    Properties: {
+                      Key: 'Value',
+                    },
+                  },
+                ],
+                EbsConfiguration: {
+                  EbsBlockDeviceConfigs: [
+                    {
+                      VolumeSpecification: {
+                        Iops: 1,
+                        SizeInGB: 1,
+                        VolumeType: 'standard',
+                      },
+                      VolumesPerInstance: 1,
+                    },
+                  ],
+                  EbsOptimized: true,
                 },
-                VolumesPerInstance: 1,
-              }],
-              EbsOptimized: true,
+                InstanceType: 'm5.xlarge',
+                WeightedCapacity: 1,
+              },
+            ],
+            LaunchSpecifications: {
+              OnDemandSpecification: {
+                AllocationStrategy: 'lowest-price',
+              },
             },
-            InstanceType: 'm5.xlarge',
-            WeightedCapacity: 1,
-          }],
-          LaunchSpecifications: {
-            OnDemandSpecification: {
-              AllocationStrategy: 'lowest-price',
-            },
+            Name: 'Main',
+            TargetOnDemandCapacity: 1,
           },
-          Name: 'Main',
-          TargetOnDemandCapacity: 1,
-        }],
+        ],
       },
       VisibleToAllUsers: true,
       JobFlowRole: {
@@ -1223,17 +1299,19 @@ test('Throws if timeout for Spot instances is less than 5 minutes', () => {
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        launchSpecifications: {
-          spotSpecification: {
-            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeout: cdk.Duration.minutes(4),
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          launchSpecifications: {
+            spotSpecification: {
+              timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+              timeout: cdk.Duration.minutes(4),
+            },
           },
+          name: 'Main',
+          targetSpotCapacity: 1,
         },
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1251,17 +1329,19 @@ test('Throws if timeout for Spot instances is greater than 1440 minutes', () => 
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        launchSpecifications: {
-          spotSpecification: {
-            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeout: cdk.Duration.minutes(1441),
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          launchSpecifications: {
+            spotSpecification: {
+              timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+              timeout: cdk.Duration.minutes(1441),
+            },
           },
+          name: 'Main',
+          targetSpotCapacity: 1,
         },
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1279,17 +1359,19 @@ test('Throws if timeoutDurationMinutes for Spot instances is less than 5 minutes
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        launchSpecifications: {
-          spotSpecification: {
-            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeoutDurationMinutes: 4,
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          launchSpecifications: {
+            spotSpecification: {
+              timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+              timeoutDurationMinutes: 4,
+            },
           },
+          name: 'Main',
+          targetSpotCapacity: 1,
         },
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1307,17 +1389,19 @@ test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440 m
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        launchSpecifications: {
-          spotSpecification: {
-            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeoutDurationMinutes: 1441,
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          launchSpecifications: {
+            spotSpecification: {
+              timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+              timeoutDurationMinutes: 1441,
+            },
           },
+          name: 'Main',
+          targetSpotCapacity: 1,
         },
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1335,16 +1419,18 @@ test('Throws if neither timeout nor timeoutDurationMinutes is specified', () => 
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        launchSpecifications: {
-          spotSpecification: {
-            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          launchSpecifications: {
+            spotSpecification: {
+              timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            },
           },
+          name: 'Main',
+          targetSpotCapacity: 1,
         },
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1362,18 +1448,20 @@ test('Throws if both timeout and timeoutDurationMinutes are specified', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        launchSpecifications: {
-          spotSpecification: {
-            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeout: cdk.Duration.minutes(5),
-            timeoutDurationMinutes: 10,
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          launchSpecifications: {
+            spotSpecification: {
+              timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+              timeout: cdk.Duration.minutes(5),
+              timeoutDurationMinutes: 10,
+            },
           },
+          name: 'Main',
+          targetSpotCapacity: 1,
         },
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1391,16 +1479,20 @@ test('Throws if both bidPrice and bidPriceAsPercentageOfOnDemandPrice are specif
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        instanceTypeConfigs: [{
-          bidPrice: '1',
-          bidPriceAsPercentageOfOnDemandPrice: 1,
-          instanceType: 'm5.xlarge',
-        }],
-        name: 'Main',
-        targetSpotCapacity: 1,
-      }],
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          instanceTypeConfigs: [
+            {
+              bidPrice: '1',
+              bidPriceAsPercentageOfOnDemandPrice: 1,
+              instanceType: 'm5.xlarge',
+            },
+          ],
+          name: 'Main',
+          targetSpotCapacity: 1,
+        },
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1418,10 +1510,12 @@ test('Throws if neither targetSpotCapacity nor targetOnDemandCapacity is specifi
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        name: 'Main',
-      }],
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          name: 'Main',
+        },
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1439,12 +1533,14 @@ test('Throws if both targetSpotCapacity and targetOnDemandCapacity are specified
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        name: 'Main',
-        targetSpotCapacity: 1,
-        targetOnDemandCapacity: 1,
-      }],
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          name: 'Main',
+          targetSpotCapacity: 1,
+          targetOnDemandCapacity: 1,
+        },
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1462,11 +1558,13 @@ test('Throws if a number other than 1 as targetSpotCapacity is specified for a m
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        name: 'Main',
-        targetSpotCapacity: 2,
-      }],
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          name: 'Main',
+          targetSpotCapacity: 2,
+        },
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1484,11 +1582,13 @@ test('Throws if a number other than 1 as targetOnDemandCapacity is specified for
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceFleets: [{
-        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
-        name: 'Main',
-        targetOnDemandCapacity: 2,
-      }],
+      instanceFleets: [
+        {
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+          name: 'Main',
+          targetOnDemandCapacity: 2,
+        },
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1506,92 +1606,105 @@ test('Create Cluster with InstanceGroup', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
-      instanceGroups: [{
-        autoScalingPolicy: {
-          constraints: {
-            maxCapacity: 2,
-            minCapacity: 1,
+      instanceGroups: [
+        {
+          autoScalingPolicy: {
+            constraints: {
+              maxCapacity: 2,
+              minCapacity: 1,
+            },
+            rules: [
+              {
+                action: {
+                  market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
+                  simpleScalingPolicyConfiguration: {
+                    adjustmentType: EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
+                    coolDown: 1,
+                    scalingAdjustment: 1,
+                  },
+                },
+                description: 'Description',
+                name: 'Name',
+                trigger: {
+                  cloudWatchAlarmDefinition: {
+                    comparisonOperator: EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
+                    dimensions: [
+                      {
+                        key: 'Key',
+                        value: 'Value',
+                      },
+                    ],
+                    evaluationPeriods: 1,
+                    metricName: 'Name',
+                    namespace: 'Namespace',
+                    period: cdk.Duration.seconds(300),
+                    statistic: EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
+                    threshold: 1,
+                    unit: EmrCreateCluster.CloudWatchAlarmUnit.NONE,
+                  },
+                },
+              },
+              {
+                action: {
+                  market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
+                  simpleScalingPolicyConfiguration: {
+                    adjustmentType: EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
+                    coolDown: 1,
+                    scalingAdjustment: 1,
+                  },
+                },
+                description: 'Description',
+                name: 'Name',
+                trigger: {
+                  cloudWatchAlarmDefinition: {
+                    comparisonOperator: EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
+                    dimensions: [
+                      {
+                        key: 'Key',
+                        value: 'Value',
+                      },
+                    ],
+                    evaluationPeriods: 1,
+                    metricName: 'Name',
+                    namespace: 'Namespace',
+                    period: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.CloudWatchPeriod')),
+                    statistic: EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
+                    threshold: 1,
+                    unit: EmrCreateCluster.CloudWatchAlarmUnit.NONE,
+                  },
+                },
+              },
+            ],
           },
-          rules: [{
-            action: {
-              market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
-              simpleScalingPolicyConfiguration: {
-                adjustmentType: EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
-                coolDown: 1,
-                scalingAdjustment: 1,
+          bidPrice: '1',
+          configurations: [
+            {
+              classification: 'Classification',
+              properties: {
+                Key: 'Value',
               },
             },
-            description: 'Description',
-            name: 'Name',
-            trigger: {
-              cloudWatchAlarmDefinition: {
-                comparisonOperator: EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
-                dimensions: [{
-                  key: 'Key',
-                  value: 'Value',
-                }],
-                evaluationPeriods: 1,
-                metricName: 'Name',
-                namespace: 'Namespace',
-                period: cdk.Duration.seconds(300),
-                statistic: EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
-                threshold: 1,
-                unit: EmrCreateCluster.CloudWatchAlarmUnit.NONE,
+          ],
+          ebsConfiguration: {
+            ebsBlockDeviceConfigs: [
+              {
+                volumeSpecification: {
+                  iops: 1,
+                  volumeSize: cdk.Size.gibibytes(1),
+                  volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
+                },
+                volumesPerInstance: 1,
               },
-            },
-          }, {
-            action: {
-              market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
-              simpleScalingPolicyConfiguration: {
-                adjustmentType: EmrCreateCluster.ScalingAdjustmentType.CHANGE_IN_CAPACITY,
-                coolDown: 1,
-                scalingAdjustment: 1,
-              },
-            },
-            description: 'Description',
-            name: 'Name',
-            trigger: {
-              cloudWatchAlarmDefinition: {
-                comparisonOperator: EmrCreateCluster.CloudWatchAlarmComparisonOperator.GREATER_THAN,
-                dimensions: [{
-                  key: 'Key',
-                  value: 'Value',
-                }],
-                evaluationPeriods: 1,
-                metricName: 'Name',
-                namespace: 'Namespace',
-                period: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.CloudWatchPeriod')),
-                statistic: EmrCreateCluster.CloudWatchAlarmStatistic.AVERAGE,
-                threshold: 1,
-                unit: EmrCreateCluster.CloudWatchAlarmUnit.NONE,
-              },
-            },
-          }],
-        },
-        bidPrice: '1',
-        configurations: [{
-          classification: 'Classification',
-          properties: {
-            Key: 'Value',
+            ],
+            ebsOptimized: true,
           },
-        }],
-        ebsConfiguration: {
-          ebsBlockDeviceConfigs: [{
-            volumeSpecification: {
-              iops: 1,
-              volumeSize: cdk.Size.gibibytes(1),
-              volumeType: EmrCreateCluster.EbsBlockDeviceVolumeType.STANDARD,
-            },
-            volumesPerInstance: 1,
-          }],
-          ebsOptimized: true,
+          instanceCount: 1,
+          instanceRole: EmrCreateCluster.InstanceRoleType.MASTER,
+          instanceType: 'm5.xlarge',
+          market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
+          name: 'Name',
         },
-        instanceCount: 1,
-        instanceRole: EmrCreateCluster.InstanceRoleType.MASTER,
-        instanceType: 'm5.xlarge',
-        market: EmrCreateCluster.InstanceMarket.ON_DEMAND,
-        name: 'Name',
-      }],
+      ],
     },
     clusterRole,
     name: 'Cluster',
@@ -1620,92 +1733,105 @@ test('Create Cluster with InstanceGroup', () => {
       Name: 'Cluster',
       Instances: {
         KeepJobFlowAliveWhenNoSteps: true,
-        InstanceGroups: [{
-          AutoScalingPolicy: {
-            Constraints: {
-              MaxCapacity: 2,
-              MinCapacity: 1,
+        InstanceGroups: [
+          {
+            AutoScalingPolicy: {
+              Constraints: {
+                MaxCapacity: 2,
+                MinCapacity: 1,
+              },
+              Rules: [
+                {
+                  Action: {
+                    Market: 'ON_DEMAND',
+                    SimpleScalingPolicyConfiguration: {
+                      AdjustmentType: 'CHANGE_IN_CAPACITY',
+                      CoolDown: 1,
+                      ScalingAdjustment: 1,
+                    },
+                  },
+                  Description: 'Description',
+                  Name: 'Name',
+                  Trigger: {
+                    CloudWatchAlarmDefinition: {
+                      ComparisonOperator: 'GREATER_THAN',
+                      Dimensions: [
+                        {
+                          Key: 'Key',
+                          Value: 'Value',
+                        },
+                      ],
+                      EvaluationPeriods: 1,
+                      MetricName: 'Name',
+                      Namespace: 'Namespace',
+                      Period: 300,
+                      Statistic: 'AVERAGE',
+                      Threshold: 1,
+                      Unit: 'NONE',
+                    },
+                  },
+                },
+                {
+                  Action: {
+                    Market: 'ON_DEMAND',
+                    SimpleScalingPolicyConfiguration: {
+                      AdjustmentType: 'CHANGE_IN_CAPACITY',
+                      CoolDown: 1,
+                      ScalingAdjustment: 1,
+                    },
+                  },
+                  Description: 'Description',
+                  Name: 'Name',
+                  Trigger: {
+                    CloudWatchAlarmDefinition: {
+                      ComparisonOperator: 'GREATER_THAN',
+                      Dimensions: [
+                        {
+                          Key: 'Key',
+                          Value: 'Value',
+                        },
+                      ],
+                      EvaluationPeriods: 1,
+                      MetricName: 'Name',
+                      Namespace: 'Namespace',
+                      'Period.$': '$.CloudWatchPeriod',
+                      Statistic: 'AVERAGE',
+                      Threshold: 1,
+                      Unit: 'NONE',
+                    },
+                  },
+                },
+              ],
             },
-            Rules: [{
-              Action: {
-                Market: 'ON_DEMAND',
-                SimpleScalingPolicyConfiguration: {
-                  AdjustmentType: 'CHANGE_IN_CAPACITY',
-                  CoolDown: 1,
-                  ScalingAdjustment: 1,
+            BidPrice: '1',
+            Configurations: [
+              {
+                Classification: 'Classification',
+                Properties: {
+                  Key: 'Value',
                 },
               },
-              Description: 'Description',
-              Name: 'Name',
-              Trigger: {
-                CloudWatchAlarmDefinition: {
-                  ComparisonOperator: 'GREATER_THAN',
-                  Dimensions: [{
-                    Key: 'Key',
-                    Value: 'Value',
-                  }],
-                  EvaluationPeriods: 1,
-                  MetricName: 'Name',
-                  Namespace: 'Namespace',
-                  Period: 300,
-                  Statistic: 'AVERAGE',
-                  Threshold: 1,
-                  Unit: 'NONE',
+            ],
+            EbsConfiguration: {
+              EbsBlockDeviceConfigs: [
+                {
+                  VolumeSpecification: {
+                    Iops: 1,
+                    SizeInGB: 1,
+                    VolumeType: 'standard',
+                  },
+                  VolumesPerInstance: 1,
                 },
-              },
-            }, {
-              Action: {
-                Market: 'ON_DEMAND',
-                SimpleScalingPolicyConfiguration: {
-                  AdjustmentType: 'CHANGE_IN_CAPACITY',
-                  CoolDown: 1,
-                  ScalingAdjustment: 1,
-                },
-              },
-              Description: 'Description',
-              Name: 'Name',
-              Trigger: {
-                CloudWatchAlarmDefinition: {
-                  'ComparisonOperator': 'GREATER_THAN',
-                  'Dimensions': [{
-                    Key: 'Key',
-                    Value: 'Value',
-                  }],
-                  'EvaluationPeriods': 1,
-                  'MetricName': 'Name',
-                  'Namespace': 'Namespace',
-                  'Period.$': '$.CloudWatchPeriod',
-                  'Statistic': 'AVERAGE',
-                  'Threshold': 1,
-                  'Unit': 'NONE',
-                },
-              },
-            }],
-          },
-          BidPrice: '1',
-          Configurations: [{
-            Classification: 'Classification',
-            Properties: {
-              Key: 'Value',
+              ],
+              EbsOptimized: true,
             },
-          }],
-          EbsConfiguration: {
-            EbsBlockDeviceConfigs: [{
-              VolumeSpecification: {
-                Iops: 1,
-                SizeInGB: 1,
-                VolumeType: 'standard',
-              },
-              VolumesPerInstance: 1,
-            }],
-            EbsOptimized: true,
+            InstanceCount: 1,
+            InstanceRole: 'MASTER',
+            InstanceType: 'm5.xlarge',
+            Market: 'ON_DEMAND',
+            Name: 'Name',
           },
-          InstanceCount: 1,
-          InstanceRole: 'MASTER',
-          InstanceType: 'm5.xlarge',
-          Market: 'ON_DEMAND',
-          Name: 'Name',
-        }],
+        ],
       },
       VisibleToAllUsers: true,
       JobFlowRole: {
@@ -1731,7 +1857,9 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       autoScalingRole,
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
+  );
 });
 
 test('Create Cluster with autoTerminationPolicyIdleTimeout', () => {
@@ -1785,7 +1913,6 @@ test('Create Cluster with autoTerminationPolicyIdleTimeout', () => {
 });
 
 test.each([0, 604801])('Task throws if autoTerminationPolicyIdleTimeout is set to %d seconds', (idletimeOutSeconds) => {
-
   expect(() => {
     new EmrCreateCluster(stack, 'Task', {
       instances: {},
@@ -1795,5 +1922,7 @@ test.each([0, 604801])('Task throws if autoTerminationPolicyIdleTimeout is set t
       autoScalingRole,
       autoTerminationPolicyIdleTimeout: cdk.Duration.seconds(idletimeOutSeconds),
     });
-  }).toThrow(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
+  }).toThrow(
+    `\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`
+  );
 });

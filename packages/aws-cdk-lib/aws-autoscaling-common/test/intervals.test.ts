@@ -17,12 +17,8 @@ describe('intervals', () => {
   });
 
   test('test interval completion', () => {
-    const lowerIncompleteIntervals = normalizeIntervals(
-      incompleteLowerRelativeIntervals(),
-      false);
-    const upperIncompleteIntervals = normalizeIntervals(
-      incompleteUpperRelativeIntervals(),
-      false);
+    const lowerIncompleteIntervals = normalizeIntervals(incompleteLowerRelativeIntervals(), false);
+    const upperIncompleteIntervals = normalizeIntervals(incompleteUpperRelativeIntervals(), false);
 
     expect(lowerIncompleteIntervals).toEqual([
       { lower: 0, upper: 65, change: undefined },
@@ -39,74 +35,78 @@ describe('intervals', () => {
 
   test('bounds propagation fails if middle boundary missing', () => {
     expect(() => {
-      normalizeIntervals([
-        { lower: 0, change: -2 },
-        { upper: 20, change: -1 },
-      ], false);
+      normalizeIntervals(
+        [
+          { lower: 0, change: -2 },
+          { upper: 20, change: -1 },
+        ],
+        false
+      );
     }).toThrow();
   });
 
   test('lower alarm index is lower than higher alarm index', () => {
-    fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_complete_intervals(), (intervals) => {
         const alarms = findAlarmThresholds(intervals);
 
-        return (alarms.lowerAlarmIntervalIndex === undefined
-          || alarms.upperAlarmIntervalIndex === undefined
-          || alarms.lowerAlarmIntervalIndex < alarms.upperAlarmIntervalIndex);
-      },
-    ));
+        return (
+          alarms.lowerAlarmIntervalIndex === undefined ||
+          alarms.upperAlarmIntervalIndex === undefined ||
+          alarms.lowerAlarmIntervalIndex < alarms.upperAlarmIntervalIndex
+        );
+      })
+    );
   });
 
   test('never pick undefined intervals for relative alarms', () => {
-    fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_complete_intervals(), (intervals) => {
         const alarms = findAlarmThresholds(intervals);
 
-        return (alarms.lowerAlarmIntervalIndex === undefined || intervals[alarms.lowerAlarmIntervalIndex].change !== undefined)
-          && (alarms.upperAlarmIntervalIndex === undefined || intervals[alarms.upperAlarmIntervalIndex].change !== undefined);
-      },
-    ));
+        return (
+          (alarms.lowerAlarmIntervalIndex === undefined ||
+            intervals[alarms.lowerAlarmIntervalIndex].change !== undefined) &&
+          (alarms.upperAlarmIntervalIndex === undefined ||
+            intervals[alarms.upperAlarmIntervalIndex].change !== undefined)
+        );
+      })
+    );
   });
 
   test('pick intervals on either side of the undefined interval, if present', () => {
-    fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_complete_intervals(), (intervals) => {
         // There must be an undefined interval and it must not be at the edges
-        const i = intervals.findIndex(x => x.change === undefined);
+        const i = intervals.findIndex((x) => x.change === undefined);
         fc.pre(i > 0 && i < intervals.length - 1);
 
         const alarms = findAlarmThresholds(intervals);
-        return (alarms.lowerAlarmIntervalIndex === i - 1 && alarms.upperAlarmIntervalIndex === i + 1);
-      },
-    ));
+        return alarms.lowerAlarmIntervalIndex === i - 1 && alarms.upperAlarmIntervalIndex === i + 1;
+      })
+    );
   });
 
   test('no picking upper bound infinity for lower alarm', () => {
-    fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_complete_intervals(), (intervals) => {
         const alarms = findAlarmThresholds(intervals);
         fc.pre(alarms.lowerAlarmIntervalIndex !== undefined);
 
         return intervals[alarms.lowerAlarmIntervalIndex!].upper !== Infinity;
-      },
-    ));
+      })
+    );
   });
 
   test('no picking lower bound 0 for upper alarm', () => {
-    fc.assert(fc.property(
-      arbitrary_complete_intervals(),
-      (intervals) => {
+    fc.assert(
+      fc.property(arbitrary_complete_intervals(), (intervals) => {
         const alarms = findAlarmThresholds(intervals);
         fc.pre(alarms.upperAlarmIntervalIndex !== undefined);
 
         return intervals[alarms.upperAlarmIntervalIndex!].lower !== 0;
-      },
-    ));
+      })
+    );
   });
 });
 

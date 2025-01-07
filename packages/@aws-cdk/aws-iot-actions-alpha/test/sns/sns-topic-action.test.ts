@@ -26,32 +26,38 @@ test('Default SNS topic action', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [{
-        Sns: {
-          RoleArn: { 'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'] },
-          TargetArn: SNS_TOPIC_ARN,
+      Actions: [
+        {
+          Sns: {
+            RoleArn: { 'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'] },
+            TargetArn: SNS_TOPIC_ARN,
+          },
         },
-      }],
+      ],
     },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
-      Statement: [{
-        Action: 'sts:AssumeRole',
-        Effect: 'Allow',
-        Principal: { Service: 'iot.amazonaws.com' },
-      }],
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'iot.amazonaws.com' },
+        },
+      ],
     },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
-        Action: 'sns:Publish',
-        Effect: 'Allow',
-        Resource: SNS_TOPIC_ARN,
-      }],
+      Statement: [
+        {
+          Action: 'sns:Publish',
+          Effect: 'Allow',
+          Resource: SNS_TOPIC_ARN,
+        },
+      ],
     },
     Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
@@ -59,16 +65,16 @@ test('Default SNS topic action', () => {
 
 test('Can set messageFormat', () => {
   // WHEN
-  topicRule.addAction(new actions.SnsTopicAction(snsTopic, {
-    messageFormat: actions.SnsActionMessageFormat.JSON,
-  }));
+  topicRule.addAction(
+    new actions.SnsTopicAction(snsTopic, {
+      messageFormat: actions.SnsActionMessageFormat.JSON,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ Sns: { MessageFormat: 'JSON' } }),
-      ],
+      Actions: [Match.objectLike({ Sns: { MessageFormat: 'JSON' } })],
     },
   });
 });
@@ -79,16 +85,16 @@ test('Can set role', () => {
   const role = iam.Role.fromRoleArn(stack, 'MyRole', roleArn);
 
   // WHEN
-  topicRule.addAction(new actions.SnsTopicAction(snsTopic, {
-    role,
-  }));
+  topicRule.addAction(
+    new actions.SnsTopicAction(snsTopic, {
+      role,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ Sns: { RoleArn: roleArn } }),
-      ],
+      Actions: [Match.objectLike({ Sns: { RoleArn: roleArn } })],
     },
   });
 });

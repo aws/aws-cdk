@@ -49,10 +49,7 @@ describe('proxy', () => {
       EngineFamily: 'MYSQL',
       RequireTLS: true,
       RoleArn: {
-        'Fn::GetAtt': [
-          'ProxyIAMRole2FE8AB0F',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ProxyIAMRole2FE8AB0F', 'Arn'],
       },
       VpcSubnetIds: [
         {
@@ -110,10 +107,7 @@ describe('proxy', () => {
       EngineFamily: 'MYSQL',
       RequireTLS: true,
       RoleArn: {
-        'Fn::GetAtt': [
-          'ProxyIAMRole2FE8AB0F',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ProxyIAMRole2FE8AB0F', 'Arn'],
       },
       VpcSubnetIds: [
         {
@@ -171,10 +165,7 @@ describe('proxy', () => {
       EngineFamily: 'POSTGRESQL',
       RequireTLS: true,
       RoleArn: {
-        'Fn::GetAtt': [
-          'ProxyIAMRole2FE8AB0F',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ProxyIAMRole2FE8AB0F', 'Arn'],
       },
       VpcSubnetIds: [
         {
@@ -244,7 +235,9 @@ describe('proxy', () => {
         vpc,
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
-    }).toThrow(/Could not determine engine for proxy target 'Default\/Cluster'\. Please provide it explicitly when importing the resource/);
+    }).toThrow(
+      /Could not determine engine for proxy target 'Default\/Cluster'\. Please provide it explicitly when importing the resource/
+    );
   });
 
   test("fails when trying to create a proxy for a target with an engine that doesn't have engineFamily", () => {
@@ -264,7 +257,9 @@ describe('proxy', () => {
         vpc,
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
-    }).toThrow(/RDS proxies require an engine family to be specified on the database cluster or instance. No family specified for engine 'oracle-ee-21'/);
+    }).toThrow(
+      /RDS proxies require an engine family to be specified on the database cluster or instance. No family specified for engine 'oracle-ee-21'/
+    );
   });
 
   test('correctly creates a proxy for an imported Cluster if its engine is known', () => {
@@ -286,9 +281,7 @@ describe('proxy', () => {
       EngineFamily: 'POSTGRESQL',
     });
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
-      DBClusterIdentifiers: [
-        'my-cluster',
-      ],
+      DBClusterIdentifiers: ['my-cluster'],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'SecurityGroup for Database Proxy',
@@ -317,21 +310,26 @@ describe('proxy', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: [{
-            Effect: 'Allow',
-            Action: 'rds-db:connect',
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':rds-db:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':dbuser:prx-1234abcd/test',
-              ]],
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 'rds-db:connect',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':rds-db:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':dbuser:prx-1234abcd/test',
+                  ],
+                ],
+              },
             },
-          }],
+          ],
           Version: '2012-10-17',
         },
       });
@@ -372,35 +370,37 @@ describe('proxy', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Effect: 'Allow',
-          Action: 'rds-db:connect',
-          Resource: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds-db:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':dbuser:',
-              {
-                'Fn::Select': [
-                  6,
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'rds-db:connect',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':rds-db:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':dbuser:',
                   {
-                    'Fn::Split': [
-                      ':',
-                      { 'Fn::GetAtt': ['ProxyCB0DFB71', 'DBProxyArn'] },
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [':', { 'Fn::GetAtt': ['ProxyCB0DFB71', 'DBProxyArn'] }],
+                      },
                     ],
                   },
+                  '/{{resolve:secretsmanager:',
+                  { Ref: 'DatabaseSecretAttachmentE5D1B020' },
+                  ':SecretString:username::}}',
                 ],
-              },
-              '/{{resolve:secretsmanager:',
-              { Ref: 'DatabaseSecretAttachmentE5D1B020' },
-              ':SecretString:username::}}',
-            ]],
+              ],
+            },
           },
-        }],
+        ],
         Version: '2012-10-17',
       },
     });
@@ -415,10 +415,7 @@ describe('proxy', () => {
 
     const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
       proxyTarget: rds.ProxyTarget.fromCluster(cluster),
-      secrets: [
-        cluster.secret!,
-        new secretsmanager.Secret(stack, 'ProxySecret'),
-      ],
+      secrets: [cluster.secret!, new secretsmanager.Secret(stack, 'ProxySecret')],
       vpc,
     });
 
@@ -466,10 +463,7 @@ describe('proxy', () => {
             Action: 'kms:Decrypt',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
         ],
@@ -502,11 +496,7 @@ describe('proxy', () => {
         },
         TargetGroupName: 'default',
       },
-      DependsOn: [
-        'clusterInstance183584D40',
-        'clusterInstance23D1AD8B2',
-        'cluster611F8AFF',
-      ],
+      DependsOn: ['clusterInstance183584D40', 'clusterInstance23D1AD8B2', 'cluster611F8AFF'],
     });
   });
 
@@ -537,11 +527,7 @@ describe('proxy', () => {
         },
         TargetGroupName: 'default',
       },
-      DependsOn: [
-        'clusterInstance183584D40',
-        'clusterInstance23D1AD8B2',
-        'cluster611F8AFF',
-      ],
+      DependsOn: ['clusterInstance183584D40', 'clusterInstance23D1AD8B2', 'cluster611F8AFF'],
     });
     Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
       Properties: {
@@ -550,11 +536,7 @@ describe('proxy', () => {
         },
         TargetGroupName: 'default',
       },
-      DependsOn: [
-        'clusterInstance183584D40',
-        'clusterInstance23D1AD8B2',
-        'cluster611F8AFF',
-      ],
+      DependsOn: ['clusterInstance183584D40', 'clusterInstance23D1AD8B2', 'cluster611F8AFF'],
     });
   });
 
@@ -582,11 +564,7 @@ describe('proxy', () => {
         },
         TargetGroupName: 'default',
       },
-      DependsOn: [
-        'clusterreaderE226030A',
-        'cluster611F8AFF',
-        'clusterwriter3FDF01F3',
-      ],
+      DependsOn: ['clusterreaderE226030A', 'cluster611F8AFF', 'clusterwriter3FDF01F3'],
     });
   });
 
@@ -617,11 +595,7 @@ describe('proxy', () => {
         },
         TargetGroupName: 'default',
       },
-      DependsOn: [
-        'clusterreaderE226030A',
-        'cluster611F8AFF',
-        'clusterwriter3FDF01F3',
-      ],
+      DependsOn: ['clusterreaderE226030A', 'cluster611F8AFF', 'clusterwriter3FDF01F3'],
     });
     Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
       Properties: {
@@ -630,11 +604,7 @@ describe('proxy', () => {
         },
         TargetGroupName: 'default',
       },
-      DependsOn: [
-        'clusterreaderE226030A',
-        'cluster611F8AFF',
-        'clusterwriter3FDF01F3',
-      ],
+      DependsOn: ['clusterreaderE226030A', 'cluster611F8AFF', 'clusterwriter3FDF01F3'],
     });
   });
 
@@ -672,10 +642,7 @@ describe('proxy', () => {
         EngineFamily: 'MYSQL',
         RequireTLS: true,
         RoleArn: {
-          'Fn::GetAtt': [
-            'ProxyIAMRole2FE8AB0F',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['ProxyIAMRole2FE8AB0F', 'Arn'],
         },
         VpcSubnetIds: [
           {
@@ -706,7 +673,9 @@ describe('proxy', () => {
           vpc,
           clientPasswordAuthType: rds.ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD,
         });
-      }).toThrow(/MYSQL_NATIVE_PASSWORD client password authentication type requires MYSQL engineFamily, got POSTGRESQL/);
+      }).toThrow(
+        /MYSQL_NATIVE_PASSWORD client password authentication type requires MYSQL engineFamily, got POSTGRESQL/
+      );
     });
 
     test('POSTGRES_SCRAM_SHA_256 clientPasswordAuthType requires POSTGRESQL engine family', () => {
@@ -727,7 +696,9 @@ describe('proxy', () => {
           vpc,
           clientPasswordAuthType: rds.ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256,
         });
-      }).toThrow(/POSTGRES_SCRAM_SHA_256 client password authentication type requires POSTGRESQL engineFamily, got MYSQL/);
+      }).toThrow(
+        /POSTGRES_SCRAM_SHA_256 client password authentication type requires POSTGRESQL engineFamily, got MYSQL/
+      );
     });
 
     test('POSTGRES_MD5 clientPasswordAuthType requires POSTGRESQL engine family', () => {
@@ -769,7 +740,9 @@ describe('proxy', () => {
           vpc,
           clientPasswordAuthType: rds.ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION,
         });
-      }).toThrow(/SQL_SERVER_AUTHENTICATION client password authentication type requires SQLSERVER engineFamily, got MYSQL/);
+      }).toThrow(
+        /SQL_SERVER_AUTHENTICATION client password authentication type requires SQLSERVER engineFamily, got MYSQL/
+      );
     });
   });
 });
@@ -809,10 +782,7 @@ describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => 
       EngineFamily: 'MYSQL',
       RequireTLS: true,
       RoleArn: {
-        'Fn::GetAtt': [
-          'ProxyIAMRole2FE8AB0F',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ProxyIAMRole2FE8AB0F', 'Arn'],
       },
       VpcSubnetIds: [
         {
@@ -860,10 +830,7 @@ describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => 
       EngineFamily: 'MYSQL',
       RequireTLS: true,
       RoleArn: {
-        'Fn::GetAtt': [
-          'ProxyIAMRole2FE8AB0F',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ProxyIAMRole2FE8AB0F', 'Arn'],
       },
       VpcSubnetIds: [
         {

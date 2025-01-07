@@ -62,13 +62,15 @@ test('only the required parameters', () => {
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
-        Action: 'codebuild:StartBuildBatch',
-        Effect: 'Allow',
-        Resource: {
-          'Fn::GetAtt': ['ProjectC78D97AD', 'Arn'],
+      Statement: [
+        {
+          Action: 'codebuild:StartBuildBatch',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': ['ProjectC78D97AD', 'Arn'],
+          },
         },
-      }],
+      ],
     },
   });
 });
@@ -110,8 +112,8 @@ test('supports tokens', () => {
       },
       EnvironmentVariablesOverride: [
         {
-          'Name': 'ZONE',
-          'Type': codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          Name: 'ZONE',
+          Type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
           'Value.$': '$.envVariables.zone',
         },
       ],
@@ -210,6 +212,6 @@ test('throw error when WAIT_FOR_TASK_TOKEN is supplied as service integration pa
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
   }).toThrow(
-    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/,
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
   );
 });

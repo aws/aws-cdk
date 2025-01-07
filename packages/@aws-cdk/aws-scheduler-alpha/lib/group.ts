@@ -1,16 +1,7 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
-import {
-  Arn,
-  ArnFormat,
-  Aws,
-  IResource,
-  Names,
-  RemovalPolicy,
-  Resource,
-  Stack,
-} from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 export interface GroupProps {
@@ -102,10 +93,7 @@ export interface IGroup extends IResource {
    *
    * @default - sum over 5 minutes
    */
-  metricFailedToBeSentToDLQ(
-    errorCode?: string,
-    props?: cloudwatch.MetricOptions
-  ): cloudwatch.Metric;
+  metricFailedToBeSentToDLQ(errorCode?: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for delivery of failed invocations to DLQ when the payload of the event sent to the DLQ exceeds the maximum size allowed by Amazon SQS.
@@ -223,10 +211,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  public metricFailedToBeSentToDLQ(
-    errorCode?: string,
-    props?: cloudwatch.MetricOptions
-  ): cloudwatch.Metric {
+  public metricFailedToBeSentToDLQ(errorCode?: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (errorCode) {
       return this.metric(`InvocationsFailedToBeSentToDeadLetterCount_${errorCode}`, props);
     }

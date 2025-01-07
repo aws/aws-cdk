@@ -18,7 +18,6 @@ beforeEach(() => {
 });
 
 describe('Http Data Source configuration', () => {
-
   test('default configuration produces name `HttpCDKDataSource`', () => {
     // WHEN
     api.addHttpDataSource('ds', endpoint);
@@ -106,10 +105,7 @@ describe('Http Data Source configuration', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'states:ListExecutions',
-              'states:ListStateMachines',
-            ],
+            Action: ['states:ListExecutions', 'states:ListStateMachines'],
             Effect: 'Allow',
             Resource: machineArn,
           },
@@ -142,11 +138,7 @@ describe('Http Data Source configuration', () => {
             },
           },
           {
-            Action: [
-              'states:ListActivities',
-              'states:DescribeStateMachine',
-              'states:DescribeActivity',
-            ],
+            Action: ['states:ListActivities', 'states:DescribeStateMachine', 'states:DescribeActivity'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -163,7 +155,6 @@ describe('Http Data Source configuration', () => {
       api.addHttpDataSource('ds', endpoint);
     }).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
-
 });
 
 describe('adding http data source from imported api', () => {

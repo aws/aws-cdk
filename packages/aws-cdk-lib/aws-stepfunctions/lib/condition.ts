@@ -305,11 +305,7 @@ export abstract class Condition {
    * Matches if a timestamp field is after or equal to the timestamp at a given mapping path
    */
   public static timestampGreaterThanEqualsJsonPath(variable: string, value: string): Condition {
-    return new VariableComparison(
-      variable,
-      ComparisonOperator.TimestampGreaterThanEqualsPath,
-      value
-    );
+    return new VariableComparison(variable, ComparisonOperator.TimestampGreaterThanEqualsPath, value);
   }
 
   /**
@@ -411,9 +407,7 @@ class VariableComparison extends Condition {
   ) {
     super();
     if (!/^\$|(\$[.[])/.test(variable)) {
-      throw new Error(
-        `Variable reference must be '$', start with '$.', or start with '$[', got '${variable}'`
-      );
+      throw new Error(`Variable reference must be '$', start with '$.', or start with '$[', got '${variable}'`);
     }
   }
 

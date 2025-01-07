@@ -107,9 +107,7 @@ export class AlarmRule {
   private static concat(operator: Operator, ...operands: IAlarmRule[]): IAlarmRule {
     return new (class implements IAlarmRule {
       public renderAlarmRule(): string {
-        const expression = operands
-          .map((operand) => `${operand.renderAlarmRule()}`)
-          .join(` ${operator} `);
+        const expression = operands.map((operand) => `${operand.renderAlarmRule()}`).join(` ${operator} `);
         return `(${expression})`;
       }
     })();

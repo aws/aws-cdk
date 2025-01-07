@@ -154,11 +154,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
   /**
    * import from EnvironmentEc2Name
    */
-  public static fromEc2EnvironmentName(
-    scope: Construct,
-    id: string,
-    ec2EnvironmentName: string
-  ): IEc2Environment {
+  public static fromEc2EnvironmentName(scope: Construct, id: string, ec2EnvironmentName: string): IEc2Environment {
     class Import extends cdk.Resource {
       public ec2EnvironmentName = ec2EnvironmentName;
       public ec2EnvironmentArn = cdk.Stack.of(this).formatArn({

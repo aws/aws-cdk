@@ -52,8 +52,8 @@ describe('state machine', () => {
           '',
           [
             '{"StartAt":"framework-isComplete-task","States":{"framework-isComplete-task":{"End":true,"Retry":[{"ErrorEquals":["States.ALL"],' +
-            `"IntervalSeconds":${interval.toSeconds()},"MaxAttempts":${maxAttempts},"BackoffRate":${backoffRate}}],` +
-            '"Catch":[{"ErrorEquals":["States.ALL"],"Next":"framework-onTimeout-task"}],"Type":"Task","Resource":"',
+              `"IntervalSeconds":${interval.toSeconds()},"MaxAttempts":${maxAttempts},"BackoffRate":${backoffRate}}],` +
+              '"Catch":[{"ErrorEquals":["States.ALL"],"Next":"framework-onTimeout-task"}],"Type":"Task","Resource":"',
             stack.resolve(isCompleteHandler.functionArn),
             '"},"framework-onTimeout-task":{"End":true,"Type":"Task","Resource":"',
             stack.resolve(timeoutHandler.functionArn),
@@ -69,10 +69,7 @@ describe('state machine', () => {
           {
             CloudWatchLogsLogGroup: {
               LogGroupArn: {
-                'Fn::GetAtt': [
-                  'LogGroupF5B46931',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
               },
             },
           },
@@ -203,10 +200,7 @@ describe('state machine', () => {
           {
             CloudWatchLogsLogGroup: {
               LogGroupArn: {
-                'Fn::GetAtt': [
-                  'statemachineLogGroupA08E43E4',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['statemachineLogGroupA08E43E4', 'Arn'],
               },
             },
           },

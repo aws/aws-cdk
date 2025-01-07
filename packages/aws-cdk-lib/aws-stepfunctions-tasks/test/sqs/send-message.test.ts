@@ -70,10 +70,10 @@ describe('SqsSendMessage', () => {
       },
       End: true,
       Parameters: {
-        'QueueUrl': { Ref: 'Queue4A7E3555' },
-        'MessageBody': 'Send this message',
+        QueueUrl: { Ref: 'Queue4A7E3555' },
+        MessageBody: 'Send this message',
         'MessageDeduplicationId.$': '$.deduping',
-        'DelaySeconds': 30,
+        DelaySeconds: 30,
       },
       Comment: 'sending a message to my SQS queue',
     });
@@ -109,7 +109,7 @@ describe('SqsSendMessage', () => {
       Parameters: {
         QueueUrl: { Ref: 'Queue4A7E3555' },
         MessageBody: {
-          'Input': 'Send this message',
+          Input: 'Send this message',
           'Token.$': '$$.Task.Token',
         },
       },
@@ -140,7 +140,7 @@ describe('SqsSendMessage', () => {
       },
       End: true,
       Parameters: {
-        'QueueUrl': { Ref: 'Queue4A7E3555' },
+        QueueUrl: { Ref: 'Queue4A7E3555' },
         'MessageBody.$': '$.theMessage',
       },
     });
@@ -175,7 +175,7 @@ describe('SqsSendMessage', () => {
       Parameters: {
         QueueUrl: { Ref: 'Queue4A7E3555' },
         MessageBody: {
-          'literal': 'literal',
+          literal: 'literal',
           'SomeInput.$': '$.theMessage',
         },
       },
@@ -233,7 +233,8 @@ describe('SqsSendMessage', () => {
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
         messageBody: sfn.TaskInput.fromText('Send this message'),
       });
-    }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/);
+    }).toThrow(
+      /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/
+    );
   });
-
 });

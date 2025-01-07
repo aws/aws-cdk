@@ -3,7 +3,15 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { RemovalPolicy, Stack } from '../../core';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc, FlowLogTrafficType } from '../lib';
+import {
+  FlowLog,
+  FlowLogDestination,
+  FlowLogResourceType,
+  FlowLogMaxAggregationInterval,
+  LogFormat,
+  Vpc,
+  FlowLogTrafficType,
+} from '../lib';
 
 describe('vpc flow logs', () => {
   test('with defaults set, it successfully creates with cloudwatch logs destination', () => {
@@ -28,7 +36,6 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
-
   });
   test('with cloudwatch logs as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
@@ -42,7 +49,7 @@ describe('vpc flow logs', () => {
         new iam.Role(stack, 'TestRole', {
           roleName: 'TestName',
           assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
-        }),
+        })
       ),
     });
 
@@ -53,7 +60,6 @@ describe('vpc flow logs', () => {
       RoleName: 'TestName',
     });
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
-
   });
   test('with s3 as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
@@ -63,7 +69,7 @@ describe('vpc flow logs', () => {
       destination: FlowLogDestination.toS3(
         new s3.Bucket(stack, 'TestBucket', {
           bucketName: 'testbucket',
-        }),
+        })
       ),
     });
 
@@ -75,7 +81,6 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'testbucket',
     });
-
   });
   test('with kinesis data firehose as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
@@ -89,9 +94,7 @@ describe('vpc flow logs', () => {
     });
     new FlowLog(stack, 'FlowLogs', {
       resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
-      destination: FlowLogDestination.toKinesisDataFirehoseDestination(
-        deliveryStreamArn,
-      ),
+      destination: FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStreamArn),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
@@ -120,7 +123,6 @@ describe('vpc flow logs', () => {
         },
       ],
     });
-
   });
 
   test('allows setting destination options', () => {
@@ -143,10 +145,7 @@ describe('vpc flow logs', () => {
         perHourPartition: false,
       },
       LogDestination: {
-        'Fn::GetAtt': [
-          'FlowLogsBucket87F67F60',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
       },
       LogDestinationType: 's3',
     });
@@ -208,10 +207,7 @@ describe('vpc flow logs', () => {
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'FlowLogsBucket87F67F60',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
                     },
                     '/custom-prefix/AWSLogs/aws-account-id=',
                     {
@@ -223,10 +219,7 @@ describe('vpc flow logs', () => {
               },
             },
             {
-              Action: [
-                's3:GetBucketAcl',
-                's3:ListBucket',
-              ],
+              Action: ['s3:GetBucketAcl', 's3:ListBucket'],
               Condition: {
                 StringEquals: {
                   'aws:SourceAccount': {
@@ -261,10 +254,7 @@ describe('vpc flow logs', () => {
                 Service: 'delivery.logs.amazonaws.com',
               },
               Resource: {
-                'Fn::GetAtt': [
-                  'FlowLogsBucket87F67F60',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
               },
             },
           ],
@@ -325,10 +315,7 @@ describe('vpc flow logs', () => {
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'FlowLogsBucket87F67F60',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
                     },
                     '/AWSLogs/',
                     {
@@ -340,10 +327,7 @@ describe('vpc flow logs', () => {
               },
             },
             {
-              Action: [
-                's3:GetBucketAcl',
-                's3:ListBucket',
-              ],
+              Action: ['s3:GetBucketAcl', 's3:ListBucket'],
               Condition: {
                 StringEquals: {
                   'aws:SourceAccount': {
@@ -378,10 +362,7 @@ describe('vpc flow logs', () => {
                 Service: 'delivery.logs.amazonaws.com',
               },
               Resource: {
-                'Fn::GetAtt': [
-                  'FlowLogsBucket87F67F60',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
               },
             },
           ],
@@ -404,10 +385,7 @@ describe('vpc flow logs', () => {
       const template = Template.fromStack(stack);
       template.hasResource('AWS::EC2::FlowLog', {
         Properties: Match.anyValue(),
-        DependsOn: [
-          'BucketAutoDeleteObjectsCustomResourceBAFD23C2',
-          'BucketPolicyE9A3008A',
-        ],
+        DependsOn: ['BucketAutoDeleteObjectsCustomResourceBAFD23C2', 'BucketPolicyE9A3008A'],
       });
     });
 
@@ -431,7 +409,7 @@ describe('vpc flow logs', () => {
         new s3.Bucket(stack, 'TestBucket', {
           bucketName: 'testbucket',
         }),
-        'FlowLogs/',
+        'FlowLogs/'
       ),
     });
 
@@ -440,7 +418,6 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'testbucket',
     });
-
   });
   test('with s3 as the destination and all the defaults set, it successfully creates all the resources', () => {
     const stack = getTestStack();
@@ -461,7 +438,6 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
-
   });
   test('create with vpc', () => {
     const stack = getTestStack();
@@ -486,7 +462,6 @@ describe('vpc flow logs', () => {
         Ref: 'VPCflowLogsLogGroupE900F980',
       },
     });
-
   });
   test('add to vpc', () => {
     const stack = getTestStack();
@@ -656,10 +631,7 @@ test('with custom log format set, it successfully creates with cloudwatch log de
 
   new FlowLog(stack, 'FlowLogs', {
     resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
-    logFormat: [
-      LogFormat.SRC_PORT,
-      LogFormat.DST_PORT,
-    ],
+    logFormat: [LogFormat.SRC_PORT, LogFormat.DST_PORT],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
@@ -728,14 +700,15 @@ test('log format for built-in types is correct', () => {
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties('AWS::EC2::FlowLog', {
-    LogFormat: ('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} '
-                + '${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} '
-                + '${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} '
-                + '${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} '
-                + '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path} '
-                + '${ecs-cluster-arn} ${ecs-cluster-name} ${ecs-container-instance-arn} ${ecs-container-instance-id} '
-                + '${ecs-container-id} ${ecs-second-container-id} ${ecs-service-name} ${ecs-task-definition-arn} '
-                + '${ecs-task-arn} ${ecs-task-id}'),
+    LogFormat:
+      '${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ' +
+      '${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} ' +
+      '${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} ' +
+      '${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} ' +
+      '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path} ' +
+      '${ecs-cluster-arn} ${ecs-cluster-name} ${ecs-container-instance-arn} ${ecs-container-instance-id} ' +
+      '${ecs-container-id} ${ecs-second-container-id} ${ecs-service-name} ${ecs-task-definition-arn} ' +
+      '${ecs-task-arn} ${ecs-task-id}',
   });
 });
 
@@ -758,7 +731,6 @@ test('with custom log format set empty, it not creates with cloudwatch log desti
       Ref: 'FlowLogsLogGroup9853A85F',
     },
   });
-
 });
 
 function getTestStack(): Stack {
@@ -772,10 +744,7 @@ test('with custom log format set all default field, it not creates with cloudwat
 
   new FlowLog(stack, 'FlowLogs', {
     resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
-    logFormat: [
-      LogFormat.VERSION,
-      LogFormat.ALL_DEFAULT_FIELDS,
-    ],
+    logFormat: [LogFormat.VERSION, LogFormat.ALL_DEFAULT_FIELDS],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
@@ -785,7 +754,8 @@ test('with custom log format set all default field, it not creates with cloudwat
     DeliverLogsPermissionArn: {
       'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
     },
-    LogFormat: '${version} ${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}',
+    LogFormat:
+      '${version} ${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}',
     LogGroupName: {
       Ref: 'FlowLogsLogGroup9853A85F',
     },
@@ -797,10 +767,7 @@ test('with custom log format set custom, it not creates with cloudwatch log dest
 
   new FlowLog(stack, 'FlowLogs', {
     resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
-    logFormat: [
-      LogFormat.SRC_PORT,
-      LogFormat.custom('${new-field}'),
-    ],
+    logFormat: [LogFormat.SRC_PORT, LogFormat.custom('${new-field}')],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
@@ -816,4 +783,3 @@ test('with custom log format set custom, it not creates with cloudwatch log dest
     },
   });
 });
-

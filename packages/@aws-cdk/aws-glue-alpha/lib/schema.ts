@@ -155,9 +155,7 @@ export class Schema {
    */
   public static varchar(length: number): Type {
     if (length <= 0 || length > 65535) {
-      throw new Error(
-        `varchar length must be (inclusively) between 1 and 65535, but was ${length}`
-      );
+      throw new Error(`varchar length must be (inclusively) between 1 and 65535, but was ${length}`);
     }
     if (length % 1 !== 0) {
       throw new Error(`varchar length must be a positive integer, was ${length}`);
@@ -188,9 +186,7 @@ export class Schema {
    */
   public static map(keyType: Type, valueType: Type): Type {
     if (!keyType.isPrimitive) {
-      throw new Error(
-        `the key type of a 'map' must be a primitive, but was ${keyType.inputString}`
-      );
+      throw new Error(`the key type of a 'map' must be a primitive, but was ${keyType.inputString}`);
     }
     return {
       isPrimitive: false,

@@ -260,21 +260,9 @@ export interface Diagnostic {
 
 export function printSummary(total: number, failed: number): void {
   if (failed > 0) {
-    logger.print(
-      '%s:    %s %s, %s total',
-      chalk.bold('Tests'),
-      chalk.red(failed),
-      chalk.red('failed'),
-      total
-    );
+    logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.red(failed), chalk.red('failed'), total);
   } else {
-    logger.print(
-      '%s:    %s %s, %s total',
-      chalk.bold('Tests'),
-      chalk.green(total),
-      chalk.green('passed'),
-      total
-    );
+    logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.green(total), chalk.green('passed'), total);
   }
 }
 
@@ -285,11 +273,7 @@ export function printSummary(total: number, failed: number): void {
 export function formatAssertionResults(results: AssertionResults): string {
   return Object.entries(results)
     .map(([id, result]) =>
-      format(
-        '%s%s',
-        id,
-        result.status === 'success' ? ` - ${result.status}` : `\n${result.message}`
-      )
+      format('%s%s', id, result.status === 'success' ? ` - ${result.status}` : `\n${result.message}`)
     )
     .join('\n      ');
 }
@@ -300,11 +284,7 @@ export function formatAssertionResults(results: AssertionResults): string {
 export function printResults(diagnostic: Diagnostic): void {
   switch (diagnostic.reason) {
     case DiagnosticReason.SNAPSHOT_SUCCESS:
-      logger.success(
-        '  UNCHANGED  %s %s',
-        diagnostic.testName,
-        chalk.gray(`${diagnostic.duration}s`)
-      );
+      logger.success('  UNCHANGED  %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.TEST_SUCCESS:
       logger.success(
@@ -315,11 +295,7 @@ export function printResults(diagnostic: Diagnostic): void {
       );
       break;
     case DiagnosticReason.NO_SNAPSHOT:
-      logger.error(
-        '  NEW        %s %s',
-        diagnostic.testName,
-        chalk.gray(`${diagnostic.duration}s`)
-      );
+      logger.error('  NEW        %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
       break;
     case DiagnosticReason.SNAPSHOT_FAILED:
       logger.error(

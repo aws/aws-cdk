@@ -152,7 +152,6 @@ describe('lambda authorizer', () => {
     });
 
     expect(auth.authorizerArn.endsWith(`/authorizers/${auth.authorizerId}`)).toBeTruthy();
-
   });
 
   test('request authorizer with default cache TTL', () => {
@@ -191,11 +190,14 @@ describe('lambda authorizer', () => {
       runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
-    expect(() => new RequestAuthorizer(stack, 'myauthorizer', {
-      handler: func,
-      resultsCacheTtl: Duration.seconds(1),
-      identitySources: [],
-    })).toThrow('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
+    expect(
+      () =>
+        new RequestAuthorizer(stack, 'myauthorizer', {
+          handler: func,
+          resultsCacheTtl: Duration.seconds(1),
+          identitySources: [],
+        })
+    ).toThrow('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
   });
 
   test('token authorizer with all parameters specified', () => {
@@ -415,9 +417,7 @@ describe('lambda authorizer', () => {
     Template.fromStack(stack).hasResource('AWS::IAM::Role', Match.anyValue());
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      Roles: [
-        stack.resolve(role.roleName),
-      ],
+      Roles: [stack.resolve(role.roleName)],
       PolicyDocument: {
         Statement: [
           {
@@ -507,9 +507,7 @@ describe('lambda authorizer', () => {
     Template.fromStack(stack).hasResource('AWS::IAM::Role', Match.anyValue());
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      Roles: [
-        stack.resolve(role.roleName),
-      ],
+      Roles: [stack.resolve(role.roleName)],
       PolicyDocument: {
         Statement: [
           {

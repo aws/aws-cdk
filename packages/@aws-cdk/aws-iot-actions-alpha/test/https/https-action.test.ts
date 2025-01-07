@@ -7,9 +7,7 @@ test('Default HTTPS action', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323(
-      "SELECT topic(2) as device_id FROM 'device/+/data'",
-    ),
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const expectedUrl = 'https://example.com';
 
@@ -49,9 +47,7 @@ test('can set confirmation url', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323(
-      "SELECT topic(2) as device_id FROM 'device/+/data'",
-    ),
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const expectedUrl = 'https://example.com';
   const expectedConfirmationUrl = 'https://example.com/confirm';
@@ -60,7 +56,7 @@ test('can set confirmation url', () => {
   topicRule.addAction(
     new actions.HttpsAction(expectedUrl, {
       confirmationUrl: expectedConfirmationUrl,
-    }),
+    })
   );
 
   //THEN
@@ -82,9 +78,7 @@ test('can set http headers', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323(
-      "SELECT topic(2) as device_id FROM 'device/+/data'",
-    ),
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const expectedUrl = 'https://example.com';
   const headers = [
@@ -93,9 +87,7 @@ test('can set http headers', () => {
   ];
 
   // WHEN
-  topicRule.addAction(
-    new actions.HttpsAction(expectedUrl, { headers: headers }),
-  );
+  topicRule.addAction(new actions.HttpsAction(expectedUrl, { headers: headers }));
 
   //THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -119,9 +111,7 @@ test('can set http auth', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323(
-      "SELECT topic(2) as device_id FROM 'device/+/data'",
-    ),
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const expectedUrl = 'https://example.com';
   const expectedAuth = {
@@ -130,9 +120,7 @@ test('can set http auth', () => {
   };
 
   // WHEN
-  topicRule.addAction(
-    new actions.HttpsAction(expectedUrl, { auth: expectedAuth }),
-  );
+  topicRule.addAction(new actions.HttpsAction(expectedUrl, { auth: expectedAuth }));
 
   //THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -144,10 +132,7 @@ test('can set http auth', () => {
             Auth: {
               Sigv4: {
                 RoleArn: {
-                  'Fn::GetAtt': [
-                    Match.stringLikeRegexp('MyTopicRuleTopicRuleActionRole'),
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': [Match.stringLikeRegexp('MyTopicRuleTopicRuleActionRole'), 'Arn'],
                 },
                 ServiceName: expectedAuth.serviceName,
                 SigningRegion: expectedAuth.signingRegion,

@@ -5,7 +5,18 @@ import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
 import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
+import {
+  App,
+  AssetHashType,
+  AssetStaging,
+  DockerImage,
+  BundlingOptions,
+  BundlingOutput,
+  FileSystem,
+  Stack,
+  Stage,
+  BundlingFileAccess,
+} from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -74,7 +85,9 @@ describe('staging', () => {
     // GIVEN
     const stack = new Stack();
     const sourcePath = path.join(os.tmpdir(), 'asset-symlink');
-    if (fs.existsSync(sourcePath)) { fs.unlinkSync(sourcePath); }
+    if (fs.existsSync(sourcePath)) {
+      fs.unlinkSync(sourcePath);
+    }
     fs.symlinkSync(FIXTURE_TEST1_DIR, sourcePath);
 
     try {
@@ -131,11 +144,12 @@ describe('staging', () => {
     expect(stagingTar.isArchive).toEqual(true);
     expect(stagingNotArchive.packaging).toEqual(FileAssetPackaging.FILE);
     expect(path.basename(stagingNotArchive.absoluteStagedPath)).toEqual(`asset.${NOT_ARCHIVED_ZIP_TXT_HASH}.txt`);
-    expect(path.basename(stagingNotArchive.relativeStagedPath(stack))).toEqual(`asset.${NOT_ARCHIVED_ZIP_TXT_HASH}.txt`);
+    expect(path.basename(stagingNotArchive.relativeStagedPath(stack))).toEqual(
+      `asset.${NOT_ARCHIVED_ZIP_TXT_HASH}.txt`
+    );
     expect(stagingNotArchive.isArchive).toEqual(false);
     expect(stagingDockerFile.packaging).toEqual(FileAssetPackaging.FILE);
     expect(stagingDockerFile.isArchive).toEqual(false);
-
   });
 
   test('asset packaging type is correct when staging is skipped because of memory cache', () => {
@@ -309,9 +323,8 @@ describe('staging', () => {
 
     // THEN
     const assembly = app.synth();
-    expect(
-      readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
@@ -358,7 +371,9 @@ describe('staging', () => {
     const resolvedStagePath = asset.relativeStagedPath(stack);
     // absolute path ending with bundling dir
     expect(path.isAbsolute(resolvedStagePath)).toEqual(true);
-    expect(new RegExp('asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4$').test(resolvedStagePath)).toEqual(true);
+    expect(
+      new RegExp('asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4$').test(resolvedStagePath)
+    ).toEqual(true);
   });
 
   test('bundler reuses its output when it can', () => {
@@ -388,9 +403,8 @@ describe('staging', () => {
     const assembly = app.synth();
 
     // We're testing that docker was run exactly once even though there are two bundling assets.
-    expect(
-      readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInputConcat()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -422,7 +436,8 @@ describe('staging', () => {
     new AssetStaging(stack, 'AssetDuplicate', {
       sourcePath: directory,
       assetHashType: AssetHashType.OUTPUT,
-      bundling: { // Same bundling but with keys ordered differently
+      bundling: {
+        // Same bundling but with keys ordered differently
         command: [DockerStubCommand.SUCCESS],
         image: DockerImage.fromRegistry('alpine'),
       },
@@ -433,9 +448,8 @@ describe('staging', () => {
 
     // We're testing that docker was run exactly once even though there are two bundling assets
     // and that the hash is based on the output
-    expect(
-      readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInputConcat()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -481,10 +495,9 @@ describe('staging', () => {
 
     // We're testing that docker was run twice - once for each set of bundler options
     // operating on the same source asset.
-    expect(
-      readDockerStubInputConcat()).toEqual(
+    expect(readDockerStubInputConcat()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS\n` +
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env UNIQUE_ENV_VAR=SOMEVALUE -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+        `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env UNIQUE_ENV_VAR=SOMEVALUE -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -510,7 +523,8 @@ describe('staging', () => {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         environment: {
-          PIP_INDEX_URL: 'https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
+          PIP_INDEX_URL:
+            'https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
         },
       },
     });
@@ -521,7 +535,8 @@ describe('staging', () => {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         environment: {
-          PIP_INDEX_URL: 'https://aws:MY_OTHER_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
+          PIP_INDEX_URL:
+            'https://aws:MY_OTHER_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
         },
       },
     });
@@ -530,9 +545,8 @@ describe('staging', () => {
     const assembly = app.synth();
 
     // We're testing that docker was run once, only for the first Asset, since the only difference is the token.
-    expect(
-      readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInputConcat()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -551,16 +565,19 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: DockerImage.fromRegistry('alpine'),
-        command: [DockerStubCommand.SUCCESS],
-        environment: {
-          PIP_INDEX_URL: 'NOT_A_URL',
-        },
-      },
-    })).toThrow('PIP_INDEX_URL must be a valid URL, got NOT_A_URL.');
+    expect(
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          bundling: {
+            image: DockerImage.fromRegistry('alpine'),
+            command: [DockerStubCommand.SUCCESS],
+            environment: {
+              PIP_INDEX_URL: 'NOT_A_URL',
+            },
+          },
+        })
+    ).toThrow('PIP_INDEX_URL must be a valid URL, got NOT_A_URL.');
   });
 
   test('bundler outputs to intermediate dir and renames to asset', () => {
@@ -587,7 +604,12 @@ describe('staging', () => {
 
     expect(ensureDirSync.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')))).toEqual(true);
     expect(chmodSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), 0o777)).toEqual(true);
-    expect(renameSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), sinon.match(path.join(assembly.directory, 'asset.')))).toEqual(true);
+    expect(
+      renameSyncSpy.calledWith(
+        sinon.match(path.join(assembly.directory, 'bundling-temp-')),
+        sinon.match(path.join(assembly.directory, 'asset.'))
+      )
+    ).toEqual(true);
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f', // 'Asset'
@@ -605,19 +627,22 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: DockerImage.fromRegistry('alpine'),
-        command: [DockerStubCommand.FAIL],
-      },
-    })).toThrow(/Failed.*bundl.*asset.*-error/);
+    expect(
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          bundling: {
+            image: DockerImage.fromRegistry('alpine'),
+            command: [DockerStubCommand.FAIL],
+          },
+        })
+    ).toThrow(/Failed.*bundl.*asset.*-error/);
 
     // THEN
     const assembly = app.synth();
 
     const dir = fs.readdirSync(assembly.directory);
-    expect(dir.some(entry => entry.match(/asset.*-error/))).toEqual(true);
+    expect(dir.some((entry) => entry.match(/asset.*-error/))).toEqual(true);
   });
 
   test('bundler re-uses assets from previous synths', () => {
@@ -661,9 +686,8 @@ describe('staging', () => {
     const appAssembly = app.synth();
     const app2Assembly = app2.synth();
 
-    expect(
-      readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInputConcat()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
 
     expect(appAssembly.directory).toEqual(app2Assembly.directory);
@@ -694,7 +718,8 @@ describe('staging', () => {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         environment: {
-          PIP_EXTRA_INDEX_URL: 'https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
+          PIP_EXTRA_INDEX_URL:
+            'https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
         },
       },
     });
@@ -714,7 +739,8 @@ describe('staging', () => {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         environment: {
-          PIP_EXTRA_INDEX_URL: 'https://aws:MY_OTHER_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
+          PIP_EXTRA_INDEX_URL:
+            'https://aws:MY_OTHER_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/',
         },
       },
     });
@@ -723,9 +749,8 @@ describe('staging', () => {
     const appAssembly = app.synth();
     const app2Assembly = app2.synth();
 
-    expect(
-      readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_EXTRA_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInputConcat()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_EXTRA_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
 
     expect(appAssembly.directory).toEqual(app2Assembly.directory);
@@ -745,17 +770,19 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // THEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: DockerImage.fromRegistry('alpine'),
-        command: [DockerStubCommand.SUCCESS_NO_OUTPUT],
-      },
-    })).toThrow(/Bundling did not produce any output/);
-
     expect(
-      readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          bundling: {
+            image: DockerImage.fromRegistry('alpine'),
+            command: [DockerStubCommand.SUCCESS_NO_OUTPUT],
+          },
+        })
+    ).toThrow(/Bundling did not produce any output/);
+
+    expect(readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`
     );
   });
 
@@ -776,9 +803,8 @@ describe('staging', () => {
     });
 
     // THEN
-    expect(
-      readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -801,9 +827,8 @@ describe('staging', () => {
     });
 
     // THEN
-    expect(
-      readDockerStubInput()).toEqual(
-      `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInput()).toEqual(
+      `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -826,9 +851,8 @@ describe('staging', () => {
     });
 
     // THEN
-    expect(
-      readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -877,15 +901,18 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // THEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: DockerImage.fromRegistry('alpine'),
-        command: [DockerStubCommand.SUCCESS],
-      },
-      assetHash: 'my-custom-hash',
-      assetHashType: AssetHashType.OUTPUT,
-    })).toThrow(/Cannot specify `output` for `assetHashType`/);
+    expect(
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          bundling: {
+            image: DockerImage.fromRegistry('alpine'),
+            command: [DockerStubCommand.SUCCESS],
+          },
+          assetHash: 'my-custom-hash',
+          assetHashType: AssetHashType.OUTPUT,
+        })
+    ).toThrow(/Cannot specify `output` for `assetHashType`/);
   });
 
   testDeprecated('throws with BUNDLE hash type and no bundling', () => {
@@ -895,10 +922,13 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // THEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      assetHashType: AssetHashType.BUNDLE,
-    })).toThrow(/Cannot use `bundle` hash type when `bundling` is not specified/);
+    expect(
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          assetHashType: AssetHashType.BUNDLE,
+        })
+    ).toThrow(/Cannot use `bundle` hash type when `bundling` is not specified/);
     expect(fs.existsSync(STUB_INPUT_FILE)).toEqual(false);
   });
 
@@ -909,10 +939,13 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // THEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      assetHashType: AssetHashType.OUTPUT,
-    })).toThrow(/Cannot use `output` hash type when `bundling` is not specified/);
+    expect(
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          assetHashType: AssetHashType.OUTPUT,
+        })
+    ).toThrow(/Cannot use `output` hash type when `bundling` is not specified/);
     expect(fs.existsSync(STUB_INPUT_FILE)).toEqual(false);
   });
 
@@ -923,10 +956,13 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // THEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      assetHashType: AssetHashType.CUSTOM,
-    })).toThrow(/`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`/);
+    expect(
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          assetHashType: AssetHashType.CUSTOM,
+        })
+    ).toThrow(/`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`/);
     expect(fs.existsSync(STUB_INPUT_FILE)).toEqual(false); // "docker" not executed
   });
 
@@ -937,16 +973,18 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // THEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: DockerImage.fromRegistry('this-is-an-invalid-docker-image'),
-        command: [DockerStubCommand.FAIL],
-      },
-    })).toThrow(/Failed to bundle asset stack\/Asset/);
     expect(
-      readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          bundling: {
+            image: DockerImage.fromRegistry('this-is-an-invalid-docker-image'),
+            command: [DockerStubCommand.FAIL],
+          },
+        })
+    ).toThrow(/Failed to bundle asset stack\/Asset/);
+    expect(readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`
     );
   });
 
@@ -1235,9 +1273,8 @@ describe('staging', () => {
       },
     });
 
-    expect(
-      readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
   });
@@ -1259,9 +1296,8 @@ describe('staging', () => {
       },
     });
 
-    expect(
-      readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    expect(readDockerStubInput()).toEqual(
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
   });
@@ -1291,7 +1327,11 @@ describe('staging', () => {
       'stack.template.json',
       'tree.json',
     ]);
-    expect(fs.readdirSync(path.join(assembly.directory, 'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48'))).toEqual([
+    expect(
+      fs.readdirSync(
+        path.join(assembly.directory, 'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48')
+      )
+    ).toEqual([
       'test.zip', // bundle dir with "touched" bundled output file
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
@@ -1380,14 +1420,19 @@ describe('staging', () => {
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
     // WHEN
-    expect(() => new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: DockerImage.fromRegistry('alpine'),
-        command: [DockerStubCommand.MULTIPLE_FILES],
-        outputType: BundlingOutput.ARCHIVED,
-      },
-    })).toThrow(/Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`/);
+    expect(
+      () =>
+        new AssetStaging(stack, 'Asset', {
+          sourcePath: directory,
+          bundling: {
+            image: DockerImage.fromRegistry('alpine'),
+            command: [DockerStubCommand.MULTIPLE_FILES],
+            outputType: BundlingOutput.ARCHIVED,
+          },
+        })
+    ).toThrow(
+      /Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`/
+    );
   });
 
   test('bundling that produces a single file with SINGLE_FILE', () => {
@@ -1562,23 +1607,33 @@ describe('staging with docker cp', () => {
       'stack.template.json',
       'tree.json',
     ]);
-    expect(fs.readdirSync(path.join(assembly.directory, 'asset.0ec371a2022d29dfd83f5df104e0f01b34233a4e3e839c3c4ec62008f0b9a0e8'))).toEqual([
+    expect(
+      fs.readdirSync(
+        path.join(assembly.directory, 'asset.0ec371a2022d29dfd83f5df104e0f01b34233a4e3e839c3c4ec62008f0b9a0e8')
+      )
+    ).toEqual([
       'test.zip', // bundle dir with "touched" bundled output file
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(true);
     const dockerCalls: string[] = readDockerStubInputConcat(STUB_INPUT_CP_CONCAT_FILE).split(/\r?\n/);
-    expect(dockerCalls).toEqual(expect.arrayContaining([
-      expect.stringContaining('volume create assetInput'),
-      expect.stringContaining('volume create assetOutput'),
-      expect.stringMatching('run --name copyContainer.* -v /input:/asset-input -v /output:/asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R .* /asset-output && chown -R .* /asset-input'),
-      expect.stringMatching('cp .*fs/fixtures/test1/\. copyContainer.*:/asset-input'),
-      expect.stringMatching('run --rm -u .* --volumes-from copyContainer.* -w /asset-input alpine DOCKER_STUB_VOLUME_SINGLE_ARCHIVE'),
-      expect.stringMatching('cp copyContainer.*:/asset-output/\. .*'),
-      expect.stringContaining('rm copyContainer'),
-      expect.stringContaining('volume rm assetInput'),
-      expect.stringContaining('volume rm assetOutput'),
-    ]));
+    expect(dockerCalls).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('volume create assetInput'),
+        expect.stringContaining('volume create assetOutput'),
+        expect.stringMatching(
+          'run --name copyContainer.* -v /input:/asset-input -v /output:/asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R .* /asset-output && chown -R .* /asset-input'
+        ),
+        expect.stringMatching('cp .*fs/fixtures/test1/\. copyContainer.*:/asset-input'),
+        expect.stringMatching(
+          'run --rm -u .* --volumes-from copyContainer.* -w /asset-input alpine DOCKER_STUB_VOLUME_SINGLE_ARCHIVE'
+        ),
+        expect.stringMatching('cp copyContainer.*:/asset-output/\. .*'),
+        expect.stringContaining('rm copyContainer'),
+        expect.stringContaining('volume rm assetInput'),
+        expect.stringContaining('volume rm assetOutput'),
+      ])
+    );
   });
 
   test('bundling that produces a single file with docker image copy variant and hash type SOURCE', () => {

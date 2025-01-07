@@ -1,7 +1,12 @@
 import { Template } from '../../assertions';
 import * as sns from '../../aws-sns';
 import { Stack } from '../../core';
-import { CloudWatchDimensionSource, ConfigurationSet, ConfigurationSetEventDestination, EventDestination } from '../lib';
+import {
+  CloudWatchDimensionSource,
+  ConfigurationSet,
+  ConfigurationSetEventDestination,
+  EventDestination,
+} from '../lib';
 
 let stack: Stack;
 let configurationSet: ConfigurationSet;
@@ -40,29 +45,34 @@ test('sns destination', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
     PolicyDocument: {
-      Statement: [{
-        Action: 'sns:Publish',
-        Condition: {
-          StringEquals: {
-            'AWS:SourceAccount': { Ref: 'AWS::AccountId' },
-            'AWS:SourceArn': {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':ses:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':configuration-set/',
-                { Ref: 'ConfigurationSet3DD38186' },
-              ]],
+      Statement: [
+        {
+          Action: 'sns:Publish',
+          Condition: {
+            StringEquals: {
+              'AWS:SourceAccount': { Ref: 'AWS::AccountId' },
+              'AWS:SourceArn': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ses:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':configuration-set/',
+                    { Ref: 'ConfigurationSet3DD38186' },
+                  ],
+                ],
+              },
             },
           },
+          Effect: 'Allow',
+          Principal: { Service: 'ses.amazonaws.com' },
+          Resource: { Ref: 'TopicBFC7AF6E' },
         },
-        Effect: 'Allow',
-        Principal: { Service: 'ses.amazonaws.com' },
-        Resource: { Ref: 'TopicBFC7AF6E' },
-      }],
+      ],
     },
   });
 });
@@ -104,4 +114,3 @@ test('cloudwatch dimensions destination', () => {
     },
   });
 });
-

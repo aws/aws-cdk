@@ -60,9 +60,7 @@ export class BasePathMapping extends Resource {
         throw new Error(`A base path cannot start or end with /", received: ${props.basePath}`);
       }
       if (props.basePath.match(/\/{2,}/)) {
-        throw new Error(
-          `A base path cannot have more than one consecutive /", received: ${props.basePath}`
-        );
+        throw new Error(`A base path cannot have more than one consecutive /", received: ${props.basePath}`);
       }
       if (!props.basePath.match(/^[a-zA-Z0-9$_.+!*'()-/]+$/)) {
         throw new Error(
@@ -78,9 +76,7 @@ export class BasePathMapping extends Resource {
     // if props.attachToStage is false, then do not attach to the stage.
     const stage =
       props.stage ??
-      (props.restApi instanceof RestApiBase && attachToStage
-        ? props.restApi.deploymentStage
-        : undefined);
+      (props.restApi instanceof RestApiBase && attachToStage ? props.restApi.deploymentStage : undefined);
 
     new CfnBasePathMapping(this, 'Resource', {
       basePath: props.basePath,

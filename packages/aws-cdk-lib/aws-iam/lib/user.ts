@@ -5,12 +5,7 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import {
-  AddToPrincipalPolicyResult,
-  ArnPrincipal,
-  IPrincipal,
-  PrincipalPolicyFragment,
-} from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
 import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack } from '../../core';
 
@@ -185,20 +180,14 @@ export class User extends Resource implements IIdentity, IUser {
   public static fromUserAttributes(scope: Construct, id: string, attrs: UserAttributes): IUser {
     class Import extends Resource implements IUser {
       public readonly grantPrincipal: IPrincipal = this;
-      public readonly principalAccount = Stack.of(scope).splitArn(
-        attrs.userArn,
-        ArnFormat.SLASH_RESOURCE_NAME
-      ).account;
+      public readonly principalAccount = Stack.of(scope).splitArn(attrs.userArn, ArnFormat.SLASH_RESOURCE_NAME).account;
       // Resource name with path can have multiple elements separated by slash.
       // Therefore, use element after last slash as userName. Happens to work for Tokens since
       // they don't have a '/' in them.
-      public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user')
-        .split('/')
-        .pop()!;
+      public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user').split('/').pop()!;
       public readonly userArn: string = attrs.userArn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
-      public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(attrs.userArn)
-        .policyFragment;
+      public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(attrs.userArn).policyFragment;
       private readonly attachedPolicies = new AttachedPolicies();
       private defaultPolicy?: Policy;
       private groupId = 0;
@@ -281,9 +270,7 @@ export class User extends Resource implements IIdentity, IUser {
         { omitEmpty: true }
       ),
       path: props.path,
-      permissionsBoundary: this.permissionsBoundary
-        ? this.permissionsBoundary.managedPolicyArn
-        : undefined,
+      permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       loginProfile: this.parseLoginProfile(props),
     });
 

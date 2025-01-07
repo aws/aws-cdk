@@ -1,4 +1,3 @@
-
 import * as path from 'path';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -6,7 +5,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('alias', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
     let fleet: gamelift.FleetBase;
@@ -18,9 +16,11 @@ describe('alias', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
       });
     });
@@ -32,14 +32,13 @@ describe('alias', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::Alias', {
-        Properties:
-            {
-              Name: 'test-alias',
-              RoutingStrategy: {
-                FleetId: { Ref: 'MyBuildFleet0F4EADEC' },
-                Type: 'SIMPLE',
-              },
-            },
+        Properties: {
+          Name: 'test-alias',
+          RoutingStrategy: {
+            FleetId: { Ref: 'MyBuildFleet0F4EADEC' },
+            Type: 'SIMPLE',
+          },
+        },
       });
     });
 
@@ -50,14 +49,13 @@ describe('alias', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::Alias', {
-        Properties:
-              {
-                Name: 'test-alias',
-                RoutingStrategy: {
-                  Message: 'terminate message',
-                  Type: 'TERMINAL',
-                },
-              },
+        Properties: {
+          Name: 'test-alias',
+          RoutingStrategy: {
+            Message: 'terminate message',
+            Type: 'TERMINAL',
+          },
+        },
       });
     });
 
@@ -67,10 +65,13 @@ describe('alias', () => {
         incorrectName += 'A';
       }
 
-      expect(() => new gamelift.Alias(stack, 'MyAlias', {
-        aliasName: incorrectName,
-        fleet: fleet,
-      })).toThrow(/Alias name can not be longer than 1024 characters but has 1025 characters./);
+      expect(
+        () =>
+          new gamelift.Alias(stack, 'MyAlias', {
+            aliasName: incorrectName,
+            fleet: fleet,
+          })
+      ).toThrow(/Alias name can not be longer than 1024 characters but has 1025 characters./);
     });
 
     test('with an incorrect description', () => {
@@ -79,27 +80,36 @@ describe('alias', () => {
         incorrectDescription += 'A';
       }
 
-      expect(() => new gamelift.Alias(stack, 'MyAlias', {
-        aliasName: 'test-name',
-        description: incorrectDescription,
-        fleet: fleet,
-      })).toThrow(/Alias description can not be longer than 1024 characters but has 1025 characters./);
+      expect(
+        () =>
+          new gamelift.Alias(stack, 'MyAlias', {
+            aliasName: 'test-name',
+            description: incorrectDescription,
+            fleet: fleet,
+          })
+      ).toThrow(/Alias description can not be longer than 1024 characters but has 1025 characters./);
     });
 
     test('with none of fleet and terminalMessage properties', () => {
-      expect(() => new gamelift.Alias(stack, 'MyAlias', {
-        aliasName: 'test-name',
-        terminalMessage: 'a terminal message',
-        fleet: fleet,
-      })).toThrow(/Either a terminal message or a fleet must be binded to this Alias./);
+      expect(
+        () =>
+          new gamelift.Alias(stack, 'MyAlias', {
+            aliasName: 'test-name',
+            terminalMessage: 'a terminal message',
+            fleet: fleet,
+          })
+      ).toThrow(/Either a terminal message or a fleet must be binded to this Alias./);
     });
 
     test('with both fleet and terminalMessage properties', () => {
-      expect(() => new gamelift.Alias(stack, 'MyAlias', {
-        aliasName: 'test-name',
-        terminalMessage: 'a terminal message',
-        fleet: fleet,
-      })).toThrow(/Either a terminal message or a fleet must be binded to this Alias, not both./);
+      expect(
+        () =>
+          new gamelift.Alias(stack, 'MyAlias', {
+            aliasName: 'test-name',
+            terminalMessage: 'a terminal message',
+            fleet: fleet,
+          })
+      ).toThrow(/Either a terminal message or a fleet must be binded to this Alias, not both./);
     });
   });
 
@@ -109,7 +119,11 @@ describe('alias', () => {
       const stack2 = new cdk.Stack();
 
       // WHEN
-      const imported = gamelift.Alias.fromAliasArn(stack2, 'Imported', 'arn:aws:gamelift:us-east-1:123456789012:alias/sample-alias-id');
+      const imported = gamelift.Alias.fromAliasArn(
+        stack2,
+        'Imported',
+        'arn:aws:gamelift:us-east-1:123456789012:alias/sample-alias-id'
+      );
 
       // THEN
       expect(imported.aliasArn).toEqual('arn:aws:gamelift:us-east-1:123456789012:alias/sample-alias-id');
@@ -125,15 +139,18 @@ describe('alias', () => {
 
       // THEN
       expect(stack.resolve(imported.aliasArn)).toStrictEqual({
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':gamelift:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':alias/sample-alias-id',
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':gamelift:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':alias/sample-alias-id',
+          ],
+        ],
       });
       expect(stack.resolve(imported.aliasId)).toStrictEqual('sample-alias-id');
     });
@@ -162,13 +179,17 @@ describe('alias', () => {
       });
 
       test('with missing attrs', () => {
-        expect(() => gamelift.Alias.fromAliasAttributes(stack, 'ImportedAlias', { }))
-          .toThrow(/Either aliasId or aliasArn must be provided in AliasAttributes/);
+        expect(() => gamelift.Alias.fromAliasAttributes(stack, 'ImportedAlias', {})).toThrow(
+          /Either aliasId or aliasArn must be provided in AliasAttributes/
+        );
       });
 
       test('with invalid ARN', () => {
-        expect(() => gamelift.Alias.fromAliasAttributes(stack, 'ImportedAlias', { aliasArn: 'arn:aws:gamelift:alias-region:123456789012:alias' }))
-          .toThrow(/No alias identifier found in ARN: 'arn:aws:gamelift:alias-region:123456789012:alias'/);
+        expect(() =>
+          gamelift.Alias.fromAliasAttributes(stack, 'ImportedAlias', {
+            aliasArn: 'arn:aws:gamelift:alias-region:123456789012:alias',
+          })
+        ).toThrow(/No alias identifier found in ARN: 'arn:aws:gamelift:alias-region:123456789012:alias'/);
       });
     });
 

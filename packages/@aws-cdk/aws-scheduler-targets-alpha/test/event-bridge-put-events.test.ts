@@ -39,10 +39,7 @@ describe('eventBridge put events', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyEventBus251E60F8',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
           },
           EventBridgeParameters: {
             DetailType: 'detailType',
@@ -62,10 +59,7 @@ describe('eventBridge put events', () => {
             Action: 'events:PutEvents',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'MyEventBus251E60F8',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
             },
           },
         ],
@@ -125,10 +119,7 @@ describe('eventBridge put events', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyEventBus251E60F8',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
           },
 
           EventBridgeParameters: {
@@ -149,10 +140,7 @@ describe('eventBridge put events', () => {
             Action: 'events:PutEvents',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'MyEventBus251E60F8',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
             },
           },
         ],
@@ -176,55 +164,60 @@ describe('eventBridge put events', () => {
 
     const template = Template.fromStack(stack);
 
-    template.resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'events:PutEvents',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'MyEventBus251E60F8',
-                'Arn',
-              ],
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'events:PutEvents',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
+              },
             },
-          },
-        ],
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
@@ -246,73 +239,75 @@ describe('eventBridge put events', () => {
 
     const template = Template.fromStack(stack);
 
-    template.resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'GroupC77FDACD',
-                    'Arn',
-                  ],
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::GetAtt': ['GroupC77FDACD', 'Arn'],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'events:PutEvents',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'MyEventBus251E60F8',
-                'Arn',
-              ],
+    template.resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'events:PutEvents',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
+              },
             },
-          },
-        ],
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
   test('creates IAM policy for imported eventBus in the same account', () => {
     const importedEventBusArn = 'arn:aws:events:us-east-1:123456789012:event-bus/MyEventBus';
@@ -379,10 +374,7 @@ describe('eventBridge put events', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyEventBus251E60F8',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
           },
 
           EventBridgeParameters: {
@@ -403,10 +395,7 @@ describe('eventBridge put events', () => {
             Action: 'events:PutEvents',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'MyEventBus251E60F8',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
             },
           },
         ],
@@ -485,10 +474,7 @@ describe('eventBridge put events', () => {
             Action: 'events:PutEvents',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'MyEventBus251E60F8',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
             },
           },
           {
@@ -523,10 +509,7 @@ describe('eventBridge put events', () => {
             Action: 'events:PutEvents',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'MyEventBus251E60F8',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
             },
           },
           {
@@ -555,10 +538,7 @@ describe('eventBridge put events', () => {
       Properties: {
         Target: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyEventBus251E60F8',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
           },
           EventBridgeParameters: {
             DetailType: 'detailType',
@@ -580,11 +560,13 @@ describe('eventBridge put events', () => {
       maxEventAge: Duration.days(3),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Maximum event age is 1 day/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: eventBusTarget,
+        })
+    ).toThrow(/Maximum event age is 1 day/);
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
@@ -592,11 +574,13 @@ describe('eventBridge put events', () => {
       maxEventAge: Duration.seconds(59),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Minimum event age is 1 minute/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: eventBusTarget,
+        })
+    ).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
@@ -604,17 +588,23 @@ describe('eventBridge put events', () => {
       retryAttempts: 200,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: eventBusTarget,
-      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: eventBusTarget,
+        })
+    ).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 
   test('throw when input is provided in props', () => {
-    expect(() =>
-      new EventBridgePutEvents(eventBusEventEntry, {
-        input: ScheduleTargetInput.fromObject({ foo: 'bar' }),
-      })).toThrow(/ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead./);
+    expect(
+      () =>
+        new EventBridgePutEvents(eventBusEventEntry, {
+          input: ScheduleTargetInput.fromObject({ foo: 'bar' }),
+        })
+    ).toThrow(
+      /ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead./
+    );
   });
 });

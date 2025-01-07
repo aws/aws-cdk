@@ -204,11 +204,7 @@ export interface IBucket extends IResource {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    * @param allowedActionPatterns Restrict the permissions to certain list of action patterns
    */
-  grantWrite(
-    identity: iam.IGrantable,
-    objectsKeyPattern?: any,
-    allowedActionPatterns?: string[]
-  ): iam.Grant;
+  grantWrite(identity: iam.IGrantable, objectsKeyPattern?: any, allowedActionPatterns?: string[]): iam.Grant;
 
   /**
    * Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM principal.
@@ -365,10 +361,7 @@ export interface IBucket extends IResource {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  addObjectCreatedNotification(
-    dest: IBucketNotificationDestination,
-    ...filters: NotificationKeyFilter[]
-  ): void;
+  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 
   /**
    * Subscribes a destination to receive notifications when an object is
@@ -378,10 +371,7 @@ export interface IBucket extends IResource {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  addObjectRemovedNotification(
-    dest: IBucketNotificationDestination,
-    ...filters: NotificationKeyFilter[]
-  ): void;
+  addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 
   /**
    * Enables event bridge notification, causing all events below to be sent to EventBridge:
@@ -601,10 +591,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailPutObject(
-    id: string,
-    options: OnCloudTrailBucketEventOptions = {}
-  ): events.Rule {
+  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
@@ -629,10 +616,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailWriteObject(
-    id: string,
-    options: OnCloudTrailBucketEventOptions = {}
-  ): events.Rule {
+  public onCloudTrailWriteObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
@@ -712,10 +696,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param options Options for generating URL.
    * @returns an TransferAccelerationUrl token
    */
-  public transferAccelerationUrlForObject(
-    key?: string,
-    options?: TransferAccelerationUrlOptions
-  ): string {
+  public transferAccelerationUrlForObject(key?: string, options?: TransferAccelerationUrlOptions): string {
     const dualStack = options?.dualStack ? '.dualstack' : '';
     const prefix = `https://${this.bucketName}.s3-accelerate${dualStack}.amazonaws.com/`;
     if (typeof key !== 'string') {
@@ -739,8 +720,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @returns an ObjectS3Url token
    */
   public virtualHostedUrlForObject(key?: string, options?: VirtualHostedStyleUrlOptions): string {
-    const domainName =
-      (options?.regional ?? true) ? this.bucketRegionalDomainName : this.bucketDomainName;
+    const domainName = (options?.regional ?? true) ? this.bucketRegionalDomainName : this.bucketDomainName;
     const prefix = `https://${domainName}`;
     if (typeof key !== 'string') {
       return prefix;
@@ -799,13 +779,8 @@ export abstract class BucketBase extends Resource implements IBucket {
     );
   }
 
-  public grantWrite(
-    identity: iam.IGrantable,
-    objectsKeyPattern: any = '*',
-    allowedActionPatterns: string[] = []
-  ) {
-    const grantedWriteActions =
-      allowedActionPatterns.length > 0 ? allowedActionPatterns : this.writeActions;
+  public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
+    const grantedWriteActions = allowedActionPatterns.length > 0 ? allowedActionPatterns : this.writeActions;
     return this.grant(
       identity,
       grantedWriteActions,
@@ -824,21 +799,11 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(
-      identity,
-      this.putActions,
-      perms.KEY_WRITE_ACTIONS,
-      this.arnForObjects(objectsKeyPattern)
-    );
+    return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS, this.arnForObjects(objectsKeyPattern));
   }
 
   public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
-    return this.grant(
-      identity,
-      perms.BUCKET_PUT_ACL_ACTIONS,
-      [],
-      this.arnForObjects(objectsKeyPattern)
-    );
+    return this.grant(identity, perms.BUCKET_PUT_ACL_ACTIONS, [], this.arnForObjects(objectsKeyPattern));
   }
 
   /**
@@ -849,12 +814,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantDelete(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(
-      identity,
-      perms.BUCKET_DELETE_ACTIONS,
-      [],
-      this.arnForObjects(objectsKeyPattern)
-    );
+    return this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [], this.arnForObjects(objectsKeyPattern));
   }
 
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
@@ -862,13 +822,7 @@ export abstract class BucketBase extends Resource implements IBucket {
     // we need unique permissions because some permissions are common between read and write key actions
     const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
 
-    return this.grant(
-      identity,
-      bucketActions,
-      keyActions,
-      this.bucketArn,
-      this.arnForObjects(objectsKeyPattern)
-    );
+    return this.grant(identity, bucketActions, keyActions, this.bucketArn, this.arnForObjects(objectsKeyPattern));
   }
 
   /**
@@ -937,9 +891,7 @@ export abstract class BucketBase extends Resource implements IBucket {
     dest: IBucketNotificationDestination,
     ...filters: NotificationKeyFilter[]
   ) {
-    this.withNotifications((notifications) =>
-      notifications.addNotification(event, dest, ...filters)
-    );
+    this.withNotifications((notifications) => notifications.addNotification(event, dest, ...filters));
   }
 
   private withNotifications(cb: (notifications: BucketNotifications) => void) {
@@ -961,10 +913,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  public addObjectCreatedNotification(
-    dest: IBucketNotificationDestination,
-    ...filters: NotificationKeyFilter[]
-  ) {
+  public addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.addEventNotification(EventType.OBJECT_CREATED, dest, ...filters);
   }
 
@@ -976,10 +925,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  public addObjectRemovedNotification(
-    dest: IBucketNotificationDestination,
-    ...filters: NotificationKeyFilter[]
-  ) {
+  public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
@@ -1823,11 +1769,7 @@ export class Bucket extends BucketBase {
    * @param attrs A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static fromBucketAttributes(
-    scope: Construct,
-    id: string,
-    attrs: BucketAttributes
-  ): IBucket {
+  public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
     const stack = Stack.of(scope);
     const region = attrs.region ?? stack.region;
     const regionInfo = regionInformation.RegionInfo.get(region);
@@ -1845,8 +1787,7 @@ export class Bucket extends BucketBase {
     let staticDomainEndpoint =
       regionInfo.s3StaticWebsiteEndpoint ??
       Lazy.string({
-        produce: () =>
-          stack.regionalFact(regionInformation.FactName.S3_STATIC_WEBSITE_ENDPOINT, newEndpoint),
+        produce: () => stack.regionalFact(regionInformation.FactName.S3_STATIC_WEBSITE_ENDPOINT, newEndpoint),
       });
 
     // Deprecated use of bucketWebsiteNewUrlFormat
@@ -1908,19 +1849,11 @@ export class Bucket extends BucketBase {
     // handle the KMS Key if the Bucket references one
     let encryptionKey: kms.IKey | undefined;
     if (cfnBucket.bucketEncryption) {
-      const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any)
-        .serverSideEncryptionConfiguration;
-      if (
-        Array.isArray(serverSideEncryptionConfiguration) &&
-        serverSideEncryptionConfiguration.length === 1
-      ) {
+      const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
+      if (Array.isArray(serverSideEncryptionConfiguration) && serverSideEncryptionConfiguration.length === 1) {
         const serverSideEncryptionRuleProperty = serverSideEncryptionConfiguration[0];
-        const serverSideEncryptionByDefault =
-          serverSideEncryptionRuleProperty.serverSideEncryptionByDefault;
-        if (
-          serverSideEncryptionByDefault &&
-          Token.isUnresolved(serverSideEncryptionByDefault.kmsMasterKeyId)
-        ) {
+        const serverSideEncryptionByDefault = serverSideEncryptionRuleProperty.serverSideEncryptionByDefault;
+        if (serverSideEncryptionByDefault && Token.isUnresolved(serverSideEncryptionByDefault.kmsMasterKeyId)) {
           const kmsIResolvable = Tokenization.reverse(serverSideEncryptionByDefault.kmsMasterKeyId);
           if (kmsIResolvable instanceof CfnReference) {
             const cfnElement = kmsIResolvable.target;
@@ -1939,18 +1872,14 @@ export class Bucket extends BucketBase {
       public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
       public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
       public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
-      public readonly bucketWebsiteDomainName = Fn.select(
-        2,
-        Fn.split('/', cfnBucket.attrWebsiteUrl)
-      );
+      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
 
       public readonly encryptionKey = encryptionKey;
       public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined;
       protected autoCreatePolicy = true;
       protected disallowPublicAccess =
-        cfnBucket.publicAccessBlockConfiguration &&
-        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
+        cfnBucket.publicAccessBlockConfiguration && (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
 
       constructor() {
         super(cfnBucket, id);
@@ -1966,10 +1895,7 @@ export class Bucket extends BucketBase {
    * @param physicalName name of the bucket.
    * @param allowLegacyBucketNaming allow legacy bucket naming style, default is false.
    */
-  public static validateBucketName(
-    physicalName: string,
-    allowLegacyBucketNaming: boolean = false
-  ): void {
+  public static validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
@@ -2007,8 +1933,7 @@ export class Bucket extends BucketBase {
       errors.push(
         allowLegacyBucketNaming
           ? 'Bucket name must end with an uppercase, lowercase character or number'
-          : 'Bucket name must end with a lowercase character or number' +
-              ` (offset: ${bucketName.length - 1})`
+          : 'Bucket name must end with a lowercase character or number' + ` (offset: ${bucketName.length - 1})`
       );
     }
 
@@ -2082,9 +2007,7 @@ export class Bucket extends BucketBase {
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
       ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls() }),
-      accelerateConfiguration: props.transferAcceleration
-        ? { accelerationStatus: 'Enabled' }
-        : undefined,
+      accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
@@ -2110,8 +2033,7 @@ export class Bucket extends BucketBase {
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
-    this.disallowPublicAccess =
-      props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
+    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
 
     // Enforce AWS Foundational Security Best Practice
@@ -2278,11 +2200,7 @@ export class Bucket extends BucketBase {
     }
 
     // if encryption key is set, encryption must be set to KMS or DSSE.
-    if (
-      encryptionType !== BucketEncryption.DSSE &&
-      encryptionType !== BucketEncryption.KMS &&
-      props.encryptionKey
-    ) {
+    if (encryptionType !== BucketEncryption.DSSE && encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
       throw new Error(
         `encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`
       );
@@ -2460,9 +2378,7 @@ export class Bucket extends BucketBase {
     }
   }
 
-  private parseServerAccessLogs(
-    props: BucketProps
-  ): CfnBucket.LoggingConfigurationProperty | undefined {
+  private parseServerAccessLogs(props: BucketProps): CfnBucket.LoggingConfigurationProperty | undefined {
     if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
     }
@@ -2554,10 +2470,7 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
-    if (
-      accessControlRequiresObjectOwnership &&
-      this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED
-    ) {
+    if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
       throw new Error(
         `objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`
       );
@@ -2603,9 +2516,7 @@ export class Bucket extends BucketBase {
     });
   }
 
-  private parseObjectLockConfig(
-    props: BucketProps
-  ): CfnBucket.ObjectLockConfigurationProperty | undefined {
+  private parseObjectLockConfig(props: BucketProps): CfnBucket.ObjectLockConfigurationProperty | undefined {
     const { objectLockEnabled, objectLockDefaultRetention } = props;
 
     if (!objectLockDefaultRetention) {
@@ -2626,9 +2537,7 @@ export class Bucket extends BucketBase {
     };
   }
 
-  private renderWebsiteConfiguration(
-    props: BucketProps
-  ): CfnBucket.WebsiteConfigurationProperty | undefined {
+  private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
     if (
       !props.websiteErrorDocument &&
       !props.websiteIndexDocument &&
@@ -2716,10 +2625,7 @@ export class Bucket extends BucketBase {
           conditions: conditions,
         })
       );
-    } else if (
-      this.accessControl &&
-      this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE
-    ) {
+    } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
       throw new Error(
         "Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed"
       );
@@ -2739,16 +2645,14 @@ export class Bucket extends BucketBase {
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
       if (
         inventory.inventoryId !== undefined &&
-        (inventory.inventoryId.length > 64 ||
-          inventoryIdValidationRegex.test(inventory.inventoryId))
+        (inventory.inventoryId.length > 64 || inventoryIdValidationRegex.test(inventory.inventoryId))
       ) {
         throw new Error(
           `inventoryId should not exceed 64 characters and should not contain special characters except . and -, got ${inventory.inventoryId}`
         );
       }
       const id =
-        inventory.inventoryId ??
-        `${this.node.id}Inventory${index}`.replace(inventoryIdValidationRegex, '').slice(-64);
+        inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace(inventoryIdValidationRegex, '').slice(-64);
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(
@@ -2787,14 +2691,10 @@ export class Bucket extends BucketBase {
   }
 
   private enableAutoDeleteObjects() {
-    const provider = AutoDeleteObjectsProvider.getOrCreateProvider(
-      this,
-      AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
-      {
-        useCfnResponseWrapper: false,
-        description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
-      }
-    );
+    const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      useCfnResponseWrapper: false,
+      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
+    });
 
     // Use a bucket policy to allow the custom resource to delete
     // objects in the bucket

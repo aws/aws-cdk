@@ -51,9 +51,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
-      const useUniqueName = FeatureFlags.of(this).isEnabled(
-        IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME
-      );
+      const useUniqueName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME);
       // To preserve existing policy names, use Names.uniqueResourceName() only when exceeding the limit of policy names
       // See https://github.com/aws/aws-cdk/pull/27548 for more
       const prefix = 'Policy';
@@ -70,10 +68,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   }
 
   public attachInlinePolicy(policy: Policy): void {
-    const thisAndPolicyAccountComparison = Token.compareStrings(
-      this.env.account,
-      policy.env.account
-    );
+    const thisAndPolicyAccountComparison = Token.compareStrings(this.env.account, policy.env.account);
     const equalOrAnyUnresolved =
       thisAndPolicyAccountComparison === TokenComparison.SAME ||
       thisAndPolicyAccountComparison === TokenComparison.BOTH_UNRESOLVED ||

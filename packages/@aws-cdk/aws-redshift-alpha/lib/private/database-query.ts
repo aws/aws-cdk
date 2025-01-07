@@ -135,9 +135,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
       ? (existing as iam.Role)
       : new iam.Role(cdk.Stack.of(this), id, {
           assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-          managedPolicies: [
-            iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-          ],
+          managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
         });
   }
 }

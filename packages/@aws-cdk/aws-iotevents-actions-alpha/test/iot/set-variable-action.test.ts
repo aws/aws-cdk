@@ -15,29 +15,37 @@ test('Default property', () => {
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [new actions.SetVariableAction('MyVariable', iotevents.Expression.fromString('foo'))],
-      }],
+      onEnter: [
+        {
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [new actions.SetVariableAction('MyVariable', iotevents.Expression.fromString('foo'))],
+        },
+      ],
     }),
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
     DetectorModelDefinition: {
-      States: [{
-        OnEnter: {
-          Events: [{
-            Actions: [{
-              SetVariable: {
-                VariableName: 'MyVariable',
-                Value: 'foo',
+      States: [
+        {
+          OnEnter: {
+            Events: [
+              {
+                Actions: [
+                  {
+                    SetVariable: {
+                      VariableName: 'MyVariable',
+                      Value: 'foo',
+                    },
+                  },
+                ],
               },
-            }],
-          }],
+            ],
+          },
         },
-      }],
+      ],
     },
   });
 });

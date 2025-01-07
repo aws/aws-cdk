@@ -76,18 +76,10 @@ export class TarballImageAsset extends Construct implements IAsset {
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
       sourceHash: stagedTarball.assetHash,
-      executable: [
-        'sh',
-        '-c',
-        `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "s/Loaded image: //g"`,
-      ],
+      executable: ['sh', '-c', `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "s/Loaded image: //g"`],
     });
 
-    this.repository = ecr.Repository.fromRepositoryName(
-      this,
-      'Repository',
-      location.repositoryName
-    );
+    this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
     this.imageTag = location.imageTag ?? this.assetHash;
   }

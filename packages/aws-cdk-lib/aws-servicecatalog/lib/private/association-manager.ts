@@ -37,11 +37,7 @@ export class AssociationManager {
       2000,
       options?.description
     );
-    const associationKey = hashValues(
-      portfolio.node.addr,
-      product.node.addr,
-      product.stack.node.addr
-    );
+    const associationKey = hashValues(portfolio.node.addr, product.node.addr, product.stack.node.addr);
     const constructId = `PortfolioProductAssociation${associationKey}`;
     const existingAssociation = portfolio.node.tryFindChild(constructId);
     const cfnAssociation = existingAssociation
@@ -66,17 +62,13 @@ export class AssociationManager {
     const constructId = `ResourceUpdateConstraint${association.associationKey}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
-      const constraint = new CfnResourceUpdateConstraint(
-        portfolio as unknown as cdk.Resource,
-        constructId,
-        {
-          acceptLanguage: options.messageLanguage,
-          description: options.description,
-          portfolioId: portfolio.portfolioId,
-          productId: product.productId,
-          tagUpdateOnProvisionedProduct: options.allow === false ? 'NOT_ALLOWED' : 'ALLOWED',
-        }
-      );
+      const constraint = new CfnResourceUpdateConstraint(portfolio as unknown as cdk.Resource, constructId, {
+        acceptLanguage: options.messageLanguage,
+        description: options.description,
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+        tagUpdateOnProvisionedProduct: options.allow === false ? 'NOT_ALLOWED' : 'ALLOWED',
+      });
 
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
@@ -97,17 +89,13 @@ export class AssociationManager {
     const constructId = `LaunchNotificationConstraint${hashValues(topic.node.addr, topic.stack.node.addr, association.associationKey)}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
-      const constraint = new CfnLaunchNotificationConstraint(
-        portfolio as unknown as cdk.Resource,
-        constructId,
-        {
-          acceptLanguage: options.messageLanguage,
-          description: options.description,
-          portfolioId: portfolio.portfolioId,
-          productId: product.productId,
-          notificationArns: [topic.topicArn],
-        }
-      );
+      const constraint = new CfnLaunchNotificationConstraint(portfolio as unknown as cdk.Resource, constructId, {
+        acceptLanguage: options.messageLanguage,
+        description: options.description,
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+        notificationArns: [topic.topicArn],
+      });
 
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
@@ -127,17 +115,13 @@ export class AssociationManager {
     const constructId = `LaunchTemplateConstraint${hashValues(association.associationKey, options.rule.ruleName)}`;
 
     if (!portfolio.node.tryFindChild(constructId)) {
-      const constraint = new CfnLaunchTemplateConstraint(
-        portfolio as unknown as cdk.Resource,
-        constructId,
-        {
-          acceptLanguage: options.messageLanguage,
-          description: options.description,
-          portfolioId: portfolio.portfolioId,
-          productId: product.productId,
-          rules: this.formatTemplateRule(portfolio.stack, options.rule),
-        }
-      );
+      const constraint = new CfnLaunchTemplateConstraint(portfolio as unknown as cdk.Resource, constructId, {
+        acceptLanguage: options.messageLanguage,
+        description: options.description,
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+        rules: this.formatTemplateRule(portfolio.stack, options.rule),
+      });
 
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
@@ -170,16 +154,10 @@ export class AssociationManager {
     });
   }
 
-  public static deployWithStackSets(
-    portfolio: IPortfolio,
-    product: IProduct,
-    options: StackSetsConstraintOptions
-  ) {
+  public static deployWithStackSets(portfolio: IPortfolio, product: IProduct, options: StackSetsConstraintOptions) {
     const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a launch role has already been set.
-    if (
-      portfolio.node.tryFindChild(this.launchRoleConstraintLogicalId(association.associationKey))
-    ) {
+    if (portfolio.node.tryFindChild(this.launchRoleConstraintLogicalId(association.associationKey))) {
       throw new Error(
         `Cannot configure StackSet deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`
       );
@@ -187,21 +165,17 @@ export class AssociationManager {
 
     const constructId = this.stackSetConstraintLogicalId(association.associationKey);
     if (!portfolio.node.tryFindChild(constructId)) {
-      const constraint = new CfnStackSetConstraint(
-        portfolio as unknown as cdk.Resource,
-        constructId,
-        {
-          acceptLanguage: options.messageLanguage,
-          description: options.description ?? '',
-          portfolioId: portfolio.portfolioId,
-          productId: product.productId,
-          accountList: options.accounts,
-          regionList: options.regions,
-          adminRole: options.adminRole.roleArn,
-          executionRole: options.executionRoleName,
-          stackInstanceControl: options.allowStackSetInstanceOperations ? 'ALLOWED' : 'NOT_ALLOWED',
-        }
-      );
+      const constraint = new CfnStackSetConstraint(portfolio as unknown as cdk.Resource, constructId, {
+        acceptLanguage: options.messageLanguage,
+        description: options.description ?? '',
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+        accountList: options.accounts,
+        regionList: options.regions,
+        adminRole: options.adminRole.roleArn,
+        executionRole: options.executionRoleName,
+        stackInstanceControl: options.allowStackSetInstanceOperations ? 'ALLOWED' : 'NOT_ALLOWED',
+      });
 
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
@@ -212,11 +186,7 @@ export class AssociationManager {
     }
   }
 
-  public static associateTagOptions(
-    resource: cdk.IResource,
-    resourceId: string,
-    tagOptions: TagOptions
-  ): void {
+  public static associateTagOptions(resource: cdk.IResource, resourceId: string, tagOptions: TagOptions): void {
     for (const cfnTagOption of tagOptions._cfnTagOptions) {
       const tagAssocationConstructId = `TagOptionAssociation${hashValues(cfnTagOption.key, cfnTagOption.value, resource.node.addr)}`;
       if (!resource.node.tryFindChild(tagAssocationConstructId)) {
@@ -244,18 +214,14 @@ export class AssociationManager {
 
     const constructId = this.launchRoleConstraintLogicalId(association.associationKey);
     if (!portfolio.node.tryFindChild(constructId)) {
-      const constraint = new CfnLaunchRoleConstraint(
-        portfolio as unknown as cdk.Resource,
-        constructId,
-        {
-          acceptLanguage: options.messageLanguage,
-          description: options.description,
-          portfolioId: portfolio.portfolioId,
-          productId: product.productId,
-          roleArn: roleOptions.roleArn,
-          localRoleName: roleOptions.localRoleName,
-        }
-      );
+      const constraint = new CfnLaunchRoleConstraint(portfolio as unknown as cdk.Resource, constructId, {
+        acceptLanguage: options.messageLanguage,
+        description: options.description,
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+        roleArn: roleOptions.roleArn,
+        localRoleName: roleOptions.localRoleName,
+      });
 
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);

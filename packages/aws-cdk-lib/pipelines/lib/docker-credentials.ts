@@ -39,10 +39,7 @@ export abstract class DockerCredential {
    * with one ECR repo and another with another ECR repo in the same account and region will
    * result in failures when using these credentials in the pipeline.
    */
-  public static ecr(
-    repositories: ecr.IRepository[],
-    opts?: EcrDockerCredentialOptions
-  ): DockerCredential {
+  public static ecr(repositories: ecr.IRepository[], opts?: EcrDockerCredentialOptions): DockerCredential {
     return new EcrDockerCredential(repositories, opts ?? {});
   }
 
@@ -168,9 +165,7 @@ class EcrDockerCredential extends DockerCredential {
     super(opts.usages);
 
     if (repositories.length === 0) {
-      throw new Error(
-        'must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`'
-      );
+      throw new Error('must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
     }
     this.registryDomain = Fn.select(0, Fn.split('/', repositories[0].repositoryUri));
   }
@@ -230,10 +225,7 @@ export function dockerCredentialsInstallCommands(
     return [];
   }
 
-  const domainCredentials = relevantRegistries.reduce(function (
-    map: Record<string, any>,
-    registry
-  ) {
+  const domainCredentials = relevantRegistries.reduce(function (map: Record<string, any>, registry) {
     Object.assign(map, registry._renderCdkAssetsConfig());
     return map;
   }, {});

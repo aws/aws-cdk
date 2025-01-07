@@ -5,7 +5,13 @@ import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, IpAddressType, NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
+import {
+  ApplicationLoadBalancer,
+  ApplicationProtocol,
+  ApplicationProtocolVersion,
+  IpAddressType,
+  NetworkLoadBalancer,
+} from '../../../aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
@@ -17,13 +23,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -87,20 +95,24 @@ describe('ApplicationLoadBalancedEc2Service', () => {
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider2', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup2', {
-        vpc,
-        instanceType: new ec2.InstanceType('t3.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'AutoScalingGroupProvider2', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup2', {
+          vpc,
+          instanceType: new ec2.InstanceType('t3.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -145,13 +157,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -179,13 +193,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     cluster.addDefaultCloudMapNamespace({
@@ -212,10 +228,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
           ContainerName: 'web',
           ContainerPort: 8000,
           RegistryArn: {
-            'Fn::GetAtt': [
-              'ServiceCloudmapServiceDE76B29D',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['ServiceCloudmapServiceDE76B29D', 'Arn'],
           },
         },
       ],
@@ -230,10 +243,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
           },
         ],
         NamespaceId: {
-          'Fn::GetAtt': [
-            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id',
-          ],
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
         },
         RoutingPolicy: 'MULTIVALUE',
       },
@@ -242,10 +252,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
       },
       Name: 'myApp',
       NamespaceId: {
-        'Fn::GetAtt': [
-          'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-          'Id',
-        ],
+        'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
       },
     });
   });
@@ -255,24 +262,27 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // THEN
-    expect(() =>
-      new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
-        cluster,
-        memoryLimitMiB: 1024,
-        taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test'),
-        },
-        desiredCount: 0,
-      }),
+    expect(
+      () =>
+        new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+          cluster,
+          memoryLimitMiB: 1024,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('test'),
+          },
+          desiredCount: 0,
+        })
     ).toThrow(/You must specify a desiredCount greater than 0/);
   });
 
@@ -281,13 +291,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -315,13 +327,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
@@ -349,13 +363,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -382,13 +398,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -419,13 +437,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
     const alb = new ApplicationLoadBalancer(stack, 'NLB', {
       vpc,
@@ -457,16 +477,19 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('accepts imported load balancer', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const albArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
     const alb = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
       loadBalancerArn: albArn,
@@ -504,13 +527,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
       cluster,
@@ -521,12 +546,14 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     });
     // THEN - Stack contains no ingress security group rules
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
-      SecurityGroupIngress: [Match.objectLike({
-        CidrIp: '0.0.0.0/0',
-        FromPort: 80,
-        IpProtocol: 'tcp',
-        ToPort: 80,
-      })],
+      SecurityGroupIngress: [
+        Match.objectLike({
+          CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        }),
+      ],
     });
   });
 
@@ -535,13 +562,15 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -571,13 +600,16 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    expect(() => new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
-      cluster,
-      vpc,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
-      },
-    })).toThrow();
+    expect(
+      () =>
+        new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+          cluster,
+          vpc,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+          },
+        })
+    ).toThrow();
   });
 
   test('multiple capacity provider strategies are set', () => {
@@ -586,20 +618,24 @@ describe('NetworkLoadBalancedEc2Service', () => {
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider2', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup2', {
-        vpc,
-        instanceType: new ec2.InstanceType('t3.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'AutoScalingGroupProvider2', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup2', {
+          vpc,
+          instanceType: new ec2.InstanceType('t3.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
@@ -644,24 +680,27 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // THEN
-    expect(() =>
-      new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
-        cluster,
-        memoryLimitMiB: 1024,
-        taskImageOptions: {
-          image: ecs.ContainerImage.fromRegistry('test'),
-        },
-        desiredCount: 0,
-      }),
+    expect(
+      () =>
+        new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+          cluster,
+          memoryLimitMiB: 1024,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('test'),
+          },
+          desiredCount: 0,
+        })
     ).toThrow(/You must specify a desiredCount greater than 0/);
   });
 
@@ -670,13 +709,15 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
@@ -704,13 +745,15 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
@@ -737,13 +780,15 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
@@ -774,13 +819,15 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const nlb = new NetworkLoadBalancer(stack, 'NLB', { vpc });
     const taskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const container = taskDef.addContainer('Container', {
@@ -808,16 +855,19 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('accepts imported load balancer', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const nlbArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const nlb = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: nlbArn,
       vpc,
@@ -856,13 +906,15 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
@@ -886,13 +938,15 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const certificate = Certificate.fromCertificateArn(stack, 'Cert', 'helloworld');
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
@@ -908,9 +962,11 @@ describe('NetworkLoadBalancedEc2Service', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 443,
       Protocol: 'TLS',
-      Certificates: [{
-        CertificateArn: 'helloworld',
-      }],
+      Certificates: [
+        {
+          CertificateArn: 'helloworld',
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -924,13 +980,15 @@ describe('NetworkLoadBalancedEc2Service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'AutoScalingGroup1', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {

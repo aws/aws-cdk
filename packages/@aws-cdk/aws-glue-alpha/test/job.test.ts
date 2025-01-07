@@ -23,7 +23,8 @@ describe('WorkerType', () => {
 
   test('.Z_2X should set the name correctly', () => expect(glue.WorkerType.Z_2X.name).toEqual('Z.2X'));
 
-  test('of(customType) should set name correctly', () => expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
+  test('of(customType) should set name correctly', () =>
+    expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
 });
 
 describe('Job', () => {
@@ -39,11 +40,13 @@ describe('Job', () => {
       const job = glue.Job.fromJobAttributes(stack, 'ImportedJob', { jobName });
 
       expect(job.jobName).toEqual(jobName);
-      expect(job.jobArn).toEqual(stack.formatArn({
-        service: 'glue',
-        resource: 'job',
-        resourceName: jobName,
-      }));
+      expect(job.jobArn).toEqual(
+        stack.formatArn({
+          service: 'glue',
+          resource: 'job',
+          resourceName: jobName,
+        })
+      );
       expect(job.grantPrincipal).toEqual(new iam.UnknownPrincipal({ resource: job }));
     });
 
@@ -52,11 +55,13 @@ describe('Job', () => {
       const job = glue.Job.fromJobAttributes(stack, 'ImportedJob', { jobName, role });
 
       expect(job.jobName).toEqual(jobName);
-      expect(job.jobArn).toEqual(stack.formatArn({
-        service: 'glue',
-        resource: 'job',
-        resourceName: jobName,
-      }));
+      expect(job.jobArn).toEqual(
+        stack.formatArn({
+          service: 'glue',
+          resource: 'job',
+          resourceName: jobName,
+        })
+      );
       expect(job.grantPrincipal).toEqual(role);
     });
   });
@@ -65,11 +70,7 @@ describe('Job', () => {
     const className = 'com.amazon.test.ClassName';
     const codeBucketName = 'bucketname';
     const codeBucketAccessStatement = {
-      Action: [
-        's3:GetObject*',
-        's3:GetBucket*',
-        's3:List*',
-      ],
+      Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
       Effect: 'Allow',
       Resource: [
         {
@@ -159,9 +160,7 @@ describe('Job', () => {
         // Role policy should grant reading from the assets bucket
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
-            Statement: [
-              codeBucketAccessStatement,
-            ],
+            Statement: [codeBucketAccessStatement],
           },
           Roles: [
             {
@@ -177,10 +176,7 @@ describe('Job', () => {
             ScriptLocation: 's3://bucketname/script',
           },
           Role: {
-            'Fn::GetAtt': [
-              'JobServiceRole4F432993',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['JobServiceRole4F432993', 'Arn'],
           },
         });
       });
@@ -188,7 +184,19 @@ describe('Job', () => {
       test('should return correct jobName and jobArn from CloudFormation', () => {
         expect(stack.resolve(job.jobName)).toEqual({ Ref: 'JobB9D00F9F' });
         expect(stack.resolve(job.jobArn)).toEqual({
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':job/', { Ref: 'JobB9D00F9F' }]],
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':glue:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':job/',
+              { Ref: 'JobB9D00F9F' },
+            ],
+          ],
         });
       });
 
@@ -269,10 +277,7 @@ describe('Job', () => {
           PolicyDocument: {
             Statement: [
               {
-                Action: [
-                  'logs:CreateLogStream',
-                  'logs:PutLogEvents',
-                ],
+                Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
                 Effect: 'Allow',
                 Resource: {
                   'Fn::Join': [
@@ -392,85 +397,106 @@ describe('Job', () => {
 
       describe('errors for execution class with FLEX', () => {
         test('job type except JobType.ETL should throw', () => {
-          expect(() => new glue.Job(stack, 'Job', {
-            executable: glue.JobExecutable.pythonShell({
-              glueVersion: glue.GlueVersion.V2_0,
-              pythonVersion: glue.PythonVersion.THREE,
-              script,
-            }),
-            executionClass: glue.ExecutionClass.FLEX,
-          })).toThrow('FLEX ExecutionClass is only available for JobType.ETL jobs');
+          expect(
+            () =>
+              new glue.Job(stack, 'Job', {
+                executable: glue.JobExecutable.pythonShell({
+                  glueVersion: glue.GlueVersion.V2_0,
+                  pythonVersion: glue.PythonVersion.THREE,
+                  script,
+                }),
+                executionClass: glue.ExecutionClass.FLEX,
+              })
+          ).toThrow('FLEX ExecutionClass is only available for JobType.ETL jobs');
         });
 
         test('with glue version 0.9 should throw', () => {
-          expect(() => new glue.Job(stack, 'Job', {
-            executable: glue.JobExecutable.pythonEtl({
-              glueVersion: glue.GlueVersion.V0_9,
-              pythonVersion: glue.PythonVersion.THREE,
-              script,
-            }),
-            executionClass: glue.ExecutionClass.FLEX,
-          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+          expect(
+            () =>
+              new glue.Job(stack, 'Job', {
+                executable: glue.JobExecutable.pythonEtl({
+                  glueVersion: glue.GlueVersion.V0_9,
+                  pythonVersion: glue.PythonVersion.THREE,
+                  script,
+                }),
+                executionClass: glue.ExecutionClass.FLEX,
+              })
+          ).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
         });
 
         test('with glue version 1.0 should throw', () => {
-          expect(() => new glue.Job(stack, 'Job', {
-            executable: glue.JobExecutable.pythonEtl({
-              glueVersion: glue.GlueVersion.V1_0,
-              pythonVersion: glue.PythonVersion.THREE,
-              script,
-            }),
-            executionClass: glue.ExecutionClass.FLEX,
-          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+          expect(
+            () =>
+              new glue.Job(stack, 'Job', {
+                executable: glue.JobExecutable.pythonEtl({
+                  glueVersion: glue.GlueVersion.V1_0,
+                  pythonVersion: glue.PythonVersion.THREE,
+                  script,
+                }),
+                executionClass: glue.ExecutionClass.FLEX,
+              })
+          ).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
         });
 
         test('with glue version 2.0 should throw', () => {
-          expect(() => new glue.Job(stack, 'Job', {
-            executable: glue.JobExecutable.pythonEtl({
-              glueVersion: glue.GlueVersion.V2_0,
-              pythonVersion: glue.PythonVersion.THREE,
-              script,
-            }),
-            executionClass: glue.ExecutionClass.FLEX,
-          })).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+          expect(
+            () =>
+              new glue.Job(stack, 'Job', {
+                executable: glue.JobExecutable.pythonEtl({
+                  glueVersion: glue.GlueVersion.V2_0,
+                  pythonVersion: glue.PythonVersion.THREE,
+                  script,
+                }),
+                executionClass: glue.ExecutionClass.FLEX,
+              })
+          ).toThrow('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
         });
 
         test('with G_025X as worker type that is neither G_1X nor G_2X should throw', () => {
-          expect(() => new glue.Job(stack, 'Job', {
-            executable: glue.JobExecutable.pythonEtl({
-              glueVersion: glue.GlueVersion.V3_0,
-              pythonVersion: glue.PythonVersion.THREE,
-              script,
-            }),
-            workerType: glue.WorkerType.G_025X,
-            workerCount: 2,
-            executionClass: glue.ExecutionClass.FLEX,
-          })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
+          expect(
+            () =>
+              new glue.Job(stack, 'Job', {
+                executable: glue.JobExecutable.pythonEtl({
+                  glueVersion: glue.GlueVersion.V3_0,
+                  pythonVersion: glue.PythonVersion.THREE,
+                  script,
+                }),
+                workerType: glue.WorkerType.G_025X,
+                workerCount: 2,
+                executionClass: glue.ExecutionClass.FLEX,
+              })
+          ).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
         });
 
         test('with job run queuing enabled should throw', () => {
-          expect(() => new glue.Job(stack, 'Job', {
-            executable: glue.JobExecutable.pythonEtl({
-              glueVersion: glue.GlueVersion.V4_0,
-              pythonVersion: glue.PythonVersion.THREE,
-              script,
-            }),
-            executionClass: glue.ExecutionClass.FLEX,
-            jobRunQueuingEnabled: true,
-          })).toThrow('FLEX ExecutionClass is only available if job run queuing is disabled');
+          expect(
+            () =>
+              new glue.Job(stack, 'Job', {
+                executable: glue.JobExecutable.pythonEtl({
+                  glueVersion: glue.GlueVersion.V4_0,
+                  pythonVersion: glue.PythonVersion.THREE,
+                  script,
+                }),
+                executionClass: glue.ExecutionClass.FLEX,
+                jobRunQueuingEnabled: true,
+              })
+          ).toThrow('FLEX ExecutionClass is only available if job run queuing is disabled');
         });
 
         test('with G_4X as worker type that is neither G_1X nor G_2X should throw', () => {
-          expect(() => new glue.Job(stack, 'Job', {
-            executable: glue.JobExecutable.pythonEtl({
-              glueVersion: glue.GlueVersion.V3_0,
-              pythonVersion: glue.PythonVersion.THREE,
-              script,
-            }),
-            workerType: glue.WorkerType.G_4X,
-            workerCount: 10,
-            executionClass: glue.ExecutionClass.FLEX,
-          })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
+          expect(
+            () =>
+              new glue.Job(stack, 'Job', {
+                executable: glue.JobExecutable.pythonEtl({
+                  glueVersion: glue.GlueVersion.V3_0,
+                  pythonVersion: glue.PythonVersion.THREE,
+                  script,
+                }),
+                workerType: glue.WorkerType.G_4X,
+                workerCount: 10,
+                executionClass: glue.ExecutionClass.FLEX,
+              })
+          ).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
         });
       });
     });
@@ -508,20 +534,14 @@ describe('Job', () => {
                   Effect: 'Allow',
                   Resource: [
                     {
-                      'Fn::GetAtt': [
-                        'JobSparkUIBucket8E6A0139',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['JobSparkUIBucket8E6A0139', 'Arn'],
                     },
                     {
                       'Fn::Join': [
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'JobSparkUIBucket8E6A0139',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['JobSparkUIBucket8E6A0139', 'Arn'],
                           },
                           '/*',
                         ],
@@ -651,18 +671,21 @@ describe('Job', () => {
 
         const expectedErrors = [
           `Invalid prefix format (value: ${badPrefix})`,
-          'Prefix must not begin with \'/\'',
-          'Prefix must end with \'/\'',
+          "Prefix must not begin with '/'",
+          "Prefix must end with '/'",
         ].join(EOL);
         it('fails if path is mis-formatted', () => {
-          expect(() => new glue.Job(stack, 'BadPrefixJob', {
-            ...defaultProps,
-            sparkUI: {
-              enabled: true,
-              bucket: sparkUIBucket,
-              prefix: badPrefix,
-            },
-          })).toThrow(expectedErrors);
+          expect(
+            () =>
+              new glue.Job(stack, 'BadPrefixJob', {
+                ...defaultProps,
+                sparkUI: {
+                  enabled: true,
+                  bucket: sparkUIBucket,
+                  prefix: badPrefix,
+                },
+              })
+          ).toThrow(expectedErrors);
         });
 
         beforeEach(() => {
@@ -697,24 +720,10 @@ describe('Job', () => {
                   Effect: 'Allow',
                   Resource: [
                     {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          { Ref: 'AWS::Partition' },
-                          ':s3:::sparkbucketname',
-                        ],
-                      ],
+                      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::sparkbucketname']],
                     },
                     {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          { Ref: 'AWS::Partition' },
-                          `:s3:::sparkbucketname/${prefix}*`,
-                        ],
-                      ],
+                      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, `:s3:::sparkbucketname/${prefix}*`]],
                     },
                   ],
                 },
@@ -755,7 +764,11 @@ describe('Job', () => {
             arg2: 'value2',
           },
           connections: [glue.Connection.fromConnectionName(stack, 'ImportedConnection', 'ConnectionName')],
-          securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'ImportedSecurityConfiguration', 'SecurityConfigurationName'),
+          securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(
+            stack,
+            'ImportedSecurityConfiguration',
+            'SecurityConfigurationName'
+          ),
           enableProfilingMetrics: true,
           tags: {
             key: 'value',
@@ -770,17 +783,14 @@ describe('Job', () => {
             ScriptLocation: 's3://bucketname/script',
           },
           Role: {
-            'Fn::GetAtt': [
-              'JobServiceRole4F432993',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['JobServiceRole4F432993', 'Arn'],
           },
           DefaultArguments: {
             '--job-language': 'scala',
             '--class': 'com.amazon.test.ClassName',
             '--enable-metrics': '',
-            'arg1': 'value1',
-            'arg2': 'value2',
+            arg1: 'value1',
+            arg2: 'value2',
           },
           Description: 'test job',
           ExecutionProperty: {
@@ -799,9 +809,7 @@ describe('Job', () => {
           Timeout: 5,
           WorkerType: 'G.2X',
           Connections: {
-            Connections: [
-              'ConnectionName',
-            ],
+            Connections: ['ConnectionName'],
           },
           SecurityConfiguration: 'SecurityConfigurationName',
         });
@@ -820,81 +828,99 @@ describe('Job', () => {
 
     test('with reserved args should throw', () => {
       ['--debug', '--mode', '--JOB_NAME'].forEach((arg, index) => {
-        const defaultArguments: {[key: string]: string} = {};
+        const defaultArguments: { [key: string]: string } = {};
         defaultArguments[arg] = 'random value';
 
-        expect(() => new glue.Job(stack, `Job${index}`, {
-          executable: glue.JobExecutable.scalaEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            className,
-            script,
-          }),
-          defaultArguments,
-        })).toThrow(/argument is reserved by Glue/);
+        expect(
+          () =>
+            new glue.Job(stack, `Job${index}`, {
+              executable: glue.JobExecutable.scalaEtl({
+                glueVersion: glue.GlueVersion.V2_0,
+                className,
+                script,
+              }),
+              defaultArguments,
+            })
+        ).toThrow(/argument is reserved by Glue/);
       });
     });
 
     describe('shell job', () => {
       test('with unsupported glue version should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonShell({
-            glueVersion: glue.GlueVersion.V0_9,
-            pythonVersion: glue.PythonVersion.TWO,
-            script,
-          }),
-        })).toThrow('Specified GlueVersion 0.9 does not support Python Shell');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonShell({
+                glueVersion: glue.GlueVersion.V0_9,
+                pythonVersion: glue.PythonVersion.TWO,
+                script,
+              }),
+            })
+        ).toThrow('Specified GlueVersion 0.9 does not support Python Shell');
       });
 
       test('with unsupported Spark UI prop should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonShell({
-            glueVersion: glue.GlueVersion.V1_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-          sparkUI: { enabled: true },
-        })).toThrow('Spark UI is not available for JobType.PYTHON_SHELL');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonShell({
+                glueVersion: glue.GlueVersion.V1_0,
+                pythonVersion: glue.PythonVersion.THREE,
+                script,
+              }),
+              sparkUI: { enabled: true },
+            })
+        ).toThrow('Spark UI is not available for JobType.PYTHON_SHELL');
       });
     });
 
     describe('ray job', () => {
       test('with unsupported glue version should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonRay({
-            glueVersion: glue.GlueVersion.V3_0,
-            pythonVersion: glue.PythonVersion.THREE_NINE,
-            runtime: glue.Runtime.RAY_TWO_FOUR,
-            script,
-          }),
-          workerType: glue.WorkerType.Z_2X,
-          workerCount: 2,
-        })).toThrow('Specified GlueVersion 3.0 does not support Ray');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonRay({
+                glueVersion: glue.GlueVersion.V3_0,
+                pythonVersion: glue.PythonVersion.THREE_NINE,
+                runtime: glue.Runtime.RAY_TWO_FOUR,
+                script,
+              }),
+              workerType: glue.WorkerType.Z_2X,
+              workerCount: 2,
+            })
+        ).toThrow('Specified GlueVersion 3.0 does not support Ray');
       });
 
       test('with unsupported Spark UI prop should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonRay({
-            glueVersion: glue.GlueVersion.V4_0,
-            pythonVersion: glue.PythonVersion.THREE_NINE,
-            runtime: glue.Runtime.RAY_TWO_FOUR,
-            script,
-          }),
-          workerType: glue.WorkerType.Z_2X,
-          workerCount: 2,
-          sparkUI: { enabled: true },
-        })).toThrow('Spark UI is not available for JobType.RAY');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonRay({
+                glueVersion: glue.GlueVersion.V4_0,
+                pythonVersion: glue.PythonVersion.THREE_NINE,
+                runtime: glue.Runtime.RAY_TWO_FOUR,
+                script,
+              }),
+              workerType: glue.WorkerType.Z_2X,
+              workerCount: 2,
+              sparkUI: { enabled: true },
+            })
+        ).toThrow('Spark UI is not available for JobType.RAY');
       });
 
       test('without runtime should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonRay({
-            glueVersion: glue.GlueVersion.V4_0,
-            pythonVersion: glue.PythonVersion.THREE_NINE,
-            script,
-          }),
-          workerType: glue.WorkerType.Z_2X,
-          workerCount: 2,
-        })).toThrow('Runtime is required for Ray jobs');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonRay({
+                glueVersion: glue.GlueVersion.V4_0,
+                pythonVersion: glue.PythonVersion.THREE_NINE,
+                script,
+              }),
+              workerType: glue.WorkerType.Z_2X,
+              workerCount: 2,
+            })
+        ).toThrow('Runtime is required for Ray jobs');
       });
 
       test.each([
@@ -904,30 +930,36 @@ describe('Job', () => {
         glue.WorkerType.G_4X,
         glue.WorkerType.G_8X,
       ])('throw error for unsupported worker type', (workerType) => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonRay({
-            glueVersion: glue.GlueVersion.V4_0,
-            pythonVersion: glue.PythonVersion.THREE_NINE,
-            runtime: glue.Runtime.RAY_TWO_FOUR,
-            script,
-          }),
-          workerType,
-          workerCount: 2,
-        })).toThrow(`WorkerType must be Z_2X for Ray jobs, got: ${workerType}`);
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonRay({
+                glueVersion: glue.GlueVersion.V4_0,
+                pythonVersion: glue.PythonVersion.THREE_NINE,
+                runtime: glue.Runtime.RAY_TWO_FOUR,
+                script,
+              }),
+              workerType,
+              workerCount: 2,
+            })
+        ).toThrow(`WorkerType must be Z_2X for Ray jobs, got: ${workerType}`);
       });
     });
 
     test('throw error for specifying timeout', () => {
-      expect(() => new glue.Job(stack, 'Job', {
-        executable: glue.JobExecutable.pythonRay({
-          glueVersion: glue.GlueVersion.V4_0,
-          pythonVersion: glue.PythonVersion.THREE_NINE,
-          runtime: glue.Runtime.RAY_TWO_FOUR,
-          script,
-        }),
-        workerType: glue.WorkerType.Z_2X,
-        timeout: cdk.Duration.minutes(5),
-      })).toThrow('Timeout cannot be set for Ray jobs');
+      expect(
+        () =>
+          new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonRay({
+              glueVersion: glue.GlueVersion.V4_0,
+              pythonVersion: glue.PythonVersion.THREE_NINE,
+              runtime: glue.Runtime.RAY_TWO_FOUR,
+              script,
+            }),
+            workerType: glue.WorkerType.Z_2X,
+            timeout: cdk.Duration.minutes(5),
+          })
+      ).toThrow('Timeout cannot be set for Ray jobs');
     });
 
     test('etl job with all props should synthesize correctly', () => {
@@ -951,10 +983,7 @@ describe('Job', () => {
           PythonVersion: '3',
         },
         Role: {
-          'Fn::GetAtt': [
-            'JobServiceRole4F432993',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['JobServiceRole4F432993', 'Arn'],
         },
         DefaultArguments: {
           '--job-language': 'python',
@@ -985,10 +1014,7 @@ describe('Job', () => {
           ScriptLocation: 's3://bucketname/script',
         },
         Role: {
-          'Fn::GetAtt': [
-            'JobServiceRole4F432993',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['JobServiceRole4F432993', 'Arn'],
         },
         DefaultArguments: {
           '--job-language': 'scala',
@@ -1016,14 +1042,9 @@ describe('Job', () => {
 
         Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           EventPattern: {
-            'source': [
-              'aws.glue',
-            ],
-            'detail-type': [
-              'Glue Job State Change',
-              'Glue Job Run Status',
-            ],
-            'detail': {
+            source: ['aws.glue'],
+            'detail-type': ['Glue Job State Change', 'Glue Job Run Status'],
+            detail: {
               jobName: [
                 {
                   Ref: 'JobB9D00F9F',
@@ -1057,17 +1078,10 @@ describe('Job', () => {
               ],
             },
             EventPattern: {
-              'source': [
-                'aws.glue',
-              ],
-              'detail-type': [
-                'Glue Job State Change',
-                'Glue Job Run Status',
-              ],
-              'detail': {
-                state: [
-                  testCase.state,
-                ],
+              source: ['aws.glue'],
+              'detail-type': ['Glue Job State Change', 'Glue Job Run Status'],
+              detail: {
+                state: [testCase.state],
                 jobName: [
                   {
                     Ref: 'JobB9D00F9F',
@@ -1081,22 +1095,39 @@ describe('Job', () => {
       });
 
       [
-        { name: '.metricSuccess()', invoke: (testJob: glue.Job) => testJob.metricSuccess(), state: 'SUCCEEDED', ruleId: 'SuccessMetricRule' },
-        { name: '.metricFailure()', invoke: (testJob: glue.Job) => testJob.metricFailure(), state: 'FAILED', ruleId: 'FailureMetricRule' },
-        { name: '.metricTimeout()', invoke: (testJob: glue.Job) => testJob.metricTimeout(), state: 'TIMEOUT', ruleId: 'TimeoutMetricRule' },
+        {
+          name: '.metricSuccess()',
+          invoke: (testJob: glue.Job) => testJob.metricSuccess(),
+          state: 'SUCCEEDED',
+          ruleId: 'SuccessMetricRule',
+        },
+        {
+          name: '.metricFailure()',
+          invoke: (testJob: glue.Job) => testJob.metricFailure(),
+          state: 'FAILED',
+          ruleId: 'FailureMetricRule',
+        },
+        {
+          name: '.metricTimeout()',
+          invoke: (testJob: glue.Job) => testJob.metricTimeout(),
+          state: 'TIMEOUT',
+          ruleId: 'TimeoutMetricRule',
+        },
       ].forEach((testCase) => {
         test(`${testCase.name} should create the expected singleton event rule and corresponding metric`, () => {
           const metric = testCase.invoke(job);
           testCase.invoke(job);
 
-          expect(metric).toEqual(new cloudwatch.Metric({
-            dimensionsMap: {
-              RuleName: (job.node.findChild(testCase.ruleId) as events.Rule).ruleName,
-            },
-            metricName: 'TriggeredRules',
-            namespace: 'AWS/Events',
-            statistic: 'Sum',
-          }));
+          expect(metric).toEqual(
+            new cloudwatch.Metric({
+              dimensionsMap: {
+                RuleName: (job.node.findChild(testCase.ruleId) as events.Rule).ruleName,
+              },
+              metricName: 'TriggeredRules',
+              namespace: 'AWS/Events',
+              statistic: 'Sum',
+            })
+          );
 
           Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
           Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -1113,17 +1144,10 @@ describe('Job', () => {
               ],
             },
             EventPattern: {
-              'source': [
-                'aws.glue',
-              ],
-              'detail-type': [
-                'Glue Job State Change',
-                'Glue Job Run Status',
-              ],
-              'detail': {
-                state: [
-                  testCase.state,
-                ],
+              source: ['aws.glue'],
+              'detail-type': ['Glue Job State Change', 'Glue Job Run Status'],
+              detail: {
+                state: [testCase.state],
                 jobName: [
                   {
                     Ref: 'JobB9D00F9F',
@@ -1138,109 +1162,130 @@ describe('Job', () => {
     });
 
     describe('.metric()', () => {
-
       test('with MetricType.COUNT should create a count sum metric', () => {
         const metricName = 'glue.driver.aggregate.bytesRead';
         const props = { statistic: cloudwatch.Statistic.SUM };
 
-        expect(job.metric(metricName, glue.MetricType.COUNT, props)).toEqual(new cloudwatch.Metric({
-          metricName,
-          statistic: 'Sum',
-          namespace: 'Glue',
-          dimensionsMap: {
-            JobName: job.jobName,
-            JobRunId: 'ALL',
-            Type: 'count',
-          },
-        }));
+        expect(job.metric(metricName, glue.MetricType.COUNT, props)).toEqual(
+          new cloudwatch.Metric({
+            metricName,
+            statistic: 'Sum',
+            namespace: 'Glue',
+            dimensionsMap: {
+              JobName: job.jobName,
+              JobRunId: 'ALL',
+              Type: 'count',
+            },
+          })
+        );
       });
 
       test('with MetricType.GAUGE should create a gauge average metric', () => {
         const metricName = 'glue.driver.BlockManager.disk.diskSpaceUsed_MB';
         const props = { statistic: cloudwatch.Statistic.AVERAGE };
 
-        expect(job.metric(metricName, glue.MetricType.GAUGE, props)).toEqual(new cloudwatch.Metric({
-          metricName,
-          statistic: 'Average',
-          namespace: 'Glue',
-          dimensionsMap: {
-            JobName: job.jobName,
-            JobRunId: 'ALL',
-            Type: 'gauge',
-          },
-        }));
+        expect(job.metric(metricName, glue.MetricType.GAUGE, props)).toEqual(
+          new cloudwatch.Metric({
+            metricName,
+            statistic: 'Average',
+            namespace: 'Glue',
+            dimensionsMap: {
+              JobName: job.jobName,
+              JobRunId: 'ALL',
+              Type: 'gauge',
+            },
+          })
+        );
       });
     });
 
     describe('validation for maxCapacity and workerType', () => {
       test('maxCapacity with workerType and workerCount should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonEtl({
-            glueVersion: glue.GlueVersion.V1_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-          maxCapacity: 10,
-          workerType: glue.WorkerType.G_1X,
-          workerCount: 10,
-        })).toThrow('maxCapacity cannot be used when setting workerType and workerCount');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonEtl({
+                glueVersion: glue.GlueVersion.V1_0,
+                pythonVersion: glue.PythonVersion.THREE,
+                script,
+              }),
+              maxCapacity: 10,
+              workerType: glue.WorkerType.G_1X,
+              workerCount: 10,
+            })
+        ).toThrow('maxCapacity cannot be used when setting workerType and workerCount');
       });
 
       test('maxCapacity with GlueVersion 2.0 or later should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-          maxCapacity: 10,
-        })).toThrow('maxCapacity cannot be used when GlueVersion 2.0 or later');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonEtl({
+                glueVersion: glue.GlueVersion.V2_0,
+                pythonVersion: glue.PythonVersion.THREE,
+                script,
+              }),
+              maxCapacity: 10,
+            })
+        ).toThrow('maxCapacity cannot be used when GlueVersion 2.0 or later');
       });
 
       test('maxCapacity with Python Shell jobs validation', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonShell({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-          maxCapacity: 10,
-        })).toThrow(/maxCapacity value must be either 0.0625 or 1 for JobType.PYTHON_SHELL jobs/);
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonShell({
+                glueVersion: glue.GlueVersion.V2_0,
+                pythonVersion: glue.PythonVersion.THREE,
+                script,
+              }),
+              maxCapacity: 10,
+            })
+        ).toThrow(/maxCapacity value must be either 0.0625 or 1 for JobType.PYTHON_SHELL jobs/);
       });
 
       test('workerType without workerCount should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-          workerType: glue.WorkerType.G_1X,
-        })).toThrow('Both workerType and workerCount must be set');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonEtl({
+                glueVersion: glue.GlueVersion.V2_0,
+                pythonVersion: glue.PythonVersion.THREE,
+                script,
+              }),
+              workerType: glue.WorkerType.G_1X,
+            })
+        ).toThrow('Both workerType and workerCount must be set');
       });
 
       test('workerCount without workerType should throw', () => {
-        expect(() => new glue.Job(stack, 'Job', {
-          executable: glue.JobExecutable.pythonEtl({
-            glueVersion: glue.GlueVersion.V2_0,
-            pythonVersion: glue.PythonVersion.THREE,
-            script,
-          }),
-          workerCount: 10,
-        })).toThrow('Both workerType and workerCount must be set');
+        expect(
+          () =>
+            new glue.Job(stack, 'Job', {
+              executable: glue.JobExecutable.pythonEtl({
+                glueVersion: glue.GlueVersion.V2_0,
+                pythonVersion: glue.PythonVersion.THREE,
+                script,
+              }),
+              workerCount: 10,
+            })
+        ).toThrow('Both workerType and workerCount must be set');
       });
     });
 
     test('validation for jobRunQueuingEnabled and maxRetries', () => {
-      expect(() => new glue.Job(stack, 'Job', {
-        executable: glue.JobExecutable.pythonEtl({
-          glueVersion: glue.GlueVersion.V4_0,
-          pythonVersion: glue.PythonVersion.THREE,
-          script,
-        }),
-        jobRunQueuingEnabled: true,
-        maxRetries: 2,
-      })).toThrow('Maximum retries was set to 2, must be set to 0 with job run queuing enabled');
+      expect(
+        () =>
+          new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V4_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            jobRunQueuingEnabled: true,
+            maxRetries: 2,
+          })
+      ).toThrow('Maximum retries was set to 2, must be set to 0 with job run queuing enabled');
     });
   });
 });

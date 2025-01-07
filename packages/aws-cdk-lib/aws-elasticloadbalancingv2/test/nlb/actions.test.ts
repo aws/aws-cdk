@@ -54,12 +54,15 @@ describe('tests', () => {
     // WHEN
     lb.addListener('Listener', {
       port: 80,
-      defaultAction: elbv2.NetworkListenerAction.weightedForward([
-        { targetGroup: group1, weight: 10 },
-        { targetGroup: group2, weight: 50 },
-      ], {
-        stickinessDuration: cdk.Duration.hours(1),
-      }),
+      defaultAction: elbv2.NetworkListenerAction.weightedForward(
+        [
+          { targetGroup: group1, weight: 10 },
+          { targetGroup: group2, weight: 50 },
+        ],
+        {
+          stickinessDuration: cdk.Duration.hours(1),
+        }
+      ),
     });
 
     // THEN

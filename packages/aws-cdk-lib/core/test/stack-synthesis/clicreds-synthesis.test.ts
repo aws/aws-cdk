@@ -34,7 +34,9 @@ describe('CLI creds synthesis', () => {
 
     const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
 
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(
+      `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateObjectKey}`
+    );
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -65,7 +67,9 @@ describe('CLI creds synthesis', () => {
 
     // THEN - we have a fixed asset location with region placeholders
     expect(evalCFN(location.bucketName)).toEqual('cdk-hnb659fds-assets-the_account-the_region');
-    expect(evalCFN(location.s3Url)).toEqual(`https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.${ext}`);
+    expect(evalCFN(location.s3Url)).toEqual(
+      `https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.${ext}`
+    );
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -80,8 +84,9 @@ describe('CLI creds synthesis', () => {
 
     // THEN - we have a fixed asset location with region placeholders
     expect(evalCFN(location.repositoryName)).toEqual('cdk-hnb659fds-container-assets-the_account-the_region');
-    expect(evalCFN(location.imageUri)).toEqual('the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef');
-
+    expect(evalCFN(location.imageUri)).toEqual(
+      'the_account.dkr.ecr.the_region.domain.aws/cdk-hnb659fds-container-assets-the_account-the_region:abcdef'
+    );
   });
 
   test('synthesis', () => {
@@ -205,7 +210,8 @@ describe('CLI creds synthesis', () => {
 
     // THEN
     const manifest = readAssetManifest(getAssetManifest(asm));
-    const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'].imageTag;
+    const imageTag =
+      manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'].imageTag;
     expect(imageTag).toEqual('test-prefix-docker-asset-hash');
   });
 
@@ -245,7 +251,9 @@ function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifa
 
 function getAssetManifest(asm: cxapi.CloudAssembly): cxapi.AssetManifestArtifact {
   const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
-  if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
+  if (!manifestArtifact) {
+    throw new Error('no asset manifest in assembly');
+  }
   return manifestArtifact;
 }
 

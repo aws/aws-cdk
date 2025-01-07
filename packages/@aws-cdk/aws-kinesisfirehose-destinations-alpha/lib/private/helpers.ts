@@ -90,9 +90,7 @@ export function createBufferingHints(
   }
   const sizeInMBs = size?.toMebibytes() ?? 5;
   if (sizeInMBs < 1 || sizeInMBs > 128) {
-    throw new Error(
-      `Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`
-    );
+    throw new Error(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`);
   }
   return { intervalInSeconds, sizeInMBs };
 }
@@ -102,9 +100,7 @@ export function createEncryptionConfig(
   encryptionKey?: kms.IKey
 ): CfnDeliveryStream.EncryptionConfigurationProperty | undefined {
   encryptionKey?.grantEncryptDecrypt(role);
-  return encryptionKey
-    ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
-    : undefined;
+  return encryptionKey ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } } : undefined;
 }
 
 export function createProcessingConfig(

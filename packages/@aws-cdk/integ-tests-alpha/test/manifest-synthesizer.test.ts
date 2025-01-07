@@ -40,21 +40,24 @@ describe(IntegManifestSynthesizer, () => {
       outdir: 'asdas',
     });
 
-    expect(write).toHaveBeenCalledWith({
-      version: Manifest.version(),
-      testCases: {
-        ['stack/case1']: {
-          assertionStack: 'stack/case1/DeployAssert',
-          assertionStackName: 'stackcase1DeployAssert491B3C7C',
-          stacks: ['stack-under-test-1'],
-        },
-        ['stack/case2']: {
-          assertionStack: 'stack/case2/DeployAssert',
-          assertionStackName: 'stackcase2DeployAssert3B5E6392',
-          stacks: ['stack-under-test-2'],
+    expect(write).toHaveBeenCalledWith(
+      {
+        version: Manifest.version(),
+        testCases: {
+          ['stack/case1']: {
+            assertionStack: 'stack/case1/DeployAssert',
+            assertionStackName: 'stackcase1DeployAssert491B3C7C',
+            stacks: ['stack-under-test-1'],
+          },
+          ['stack/case2']: {
+            assertionStack: 'stack/case2/DeployAssert',
+            assertionStackName: 'stackcase2DeployAssert3B5E6392',
+            stacks: ['stack-under-test-2'],
+          },
         },
       },
-    }, tmpDir);
+      tmpDir
+    );
   });
 
   test('default', () => {

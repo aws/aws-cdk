@@ -310,10 +310,7 @@ export interface LambdaDeploymentGroupAttributes {
   readonly deploymentConfig?: ILambdaDeploymentConfig;
 }
 
-class ImportedLambdaDeploymentGroup
-  extends ImportedDeploymentGroupBase
-  implements ILambdaDeploymentGroup
-{
+class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implements ILambdaDeploymentGroup {
   public readonly application: ILambdaApplication;
   public readonly deploymentConfig: ILambdaDeploymentConfig;
 

@@ -17,11 +17,7 @@ test('queues can be used as destinations', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'sqs:SendMessage',
-            'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl',
-          ],
+          Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
           Condition: {
             ArnLike: {
               'aws:SourceArn': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
@@ -32,7 +28,6 @@ test('queues can be used as destinations', () => {
             Service: 's3.amazonaws.com',
           },
           Resource: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
-
         },
       ],
       Version: '2012-10-17',
@@ -51,14 +46,9 @@ test('queues can be used as destinations', () => {
     NotificationConfiguration: {
       QueueConfigurations: [
         {
-          Events: [
-            's3:ObjectRemoved:*',
-          ],
+          Events: ['s3:ObjectRemoved:*'],
           QueueArn: {
-            'Fn::GetAtt': [
-              'Queue4A7E3555',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
           },
         },
       ],
@@ -70,8 +60,7 @@ test('queues can be used as destinations', () => {
 
   const resources = Template.fromStack(stack).findResources('Custom::S3BucketNotifications');
 
-  expect(resources.BucketNotifications8F2E257D.DependsOn)
-    .toEqual(['QueuePolicy25439813', 'Queue4A7E3555']);
+  expect(resources.BucketNotifications8F2E257D.DependsOn).toEqual(['QueuePolicy25439813', 'Queue4A7E3555']);
 });
 
 test('if the queue is encrypted with a custom kms key, the key resource policy is updated to allow s3 to read messages', () => {
@@ -83,17 +72,16 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
 
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: Match.arrayWith([{
-        Action: [
-          'kms:GenerateDataKey*',
-          'kms:Decrypt',
-        ],
-        Effect: 'Allow',
-        Principal: {
-          Service: 's3.amazonaws.com',
+      Statement: Match.arrayWith([
+        {
+          Action: ['kms:GenerateDataKey*', 'kms:Decrypt'],
+          Effect: 'Allow',
+          Principal: {
+            Service: 's3.amazonaws.com',
+          },
+          Resource: '*',
         },
-        Resource: '*',
-      }]),
+      ]),
     },
   });
 });
@@ -101,7 +89,11 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
 test('if the queue is encrypted with a imported kms key, printout warning', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');
-  const key = kms.Key.fromKeyArn(stack, 'ImportedKey', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab');
+  const key = kms.Key.fromKeyArn(
+    stack,
+    'ImportedKey',
+    'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'
+  );
   const queue = new sqs.Queue(stack, 'Queue', {
     encryption: sqs.QueueEncryption.KMS,
     encryptionMasterKey: key,
@@ -109,15 +101,19 @@ test('if the queue is encrypted with a imported kms key, printout warning', () =
 
   bucket.addObjectCreatedNotification(new notif.SqsDestination(queue));
 
-  Annotations.fromStack(stack).hasWarning('/Default/ImportedKey', `Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify({
-    Action: [
-      'kms:GenerateDataKey*',
-      'kms:Decrypt',
-    ],
-    Effect: 'Allow',
-    Principal: {
-      Service: 's3.amazonaws.com',
-    },
-    Resource: '*',
-  }, null, 2)} [ack: @aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded]`);
+  Annotations.fromStack(stack).hasWarning(
+    '/Default/ImportedKey',
+    `Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify(
+      {
+        Action: ['kms:GenerateDataKey*', 'kms:Decrypt'],
+        Effect: 'Allow',
+        Principal: {
+          Service: 's3.amazonaws.com',
+        },
+        Resource: '*',
+      },
+      null,
+      2
+    )} [ack: @aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded]`
+  );
 });

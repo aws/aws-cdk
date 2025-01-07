@@ -40,7 +40,10 @@ describe('singleton lambda', () => {
             },
             ManagedPolicyArns: [
               {
-                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']],
+                'Fn::Join': [
+                  '',
+                  ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+                ],
               },
             ],
           },
@@ -79,10 +82,7 @@ describe('singleton lambda', () => {
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      DependsOn: [
-        'dependencyUser1B9CB07E',
-        'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235',
-      ],
+      DependsOn: ['dependencyUser1B9CB07E', 'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235'],
     });
   });
 
@@ -155,9 +155,11 @@ describe('singleton lambda', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: [{
-        Ref: 'myLayerBA1B098A',
-      }],
+      Layers: [
+        {
+          Ref: 'myLayerBA1B098A',
+        },
+      ],
     });
   });
 
@@ -185,7 +187,9 @@ describe('singleton lambda', () => {
     expect(statement.Effect).toEqual('Allow');
     expect(statement.Resource).toEqual([
       { 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] },
-      { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] }, ':*']] },
+      {
+        'Fn::Join': ['', [{ 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38', 'Arn'] }, ':*']],
+      },
     ]);
   });
 
@@ -203,8 +207,9 @@ describe('singleton lambda', () => {
     });
 
     // THEN
-    expect(() => singleton._checkEdgeCompatibility())
-      .toThrow(/contains environment variables .* and is not compatible with Lambda@Edge/);
+    expect(() => singleton._checkEdgeCompatibility()).toThrow(
+      /contains environment variables .* and is not compatible with Lambda@Edge/
+    );
   });
 
   test('logGroup is correctly returned', () => {

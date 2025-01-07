@@ -45,30 +45,22 @@ class TestStack extends Stack {
     });
     this.functionNames.push(pythonFunction39Excludes.functionName);
 
-    const pythonFunction38Excludes = new lambda.PythonFunction(
-      this,
-      'my_handler_python_38_excludes',
-      {
-        entry: path.join(__dirname, 'lambda-handler-pipenv'),
-        runtime: Runtime.PYTHON_3_8,
-        bundling: {
-          assetExcludes: ['.ignorefile'],
-        },
-      }
-    );
+    const pythonFunction38Excludes = new lambda.PythonFunction(this, 'my_handler_python_38_excludes', {
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      runtime: Runtime.PYTHON_3_8,
+      bundling: {
+        assetExcludes: ['.ignorefile'],
+      },
+    });
     this.functionNames.push(pythonFunction38Excludes.functionName);
 
-    const pythonFunction37Excludes = new lambda.PythonFunction(
-      this,
-      'my_handler_python_37_excludes',
-      {
-        entry: path.join(__dirname, 'lambda-handler-pipenv'),
-        runtime: Runtime.PYTHON_3_7,
-        bundling: {
-          assetExcludes: ['.ignorefile'],
-        },
-      }
-    );
+    const pythonFunction37Excludes = new lambda.PythonFunction(this, 'my_handler_python_37_excludes', {
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      runtime: Runtime.PYTHON_3_7,
+      bundling: {
+        assetExcludes: ['.ignorefile'],
+      },
+    });
     this.functionNames.push(pythonFunction37Excludes.functionName);
   }
 }

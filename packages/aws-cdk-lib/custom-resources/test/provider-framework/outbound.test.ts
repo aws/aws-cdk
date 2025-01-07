@@ -170,4 +170,3 @@ describe('invokeFunction tests', () => {
     expect(receivedFunctionStates).toEqual(['Pending', 'Pending', 'Inactive']);
   });
 });
-

@@ -4,12 +4,7 @@ import { BOOTSTRAP_QUALIFIER_CONTEXT, DefaultStackSynthesizer } from './default-
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import * as cxapi from '../../../cx-api';
-import {
-  DockerImageAssetLocation,
-  DockerImageAssetSource,
-  FileAssetLocation,
-  FileAssetSource,
-} from '../assets';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { StringSpecializer } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -152,12 +147,9 @@ export class CliCredentialsStackSynthesizer
       this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME
     );
     this.repositoryName = spec.specialize(
-      this.props.imageAssetsRepositoryName ??
-        DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
+      this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
     );
-    this.bucketPrefix = spec.specialize(
-      this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
-    );
+    this.bucketPrefix = spec.specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
     this.dockerTagPrefix = spec.specialize(
       this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX
     );

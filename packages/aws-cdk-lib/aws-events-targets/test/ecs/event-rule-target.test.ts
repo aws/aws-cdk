@@ -1,4 +1,3 @@
-
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
@@ -40,15 +39,19 @@ test('Can use EC2 taskdef as EventRule target', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -86,16 +89,20 @@ test('Can use EC2 taskdef as EventRule target with dead letter queue', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-    deadLetterQueue,
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+      deadLetterQueue,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -116,10 +123,7 @@ test('Can use EC2 taskdef as EventRule target with dead letter queue', () => {
         Id: 'Target0',
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyDeadLetterQueueD997968A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyDeadLetterQueueD997968A', 'Arn'],
           },
         },
       },
@@ -127,29 +131,38 @@ test('Can use EC2 taskdef as EventRule target with dead letter queue', () => {
   });
 });
 
-test('Throws error for lacking of taskRole ' +
-    'when importing from an EC2 task definition just from a task definition arn as EventRule target', () => {
-  // GIVEN
-  const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
+test(
+  'Throws error for lacking of taskRole ' +
+    'when importing from an EC2 task definition just from a task definition arn as EventRule target',
+  () => {
+    // GIVEN
+    const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
 
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
-  });
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 min)'),
+    });
 
-  // THEN
-  expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-    }));
-  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-});
+    // THEN
+    expect(() => {
+      rule.addTarget(
+        new targets.EcsTask({
+          cluster,
+          taskDefinition,
+          taskCount: 1,
+          containerOverrides: [
+            {
+              containerName: 'TheContainer',
+              command: ['echo', events.EventField.fromPath('$.detail.event')],
+            },
+          ],
+        })
+      );
+    }).toThrow(
+      'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        "Add the 'taskRole' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+    );
+  }
+);
 
 test('Can import an EC2 task definition from task definition attributes as EventRule target', () => {
   // GIVEN
@@ -166,15 +179,19 @@ test('Can import an EC2 task definition from task definition attributes as Event
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -198,29 +215,42 @@ test('Can import an EC2 task definition from task definition attributes as Event
   });
 });
 
-test('Throws error for lacking of taskRole ' +
-  'when importing from a Fargate task definition just from a task definition arn as EventRule target', () => {
-  // GIVEN
-  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
+test(
+  'Throws error for lacking of taskRole ' +
+    'when importing from a Fargate task definition just from a task definition arn as EventRule target',
+  () => {
+    // GIVEN
+    const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+      stack,
+      'TaskDef',
+      'ImportedTaskDefArn'
+    );
 
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
-  });
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 min)'),
+    });
 
-  // THEN
-  expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-    }));
-  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-});
+    // THEN
+    expect(() => {
+      rule.addTarget(
+        new targets.EcsTask({
+          cluster,
+          taskDefinition,
+          taskCount: 1,
+          containerOverrides: [
+            {
+              containerName: 'TheContainer',
+              command: ['echo', events.EventField.fromPath('$.detail.event')],
+            },
+          ],
+        })
+      );
+    }).toThrow(
+      'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        "Add the 'taskRole' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+    );
+  }
+);
 
 test('Can import a Fargate task definition from task definition attributes as EventRule target', () => {
   // GIVEN
@@ -237,15 +267,19 @@ test('Can import a Fargate task definition from task definition attributes as Ev
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -269,29 +303,38 @@ test('Can import a Fargate task definition from task definition attributes as Ev
   });
 });
 
-test('Throws error for lacking of taskRole ' +
-  'when importing from a task definition just from a task definition arn as EventRule target', () => {
-  // GIVEN
-  const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
+test(
+  'Throws error for lacking of taskRole ' +
+    'when importing from a task definition just from a task definition arn as EventRule target',
+  () => {
+    // GIVEN
+    const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
-  });
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 min)'),
+    });
 
-  // THEN
-  expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-    }));
-  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-});
+    // THEN
+    expect(() => {
+      rule.addTarget(
+        new targets.EcsTask({
+          cluster,
+          taskDefinition,
+          taskCount: 1,
+          containerOverrides: [
+            {
+              containerName: 'TheContainer',
+              command: ['echo', events.EventField.fromPath('$.detail.event')],
+            },
+          ],
+        })
+      );
+    }).toThrow(
+      'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        "Add the 'taskRole' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+    );
+  }
+);
 
 test('Can import a Task definition from task definition attributes as EventRule target', () => {
   // GIVEN
@@ -308,15 +351,19 @@ test('Can import a Task definition from task definition attributes as EventRule 
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -356,10 +403,12 @@ test('Can use Fargate taskdef as EventRule target', () => {
     cluster,
     taskDefinition,
     taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
+    containerOverrides: [
+      {
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      },
+    ],
   });
   rule.addTarget(target);
 
@@ -383,10 +432,7 @@ test('Can use Fargate taskdef as EventRule target', () => {
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
                 {
-                  'Fn::GetAtt': [
-                    'TaskDefSecurityGroupD50E7CF0',
-                    'GroupId',
-                  ],
+                  'Fn::GetAtt': ['TaskDefSecurityGroupD50E7CF0', 'GroupId'],
                 },
               ],
             },
@@ -422,10 +468,12 @@ test('Can use Fargate taskdef as EventRule target with dead letter queue', () =>
     cluster,
     taskDefinition,
     taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
+    containerOverrides: [
+      {
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      },
+    ],
     deadLetterQueue,
   });
   rule.addTarget(target);
@@ -450,10 +498,7 @@ test('Can use Fargate taskdef as EventRule target with dead letter queue', () =>
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
                 {
-                  'Fn::GetAtt': [
-                    'TaskDefSecurityGroupD50E7CF0',
-                    'GroupId',
-                  ],
+                  'Fn::GetAtt': ['TaskDefSecurityGroupD50E7CF0', 'GroupId'],
                 },
               ],
             },
@@ -469,10 +514,7 @@ test('Can use Fargate taskdef as EventRule target with dead letter queue', () =>
         Id: 'Target0',
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyDeadLetterQueueD997968A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyDeadLetterQueueD997968A', 'Arn'],
           },
         },
       },
@@ -497,15 +539,21 @@ test('Can use same fargate taskdef with multiple rules', () => {
     },
   });
 
-  scheduledRule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-  }));
+  scheduledRule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+    })
+  );
 
-  expect(() => patternRule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-  }))).not.toThrow();
+  expect(() =>
+    patternRule.addTarget(
+      new targets.EcsTask({
+        cluster,
+        taskDefinition,
+      })
+    )
+  ).not.toThrow();
 });
 
 test('Can use same fargate taskdef multiple times in a rule', () => {
@@ -519,33 +567,45 @@ test('Can use same fargate taskdef multiple times in a rule', () => {
     schedule: events.Schedule.expression('rate(1 min)'),
   });
 
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.a')],
-    }],
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.a')],
+        },
+      ],
+    })
+  );
 
-  expect(() => rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.b')],
-    }],
-  }))).not.toThrow();
+  expect(() =>
+    rule.addTarget(
+      new targets.EcsTask({
+        cluster,
+        taskDefinition,
+        containerOverrides: [
+          {
+            containerName: 'TheContainer',
+            command: ['echo', events.EventField.fromPath('$.detail.b')],
+          },
+        ],
+      })
+    )
+  ).not.toThrow();
 });
 
 test('Isolated subnet does not have AssignPublicIp=true', () => {
   // GIVEN
   vpc = new ec2.Vpc(stack, 'Vpc2', {
     maxAzs: 1,
-    subnetConfiguration: [{
-      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-      name: 'Isolated',
-    }],
+    subnetConfiguration: [
+      {
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        name: 'Isolated',
+      },
+    ],
   });
   cluster = new ecs.Cluster(stack, 'EcsCluster2', { vpc });
 
@@ -559,16 +619,20 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', 'yay'],
-    }],
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', 'yay'],
+        },
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -589,10 +653,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
                 {
-                  'Fn::GetAtt': [
-                    'TaskDefSecurityGroupD50E7CF0',
-                    'GroupId',
-                  ],
+                  'Fn::GetAtt': ['TaskDefSecurityGroupD50E7CF0', 'GroupId'],
                 },
               ],
             },
@@ -620,17 +681,21 @@ testDeprecated('throws an error if both securityGroup and securityGroups is spec
 
   // THEN
   expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      securityGroup,
-      securityGroups: [securityGroup],
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', 'yay'],
-      }],
-    }));
+    rule.addTarget(
+      new targets.EcsTask({
+        cluster,
+        taskDefinition,
+        taskCount: 1,
+        securityGroup,
+        securityGroups: [securityGroup],
+        containerOverrides: [
+          {
+            containerName: 'TheContainer',
+            command: ['echo', 'yay'],
+          },
+        ],
+      })
+    );
   }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
 });
 
@@ -650,16 +715,20 @@ test('uses multiple security groups', () => {
   ];
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    securityGroups,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', 'yay'],
-    }],
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      securityGroups,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', 'yay'],
+        },
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -707,16 +776,20 @@ test('uses existing IAM role', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-    role,
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+      role,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -751,16 +824,20 @@ test('uses the specific fargate platform version', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-    platformVersion,
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+      platformVersion,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -793,16 +870,20 @@ test('sets the propagate tags flag', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-    propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+      propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -829,16 +910,20 @@ test('throws an error when trying to pass a disallowed value for propagateTags',
 
   // THEN
   expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-      propagateTags: ecs.PropagatedTagSource.SERVICE, // propagateTags must be TASK_DEFINITION or NONE
-    }));
+    rule.addTarget(
+      new targets.EcsTask({
+        cluster,
+        taskDefinition,
+        taskCount: 1,
+        containerOverrides: [
+          {
+            containerName: 'TheContainer',
+            command: ['echo', events.EventField.fromPath('$.detail.event')],
+          },
+        ],
+        propagateTags: ecs.PropagatedTagSource.SERVICE, // propagateTags must be TASK_DEFINITION or NONE
+      })
+    );
   }).toThrow('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
 });
 
@@ -854,16 +939,20 @@ test('set enableExecuteCommand', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-    enableExecuteCommand: true,
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+      enableExecuteCommand: true,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -889,21 +978,25 @@ test('sets tag lists', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-    tags: [
-      {
-        key: 'my-tag',
-        value: 'my-tag-value',
-      },
-    ],
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+      tags: [
+        {
+          key: 'my-tag',
+          value: 'my-tag-value',
+        },
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -934,17 +1027,21 @@ test('enable assignPublicIp for public subnet', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
-    assignPublicIp: true,
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+      subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+      assignPublicIp: true,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -974,17 +1071,21 @@ test('DISABLE is set when disable assignPublicIp in a public subnet', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    taskCount: 1,
-    containerOverrides: [{
-      containerName: 'TheContainer',
-      command: ['echo', events.EventField.fromPath('$.detail.event')],
-    }],
-    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
-    assignPublicIp: false,
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [
+        {
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        },
+      ],
+      subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+      assignPublicIp: false,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -1015,17 +1116,21 @@ test('throw error when enable assignPublicIp for non-Fargate task', () => {
 
   // THEN
   expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-      subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
-      assignPublicIp: true,
-    }));
+    rule.addTarget(
+      new targets.EcsTask({
+        cluster,
+        taskDefinition,
+        taskCount: 1,
+        containerOverrides: [
+          {
+            containerName: 'TheContainer',
+            command: ['echo', events.EventField.fromPath('$.detail.event')],
+          },
+        ],
+        subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+        assignPublicIp: true,
+      })
+    );
   }).toThrow('assignPublicIp is only supported for FARGATE tasks');
 });
 
@@ -1042,17 +1147,21 @@ test('throw an error when assignPublicIp is set to true for private subnets', ()
 
   // THEN
   expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-      assignPublicIp: true,
-    }));
+    rule.addTarget(
+      new targets.EcsTask({
+        cluster,
+        taskDefinition,
+        taskCount: 1,
+        containerOverrides: [
+          {
+            containerName: 'TheContainer',
+            command: ['echo', events.EventField.fromPath('$.detail.event')],
+          },
+        ],
+        subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+        assignPublicIp: true,
+      })
+    );
   }).toThrow('assignPublicIp should be set to true only for PUBLIC subnets');
 });
 
@@ -1079,11 +1188,13 @@ test.each([
   });
 
   // WHEN
-  rule.addTarget(new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    launchType,
-  }));
+  rule.addTarget(
+    new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      launchType,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -1111,7 +1222,7 @@ test('When using non-imported TaskDefinition, the IAM policy `Resource` should u
     new EcsTask({
       cluster: cluster,
       taskDefinition: taskDefinition,
-    }),
+    })
   );
 
   const policyMatch = Match.objectLike({
@@ -1145,7 +1256,7 @@ test('Imported task definition without revision adds wildcard to policy resource
     new EcsTask({
       cluster: cluster,
       taskDefinition: taskDefinition,
-    }),
+    })
   );
 
   const policyMatch = Match.objectLike({
@@ -1177,7 +1288,7 @@ test('Imported task definition with revision uses original arn for policy resour
     new EcsTask({
       cluster: cluster,
       taskDefinition: taskDefinition,
-    }),
+    })
   );
 
   const policyMatch = Match.objectLike({

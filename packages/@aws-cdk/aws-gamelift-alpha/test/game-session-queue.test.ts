@@ -1,4 +1,3 @@
-
 import * as path from 'path';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
@@ -8,7 +7,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('gameSessionQueue', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
     let fleet: gamelift.FleetBase;
@@ -20,9 +18,11 @@ describe('gameSessionQueue', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
       });
     });
@@ -34,37 +34,36 @@ describe('gameSessionQueue', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::GameSessionQueue', {
-        Properties:
+        Properties: {
+          Name: 'test-gameSessionQueue',
+          Destinations: [
             {
-              Name: 'test-gameSessionQueue',
-              Destinations: [
-                {
-                  DestinationArn: {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':gamelift:',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        ':',
-                        {
-                          Ref: 'AWS::AccountId',
-                        },
-                        ':fleet/',
-                        {
-                          Ref: 'MyBuildFleet0F4EADEC',
-                        },
-                      ],
-                    ],
-                  },
-                },
-              ],
+              DestinationArn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':gamelift:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':fleet/',
+                    {
+                      Ref: 'MyBuildFleet0F4EADEC',
+                    },
+                  ],
+                ],
+              },
             },
+          ],
+        },
       });
     });
 
@@ -80,37 +79,36 @@ describe('gameSessionQueue', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::GameSessionQueue', {
-        Properties:
-              {
-                Name: 'test-gameSessionQueue',
-                Destinations: [
-                  {
-                    DestinationArn: {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            Ref: 'AWS::Partition',
-                          },
-                          ':gamelift:',
-                          {
-                            Ref: 'AWS::Region',
-                          },
-                          ':',
-                          {
-                            Ref: 'AWS::AccountId',
-                          },
-                          ':alias/',
-                          {
-                            Ref: 'MyAlias9A08CB8C',
-                          },
-                        ],
-                      ],
+        Properties: {
+          Name: 'test-gameSessionQueue',
+          Destinations: [
+            {
+              DestinationArn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
                     },
-                  },
+                    ':gamelift:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':alias/',
+                    {
+                      Ref: 'MyAlias9A08CB8C',
+                    },
+                  ],
                 ],
               },
+            },
+          ],
+        },
       });
     });
 
@@ -128,62 +126,61 @@ describe('gameSessionQueue', () => {
       queue.addDestination(alias);
 
       Template.fromStack(stack).hasResource('AWS::GameLift::GameSessionQueue', {
-        Properties:
-              {
-                Name: 'test-gameSessionQueue',
-                Destinations: [
-                  {
-                    DestinationArn: {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            Ref: 'AWS::Partition',
-                          },
-                          ':gamelift:',
-                          {
-                            Ref: 'AWS::Region',
-                          },
-                          ':',
-                          {
-                            Ref: 'AWS::AccountId',
-                          },
-                          ':fleet/',
-                          {
-                            Ref: 'MyBuildFleet0F4EADEC',
-                          },
-                        ],
-                      ],
+        Properties: {
+          Name: 'test-gameSessionQueue',
+          Destinations: [
+            {
+              DestinationArn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
                     },
-                  },
-                  {
-                    DestinationArn: {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            Ref: 'AWS::Partition',
-                          },
-                          ':gamelift:',
-                          {
-                            Ref: 'AWS::Region',
-                          },
-                          ':',
-                          {
-                            Ref: 'AWS::AccountId',
-                          },
-                          ':alias/',
-                          {
-                            Ref: 'MyAlias9A08CB8C',
-                          },
-                        ],
-                      ],
+                    ':gamelift:',
+                    {
+                      Ref: 'AWS::Region',
                     },
-                  },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':fleet/',
+                    {
+                      Ref: 'MyBuildFleet0F4EADEC',
+                    },
+                  ],
                 ],
               },
+            },
+            {
+              DestinationArn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':gamelift:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':alias/',
+                    {
+                      Ref: 'MyAlias9A08CB8C',
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+        },
       });
     });
 
@@ -196,15 +193,14 @@ describe('gameSessionQueue', () => {
         customEventData: 'test-event-data',
         allowedLocations: ['eu-west-1', 'eu-west-2'],
         notificationTarget: topic,
-        playerLatencyPolicies: [{
-          maximumIndividualPlayerLatency: cdk.Duration.millis(100),
-          policyDuration: cdk.Duration.seconds(300),
-        }],
+        playerLatencyPolicies: [
+          {
+            maximumIndividualPlayerLatency: cdk.Duration.millis(100),
+            policyDuration: cdk.Duration.seconds(300),
+          },
+        ],
         priorityConfiguration: {
-          locationOrder: [
-            'eu-west-1',
-            'eu-west-2',
-          ],
+          locationOrder: ['eu-west-1', 'eu-west-2'],
           priorityOrder: [
             gamelift.PriorityType.LATENCY,
             gamelift.PriorityType.COST,
@@ -213,66 +209,55 @@ describe('gameSessionQueue', () => {
           ],
         },
         timeout: cdk.Duration.seconds(300),
-
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::GameSessionQueue', {
-        Properties:
+        Properties: {
+          Name: 'test-gameSessionQueue',
+          CustomEventData: 'test-event-data',
+          FilterConfiguration: {
+            AllowedLocations: ['eu-west-1', 'eu-west-2'],
+          },
+          NotificationTarget: { Ref: 'MyTopic86869434' },
+          PlayerLatencyPolicies: [
             {
-              Name: 'test-gameSessionQueue',
-              CustomEventData: 'test-event-data',
-              FilterConfiguration: {
-                AllowedLocations: [
-                  'eu-west-1',
-                  'eu-west-2',
-                ],
-              },
-              NotificationTarget: { Ref: 'MyTopic86869434' },
-              PlayerLatencyPolicies: [{
-                MaximumIndividualPlayerLatencyMilliseconds: 100,
-                PolicyDurationSeconds: 300,
-              }],
-              PriorityConfiguration: {
-                LocationOrder: [
-                  'eu-west-1',
-                  'eu-west-2',
-                ],
-                PriorityOrder: [
-                  'LATENCY',
-                  'COST',
-                  'DESTINATION',
-                  'LOCATION',
-                ],
-              },
-              TimeoutInSeconds: 300,
-              Destinations: [
-                {
-                  DestinationArn: {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':gamelift:',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        ':',
-                        {
-                          Ref: 'AWS::AccountId',
-                        },
-                        ':fleet/',
-                        {
-                          Ref: 'MyBuildFleet0F4EADEC',
-                        },
-                      ],
-                    ],
-                  },
-                },
-              ],
+              MaximumIndividualPlayerLatencyMilliseconds: 100,
+              PolicyDurationSeconds: 300,
             },
+          ],
+          PriorityConfiguration: {
+            LocationOrder: ['eu-west-1', 'eu-west-2'],
+            PriorityOrder: ['LATENCY', 'COST', 'DESTINATION', 'LOCATION'],
+          },
+          TimeoutInSeconds: 300,
+          Destinations: [
+            {
+              DestinationArn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':gamelift:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':fleet/',
+                    {
+                      Ref: 'MyBuildFleet0F4EADEC',
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+        },
       });
     });
 
@@ -282,16 +267,17 @@ describe('gameSessionQueue', () => {
         incorrectLocationOrder.push('test-location');
       }
 
-      expect(() => new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
-        gameSessionQueueName: 'test-name',
-        destinations: [fleet],
-        priorityConfiguration: {
-          locationOrder: incorrectLocationOrder,
-          priorityOrder: [
-            gamelift.PriorityType.COST,
-          ],
-        },
-      })).toThrow(/No more than 100 locations are allowed per priority configuration, given 101/);
+      expect(
+        () =>
+          new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
+            gameSessionQueueName: 'test-name',
+            destinations: [fleet],
+            priorityConfiguration: {
+              locationOrder: incorrectLocationOrder,
+              priorityOrder: [gamelift.PriorityType.COST],
+            },
+          })
+      ).toThrow(/No more than 100 locations are allowed per priority configuration, given 101/);
     });
 
     test('with an invlaid priority configuration priority order', () => {
@@ -300,14 +286,17 @@ describe('gameSessionQueue', () => {
         incorrectPriorityOrder.push(gamelift.PriorityType.COST);
       }
 
-      expect(() => new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
-        gameSessionQueueName: 'test-name',
-        destinations: [fleet],
-        priorityConfiguration: {
-          locationOrder: ['eu-west-1', 'eu-west-2'],
-          priorityOrder: incorrectPriorityOrder,
-        },
-      })).toThrow(/No more than 4 priorities are allowed per priority configuration, given 5/);
+      expect(
+        () =>
+          new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
+            gameSessionQueueName: 'test-name',
+            destinations: [fleet],
+            priorityConfiguration: {
+              locationOrder: ['eu-west-1', 'eu-west-2'],
+              priorityOrder: incorrectPriorityOrder,
+            },
+          })
+      ).toThrow(/No more than 4 priorities are allowed per priority configuration, given 5/);
     });
 
     test('with an incorrect name', () => {
@@ -316,19 +305,25 @@ describe('gameSessionQueue', () => {
         incorrectName += 'A';
       }
 
-      expect(() => new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
-        gameSessionQueueName: incorrectName,
-        destinations: [fleet],
-      })).toThrow(/GameSessionQueue name can not be longer than 128 characters but has 129 characters./);
+      expect(
+        () =>
+          new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
+            gameSessionQueueName: incorrectName,
+            destinations: [fleet],
+          })
+      ).toThrow(/GameSessionQueue name can not be longer than 128 characters but has 129 characters./);
     });
 
     test('with an incorrect name format', () => {
       let incorrectName = 'test with space';
 
-      expect(() => new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
-        gameSessionQueueName: incorrectName,
-        destinations: [fleet],
-      })).toThrow(/GameSessionQueue name test with space can contain only letters, numbers, hyphens with no spaces./);
+      expect(
+        () =>
+          new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
+            gameSessionQueueName: incorrectName,
+            destinations: [fleet],
+          })
+      ).toThrow(/GameSessionQueue name test with space can contain only letters, numbers, hyphens with no spaces./);
     });
 
     test('with an incorrect custom event data', () => {
@@ -337,11 +332,14 @@ describe('gameSessionQueue', () => {
         incorrectCustomEventData += 'A';
       }
 
-      expect(() => new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
-        gameSessionQueueName: 'test-name',
-        destinations: [fleet],
-        customEventData: incorrectCustomEventData,
-      })).toThrow(/GameSessionQueue custom event data can not be longer than 256 characters but has 257 characters./);
+      expect(
+        () =>
+          new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
+            gameSessionQueueName: 'test-name',
+            destinations: [fleet],
+            customEventData: incorrectCustomEventData,
+          })
+      ).toThrow(/GameSessionQueue custom event data can not be longer than 256 characters but has 257 characters./);
     });
 
     test('with an incorrect number of locations', () => {
@@ -350,11 +348,14 @@ describe('gameSessionQueue', () => {
         incorrectLocations.push('test');
       }
 
-      expect(() => new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
-        gameSessionQueueName: 'test-name',
-        destinations: [fleet],
-        allowedLocations: incorrectLocations,
-      })).toThrow(/No more than 100 allowed locations are allowed per game session queue, given 101/);
+      expect(
+        () =>
+          new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
+            gameSessionQueueName: 'test-name',
+            destinations: [fleet],
+            allowedLocations: incorrectLocations,
+          })
+      ).toThrow(/No more than 100 allowed locations are allowed per game session queue, given 101/);
     });
   });
 
@@ -370,9 +371,11 @@ describe('gameSessionQueue', () => {
         content: gamelift.Build.fromAsset(stack, 'Build', path.join(__dirname, 'my-game-build')),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
         runtimeConfiguration: {
-          serverProcesses: [{
-            launchPath: 'test-launch-path',
-          }],
+          serverProcesses: [
+            {
+              launchPath: 'test-launch-path',
+            },
+          ],
         },
       });
       gameSessionQueue = new gamelift.GameSessionQueue(stack, 'MyGameSessionQueue', {
@@ -484,7 +487,6 @@ describe('gameSessionQueue', () => {
         },
       });
     });
-
   });
 
   describe('test import methods', () => {
@@ -493,10 +495,16 @@ describe('gameSessionQueue', () => {
       const stack2 = new cdk.Stack();
 
       // WHEN
-      const imported = gamelift.GameSessionQueue.fromGameSessionQueueArn(stack2, 'Imported', 'arn:aws:gamelift:us-east-1:123456789012:gamesessionqueue/sample-gameSessionQueue-name');
+      const imported = gamelift.GameSessionQueue.fromGameSessionQueueArn(
+        stack2,
+        'Imported',
+        'arn:aws:gamelift:us-east-1:123456789012:gamesessionqueue/sample-gameSessionQueue-name'
+      );
 
       // THEN
-      expect(imported.gameSessionQueueArn).toEqual('arn:aws:gamelift:us-east-1:123456789012:gamesessionqueue/sample-gameSessionQueue-name');
+      expect(imported.gameSessionQueueArn).toEqual(
+        'arn:aws:gamelift:us-east-1:123456789012:gamesessionqueue/sample-gameSessionQueue-name'
+      );
       expect(imported.gameSessionQueueName).toEqual('sample-gameSessionQueue-name');
     });
 
@@ -505,19 +513,26 @@ describe('gameSessionQueue', () => {
       const stack = new cdk.Stack();
 
       // WHEN
-      const imported = gamelift.GameSessionQueue.fromGameSessionQueueName(stack, 'Imported', 'sample-gameSessionQueue-name');
+      const imported = gamelift.GameSessionQueue.fromGameSessionQueueName(
+        stack,
+        'Imported',
+        'sample-gameSessionQueue-name'
+      );
 
       // THEN
       expect(stack.resolve(imported.gameSessionQueueArn)).toStrictEqual({
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':gamelift:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':gamesessionqueue/sample-gameSessionQueue-name',
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':gamelift:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':gamesessionqueue/sample-gameSessionQueue-name',
+          ],
+        ],
       });
       expect(stack.resolve(imported.gameSessionQueueName)).toStrictEqual('sample-gameSessionQueue-name');
     });
@@ -537,7 +552,11 @@ describe('gameSessionQueue', () => {
 
     describe('', () => {
       test('with required attrs only', () => {
-        const importedFleet = gamelift.GameSessionQueue.fromGameSessionQueueAttributes(stack, 'ImportedGameSessionQueue', { gameSessionQueueArn });
+        const importedFleet = gamelift.GameSessionQueue.fromGameSessionQueueAttributes(
+          stack,
+          'ImportedGameSessionQueue',
+          { gameSessionQueueArn }
+        );
 
         expect(importedFleet.gameSessionQueueName).toEqual(gameSessionQueueName);
         expect(importedFleet.gameSessionQueueArn).toEqual(gameSessionQueueArn);
@@ -546,13 +565,19 @@ describe('gameSessionQueue', () => {
       });
 
       test('with missing attrs', () => {
-        expect(() => gamelift.GameSessionQueue.fromGameSessionQueueAttributes(stack, 'ImportedGameSessionQueue', { }))
-          .toThrow(/Either gameSessionQueueName or gameSessionQueueArn must be provided in GameSessionQueueAttributes/);
+        expect(() =>
+          gamelift.GameSessionQueue.fromGameSessionQueueAttributes(stack, 'ImportedGameSessionQueue', {})
+        ).toThrow(/Either gameSessionQueueName or gameSessionQueueArn must be provided in GameSessionQueueAttributes/);
       });
 
       test('with invalid ARN', () => {
-        expect(() => gamelift.GameSessionQueue.fromGameSessionQueueAttributes(stack, 'ImportedGameSessionQueue', { gameSessionQueueArn: 'arn:aws:gamelift:gameSessionQueue-region:123456789012:gamesessionqueue' }))
-          .toThrow(/No gameSessionQueue name found in ARN: 'arn:aws:gamelift:gameSessionQueue-region:123456789012:gamesessionqueue'/);
+        expect(() =>
+          gamelift.GameSessionQueue.fromGameSessionQueueAttributes(stack, 'ImportedGameSessionQueue', {
+            gameSessionQueueArn: 'arn:aws:gamelift:gameSessionQueue-region:123456789012:gamesessionqueue',
+          })
+        ).toThrow(
+          /No gameSessionQueue name found in ARN: 'arn:aws:gamelift:gameSessionQueue-region:123456789012:gamesessionqueue'/
+        );
       });
     });
 
@@ -560,7 +585,9 @@ describe('gameSessionQueue', () => {
       let gameSessionQueue: gamelift.IGameSessionQueue;
 
       beforeEach(() => {
-        gameSessionQueue = gamelift.GameSessionQueue.fromGameSessionQueueAttributes(stack, 'ImportedGameSessionQueue', { gameSessionQueueArn });
+        gameSessionQueue = gamelift.GameSessionQueue.fromGameSessionQueueAttributes(stack, 'ImportedGameSessionQueue', {
+          gameSessionQueueArn,
+        });
       });
 
       test("the gameSessionQueue's region is taken from the ARN", () => {

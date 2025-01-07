@@ -67,9 +67,11 @@ describe('create', () => {
         username: username,
       },
     });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE USER username PASSWORD '${password}'`,
-    }));
+    expect(mockExecuteStatement).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Sql: `CREATE USER username PASSWORD '${password}'`,
+      })
+    );
   });
 });
 
@@ -85,9 +87,11 @@ describe('delete', () => {
 
     await manageUser(resourceProperties, event);
 
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: 'DROP USER username',
-    }));
+    expect(mockExecuteStatement).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Sql: 'DROP USER username',
+      })
+    );
   });
 });
 
@@ -109,10 +113,12 @@ describe('update', () => {
     await expect(manageUser(newResourceProperties, event)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      ClusterIdentifier: newClusterName,
-      Sql: expect.stringMatching(/CREATE USER/),
-    }));
+    expect(mockExecuteStatement).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ClusterIdentifier: newClusterName,
+        Sql: expect.stringMatching(/CREATE USER/),
+      })
+    );
   });
 
   test('does not replace if admin user ARN changes', async () => {
@@ -138,10 +144,12 @@ describe('update', () => {
     await expect(manageUser(newResourceProperties, event)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Database: newDatabaseName,
-      Sql: expect.stringMatching(/CREATE USER/),
-    }));
+    expect(mockExecuteStatement).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Database: newDatabaseName,
+        Sql: expect.stringMatching(/CREATE USER/),
+      })
+    );
   });
 
   test('replaces if user name changes', async () => {
@@ -154,20 +162,26 @@ describe('update', () => {
     await expect(manageUser(newResourceProperties, event)).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`CREATE USER ${newUsername}`)),
-    }));
+    expect(mockExecuteStatement).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Sql: expect.stringMatching(new RegExp(`CREATE USER ${newUsername}`)),
+      })
+    );
   });
 
   test('does not replace if password changes', async () => {
     const newPassword = 'newPassword';
-    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: newPassword }) }));
+    mockGetSecretValue.mockImplementationOnce(async () => ({
+      SecretString: JSON.stringify({ password: newPassword }),
+    }));
 
     await expect(manageUser(resourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`ALTER USER ${username} PASSWORD '${password}'`)),
-    }));
+    expect(mockExecuteStatement).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Sql: expect.stringMatching(new RegExp(`ALTER USER ${username} PASSWORD '${password}'`)),
+      })
+    );
   });
 });

@@ -10,7 +10,6 @@ import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
 
 test('security groups are applied to all framework functions', () => {
-
   // GIVEN
   const stack = new Stack();
 
@@ -39,10 +38,7 @@ test('security groups are applied to all framework functions', () => {
     VpcConfig: {
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'SecurityGroupDD263621',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
         },
       ],
     },
@@ -53,10 +49,7 @@ test('security groups are applied to all framework functions', () => {
     VpcConfig: {
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'SecurityGroupDD263621',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
         },
       ],
     },
@@ -67,19 +60,14 @@ test('security groups are applied to all framework functions', () => {
     VpcConfig: {
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'SecurityGroupDD263621',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
         },
       ],
     },
   });
-
 });
 
 test('vpc is applied to all framework functions', () => {
-
   // GIVEN
   const stack = new Stack();
 
@@ -104,33 +92,23 @@ test('vpc is applied to all framework functions', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onEvent',
     VpcConfig: {
-      SubnetIds: [
-        { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
-        { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
-      ],
+      SubnetIds: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
     },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.isComplete',
     VpcConfig: {
-      SubnetIds: [
-        { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
-        { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
-      ],
+      SubnetIds: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
     },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onTimeout',
     VpcConfig: {
-      SubnetIds: [
-        { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
-        { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
-      ],
+      SubnetIds: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
     },
   });
-
 });
 
 test('minimal setup', () => {
@@ -162,10 +140,12 @@ test('minimal setup', () => {
 
   // no framework "is complete" handler or state machine
   Template.fromStack(stack).resourceCountIs('AWS::StepFunctions::StateMachine', 0);
-  expect(Template.fromStack(stack).findResources('AWS::Lambda::Function', {
-    Handler: 'framework.isComplete',
-    Timeout: 900,
-  })).toEqual({});
+  expect(
+    Template.fromStack(stack).findResources('AWS::Lambda::Function', {
+      Handler: 'framework.isComplete',
+      Timeout: 900,
+    })
+  ).toEqual({});
 });
 
 test('if isComplete is specified, the isComplete framework handler is also included', () => {
@@ -227,17 +207,11 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
         [
           '{"StartAt":"framework-isComplete-task","States":{"framework-isComplete-task":{"End":true,"Retry":[{"ErrorEquals":["States.ALL"],"IntervalSeconds":5,"MaxAttempts":360,"BackoffRate":1}],"Catch":[{"ErrorEquals":["States.ALL"],"Next":"framework-onTimeout-task"}],"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': [
-              'MyProviderframeworkisComplete364190E2',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyProviderframeworkisComplete364190E2', 'Arn'],
           },
           '"},"framework-onTimeout-task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': [
-              'MyProviderframeworkonTimeoutD9D96588',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyProviderframeworkonTimeoutD9D96588', 'Arn'],
           },
           '"}}}',
         ],
@@ -248,10 +222,7 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
         {
           CloudWatchLogsLogGroup: {
             LogGroupArn: {
-              'Fn::GetAtt': [
-                'MyProviderwaiterstatemachineLogGroupD43CA868',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyProviderwaiterstatemachineLogGroupD43CA868', 'Arn'],
             },
           },
         },
@@ -284,10 +255,7 @@ test('a default LoggingConfiguration will be created even if waiterStateMachineL
         {
           CloudWatchLogsLogGroup: {
             LogGroupArn: {
-              'Fn::GetAtt': [
-                'MyProviderwaiterstatemachineLogGroupD43CA868',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyProviderwaiterstatemachineLogGroupD43CA868', 'Arn'],
             },
           },
         },
@@ -330,28 +298,48 @@ test('fails if "queryInterval" or "totalTimeout" or "waiterStateMachineLogOption
   });
 
   // THEN
-  expect(() => new cr.Provider(stack, 'provider1', {
-    onEventHandler: handler,
-    queryInterval: Duration.seconds(10),
-  })).toThrow(/\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+  expect(
+    () =>
+      new cr.Provider(stack, 'provider1', {
+        onEventHandler: handler,
+        queryInterval: Duration.seconds(10),
+      })
+  ).toThrow(
+    /\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/
+  );
 
-  expect(() => new cr.Provider(stack, 'provider2', {
-    onEventHandler: handler,
-    totalTimeout: Duration.seconds(100),
-  })).toThrow(/\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+  expect(
+    () =>
+      new cr.Provider(stack, 'provider2', {
+        onEventHandler: handler,
+        totalTimeout: Duration.seconds(100),
+      })
+  ).toThrow(
+    /\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/
+  );
 
-  expect(() => new cr.Provider(stack, 'provider3', {
-    onEventHandler: handler,
-    waiterStateMachineLogOptions: {
-      includeExecutionData: true,
-      level: LogLevel.ALL,
-    },
-  })).toThrow(/\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+  expect(
+    () =>
+      new cr.Provider(stack, 'provider3', {
+        onEventHandler: handler,
+        waiterStateMachineLogOptions: {
+          includeExecutionData: true,
+          level: LogLevel.ALL,
+        },
+      })
+  ).toThrow(
+    /\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/
+  );
 
-  expect(() => new cr.Provider(stack, 'provider4', {
-    onEventHandler: handler,
-    disableWaiterStateMachineLogging: false,
-  })).toThrow(/\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/);
+  expect(
+    () =>
+      new cr.Provider(stack, 'provider4', {
+        onEventHandler: handler,
+        disableWaiterStateMachineLogging: false,
+      })
+  ).toThrow(
+    /\"queryInterval\", \"totalTimeout\", \"waiterStateMachineLogOptions\", and \"disableWaiterStateMachineLogging\" can only be configured if \"isCompleteHandler\" is specified. Otherwise, they have no meaning/
+  );
 });
 
 describe('retry policy', () => {
@@ -371,17 +359,21 @@ describe('retry policy', () => {
   });
 
   it('fails if total timeout cannot be integrally divided', () => {
-    expect(() => util.calculateRetryPolicy({
-      totalTimeout: Duration.seconds(100),
-      queryInterval: Duration.seconds(75),
-    })).toThrow(/Cannot determine retry count since totalTimeout=100s is not integrally dividable by queryInterval=75s/);
+    expect(() =>
+      util.calculateRetryPolicy({
+        totalTimeout: Duration.seconds(100),
+        queryInterval: Duration.seconds(75),
+      })
+    ).toThrow(/Cannot determine retry count since totalTimeout=100s is not integrally dividable by queryInterval=75s/);
   });
 
   it('fails if interval > timeout', () => {
-    expect(() => util.calculateRetryPolicy({
-      totalTimeout: Duration.seconds(5),
-      queryInterval: Duration.seconds(10),
-    })).toThrow(/Cannot determine retry count since totalTimeout=5s is not integrally dividable by queryInterval=10s/);
+    expect(() =>
+      util.calculateRetryPolicy({
+        totalTimeout: Duration.seconds(5),
+        queryInterval: Duration.seconds(10),
+      })
+    ).toThrow(/Cannot determine retry count since totalTimeout=5s is not integrally dividable by queryInterval=10s/);
   });
 });
 
@@ -480,10 +472,7 @@ describe('role', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Role: {
-        'Fn::GetAtt': [
-          'MyRoleF48FFE04',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'],
       },
     });
   });
@@ -504,10 +493,7 @@ describe('role', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Role: {
-        'Fn::GetAtt': [
-          'MyProviderframeworkonEventServiceRole8761E48D',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyProviderframeworkonEventServiceRole8761E48D', 'Arn'],
       },
     });
   });
@@ -557,10 +543,7 @@ describe('environment encryption', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       KmsKeyArn: {
-        'Fn::GetAtt': [
-          'EnvVarEncryptKey1A7CABDB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['EnvVarEncryptKey1A7CABDB', 'Arn'],
       },
     });
   });

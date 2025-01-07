@@ -59,9 +59,7 @@ export async function onEvent(event: AWSLambda.CloudFormationCustomResourceEvent
   return provider.onEvent();
 }
 
-export async function isComplete(
-  event: AWSLambda.CloudFormationCustomResourceEvent
-): Promise<IsCompleteResponse> {
+export async function isComplete(event: AWSLambda.CloudFormationCustomResourceEvent): Promise<IsCompleteResponse> {
   const provider = createResourceHandler(event);
   return provider.isComplete();
 }

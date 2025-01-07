@@ -42,11 +42,7 @@ interface IEndpointProductionVariant {
    *
    * @default - sum over 5 minutes
    */
-  metric(
-    namespace: string,
-    metricName: string,
-    props?: cloudwatch.MetricOptions
-  ): cloudwatch.Metric;
+  metric(namespace: string, metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -148,11 +144,7 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
     this.endpoint = endpoint;
   }
 
-  public metric(
-    namespace: string,
-    metricName: string,
-    props?: cloudwatch.MetricOptions
-  ): cloudwatch.Metric {
+  public metric(namespace: string, metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace,
       metricName,
@@ -229,28 +221,16 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
     });
   }
 
-  public autoScaleInstanceCount(
-    scalingProps: appscaling.EnableScalingProps
-  ): ScalableInstanceCount {
+  public autoScaleInstanceCount(scalingProps: appscaling.EnableScalingProps): ScalableInstanceCount {
     const errors: string[] = [];
     if (scalingProps.minCapacity && scalingProps.minCapacity > this.initialInstanceCount) {
-      errors.push(
-        `minCapacity cannot be greater than initial instance count: ${this.initialInstanceCount}`
-      );
+      errors.push(`minCapacity cannot be greater than initial instance count: ${this.initialInstanceCount}`);
     }
     if (scalingProps.maxCapacity && scalingProps.maxCapacity < this.initialInstanceCount) {
-      errors.push(
-        `maxCapacity cannot be less than initial instance count: ${this.initialInstanceCount}`
-      );
+      errors.push(`maxCapacity cannot be less than initial instance count: ${this.initialInstanceCount}`);
     }
-    if (
-      BURSTABLE_INSTANCE_TYPE_PREFIXES.some((prefix) =>
-        this.instanceType.toString().startsWith(prefix)
-      )
-    ) {
-      errors.push(
-        `AutoScaling not supported for burstable instance types like ${this.instanceType}`
-      );
+    if (BURSTABLE_INSTANCE_TYPE_PREFIXES.some((prefix) => this.instanceType.toString().startsWith(prefix))) {
+      errors.push(`AutoScaling not supported for burstable instance types like ${this.instanceType}`);
     }
     if (this.scalableInstanceCount) {
       errors.push('AutoScaling of task count already enabled for this service');
@@ -397,16 +377,9 @@ export class Endpoint extends EndpointBase {
    * @param id the resource id.
    * @param attrs the attributes of the endpoint to import.
    */
-  public static fromEndpointAttributes(
-    scope: Construct,
-    id: string,
-    attrs: EndpointAttributes
-  ): IEndpoint {
+  public static fromEndpointAttributes(scope: Construct, id: string, attrs: EndpointAttributes): IEndpoint {
     const endpointArn = attrs.endpointArn;
-    const endpointName = cdk.Stack.of(scope).splitArn(
-      endpointArn,
-      cdk.ArnFormat.SLASH_RESOURCE_NAME
-    ).resourceName!;
+    const endpointName = cdk.Stack.of(scope).splitArn(endpointArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends EndpointBase {
       public readonly endpointArn = endpointArn;
@@ -474,9 +447,7 @@ export class Endpoint extends EndpointBase {
    */
   public get instanceProductionVariants(): IEndpointInstanceProductionVariant[] {
     if (this.endpointConfig instanceof EndpointConfig) {
-      return this.endpointConfig._instanceProductionVariants.map(
-        (v) => new EndpointInstanceProductionVariant(this, v)
-      );
+      return this.endpointConfig._instanceProductionVariants.map((v) => new EndpointInstanceProductionVariant(this, v));
     }
 
     throw new Error('Production variant lookup is not supported for an imported IEndpointConfig');

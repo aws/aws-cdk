@@ -87,9 +87,7 @@ async function onDelete(repositoryName: string) {
   const repository = response.repositories?.find((repo) => repo.repositoryName === repositoryName);
 
   if (!(await isRepositoryTaggedForDeletion(repository?.repositoryArn!))) {
-    process.stdout.write(
-      `Repository does not have '${AUTO_DELETE_IMAGES_TAG}' tag, skipping cleaning.\n`
-    );
+    process.stdout.write(`Repository does not have '${AUTO_DELETE_IMAGES_TAG}' tag, skipping cleaning.\n`);
     return;
   }
   try {

@@ -237,10 +237,7 @@ export interface FunctionAttributes {
   readonly architecture?: Architecture;
 }
 
-export abstract class FunctionBase
-  extends Resource
-  implements IFunction, ec2.IClientVpnConnectionHandler
-{
+export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
   /**
    * The principal this Lambda Function is running as
    */
@@ -371,8 +368,7 @@ export abstract class FunctionBase
 
     let principal = this.parsePermissionPrincipal(permission.principal);
 
-    let { sourceArn, sourceAccount, principalOrgID } =
-      this.validateConditionCombinations(permission.principal) ?? {};
+    let { sourceArn, sourceAccount, principalOrgID } = this.validateConditionCombinations(permission.principal) ?? {};
 
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
@@ -458,12 +454,7 @@ export abstract class FunctionBase
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._invocationGrants[identifier];
     if (!grant) {
-      grant = this.grant(
-        grantee,
-        identifier,
-        'lambda:InvokeFunction',
-        this.resourceArnsForGrantInvoke
-      );
+      grant = this.grant(grantee, identifier, 'lambda:InvokeFunction', this.resourceArnsForGrantInvoke);
       this._invocationGrants[identifier] = grant;
     }
     return grant;
@@ -536,9 +527,7 @@ export abstract class FunctionBase
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new Error(
-        `An EventInvokeConfig has already been configured for the function at ${this.node.path}`
-      );
+      throw new Error(`An EventInvokeConfig has already been configured for the function at ${this.node.path}`);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
@@ -581,10 +570,7 @@ export abstract class FunctionBase
     if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
       return false;
     }
-    return (
-      this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account ===
-      this.stack.account
-    );
+    return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.stack.account;
   }
 
   private grant(
@@ -640,9 +626,7 @@ export abstract class FunctionBase
    * Try to recognize some specific Principal classes first, then try a generic
    * fallback.
    */
-  private parsePermissionPrincipal(
-    principal: iam.IPrincipal | { readonly wrapped: iam.IPrincipal }
-  ) {
+  private parsePermissionPrincipal(principal: iam.IPrincipal | { readonly wrapped: iam.IPrincipal }) {
     // Try some specific common classes first.
     // use duck-typing, not instance of
     if ('wrapped' in principal) {
@@ -718,12 +702,8 @@ export abstract class FunctionBase
     }
 
     const sourceArn = requireString(requireObject(conditions.ArnLike)?.['aws:SourceArn']);
-    const sourceAccount = requireString(
-      requireObject(conditions.StringEquals)?.['aws:SourceAccount']
-    );
-    const principalOrgID = requireString(
-      requireObject(conditions.StringEquals)?.['aws:PrincipalOrgID']
-    );
+    const sourceAccount = requireString(requireObject(conditions.StringEquals)?.['aws:SourceAccount']);
+    const principalOrgID = requireString(requireObject(conditions.StringEquals)?.['aws:PrincipalOrgID']);
 
     // PrincipalOrgID cannot be combined with any other conditions
     if (principalOrgID && (sourceArn || sourceAccount)) {
@@ -770,8 +750,7 @@ export abstract class FunctionBase
         (condition) =>
           !supportedPrincipalConditions.some(
             (supportedCondition) =>
-              supportedCondition.operator === condition.operator &&
-              supportedCondition.key === condition.key
+              supportedCondition.operator === condition.operator && supportedCondition.key === condition.key
           )
       );
 

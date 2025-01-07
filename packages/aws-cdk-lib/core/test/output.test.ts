@@ -20,15 +20,13 @@ describe('output', () => {
     });
     expect(toCloudFormation(stack)).toEqual({
       Resources: { MyResource: { Type: 'R' } },
-      Outputs:
-     {
-       MyOutput:
-      {
-        Description: 'CfnOutput properties',
-        Export: { Name: 'ExportName' },
-        Value: { Ref: 'MyResource' },
+      Outputs: {
+        MyOutput: {
+          Description: 'CfnOutput properties',
+          Export: { Name: 'ExportName' },
+          Value: { Ref: 'MyResource' },
+        },
       },
-     },
     });
   });
 
@@ -44,10 +42,8 @@ describe('output', () => {
     });
     expect(toCloudFormation(stack)).toEqual({
       Resources: { MyResource: { Type: 'R' } },
-      Outputs:
-      {
-        MyOutputWithKey:
-        {
+      Outputs: {
+        MyOutputWithKey: {
           Description: 'CfnOutput properties',
           Export: { Name: 'ExportName' },
           Value: { Ref: 'MyResource' },
@@ -139,18 +135,14 @@ describe('output', () => {
     const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'x'.repeat(260) });
     const errors = output.node.validate();
 
-    expect(errors).toEqual([
-      expect.stringContaining('Export name cannot exceed 255 characters (got 260 characters)'),
-    ]);
+    expect(errors).toEqual([expect.stringContaining('Export name cannot exceed 255 characters (got 260 characters)')]);
   });
 
   test('Verify zero length of export name', () => {
     const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: '' });
     const errors = output.node.validate();
 
-    expect(errors).toEqual([
-      expect.stringContaining('Export name cannot be empty'),
-    ]);
+    expect(errors).toEqual([expect.stringContaining('Export name cannot be empty')]);
   });
 
   test('throw if export name has invalid strings (space)', () => {
@@ -158,7 +150,9 @@ describe('output', () => {
     const errors = output.node.validate();
 
     expect(errors).toEqual([
-      expect.stringContaining('Export name must only include alphanumeric characters, colons, or hyphens (got \'SOME INVALID EXPORT NAME\''),
+      expect.stringContaining(
+        "Export name must only include alphanumeric characters, colons, or hyphens (got 'SOME INVALID EXPORT NAME'"
+      ),
     ]);
   });
 
@@ -167,7 +161,9 @@ describe('output', () => {
     const errors = output.node.validate();
 
     expect(errors).toEqual([
-      expect.stringContaining('Export name must only include alphanumeric characters, colons, or hyphens (got \'SOME_INVALID_EXPORT_NAME\''),
+      expect.stringContaining(
+        "Export name must only include alphanumeric characters, colons, or hyphens (got 'SOME_INVALID_EXPORT_NAME'"
+      ),
     ]);
   });
 
@@ -177,7 +173,9 @@ describe('output', () => {
 
     expect(errors).toEqual([
       expect.stringContaining('Export name cannot exceed 255 characters (got 260 characters)'),
-      expect.stringContaining(`Export name must only include alphanumeric characters, colons, or hyphens (got '${' '.repeat(260)}'`),
+      expect.stringContaining(
+        `Export name must only include alphanumeric characters, colons, or hyphens (got '${' '.repeat(260)}'`
+      ),
     ]);
   });
 });

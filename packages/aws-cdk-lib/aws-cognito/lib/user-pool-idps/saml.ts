@@ -91,20 +91,14 @@ export class UserPoolIdentityProviderSamlMetadata {
    * Specify SAML metadata via a URL.
    */
   public static url(url: string): UserPoolIdentityProviderSamlMetadata {
-    return new UserPoolIdentityProviderSamlMetadata(
-      url,
-      UserPoolIdentityProviderSamlMetadataType.URL
-    );
+    return new UserPoolIdentityProviderSamlMetadata(url, UserPoolIdentityProviderSamlMetadataType.URL);
   }
 
   /**
    * Specify SAML metadata via the contents of a file.
    */
   public static file(fileContent: string): UserPoolIdentityProviderSamlMetadata {
-    return new UserPoolIdentityProviderSamlMetadata(
-      fileContent,
-      UserPoolIdentityProviderSamlMetadataType.FILE
-    );
+    return new UserPoolIdentityProviderSamlMetadata(fileContent, UserPoolIdentityProviderSamlMetadataType.FILE);
   }
 
   /**
@@ -139,14 +133,8 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
       providerType: 'SAML',
       providerDetails: {
         IDPSignout: props.idpSignout ?? false,
-        MetadataURL:
-          metadataType === UserPoolIdentityProviderSamlMetadataType.URL
-            ? metadataContent
-            : undefined,
-        MetadataFile:
-          metadataType === UserPoolIdentityProviderSamlMetadataType.FILE
-            ? metadataContent
-            : undefined,
+        MetadataURL: metadataType === UserPoolIdentityProviderSamlMetadataType.URL ? metadataContent : undefined,
+        MetadataFile: metadataType === UserPoolIdentityProviderSamlMetadataType.FILE ? metadataContent : undefined,
         EncryptedResponses: props.encryptedResponses ?? undefined,
         RequestSigningAlgorithm: props.requestSigningAlgorithm,
         IDPInit: props.idpInitiated ?? undefined,

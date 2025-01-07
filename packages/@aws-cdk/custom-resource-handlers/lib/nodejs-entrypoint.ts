@@ -27,20 +27,14 @@ export type HandlerResponse =
     };
 
 export function makeHandler(userHandler: Handler) {
-  return async (
-    event: AWSLambda.CloudFormationCustomResourceEvent,
-    context?: AWSLambda.Context
-  ) => {
+  return async (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => {
     const sanitizedEvent = { ...event, ResponseURL: '...' };
     external.log(JSON.stringify(sanitizedEvent, undefined, 2));
 
     // ignore DELETE event when the physical resource ID is the marker that
     // indicates that this DELETE is a subsequent DELETE to a failed CREATE
     // operation.
-    if (
-      event.RequestType === 'Delete' &&
-      event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER
-    ) {
+    if (event.RequestType === 'Delete' && event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER) {
       external.log('ignoring DELETE event caused by a failed CREATE event');
       await submitResponse('SUCCESS', event);
       return;
@@ -77,9 +71,7 @@ export function makeHandler(userHandler: Handler) {
         } else {
           // otherwise, if PhysicalResourceId is not specified, something is
           // terribly wrong because all other events should have an ID.
-          external.log(
-            `ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event)}`
-          );
+          external.log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event)}`);
         }
       }
 
@@ -147,10 +139,7 @@ async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
   await withRetries(retryOptions, external.sendHttpRequest)(req, responseBody);
 }
 
-async function defaultSendHttpRequest(
-  options: https.RequestOptions,
-  requestBody: string
-): Promise<void> {
+async function defaultSendHttpRequest(options: https.RequestOptions, requestBody: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     try {
       const request = https.request(options, (response) => {

@@ -48,10 +48,7 @@ describe('API destination', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyApiDestination07E6A8F9',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyApiDestination07E6A8F9', 'Arn'],
       },
       TargetParameters: {},
     });
@@ -155,16 +152,20 @@ describe('API destination', () => {
     // ASSERT
     template.hasResource('AWS::IAM::Policy', {
       Properties: {
-        Roles: [{
-          Ref: 'MyPipeRoleCBC8E9AB',
-        }],
+        Roles: [
+          {
+            Ref: 'MyPipeRoleCBC8E9AB',
+          },
+        ],
         PolicyDocument: {
-          Statement: [{
-            Action: 'events:InvokeApiDestination',
-            Resource: {
-              'Fn::GetAtt': ['MyApiDestination07E6A8F9', 'Arn'],
+          Statement: [
+            {
+              Action: 'events:InvokeApiDestination',
+              Resource: {
+                'Fn::GetAtt': ['MyApiDestination07E6A8F9', 'Arn'],
+              },
             },
-          }],
+          ],
         },
       },
     });

@@ -4,7 +4,16 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
-import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret, SubnetGroup, TimeoutAction } from '../lib';
+import {
+  AuroraPostgresEngineVersion,
+  ServerlessCluster,
+  DatabaseClusterEngine,
+  ParameterGroup,
+  AuroraCapacityUnit,
+  DatabaseSecret,
+  SubnetGroup,
+  TimeoutAction,
+} from '../lib';
 
 describe('serverless cluster', () => {
   test('can create a Serverless Cluster with Aurora Postgres database engine', () => {
@@ -38,10 +47,7 @@ describe('serverless cluster', () => {
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {
-            'Fn::GetAtt': [
-              'ServerlessDatabaseSecurityGroupB00D8C0F',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['ServerlessDatabaseSecurityGroupB00D8C0F', 'GroupId'],
           },
         ],
       },
@@ -72,26 +78,21 @@ describe('serverless cluster', () => {
         },
         EngineMode: 'serverless',
         MasterUsername: {
-          'Fn::Join': ['', [
-            '{{resolve:secretsmanager:',
-            { Ref: 'ServerlessDatabaseSecret1C9BF4F1' },
-            ':SecretString:username::}}',
-          ]],
+          'Fn::Join': [
+            '',
+            ['{{resolve:secretsmanager:', { Ref: 'ServerlessDatabaseSecret1C9BF4F1' }, ':SecretString:username::}}'],
+          ],
         },
         MasterUserPassword: {
-          'Fn::Join': ['', [
-            '{{resolve:secretsmanager:',
-            { Ref: 'ServerlessDatabaseSecret1C9BF4F1' },
-            ':SecretString:password::}}',
-          ]],
+          'Fn::Join': [
+            '',
+            ['{{resolve:secretsmanager:', { Ref: 'ServerlessDatabaseSecret1C9BF4F1' }, ':SecretString:password::}}'],
+          ],
         },
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {
-            'Fn::GetAtt': [
-              'ServerlessDatabaseSecurityGroupB00D8C0F',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['ServerlessDatabaseSecurityGroupB00D8C0F', 'GroupId'],
           },
         ],
       },
@@ -123,18 +124,16 @@ describe('serverless cluster', () => {
       EngineMode: 'serverless',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: {
-        'Fn::Join': ['', [
-          '{{resolve:secretsmanager:',
-          { Ref: 'DatabaseSecret3B817195' },
-          ':SecretString:username::}}',
-        ]],
+        'Fn::Join': [
+          '',
+          ['{{resolve:secretsmanager:', { Ref: 'DatabaseSecret3B817195' }, ':SecretString:username::}}'],
+        ],
       },
       MasterUserPassword: {
-        'Fn::Join': ['', [
-          '{{resolve:secretsmanager:',
-          { Ref: 'DatabaseSecret3B817195' },
-          ':SecretString:password::}}',
-        ]],
+        'Fn::Join': [
+          '',
+          ['{{resolve:secretsmanager:', { Ref: 'DatabaseSecret3B817195' }, ':SecretString:password::}}'],
+        ],
       },
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
     });
@@ -174,18 +173,16 @@ describe('serverless cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       MasterUsername: {
-        'Fn::Join': ['', [
-          '{{resolve:secretsmanager:',
-          { Ref: 'DatabaseSecret3B817195' },
-          ':SecretString:username::}}',
-        ]],
+        'Fn::Join': [
+          '',
+          ['{{resolve:secretsmanager:', { Ref: 'DatabaseSecret3B817195' }, ':SecretString:username::}}'],
+        ],
       },
       MasterUserPassword: {
-        'Fn::Join': ['', [
-          '{{resolve:secretsmanager:',
-          { Ref: 'DatabaseSecret3B817195' },
-          ':SecretString:password::}}',
-        ]],
+        'Fn::Join': [
+          '',
+          ['{{resolve:secretsmanager:', { Ref: 'DatabaseSecret3B817195' }, ':SecretString:password::}}'],
+        ],
       },
     });
 
@@ -214,10 +211,7 @@ describe('serverless cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       KmsKeyId: {
-        'Fn::GetAtt': [
-          'Key961B73FD',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Key961B73FD', 'Arn'],
       },
     });
   });
@@ -258,8 +252,7 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack.resolve(cluster.clusterEndpoint)).not
-      .toEqual(stack.resolve(cluster.clusterReadEndpoint));
+    expect(stack.resolve(cluster.clusterEndpoint)).not.toEqual(stack.resolve(cluster.clusterReadEndpoint));
   });
 
   test('imported cluster with imported security group honors allowAllOutbound', () => {
@@ -271,9 +264,11 @@ describe('serverless cluster', () => {
       clusterIdentifier: 'identifier',
       port: 3306,
       readerEndpointAddress: 'reader-address',
-      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
-        allowAllOutbound: false,
-      })],
+      securityGroups: [
+        ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+          allowAllOutbound: false,
+        }),
+      ],
     });
 
     // WHEN
@@ -314,9 +309,11 @@ describe('serverless cluster', () => {
       clusterIdentifier: 'identifier',
       port: 3306,
       readerEndpointAddress: 'reader-address',
-      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
-        allowAllOutbound: false,
-      })],
+      securityGroups: [
+        ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+          allowAllOutbound: false,
+        }),
+      ],
     });
 
     expect(cluster.clusterEndpoint.socketAddress).toEqual('addr:3306');
@@ -542,23 +539,27 @@ describe('serverless cluster', () => {
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
-    expect(() =>
-      new ServerlessCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA_MYSQL,
-        vpc,
-        scaling: {
-          autoPause: cdk.Duration.seconds(30),
-        },
-      })).toThrow(/auto pause time must be between 5 minutes and 1 day./);
+    expect(
+      () =>
+        new ServerlessCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          scaling: {
+            autoPause: cdk.Duration.seconds(30),
+          },
+        })
+    ).toThrow(/auto pause time must be between 5 minutes and 1 day./);
 
-    expect(() =>
-      new ServerlessCluster(stack, 'Another Database', {
-        engine: DatabaseClusterEngine.AURORA_MYSQL,
-        vpc,
-        scaling: {
-          autoPause: cdk.Duration.days(2),
-        },
-      })).toThrow(/auto pause time must be between 5 minutes and 1 day./);
+    expect(
+      () =>
+        new ServerlessCluster(stack, 'Another Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          scaling: {
+            autoPause: cdk.Duration.days(2),
+          },
+        })
+    ).toThrow(/auto pause time must be between 5 minutes and 1 day./);
   });
 
   test('throws when invalid backup retention period is specified', () => {
@@ -567,19 +568,23 @@ describe('serverless cluster', () => {
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
-    expect(() =>
-      new ServerlessCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA_MYSQL,
-        vpc,
-        backupRetention: cdk.Duration.days(0),
-      })).toThrow(/backup retention period must be between 1 and 35 days. received: 0/);
+    expect(
+      () =>
+        new ServerlessCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          backupRetention: cdk.Duration.days(0),
+        })
+    ).toThrow(/backup retention period must be between 1 and 35 days. received: 0/);
 
-    expect(() =>
-      new ServerlessCluster(stack, 'Another Database', {
-        engine: DatabaseClusterEngine.AURORA_MYSQL,
-        vpc,
-        backupRetention: cdk.Duration.days(36),
-      })).toThrow(/backup retention period must be between 1 and 35 days. received: 36/);
+    expect(
+      () =>
+        new ServerlessCluster(stack, 'Another Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          backupRetention: cdk.Duration.days(36),
+        })
+    ).toThrow(/backup retention period must be between 1 and 35 days. received: 36/);
   });
 
   test('throws error when min capacity is greater than max capacity', () => {
@@ -588,15 +593,17 @@ describe('serverless cluster', () => {
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
-    expect(() =>
-      new ServerlessCluster(stack, 'Database', {
-        engine: DatabaseClusterEngine.AURORA_MYSQL,
-        vpc,
-        scaling: {
-          minCapacity: AuroraCapacityUnit.ACU_2,
-          maxCapacity: AuroraCapacityUnit.ACU_1,
-        },
-      })).toThrow(/maximum capacity must be greater than or equal to minimum capacity./);
+    expect(
+      () =>
+        new ServerlessCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          scaling: {
+            minCapacity: AuroraCapacityUnit.ACU_2,
+            maxCapacity: AuroraCapacityUnit.ACU_1,
+          },
+        })
+    ).toThrow(/maximum capacity must be greater than or equal to minimum capacity./);
   });
 
   test('check that clusterArn property works', () => {
@@ -617,12 +624,10 @@ describe('serverless cluster', () => {
 
     // THEN
     expect(stack.resolve(cluster.clusterArn)).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':rds:us-test-1:12345:cluster:',
-        { Ref: 'DatabaseB269D8BB' },
-      ]],
+      'Fn::Join': [
+        '',
+        ['arn:', { Ref: 'AWS::Partition' }, ':rds:us-test-1:12345:cluster:', { Ref: 'DatabaseB269D8BB' }],
+      ],
     });
   });
 
@@ -656,10 +661,7 @@ describe('serverless cluster', () => {
             Resource: '*',
           },
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: {
               Ref: 'DatabaseSecretAttachmentE5D1B020',
@@ -708,10 +710,7 @@ describe('serverless cluster', () => {
             Resource: '*',
           },
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: {
               Ref: 'SecretA720EF05',
@@ -760,7 +759,9 @@ describe('serverless cluster', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    expect(() => cluster.grantDataApiAccess(user)).toThrow(/Cannot grant Data API access when the Data API is disabled/);
+    expect(() => cluster.grantDataApiAccess(user)).toThrow(
+      /Cannot grant Data API access when the Data API is disabled/
+    );
   });
 
   test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
@@ -829,10 +830,15 @@ describe('serverless cluster', () => {
     const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
 
     // THEN
-    expect(() => new ServerlessCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      securityGroups: [sg],
-    })).toThrow(/A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups/);
+    expect(
+      () =>
+        new ServerlessCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          securityGroups: [sg],
+        })
+    ).toThrow(
+      /A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups/
+    );
   });
 
   test('cannot create a Serverless cluster without VPC but specifying a subnet group', () => {
@@ -842,10 +848,13 @@ describe('serverless cluster', () => {
     const subnetGroup = SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup12345', SubnetGroupName);
 
     // THEN
-    expect(() => new ServerlessCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      subnetGroup,
-    })).toThrow(/A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup/);
+    expect(
+      () =>
+        new ServerlessCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          subnetGroup,
+        })
+    ).toThrow(/A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup/);
   });
 
   test('cannot create a Serverless cluster without VPC but specifying VPC subnets', () => {
@@ -858,10 +867,13 @@ describe('serverless cluster', () => {
     };
 
     // THEN
-    expect(() => new ServerlessCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      vpcSubnets,
-    })).toThrow(/A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets/);
+    expect(
+      () =>
+        new ServerlessCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpcSubnets,
+        })
+    ).toThrow(/A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets/);
   });
 
   test('can call exportValue on endpoint.port', () => {
@@ -965,26 +977,29 @@ describe('serverless cluster', () => {
     });
   });
 
-  test.each([
-    cdk.Duration.seconds(59),
-    cdk.Duration.seconds(601),
-  ])('invalid ServerlessScalingOptions throws', (duration) => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
+  test.each([cdk.Duration.seconds(59), cdk.Duration.seconds(601)])(
+    'invalid ServerlessScalingOptions throws',
+    (duration) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    // THEN
-    expect(() => new ServerlessCluster(stack, 'Database1', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      vpc,
-      scaling: {
-        autoPause: cdk.Duration.minutes(10),
-        minCapacity: AuroraCapacityUnit.ACU_8,
-        maxCapacity: AuroraCapacityUnit.ACU_32,
-        timeout: duration,
-      },
-    })).toThrow(/timeout must be between 60 and 600 seconds/);
-  });
+      // THEN
+      expect(
+        () =>
+          new ServerlessCluster(stack, 'Database1', {
+            engine: DatabaseClusterEngine.AURORA_MYSQL,
+            vpc,
+            scaling: {
+              autoPause: cdk.Duration.minutes(10),
+              minCapacity: AuroraCapacityUnit.ACU_8,
+              maxCapacity: AuroraCapacityUnit.ACU_32,
+              timeout: duration,
+            },
+          })
+      ).toThrow(/timeout must be between 60 and 600 seconds/);
+    }
+  );
 });
 
 function testStack(app?: cdk.App, id?: string): cdk.Stack {

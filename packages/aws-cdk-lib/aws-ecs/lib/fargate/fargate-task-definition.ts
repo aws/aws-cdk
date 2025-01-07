@@ -158,10 +158,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
     super(scope, id, {
       ...props,
       cpu: props.cpu !== undefined ? Tokenization.stringifyNumber(props.cpu) : '256',
-      memoryMiB:
-        props.memoryLimitMiB !== undefined
-          ? Tokenization.stringifyNumber(props.memoryLimitMiB)
-          : '512',
+      memoryMiB: props.memoryLimitMiB !== undefined ? Tokenization.stringifyNumber(props.memoryLimitMiB) : '512',
       compatibility: Compatibility.FARGATE,
       networkMode: NetworkMode.AWS_VPC,
       pidMode: props.pidMode,
@@ -178,9 +175,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
 
     if (props.pidMode) {
       if (!props.runtimePlatform?.operatingSystemFamily) {
-        throw new Error(
-          "Specifying 'pidMode' requires that operating system family also be provided."
-        );
+        throw new Error("Specifying 'pidMode' requires that operating system family also be provided.");
       }
       if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
         throw new Error("'pidMode' is not supported for Windows containers.");

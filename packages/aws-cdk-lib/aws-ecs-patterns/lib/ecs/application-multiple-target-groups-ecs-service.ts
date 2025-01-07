@@ -1,10 +1,5 @@
 import { Construct } from 'constructs';
-import {
-  Ec2Service,
-  Ec2TaskDefinition,
-  PlacementConstraint,
-  PlacementStrategy,
-} from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
@@ -103,11 +98,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsEc2Service class.
    */
-  constructor(
-    scope: Construct,
-    id: string,
-    props: ApplicationMultipleTargetGroupsEc2ServiceProps = {}
-  ) {
+  constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsEc2ServiceProps = {}) {
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {

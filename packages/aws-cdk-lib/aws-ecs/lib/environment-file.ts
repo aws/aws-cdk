@@ -24,11 +24,7 @@ export abstract class EnvironmentFile {
    * @param key The object key
    * @param objectVersion Optional S3 object version
    */
-  public static fromBucket(
-    bucket: IBucket,
-    key: string,
-    objectVersion?: string
-  ): S3EnvironmentFile {
+  public static fromBucket(bucket: IBucket, key: string, objectVersion?: string): S3EnvironmentFile {
     return new S3EnvironmentFile(bucket, key, objectVersion);
   }
 

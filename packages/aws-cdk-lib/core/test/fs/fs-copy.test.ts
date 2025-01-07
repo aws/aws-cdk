@@ -24,7 +24,6 @@ describe('fs copy', () => {
       '    subdir3 (D)',
       '        file3.txt',
     ]);
-
   });
 
   test('Always: follow all symlinks', () => {
@@ -49,7 +48,6 @@ describe('fs copy', () => {
       '    file-in-subdir.txt',
       'normal-file.txt',
     ]);
-
   });
 
   test('Never: do not follow all symlinks', () => {
@@ -72,7 +70,6 @@ describe('fs copy', () => {
       '    file-in-subdir.txt',
       'normal-file.txt',
     ]);
-
   });
 
   test('External: follow only external symlinks', () => {
@@ -96,7 +93,6 @@ describe('fs copy', () => {
       '    file-in-subdir.txt',
       'normal-file.txt',
     ]);
-
   });
 
   test('exclude', () => {
@@ -105,22 +101,11 @@ describe('fs copy', () => {
 
     // WHEN
     FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
-      exclude: [
-        '*',
-        '!subdir2',
-        '!subdir2/**/*',
-        '.*',
-      ],
+      exclude: ['*', '!subdir2', '!subdir2/**/*', '.*'],
     });
 
     // THEN
-    expect(tree(outdir)).toEqual([
-      'subdir2 (D)',
-      '    empty-subdir (D)',
-      '    subdir3 (D)',
-      '        file3.txt',
-    ]);
-
+    expect(tree(outdir)).toEqual(['subdir2 (D)', '    empty-subdir (D)', '    subdir3 (D)', '        file3.txt']);
   });
 });
 

@@ -26,10 +26,7 @@ describe('sqs', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MySqs4F2D580E',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MySqs4F2D580E', 'Arn'],
       },
       SourceParameters: {},
     });
@@ -88,4 +85,3 @@ describe('sqs', () => {
     expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
   });
 });
-

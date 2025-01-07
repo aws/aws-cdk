@@ -45,8 +45,7 @@ export class AmazonLinux2022Kernel {
 /**
  * Properties specific to al2022 images
  */
-export interface AmazonLinux2022ImageSsmParameterProps
-  extends AmazonLinuxImageSsmParameterCommonOptions {
+export interface AmazonLinux2022ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
    * What kernel version of Amazon Linux to use
    *

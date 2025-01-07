@@ -43,20 +43,13 @@ export class SqsSubscription implements sns.ITopicSubscription {
     // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
     if (this.queue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
-      throw new Error(
-        'SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription'
-      );
+      throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription');
     }
 
     // if the dead-letter queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
-    if (
-      this.props.deadLetterQueue &&
-      this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED
-    ) {
-      throw new Error(
-        'SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue'
-      );
+    if (this.props.deadLetterQueue && this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
+      throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue');
     }
 
     // add a statement to the queue resource policy which allows this topic
@@ -80,9 +73,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
           resources: ['*'],
           actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
           principals: [snsServicePrincipal],
-          conditions: FeatureFlags.of(topic).isEnabled(
-            cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY
-          )
+          conditions: FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)
             ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
             : undefined,
         })

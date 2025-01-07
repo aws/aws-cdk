@@ -20,10 +20,7 @@ describe('LambdaWebSocketIntegration', () => {
         },
         ':lambda:path/2015-03-31/functions/',
         {
-          'Fn::GetAtt': [
-            'Fn9270CBC0',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
         },
         '/invocations',
       ],
@@ -57,14 +54,10 @@ describe('LambdaWebSocketIntegration', () => {
     // WHEN
     new WebSocketApi(stack, 'Api', {
       connectRouteOptions: {
-        integration: new WebSocketLambdaIntegration(
-          'Integration',
-          fooFn,
-          {
-            timeout: Duration.seconds(10),
-            contentHandling: ContentHandling.CONVERT_TO_TEXT,
-          },
-        ),
+        integration: new WebSocketLambdaIntegration('Integration', fooFn, {
+          timeout: Duration.seconds(10),
+          contentHandling: ContentHandling.CONVERT_TO_TEXT,
+        }),
       },
     });
 

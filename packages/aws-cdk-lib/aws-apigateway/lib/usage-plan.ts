@@ -269,9 +269,7 @@ export class UsagePlan extends UsagePlanBase {
    *
    * @param props
    */
-  private renderApiStages(
-    apiStages: UsagePlanPerApiStage[] | undefined
-  ): CfnUsagePlan.ApiStageProperty[] | undefined {
+  private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
     if (apiStages && apiStages.length > 0) {
       const stages: CfnUsagePlan.ApiStageProperty[] = [];
       apiStages.forEach((apiStage: UsagePlanPerApiStage) => {
@@ -308,9 +306,7 @@ export class UsagePlan extends UsagePlanBase {
     }
   }
 
-  private renderThrottle(
-    props: ThrottleSettings | undefined
-  ): CfnUsagePlan.ThrottleSettingsProperty | Token {
+  private renderThrottle(props: ThrottleSettings | undefined): CfnUsagePlan.ThrottleSettingsProperty | Token {
     let ret: CfnUsagePlan.ThrottleSettingsProperty | Token;
     if (props !== undefined) {
       const burstLimit = props.burstLimit;

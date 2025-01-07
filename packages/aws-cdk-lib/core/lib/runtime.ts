@@ -158,10 +158,7 @@ export class ValidationResult {
    */
   public errorTree(): string {
     const childMessages = this.results.errorTreeList();
-    return (
-      this.errorMessage +
-      (childMessages.length ? `\n  ${childMessages.replace(/\n/g, '\n  ')}` : '')
-    );
+    return this.errorMessage + (childMessages.length ? `\n  ${childMessages.replace(/\n/g, '\n  ')}` : '');
   }
 
   /**
@@ -359,11 +356,7 @@ export function requiredValidator(x: any) {
  *
  * @throws if the property ``name`` is not present in ``props``.
  */
-export function requireProperty(
-  props: { [name: string]: any },
-  name: string,
-  context: Construct
-): any {
+export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
   const value = props[name];
   if (value == null) {
     throw new Error(`${context.toString()} is missing required property: ${name}`);

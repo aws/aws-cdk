@@ -182,9 +182,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       })
     );
 
-    target.role?.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaMSKExecutionRole')
-    );
+    target.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaMSKExecutionRole'));
   }
 
   private sourceAccessConfigurations() {
@@ -269,9 +267,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   private mappingId(target: lambda.IFunction) {
-    const idHash = md5hash(
-      JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers))
-    );
+    const idHash = md5hash(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers)));
     return `KafkaEventSource:${idHash}:${this.innerProps.topic}`;
   }
 

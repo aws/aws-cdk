@@ -47,17 +47,14 @@ describe('MSK Cluster', () => {
     [msk.KafkaVersion.V3_6_0, '3.6.0'],
     [msk.KafkaVersion.V3_7_X, '3.7.x'],
     [msk.KafkaVersion.V3_7_X_KRAFT, '3.7.x.kraft'],
-  ],
-  )('created with expected Kafka version %j', (parameter, result) => {
+  ])('created with expected Kafka version %j', (parameter, result) => {
     new msk.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
       kafkaVersion: parameter,
       vpc,
     });
 
-    Template.fromStack(stack).hasResource(
-      'AWS::MSK::Cluster', {},
-    );
+    Template.fromStack(stack).hasResource('AWS::MSK::Cluster', {});
     Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       KafkaVersion: result,
     });
@@ -70,13 +67,10 @@ describe('MSK Cluster', () => {
       vpc,
     });
 
-    Template.fromStack(stack).hasResource(
-      'AWS::MSK::Cluster',
-      {
-        DeletionPolicy: 'Retain',
-        UpdateReplacePolicy: 'Retain',
-      },
-    );
+    Template.fromStack(stack).hasResource('AWS::MSK::Cluster', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
     Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       KafkaVersion: '2.6.1',
     });
@@ -122,32 +116,34 @@ describe('MSK Cluster', () => {
                   acmpca.CertificateAuthority.fromCertificateAuthorityArn(
                     stack,
                     'CertificateAuthority',
-                    'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+                    'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'
                   ),
                 ],
               }),
-            }),
+            })
         ).toThrow(
-          'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
+          'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.'
         );
       });
     });
 
     describe('with sasl/scram auth', () => {
       test('fails if tls encryption is set to plaintext', () => {
-        expect(() => new msk.Cluster(stack, 'Cluster', {
-          clusterName: 'cluster',
-          kafkaVersion: msk.KafkaVersion.V2_6_1,
-          vpc,
-          encryptionInTransit: {
-            clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
-          },
-          clientAuthentication: msk.ClientAuthentication.sasl({
-            scram: true,
-          }),
-        }),
+        expect(
+          () =>
+            new msk.Cluster(stack, 'Cluster', {
+              clusterName: 'cluster',
+              kafkaVersion: msk.KafkaVersion.V2_6_1,
+              vpc,
+              encryptionInTransit: {
+                clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
+              },
+              clientAuthentication: msk.ClientAuthentication.sasl({
+                scram: true,
+              }),
+            })
         ).toThrow(
-          'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
+          'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.'
         );
       });
 
@@ -164,9 +160,9 @@ describe('MSK Cluster', () => {
               clientAuthentication: msk.ClientAuthentication.sasl({
                 scram: true,
               }),
-            }),
+            })
         ).toThrow(
-          'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
+          'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.'
         );
       });
     });
@@ -203,9 +199,9 @@ describe('MSK Cluster', () => {
               clientAuthentication: msk.ClientAuthentication.sasl({
                 iam: true,
               }),
-            }),
+            })
         ).toThrow(
-          'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
+          'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.'
         );
       });
 
@@ -222,9 +218,9 @@ describe('MSK Cluster', () => {
               clientAuthentication: msk.ClientAuthentication.sasl({
                 iam: true,
               }),
-            }),
+            })
         ).toThrow(
-          'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
+          'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.'
         );
       });
     });
@@ -241,11 +237,7 @@ describe('MSK Cluster', () => {
           ],
           ebsStorageInfo: {
             volumeSize: 100,
-            encryptionKey: kms.Key.fromKeyArn(
-              stack,
-              'kms',
-              'arn:aws:kms:us-east-1:111122223333:key/1234abc',
-            ),
+            encryptionKey: kms.Key.fromKeyArn(stack, 'kms', 'arn:aws:kms:us-east-1:111122223333:key/1234abc'),
           },
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -256,7 +248,7 @@ describe('MSK Cluster', () => {
               acmpca.CertificateAuthority.fromCertificateAuthorityArn(
                 stack,
                 'CertificateAuthority',
-                'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+                'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'
               ),
             ],
           }),
@@ -269,19 +261,12 @@ describe('MSK Cluster', () => {
             s3: {
               bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'a-bucket'),
             },
-            cloudwatchLogGroup: logs.LogGroup.fromLogGroupName(
-              stack,
-              'LogGroup',
-              'a-log-group',
-            ),
+            cloudwatchLogGroup: logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'a-log-group'),
             firehoseDeliveryStreamName: 'a-delivery-stream',
           },
         });
 
-        cluster.connections.allowFrom(
-          ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg3', 'sg-3'),
-          ec2.Port.tcp(2181),
-        );
+        cluster.connections.allowFrom(ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg3', 'sg-3'), ec2.Port.tcp(2181));
 
         // THEN
         expect(Template.fromStack(stack)).toMatchSnapshot();
@@ -312,32 +297,32 @@ describe('MSK Cluster', () => {
       test('with a policy allowing the secrets manager service to use the key', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           KeyPolicy: {
-            'Statement': [
+            Statement: [
               {
-                'Action': 'kms:*',
-                'Effect': 'Allow',
-                'Principal': {
-                  'AWS': {
+                Action: 'kms:*',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
                     'Fn::Join': [
                       '',
                       [
                         'arn:',
                         {
-                          'Ref': 'AWS::Partition',
+                          Ref: 'AWS::Partition',
                         },
                         ':iam::',
                         {
-                          'Ref': 'AWS::AccountId',
+                          Ref: 'AWS::AccountId',
                         },
                         ':root',
                       ],
                     ],
                   },
                 },
-                'Resource': '*',
+                Resource: '*',
               },
               {
-                'Action': [
+                Action: [
                   'kms:Encrypt',
                   'kms:Decrypt',
                   'kms:ReEncrypt*',
@@ -345,22 +330,22 @@ describe('MSK Cluster', () => {
                   'kms:CreateGrant',
                   'kms:DescribeKey',
                 ],
-                'Condition': {
-                  'StringEquals': {
+                Condition: {
+                  StringEquals: {
                     'kms:ViaService': {
                       'Fn::Join': [
                         '',
                         [
                           'secretsmanager.',
                           {
-                            'Ref': 'AWS::Region',
+                            Ref: 'AWS::Region',
                           },
                           '.amazonaws.com',
                         ],
                       ],
                     },
                     'kms:CallerAccount': {
-                      'Ref': 'AWS::AccountId',
+                      Ref: 'AWS::AccountId',
                     },
                   },
                 },
@@ -370,7 +355,7 @@ describe('MSK Cluster', () => {
                 Sid: 'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
               },
             ],
-            'Version': '2012-10-17',
+            Version: '2012-10-17',
           },
         });
       });
@@ -390,7 +375,7 @@ describe('MSK Cluster', () => {
               iam: true,
               scram: true,
             }),
-          }),
+          })
       ).toThrow('Only one client authentication method can be enabled.');
     });
   });
@@ -401,10 +386,7 @@ describe('MSK Cluster', () => {
         clusterName: 'cluster',
         kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
-        instanceType: ec2.InstanceType.of(
-          ec2.InstanceClass.M5,
-          ec2.InstanceSize.XLARGE,
-        ),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
@@ -418,10 +400,7 @@ describe('MSK Cluster', () => {
       clusterName: 'cluster',
       kafkaVersion: msk.KafkaVersion.V2_6_1,
       vpc,
-      instanceType: ec2.InstanceType.of(
-        ec2.InstanceClass.M5,
-        ec2.InstanceSize.XLARGE,
-      ),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
@@ -535,10 +514,7 @@ describe('MSK Cluster', () => {
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'Bucket83908E77',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['Bucket83908E77', 'Arn'],
                     },
                     '/AWSLogs/',
                     {
@@ -550,10 +526,7 @@ describe('MSK Cluster', () => {
               },
             },
             {
-              Action: [
-                's3:GetBucketAcl',
-                's3:ListBucket',
-              ],
+              Action: ['s3:GetBucketAcl', 's3:ListBucket'],
               Condition: {
                 StringEquals: {
                   'aws:SourceAccount': {
@@ -588,10 +561,7 @@ describe('MSK Cluster', () => {
                 Service: 'delivery.logs.amazonaws.com',
               },
               Resource: {
-                'Fn::GetAtt': [
-                  'Bucket83908E77',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Bucket83908E77', 'Arn'],
               },
             },
           ],
@@ -624,25 +594,27 @@ describe('MSK Cluster', () => {
 
   describe('ebs volume size is within bounds', () => {
     test('exceeds max', () => {
-      expect(() => new msk.Cluster(stack, 'Cluster', {
-        clusterName: 'cluster',
-        kafkaVersion: msk.KafkaVersion.V2_6_1,
-        vpc,
-        ebsStorageInfo: { volumeSize: 16385 },
-      })).toThrow(
-        'EBS volume size should be in the range 1-16384',
-      );
+      expect(
+        () =>
+          new msk.Cluster(stack, 'Cluster', {
+            clusterName: 'cluster',
+            kafkaVersion: msk.KafkaVersion.V2_6_1,
+            vpc,
+            ebsStorageInfo: { volumeSize: 16385 },
+          })
+      ).toThrow('EBS volume size should be in the range 1-16384');
     });
 
     test('below minimum', () => {
-      expect(() => new msk.Cluster(stack, 'Cluster', {
-        clusterName: 'cluster',
-        kafkaVersion: msk.KafkaVersion.V2_6_1,
-        vpc,
-        ebsStorageInfo: { volumeSize: 0 },
-      })).toThrow(
-        'EBS volume size should be in the range 1-16384',
-      );
+      expect(
+        () =>
+          new msk.Cluster(stack, 'Cluster', {
+            clusterName: 'cluster',
+            kafkaVersion: msk.KafkaVersion.V2_6_1,
+            vpc,
+            ebsStorageInfo: { volumeSize: 0 },
+          })
+      ).toThrow('EBS volume size should be in the range 1-16384');
     });
   });
 
@@ -666,8 +638,7 @@ describe('MSK Cluster', () => {
   });
 
   describe('importing an existing cluster with an ARN', () => {
-    const clusterArn =
-      'arn:aws:kafka:us-west-2:111111111111:cluster/a-cluster/11111111-1111-1111-1111-111111111111-1';
+    const clusterArn = 'arn:aws:kafka:us-west-2:111111111111:cluster/a-cluster/11111111-1111-1111-1111-111111111111-1';
     let cluster: msk.ICluster;
 
     beforeEach(() => {
@@ -693,11 +664,7 @@ describe('MSK Cluster', () => {
       ],
       ebsStorageInfo: {
         volumeSize: 100,
-        encryptionKey: kms.Key.fromKeyArn(
-          stack,
-          'kms',
-          'arn:aws:kms:us-east-1:111122223333:key/1234abc',
-        ),
+        encryptionKey: kms.Key.fromKeyArn(stack, 'kms', 'arn:aws:kms:us-east-1:111122223333:key/1234abc'),
       },
       encryptionInTransit: {
         clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -707,7 +674,7 @@ describe('MSK Cluster', () => {
           acmpca.CertificateAuthority.fromCertificateAuthorityArn(
             stack,
             'CertificateAuthority',
-            'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+            'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'
           ),
         ],
       }),
@@ -720,19 +687,12 @@ describe('MSK Cluster', () => {
         s3: {
           bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'a-bucket'),
         },
-        cloudwatchLogGroup: logs.LogGroup.fromLogGroupName(
-          stack,
-          'LogGroup',
-          'a-log-group',
-        ),
+        cloudwatchLogGroup: logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'a-log-group'),
         firehoseDeliveryStreamName: 'a-delivery-stream',
       },
     });
 
-    cluster.connections.allowFrom(
-      ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg3', 'sg-3'),
-      ec2.Port.tcp(2181),
-    );
+    cluster.connections.allowFrom(ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg3', 'sg-3'), ec2.Port.tcp(2181));
 
     // THEN
     expect(Template.fromStack(stack)).toMatchSnapshot();
@@ -747,7 +707,7 @@ describe('MSK Cluster', () => {
       });
 
       expect(() => cluster.addUser('my-user')).toThrow(
-        'Cannot create users if an authentication KMS key has not been created/provided.',
+        'Cannot create users if an authentication KMS key has not been created/provided.'
       );
     });
 
@@ -765,7 +725,7 @@ describe('MSK Cluster', () => {
       cluster.addUser(username);
 
       Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
-        'Name': {
+        Name: {
           'Fn::Join': [
             '',
             [
@@ -777,7 +737,7 @@ describe('MSK Cluster', () => {
                     'Fn::Split': [
                       '/',
                       {
-                        'Ref': 'ClusterEB0386A7',
+                        Ref: 'ClusterEB0386A7',
                       },
                     ],
                   },
@@ -822,10 +782,8 @@ describe('MSK Cluster', () => {
               kafkaVersion: msk.KafkaVersion.V2_6_1,
               vpc,
               storageMode: msk.StorageMode.TIERED,
-            }),
-        ).toThrow(
-          'To deploy a tiered cluster you must select a compatible Kafka version, got 2.6.1',
-        );
+            })
+        ).toThrow('To deploy a tiered cluster you must select a compatible Kafka version, got 2.6.1');
       });
 
       test('fails if instance type is t3.small', () => {
@@ -837,10 +795,8 @@ describe('MSK Cluster', () => {
               kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
               vpc,
               storageMode: msk.StorageMode.TIERED,
-            }),
-        ).toThrow(
-          'Tiered storage doesn\'t support broker type t3.small',
-        );
+            })
+        ).toThrow("Tiered storage doesn't support broker type t3.small");
       });
     });
 
@@ -859,4 +815,3 @@ describe('MSK Cluster', () => {
     });
   });
 });
-

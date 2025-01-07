@@ -22,9 +22,7 @@ test('create an app connected to a GitHub repository', () => {
       frontend: {
         phases: {
           build: {
-            commands: [
-              'npm run build',
-            ],
+            commands: ['npm run build'],
           },
         },
       },
@@ -36,10 +34,7 @@ test('create an app connected to a GitHub repository', () => {
     Name: 'App',
     BuildSpec: 'version: \"1.0\"\nfrontend:\n  phases:\n    build:\n      commands:\n        - npm run build\n',
     IAMServiceRole: {
-      'Fn::GetAtt': [
-        'AppRole1AF9B530',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AppRole1AF9B530', 'Arn'],
     },
     OauthToken: 'secret',
     Repository: 'https://github.com/aws/aws-cdk',
@@ -77,9 +72,7 @@ test('create an app connected to a GitLab repository', () => {
       frontend: {
         phases: {
           build: {
-            commands: [
-              'npm run build',
-            ],
+            commands: ['npm run build'],
           },
         },
       },
@@ -89,12 +82,10 @@ test('create an app connected to a GitLab repository', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     Name: 'App',
-    BuildSpec: '{\n  \"version\": \"1.0\",\n  \"frontend\": {\n    \"phases\": {\n      \"build\": {\n        \"commands\": [\n          \"npm run build\"\n        ]\n      }\n    }\n  }\n}',
+    BuildSpec:
+      '{\n  \"version\": \"1.0\",\n  \"frontend\": {\n    \"phases\": {\n      \"build\": {\n        \"commands\": [\n          \"npm run build\"\n        ]\n      }\n    }\n  }\n}',
     IAMServiceRole: {
-      'Fn::GetAtt': [
-        'AppRole1AF9B530',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AppRole1AF9B530', 'Arn'],
     },
     OauthToken: 'secret',
     Repository: 'https://gitlab.com/aws/aws-cdk',
@@ -127,10 +118,7 @@ test('create an app connected to a CodeCommit repository', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     IAMServiceRole: {
-      'Fn::GetAtt': [
-        'AppRole1AF9B530',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AppRole1AF9B530', 'Arn'],
     },
     Repository: {
       'Fn::Join': [
@@ -465,16 +453,19 @@ test('create a dynamically rendered app when the platform is set to WEB_COMPUTE'
   });
 });
 
-test.each([amplify.CacheConfigType.AMPLIFY_MANAGED, amplify.CacheConfigType.AMPLIFY_MANAGED_NO_COOKIES])('create a app with cacheConfigType is set to %s', (cacheConfigType) => {
-  // WHEN
-  new amplify.App(stack, 'App', {
-    cacheConfigType,
-  });
+test.each([amplify.CacheConfigType.AMPLIFY_MANAGED, amplify.CacheConfigType.AMPLIFY_MANAGED_NO_COOKIES])(
+  'create a app with cacheConfigType is set to %s',
+  (cacheConfigType) => {
+    // WHEN
+    new amplify.App(stack, 'App', {
+      cacheConfigType,
+    });
 
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
-    CacheConfig: {
-      Type: cacheConfigType,
-    },
-  });
-});
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+      CacheConfig: {
+        Type: cacheConfigType,
+      },
+    });
+  }
+);

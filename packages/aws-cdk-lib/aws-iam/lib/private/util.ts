@@ -82,10 +82,7 @@ export class AttachedPolicies {
  *
  * Does an in-place merge.
  */
-export function mergePrincipal(
-  target: { [key: string]: string[] },
-  source: { [key: string]: string[] }
-) {
+export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
   // If one represents a literal string, the other one must be empty
   const sourceKeys = Object.keys(source);
   const targetKeys = Object.keys(target);

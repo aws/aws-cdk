@@ -16,7 +16,8 @@ describe('arn', () => {
     const pseudo = new ScopedAws(stack);
 
     expect(stack.resolve(arn)).toEqual(
-      stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
+      stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`)
+    );
   });
 
   test('cannot rely on defaults when stack not known', () => {
@@ -24,7 +25,8 @@ describe('arn', () => {
       Arn.format({
         service: 'sqs',
         resource: 'myqueuename',
-      })).toThrow(/must all be passed if stack is not/);
+      })
+    ).toThrow(/must all be passed if stack is not/);
   });
 
   test('create from components with specific values for the various components', () => {
@@ -39,8 +41,7 @@ describe('arn', () => {
       resourceName: 'mytable/stream/label',
     });
 
-    expect(stack.resolve(arn)).toEqual(
-      'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
+    expect(stack.resolve(arn)).toEqual('arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
   });
 
   test('allow empty string in components', () => {
@@ -54,8 +55,7 @@ describe('arn', () => {
       partition: 'aws-cn',
     });
 
-    expect(stack.resolve(arn)).toEqual(
-      'arn:aws-cn:s3:::my-bucket');
+    expect(stack.resolve(arn)).toEqual('arn:aws-cn:s3:::my-bucket');
   });
 
   testDeprecated('resourcePathSep can be set to ":" instead of the default "/"', () => {
@@ -71,7 +71,8 @@ describe('arn', () => {
     const pseudo = new ScopedAws(stack);
 
     expect(stack.resolve(arn)).toEqual(
-      stack.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
+      stack.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`)
+    );
   });
 
   testDeprecated('resourcePathSep can be set to "" instead of the default "/"', () => {
@@ -87,41 +88,48 @@ describe('arn', () => {
     const pseudo = new ScopedAws(stack);
 
     expect(stack.resolve(arn)).toEqual(
-      stack.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
+      stack.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`)
+    );
   });
 
   test('fails if resourcePathSep is neither ":" nor "/"', () => {
     const stack = new Stack();
 
-    expect(() => stack.formatArn({
-      service: 'foo',
-      resource: 'bar',
-      sep: 'x',
-    })).toThrow();
+    expect(() =>
+      stack.formatArn({
+        service: 'foo',
+        resource: 'bar',
+        sep: 'x',
+      })
+    ).toThrow();
   });
 
   describeDeprecated('Arn.parse(s)', () => {
-
     describe('fails', () => {
       test('if doesn\'t start with "arn:"', () => {
         const stack = new Stack();
         expect(() => stack.parseArn('barn:foo:x:a:1:2')).toThrow(/ARNs must start with "arn:".*barn:foo/);
-
       });
 
       test('if the ARN doesnt have enough components', () => {
         const stack = new Stack();
-        expect(() => stack.parseArn('arn:is:too:short')).toThrow(/The `resource` component \(6th component\) of an ARN is required/);
+        expect(() => stack.parseArn('arn:is:too:short')).toThrow(
+          /The `resource` component \(6th component\) of an ARN is required/
+        );
       });
 
       test('if "service" is not specified', () => {
         const stack = new Stack();
-        expect(() => stack.parseArn('arn:aws::4:5:6')).toThrow(/The `service` component \(3rd component\) of an ARN is required/);
+        expect(() => stack.parseArn('arn:aws::4:5:6')).toThrow(
+          /The `service` component \(3rd component\) of an ARN is required/
+        );
       });
 
       test('if "resource" is not specified', () => {
         const stack = new Stack();
-        expect(() => stack.parseArn('arn:aws:service:::')).toThrow(/The `resource` component \(6th component\) of an ARN is required/);
+        expect(() => stack.parseArn('arn:aws:service:::')).toThrow(
+          /The `resource` component \(6th component\) of an ARN is required/
+        );
       });
     });
 
@@ -221,7 +229,8 @@ describe('arn', () => {
         }
         const tokenArnComponents = stack.splitArn(
           Token.asString(new Intrinsic({ Ref: 'TheArn' })),
-          parsedComponents.arnFormat!);
+          parsedComponents.arnFormat!
+        );
         const cfnArnComponents = stack.resolve(tokenArnComponents);
         const evaluatedArnComponents = evaluateCFN(cfnArnComponents, { TheArn: arn });
         expect(evaluatedArnComponents).toEqual(parsedComponents);
@@ -250,9 +259,13 @@ describe('arn', () => {
       expect(parsed.sep).toEqual('/');
 
       // eslint-disable-next-line max-len
-      expect(stack.resolve(parsed.resource)).toEqual({ 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
+      expect(stack.resolve(parsed.resource)).toEqual({
+        'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }],
+      });
       // eslint-disable-next-line max-len
-      expect(stack.resolve(parsed.resourceName)).toEqual({ 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
+      expect(stack.resolve(parsed.resourceName)).toEqual({
+        'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }],
+      });
     });
 
     test('extracting resource name from a complex ARN', () => {
@@ -264,9 +277,11 @@ describe('arn', () => {
       const parsed = Arn.extractResourceName(theToken, 'role');
 
       // THEN
-      expect(evaluateCFN(stack.resolve(parsed), {
-        SomeParameter: 'arn:aws:iam::111111111111:role/path/to/role/name',
-      })).toEqual('path/to/role/name');
+      expect(
+        evaluateCFN(stack.resolve(parsed), {
+          SomeParameter: 'arn:aws:iam::111111111111:role/path/to/role/name',
+        })
+      ).toEqual('path/to/role/name');
     });
 
     test('extractResourceName validates resource type if possible', () => {

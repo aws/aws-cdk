@@ -44,10 +44,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
     super(id);
   }
 
-  public produceAction(
-    stage: IStage,
-    options: ProduceActionOptions
-  ): CodePipelineActionFactoryResult {
+  public produceAction(stage: IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const sec = this.getOrCreateSecCheck(options.pipeline);
     this.props.notificationTopic?.grantPublish(sec.cdkDiffProject);
 
@@ -94,9 +91,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
     const existing = Node.of(pipeline).tryFindChild(id);
     if (existing) {
       if (!(existing instanceof ApplicationSecurityCheck)) {
-        throw new Error(
-          `Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`
-        );
+        throw new Error(`Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`);
       }
       return existing;
     }

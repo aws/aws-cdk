@@ -313,9 +313,7 @@ export class PolicyDocument implements cdk.IResolvable {
   }
 
   private shouldMerge(scope: IConstruct) {
-    return (
-      this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false
-    );
+    return this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false;
   }
 
   /**

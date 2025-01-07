@@ -46,7 +46,7 @@ test('use S3 bucket website as record target with health check', () => {
     target: route53.RecordTarget.fromAlias(
       new targets.BucketWebsiteTarget(bucketWebsite, {
         evaluateTargetHealth: true,
-      }),
+      })
     ),
   });
 

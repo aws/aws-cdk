@@ -1,9 +1,16 @@
 import { CfnParameter, Stack } from '../../core';
-import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute, ClientAttributes } from '../lib';
+import {
+  BooleanAttribute,
+  CustomAttributeConfig,
+  DateTimeAttribute,
+  ICustomAttribute,
+  NumberAttribute,
+  StringAttribute,
+  ClientAttributes,
+} from '../lib';
 import { StandardAttributeNames } from '../lib/private/attr-names';
 
 describe('User Pool Attributes', () => {
-
   describe('mutable', () => {
     test('default', () => {
       // GIVEN
@@ -15,7 +22,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: CustomAttributeConfig[] = allAttributes.map((attr) => attr.bind() );
+      const bounds: CustomAttributeConfig[] = allAttributes.map((attr) => attr.bind());
 
       // THEN
       bounds.forEach((bound) => {
@@ -36,7 +43,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind());
 
       // THEN
       bounds.forEach((bound) => {
@@ -59,7 +66,7 @@ describe('User Pool Attributes', () => {
       ];
 
       // WHEN
-      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind());
 
       // THEN
       bounds.forEach((bound) => {
@@ -100,10 +107,8 @@ describe('User Pool Attributes', () => {
     });
 
     test('throws error when crossing limits', () => {
-      expect(() => new StringAttribute({ minLen: -10 }))
-        .toThrow(/minLen cannot be less than/);
-      expect(() => new StringAttribute({ maxLen: 5000 }))
-        .toThrow(/maxLen cannot be greater than/);
+      expect(() => new StringAttribute({ minLen: -10 })).toThrow(/minLen cannot be less than/);
+      expect(() => new StringAttribute({ maxLen: 5000 })).toThrow(/maxLen cannot be greater than/);
     });
 
     test('validation is skipped when minLen or maxLen are tokens', () => {
@@ -112,10 +117,8 @@ describe('User Pool Attributes', () => {
         type: 'Number',
       });
 
-      expect(() => new StringAttribute({ minLen: parameter.valueAsNumber }))
-        .not.toThrow();
-      expect(() => new StringAttribute({ maxLen: parameter.valueAsNumber }))
-        .not.toThrow();
+      expect(() => new StringAttribute({ minLen: parameter.valueAsNumber })).not.toThrow();
+      expect(() => new StringAttribute({ maxLen: parameter.valueAsNumber })).not.toThrow();
     });
   });
 
@@ -182,7 +185,7 @@ describe('User Pool Attributes', () => {
   describe('ClientAttributes', () => {
     test('create empty ClientAttributes', () => {
       // WHEN
-      const clientAttributes = (new ClientAttributes());
+      const clientAttributes = new ClientAttributes();
 
       // THEN
       expect(clientAttributes.attributes()).toStrictEqual([]);
@@ -193,27 +196,29 @@ describe('User Pool Attributes', () => {
       const customAttributes = ['custom:my_attribute'];
 
       // WHEN
-      const clientAttributes = (new ClientAttributes()).withStandardAttributes({
-        address: true,
-        birthdate: true,
-        email: true,
-        emailVerified: true,
-        familyName: true,
-        fullname: true,
-        gender: true,
-        givenName: true,
-        lastUpdateTime: true,
-        locale: true,
-        middleName: true,
-        nickname: true,
-        phoneNumber: true,
-        phoneNumberVerified: true,
-        preferredUsername: true,
-        profilePage: true,
-        profilePicture: true,
-        timezone: true,
-        website: true,
-      }).withCustomAttributes(...customAttributes);
+      const clientAttributes = new ClientAttributes()
+        .withStandardAttributes({
+          address: true,
+          birthdate: true,
+          email: true,
+          emailVerified: true,
+          familyName: true,
+          fullname: true,
+          gender: true,
+          givenName: true,
+          lastUpdateTime: true,
+          locale: true,
+          middleName: true,
+          nickname: true,
+          phoneNumber: true,
+          phoneNumberVerified: true,
+          preferredUsername: true,
+          profilePage: true,
+          profilePicture: true,
+          timezone: true,
+          website: true,
+        })
+        .withCustomAttributes(...customAttributes);
       const attributes = clientAttributes.attributes();
 
       // THEN
@@ -226,12 +231,8 @@ describe('User Pool Attributes', () => {
 
     test('create ClientAttributes copying another one', () => {
       // GIVEN
-      const original = (new ClientAttributes())
-        .withStandardAttributes({ email: true })
-        .withCustomAttributes('custom1');
-      const copied = original
-        .withStandardAttributes({ emailVerified: true })
-        .withCustomAttributes('custom2');
+      const original = new ClientAttributes().withStandardAttributes({ email: true }).withCustomAttributes('custom1');
+      const copied = original.withStandardAttributes({ emailVerified: true }).withCustomAttributes('custom2');
 
       // WHEN
       const originalAttributes = original.attributes();
@@ -257,7 +258,7 @@ describe('User Pool Attributes', () => {
       const customAttributes = ['custom:my_first', 'my_second'];
 
       // WHEN
-      const clientAttributes = (new ClientAttributes()).withCustomAttributes(...customAttributes);
+      const clientAttributes = new ClientAttributes().withCustomAttributes(...customAttributes);
       const attributes = clientAttributes.attributes();
 
       // EXPECT
@@ -281,7 +282,7 @@ describe('User Pool Attributes', () => {
       }
 
       // WHEN
-      const attributes = (new ClientAttributes()).withStandardAttributes(allStandardAttributes).attributes();
+      const attributes = new ClientAttributes().withStandardAttributes(allStandardAttributes).attributes();
 
       // EXPECT
       expect(attributes.length).toEqual(standardAttributeNamesCount);

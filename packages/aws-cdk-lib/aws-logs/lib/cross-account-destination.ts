@@ -1,10 +1,7 @@
 import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
-import {
-  ILogSubscriptionDestination,
-  LogSubscriptionDestinationConfig,
-} from './subscription-filter';
+import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
@@ -115,8 +112,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
    */
   private lazyStringifiedPolicyDocument(): string {
     return cdk.Lazy.string({
-      produce: () =>
-        this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument),
+      produce: () => (this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument)),
     });
   }
 }

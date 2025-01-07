@@ -90,24 +90,29 @@ describe('DynamoDB Mapping Templates', () => {
   test('read consistency option for dynamoDbGetItem should render correctly', () => {
     const template = appsync.MappingTemplate.dynamoDbGetItem('id', 'id', true);
     const rendered = joined(template.renderTemplate());
-    expect(rendered).toStrictEqual('{\"version\":\"2017-02-28\",\"operation\":\"GetItem\",\"consistentRead\":true,\"key\":{\"id\":$util.dynamodb.toDynamoDBJson($ctx.args.id)}}');
+    expect(rendered).toStrictEqual(
+      '{\"version\":\"2017-02-28\",\"operation\":\"GetItem\",\"consistentRead\":true,\"key\":{\"id\":$util.dynamodb.toDynamoDBJson($ctx.args.id)}}'
+    );
   });
 
   test('read consistency option for dynamoDbQuery should render correctly', () => {
     const template = appsync.MappingTemplate.dynamoDbQuery(KeyCondition.eq('order', 'order'), 'orderIndex', true);
     const rendered = joined(template.renderTemplate());
-    expect(rendered).toStrictEqual('{\"version\":\"2017-02-28\",\"operation\":\"Query\",\"consistentRead\":true,\"index\":\"orderIndex\",\"query\":{\"expression\":\"#order=:order\",\"expressionNames\":{\"#order\":\"order\"},\"expressionValues\":{\":order\":$util.dynamodb.toDynamoDBJson($ctx.args.order)}}}');
+    expect(rendered).toStrictEqual(
+      '{\"version\":\"2017-02-28\",\"operation\":\"Query\",\"consistentRead\":true,\"index\":\"orderIndex\",\"query\":{\"expression\":\"#order=:order\",\"expressionNames\":{\"#order\":\"order\"},\"expressionValues\":{\":order\":$util.dynamodb.toDynamoDBJson($ctx.args.order)}}}'
+    );
   });
 
   test('PutItem projecting all', () => {
     const template = appsync.MappingTemplate.dynamoDbPutItem(
       appsync.PrimaryKey.partition('id').is('id'),
-      appsync.Values.projecting(),
+      appsync.Values.projecting()
     );
 
     const rendered = joined(template.renderTemplate());
 
-    expect(rendered).toStrictEqual(joined(`
+    expect(rendered).toStrictEqual(
+      joined(`
       #set($input = $ctx.args)
       {
         "version" : "2017-02-28",
@@ -116,19 +121,20 @@ describe('DynamoDB Mapping Templates', () => {
           "id" : $util.dynamodb.toDynamoDBJson($ctx.args.id)
         },
         "attributeValues": $util.dynamodb.toMapValuesJson($input)
-      }`),
+      }`)
     );
   });
 
   test('PutItem with invididual attributes', () => {
     const template = appsync.MappingTemplate.dynamoDbPutItem(
       appsync.PrimaryKey.partition('id').is('id'),
-      appsync.Values.attribute('val').is('ctx.args.val'),
+      appsync.Values.attribute('val').is('ctx.args.val')
     );
 
     const rendered = joined(template.renderTemplate());
 
-    expect(rendered).toStrictEqual(joined(`
+    expect(rendered).toStrictEqual(
+      joined(`
       #set($input = {})
       $util.qr($input.put("val", ctx.args.val))
       {
@@ -138,19 +144,20 @@ describe('DynamoDB Mapping Templates', () => {
           "id" : $util.dynamodb.toDynamoDBJson($ctx.args.id)
         },
         "attributeValues": $util.dynamodb.toMapValuesJson($input)
-      }`),
+      }`)
     );
   });
 
   test('PutItem with additional attributes', () => {
     const template = appsync.MappingTemplate.dynamoDbPutItem(
       appsync.PrimaryKey.partition('id').is('id'),
-      appsync.Values.projecting().attribute('val').is('ctx.args.val'),
+      appsync.Values.projecting().attribute('val').is('ctx.args.val')
     );
 
     const rendered = joined(template.renderTemplate());
 
-    expect(rendered).toStrictEqual(joined(`
+    expect(rendered).toStrictEqual(
+      joined(`
       #set($input = $ctx.args)
       $util.qr($input.put("val", ctx.args.val))
       {
@@ -160,7 +167,7 @@ describe('DynamoDB Mapping Templates', () => {
           "id" : $util.dynamodb.toDynamoDBJson($ctx.args.id)
         },
         "attributeValues": $util.dynamodb.toMapValuesJson($input)
-      }`),
+      }`)
     );
   });
 });
@@ -205,5 +212,4 @@ describe('adding DynamoDb data source from imported api', () => {
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });
-
 });

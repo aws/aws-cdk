@@ -108,14 +108,10 @@ describeUserParams.expect(
   })
 );
 
-const describeEngineDefaultParams = test.assertions.awsApiCall(
-  'Redshift',
-  'describeClusterParameters',
-  {
-    ParameterGroupName: updateStack.parameterGroup.clusterParameterGroupName,
-    Source: 'engine-default',
-  }
-);
+const describeEngineDefaultParams = test.assertions.awsApiCall('Redshift', 'describeClusterParameters', {
+  ParameterGroupName: updateStack.parameterGroup.clusterParameterGroupName,
+  Source: 'engine-default',
+});
 describeEngineDefaultParams.expect(
   integ.ExpectedResult.objectLike({
     Parameters: Match.arrayWith([

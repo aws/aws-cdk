@@ -11,10 +11,12 @@ describe('schedule target', () => {
   let stack: Stack;
   let pipeline: IPipeline;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
-  const pipelineParameterList: SageMakerPipelineParameter[] = [{
-    name: 'MyParameterName',
-    value: 'MyParameterValue',
-  }];
+  const pipelineParameterList: SageMakerPipelineParameter[] = [
+    {
+      name: 'MyParameterName',
+      value: 'MyParameterValue',
+    },
+  ];
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -39,10 +41,12 @@ describe('schedule target', () => {
           RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd15d6b89C69AEC', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
-            PipelineParameterList: [{
-              Name: 'MyParameterName',
-              Value: 'MyParameterValue',
-            }],
+            PipelineParameterList: [
+              {
+                Name: 'MyParameterName',
+                Value: 'MyParameterValue',
+              },
+            ],
           },
         },
       },
@@ -116,10 +120,12 @@ describe('schedule target', () => {
           RoleArn: { 'Fn::GetAtt': ['ProvidedTargetRole8CFDD54A', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
-            PipelineParameterList: [{
-              Name: 'MyParameterName',
-              Value: 'MyParameterValue',
-            }],
+            PipelineParameterList: [
+              {
+                Name: 'MyParameterName',
+                Value: 'MyParameterValue',
+              },
+            ],
           },
         },
       },
@@ -154,50 +160,58 @@ describe('schedule target', () => {
       target: pipelineTarget,
     });
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'sagemaker:StartPipelineExecution',
-            Effect: 'Allow',
-            Resource: 'MyPipeline1',
-          },
-        ],
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'sagemaker:StartPipelineExecution',
+              Effect: 'Allow',
+              Resource: 'MyPipeline1',
+            },
+          ],
+        },
+        Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
@@ -219,68 +233,73 @@ describe('schedule target', () => {
       group,
     });
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'GroupC77FDACD',
-                    'Arn',
-                  ],
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::GetAtt': ['GroupC77FDACD', 'Arn'],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'sagemaker:StartPipelineExecution',
-            Effect: 'Allow',
-            Resource: 'MyPipeline1',
-          },
-        ],
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'sagemaker:StartPipelineExecution',
+              Effect: 'Allow',
+              Resource: 'MyPipeline1',
+            },
+          ],
+        },
+        Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM policy for pipeline in the another stack with the same account', () => {
@@ -308,10 +327,12 @@ describe('schedule target', () => {
           RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget6a2eb1D8028120', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
-            PipelineParameterList: [{
-              Name: 'MyParameterName',
-              Value: 'MyParameterValue',
-            }],
+            PipelineParameterList: [
+              {
+                Name: 'MyParameterName',
+                Value: 'MyParameterValue',
+              },
+            ],
           },
         },
       },
@@ -351,10 +372,12 @@ describe('schedule target', () => {
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
           SageMakerPipelineParameters: {
-            PipelineParameterList: [{
-              Name: 'MyParameterName',
-              Value: 'MyParameterValue',
-            }],
+            PipelineParameterList: [
+              {
+                Name: 'MyParameterName',
+                Value: 'MyParameterValue',
+              },
+            ],
           },
         },
       },
@@ -401,10 +424,12 @@ describe('schedule target', () => {
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
           SageMakerPipelineParameters: {
-            PipelineParameterList: [{
-              Name: 'MyParameterName',
-              Value: 'MyParameterValue',
-            }],
+            PipelineParameterList: [
+              {
+                Name: 'MyParameterName',
+                Value: 'MyParameterValue',
+              },
+            ],
           },
         },
       },
@@ -512,10 +537,12 @@ describe('schedule target', () => {
             MaximumRetryAttempts: 5,
           },
           SageMakerPipelineParameters: {
-            PipelineParameterList: [{
-              Name: 'MyParameterName',
-              Value: 'MyParameterValue',
-            }],
+            PipelineParameterList: [
+              {
+                Name: 'MyParameterName',
+                Value: 'MyParameterValue',
+              },
+            ],
           },
         },
       },
@@ -528,11 +555,13 @@ describe('schedule target', () => {
       pipelineParameterList,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: pipelineTarget,
-      })).toThrow(/Maximum event age is 1 day/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: pipelineTarget,
+        })
+    ).toThrow(/Maximum event age is 1 day/);
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
@@ -541,11 +570,13 @@ describe('schedule target', () => {
       pipelineParameterList,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: pipelineTarget,
-      })).toThrow(/Minimum event age is 1 minute/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: pipelineTarget,
+        })
+    ).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
@@ -554,11 +585,13 @@ describe('schedule target', () => {
       pipelineParameterList,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: pipelineTarget,
-      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: pipelineTarget,
+        })
+    ).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 
   test('throws when pipelineParameterList length is greater than 200', () => {
@@ -571,10 +604,12 @@ describe('schedule target', () => {
       dummyPipelineParameterList.push(dummyObject);
     }
 
-    expect(() =>
-      new SageMakerStartPipelineExecution(pipeline, {
-        pipelineParameterList: dummyPipelineParameterList,
-      })).toThrow(/pipelineParameterList length must be between 0 and 200, got 201/);
+    expect(
+      () =>
+        new SageMakerStartPipelineExecution(pipeline, {
+          pipelineParameterList: dummyPipelineParameterList,
+        })
+    ).toThrow(/pipelineParameterList length must be between 0 and 200, got 201/);
   });
 });
 

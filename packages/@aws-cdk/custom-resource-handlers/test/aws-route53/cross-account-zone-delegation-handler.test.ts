@@ -41,10 +41,13 @@ afterAll(() => {
 
 test('throws error if both ParentZoneId and ParentZoneName are not provided', async () => {
   // WHEN
-  const event = getCfnEvent({}, {
-    ParentZoneId: undefined,
-    ParentZoneName: undefined,
-  });
+  const event = getCfnEvent(
+    {},
+    {
+      ParentZoneId: undefined,
+      ParentZoneName: undefined,
+    }
+  );
 
   // THEN
   await expect(invokeHandler(event)).rejects.toThrow(/One of ParentZoneId or ParentZoneName must be specified/);
@@ -52,11 +55,13 @@ test('throws error if both ParentZoneId and ParentZoneName are not provided', as
 
 test('calls create resource record set with Upsert for Create event', async () => {
   // GIVEN
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockStsClient.assumeRole.mockResolvedValueOnce({
+    Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' },
+  });
   mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
 
   // WHEN
-  const event= getCfnEvent();
+  const event = getCfnEvent();
   await invokeHandler(event);
 
   // THEN
@@ -64,26 +69,30 @@ test('calls create resource record set with Upsert for Create event', async () =
   expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
     HostedZoneId: '1',
     ChangeBatch: {
-      Changes: [{
-        Action: 'UPSERT',
-        ResourceRecordSet: {
-          Name: 'recordName',
-          Type: 'NS',
-          TTL: 172800,
-          ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+      Changes: [
+        {
+          Action: 'UPSERT',
+          ResourceRecordSet: {
+            Name: 'recordName',
+            Type: 'NS',
+            TTL: 172800,
+            ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+          },
         },
-      }],
+      ],
     },
   });
 });
 
 test('calls create resource record set with DELETE for Delete event', async () => {
   // GIVEN
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockStsClient.assumeRole.mockResolvedValueOnce({
+    Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' },
+  });
   mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
 
   // WHEN
-  const event= getCfnEvent({ RequestType: 'Delete' });
+  const event = getCfnEvent({ RequestType: 'Delete' });
   await invokeHandler(event);
 
   // THEN
@@ -91,15 +100,17 @@ test('calls create resource record set with DELETE for Delete event', async () =
   expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
     HostedZoneId: '1',
     ChangeBatch: {
-      Changes: [{
-        Action: 'DELETE',
-        ResourceRecordSet: {
-          Name: 'recordName',
-          Type: 'NS',
-          TTL: 172800,
-          ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+      Changes: [
+        {
+          Action: 'DELETE',
+          ResourceRecordSet: {
+            Name: 'recordName',
+            Type: 'NS',
+            TTL: 172800,
+            ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+          },
         },
-      }],
+      ],
     },
   });
 });
@@ -109,7 +120,9 @@ test('calls listHostedZonesByName to get public zoneId if ParentZoneId is not pr
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';
 
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockStsClient.assumeRole.mockResolvedValueOnce({
+    Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' },
+  });
   mockRoute53Client.listHostedZonesByName.mockResolvedValueOnce({
     HostedZones: [
       { Name: `${parentZoneName}.`, Id: parentZoneId },
@@ -119,10 +132,13 @@ test('calls listHostedZonesByName to get public zoneId if ParentZoneId is not pr
   mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
 
   // WHEN
-  const event = getCfnEvent({}, {
-    ParentZoneId: undefined,
-    ParentZoneName: parentZoneName,
-  });
+  const event = getCfnEvent(
+    {},
+    {
+      ParentZoneId: undefined,
+      ParentZoneName: parentZoneName,
+    }
+  );
   await invokeHandler(event);
 
   // THEN
@@ -133,15 +149,17 @@ test('calls listHostedZonesByName to get public zoneId if ParentZoneId is not pr
   expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
     HostedZoneId: parentZoneId,
     ChangeBatch: {
-      Changes: [{
-        Action: 'UPSERT',
-        ResourceRecordSet: {
-          Name: 'recordName',
-          Type: 'NS',
-          TTL: 172800,
-          ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+      Changes: [
+        {
+          Action: 'UPSERT',
+          ResourceRecordSet: {
+            Name: 'recordName',
+            Type: 'NS',
+            TTL: 172800,
+            ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
+          },
         },
-      }],
+      ],
     },
   });
 });
@@ -151,7 +169,9 @@ test('throws if more than one HostedZones are returned for the provided ParentHo
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';
 
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
+  mockStsClient.assumeRole.mockResolvedValueOnce({
+    Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' },
+  });
   mockRoute53Client.listHostedZonesByName.mockResolvedValueOnce({
     HostedZones: [
       { Name: `${parentZoneName}.`, Id: parentZoneId },
@@ -160,10 +180,13 @@ test('throws if more than one HostedZones are returned for the provided ParentHo
   });
 
   // WHEN
-  const event = getCfnEvent({}, {
-    ParentZoneId: undefined,
-    ParentZoneName: parentZoneName,
-  });
+  const event = getCfnEvent(
+    {},
+    {
+      ParentZoneId: undefined,
+      ParentZoneName: parentZoneName,
+    }
+  );
 
   // THEN
   await expect(invokeHandler(event)).rejects.toThrow(/Expected one hosted zone to match the given name but found 2/);
@@ -173,7 +196,7 @@ test('throws if more than one HostedZones are returned for the provided ParentHo
 
 function getCfnEvent(
   event?: Partial<AWSLambda.CloudFormationCustomResourceEvent>,
-  resourceProps?: any,
+  resourceProps?: any
 ): Partial<AWSLambda.CloudFormationCustomResourceEvent> {
   return {
     RequestType: 'Create',

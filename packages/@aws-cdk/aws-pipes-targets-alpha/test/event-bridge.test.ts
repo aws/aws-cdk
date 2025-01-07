@@ -24,10 +24,7 @@ describe('EventBridge', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyEventBus251E60F8',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyEventBus251E60F8', 'Arn'],
       },
       TargetParameters: {},
     });
@@ -61,10 +58,7 @@ describe('EventBridge', () => {
         EventBridgeEventBusParameters: {
           DetailType: 'detail-type',
           EndpointId: 'abcde.veo',
-          Resources: [
-            'resource-1',
-            'resource-2',
-          ],
+          Resources: ['resource-1', 'resource-2'],
           Source: 'source',
           Time: 'time',
         },

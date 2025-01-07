@@ -1,11 +1,6 @@
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
-import {
-  KeyPair,
-  KeyPairFormat,
-  KeyPairType,
-  OperatingSystemType,
-} from '../lib';
+import { KeyPair, KeyPairFormat, KeyPairType, OperatingSystemType } from '../lib';
 
 describe('Key Pair', () => {
   test('basic test', () => {
@@ -150,10 +145,13 @@ describe('Key Pair', () => {
     const stack = new cdk.Stack();
 
     // THEN
-    expect(() => new KeyPair(stack, 'KeyPair', {
-      publicKeyMaterial: 'ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAA',
-      type: KeyPairType.ED25519,
-    })).toThrow('Cannot specify \'type\' for keys with imported material');
+    expect(
+      () =>
+        new KeyPair(stack, 'KeyPair', {
+          publicKeyMaterial: 'ssh-ed25519 AAAAAAAAAAAAAAAAAAAAAA',
+          type: KeyPairType.ED25519,
+        })
+    ).toThrow("Cannot specify 'type' for keys with imported material");
   });
 
   it('returns a reference to SSM parameter for non-imported keys', () => {
@@ -183,6 +181,8 @@ describe('Key Pair', () => {
     });
 
     // THEN
-    expect(() => keyPair.privateKey).toThrow('An SSM parameter with private key material is not created for imported keys');
+    expect(() => keyPair.privateKey).toThrow(
+      'An SSM parameter with private key material is not created for imported keys'
+    );
   });
 });

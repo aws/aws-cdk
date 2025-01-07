@@ -61,8 +61,7 @@ export class TemplateAndChangeSetDiffMerger {
   constructor(props: TemplateAndChangeSetDiffMergerProps) {
     this.changeSet = props.changeSet;
     this.changeSetResources =
-      props.changeSetResources ??
-      this.convertDescribeChangeSetOutputToChangeSetResources(this.changeSet);
+      props.changeSetResources ?? this.convertDescribeChangeSetOutputToChangeSetResources(this.changeSet);
   }
 
   /**
@@ -82,8 +81,7 @@ export class TemplateAndChangeSetDiffMerger {
         // Details is only included if resourceChange.Action === 'Modify'
         if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
           propertyReplacementModes[propertyChange.Target.Name] = {
-            replacementMode:
-              TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChange),
+            replacementMode: TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChange),
           };
         }
       }
@@ -91,8 +89,7 @@ export class TemplateAndChangeSetDiffMerger {
       changeSetResources[resourceChange.ResourceChange.LogicalResourceId] = {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType:
-          resourceChange.ResourceChange.ResourceType ??
-          TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
+          resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         propertyReplacementModes: propertyReplacementModes,
       };
     }
@@ -115,11 +112,7 @@ export class TemplateAndChangeSetDiffMerger {
       return;
     }
     change.forEachDifference(
-      (
-        type: 'Property' | 'Other',
-        name: string,
-        value: types.Difference<any> | types.PropertyDifference<any>
-      ) => {
+      (type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
         if (type === 'Property') {
           if (!this.changeSetResources[logicalId]) {
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
@@ -131,20 +124,16 @@ export class TemplateAndChangeSetDiffMerger {
             .propertyReplacementModes ?? {})[name]?.replacementMode;
           switch (changingPropertyCausesResourceReplacement) {
             case 'Always':
-              (value as types.PropertyDifference<any>).changeImpact =
-                types.ResourceImpact.WILL_REPLACE;
+              (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
               break;
             case 'Never':
-              (value as types.PropertyDifference<any>).changeImpact =
-                types.ResourceImpact.WILL_UPDATE;
+              (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_UPDATE;
               break;
             case 'Conditionally':
-              (value as types.PropertyDifference<any>).changeImpact =
-                types.ResourceImpact.MAY_REPLACE;
+              (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.MAY_REPLACE;
               break;
             case undefined:
-              (value as types.PropertyDifference<any>).changeImpact =
-                types.ResourceImpact.NO_CHANGE;
+              (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
               (value as types.PropertyDifference<any>).isDifferent = false;
               break;
             // otherwise, defer to the changeImpact from the template diff
@@ -153,10 +142,7 @@ export class TemplateAndChangeSetDiffMerger {
           switch (name) {
             case 'Metadata':
               // we want to ignore metadata changes in the diff, so compare newValue against newValue.
-              change.setOtherChange(
-                'Metadata',
-                new types.Difference<string>(value.newValue, value.newValue)
-              );
+              change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
               break;
           }
         }

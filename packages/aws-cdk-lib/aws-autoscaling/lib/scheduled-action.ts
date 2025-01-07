@@ -100,11 +100,7 @@ export class ScheduledAction extends Resource {
   constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
 
-    if (
-      props.minCapacity === undefined &&
-      props.maxCapacity === undefined &&
-      props.desiredCapacity === undefined
-    ) {
+    if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {
       throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
     }
 

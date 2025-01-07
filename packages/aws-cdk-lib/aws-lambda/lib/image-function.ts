@@ -41,17 +41,12 @@ export abstract class DockerImageCode {
    * @param directory the directory from which the asset must be created
    * @param props properties to further configure the selected image
    */
-  public static fromImageAsset(
-    directory: string,
-    props: AssetImageCodeProps = {}
-  ): DockerImageCode {
+  public static fromImageAsset(directory: string, props: AssetImageCodeProps = {}): DockerImageCode {
     return {
       _bind(architecture?: Architecture) {
         return new AssetImageCode(directory, {
           // determine the platform from `architecture`.
-          ...(architecture?.dockerPlatform
-            ? { platform: Platform.custom(architecture.dockerPlatform) }
-            : {}),
+          ...(architecture?.dockerPlatform ? { platform: Platform.custom(architecture.dockerPlatform) } : {}),
           ...props,
         });
       },

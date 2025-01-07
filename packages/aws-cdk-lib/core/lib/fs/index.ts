@@ -19,12 +19,7 @@ export class FileSystem {
    * @param options options
    * @param rootDir Root directory to calculate exclusions from
    */
-  public static copyDirectory(
-    srcDir: string,
-    destDir: string,
-    options: CopyOptions = {},
-    rootDir?: string
-  ) {
+  public static copyDirectory(srcDir: string, destDir: string, options: CopyOptions = {}, rootDir?: string) {
     return copyDirectory(srcDir, destDir, options, rootDir);
   }
 

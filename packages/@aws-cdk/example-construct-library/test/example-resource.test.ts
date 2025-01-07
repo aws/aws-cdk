@@ -21,9 +21,12 @@ import * as er from '../lib';
 /* eslint-disable quote-props */
 
 const EXAMPLE_RESOURCE_NAME = {
-  'Fn::Select': [1, {
-    'Fn::Split': ['/', { 'Ref': 'ExampleResourceAC53F4AE' }],
-  }],
+  'Fn::Select': [
+    1,
+    {
+      'Fn::Split': ['/', { Ref: 'ExampleResourceAC53F4AE' }],
+    },
+  ],
 };
 
 describe('Example Resource', () => {
@@ -52,19 +55,19 @@ describe('Example Resource', () => {
       test('with count = 0 and timeout = 10', () => {
         // you can also assert the properties of the resulting resource
         Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::WaitCondition', {
-          'Count': 0,
-          'Timeout': '10',
-          'Handle': {
+          Count: 0,
+          Timeout: '10',
+          Handle: {
             // Don't be afraid of using the generated logical IDs in your tests!
             // While they look random, they are actually only dependent on the
             // path constructs have in the tree.
             // Since changing logical IDs as the library changes actually causes
             // problems for their customers (their CloudFormation resources will be replaced),
             // it's good for the unit tests to verify that the logical IDs are stable.
-            'Ref': 'ExampleResourceWaitConditionHandle9C53A8D3',
+            Ref: 'ExampleResourceWaitConditionHandle9C53A8D3',
           },
           // this is how you can check a given property is _not_ set
-          'RandomProperty': Match.absent(),
+          RandomProperty: Match.absent(),
         });
       });
 
@@ -72,19 +75,21 @@ describe('Example Resource', () => {
         // hasResource asserts _all_ properties of a resource,
         // while hasResourceProperties only those within the 'Property' block
         Template.fromStack(stack).hasResource('AWS::CloudFormation::WaitCondition', {
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
-        // by default, haveResource and haveResourceLike only assert the properties of a resource -
-        // here's how you make them look at the entire resource definition
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+          // by default, haveResource and haveResourceLike only assert the properties of a resource -
+          // here's how you make them look at the entire resource definition
         });
       });
     });
 
     test('returns true from addToResourcePolicy', () => {
-      const result = exampleResource.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['kms:*'],
-        resources: ['*'],
-      }));
+      const result = exampleResource.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['kms:*'],
+          resources: ['*'],
+        })
+      );
 
       expect(result).toBe(true);
     });
@@ -97,22 +102,25 @@ describe('Example Resource', () => {
       exampleResource.grantRead(role);
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': 's3:Get*',
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  ':cloudformation:',
-                  { 'Ref': 'AWS::Region' },
-                  ':',
-                  { 'Ref': 'AWS::AccountId' },
-                  ':wait-condition/',
-                  { 'Ref': 'ExampleResourceAC53F4AE' },
-                ]],
+              Action: 's3:Get*',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':cloudformation:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':wait-condition/',
+                    { Ref: 'ExampleResourceAC53F4AE' },
+                  ],
+                ],
               },
             },
           ],
@@ -172,10 +180,7 @@ describe('Example Resource', () => {
 
     test('correctly fills out the subnetIds property of the created VPC endpoint', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
-        'SubnetIds': [
-          { 'Ref': 'VpcPrivateSubnet1Subnet536B997A' },
-          { 'Ref': 'VpcPrivateSubnet2Subnet3788AAA1' },
-        ],
+        SubnetIds: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
       });
     });
   });
@@ -184,8 +189,11 @@ describe('Example Resource', () => {
     let exampleResource: er.IExampleResource;
 
     beforeEach(() => {
-      exampleResource = er.ExampleResource.fromExampleResourceName(stack, 'ExampleResource',
-        'my-example-resource-name');
+      exampleResource = er.ExampleResource.fromExampleResourceName(
+        stack,
+        'ExampleResource',
+        'my-example-resource-name'
+      );
     });
 
     test('throws when accessing connections', () => {
@@ -204,23 +212,28 @@ describe('Example Resource', () => {
       // into their correct values.
       const arn = stack.resolve(exampleResource.exampleResourceArn);
       expect(arn).toEqual({
-        'Fn::Join': ['', [
-          'arn:',
-          { 'Ref': 'AWS::Partition' },
-          ':cloudformation:',
-          { 'Ref': 'AWS::Region' },
-          ':',
-          { 'Ref': 'AWS::AccountId' },
-          ':wait-condition/my-example-resource-name',
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudformation:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':wait-condition/my-example-resource-name',
+          ],
+        ],
       });
     });
 
     test('returns false from addToResourcePolicy', () => {
-      const result = exampleResource.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['kms:*'],
-        resources: ['*'],
-      }));
+      const result = exampleResource.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['kms:*'],
+          resources: ['*'],
+        })
+      );
 
       expect(result).toEqual(false);
     });
@@ -232,8 +245,8 @@ describe('Example Resource', () => {
       new er.ExampleResource(stack, 'ExampleResource', {
         waitConditionHandleName: 'a-1234',
       });
-    // it's not enough to know an exception was thrown -
-    // we have to verify that its message is what we expected
+      // it's not enough to know an exception was thrown -
+      // we have to verify that its message is what we expected
     }).toThrow(/waitConditionHandleName must be non-empty and contain only letters and underscores, got: 'a-1234'/);
   });
 

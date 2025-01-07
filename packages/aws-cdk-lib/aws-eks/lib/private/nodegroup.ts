@@ -22,7 +22,5 @@ export function isGpuInstanceType(instanceType: InstanceType): boolean {
     InstanceClass.INF1,
     InstanceClass.INF2,
   ];
-  return knownGpuInstanceTypes.some((c) =>
-    instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE))
-  );
+  return knownGpuInstanceTypes.some((c) => instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)));
 }

@@ -56,7 +56,9 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(() => portMap.validate()).toThrow(`The containerPortRange must be set when containerPort is equal to ${ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE}`);
+        expect(() => portMap.validate()).toThrow(
+          `The containerPortRange must be set when containerPort is equal to ${ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE}`
+        );
       });
 
       test('throws when PortMapping.containerPortRange is used along with PortMapping.containerPort', () => {
@@ -67,7 +69,9 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(() => portMap.validate()).toThrow('Cannot set "containerPort" and "containerPortRange" at the same time.');
+        expect(() => portMap.validate()).toThrow(
+          'Cannot set "containerPort" and "containerPortRange" at the same time.'
+        );
       });
 
       describe('throws when PortMapping.hostPort is set to a different port than the container port', () => {
@@ -79,7 +83,9 @@ describe('container definition', () => {
           });
 
           // THEN
-          expect(() => portMap.validate()).toThrow('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
+          expect(() => portMap.validate()).toThrow(
+            'The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.'
+          );
         });
 
         test('when network mode is Host', () => {
@@ -90,7 +96,9 @@ describe('container definition', () => {
           });
 
           // THEN
-          expect(() => portMap.validate()).toThrow('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
+          expect(() => portMap.validate()).toThrow(
+            'The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.'
+          );
         });
       });
 
@@ -182,7 +190,9 @@ describe('container definition', () => {
           });
 
           // THEN
-          expect(() => portMap.validate()).toThrow('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+          expect(() => portMap.validate()).toThrow(
+            'Either AwsVpc or Bridge network mode is required to set a port range for the container.'
+          );
         });
 
         test('when network mode is NAT', () => {
@@ -193,7 +203,9 @@ describe('container definition', () => {
           });
 
           // THEN
-          expect(() => portMap.validate()).toThrow('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+          expect(() => portMap.validate()).toThrow(
+            'Either AwsVpc or Bridge network mode is required to set a port range for the container.'
+          );
         });
 
         test('when network mode is None', () => {
@@ -204,7 +216,9 @@ describe('container definition', () => {
           });
 
           // THEN
-          expect(() => portMap.validate()).toThrow('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+          expect(() => portMap.validate()).toThrow(
+            'Either AwsVpc or Bridge network mode is required to set a port range for the container.'
+          );
         });
       });
 
@@ -276,9 +290,7 @@ describe('container definition', () => {
             portMap.validate();
           }).not.toThrow();
         });
-
       });
-
     });
 
     describe('ServiceConnect class', () => {
@@ -317,7 +329,6 @@ describe('container definition', () => {
           // THEN
           expect(serviceConnect.isServiceConnect()).toEqual(false);
         });
-
       });
 
       describe('validate', () => {
@@ -346,7 +357,7 @@ describe('container definition', () => {
           // THEN
           expect(() => {
             serviceConnect.validate();
-          }).toThrow('Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
+          }).toThrow("Service connect-related port mapping field 'appProtocol' cannot be set without 'name'");
         });
 
         test('should not throw if AWS_VPC NetworkMode and has portname', () => {
@@ -362,9 +373,7 @@ describe('container definition', () => {
             serviceConnect.validate();
           }).not.toThrow();
         });
-
       });
-
     });
 
     test('port mapping throws an error when appProtocol is set without name', () => {
@@ -395,12 +404,10 @@ describe('container definition', () => {
       expect(container.portMappings).toEqual(expected);
 
       expect(() => {
-        container.addPortMappings(
-          {
-            containerPort: 443,
-            appProtocol: ecs.AppProtocol.grpc,
-          },
-        );
+        container.addPortMappings({
+          containerPort: 443,
+          appProtocol: ecs.AppProtocol.grpc,
+        });
       }).toThrow(/Service connect-related port mapping field 'appProtocol' cannot be set without 'name'/);
     });
 
@@ -425,7 +432,7 @@ describe('container definition', () => {
           {
             containerPort: 443,
             name: 'api',
-          },
+          }
         );
       }).toThrow(/Port mapping name 'api' already exists on this container/);
     });
@@ -443,12 +450,10 @@ describe('container definition', () => {
 
       // THEN
       expect(() => {
-        container.addPortMappings(
-          {
-            containerPort: 80,
-            name: '',
-          },
-        );
+        container.addPortMappings({
+          containerPort: 80,
+          name: '',
+        });
       }).toThrow();
     });
 
@@ -502,40 +507,25 @@ describe('container definition', () => {
         secrets: {
           SECRET: ecs.Secret.fromSecretsManager(secret),
         },
-        systemControls: [
-          { namespace: 'SomeNamespace', value: 'SomeValue' },
-        ],
+        systemControls: [{ namespace: 'SomeNamespace', value: 'SomeValue' }],
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
-            Command: [
-              'CMD-SHELL',
-            ],
+            Command: ['CMD-SHELL'],
             Cpu: 128,
-            CredentialSpecs: [
-              'credentialspecdomainless:arn:aws:s3:::bucket_name/key_name',
-            ],
+            CredentialSpecs: ['credentialspecdomainless:arn:aws:s3:::bucket_name/key_name'],
             DisableNetworking: true,
-            DnsSearchDomains: [
-              'example.com',
-            ],
-            DnsServers: [
-              'host.com',
-            ],
+            DnsSearchDomains: ['example.com'],
+            DnsServers: ['host.com'],
             DockerLabels: {
               key: 'fooLabel',
               value: 'barLabel',
             },
-            DockerSecurityOptions: [
-              'ECS_SELINUX_CAPABLE=true',
-            ],
-            EntryPoint: [
-              'top',
-              '-b',
-            ],
+            DockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
+            EntryPoint: ['top', '-b'],
             Environment: [
               {
                 Name: 'key',
@@ -546,51 +536,53 @@ describe('container definition', () => {
                 Value: 'bar',
               },
             ],
-            EnvironmentFiles: [{
-              Type: 's3',
-              Value: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':s3:::',
-                    {
-                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
-                    },
-                    '/',
-                    {
-                      'Fn::Select': [
-                        0,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    {
-                      'Fn::Select': [
-                        1,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
+            EnvironmentFiles: [
+              {
+                Type: 's3',
+                Value: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
+                      {
+                        Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                      },
+                      '/',
+                      {
+                        'Fn::Select': [
+                          0,
+                          {
+                            'Fn::Split': [
+                              '||',
+                              {
+                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                      {
+                        'Fn::Select': [
+                          1,
+                          {
+                            'Fn::Split': [
+                              '||',
+                              {
+                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
                   ],
-                ],
+                },
               },
-            }],
+            ],
             Essential: true,
             ExtraHosts: [
               {
@@ -599,10 +591,7 @@ describe('container definition', () => {
               },
             ],
             HealthCheck: {
-              Command: [
-                'CMD-SHELL',
-                'curl localhost:8000',
-              ],
+              Command: ['CMD-SHELL', 'curl localhost:8000'],
               Interval: 30,
               Retries: 3,
               Timeout: 5,
@@ -842,7 +831,9 @@ describe('container definition', () => {
               },
             ],
           });
-        }).toThrow('Service connect related port mapping fields \'name\' and \'appProtocol\' are not supported for network mode host');
+        }).toThrow(
+          "Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode host"
+        );
       });
     });
 
@@ -857,9 +848,11 @@ describe('container definition', () => {
         const container = taskDefinition.addContainer('Container', {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
           memoryLimitMiB: 2048,
-          portMappings: [{
-            containerPort: 8080,
-          }],
+          portMappings: [
+            {
+              containerPort: 8080,
+            },
+          ],
         });
 
         // THEN
@@ -876,10 +869,12 @@ describe('container definition', () => {
         const container = taskDefinition.addContainer('Container', {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
           memoryLimitMiB: 2048,
-          portMappings: [{
-            containerPort: 8080,
-            hostPort: 8084,
-          }],
+          portMappings: [
+            {
+              containerPort: 8080,
+              hostPort: 8084,
+            },
+          ],
         });
 
         // THEN
@@ -896,10 +891,12 @@ describe('container definition', () => {
         const container = taskDefinition.addContainer('Container', {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
           memoryLimitMiB: 2048,
-          portMappings: [{
-            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
-            containerPortRange: '8080-8081',
-          }],
+          portMappings: [
+            {
+              containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+              containerPortRange: '8080-8081',
+            },
+          ],
         });
 
         // THEN
@@ -1005,14 +1002,18 @@ describe('container definition', () => {
       const container = taskDefinition.addContainer('MyContainer', {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         memoryLimitMiB: 2048,
-        portMappings: [{
-          containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
-          containerPortRange: '8080-8081',
-        }],
+        portMappings: [
+          {
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+            containerPortRange: '8080-8081',
+          },
+        ],
       });
 
       // THEN
-      expect(() => container.containerPort).toThrow('The first port mapping of the container MyContainer must expose a single port.');
+      expect(() => container.containerPort).toThrow(
+        'The first port mapping of the container MyContainer must expose a single port.'
+      );
     });
   });
 
@@ -1072,14 +1073,18 @@ describe('container definition', () => {
       const container = taskDefinition.addContainer('MyContainer', {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         memoryLimitMiB: 2048,
-        portMappings: [{
-          containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
-          containerPortRange: '8080-8081',
-        }],
+        portMappings: [
+          {
+            containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+            containerPortRange: '8080-8081',
+          },
+        ],
       });
 
       // THEN
-      expect(() => container.ingressPort).toThrow('The first port mapping of the container MyContainer must expose a single port.');
+      expect(() => container.ingressPort).toThrow(
+        'The first port mapping of the container MyContainer must expose a single port.'
+      );
     });
 
     describe('With network mode Host ', () => {
@@ -1250,14 +1255,16 @@ describe('container definition', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         Match.objectLike({
-          Environment: [{
-            Name: 'TEST_ENVIRONMENT_VARIABLE',
-            Value: 'test environment variable value',
-          },
-          {
-            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
-            Value: 'second test value',
-          }],
+          Environment: [
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE',
+              Value: 'test environment variable value',
+            },
+            {
+              Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+              Value: 'second test value',
+            },
+          ],
         }),
       ],
     });
@@ -1279,10 +1286,12 @@ describe('container definition', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         Match.objectLike({
-          Environment: [{
-            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
-            Value: 'second test value',
-          }],
+          Environment: [
+            {
+              Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+              Value: 'second test value',
+            },
+          ],
         }),
       ],
     });
@@ -1328,10 +1337,7 @@ describe('container definition', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         Match.objectLike({
-          PortMappings: [
-            Match.objectLike({ ContainerPort: 80 }),
-            Match.objectLike({ ContainerPort: 443 }),
-          ],
+          PortMappings: [Match.objectLike({ ContainerPort: 80 }), Match.objectLike({ ContainerPort: 443 })],
         }),
       ],
     });
@@ -1390,51 +1396,53 @@ describe('container definition', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             Match.objectLike({
-              EnvironmentFiles: [{
-                Type: 's3',
-                Value: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::',
-                      {
-                        Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
-                      },
-                      '/',
-                      {
-                        'Fn::Select': [
-                          0,
-                          {
-                            'Fn::Split': [
-                              '||',
-                              {
-                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                      {
-                        'Fn::Select': [
-                          1,
-                          {
-                            'Fn::Split': [
-                              '||',
-                              {
-                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                              },
-                            ],
-                          },
-                        ],
-                      },
+              EnvironmentFiles: [
+                {
+                  Type: 's3',
+                  Value: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                        {
+                          Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                        },
+                        '/',
+                        {
+                          'Fn::Select': [
+                            0,
+                            {
+                              'Fn::Split': [
+                                '||',
+                                {
+                                  Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                        {
+                          'Fn::Select': [
+                            1,
+                            {
+                              'Fn::Split': [
+                                '||',
+                                {
+                                  Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
                     ],
-                  ],
+                  },
                 },
-              }],
+              ],
             }),
           ],
         });
@@ -1459,25 +1467,27 @@ describe('container definition', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             Match.objectLike({
-              EnvironmentFiles: [{
-                Type: 's3',
-                Value: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::',
-                      {
-                        Ref: 'Bucket83908E77',
-                      },
-                      '/test-key',
+              EnvironmentFiles: [
+                {
+                  Type: 's3',
+                  Value: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                        {
+                          Ref: 'Bucket83908E77',
+                        },
+                        '/test-key',
+                      ],
                     ],
-                  ],
+                  },
                 },
-              }],
+              ],
             }),
           ],
         });
@@ -1502,51 +1512,53 @@ describe('container definition', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             Match.objectLike({
-              EnvironmentFiles: [{
-                Type: 's3',
-                Value: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::',
-                      {
-                        Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
-                      },
-                      '/',
-                      {
-                        'Fn::Select': [
-                          0,
-                          {
-                            'Fn::Split': [
-                              '||',
-                              {
-                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                      {
-                        'Fn::Select': [
-                          1,
-                          {
-                            'Fn::Split': [
-                              '||',
-                              {
-                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                              },
-                            ],
-                          },
-                        ],
-                      },
+              EnvironmentFiles: [
+                {
+                  Type: 's3',
+                  Value: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                        {
+                          Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                        },
+                        '/',
+                        {
+                          'Fn::Select': [
+                            0,
+                            {
+                              'Fn::Split': [
+                                '||',
+                                {
+                                  Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                        {
+                          'Fn::Select': [
+                            1,
+                            {
+                              'Fn::Split': [
+                                '||',
+                                {
+                                  Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
                     ],
-                  ],
+                  },
                 },
-              }],
+              ],
             }),
           ],
         });
@@ -1571,25 +1583,27 @@ describe('container definition', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             Match.objectLike({
-              EnvironmentFiles: [{
-                Type: 's3',
-                Value: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::',
-                      {
-                        Ref: 'Bucket83908E77',
-                      },
-                      '/test-key',
+              EnvironmentFiles: [
+                {
+                  Type: 's3',
+                  Value: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                        {
+                          Ref: 'Bucket83908E77',
+                        },
+                        '/test-key',
+                      ],
                     ],
-                  ],
+                  },
                 },
-              }],
+              ],
             }),
           ],
         });
@@ -1632,10 +1646,12 @@ describe('container definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
-      const inferenceAccelerators = [{
-        deviceName: 'device1',
-        deviceType: 'eia2.medium',
-      }];
+      const inferenceAccelerators = [
+        {
+          deviceName: 'device1',
+          deviceType: 'eia2.medium',
+        },
+      ];
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         inferenceAccelerators,
@@ -1653,10 +1669,12 @@ describe('container definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        InferenceAccelerators: [{
-          DeviceName: 'device1',
-          DeviceType: 'eia2.medium',
-        }],
+        InferenceAccelerators: [
+          {
+            DeviceName: 'device1',
+            DeviceType: 'eia2.medium',
+          },
+        ],
         ContainerDefinitions: [
           Match.objectLike({
             Image: 'test',
@@ -1675,13 +1693,16 @@ describe('container definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
-      const inferenceAccelerators = [{
-        deviceName: 'device1',
-        deviceType: 'eia2.medium',
-      }, {
-        deviceName: 'device2',
-        deviceType: 'eia2.large',
-      }];
+      const inferenceAccelerators = [
+        {
+          deviceName: 'device1',
+          deviceType: 'eia2.medium',
+        },
+        {
+          deviceName: 'device2',
+          deviceType: 'eia2.large',
+        },
+      ];
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         inferenceAccelerators,
@@ -1701,13 +1722,16 @@ describe('container definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        InferenceAccelerators: [{
-          DeviceName: 'device1',
-          DeviceType: 'eia2.medium',
-        }, {
-          DeviceName: 'device2',
-          DeviceType: 'eia2.large',
-        }],
+        InferenceAccelerators: [
+          {
+            DeviceName: 'device1',
+            DeviceType: 'eia2.medium',
+          },
+          {
+            DeviceName: 'device2',
+            DeviceType: 'eia2.large',
+          },
+        ],
         ContainerDefinitions: [
           Match.objectLike({
             Image: 'test',
@@ -1730,10 +1754,12 @@ describe('container definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
-      const inferenceAccelerators = [{
-        deviceName: 'device1',
-        deviceType: 'eia2.medium',
-      }];
+      const inferenceAccelerators = [
+        {
+          deviceName: 'device1',
+          deviceType: 'eia2.medium',
+        },
+      ];
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         inferenceAccelerators,
@@ -1748,7 +1774,9 @@ describe('container definition', () => {
           memoryLimitMiB: 1024,
           inferenceAcceleratorResources,
         });
-      }).toThrow(/Resource value device2 in container definition doesn't match any inference accelerator device name in the task definition./);
+      }).toThrow(
+        /Resource value device2 in container definition doesn't match any inference accelerator device name in the task definition./
+      );
     });
   });
 
@@ -1756,10 +1784,12 @@ describe('container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const inferenceAccelerators = [{
-      deviceName: 'device1',
-      deviceType: 'eia2.medium',
-    }];
+    const inferenceAccelerators = [
+      {
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      },
+    ];
 
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
       inferenceAccelerators,
@@ -1777,20 +1807,25 @@ describe('container definition', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       Family: 'Ec2TaskDef',
-      InferenceAccelerators: [{
-        DeviceName: 'device1',
-        DeviceType: 'eia2.medium',
-      }],
+      InferenceAccelerators: [
+        {
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        },
+      ],
       ContainerDefinitions: [
         Match.objectLike({
           Image: 'test',
-          ResourceRequirements: [{
-            Type: 'InferenceAccelerator',
-            Value: 'device1',
-          }, {
-            Type: 'GPU',
-            Value: '2',
-          }],
+          ResourceRequirements: [
+            {
+              Type: 'InferenceAccelerator',
+              Value: 'device1',
+            },
+            {
+              Type: 'GPU',
+              Value: '2',
+            },
+          ],
         }),
       ],
     });
@@ -1905,22 +1940,14 @@ describe('container definition', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: {
               Ref: 'SecretA720EF05',
             },
           },
           {
-            Action: [
-              'ssm:DescribeParameters',
-              'ssm:GetParameters',
-              'ssm:GetParameter',
-              'ssm:GetParameterHistory',
-            ],
+            Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -2004,7 +2031,11 @@ describe('container definition', () => {
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
         SECRET_KEY_ID: ecs.Secret.fromSecretsManagerVersion(secret, { versionId: 'version-id' }, 'specificKey'),
-        SECRET_KEY_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }, 'specificKey'),
+        SECRET_KEY_STAGE: ecs.Secret.fromSecretsManagerVersion(
+          secret,
+          { versionStage: 'version-stage' },
+          'specificKey'
+        ),
       },
     });
 
@@ -2453,10 +2484,7 @@ describe('container definition', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
             Effect: 'Allow',
             Resource: mySecretArn,
           },
@@ -2480,7 +2508,6 @@ describe('container definition', () => {
 
       // THEN
       expect(taskDefinition.defaultContainer).toEqual(container);
-
     });
 
     test('when the props passed in is not an essential container', () => {
@@ -2506,9 +2533,11 @@ describe('container definition', () => {
       const stack = new cdk.Stack();
 
       const swappinessValues = [-1, 30.5, 101];
-      swappinessValues.forEach(swappiness => expect(() =>
-        new ecs.LinuxParameters(stack, `LinuxParametersWithSwappiness(${swappiness})`, { swappiness }))
-        .toThrow(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`));
+      swappinessValues.forEach((swappiness) =>
+        expect(
+          () => new ecs.LinuxParameters(stack, `LinuxParametersWithSwappiness(${swappiness})`, { swappiness })
+        ).toThrow(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`)
+      );
     });
 
     test('with only required properties set, it correctly sets default properties', () => {
@@ -2756,7 +2785,9 @@ describe('container definition', () => {
     };
 
     // THEN
-    expect(() => new ecs.ContainerDefinition(stack, 'Container', containerDefinitionProps)).toThrow(/Only one credential spec is allowed per container definition/);
+    expect(() => new ecs.ContainerDefinition(stack, 'Container', containerDefinitionProps)).toThrow(
+      /Only one credential spec is allowed per container definition/
+    );
   });
 
   test('can specify restart policy', () => {
@@ -2888,7 +2919,9 @@ describe('container definition', () => {
         enableRestartPolicy: false,
         restartIgnoredExitCodes: [0, 127],
       });
-    }).toThrow(/The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false/);
+    }).toThrow(
+      /The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false/
+    );
   });
 
   test('throws when enableRestartPolicy is set to false but restartAttemptPeriod is specified', () => {
@@ -2905,7 +2938,9 @@ describe('container definition', () => {
         enableRestartPolicy: false,
         restartAttemptPeriod: cdk.Duration.seconds(360),
       });
-    }).toThrow(/The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false/);
+    }).toThrow(
+      /The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false/
+    );
   });
 
   test('throws when there are more than 50 in restartIgnoredExitCodes', () => {

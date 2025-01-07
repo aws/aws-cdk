@@ -15,9 +15,11 @@ describe('metrics', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      MetricsConfigurations: [{
-        Id: 'test',
-      }],
+      MetricsConfigurations: [
+        {
+          Id: 'test',
+        },
+      ],
     });
   });
 
@@ -27,18 +29,22 @@ describe('metrics', () => {
 
     // WHEN
     new Bucket(stack, 'Bucket', {
-      metrics: [{
-        id: 'test',
-        prefix: 'prefix',
-      }],
+      metrics: [
+        {
+          id: 'test',
+          prefix: 'prefix',
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      MetricsConfigurations: [{
-        Id: 'test',
-        Prefix: 'prefix',
-      }],
+      MetricsConfigurations: [
+        {
+          Id: 'test',
+          Prefix: 'prefix',
+        },
+      ],
     });
   });
 
@@ -48,21 +54,25 @@ describe('metrics', () => {
 
     // WHEN
     new Bucket(stack, 'Bucket', {
-      metrics: [{
-        id: 'test',
-        tagFilters: { tagname1: 'tagvalue1', tagname2: 'tagvalue2' },
-      }],
+      metrics: [
+        {
+          id: 'test',
+          tagFilters: { tagname1: 'tagvalue1', tagname2: 'tagvalue2' },
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      MetricsConfigurations: [{
-        Id: 'test',
-        TagFilters: [
-          { Key: 'tagname1', Value: 'tagvalue1' },
-          { Key: 'tagname2', Value: 'tagvalue2' },
-        ],
-      }],
+      MetricsConfigurations: [
+        {
+          Id: 'test',
+          TagFilters: [
+            { Key: 'tagname1', Value: 'tagvalue1' },
+            { Key: 'tagname2', Value: 'tagvalue2' },
+          ],
+        },
+      ],
     });
   });
 
@@ -76,7 +86,6 @@ describe('metrics', () => {
         {
           id: 'test',
           tagFilters: { tagname1: 'tagvalue1', tagname2: 'tagvalue2' },
-
         },
         {
           id: 'test2',
@@ -87,17 +96,19 @@ describe('metrics', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      MetricsConfigurations: [{
-        Id: 'test',
-        TagFilters: [
-          { Key: 'tagname1', Value: 'tagvalue1' },
-          { Key: 'tagname2', Value: 'tagvalue2' },
-        ],
-      },
-      {
-        Id: 'test2',
-        Prefix: 'prefix',
-      }],
+      MetricsConfigurations: [
+        {
+          Id: 'test',
+          TagFilters: [
+            { Key: 'tagname1', Value: 'tagvalue1' },
+            { Key: 'tagname2', Value: 'tagvalue2' },
+          ],
+        },
+        {
+          Id: 'test2',
+          Prefix: 'prefix',
+        },
+      ],
     });
   });
 });

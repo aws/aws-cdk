@@ -82,9 +82,7 @@ export class Aspects {
    * @param options Options to apply on this aspect.
    */
   public add(aspect: IAspect, options?: AspectOptions) {
-    this._appliedAspects.push(
-      new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT)
-    );
+    this._appliedAspects.push(new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT));
   }
 
   /**

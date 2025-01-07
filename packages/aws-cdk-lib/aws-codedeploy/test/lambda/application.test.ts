@@ -39,7 +39,9 @@ describe('CodeDeploy Lambda Application', () => {
       applicationName: 'my name',
     });
 
-    expect(() => app.synth()).toThrow('Application name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
+    expect(() => app.synth()).toThrow(
+      'Application name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).'
+    );
   });
 
   test('can be imported', () => {

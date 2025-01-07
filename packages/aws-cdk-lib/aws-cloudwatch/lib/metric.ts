@@ -336,16 +336,8 @@ export class Metric implements IMetric {
   constructor(props: MetricProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     const periodSec = this.period.toSeconds();
-    if (
-      periodSec !== 1 &&
-      periodSec !== 5 &&
-      periodSec !== 10 &&
-      periodSec !== 30 &&
-      periodSec % 60 !== 0
-    ) {
-      throw new Error(
-        `'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`
-      );
+    if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
+      throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
 
     this.warnings = undefined;
@@ -461,9 +453,7 @@ export class Metric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(
-        "Using a math expression is not supported here. Pass a 'Metric' object instead"
-      );
+      throw new Error("Using a math expression is not supported here. Pass a 'Metric' object instead");
     }
 
     const parsed = parseStatistic(metricConfig.metricStat.statistic);
@@ -492,9 +482,7 @@ export class Metric implements IMetric {
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(
-        "Using a math expression is not supported here. Pass a 'Metric' object instead"
-      );
+      throw new Error("Using a math expression is not supported here. Pass a 'Metric' object instead");
     }
 
     return {
@@ -576,15 +564,11 @@ export class Metric implements IMetric {
         throw new Error(`Dimension value of '${dims[key]}' is invalid`);
       }
       if (key.length < 1 || key.length > 255) {
-        throw new Error(
-          `Dimension name must be at least 1 and no more than 255 characters; received ${key}`
-        );
+        throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
       }
 
       if (dims[key].length < 1 || dims[key].length > 255) {
-        throw new Error(
-          `Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`
-        );
+        throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
       }
     });
 
@@ -683,9 +667,7 @@ export class MathExpression implements IMetric {
         `Periods of metrics in 'usingMetrics' for Math expression '${this.expression}' have been overridden to ${this.period.toSeconds()} seconds.`;
     }
 
-    const invalidVariableNames = Object.keys(this.usingMetrics).filter(
-      (x) => !validVariableName(x)
-    );
+    const invalidVariableNames = Object.keys(this.usingMetrics).filter((x) => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
       throw new Error(
         `Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`
@@ -698,9 +680,7 @@ export class MathExpression implements IMetric {
     // can't throw on this anymore since we didn't use to do this validation from the start
     // and now there will be loads of people who are violating the expected contract, but
     // we can add warnings.
-    const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(
-      (i) => !this.usingMetrics[i]
-    );
+    const missingIdentifiers = allIdentifiersInExpression(this.expression).filter((i) => !this.usingMetrics[i]);
 
     if (
       !this.expression.toUpperCase().match('\\s*INSIGHT_RULE_METRIC|SELECT|SEARCH|METRICS\\s.*') &&
@@ -757,18 +737,14 @@ export class MathExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error(
-      "Using a math expression is not supported here. Pass a 'Metric' object instead"
-    );
+    throw new Error("Using a math expression is not supported here. Pass a 'Metric' object instead");
   }
 
   /**
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error(
-      "Using a math expression is not supported here. Pass a 'Metric' object instead"
-    );
+    throw new Error("Using a math expression is not supported here. Pass a 'Metric' object instead");
   }
 
   public toMetricConfig(): MetricConfig {
@@ -991,10 +967,7 @@ function changeAllPeriods(
  * Relies on the fact that implementations of `IMetric` are also supposed to have
  * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
  */
-function changePeriod(
-  metric: IMetric,
-  period: cdk.Duration
-): { metric: IMetric; overridden: boolean } {
+function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean } {
   if (isModifiableMetric(metric)) {
     const overridden =
       isMetricWithPeriod(metric) && // always true, as the period property is set with a default value even if it is not specified

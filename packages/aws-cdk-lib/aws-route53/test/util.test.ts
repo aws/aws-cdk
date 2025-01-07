@@ -14,10 +14,13 @@ describe('util', () => {
 
     // WHEN
     const providedName = 'test.domain.com.';
-    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-      hostedZoneId: 'fakeId',
-      zoneName: 'ignored',
-    }));
+    const qualified = util.determineFullyQualifiedDomainName(
+      providedName,
+      HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'ignored',
+      })
+    );
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
@@ -29,10 +32,13 @@ describe('util', () => {
 
     // WHEN
     const providedName = 'test.domain.com';
-    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-      hostedZoneId: 'fakeId',
-      zoneName: 'test.domain.com.',
-    }));
+    const qualified = util.determineFullyQualifiedDomainName(
+      providedName,
+      HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'test.domain.com.',
+      })
+    );
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
@@ -44,10 +50,13 @@ describe('util', () => {
 
     // WHEN
     const providedName = 'test.domain.com';
-    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-      hostedZoneId: 'fakeId',
-      zoneName: 'domain.com.',
-    }));
+    const qualified = util.determineFullyQualifiedDomainName(
+      providedName,
+      HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      })
+    );
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
@@ -59,10 +68,13 @@ describe('util', () => {
 
     // WHEN
     const providedName = 'test';
-    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-      hostedZoneId: 'fakeId',
-      zoneName: 'domain.com.',
-    }));
+    const qualified = util.determineFullyQualifiedDomainName(
+      providedName,
+      HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      })
+    );
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');

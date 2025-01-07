@@ -148,14 +148,13 @@ describe('export writer provider', () => {
     // THEN
     const cfn = toCloudFormation(stack);
     const stack2Cfn = toCloudFormation(stack2);
-    const staging = stack.node.tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
+    const staging = stack.node
+      .tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')
+      ?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
 
     expect(stack.resolve(exportValue)).toEqual({
-      'Fn::GetAtt': [
-        'ExportsReader8B249524',
-        '/cdk/exports/MyResourceName',
-      ],
+      'Fn::GetAtt': ['ExportsReader8B249524', '/cdk/exports/MyResourceName'],
     });
     expect(cfn).toEqual({
       Mappings: latestNodeRuntimeMap.Mappings,
@@ -190,22 +189,24 @@ describe('export writer provider', () => {
                         'ssm:PutParameter',
                       ],
                       Effect: 'Allow',
-                      Resource: [{
-                        'Fn::Join': [
-                          '',
-                          [
-                            'arn:',
-                            {
-                              Ref: 'AWS::Partition',
-                            },
-                            ':ssm:us-east-1:',
-                            {
-                              Ref: 'AWS::AccountId',
-                            },
-                            ':parameter/cdk/exports/*',
+                      Resource: [
+                        {
+                          'Fn::Join': [
+                            '',
+                            [
+                              'arn:',
+                              {
+                                Ref: 'AWS::Partition',
+                              },
+                              ':ssm:us-east-1:',
+                              {
+                                Ref: 'AWS::AccountId',
+                              },
+                              ':parameter/cdk/exports/*',
+                            ],
                           ],
-                        ],
-                      }],
+                        },
+                      ],
                     },
                   ],
                   Version: '2012-10-17',
@@ -227,18 +228,12 @@ describe('export writer provider', () => {
               region: 'us-east-1',
               exports: {
                 '/cdk/exports/MyResourceName': {
-                  'Fn::GetAtt': [
-                    'MyResource',
-                    'arn',
-                  ],
+                  'Fn::GetAtt': ['MyResource', 'arn'],
                 },
               },
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
             },
           },
           Type: 'Custom::CrossRegionExportWriter',
@@ -257,10 +252,7 @@ describe('export writer provider', () => {
             MemorySize: 128,
             Handler: '__entrypoint__.handler',
             Role: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1', 'Arn'],
             },
             Runtime: {
               'Fn::FindInMap': [
@@ -272,9 +264,7 @@ describe('export writer provider', () => {
               ],
             },
           },
-          DependsOn: [
-            'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
-          ],
+          DependsOn: ['CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1'],
         },
       },
     });
@@ -282,9 +272,7 @@ describe('export writer provider', () => {
       Mappings: latestNodeRuntimeMap.Mappings,
       Resources: {
         CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
-          DependsOn: [
-            'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
-          ],
+          DependsOn: ['CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD'],
           Properties: {
             Code: {
               S3Bucket: {
@@ -295,10 +283,7 @@ describe('export writer provider', () => {
             Handler: '__entrypoint__.handler',
             MemorySize: 128,
             Role: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD', 'Arn'],
             },
             Runtime: {
               'Fn::FindInMap': [
@@ -337,11 +322,7 @@ describe('export writer provider', () => {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: [
-                        'ssm:AddTagsToResource',
-                        'ssm:RemoveTagsFromResource',
-                        'ssm:GetParameters',
-                      ],
+                      Action: ['ssm:AddTagsToResource', 'ssm:RemoveTagsFromResource', 'ssm:GetParameters'],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::Join': [
@@ -386,10 +367,7 @@ describe('export writer provider', () => {
               prefix: 'Stack2',
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68', 'Arn'],
             },
           },
           Type: 'Custom::CrossRegionExportReader',
@@ -529,7 +507,9 @@ describe('export writer provider', () => {
     // THEN
     const cfn = toCloudFormation(stack);
     const stack2Cfn = toCloudFormation(stack2);
-    const staging = stack.node.tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
+    const staging = stack.node
+      .tryFindChild('Custom::CrossRegionExportWriterCustomResourceProvider')
+      ?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
 
     expect(stack.resolve(exportValue)).toEqual({
@@ -568,22 +548,24 @@ describe('export writer provider', () => {
                         'ssm:PutParameter',
                       ],
                       Effect: 'Allow',
-                      Resource: [{
-                        'Fn::Join': [
-                          '',
-                          [
-                            'arn:',
-                            {
-                              Ref: 'AWS::Partition',
-                            },
-                            ':ssm:us-east-1:',
-                            {
-                              Ref: 'AWS::AccountId',
-                            },
-                            ':parameter/cdk/exports/*',
+                      Resource: [
+                        {
+                          'Fn::Join': [
+                            '',
+                            [
+                              'arn:',
+                              {
+                                Ref: 'AWS::Partition',
+                              },
+                              ':ssm:us-east-1:',
+                              {
+                                Ref: 'AWS::AccountId',
+                              },
+                              ':parameter/cdk/exports/*',
+                            ],
                           ],
-                        ],
-                      }],
+                        },
+                      ],
                     },
                   ],
                   Version: '2012-10-17',
@@ -605,19 +587,12 @@ describe('export writer provider', () => {
               region: 'us-east-1',
               exports: {
                 '/cdk/exports/MyResourceName': {
-                  'Fn::GetAtt': [
-                    'MyResource',
-                    'arn',
-                  ],
+                  'Fn::GetAtt': ['MyResource', 'arn'],
                 },
               },
-
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
             },
           },
           Type: 'Custom::CrossRegionExportWriter',
@@ -636,10 +611,7 @@ describe('export writer provider', () => {
             MemorySize: 128,
             Handler: '__entrypoint__.handler',
             Role: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1', 'Arn'],
             },
             Runtime: {
               'Fn::FindInMap': [
@@ -651,9 +623,7 @@ describe('export writer provider', () => {
               ],
             },
           },
-          DependsOn: [
-            'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
-          ],
+          DependsOn: ['CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1'],
         },
       },
     });
@@ -661,9 +631,7 @@ describe('export writer provider', () => {
       Mappings: latestNodeRuntimeMap.Mappings,
       Resources: {
         CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68: {
-          DependsOn: [
-            'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
-          ],
+          DependsOn: ['CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD'],
           Properties: {
             Code: {
               S3Bucket: {
@@ -674,10 +642,7 @@ describe('export writer provider', () => {
             Handler: '__entrypoint__.handler',
             MemorySize: 128,
             Role: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD', 'Arn'],
             },
             Runtime: {
               'Fn::FindInMap': [
@@ -716,11 +681,7 @@ describe('export writer provider', () => {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: [
-                        'ssm:AddTagsToResource',
-                        'ssm:RemoveTagsFromResource',
-                        'ssm:GetParameters',
-                      ],
+                      Action: ['ssm:AddTagsToResource', 'ssm:RemoveTagsFromResource', 'ssm:GetParameters'],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::Join': [
@@ -765,10 +726,7 @@ describe('export writer provider', () => {
               prefix: 'Stack2',
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68', 'Arn'],
             },
           },
           Type: 'Custom::CrossRegionExportReader',

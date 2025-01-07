@@ -225,9 +225,7 @@ export class Topic extends TopicBase {
     const fifo = topicName.endsWith('.fifo');
 
     if (attrs.contentBasedDeduplication && !fifo) {
-      throw new Error(
-        'Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.'
-      );
+      throw new Error('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.');
     }
 
     class Import extends TopicBase {
@@ -302,14 +300,8 @@ export class Topic extends TopicBase {
       throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
     }
 
-    if (
-      props.displayName &&
-      !Token.isUnresolved(props.displayName) &&
-      props.displayName.length > 100
-    ) {
-      throw new Error(
-        `displayName must be less than or equal to 100 characters, got ${props.displayName.length}`
-      );
+    if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
+      throw new Error(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`);
     }
 
     const resource = new CfnTopic(this, 'Resource', {
@@ -324,10 +316,7 @@ export class Topic extends TopicBase {
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,
       signatureVersion: props.signatureVersion,
-      deliveryStatusLogging: Lazy.any(
-        { produce: () => this.renderLoggingConfigs() },
-        { omitEmptyArray: true }
-      ),
+      deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
       tracingConfig: props.tracingConfig,
     });
 

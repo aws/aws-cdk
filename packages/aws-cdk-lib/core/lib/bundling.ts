@@ -273,9 +273,7 @@ export class BundlingDockerImage {
       ...(options.network ? ['--network', options.network] : []),
       ...(options.platform ? ['--platform', options.platform] : []),
       ...(options.user ? ['-u', options.user] : []),
-      ...(options.volumesFrom
-        ? flatten(options.volumesFrom.map((v) => ['--volumes-from', v]))
-        : []),
+      ...(options.volumesFrom ? flatten(options.volumesFrom.map((v) => ['--volumes-from', v])) : []),
       ...flatten(
         volumes.map((v) => [
           '-v',
@@ -352,11 +350,7 @@ export class DockerImage extends BundlingDockerImage {
       ...(options.platform ? ['--platform', options.platform] : []),
       ...(options.targetStage ? ['--target', options.targetStage] : []),
       ...(options.cacheFrom
-        ? [
-            ...options.cacheFrom
-              .map((cacheFrom) => ['--cache-from', this.cacheOptionToFlag(cacheFrom)])
-              .flat(),
-          ]
+        ? [...options.cacheFrom.map((cacheFrom) => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()]
         : []),
       ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
       ...(options.cacheDisabled ? ['--no-cache'] : []),

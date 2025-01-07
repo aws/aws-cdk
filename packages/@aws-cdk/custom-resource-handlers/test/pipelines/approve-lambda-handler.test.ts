@@ -16,7 +16,6 @@ jest.setTimeout(10_000);
 import { handler } from '../../lib/pipelines/approve-lambda/index';
 
 describe('approve-lambda handler', () => {
-
   beforeEach(() => {
     jest.spyOn(global, 'setTimeout');
   });
@@ -29,17 +28,21 @@ describe('approve-lambda handler', () => {
     // GIVEN
     mockGetPipelineState.mockImplementation(() => {
       return {
-        stageStates: [{
-          stageName: 'stage',
-          actionStates: [{
-            actionName: 'action',
-            latestExecution: {
-              lastStatusChange: 1446137358.328,
-              status: 'Succeeded',
-              token: 'token',
-            },
-          }],
-        }],
+        stageStates: [
+          {
+            stageName: 'stage',
+            actionStates: [
+              {
+                actionName: 'action',
+                latestExecution: {
+                  lastStatusChange: 1446137358.328,
+                  status: 'Succeeded',
+                  token: 'token',
+                },
+              },
+            ],
+          },
+        ],
       };
     });
 
@@ -60,22 +63,27 @@ describe('approve-lambda handler', () => {
     // GIVEN
     mockGetPipelineState.mockImplementation(async () => {
       return {
-        stageStates: [{
-          stageName: 'unknown',
-          actionStates: [{
-            actionName: 'action',
-            latestExecution: {
-              lastStatusChange: 1446137358.328,
-              status: 'Succeeded',
-              token: 'token',
-            },
-          }],
-        }],
+        stageStates: [
+          {
+            stageName: 'unknown',
+            actionStates: [
+              {
+                actionName: 'action',
+                latestExecution: {
+                  lastStatusChange: 1446137358.328,
+                  status: 'Succeeded',
+                  token: 'token',
+                },
+              },
+            ],
+          },
+        ],
       };
     });
 
     // expire deadline after first loop
-    jest.spyOn(Date, 'now')
+    jest
+      .spyOn(Date, 'now')
       .mockReturnValueOnce(0)
       .mockReturnValueOnce(0)
       .mockReturnValueOnce(10 * 60_000);
@@ -98,22 +106,27 @@ describe('approve-lambda handler', () => {
     // GIVEN
     mockGetPipelineState.mockImplementation(async () => {
       return {
-        stageStates: [{
-          stageName: 'stage',
-          actionStates: [{
-            actionName: 'unknown',
-            latestExecution: {
-              lastStatusChange: 1446137358.328,
-              status: 'Succeeded',
-              token: 'token',
-            },
-          }],
-        }],
+        stageStates: [
+          {
+            stageName: 'stage',
+            actionStates: [
+              {
+                actionName: 'unknown',
+                latestExecution: {
+                  lastStatusChange: 1446137358.328,
+                  status: 'Succeeded',
+                  token: 'token',
+                },
+              },
+            ],
+          },
+        ],
       };
     });
 
     // expire deadline after first loop
-    jest.spyOn(Date, 'now')
+    jest
+      .spyOn(Date, 'now')
       .mockReturnValueOnce(0)
       .mockReturnValueOnce(0)
       .mockReturnValueOnce(10 * 60_000);
@@ -136,21 +149,26 @@ describe('approve-lambda handler', () => {
     // GIVEN
     mockGetPipelineState.mockImplementation(async () => {
       return {
-        stageStates: [{
-          stageName: 'stage',
-          actionStates: [{
-            actionName: 'unknown',
-            latestExecution: {
-              lastStatusChange: 1446137358.328,
-              status: 'Succeeded',
-            },
-          }],
-        }],
+        stageStates: [
+          {
+            stageName: 'stage',
+            actionStates: [
+              {
+                actionName: 'unknown',
+                latestExecution: {
+                  lastStatusChange: 1446137358.328,
+                  status: 'Succeeded',
+                },
+              },
+            ],
+          },
+        ],
       };
     });
 
     // expire deadline after first loop
-    jest.spyOn(Date, 'now')
+    jest
+      .spyOn(Date, 'now')
       .mockReturnValueOnce(0)
       .mockReturnValueOnce(0)
       .mockReturnValueOnce(10 * 60_000);

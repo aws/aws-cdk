@@ -47,10 +47,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     id: string,
     deploymentStrategyArn: string
   ): IDeploymentStrategy {
-    const parsedArn = Stack.of(scope).splitArn(
-      deploymentStrategyArn,
-      ArnFormat.SLASH_RESOURCE_NAME
-    );
+    const parsedArn = Stack.of(scope).splitArn(deploymentStrategyArn, ArnFormat.SLASH_RESOURCE_NAME);
     const deploymentStrategyId = parsedArn.resourceName;
     if (!deploymentStrategyId) {
       throw new Error('Missing required deployment strategy id from deployment strategy ARN');

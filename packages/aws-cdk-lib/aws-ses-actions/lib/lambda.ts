@@ -65,9 +65,7 @@ export class Lambda implements ses.IReceiptRuleAction {
     }
 
     // Ensure permission is deployed before rule
-    const permission = this.props.function.permissionsNode.tryFindChild(
-      permissionId
-    ) as lambda.CfnPermission;
+    const permission = this.props.function.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission;
     if (permission) {
       // The Lambda could be imported
       rule.node.addDependency(permission);

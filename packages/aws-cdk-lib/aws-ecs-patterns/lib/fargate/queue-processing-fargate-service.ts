@@ -4,17 +4,12 @@ import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
-import {
-  QueueProcessingServiceBase,
-  QueueProcessingServiceBaseProps,
-} from '../base/queue-processing-service-base';
+import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
  * The properties for the QueueProcessingFargateService service.
  */
-export interface QueueProcessingFargateServiceProps
-  extends QueueProcessingServiceBaseProps,
-    FargateServiceBaseProps {
+export interface QueueProcessingFargateServiceProps extends QueueProcessingServiceBaseProps, FargateServiceBaseProps {
   /**
    * Optional name for the container added.
    * This name is not used when `taskDefinition` is provided.

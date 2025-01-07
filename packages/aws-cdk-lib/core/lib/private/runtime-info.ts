@@ -94,8 +94,7 @@ function pluginFqn(plugin: IPolicyValidationPluginBeta1): string {
  * as long as the construct fully-qualified names match the defined allow list.
  */
 export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
-  const isDefined = (value: ConstructInfo | undefined): value is ConstructInfo =>
-    value !== undefined;
+  const isDefined = (value: ConstructInfo | undefined): value is ConstructInfo => value !== undefined;
 
   const allConstructInfos = constructsInStack(stack)
     .map((construct) => constructInfoFromConstruct(construct))

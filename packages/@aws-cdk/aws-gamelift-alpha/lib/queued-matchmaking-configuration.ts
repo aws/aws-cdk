@@ -123,10 +123,7 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
       physicalName: props.matchmakingConfigurationName,
     });
 
-    if (
-      props.matchmakingConfigurationName &&
-      !cdk.Token.isUnresolved(props.matchmakingConfigurationName)
-    ) {
+    if (props.matchmakingConfigurationName && !cdk.Token.isUnresolved(props.matchmakingConfigurationName)) {
       if (props.matchmakingConfigurationName.length > 128) {
         throw new Error(
           `Matchmaking configuration name can not be longer than 128 characters but has ${props.matchmakingConfigurationName.length} characters.`
@@ -212,8 +209,7 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
       gameSessionQueueArns: cdk.Lazy.list({ produce: () => this.parseGameSessionQueues() }),
       notificationTarget: this.notificationTarget.topicArn,
       requestTimeoutSeconds:
-        (props.requestTimeout && props.requestTimeout.toSeconds()) ||
-        cdk.Duration.seconds(300).toSeconds(),
+        (props.requestTimeout && props.requestTimeout.toSeconds()) || cdk.Duration.seconds(300).toSeconds(),
       ruleSetName: props.ruleSet.matchmakingRuleSetName,
     });
 
@@ -252,9 +248,7 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
 
     return props.gameProperties.map(parseGameProperty);
 
-    function parseGameProperty(
-      gameProperty: GameProperty
-    ): gamelift.CfnMatchmakingConfiguration.GamePropertyProperty {
+    function parseGameProperty(gameProperty: GameProperty): gamelift.CfnMatchmakingConfiguration.GamePropertyProperty {
       return {
         key: gameProperty.key,
         value: gameProperty.value,

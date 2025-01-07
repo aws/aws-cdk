@@ -51,9 +51,7 @@ describe('ProductStack', () => {
 
   test('Use correct assetPath when outdir is absolute', () => {
     // GIVEN
-    const app = new cdk.App(
-      { outdir: '/tmp/foobar' },
-    );
+    const app = new cdk.App({ outdir: '/tmp/foobar' });
     const mainStack = new cdk.Stack(app, 'MyStackAbsolutePath');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
       bucketName: 'test-asset-bucket',
@@ -84,15 +82,16 @@ describe('ProductStack', () => {
 
     // THEN
     const assembly = app.synth();
-    const stackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8'));
+    const stackTemplate = JSON.parse(
+      fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8')
+    );
     Template.fromJSON(stackTemplate).resourceCountIs('AWS::CDK::Metadata', enabled ? 1 : 0);
     expect(Template.fromJSON(stackTemplate).toJSON().Description).toEqual('foo bar');
   });
 
   test('Used defined Asset bucket in product stack with nested assets', () => {
     // GIVEN
-    const app = new cdk.App(
-    );
+    const app = new cdk.App();
     const mainStack = new cdk.Stack(app, 'MyStack');
     let templateFileUrl = '';
     class PortfolioStage extends cdk.Stage {
@@ -152,7 +151,7 @@ describe('ProductStack', () => {
                   assetBucket: new s3.Bucket(this, 'AssetBucket', {
                     bucketName: 'test-asset-bucket',
                   }),
-                }),
+                })
               ),
             },
           ],
@@ -209,8 +208,7 @@ describe('ProductStack', () => {
     // GIVEN
     const app = new cdk.App();
     const mainStack = new cdk.Stack(app, 'MyStack');
-    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
-    });
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {});
     const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
       assetBucket: testAssetBucket,
     });
@@ -246,17 +244,16 @@ describe('ProductStack', () => {
       new servicecatalog.ProductStack(app, 'ProductStack');
     }).toThrow(/must be defined within scope of another non-product stack/);
   }),
+    test('fails if defined without a parent stack', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const group = new Construct(app, 'group');
 
-  test('fails if defined without a parent stack', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const group = new Construct(app, 'group');
-
-    // THEN
-    expect(() => {
-      new servicecatalog.ProductStack(group, 'ProductStack');
-    }).toThrow(/must be defined within scope of another non-product stack/);
-  });
+      // THEN
+      expect(() => {
+        new servicecatalog.ProductStack(group, 'ProductStack');
+      }).toThrow(/must be defined within scope of another non-product stack/);
+    });
 
   test('can be defined as a direct child or an indirect child of a Stack', () => {
     // GIVEN
@@ -306,8 +303,7 @@ describe('ProductStack', () => {
     // GIVEN
     const app = new cdk.App();
     const mainStack = new cdk.Stack(app, 'MyStack');
-    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
-    });
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {});
     const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
       assetBucket: testAssetBucket,
       serverSideEncryption: ServerSideEncryption.AWS_KMS,
@@ -326,8 +322,7 @@ describe('ProductStack', () => {
     const app = new cdk.App();
     const mainStack = new cdk.Stack(app, 'MyStack');
     const testKmsKey = new kms.Key(mainStack, 'TestKmsKey');
-    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
-    });
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {});
     const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
       assetBucket: testAssetBucket,
       serverSideEncryptionAwsKmsKeyId: testKmsKey.keyId,
@@ -368,7 +363,9 @@ describe('ProductStack', () => {
 
     // THEN
     expect(productStack._getAssetBucket()).toBeDefined();
-    const mainStackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8'));
+    const mainStackTemplate = JSON.parse(
+      fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8')
+    );
     Template.fromJSON(mainStackTemplate).hasResourceProperties('Custom::CDKBucketDeployment', {
       SystemMetadata: {
         sse: 'aws:kms',
@@ -397,7 +394,9 @@ describe('ProductStack', () => {
 
     // THEN
     expect(productStack._getAssetBucket()).toBeDefined();
-    const mainStackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8'));
+    const mainStackTemplate = JSON.parse(
+      fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8')
+    );
     Template.fromJSON(mainStackTemplate).hasResourceProperties('Custom::CDKBucketDeployment', {
       SystemMetadata: {
         sse: 'AES256',
@@ -428,7 +427,9 @@ describe('ProductStack', () => {
 
     // THEN
     expect(productStack._getAssetBucket()).toBeDefined();
-    const mainStackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8'));
+    const mainStackTemplate = JSON.parse(
+      fs.readFileSync(path.join(assembly.directory, mainStack.templateFile), 'utf-8')
+    );
     Template.fromJSON(mainStackTemplate).hasResourceProperties('AWS::Lambda::Function', {
       MemorySize: 256,
     });
@@ -448,31 +449,39 @@ describe('ProductStack', () => {
       providerName: 'MyProvider',
     });
 
-    portfolio.addProduct(new servicecatalog.CloudFormationProduct(mainStack, 'Product1', {
-      productName: 'Prod 1',
-      owner: 'Owner 1',
-      productVersions: [{
-        productVersionName: 'v1',
-        cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
-          new ProductWithAnAsset(mainStack, 'MyProductStack1', {
-            assetBucket: testAssetBucket,
-          }),
-        ),
-      }],
-    }));
-    portfolio.addProduct(new servicecatalog.CloudFormationProduct(mainStack, 'Product2', {
-      productName: 'Prod 2',
-      owner: 'Owner 2',
-      productVersions: [{
-        productVersionName: 'v1',
-        cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
-          new ProductWithAnAsset(mainStack, 'MyProductStack2', {
-            assetBucket: testAssetBucket,
-            description: 'Just a description to make the asset definitely different',
-          }),
-        ),
-      }],
-    }));
+    portfolio.addProduct(
+      new servicecatalog.CloudFormationProduct(mainStack, 'Product1', {
+        productName: 'Prod 1',
+        owner: 'Owner 1',
+        productVersions: [
+          {
+            productVersionName: 'v1',
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
+              new ProductWithAnAsset(mainStack, 'MyProductStack1', {
+                assetBucket: testAssetBucket,
+              })
+            ),
+          },
+        ],
+      })
+    );
+    portfolio.addProduct(
+      new servicecatalog.CloudFormationProduct(mainStack, 'Product2', {
+        productName: 'Prod 2',
+        owner: 'Owner 2',
+        productVersions: [
+          {
+            productVersionName: 'v1',
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
+              new ProductWithAnAsset(mainStack, 'MyProductStack2', {
+                assetBucket: testAssetBucket,
+                description: 'Just a description to make the asset definitely different',
+              })
+            ),
+          },
+        ],
+      })
+    );
 
     // WHEN
     app.synth();

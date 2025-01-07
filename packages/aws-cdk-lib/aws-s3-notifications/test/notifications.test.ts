@@ -13,18 +13,17 @@ test('bucket without notifications', () => {
   new s3.Bucket(stack, 'MyBucket');
 
   Template.fromStack(stack).templateMatches({
-    'Resources': {
-      'MyBucketF68F3FF0': {
-        'Type': 'AWS::S3::Bucket',
-        'DeletionPolicy': 'Retain',
-        'UpdateReplacePolicy': 'Retain',
+    Resources: {
+      MyBucketF68F3FF0: {
+        Type: 'AWS::S3::Bucket',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       },
     },
   });
 });
 
 test('notifications can be added to imported buckets', () => {
-
   const stack = new cdk.Stack();
 
   const bucket = s3.Bucket.fromBucketName(stack, 'MyBucket', 'mybucket');
@@ -37,19 +36,16 @@ test('notifications can be added to imported buckets', () => {
     BucketName: 'mybucket',
     Managed: false,
     NotificationConfiguration: {
-      'TopicConfigurations': [
+      TopicConfigurations: [
         {
-          'Events': [
-            's3:ObjectCreated:*',
-          ],
-          'TopicArn': {
-            'Ref': 'MyTopic86869434',
+          Events: ['s3:ObjectCreated:*'],
+          TopicArn: {
+            Ref: 'MyTopic86869434',
           },
         },
       ],
     },
   });
-
 });
 
 test('when notification are added, a custom resource is provisioned + a lambda handler for it', () => {
@@ -61,7 +57,9 @@ test('when notification are added, a custom resource is provisioned + a lambda h
   bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 
   Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
-  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' });
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+  });
   Template.fromStack(stack).resourceCountIs('Custom::S3BucketNotifications', 1);
 });
 
@@ -95,36 +93,33 @@ test('bucketNotificationTarget is not called during synthesis', () => {
   bucket.addObjectCreatedNotification(new s3n.SnsDestination(topic));
 
   Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
-    'Topics': [
+    Topics: [
       {
-        'Ref': 'TopicBFC7AF6E',
+        Ref: 'TopicBFC7AF6E',
       },
     ],
-    'PolicyDocument': {
-      'Statement': [
+    PolicyDocument: {
+      Statement: [
         {
-          'Action': 'sns:Publish',
-          'Condition': {
-            'ArnLike': {
+          Action: 'sns:Publish',
+          Condition: {
+            ArnLike: {
               'aws:SourceArn': {
-                'Fn::GetAtt': [
-                  'MyBucketF68F3FF0',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
               },
             },
           },
-          'Effect': 'Allow',
-          'Principal': {
-            'Service': 's3.amazonaws.com',
+          Effect: 'Allow',
+          Principal: {
+            Service: 's3.amazonaws.com',
           },
-          'Resource': {
-            'Ref': 'TopicBFC7AF6E',
+          Resource: {
+            Ref: 'TopicBFC7AF6E',
           },
-          'Sid': '0',
+          Sid: '0',
         },
       ],
-      'Version': '2012-10-17',
+      Version: '2012-10-17',
     },
   });
 });
@@ -135,21 +130,21 @@ test('subscription types', () => {
   const bucket = new s3.Bucket(stack, 'TestBucket');
 
   const queueTarget: s3.IBucketNotificationDestination = {
-    bind: _ => ({
+    bind: (_) => ({
       type: s3.BucketNotificationDestinationType.QUEUE,
       arn: 'arn:aws:sqs:...',
     }),
   };
 
   const lambdaTarget: s3.IBucketNotificationDestination = {
-    bind: _ => ({
+    bind: (_) => ({
       type: s3.BucketNotificationDestinationType.LAMBDA,
       arn: 'arn:aws:lambda:...',
     }),
   };
 
   const topicTarget: s3.IBucketNotificationDestination = {
-    bind: _ => ({
+    bind: (_) => ({
       type: s3.BucketNotificationDestinationType.TOPIC,
       arn: 'arn:aws:sns:...',
     }),
@@ -160,44 +155,35 @@ test('subscription types', () => {
   bucket.addObjectRemovedNotification(topicTarget, { prefix: 'prefix' });
 
   Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
-    'ServiceToken': {
-      'Fn::GetAtt': [
-        'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
-        'Arn',
-      ],
+    ServiceToken: {
+      'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn'],
     },
-    'BucketName': {
-      'Ref': 'TestBucket560B80BC',
+    BucketName: {
+      Ref: 'TestBucket560B80BC',
     },
-    'NotificationConfiguration': {
-      'LambdaFunctionConfigurations': [
+    NotificationConfiguration: {
+      LambdaFunctionConfigurations: [
         {
-          'Events': [
-            's3:ObjectCreated:*',
-          ],
-          'LambdaFunctionArn': 'arn:aws:lambda:...',
+          Events: ['s3:ObjectCreated:*'],
+          LambdaFunctionArn: 'arn:aws:lambda:...',
         },
       ],
-      'QueueConfigurations': [
+      QueueConfigurations: [
         {
-          'Events': [
-            's3:ObjectCreated:*',
-          ],
-          'QueueArn': 'arn:aws:sqs:...',
+          Events: ['s3:ObjectCreated:*'],
+          QueueArn: 'arn:aws:sqs:...',
         },
       ],
-      'TopicConfigurations': [
+      TopicConfigurations: [
         {
-          'Events': [
-            's3:ObjectRemoved:*',
-          ],
-          'TopicArn': 'arn:aws:sns:...',
-          'Filter': {
-            'Key': {
-              'FilterRules': [
+          Events: ['s3:ObjectRemoved:*'],
+          TopicArn: 'arn:aws:sns:...',
+          Filter: {
+            Key: {
+              FilterRules: [
                 {
-                  'Name': 'prefix',
-                  'Value': 'prefix',
+                  Name: 'prefix',
+                  Value: 'prefix',
                 },
               ],
             },
@@ -214,42 +200,35 @@ test('multiple subscriptions of the same type', () => {
   const bucket = new s3.Bucket(stack, 'TestBucket');
 
   bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, {
-    bind: _ => ({
+    bind: (_) => ({
       type: s3.BucketNotificationDestinationType.QUEUE,
       arn: 'arn:aws:sqs:...:queue1',
     }),
   });
 
   bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, {
-    bind: _ => ({
+    bind: (_) => ({
       type: s3.BucketNotificationDestinationType.QUEUE,
       arn: 'arn:aws:sqs:...:queue2',
     }),
   });
 
   Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
-    'ServiceToken': {
-      'Fn::GetAtt': [
-        'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
-        'Arn',
-      ],
+    ServiceToken: {
+      'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn'],
     },
-    'BucketName': {
-      'Ref': 'TestBucket560B80BC',
+    BucketName: {
+      Ref: 'TestBucket560B80BC',
     },
-    'NotificationConfiguration': {
-      'QueueConfigurations': [
+    NotificationConfiguration: {
+      QueueConfigurations: [
         {
-          'Events': [
-            's3:ObjectRemoved:Delete',
-          ],
-          'QueueArn': 'arn:aws:sqs:...:queue1',
+          Events: ['s3:ObjectRemoved:Delete'],
+          QueueArn: 'arn:aws:sqs:...:queue1',
         },
         {
-          'Events': [
-            's3:ObjectRemoved:Delete',
-          ],
-          'QueueArn': 'arn:aws:sqs:...:queue2',
+          Events: ['s3:ObjectRemoved:Delete'],
+          QueueArn: 'arn:aws:sqs:...:queue2',
         },
       ],
     },
@@ -266,39 +245,38 @@ test('prefix/suffix filters', () => {
     arn: 'arn:aws:sqs:...',
   };
 
-  bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, { bind: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
+  bucket.addEventNotification(
+    s3.EventType.OBJECT_REMOVED_DELETE,
+    { bind: (_) => bucketNotificationTarget },
+    { prefix: 'images/', suffix: '.jpg' }
+  );
 
   Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
-    'ServiceToken': {
-      'Fn::GetAtt': [
-        'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691',
-        'Arn',
-      ],
+    ServiceToken: {
+      'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn'],
     },
-    'BucketName': {
-      'Ref': 'TestBucket560B80BC',
+    BucketName: {
+      Ref: 'TestBucket560B80BC',
     },
-    'NotificationConfiguration': {
-      'QueueConfigurations': [
+    NotificationConfiguration: {
+      QueueConfigurations: [
         {
-          'Events': [
-            's3:ObjectRemoved:Delete',
-          ],
-          'Filter': {
-            'Key': {
-              'FilterRules': [
+          Events: ['s3:ObjectRemoved:Delete'],
+          Filter: {
+            Key: {
+              FilterRules: [
                 {
-                  'Name': 'suffix',
-                  'Value': '.jpg',
+                  Name: 'suffix',
+                  Value: '.jpg',
                 },
                 {
-                  'Name': 'prefix',
-                  'Value': 'images/',
+                  Name: 'prefix',
+                  Value: 'images/',
                 },
               ],
             },
           },
-          'QueueArn': 'arn:aws:sqs:...',
+          QueueArn: 'arn:aws:sqs:...',
         },
       ],
     },
@@ -346,23 +324,19 @@ describe('CloudWatch Events', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      'EventPattern': {
-        'source': [
-          'aws.s3',
-        ],
-        'detail': {
-          'eventName': [
-            'PutObject',
-          ],
-          'resources': {
-            'ARN': [
+      EventPattern: {
+        source: ['aws.s3'],
+        detail: {
+          eventName: ['PutObject'],
+          resources: {
+            ARN: [
               {
                 'Fn::Join': [
                   '',
                   [
                     'arn:',
                     {
-                      'Ref': 'AWS::Partition',
+                      Ref: 'AWS::Partition',
                     },
                     ':s3:::mybucket',
                   ],
@@ -372,7 +346,7 @@ describe('CloudWatch Events', () => {
           },
         },
       },
-      'State': 'ENABLED',
+      State: 'ENABLED',
     });
   });
 
@@ -389,23 +363,19 @@ describe('CloudWatch Events', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      'EventPattern': {
-        'source': [
-          'aws.s3',
-        ],
-        'detail': {
-          'eventName': [
-            'PutObject',
-          ],
-          'resources': {
-            'ARN': [
+      EventPattern: {
+        source: ['aws.s3'],
+        detail: {
+          eventName: ['PutObject'],
+          resources: {
+            ARN: [
               {
                 'Fn::Join': [
                   '',
                   [
                     'arn:',
                     {
-                      'Ref': 'AWS::Partition',
+                      Ref: 'AWS::Partition',
                     },
                     ':s3:::mybucket/my/path.zip',
                   ],
@@ -415,7 +385,7 @@ describe('CloudWatch Events', () => {
           },
         },
       },
-      'State': 'ENABLED',
+      State: 'ENABLED',
     });
   });
 
@@ -431,19 +401,13 @@ describe('CloudWatch Events', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      'EventPattern': {
-        'source': [
-          'aws.s3',
-        ],
-        'detail': {
-          'eventName': [
-            'CompleteMultipartUpload',
-            'CopyObject',
-            'PutObject',
-          ],
+      EventPattern: {
+        source: ['aws.s3'],
+        detail: {
+          eventName: ['CompleteMultipartUpload', 'CopyObject', 'PutObject'],
         },
       },
-      'State': 'ENABLED',
+      State: 'ENABLED',
     });
   });
 
@@ -459,15 +423,11 @@ describe('CloudWatch Events', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      'EventPattern': {
-        'source': [
-          'aws.s3',
-        ],
-        'detail': {
-          'requestParameters': {
-            'bucketName': [
-              bucket.bucketName,
-            ],
+      EventPattern: {
+        source: ['aws.s3'],
+        detail: {
+          requestParameters: {
+            bucketName: [bucket.bucketName],
           },
         },
       },
@@ -487,18 +447,12 @@ describe('CloudWatch Events', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      'EventPattern': {
-        'source': [
-          'aws.s3',
-        ],
-        'detail': {
-          'requestParameters': {
-            'bucketName': [
-              bucket.bucketName,
-            ],
-            'key': [
-              'my/path.zip',
-            ],
+      EventPattern: {
+        source: ['aws.s3'],
+        detail: {
+          requestParameters: {
+            bucketName: [bucket.bucketName],
+            key: ['my/path.zip'],
           },
         },
       },

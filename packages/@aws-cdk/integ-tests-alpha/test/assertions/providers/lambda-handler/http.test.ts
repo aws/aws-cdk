@@ -15,7 +15,9 @@ function httpHandler() {
 
 beforeAll(() => {
   jest.useFakeTimers();
-  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  jest.spyOn(console, 'log').mockImplementation(() => {
+    return true;
+  });
 });
 
 afterAll(() => {
@@ -25,9 +27,7 @@ afterAll(() => {
 
 beforeEach(() => {
   fetchMock = (fetch as any).mockResolvedValue(
-    new Response(
-      JSON.stringify({ key: 'value' }),
-      { status: 200, statusText: 'OK', ok: true }),
+    new Response(JSON.stringify({ key: 'value' }), { status: 200, statusText: 'OK', ok: true })
   );
 });
 
@@ -50,9 +50,7 @@ describe('HttpHandler', () => {
         key: 'value',
       },
       headers: {
-        'Content-Type': [
-          'text/plain;charset=UTF-8',
-        ],
+        'Content-Type': ['text/plain;charset=UTF-8'],
       },
       status: 200,
       statusText: 'OK',
@@ -86,9 +84,7 @@ describe('HttpHandler', () => {
         key: 'value',
       },
       headers: {
-        'Content-Type': [
-          'text/plain;charset=UTF-8',
-        ],
+        'Content-Type': ['text/plain;charset=UTF-8'],
       },
       status: 200,
       statusText: 'OK',
@@ -106,7 +102,7 @@ describe('HttpHandler', () => {
   test('JSON is parsed', async () => {
     // GIVEN
     fetchMock.mockResolvedValue(
-      new Response(JSON.stringify({ key: 'value' }), { status: 200, statusText: 'OK', ok: true }),
+      new Response(JSON.stringify({ key: 'value' }), { status: 200, statusText: 'OK', ok: true })
     );
 
     // WHEN
@@ -118,9 +114,7 @@ describe('HttpHandler', () => {
 
   test('Non-JSON is not parsed', async () => {
     // GIVEN
-    fetchMock.mockResolvedValue(
-      new Response('this is a string', { status: 200, statusText: 'OK', ok: true }),
-    );
+    fetchMock.mockResolvedValue(new Response('this is a string', { status: 200, statusText: 'OK', ok: true }));
 
     // WHEN
     const response = await processEvent({ parameters: { url: 'x' } });

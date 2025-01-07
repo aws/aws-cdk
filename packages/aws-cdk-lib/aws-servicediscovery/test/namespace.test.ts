@@ -22,7 +22,6 @@ describe('namespace', () => {
         },
       },
     });
-
   });
 
   test('Public DNS namespace', () => {
@@ -42,7 +41,6 @@ describe('namespace', () => {
         },
       },
     });
-
   });
 
   test('Private DNS namespace', () => {
@@ -60,7 +58,6 @@ describe('namespace', () => {
         Ref: 'MyVpcF9F0CA6F',
       },
     });
-
   });
 
   test('CloudFormation attributes', () => {
@@ -84,50 +81,32 @@ describe('namespace', () => {
 
     Template.fromStack(stack).hasOutput('PrivateNsId', {
       Value: {
-        'Fn::GetAtt': [
-          'MyPrivateNamespace8CB3AE39',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyPrivateNamespace8CB3AE39', 'Id'],
       },
     });
     Template.fromStack(stack).hasOutput('PrivateNsArn', {
       Value: {
-        'Fn::GetAtt': [
-          'MyPrivateNamespace8CB3AE39',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyPrivateNamespace8CB3AE39', 'Arn'],
       },
     });
     Template.fromStack(stack).hasOutput('PrivateHostedZoneId', {
       Value: {
-        'Fn::GetAtt': [
-          'MyPrivateNamespace8CB3AE39',
-          'HostedZoneId',
-        ],
+        'Fn::GetAtt': ['MyPrivateNamespace8CB3AE39', 'HostedZoneId'],
       },
     });
     Template.fromStack(stack).hasOutput('PublicNsId', {
       Value: {
-        'Fn::GetAtt': [
-          'MyPublicNamespaceAB66AFAC',
-          'Id',
-        ],
+        'Fn::GetAtt': ['MyPublicNamespaceAB66AFAC', 'Id'],
       },
     });
     Template.fromStack(stack).hasOutput('PublicNsArn', {
       Value: {
-        'Fn::GetAtt': [
-          'MyPublicNamespaceAB66AFAC',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyPublicNamespaceAB66AFAC', 'Arn'],
       },
     });
     Template.fromStack(stack).hasOutput('PublicHostedZoneId', {
       Value: {
-        'Fn::GetAtt': [
-          'MyPublicNamespaceAB66AFAC',
-          'HostedZoneId',
-        ],
+        'Fn::GetAtt': ['MyPublicNamespaceAB66AFAC', 'HostedZoneId'],
       },
     });
   });

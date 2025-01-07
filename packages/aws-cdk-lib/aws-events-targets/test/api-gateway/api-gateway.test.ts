@@ -21,7 +21,9 @@ test('use a SpecRestApi APIGateway event rule target', () => {
   rule.addTarget(apiGatewayTarget);
 
   // THEN
-  expect(() => apiGatewayTarget.restApi).toThrow('The iRestApi is not a RestApi construct, and cannot be retrieved this way.');
+  expect(() => apiGatewayTarget.restApi).toThrow(
+    'The iRestApi is not a RestApi construct, and cannot be retrieved this way.'
+  );
   expect(apiGatewayTarget.iRestApi).toBe(specRestApi);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -58,10 +60,7 @@ test('use a SpecRestApi APIGateway event rule target', () => {
         HttpParameters: {},
         Id: 'Target0',
         RoleArn: {
-          'Fn::GetAtt': [
-            'MySpecRestApiEventsRole25C1D10F',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MySpecRestApiEventsRole25C1D10F', 'Arn'],
         },
       },
     ],
@@ -114,10 +113,7 @@ test('use api gateway rest api as an event rule target', () => {
         HttpParameters: {},
         Id: 'Target0',
         RoleArn: {
-          'Fn::GetAtt': [
-            'MyLambdaRestApiEventsRole3C0505CC',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaRestApiEventsRole3C0505CC', 'Arn'],
         },
       },
     ],
@@ -136,9 +132,13 @@ test('with stage, path, method setting', () => {
   const stage = 'test-stage';
   const path = '/test-path';
   const method = 'GET';
-  rule.addTarget(new targets.ApiGateway(restApi, {
-    stage, path, method,
-  }));
+  rule.addTarget(
+    new targets.ApiGateway(restApi, {
+      stage,
+      path,
+      method,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -171,10 +171,7 @@ test('with stage, path, method setting', () => {
         HttpParameters: {},
         Id: 'Target0',
         RoleArn: {
-          'Fn::GetAtt': [
-            'MyLambdaRestApiEventsRole3C0505CC',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaRestApiEventsRole3C0505CC', 'Arn'],
         },
       },
     ],
@@ -199,12 +196,14 @@ test('with http parameters', () => {
     TestQueryParameter1: 'test-query-parameter-value-1',
     TestQueryParameter2: 'test-query-parameter-value-2',
   };
-  rule.addTarget(new targets.ApiGateway(restApi, {
-    path: '/*/*',
-    pathParameterValues,
-    headerParameters,
-    queryStringParameters,
-  }));
+  rule.addTarget(
+    new targets.ApiGateway(restApi, {
+      path: '/*/*',
+      pathParameterValues,
+      headerParameters,
+      queryStringParameters,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -230,21 +229,36 @@ test('Throw when the number of wild cards in the path not equal to the number of
   });
 
   // WHEN, THEN
-  expect(() => rule.addTarget(new targets.ApiGateway(restApi, {
-    pathParameterValues: ['value1'],
-  }))).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
-  expect(() => rule.addTarget(new targets.ApiGateway(restApi, {
-    path: '/*',
-  }))).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
-  expect(() => rule.addTarget(new targets.ApiGateway(restApi, {
-    path: '/*/*',
-    pathParameterValues: ['value1'],
-  }))).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
-  expect(() => rule.addTarget(new targets.ApiGateway(restApi, {
-    path: '/*/*',
-    pathParameterValues: ['value1', 'value2'],
-  }))).not.toThrow();
-
+  expect(() =>
+    rule.addTarget(
+      new targets.ApiGateway(restApi, {
+        pathParameterValues: ['value1'],
+      })
+    )
+  ).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
+  expect(() =>
+    rule.addTarget(
+      new targets.ApiGateway(restApi, {
+        path: '/*',
+      })
+    )
+  ).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
+  expect(() =>
+    rule.addTarget(
+      new targets.ApiGateway(restApi, {
+        path: '/*/*',
+        pathParameterValues: ['value1'],
+      })
+    )
+  ).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
+  expect(() =>
+    rule.addTarget(
+      new targets.ApiGateway(restApi, {
+        path: '/*/*',
+        pathParameterValues: ['value1', 'value2'],
+      })
+    )
+  ).not.toThrow();
 });
 
 test('with an explicit event role', () => {
@@ -259,19 +273,18 @@ test('with an explicit event role', () => {
   const eventRole = new iam.Role(stack, 'Trigger-test-role', {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
-  rule.addTarget(new targets.ApiGateway(restApi, {
-    eventRole,
-  }));
+  rule.addTarget(
+    new targets.ApiGateway(restApi, {
+      eventRole,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         RoleArn: {
-          'Fn::GetAtt': [
-            'TriggertestroleBCF8E6AD',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TriggertestroleBCF8E6AD', 'Arn'],
         },
         Id: 'Target0',
       },
@@ -289,9 +302,11 @@ test('use a Dead Letter Queue', () => {
 
   // WHEN
   const queue = new sqs.Queue(stack, 'Queue');
-  rule.addTarget(new targets.ApiGateway(restApi, {
-    deadLetterQueue: queue,
-  }));
+  rule.addTarget(
+    new targets.ApiGateway(restApi, {
+      deadLetterQueue: queue,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -299,10 +314,7 @@ test('use a Dead Letter Queue', () => {
       {
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'Queue4A7E3555',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
           },
         },
         Id: 'Target0',
@@ -317,9 +329,9 @@ function newTestRestApi(scope: constructs.Construct, suffix = '') {
     handler: 'bar',
     runtime: lambda.Runtime.NODEJS_LATEST,
   });
-  return new api.LambdaRestApi( scope, `MyLambdaRestApi${suffix}`, {
+  return new api.LambdaRestApi(scope, `MyLambdaRestApi${suffix}`, {
     handler: lambdaFunctin,
-  } );
+  });
 }
 
 function newTestSpecRestApi(scope: constructs.Construct, suffix = '') {

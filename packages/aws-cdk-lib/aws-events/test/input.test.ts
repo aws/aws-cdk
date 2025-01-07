@@ -34,10 +34,14 @@ describe('input', () => {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
-        data: EventField.fromPath('$'),
-        stackName: cdk.Aws.STACK_NAME,
-      })));
+      rule.addTarget(
+        new SomeTarget(
+          RuleTargetInput.fromObject({
+            data: EventField.fromPath('$'),
+            stackName: cdk.Aws.STACK_NAME,
+          })
+        )
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -48,14 +52,7 @@ describe('input', () => {
                 f1: '$',
               },
               InputTemplate: {
-                'Fn::Join': [
-                  '',
-                  [
-                    '{"data":<f1>,"stackName":"',
-                    { Ref: 'AWS::StackName' },
-                    '"}',
-                  ],
-                ],
+                'Fn::Join': ['', ['{"data":<f1>,"stackName":"', { Ref: 'AWS::StackName' }, '"}']],
               },
             },
           },
@@ -71,10 +68,14 @@ describe('input', () => {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
-        data: `they said \"hello\"${EventField.fromPath('$')}`,
-        stackName: cdk.Aws.STACK_NAME,
-      })));
+      rule.addTarget(
+        new SomeTarget(
+          RuleTargetInput.fromObject({
+            data: `they said \"hello\"${EventField.fromPath('$')}`,
+            stackName: cdk.Aws.STACK_NAME,
+          })
+        )
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -87,11 +88,7 @@ describe('input', () => {
               InputTemplate: {
                 'Fn::Join': [
                   '',
-                  [
-                    '{"data":"they said \\\"hello\\\"<f1>","stackName":"',
-                    { Ref: 'AWS::StackName' },
-                    '"}',
-                  ],
+                  ['{"data":"they said \\\"hello\\\"<f1>","stackName":"', { Ref: 'AWS::StackName' }, '"}'],
                 ],
               },
             },
@@ -108,10 +105,14 @@ describe('input', () => {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
-        data: `more text ${EventField.fromPath('$')}`,
-        stackName: cdk.Aws.STACK_NAME,
-      })));
+      rule.addTarget(
+        new SomeTarget(
+          RuleTargetInput.fromObject({
+            data: `more text ${EventField.fromPath('$')}`,
+            stackName: cdk.Aws.STACK_NAME,
+          })
+        )
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -122,14 +123,7 @@ describe('input', () => {
                 f1: '$',
               },
               InputTemplate: {
-                'Fn::Join': [
-                  '',
-                  [
-                    '{"data":"more text <f1>","stackName":"',
-                    { Ref: 'AWS::StackName' },
-                    '"}',
-                  ],
-                ],
+                'Fn::Join': ['', ['{"data":"more text <f1>","stackName":"', { Ref: 'AWS::StackName' }, '"}']],
               },
             },
           },
@@ -145,10 +139,14 @@ describe('input', () => {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
-        data: `more text "${EventField.fromPath('$')}"`,
-        stackName: cdk.Aws.STACK_NAME,
-      })));
+      rule.addTarget(
+        new SomeTarget(
+          RuleTargetInput.fromObject({
+            data: `more text "${EventField.fromPath('$')}"`,
+            stackName: cdk.Aws.STACK_NAME,
+          })
+        )
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -159,14 +157,7 @@ describe('input', () => {
                 f1: '$',
               },
               InputTemplate: {
-                'Fn::Join': [
-                  '',
-                  [
-                    '{"data":"more text \\\"<f1>\\\"","stackName":"',
-                    { Ref: 'AWS::StackName' },
-                    '"}',
-                  ],
-                ],
+                'Fn::Join': ['', ['{"data":"more text \\\"<f1>\\\"","stackName":"', { Ref: 'AWS::StackName' }, '"}']],
               },
             },
           },
@@ -182,10 +173,14 @@ describe('input', () => {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({
-        data: `${EventField.fromPath('$')}${EventField.fromPath('$.other')}`,
-        stackName: cdk.Aws.STACK_NAME,
-      })));
+      rule.addTarget(
+        new SomeTarget(
+          RuleTargetInput.fromObject({
+            data: `${EventField.fromPath('$')}${EventField.fromPath('$.other')}`,
+            stackName: cdk.Aws.STACK_NAME,
+          })
+        )
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -196,14 +191,7 @@ describe('input', () => {
                 f1: '$',
               },
               InputTemplate: {
-                'Fn::Join': [
-                  '',
-                  [
-                    '{"data":"<f1><other>","stackName":"',
-                    { Ref: 'AWS::StackName' },
-                    '"}',
-                  ],
-                ],
+                'Fn::Join': ['', ['{"data":"<f1><other>","stackName":"', { Ref: 'AWS::StackName' }, '"}']],
               },
             },
           },
@@ -232,10 +220,7 @@ describe('input', () => {
                 [
                   '{\"userArn\":\"',
                   {
-                    'Fn::GetAtt': [
-                      'User00B015A1',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['User00B015A1', 'Arn'],
                   },
                   '\"}',
                 ],
@@ -313,8 +298,7 @@ describe('input', () => {
 });
 
 class SomeTarget implements IRuleTarget {
-  public constructor(private readonly input: RuleTargetInput) {
-  }
+  public constructor(private readonly input: RuleTargetInput) {}
 
   public bind() {
     return { id: 'T1', arn: 'ARN1', input: this.input };

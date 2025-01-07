@@ -1,5 +1,13 @@
 import { Template } from '../../../assertions';
-import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, VpcLink } from '../../../aws-apigatewayv2';
+import {
+  HttpApi,
+  HttpMethod,
+  HttpRoute,
+  HttpRouteKey,
+  MappingValue,
+  ParameterMapping,
+  VpcLink,
+} from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as servicediscovery from '../../../aws-servicediscovery';
 import { Stack } from '../../../core';
@@ -34,10 +42,7 @@ describe('HttpServiceDiscoveryIntegration', () => {
       ConnectionType: 'VPC_LINK',
       IntegrationMethod: 'ANY',
       IntegrationUri: {
-        'Fn::GetAtt': [
-          'NamespaceServiceCABDF534',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['NamespaceServiceCABDF534', 'Arn'],
       },
       PayloadFormatVersion: '1.0',
     });
@@ -81,11 +86,14 @@ describe('HttpServiceDiscoveryIntegration', () => {
     const service = namespace.createService('Service');
     const api = new HttpApi(stack, 'HttpApi');
 
-    expect(() => new HttpRoute(stack, 'HttpProxyPrivateRoute', {
-      httpApi: api,
-      integration: new HttpServiceDiscoveryIntegration('Integration', service, { method: HttpMethod.PATCH }),
-      routeKey: HttpRouteKey.with('/pets'),
-    })).toThrow(/vpcLink property is mandatory/);
+    expect(
+      () =>
+        new HttpRoute(stack, 'HttpProxyPrivateRoute', {
+          httpApi: api,
+          integration: new HttpServiceDiscoveryIntegration('Integration', service, { method: HttpMethod.PATCH }),
+          routeKey: HttpRouteKey.with('/pets'),
+        })
+    ).toThrow(/vpcLink property is mandatory/);
   });
 
   test('tlsConfig option is correctly recognized', () => {

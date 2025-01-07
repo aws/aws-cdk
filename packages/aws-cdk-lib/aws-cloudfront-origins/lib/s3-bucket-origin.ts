@@ -61,10 +61,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   /**
    * Create a S3 Origin with Origin Access Control (OAC) configured
    */
-  public static withOriginAccessControl(
-    bucket: IBucket,
-    props?: S3BucketOriginWithOACProps
-  ): cloudfront.IOrigin {
+  public static withOriginAccessControl(bucket: IBucket, props?: S3BucketOriginWithOACProps): cloudfront.IOrigin {
     return new S3BucketOriginWithOAC(bucket, props);
   }
 
@@ -73,20 +70,14 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
    * OAI is a legacy feature and we **strongly** recommend you to use OAC via `withOriginAccessControl()`
    * unless it is not supported in your required region (e.g. China regions).
    */
-  public static withOriginAccessIdentity(
-    bucket: IBucket,
-    props?: S3BucketOriginWithOAIProps
-  ): cloudfront.IOrigin {
+  public static withOriginAccessIdentity(bucket: IBucket, props?: S3BucketOriginWithOAIProps): cloudfront.IOrigin {
     return new S3BucketOriginWithOAI(bucket, props);
   }
 
   /**
    * Create a S3 Origin with default S3 bucket settings (no origin access control)
    */
-  public static withBucketDefaults(
-    bucket: IBucket,
-    props?: cloudfront.OriginProps
-  ): cloudfront.IOrigin {
+  public static withBucketDefaults(bucket: IBucket, props?: cloudfront.OriginProps): cloudfront.IOrigin {
     return new (class extends S3BucketOrigin {
       constructor() {
         super(bucket, { ...props });
@@ -99,10 +90,7 @@ export abstract class S3BucketOrigin extends cloudfront.OriginBase {
   }
 
   /** @internal */
-  protected _bind(
-    scope: Construct,
-    options: cloudfront.OriginBindOptions
-  ): cloudfront.OriginBindConfig {
+  protected _bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     return super.bind(scope, options);
   }
 
@@ -123,24 +111,15 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     this.originAccessLevels = props?.originAccessLevels;
   }
 
-  public bind(
-    scope: Construct,
-    options: cloudfront.OriginBindOptions
-  ): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessControl) {
-      this.originAccessControl = new cloudfront.S3OriginAccessControl(
-        scope,
-        'S3OriginAccessControl'
-      );
+      this.originAccessControl = new cloudfront.S3OriginAccessControl(scope, 'S3OriginAccessControl');
     }
 
     const distributionId = options.distributionId;
     const accessLevels = new Set(this.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
     const bucketPolicyActions = this.getBucketPolicyActions(accessLevels);
-    const bucketPolicyResult = this.grantDistributionAccessToBucket(
-      distributionId!,
-      bucketPolicyActions
-    );
+    const bucketPolicyResult = this.grantDistributionAccessToBucket(distributionId!, bucketPolicyActions);
 
     // Failed to update bucket policy, assume using imported bucket
     if (!bucketPolicyResult.statementAdded) {
@@ -153,10 +132,7 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
 
     if (this.bucket.encryptionKey) {
       const keyPolicyActions = this.getKeyPolicyActions(accessLevels);
-      const keyPolicyResult = this.grantDistributionAccessToKey(
-        keyPolicyActions,
-        this.bucket.encryptionKey
-      );
+      const keyPolicyResult = this.grantDistributionAccessToKey(keyPolicyActions, this.bucket.encryptionKey);
       // Failed to update key policy, assume using imported key
       if (!keyPolicyResult.statementAdded) {
         Annotations.of(scope).addWarningV2(
@@ -198,10 +174,7 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     return actions;
   }
 
-  private grantDistributionAccessToBucket(
-    distributionId: string,
-    actions: string[]
-  ): iam.AddToResourcePolicyResult {
+  private grantDistributionAccessToBucket(distributionId: string, actions: string[]): iam.AddToResourcePolicyResult {
     const oacBucketPolicyStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
@@ -217,10 +190,7 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     return result;
   }
 
-  private grantDistributionAccessToKey(
-    actions: string[],
-    key: IKey
-  ): iam.AddToResourcePolicyResult {
+  private grantDistributionAccessToKey(actions: string[], key: IKey): iam.AddToResourcePolicyResult {
     const oacKeyPolicyStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
@@ -254,10 +224,7 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
     this.originAccessIdentity = props?.originAccessIdentity;
   }
 
-  public bind(
-    scope: Construct,
-    options: cloudfront.OriginBindOptions
-  ): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,

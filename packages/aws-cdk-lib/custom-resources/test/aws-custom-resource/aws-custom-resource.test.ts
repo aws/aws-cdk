@@ -5,7 +5,13 @@ import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { App, Stack } from '../../../core';
 import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from '../../../cx-api';
-import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+  Logging,
+  PhysicalResourceId,
+  PhysicalResourceIdReference,
+} from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -37,42 +43,42 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
-    'Create': JSON.stringify({
-      'service': 'CloudWatchLogs',
-      'action': 'putRetentionPolicy',
-      'parameters': {
-        'logGroupName': '/aws/lambda/loggroup',
-        'retentionInDays': 90,
+    Create: JSON.stringify({
+      service: 'CloudWatchLogs',
+      action: 'putRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+        retentionInDays: 90,
       },
-      'physicalResourceId': {
-        'id': 'loggroup',
-      },
-    }),
-    'Delete': JSON.stringify({
-      'service': 'CloudWatchLogs',
-      'action': 'deleteRetentionPolicy',
-      'parameters': {
-        'logGroupName': '/aws/lambda/loggroup',
+      physicalResourceId: {
+        id: 'loggroup',
       },
     }),
-    'InstallLatestAwsSdk': true,
+    Delete: JSON.stringify({
+      service: 'CloudWatchLogs',
+      action: 'deleteRetentionPolicy',
+      parameters: {
+        logGroupName: '/aws/lambda/loggroup',
+      },
+    }),
+    InstallLatestAwsSdk: true,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    'PolicyDocument': {
-      'Statement': [
+    PolicyDocument: {
+      Statement: [
         {
-          'Action': 'logs:PutRetentionPolicy',
-          'Effect': 'Allow',
-          'Resource': '*',
+          Action: 'logs:PutRetentionPolicy',
+          Effect: 'Allow',
+          Resource: '*',
         },
         {
-          'Action': 'logs:DeleteRetentionPolicy',
-          'Effect': 'Allow',
-          'Resource': '*',
+          Action: 'logs:DeleteRetentionPolicy',
+          Effect: 'Allow',
+          Resource: '*',
         },
       ],
-      'Version': '2012-10-17',
+      Version: '2012-10-17',
     },
   });
 });
@@ -99,28 +105,28 @@ test('onCreate defaults to onUpdate', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::S3PutObject', {
-    'Create': JSON.stringify({
-      'service': 's3',
-      'action': 'putObject',
-      'parameters': {
-        'Bucket': 'my-bucket',
-        'Key': 'my-key',
-        'Body': 'my-body',
+    Create: JSON.stringify({
+      service: 's3',
+      action: 'putObject',
+      parameters: {
+        Bucket: 'my-bucket',
+        Key: 'my-key',
+        Body: 'my-body',
       },
-      'physicalResourceId': {
-        'responsePath': 'ETag',
+      physicalResourceId: {
+        responsePath: 'ETag',
       },
     }),
-    'Update': JSON.stringify({
-      'service': 's3',
-      'action': 'putObject',
-      'parameters': {
-        'Bucket': 'my-bucket',
-        'Key': 'my-key',
-        'Body': 'my-body',
+    Update: JSON.stringify({
+      service: 's3',
+      action: 'putObject',
+      parameters: {
+        Bucket: 'my-bucket',
+        Key: 'my-key',
+        Body: 'my-body',
       },
-      'physicalResourceId': {
-        'responsePath': 'ETag',
+      physicalResourceId: {
+        responsePath: 'ETag',
       },
     }),
   });
@@ -152,24 +158,27 @@ test('with custom policyStatements', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    'PolicyDocument': {
-      'Statement': [
+    PolicyDocument: {
+      Statement: [
         {
-          'Action': 's3:PutObject',
-          'Effect': 'Allow',
-          'Resource': 'arn:aws:s3:::my-bucket/my-key',
+          Action: 's3:PutObject',
+          Effect: 'Allow',
+          Resource: 'arn:aws:s3:::my-bucket/my-key',
         },
       ],
-      'Version': '2012-10-17',
+      Version: '2012-10-17',
     },
   });
 });
 
 test('fails when no calls are specified', () => {
   const stack = new cdk.Stack();
-  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
-    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-  })).toThrow(/`onCreate`.+`onUpdate`.+`onDelete`/);
+  expect(
+    () =>
+      new AwsCustomResource(stack, 'AwsSdk', {
+        policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      })
+  ).toThrow(/`onCreate`.+`onUpdate`.+`onDelete`/);
 });
 
 // test patterns for physicalResourceId
@@ -503,17 +512,17 @@ test('booleans are encoded in the stringified parameters object', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::ServiceAction', {
-    'Create': JSON.stringify({
-      'service': 'service',
-      'action': 'action',
-      'parameters': {
-        'trueBoolean': true,
-        'trueString': 'true',
-        'falseBoolean': false,
-        'falseString': 'false',
+    Create: JSON.stringify({
+      service: 'service',
+      action: 'action',
+      parameters: {
+        trueBoolean: true,
+        trueString: 'true',
+        falseBoolean: false,
+        falseString: 'false',
       },
-      'physicalResourceId': {
-        'id': 'id',
+      physicalResourceId: {
+        id: 'id',
       },
     }),
   });
@@ -521,18 +530,21 @@ test('booleans are encoded in the stringified parameters object', () => {
 
 test('fails PhysicalResourceIdReference is passed to onCreate parameters', () => {
   const stack = new cdk.Stack();
-  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
-    resourceType: 'Custom::ServiceAction',
-    onCreate: {
-      service: 'service',
-      action: 'action',
-      parameters: {
-        physicalResourceIdReference: new PhysicalResourceIdReference(),
-      },
-      physicalResourceId: PhysicalResourceId.of('id'),
-    },
-    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-  })).toThrow('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
+  expect(
+    () =>
+      new AwsCustomResource(stack, 'AwsSdk', {
+        resourceType: 'Custom::ServiceAction',
+        onCreate: {
+          service: 'service',
+          action: 'action',
+          parameters: {
+            physicalResourceIdReference: new PhysicalResourceIdReference(),
+          },
+          physicalResourceId: PhysicalResourceId.of('id'),
+        },
+        policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      })
+  ).toThrow('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
 });
 
 test('encodes physical resource id reference', () => {
@@ -559,18 +571,18 @@ test('encodes physical resource id reference', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::ServiceAction', {
-    'Create': JSON.stringify({
-      'service': 'service',
-      'action': 'action',
-      'parameters': {
-        'trueBoolean': true,
-        'trueString': 'true',
-        'falseBoolean': false,
-        'falseString': 'false',
-        'physicalResourceIdReference': 'PHYSICAL:RESOURCEID:',
+    Create: JSON.stringify({
+      service: 'service',
+      action: 'action',
+      parameters: {
+        trueBoolean: true,
+        trueString: 'true',
+        falseBoolean: false,
+        falseString: 'false',
+        physicalResourceIdReference: 'PHYSICAL:RESOURCEID:',
       },
-      'physicalResourceId': {
-        'id': 'id',
+      physicalResourceId: {
+        id: 'id',
       },
     }),
   });
@@ -633,9 +645,13 @@ test('memorySize is undefined if installLatestAwsSdk is false', () => {
   });
 
   // THEN
-  Template.fromStack(stack).resourcePropertiesCountIs('AWS::Lambda::Function', {
-    MemorySize: 512,
-  }, 0);
+  Template.fromStack(stack).resourcePropertiesCountIs(
+    'AWS::Lambda::Function',
+    {
+      MemorySize: 512,
+    },
+    0
+  );
 });
 
 test('use memorySize prop if installLatestAwsSdk is true', () => {
@@ -728,10 +744,7 @@ test('implements IGrantable', () => {
           Action: 'iam:PassRole',
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
           },
         },
       ],
@@ -781,15 +794,11 @@ test('getData', () => {
 
   // THEN
   expect(stack.resolve(token)).toEqual({
-    'Fn::GetAtt': [
-      'AwsSdkE966FE43',
-      'Data',
-    ],
+    'Fn::GetAtt': ['AwsSdkE966FE43', 'Data'],
   });
 });
 
 test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
-
   const stack = new cdk.Stack();
 
   const resource = new AwsCustomResource(stack, 'AwsSdk', {
@@ -807,11 +816,9 @@ test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
   });
 
   expect(() => resource.getResponseFieldReference('ShouldFail')).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
-
   const stack = new cdk.Stack();
 
   const resource = new AwsCustomResource(stack, 'AwsSdk', {
@@ -829,54 +836,60 @@ test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
   });
 
   expect(() => resource.getResponseField('ShouldFail')).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodesMatching', () => {
-
   const stack = new cdk.Stack();
-  expect(() => new AwsCustomResource(stack, 'AwsSdkOnUpdate', {
-    onUpdate: {
-      service: 'CloudWatchLogs',
-      action: 'putRetentionPolicy',
-      parameters: {
-        logGroupName: '/aws/lambda/loggroup',
-        retentionInDays: 90,
-      },
-      ignoreErrorCodesMatching: '.*',
-      physicalResourceId: PhysicalResourceId.fromResponse('Response'),
-    },
-    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-  })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
+  expect(
+    () =>
+      new AwsCustomResource(stack, 'AwsSdkOnUpdate', {
+        onUpdate: {
+          service: 'CloudWatchLogs',
+          action: 'putRetentionPolicy',
+          parameters: {
+            logGroupName: '/aws/lambda/loggroup',
+            retentionInDays: 90,
+          },
+          ignoreErrorCodesMatching: '.*',
+          physicalResourceId: PhysicalResourceId.fromResponse('Response'),
+        },
+        policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      })
+  ).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
 
-  expect(() => new AwsCustomResource(stack, 'AwsSdkOnCreate', {
-    onCreate: {
-      service: 'CloudWatchLogs',
-      action: 'putRetentionPolicy',
-      parameters: {
-        logGroupName: '/aws/lambda/loggroup',
-        retentionInDays: 90,
-      },
-      ignoreErrorCodesMatching: '.*',
-      physicalResourceId: PhysicalResourceId.fromResponse('Response'),
-    },
-    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-  })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
+  expect(
+    () =>
+      new AwsCustomResource(stack, 'AwsSdkOnCreate', {
+        onCreate: {
+          service: 'CloudWatchLogs',
+          action: 'putRetentionPolicy',
+          parameters: {
+            logGroupName: '/aws/lambda/loggroup',
+            retentionInDays: 90,
+          },
+          ignoreErrorCodesMatching: '.*',
+          physicalResourceId: PhysicalResourceId.fromResponse('Response'),
+        },
+        policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      })
+  ).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
 
-  expect(() => new AwsCustomResource(stack, 'AwsSdkOnDelete', {
-    onDelete: {
-      service: 'CloudWatchLogs',
-      action: 'putRetentionPolicy',
-      parameters: {
-        logGroupName: '/aws/lambda/loggroup',
-        retentionInDays: 90,
-      },
-      ignoreErrorCodesMatching: '.*',
-      physicalResourceId: PhysicalResourceId.fromResponse('Response'),
-    },
-    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-  })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
-
+  expect(
+    () =>
+      new AwsCustomResource(stack, 'AwsSdkOnDelete', {
+        onDelete: {
+          service: 'CloudWatchLogs',
+          action: 'putRetentionPolicy',
+          parameters: {
+            logGroupName: '/aws/lambda/loggroup',
+            retentionInDays: 90,
+          },
+          ignoreErrorCodesMatching: '.*',
+          physicalResourceId: PhysicalResourceId.fromResponse('Response'),
+        },
+        policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      })
+  ).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
 });
 
 test('getDataString', () => {
@@ -912,10 +925,7 @@ test('getDataString', () => {
         [
           '{"service":"service","action":"action","parameters":{"a":"',
           {
-            'Fn::GetAtt': [
-              'AwsSdk155B91071',
-              'Data',
-            ],
+            'Fn::GetAtt': ['AwsSdk155B91071', 'Data'],
           },
           '"},"physicalResourceId":{"id":"id"}}',
         ],
@@ -998,7 +1008,7 @@ test('disable AWS SDK installation', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
-    'InstallLatestAwsSdk': false,
+    InstallLatestAwsSdk: false,
   });
 });
 
@@ -1103,14 +1113,11 @@ test('tokens can be used as dictionary keys', () => {
         [
           '{"service":"service1","action":"action1","physicalResourceId":{"id":"id1"},"parameters":{"',
           {
-            'Ref': 'MyResource',
+            Ref: 'MyResource',
           },
           '":{"Foo":1234,"Bar":"',
           {
-            'Fn::GetAtt': [
-              'MyResource',
-              'Foorz',
-            ],
+            'Fn::GetAtt': ['MyResource', 'Foorz'],
           },
           '"}}}',
         ],
@@ -1152,16 +1159,19 @@ test('assumedRoleArn adds statement for sts:assumeRole', () => {
 
 test('fails when at least one of policy or role is not specified', () => {
   const stack = new cdk.Stack();
-  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
-    onUpdate: {
-      service: 'service',
-      action: 'action',
-      physicalResourceId: PhysicalResourceId.of('id'),
-      parameters: {
-        param: 'param',
-      },
-    },
-  })).toThrow(/`policy`.+`role`/);
+  expect(
+    () =>
+      new AwsCustomResource(stack, 'AwsSdk', {
+        onUpdate: {
+          service: 'service',
+          action: 'action',
+          physicalResourceId: PhysicalResourceId.of('id'),
+          parameters: {
+            param: 'param',
+          },
+        },
+      })
+  ).toThrow(/`policy`.+`role`/);
 });
 
 test('can provide no policy if using existing role', () => {
@@ -1202,7 +1212,7 @@ test('can specify VPC', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     VpcConfig: {
-      SubnetIds: stack.resolve(vpc.privateSubnets.map(subnet => subnet.subnetId)),
+      SubnetIds: stack.resolve(vpc.privateSubnets.map((subnet) => subnet.subnetId)),
     },
   });
 });
@@ -1272,7 +1282,7 @@ test('vpcSubnets filter is not required when only isolated subnets exist', () =>
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     VpcConfig: {
-      SubnetIds: stack.resolve(vpc.isolatedSubnets.map(subnet => subnet.subnetId)),
+      SubnetIds: stack.resolve(vpc.isolatedSubnets.map((subnet) => subnet.subnetId)),
     },
   });
 });
@@ -1296,7 +1306,7 @@ test('vpcSubnets filter is not required for the default VPC configuration', () =
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     VpcConfig: {
-      SubnetIds: stack.resolve(vpc.privateSubnets.map(subnet => subnet.subnetId)),
+      SubnetIds: stack.resolve(vpc.privateSubnets.map((subnet) => subnet.subnetId)),
     },
   });
 });
@@ -1306,15 +1316,18 @@ test('vpcSubnets without vpc results in an error', () => {
   const stack = new cdk.Stack();
 
   // WHEN
-  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
-    onCreate: {
-      service: 'service',
-      action: 'action',
-      physicalResourceId: PhysicalResourceId.of('id'),
-    },
-    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-  })).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
+  expect(
+    () =>
+      new AwsCustomResource(stack, 'AwsSdk', {
+        onCreate: {
+          service: 'service',
+          action: 'action',
+          physicalResourceId: PhysicalResourceId.of('id'),
+        },
+        policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      })
+  ).toThrow("Cannot configure 'vpcSubnets' without configuring a VPC");
 });
 
 test.each([
@@ -1347,7 +1360,7 @@ test.each([
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
-    'InstallLatestAwsSdk': expected,
+    InstallLatestAwsSdk: expected,
   });
 });
 
@@ -1436,28 +1449,28 @@ describe('logging configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::S3PutObject', {
-      'Create': JSON.stringify({
-        'service': 's3',
-        'action': 'putObject',
-        'parameters': {
-          'Bucket': 'my-bucket',
-          'Key': 'my-key',
-          'Body': 'my-body',
+      Create: JSON.stringify({
+        service: 's3',
+        action: 'putObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'my-key',
+          Body: 'my-body',
         },
-        'physicalResourceId': {
-          'responsePath': 'ETag',
+        physicalResourceId: {
+          responsePath: 'ETag',
         },
       }),
-      'Update': JSON.stringify({
-        'service': 's3',
-        'action': 'putObject',
-        'parameters': {
-          'Bucket': 'my-bucket',
-          'Key': 'my-key',
-          'Body': 'my-body',
+      Update: JSON.stringify({
+        service: 's3',
+        action: 'putObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'my-key',
+          Body: 'my-body',
         },
-        'physicalResourceId': {
-          'responsePath': 'ETag',
+        physicalResourceId: {
+          responsePath: 'ETag',
         },
       }),
     });
@@ -1486,31 +1499,31 @@ describe('logging configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::S3PutObject', {
-      'Create': JSON.stringify({
-        'service': 's3',
-        'action': 'putObject',
-        'parameters': {
-          'Bucket': 'my-bucket',
-          'Key': 'my-key',
-          'Body': 'my-body',
+      Create: JSON.stringify({
+        service: 's3',
+        action: 'putObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'my-key',
+          Body: 'my-body',
         },
-        'physicalResourceId': {
-          'responsePath': 'ETag',
+        physicalResourceId: {
+          responsePath: 'ETag',
         },
-        'logApiResponseData': true,
+        logApiResponseData: true,
       }),
-      'Update': JSON.stringify({
-        'service': 's3',
-        'action': 'putObject',
-        'parameters': {
-          'Bucket': 'my-bucket',
-          'Key': 'my-key',
-          'Body': 'my-body',
+      Update: JSON.stringify({
+        service: 's3',
+        action: 'putObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'my-key',
+          Body: 'my-body',
         },
-        'physicalResourceId': {
-          'responsePath': 'ETag',
+        physicalResourceId: {
+          responsePath: 'ETag',
         },
-        'logApiResponseData': true,
+        logApiResponseData: true,
       }),
     });
   });

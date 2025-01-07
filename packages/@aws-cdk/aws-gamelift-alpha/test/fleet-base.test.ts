@@ -36,13 +36,17 @@ describe('Fleet base', () => {
 
       test('with missing attrs', () => {
         const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
-        expect(() => gamelift.FleetBase.fromFleetAttributes(stack, 'ImportedScript', { role }))
-          .toThrow(/Either fleetId or fleetArn must be provided in FleetAttributes/);
+        expect(() => gamelift.FleetBase.fromFleetAttributes(stack, 'ImportedScript', { role })).toThrow(
+          /Either fleetId or fleetArn must be provided in FleetAttributes/
+        );
       });
 
       test('with invalid ARN', () => {
-        expect(() => gamelift.FleetBase.fromFleetAttributes(stack, 'ImportedScript', { fleetArn: 'arn:aws:gamelift:fleet-region:123456789012:fleet' }))
-          .toThrow(/No fleet identifier found in ARN: 'arn:aws:gamelift:fleet-region:123456789012:fleet'/);
+        expect(() =>
+          gamelift.FleetBase.fromFleetAttributes(stack, 'ImportedScript', {
+            fleetArn: 'arn:aws:gamelift:fleet-region:123456789012:fleet',
+          })
+        ).toThrow(/No fleet identifier found in ARN: 'arn:aws:gamelift:fleet-region:123456789012:fleet'/);
       });
     });
 

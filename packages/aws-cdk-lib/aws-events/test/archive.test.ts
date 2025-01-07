@@ -26,16 +26,15 @@ describe('archive', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
       EventPattern: {
-        account: [{
-          Ref: 'AWS::AccountId',
-        }],
+        account: [
+          {
+            Ref: 'AWS::AccountId',
+          },
+        ],
       },
       RetentionDays: 10,
       SourceArn: {
-        'Fn::GetAtt': [
-          'BusEA82B648',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['BusEA82B648', 'Arn'],
       },
     });
   });
@@ -63,17 +62,16 @@ describe('archive', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
       EventPattern: {
-        'account': [{
-          Ref: 'AWS::AccountId',
-        }],
+        account: [
+          {
+            Ref: 'AWS::AccountId',
+          },
+        ],
         'detail-type': ['Custom Detail Type'],
       },
       RetentionDays: 10,
       SourceArn: {
-        'Fn::GetAtt': [
-          'BusEA82B648',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['BusEA82B648', 'Arn'],
       },
     });
   });

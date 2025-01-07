@@ -84,8 +84,7 @@ export abstract class EventDestination {
 /**
  * Properties for a configuration set event destination
  */
-export interface ConfigurationSetEventDestinationProps
-  extends ConfigurationSetEventDestinationOptions {
+export interface ConfigurationSetEventDestinationProps extends ConfigurationSetEventDestinationOptions {
   /**
    * The configuration set that contains the event destination.
    */
@@ -218,10 +217,7 @@ export enum CloudWatchDimensionSource {
 /**
  * A configuration set event destination
  */
-export class ConfigurationSetEventDestination
-  extends Resource
-  implements IConfigurationSetEventDestination
-{
+export class ConfigurationSetEventDestination extends Resource implements IConfigurationSetEventDestination {
   /**
    * Use an existing configuration set
    */
@@ -249,9 +245,7 @@ export class ConfigurationSetEventDestination
         name: this.physicalName,
         enabled: props.enabled ?? true,
         matchingEventTypes: props.events ?? Object.values(EmailSendingEvent),
-        snsDestination: props.destination.topic
-          ? { topicArn: props.destination.topic.topicArn }
-          : undefined,
+        snsDestination: props.destination.topic ? { topicArn: props.destination.topic.topicArn } : undefined,
         cloudWatchDestination: props.destination.dimensions
           ? {
               dimensionConfigurations: props.destination.dimensions.map((dimension) => ({

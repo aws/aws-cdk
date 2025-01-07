@@ -144,9 +144,7 @@ export class HttpsRedirect extends Construct {
       throw new Error(`Stack ${stack.stackId} must be created in the scope of an App or Stage`);
     }
     if (Token.isUnresolved(stack.region)) {
-      throw new Error(
-        `When ${ROUTE53_PATTERNS_USE_CERTIFICATE} is enabled, a region must be defined on the Stack`
-      );
+      throw new Error(`When ${ROUTE53_PATTERNS_USE_CERTIFICATE} is enabled, a region must be defined on the Stack`);
     }
     if (stack.region !== 'us-east-1') {
       const stackId = `certificate-redirect-stack-${stack.node.addr}`;
@@ -176,10 +174,7 @@ export class HttpsRedirect extends Construct {
     if (useCertificate) {
       // this preserves backwards compatibility. Previously the certificate was always created in `this` scope
       // so we need to keep the name the same
-      const id =
-        this.certificateScope() === this
-          ? 'RedirectCertificate'
-          : 'RedirectCertificate' + this.node.addr;
+      const id = this.certificateScope() === this ? 'RedirectCertificate' : 'RedirectCertificate' + this.node.addr;
       return new Certificate(this.certificateScope(), id, {
         domainName: domainNames[0],
         subjectAlternativeNames: domainNames,

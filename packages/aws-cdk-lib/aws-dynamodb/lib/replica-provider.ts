@@ -37,9 +37,7 @@ export class ReplicaProvider extends NestedStack {
   public static getOrCreate(scope: Construct, props: ReplicaProviderProps) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
-    return (
-      (stack.node.tryFindChild(uid) as ReplicaProvider) ?? new ReplicaProvider(stack, uid, props)
-    );
+    return (stack.node.tryFindChild(uid) as ReplicaProvider) ?? new ReplicaProvider(stack, uid, props);
   }
 
   /**
@@ -79,8 +77,7 @@ export class ReplicaProvider extends NestedStack {
             service: 'iam',
             region: '', // IAM is region-less
             resource: 'role',
-            resourceName:
-              'aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
+            resourceName: 'aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
           }),
         ],
       })
@@ -97,9 +94,7 @@ export class ReplicaProvider extends NestedStack {
     // Required for replica table deletion
     let resources: string[] = [];
     props.regions.forEach((region) => {
-      resources.push(
-        `arn:${Aws.PARTITION}:dynamodb:${region}:${this.account}:table/${props.tableName}`
-      );
+      resources.push(`arn:${Aws.PARTITION}:dynamodb:${region}:${this.account}:table/${props.tableName}`);
     });
 
     this.onEventHandler.addToRolePolicy(

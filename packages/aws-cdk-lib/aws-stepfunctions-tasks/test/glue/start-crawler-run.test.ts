@@ -40,37 +40,36 @@ test('Invoke glue crawler with crawler name', () => {
   });
 
   const template = Template.fromStack(stack);
-  expect(template.hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'glue:StartCrawler',
-            'glue:GetCrawler',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':glue:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                `:crawler/${crawlerName}`,
+  expect(
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['glue:StartCrawler', 'glue:GetCrawler'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':glue:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  `:crawler/${crawlerName}`,
+                ],
               ],
-            ],
+            },
           },
-        },
-      ],
-    },
-  }));
+        ],
+      },
+    })
+  );
 });

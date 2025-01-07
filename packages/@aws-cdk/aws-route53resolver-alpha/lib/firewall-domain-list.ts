@@ -101,9 +101,7 @@ export abstract class FirewallDomains {
     // cdk-assets will correctly set the content type for the S3 object
     // if the file has the correct extension
     if (path.extname(assetPath) !== '.txt') {
-      throw new Error(
-        `FirewallDomains.fromAsset() expects a file with the .txt extension, got ${assetPath}`
-      );
+      throw new Error(`FirewallDomains.fromAsset() expects a file with the .txt extension, got ${assetPath}`);
     }
 
     return {

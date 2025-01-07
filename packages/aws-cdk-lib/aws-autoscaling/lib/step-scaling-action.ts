@@ -85,8 +85,7 @@ export class StepScalingAction extends Construct {
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'StepScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
-      estimatedInstanceWarmup:
-        props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
+      estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
       metricAggregationType: props.metricAggregationType,

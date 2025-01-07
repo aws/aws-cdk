@@ -133,11 +133,7 @@ export class WaiterStateMachine extends Construct {
     const resource = new CfnStateMachine(this, 'Resource', {
       definitionString: definition,
       roleArn: role.roleArn,
-      loggingConfiguration: this.renderLoggingConfiguration(
-        role,
-        props.logOptions,
-        props.disableLogging
-      ),
+      loggingConfiguration: this.renderLoggingConfiguration(role, props.logOptions, props.disableLogging),
     });
     resource.node.addDependency(role);
 

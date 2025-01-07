@@ -7,10 +7,6 @@ beforeAll(() => {
 });
 
 test('golang is available', async () => {
-  const proc = spawnSync(docker, [
-    'run', 'golang',
-    'sh', '-c',
-    'go version',
-  ]);
+  const proc = spawnSync(docker, ['run', 'golang', 'sh', '-c', 'go version']);
   expect(proc.status).toEqual(0);
 });

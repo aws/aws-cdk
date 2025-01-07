@@ -38,10 +38,7 @@ export class S3Origin implements cloudfront.IOrigin {
       : new S3BucketOrigin(bucket, props);
   }
 
-  public bind(
-    scope: Construct,
-    options: cloudfront.OriginBindOptions
-  ): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     return this.origin.bind(scope, options);
   }
 }
@@ -64,10 +61,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     }
   }
 
-  public bind(
-    scope: Construct,
-    options: cloudfront.OriginBindOptions
-  ): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,

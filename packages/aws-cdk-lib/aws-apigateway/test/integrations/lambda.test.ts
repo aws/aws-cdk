@@ -37,10 +37,7 @@ describe('lambda', () => {
               },
               ':lambda:path/2015-03-31/functions/',
               {
-                'Fn::GetAtt': [
-                  'Handler886CB40B',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Handler886CB40B', 'Arn'],
               },
               '/invocations',
             ],
@@ -71,18 +68,6 @@ describe('lambda', () => {
         'Fn::Join': [
           '',
           [
-            'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':',
-            { Ref: 'apiC8550315' }, '/', { Ref: 'apiDeploymentStageprod896C8101' }, '/GET/',
-          ],
-        ],
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', Match.not({
-      SourceArn: {
-        'Fn::Join': [
-          '',
-          [
             'arn:',
             { Ref: 'AWS::Partition' },
             ':execute-api:',
@@ -91,11 +76,35 @@ describe('lambda', () => {
             { Ref: 'AWS::AccountId' },
             ':',
             { Ref: 'apiC8550315' },
-            '/test-invoke-stage/GET/',
+            '/',
+            { Ref: 'apiDeploymentStageprod896C8101' },
+            '/GET/',
           ],
         ],
       },
-    }));
+    });
+
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::Lambda::Permission',
+      Match.not({
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':execute-api:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':',
+              { Ref: 'apiC8550315' },
+              '/test-invoke-stage/GET/',
+            ],
+          ],
+        },
+      })
+    );
   });
 
   test('"allowTestInvoke" set to true allows calling the API from the test UI', () => {

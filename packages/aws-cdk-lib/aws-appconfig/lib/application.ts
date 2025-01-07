@@ -8,14 +8,7 @@ import {
   SourcedConfigurationOptions,
 } from './configuration';
 import { Environment, EnvironmentOptions, IEnvironment } from './environment';
-import {
-  ActionPoint,
-  IEventDestination,
-  ExtensionOptions,
-  IExtension,
-  IExtensible,
-  ExtensibleBase,
-} from './extension';
+import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
 
@@ -94,11 +87,7 @@ export interface IApplication extends cdk.IResource {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  on(
-    actionPoint: ActionPoint,
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ): void;
+  on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds a PRE_CREATE_HOSTED_CONFIGURATION_VERSION extension with the
@@ -107,10 +96,7 @@ export interface IApplication extends cdk.IResource {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  preCreateHostedConfigurationVersion(
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ): void;
+  preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds a PRE_START_DEPLOYMENT extension with the provided event destination and
@@ -214,20 +200,14 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
     });
   }
 
-  public addHostedConfiguration(
-    id: string,
-    options: HostedConfigurationOptions
-  ): HostedConfiguration {
+  public addHostedConfiguration(id: string, options: HostedConfigurationOptions): HostedConfiguration {
     return new HostedConfiguration(this, id, {
       application: this,
       ...options,
     });
   }
 
-  public addSourcedConfiguration(
-    id: string,
-    options: SourcedConfigurationOptions
-  ): SourcedConfiguration {
+  public addSourcedConfiguration(id: string, options: SourcedConfigurationOptions): SourcedConfiguration {
     return new SourcedConfiguration(this, id, {
       application: this,
       ...options,
@@ -250,11 +230,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  public on(
-    actionPoint: ActionPoint,
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ) {
+  public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.on(actionPoint, eventDestination, options);
   }
 
@@ -265,10 +241,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  public preCreateHostedConfigurationVersion(
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ) {
+  public preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.preCreateHostedConfigurationVersion(eventDestination, options);
   }
 
@@ -373,15 +346,8 @@ export class Application extends ApplicationBase {
    * @param id The name of the application construct
    * @param applicationArn The Amazon Resource Name (ARN) of the application
    */
-  public static fromApplicationArn(
-    scope: Construct,
-    id: string,
-    applicationArn: string
-  ): IApplication {
-    const parsedArn = cdk.Stack.of(scope).splitArn(
-      applicationArn,
-      cdk.ArnFormat.SLASH_RESOURCE_NAME
-    );
+  public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
+    const parsedArn = cdk.Stack.of(scope).splitArn(applicationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     const applicationId = parsedArn.resourceName;
     if (!applicationId) {
       throw new Error('Missing required application id from application ARN');
@@ -403,11 +369,7 @@ export class Application extends ApplicationBase {
    * @param id The name of the application construct
    * @param applicationId The ID of the application
    */
-  public static fromApplicationId(
-    scope: Construct,
-    id: string,
-    applicationId: string
-  ): IApplication {
+  public static fromApplicationId(scope: Construct, id: string, applicationId: string): IApplication {
     const stack = cdk.Stack.of(scope);
     const applicationArn = stack.formatArn({
       service: 'appconfig',
@@ -442,9 +404,7 @@ export class Application extends ApplicationBase {
    */
   public static addAgentToEcs(taskDef: ecs.TaskDefinition) {
     taskDef.addContainer('AppConfigAgentContainer', {
-      image: ecs.ContainerImage.fromRegistry(
-        'public.ecr.aws/aws-appconfig/aws-appconfig-agent:latest'
-      ),
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/aws-appconfig/aws-appconfig-agent:latest'),
       containerName: 'AppConfigAgentContainer',
     });
   }
@@ -518,18 +478,13 @@ const lambdaLayerVersions: { [key: string]: { [key: string]: string } } = {
     'eu-south-1': 'arn:aws:lambda:eu-south-1:203683718741:layer:AWS-AppConfig-Extension:83',
     'eu-south-2': 'arn:aws:lambda:eu-south-2:586093569114:layer:AWS-AppConfig-Extension:44',
     'cn-north-1': 'arn:aws-cn:lambda:cn-north-1:615057806174:layer:AWS-AppConfig-Extension:76',
-    'cn-northwest-1':
-      'arn:aws-cn:lambda:cn-northwest-1:615084187847:layer:AWS-AppConfig-Extension:76',
+    'cn-northwest-1': 'arn:aws-cn:lambda:cn-northwest-1:615084187847:layer:AWS-AppConfig-Extension:76',
     'ap-east-1': 'arn:aws:lambda:ap-east-1:630222743974:layer:AWS-AppConfig-Extension:83',
     'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension:98',
-    'ap-northeast-2':
-      'arn:aws:lambda:ap-northeast-2:826293736237:layer:AWS-AppConfig-Extension:108',
-    'ap-northeast-3':
-      'arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension:101',
-    'ap-southeast-1':
-      'arn:aws:lambda:ap-southeast-1:421114256042:layer:AWS-AppConfig-Extension:106',
-    'ap-southeast-2':
-      'arn:aws:lambda:ap-southeast-2:080788657173:layer:AWS-AppConfig-Extension:106',
+    'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:826293736237:layer:AWS-AppConfig-Extension:108',
+    'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension:101',
+    'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:421114256042:layer:AWS-AppConfig-Extension:106',
+    'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:080788657173:layer:AWS-AppConfig-Extension:106',
     'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:418787028745:layer:AWS-AppConfig-Extension:79',
     'ap-southeast-4': 'arn:aws:lambda:ap-southeast-4:307021474294:layer:AWS-AppConfig-Extension:20',
     'ap-south-1': 'arn:aws:lambda:ap-south-1:554480029851:layer:AWS-AppConfig-Extension:107',
@@ -539,22 +494,17 @@ const lambdaLayerVersions: { [key: string]: { [key: string]: string } } = {
     'il-central-1': 'arn:aws:lambda:il-central-1:895787185223:layer:AWS-AppConfig-Extension:22',
     'me-central-1': 'arn:aws:lambda:me-central-1:662846165436:layer:AWS-AppConfig-Extension:49',
     'me-south-1': 'arn:aws:lambda:me-south-1:559955524753:layer:AWS-AppConfig-Extension:85',
-    'us-gov-east-1':
-      'arn:aws-us-gov:lambda:us-gov-east-1:946561847325:layer:AWS-AppConfig-Extension:54',
-    'us-gov-west-1':
-      'arn:aws-us-gov:lambda:us-gov-west-1:946746059096:layer:AWS-AppConfig-Extension:54',
+    'us-gov-east-1': 'arn:aws-us-gov:lambda:us-gov-east-1:946561847325:layer:AWS-AppConfig-Extension:54',
+    'us-gov-west-1': 'arn:aws-us-gov:lambda:us-gov-west-1:946746059096:layer:AWS-AppConfig-Extension:54',
   },
   [Platform.ARM_64]: {
     'us-east-1': 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:61',
     'us-east-2': 'arn:aws:lambda:us-east-2:728743619870:layer:AWS-AppConfig-Extension-Arm64:45',
     'us-west-1': 'arn:aws:lambda:us-west-1:958113053741:layer:AWS-AppConfig-Extension-Arm64:18',
     'us-west-2': 'arn:aws:lambda:us-west-2:359756378197:layer:AWS-AppConfig-Extension-Arm64:63',
-    'ca-central-1':
-      'arn:aws:lambda:ca-central-1:039592058896:layer:AWS-AppConfig-Extension-Arm64:13',
-    'eu-central-1':
-      'arn:aws:lambda:eu-central-1:066940009817:layer:AWS-AppConfig-Extension-Arm64:49',
-    'eu-central-2':
-      'arn:aws:lambda:eu-central-2:758369105281:layer:AWS-AppConfig-Extension-Arm64:5',
+    'ca-central-1': 'arn:aws:lambda:ca-central-1:039592058896:layer:AWS-AppConfig-Extension-Arm64:13',
+    'eu-central-1': 'arn:aws:lambda:eu-central-1:066940009817:layer:AWS-AppConfig-Extension-Arm64:49',
+    'eu-central-2': 'arn:aws:lambda:eu-central-2:758369105281:layer:AWS-AppConfig-Extension-Arm64:5',
     'eu-west-1': 'arn:aws:lambda:eu-west-1:434848589818:layer:AWS-AppConfig-Extension-Arm64:63',
     'eu-west-2': 'arn:aws:lambda:eu-west-2:282860088358:layer:AWS-AppConfig-Extension-Arm64:45',
     'eu-west-3': 'arn:aws:lambda:eu-west-3:493207061005:layer:AWS-AppConfig-Extension-Arm64:17',
@@ -562,28 +512,19 @@ const lambdaLayerVersions: { [key: string]: { [key: string]: string } } = {
     'eu-south-1': 'arn:aws:lambda:eu-south-1:203683718741:layer:AWS-AppConfig-Extension-Arm64:11',
     'eu-south-2': 'arn:aws:lambda:eu-south-2:586093569114:layer:AWS-AppConfig-Extension-Arm64:5',
     'ap-east-1': 'arn:aws:lambda:ap-east-1:630222743974:layer:AWS-AppConfig-Extension-Arm64:11',
-    'ap-northeast-1':
-      'arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension-Arm64:51',
-    'ap-northeast-2':
-      'arn:aws:lambda:ap-northeast-2:826293736237:layer:AWS-AppConfig-Extension-Arm64:16',
-    'ap-northeast-3':
-      'arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension-Arm64:16',
-    'ap-southeast-1':
-      'arn:aws:lambda:ap-southeast-1:421114256042:layer:AWS-AppConfig-Extension-Arm64:58',
-    'ap-southeast-2':
-      'arn:aws:lambda:ap-southeast-2:080788657173:layer:AWS-AppConfig-Extension-Arm64:49',
-    'ap-southeast-3':
-      'arn:aws:lambda:ap-southeast-3:418787028745:layer:AWS-AppConfig-Extension-Arm64:16',
-    'ap-southeast-4':
-      'arn:aws:lambda:ap-southeast-4:307021474294:layer:AWS-AppConfig-Extension-Arm64:5',
+    'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension-Arm64:51',
+    'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:826293736237:layer:AWS-AppConfig-Extension-Arm64:16',
+    'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension-Arm64:16',
+    'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:421114256042:layer:AWS-AppConfig-Extension-Arm64:58',
+    'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:080788657173:layer:AWS-AppConfig-Extension-Arm64:49',
+    'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:418787028745:layer:AWS-AppConfig-Extension-Arm64:16',
+    'ap-southeast-4': 'arn:aws:lambda:ap-southeast-4:307021474294:layer:AWS-AppConfig-Extension-Arm64:5',
     'ap-south-1': 'arn:aws:lambda:ap-south-1:554480029851:layer:AWS-AppConfig-Extension-Arm64:49',
     'ap-south-2': 'arn:aws:lambda:ap-south-2:489524808438:layer:AWS-AppConfig-Extension-Arm64:5',
     'sa-east-1': 'arn:aws:lambda:sa-east-1:000010852771:layer:AWS-AppConfig-Extension-Arm64:16',
     'af-south-1': 'arn:aws:lambda:af-south-1:574348263942:layer:AWS-AppConfig-Extension-Arm64:11',
-    'me-central-1':
-      'arn:aws:lambda:me-central-1:662846165436:layer:AWS-AppConfig-Extension-Arm64:5',
+    'me-central-1': 'arn:aws:lambda:me-central-1:662846165436:layer:AWS-AppConfig-Extension-Arm64:5',
     'me-south-1': 'arn:aws:lambda:me-south-1:559955524753:layer:AWS-AppConfig-Extension-Arm64:13',
-    'il-central-1':
-      'arn:aws:lambda:il-central-1:895787185223:layer:AWS-AppConfig-Extension-Arm64:5',
+    'il-central-1': 'arn:aws:lambda:il-central-1:895787185223:layer:AWS-AppConfig-Extension-Arm64:5',
   },
 };

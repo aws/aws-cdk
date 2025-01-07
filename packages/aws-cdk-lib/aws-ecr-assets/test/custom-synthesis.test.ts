@@ -6,7 +6,19 @@
 
 import * as path from 'path';
 import { Template } from '../../assertions';
-import { StackSynthesizer, FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
+import {
+  StackSynthesizer,
+  FileAssetSource,
+  FileAssetLocation,
+  DockerImageAssetSource,
+  DockerImageAssetLocation,
+  ISynthesisSession,
+  App,
+  Stack,
+  AssetManifestBuilder,
+  CfnParameter,
+  CfnResource,
+} from '../../core';
 import { AssetManifestArtifact } from '../../cx-api';
 import { DockerImageAsset } from '../lib';
 
@@ -36,25 +48,30 @@ test('use custom synthesizer', () => {
 
   const stackTemplate = Template.fromJSON(stackArtifact.template);
   stackTemplate.hasResourceProperties('CDK::TestResource', {
-    ImageUri: { 'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/${RepositoryName}:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14' },
+    ImageUri: {
+      'Fn::Sub':
+        '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/${RepositoryName}:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
+    },
     ImageTag: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
   });
 
-  expect(assetArtifact.contents).toEqual(expect.objectContaining({
-    dockerImages: expect.objectContaining({
-      '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14': {
-        destinations: {
-          'current_account-current_region': {
-            repositoryName: 'write-repo',
-            imageTag: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
+  expect(assetArtifact.contents).toEqual(
+    expect.objectContaining({
+      dockerImages: expect.objectContaining({
+        '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14': {
+          destinations: {
+            'current_account-current_region': {
+              repositoryName: 'write-repo',
+              imageTag: '0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
+            },
+          },
+          source: {
+            directory: 'asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
           },
         },
-        source: {
-          directory: 'asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14',
-        },
-      },
-    }),
-  }));
+      }),
+    })
+  );
 });
 
 class CustomSynthesizer extends StackSynthesizer {
@@ -68,7 +85,7 @@ class CustomSynthesizer extends StackSynthesizer {
   }
 
   addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    void(asset);
+    void asset;
     throw new Error('file assets not supported here');
   }
 

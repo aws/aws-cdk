@@ -127,7 +127,10 @@ describe('scalable target', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/Target', Match.stringLikeRegexp("cron: If you don't pass 'minute', by default the event runs every minute.*"));
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Target',
+      Match.stringLikeRegexp("cron: If you don't pass 'minute', by default the event runs every minute.*")
+    );
   });
 
   test('scheduled scaling shows no warning when minute is * in cron', () => {
@@ -147,7 +150,10 @@ describe('scalable target', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('/Default/Target', Match.stringLikeRegexp("cron: If you don't pass 'minute', by default the event runs every minute.*"));
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/Target',
+      Match.stringLikeRegexp("cron: If you don't pass 'minute', by default the event runs every minute.*")
+    );
   });
 
   test('step scaling on MathExpression', () => {
@@ -175,9 +181,12 @@ describe('scalable target', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', Match.not({
-      Period: 60,
-    }));
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::CloudWatch::Alarm',
+      Match.not({
+        Period: 60,
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
@@ -282,10 +291,7 @@ describe('scalable target', () => {
       MinCapacity: 1,
       MaxCapacity: 20,
       RoleARN: {
-        'Fn::GetAtt': [
-          'Role1ABCC5F0',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
       },
     });
   });

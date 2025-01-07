@@ -2,8 +2,7 @@
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 
-export type ModernTestGitHubNpmPipelineProps = Partial<cdkp.CodePipelineProps> &
-  Partial<cdkp.ShellStepProps>;
+export type ModernTestGitHubNpmPipelineProps = Partial<cdkp.CodePipelineProps> & Partial<cdkp.ShellStepProps>;
 
 export class ModernTestGitHubNpmPipeline extends cdkp.CodePipeline {
   public readonly gitHubSource: cdkp.CodePipelineSource;

@@ -76,10 +76,7 @@ export class LinuxArmBuildImage implements IBuildImage {
    * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    * @returns An aarch64 Linux build image from an ECR repository.
    */
-  public static fromEcrRepository(
-    repository: ecr.IRepository,
-    tagOrDigest: string = 'latest'
-  ): IBuildImage {
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
     return new LinuxArmBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -124,9 +121,7 @@ export class LinuxArmBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
-      ret.push(
-        `ARM images do not support Lambda ComputeTypes, got ${buildEnvironment.computeType}`
-      );
+      ret.push(`ARM images do not support Lambda ComputeTypes, got ${buildEnvironment.computeType}`);
     }
     return ret;
   }

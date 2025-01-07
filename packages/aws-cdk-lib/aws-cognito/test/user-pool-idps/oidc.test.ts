@@ -164,29 +164,35 @@ describe('UserPoolIdentityProvider', () => {
       const pool = new UserPool(stack, 'userpool');
 
       // THEN
-      expect(() => new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
-        userPool: pool,
-        name: 'xy',
-        clientId: 'client-id',
-        clientSecret: 'client-secret',
-        issuerUrl: 'https://my-issuer-url.com',
-      })).toThrow(/Expected provider name to be between 3 and 32 characters/);
+      expect(
+        () =>
+          new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
+            userPool: pool,
+            name: 'xy',
+            clientId: 'client-id',
+            clientSecret: 'client-secret',
+            issuerUrl: 'https://my-issuer-url.com',
+          })
+      ).toThrow(/Expected provider name to be between 3 and 32 characters/);
     });
 
-    test('throws with provider name that doesn\'t match pattern', () => {
+    test("throws with provider name that doesn't match pattern", () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'userpool');
       const name = ' thisisabadname';
 
       // THEN
-      expect(() => new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
-        userPool: pool,
-        name,
-        clientId: 'client-id',
-        clientSecret: 'client-secret',
-        issuerUrl: 'https://my-issuer-url.com',
-      })).toThrow(`Expected provider name must match [^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+, received ${name}`);
+      expect(
+        () =>
+          new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
+            userPool: pool,
+            name,
+            clientId: 'client-id',
+            clientSecret: 'client-secret',
+            issuerUrl: 'https://my-issuer-url.com',
+          })
+      ).toThrow(`Expected provider name must match [^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+, received ${name}`);
     });
 
     test('generates a valid name when unique id is too short', () => {

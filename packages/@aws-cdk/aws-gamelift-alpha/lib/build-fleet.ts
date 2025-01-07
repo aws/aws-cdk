@@ -124,17 +124,13 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
 
     // Add all locations
     if (props.locations && props.locations?.length > 100) {
-      throw new Error(
-        `No more than 100 locations are allowed per fleet, given ${props.locations.length}`
-      );
+      throw new Error(`No more than 100 locations are allowed per fleet, given ${props.locations.length}`);
     }
     (props.locations || []).forEach(this.addInternalLocation.bind(this));
 
     // Add all Ingress rules
     if (props.ingressRules && props.ingressRules?.length > 50) {
-      throw new Error(
-        `No more than 50 ingress rules are allowed per fleet, given ${props.ingressRules.length}`
-      );
+      throw new Error(`No more than 50 ingress rules are allowed per fleet, given ${props.ingressRules.length}`);
     }
     (props.ingressRules || []).forEach(this.addInternalIngressRule.bind(this));
 
@@ -164,9 +160,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       maxSize: props.maxSize ? props.maxSize : 1,
       minSize: props.minSize ? props.minSize : 0,
       name: this.physicalName,
-      newGameSessionProtectionPolicy: props.protectNewGameSession
-        ? 'FullProtection'
-        : 'NoProtection',
+      newGameSessionProtectionPolicy: props.protectNewGameSession ? 'FullProtection' : 'NoProtection',
       peerVpcAwsAccountId: props.peerVpc && props.peerVpc.env.account,
       peerVpcId: props.peerVpc && props.peerVpc.vpcId,
       resourceCreationLimitPolicy: this.parseResourceCreationLimitPolicy(props),

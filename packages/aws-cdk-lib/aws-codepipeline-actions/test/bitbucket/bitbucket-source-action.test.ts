@@ -17,35 +17,35 @@ describeDeprecated('BitBucket source Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
-            'Actions': [
+            Name: 'Source',
+            Actions: [
               {
-                'Name': 'BitBucket',
-                'ActionTypeId': {
-                  'Owner': 'AWS',
-                  'Provider': 'CodeStarSourceConnection',
+                Name: 'BitBucket',
+                ActionTypeId: {
+                  Owner: 'AWS',
+                  Provider: 'CodeStarSourceConnection',
                 },
-                'Configuration': {
-                  'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
-                  'FullRepositoryId': 'aws/aws-cdk',
-                  'BranchName': 'master',
+                Configuration: {
+                  ConnectionArn:
+                    'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                  FullRepositoryId: 'aws/aws-cdk',
+                  BranchName: 'master',
                 },
               },
             ],
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'CodeBuild',
+                Name: 'CodeBuild',
               },
             ],
           },
         ],
       });
-
     });
   });
 
@@ -57,28 +57,23 @@ describeDeprecated('BitBucket source Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': [
-              'logs:CreateLogGroup',
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-            ],
+            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
           },
           {},
           {},
           {},
           {},
           {
-            'Action': 'codestar-connections:UseConnection',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+            Action: 'codestar-connections:UseConnection',
+            Effect: 'Allow',
+            Resource: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
           },
         ],
       },
     });
-
   });
   test('grant s3 putObjectACL to the following CodeBuild Project', () => {
     const stack = new Stack();
@@ -86,23 +81,17 @@ describeDeprecated('BitBucket source Action', () => {
       codeBuildCloneOutput: true,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': Match.arrayWith([
+      PolicyDocument: {
+        Statement: Match.arrayWith([
           Match.objectLike({
-            'Action': [
-              's3:PutObjectAcl',
-              's3:PutObjectVersionAcl',
-            ],
-            'Effect': 'Allow',
-            'Resource': {
+            Action: ['s3:PutObjectAcl', 's3:PutObjectVersionAcl'],
+            Effect: 'Allow',
+            Resource: {
               'Fn::Join': [
                 '',
                 [
                   {
-                    'Fn::GetAtt': [
-                      'PipelineArtifactsBucket22248F97',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['PipelineArtifactsBucket22248F97', 'Arn'],
                   },
                   '/*',
                 ],
@@ -112,7 +101,6 @@ describeDeprecated('BitBucket source Action', () => {
         ]),
       },
     });
-
   });
   test('setting triggerOnPush=false reflects in the configuration', () => {
     const stack = new Stack();
@@ -122,36 +110,36 @@ describeDeprecated('BitBucket source Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {
-          'Name': 'Source',
-          'Actions': [
+          Name: 'Source',
+          Actions: [
             {
-              'Name': 'BitBucket',
-              'ActionTypeId': {
-                'Owner': 'AWS',
-                'Provider': 'CodeStarSourceConnection',
+              Name: 'BitBucket',
+              ActionTypeId: {
+                Owner: 'AWS',
+                Provider: 'CodeStarSourceConnection',
               },
-              'Configuration': {
-                'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
-                'FullRepositoryId': 'aws/aws-cdk',
-                'BranchName': 'master',
-                'DetectChanges': false,
+              Configuration: {
+                ConnectionArn:
+                  'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                FullRepositoryId: 'aws/aws-cdk',
+                BranchName: 'master',
+                DetectChanges: false,
               },
             },
           ],
         },
         {
-          'Name': 'Build',
-          'Actions': [
+          Name: 'Build',
+          Actions: [
             {
-              'Name': 'CodeBuild',
+              Name: 'CodeBuild',
             },
           ],
         },
       ],
     });
-
   });
 });
 
@@ -167,7 +155,8 @@ function createBitBucketAndCodeBuildPipeline(stack: Stack, props: Partial<cpacti
             owner: 'aws',
             repo: 'aws-cdk',
             output: sourceOutput,
-            connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+            connectionArn:
+              'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
             ...props,
           }),
         ],

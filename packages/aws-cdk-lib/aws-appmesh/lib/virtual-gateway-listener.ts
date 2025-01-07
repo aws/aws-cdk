@@ -3,12 +3,7 @@ import { CfnVirtualGateway } from './appmesh.generated';
 import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
 import { ConnectionPoolConfig, renderListenerTlsOptions } from './private/utils';
-import {
-  GrpcConnectionPool,
-  Http2ConnectionPool,
-  HttpConnectionPool,
-  Protocol,
-} from './shared-interfaces';
+import { GrpcConnectionPool, Http2ConnectionPool, HttpConnectionPool, Protocol } from './shared-interfaces';
 
 /**
  * Represents the properties needed to define a Listeners for a VirtualGateway
@@ -157,12 +152,9 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port })
-          .virtualGatewayHealthCheck,
+        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualGatewayHealthCheck,
         tls: renderListenerTlsOptions(scope, this.listenerTls),
-        connectionPool: this.connectionPool
-          ? renderConnectionPool(this.connectionPool, this.protocol)
-          : undefined,
+        connectionPool: this.connectionPool ? renderConnectionPool(this.connectionPool, this.protocol) : undefined,
       },
     };
   }
@@ -174,14 +166,10 @@ function renderConnectionPool(
 ): CfnVirtualGateway.VirtualGatewayConnectionPoolProperty {
   return {
     [listenerProtocol]: {
-      maxRequests:
-        connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
-      maxConnections:
-        connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
+      maxRequests: connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
+      maxConnections: connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
       maxPendingRequests:
-        connectionPool?.maxPendingRequests !== undefined
-          ? connectionPool.maxPendingRequests
-          : undefined,
+        connectionPool?.maxPendingRequests !== undefined ? connectionPool.maxPendingRequests : undefined,
     },
   };
 }

@@ -33,9 +33,7 @@ export function deployTimeLookup(
   }
 
   // Derive map name and lookup key from the factName, splitting on ':' if it exists
-  const [factClass, factParam] = factName.includes(':')
-    ? factName.split(':')
-    : ([factName, 'value'] as const);
+  const [factClass, factParam] = factName.includes(':') ? factName.split(':') : ([factName, 'value'] as const);
 
   const mapId = `${ucfirst(factClass)}Map`;
   const factKey = factParam.replace(/[^a-zA-Z0-9]/g, 'x');

@@ -1,10 +1,7 @@
 import { Duration, IResource, Lazy, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IFirewallDomainList } from './firewall-domain-list';
-import {
-  FirewallRuleGroupAssociation,
-  FirewallRuleGroupAssociationOptions,
-} from './firewall-rule-group-association';
+import { FirewallRuleGroupAssociation, FirewallRuleGroupAssociationOptions } from './firewall-rule-group-association';
 import { CfnFirewallRuleGroup } from 'aws-cdk-lib/aws-route53resolver';
 
 /**
@@ -160,11 +157,7 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
   /**
    * Import an existing Firewall Rule Group
    */
-  public static fromFirewallRuleGroupId(
-    scope: Construct,
-    id: string,
-    firewallRuleGroupId: string
-  ): IFirewallRuleGroup {
+  public static fromFirewallRuleGroupId(scope: Construct, id: string, firewallRuleGroupId: string): IFirewallRuleGroup {
     class Import extends Resource implements IFirewallRuleGroup {
       public readonly firewallRuleGroupId = firewallRuleGroupId;
     }
@@ -263,10 +256,7 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
   /**
    * Associates this Firewall Rule Group with a VPC
    */
-  public associate(
-    id: string,
-    props: FirewallRuleGroupAssociationOptions
-  ): FirewallRuleGroupAssociation {
+  public associate(id: string, props: FirewallRuleGroupAssociationOptions): FirewallRuleGroupAssociation {
     return new FirewallRuleGroupAssociation(this, id, {
       ...props,
       firewallRuleGroup: this,

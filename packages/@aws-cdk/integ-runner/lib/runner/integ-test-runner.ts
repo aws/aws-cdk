@@ -1,10 +1,5 @@
 import * as path from 'path';
-import {
-  DeployOptions,
-  DestroyOptions,
-  HotswapMode,
-  StackActivityProgress,
-} from '@aws-cdk/cdk-cli-wrapper';
+import { DeployOptions, DestroyOptions, HotswapMode, StackActivityProgress } from '@aws-cdk/cdk-cli-wrapper';
 import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
@@ -229,8 +224,7 @@ export class IntegTestRunner extends IntegRunner {
       );
     }
     const clean = options.clean ?? true;
-    const updateWorkflowEnabled =
-      (options.updateWorkflow ?? true) && (actualTestCase.stackUpdateWorkflow ?? true);
+    const updateWorkflowEnabled = (options.updateWorkflow ?? true) && (actualTestCase.stackUpdateWorkflow ?? true);
     const enableForVerbosityLevel = (needed = 1) => {
       const verbosity = options.verbosity ?? 0;
       return verbosity >= needed ? true : undefined;
@@ -266,10 +260,7 @@ export class IntegTestRunner extends IntegRunner {
       }
       // only create the snapshot if there are no failed assertion results
       // (i.e. no failures)
-      if (
-        !assertionResults ||
-        !Object.values(assertionResults).some((result) => result.status === 'fail')
-      ) {
+      if (!assertionResults || !Object.values(assertionResults).some((result) => result.status === 'fail')) {
         this.createSnapshot();
       }
     } catch (e) {
@@ -329,11 +320,7 @@ export class IntegTestRunner extends IntegRunner {
     }
   }
 
-  private async watch(
-    watchArgs: DeployOptions,
-    testCaseName: string,
-    verbosity: number
-  ): Promise<void> {
+  private async watch(watchArgs: DeployOptions, testCaseName: string, verbosity: number): Promise<void> {
     const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
     if (actualTestCase.hooks?.preDeploy) {
       actualTestCase.hooks.preDeploy.forEach((cmd) => {
@@ -345,15 +332,9 @@ export class IntegTestRunner extends IntegRunner {
     const deployArgs = {
       ...watchArgs,
       lookups: this.actualTestSuite.enableLookups,
-      stacks: [
-        ...actualTestCase.stacks,
-        ...(actualTestCase.assertionStack ? [actualTestCase.assertionStack] : []),
-      ],
+      stacks: [...actualTestCase.stacks, ...(actualTestCase.assertionStack ? [actualTestCase.assertionStack] : [])],
       output: path.relative(this.directory, this.cdkOutDir),
-      outputsFile: path.relative(
-        this.directory,
-        path.join(this.cdkOutDir, 'assertion-results.json')
-      ),
+      outputsFile: path.relative(this.directory, path.join(this.cdkOutDir, 'assertion-results.json')),
       ...actualTestCase?.cdkCommandOptions?.deploy?.args,
       context: {
         ...this.getContext(actualTestCase?.cdkCommandOptions?.deploy?.args?.context),
@@ -383,9 +364,7 @@ export class IntegTestRunner extends IntegRunner {
             'cdk synth',
             `-a '${this.cdkApp}'`,
             `-o '${this.cdkOutDir}'`,
-            ...Object.entries(this.getContext()).flatMap(([k, v]) =>
-              typeof v !== 'object' ? [`-c '${k}=${v}'`] : []
-            ),
+            ...Object.entries(this.getContext()).flatMap(([k, v]) => (typeof v !== 'object' ? [`-c '${k}=${v}'`] : [])),
             deployArgs.stacks.join(' '),
             `--outputs-file ${deployArgs.outputsFile}`,
             `--profile ${deployArgs.profile}`,
@@ -537,10 +516,7 @@ export class IntegTestRunner extends IntegRunner {
           rollback: false,
           output: path.relative(this.directory, this.cdkOutDir),
           ...actualTestCase?.cdkCommandOptions?.deploy?.args,
-          outputsFile: path.relative(
-            this.directory,
-            path.join(this.cdkOutDir, 'assertion-results.json')
-          ),
+          outputsFile: path.relative(this.directory, path.join(this.cdkOutDir, 'assertion-results.json')),
           context: this.getContext(actualTestCase?.cdkCommandOptions?.deploy?.args?.context),
           app: this.cdkApp,
         });

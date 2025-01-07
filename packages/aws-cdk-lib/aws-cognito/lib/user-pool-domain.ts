@@ -4,12 +4,7 @@ import { IUserPool } from './user-pool';
 import { UserPoolClient } from './user-pool-client';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IResource, Resource, Stack, Token } from '../../core';
-import {
-  AwsCustomResource,
-  AwsCustomResourcePolicy,
-  AwsSdkCall,
-  PhysicalResourceId,
-} from '../../custom-resources';
+import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 
 /**
  * Represents a user pool domain.
@@ -89,11 +84,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
   /**
    * Import a UserPoolDomain given its domain name
    */
-  public static fromDomainName(
-    scope: Construct,
-    id: string,
-    userPoolDomainName: string
-  ): IUserPoolDomain {
+  public static fromDomainName(scope: Construct, id: string, userPoolDomainName: string): IUserPoolDomain {
     class Import extends Resource implements IUserPoolDomain {
       public readonly domainName = userPoolDomainName;
     }
@@ -119,9 +110,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
       !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
       !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)
     ) {
-      throw new Error(
-        'domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens'
-      );
+      throw new Error('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens');
     }
 
     this.isCognitoDomain = !!props.cognitoDomain;
@@ -175,9 +164,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
         installLatestAwsSdk: false,
       });
     }
-    return this.cloudFrontCustomResource.getResponseField(
-      'DomainDescription.CloudFrontDistribution'
-    );
+    return this.cloudFrontCustomResource.getResponseField('DomainDescription.CloudFrontDistribution');
   }
 
   /**

@@ -92,11 +92,7 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
   /**
    * Import from VPC connector attributes.
    */
-  public static fromVpcConnectorAttributes(
-    scope: Construct,
-    id: string,
-    attrs: VpcConnectorAttributes
-  ): IVpcConnector {
+  public static fromVpcConnectorAttributes(scope: Construct, id: string, attrs: VpcConnectorAttributes): IVpcConnector {
     const vpcConnectorArn = attrs.vpcConnectorArn;
     const vpcConnectorName = attrs.vpcConnectorName;
     const vpcConnectorRevision = attrs.vpcConnectorRevision;

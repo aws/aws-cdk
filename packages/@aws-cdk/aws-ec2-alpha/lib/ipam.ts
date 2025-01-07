@@ -330,8 +330,7 @@ class IpamPool extends Resource implements IIpamPool {
       physicalName:
         props.ipamPoolName ??
         Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
         }),
     });
 
@@ -514,9 +513,7 @@ export class Ipam extends Resource {
     this.ipamName = props?.ipamName;
 
     this._ipam = new CfnIPAM(this, 'Ipam', {
-      operatingRegions: this.operatingRegions
-        ? this.operatingRegions.map((region) => ({ regionName: region }))
-        : [],
+      operatingRegions: this.operatingRegions ? this.operatingRegions.map((region) => ({ regionName: region })) : [],
     });
     this.node.defaultChild = this._ipam;
 

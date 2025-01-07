@@ -136,22 +136,14 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
   /**
    * Import a ruleSet into CDK using its name
    */
-  static fromMatchmakingRuleSetName(
-    scope: Construct,
-    id: string,
-    matchmakingRuleSetName: string
-  ): IMatchmakingRuleSet {
+  static fromMatchmakingRuleSetName(scope: Construct, id: string, matchmakingRuleSetName: string): IMatchmakingRuleSet {
     return this.fromMatchmakingRuleSetAttributes(scope, id, { matchmakingRuleSetName });
   }
 
   /**
    * Import a ruleSet into CDK using its ARN
    */
-  static fromMatchmakingRuleSetArn(
-    scope: Construct,
-    id: string,
-    matchmakingRuleSetArn: string
-  ): IMatchmakingRuleSet {
+  static fromMatchmakingRuleSetArn(scope: Construct, id: string, matchmakingRuleSetArn: string): IMatchmakingRuleSet {
     return this.fromMatchmakingRuleSetAttributes(scope, id, { matchmakingRuleSetArn });
   }
 
@@ -170,13 +162,10 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
     }
     const matchmakingRuleSetName =
       attrs.matchmakingRuleSetName ??
-      cdk.Stack.of(scope).splitArn(attrs.matchmakingRuleSetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-        .resourceName;
+      cdk.Stack.of(scope).splitArn(attrs.matchmakingRuleSetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!matchmakingRuleSetName) {
-      throw new Error(
-        `No matchmaking ruleSet identifier found in ARN: '${attrs.matchmakingRuleSetArn}'`
-      );
+      throw new Error(`No matchmaking ruleSet identifier found in ARN: '${attrs.matchmakingRuleSetArn}'`);
     }
 
     const matchmakingRuleSetArn =

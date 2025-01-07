@@ -21,23 +21,21 @@ describe('CDK Include for templates with SAM transform', () => {
     includeTestTemplate(stack, 'only-minimal-sam-function-codeuri-as-s3location.yaml');
 
     Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('only-minimal-sam-function-codeuri-as-s3location.yaml'),
+      loadTestFileToJsObject('only-minimal-sam-function-codeuri-as-s3location.yaml')
     );
   });
 
   test('can ingest a template with only a SAM function using an array with DDB CRUD for Policies, and output it unchanged', () => {
     includeTestTemplate(stack, 'only-sam-function-policies-array-ddb-crud.yaml');
 
-    Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('only-sam-function-policies-array-ddb-crud.yaml'),
-    );
+    Template.fromStack(stack).templateMatches(loadTestFileToJsObject('only-sam-function-policies-array-ddb-crud.yaml'));
   });
 
   test('can ingest a template with only a minimal SAM function using a parameter for CodeUri, and output it unchanged', () => {
     includeTestTemplate(stack, 'only-minimal-sam-function-codeuri-as-param.yaml');
 
     Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('only-minimal-sam-function-codeuri-as-param.yaml'),
+      loadTestFileToJsObject('only-minimal-sam-function-codeuri-as-param.yaml')
     );
   });
 
@@ -45,7 +43,7 @@ describe('CDK Include for templates with SAM transform', () => {
     includeTestTemplate(stack, 'only-minimal-sam-function-codeuri-bucket-as-param.yaml');
 
     Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('only-minimal-sam-function-codeuri-bucket-as-param.yaml'),
+      loadTestFileToJsObject('only-minimal-sam-function-codeuri-bucket-as-param.yaml')
     );
   });
 
@@ -53,32 +51,26 @@ describe('CDK Include for templates with SAM transform', () => {
     includeTestTemplate(stack, 'only-sam-function-policies-array-ddb-crud-if.yaml');
 
     Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('only-sam-function-policies-array-ddb-crud-if.yaml'),
+      loadTestFileToJsObject('only-sam-function-policies-array-ddb-crud-if.yaml')
     );
   });
 
   test('can ingest a template with a a union-type property provided as an object, and output it unchanged', () => {
     includeTestTemplate(stack, 'api-endpoint-config-object.yaml');
 
-    Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('api-endpoint-config-object.yaml'),
-    );
+    Template.fromStack(stack).templateMatches(loadTestFileToJsObject('api-endpoint-config-object.yaml'));
   });
 
   test('can ingest a template with a a union-type property provided as a string, and output it unchanged', () => {
     includeTestTemplate(stack, 'api-endpoint-config-string.yaml');
 
-    Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('api-endpoint-config-string.yaml'),
-    );
+    Template.fromStack(stack).templateMatches(loadTestFileToJsObject('api-endpoint-config-string.yaml'));
   });
 
   test('can ingest a template with a a union-type property provided as an empty string, and output it unchanged', () => {
     includeTestTemplate(stack, 'api-endpoint-config-string-empty.yaml');
 
-    Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('api-endpoint-config-string-empty.yaml'),
-    );
+    Template.fromStack(stack).templateMatches(loadTestFileToJsObject('api-endpoint-config-string-empty.yaml'));
   });
 });
 

@@ -443,11 +443,7 @@ export class Cluster extends ClusterBase {
   /**
    * Reference an existing cluster, defined outside of the CDK code, by name.
    */
-  public static fromClusterArn(
-    scope: constructs.Construct,
-    id: string,
-    clusterArn: string
-  ): ICluster {
+  public static fromClusterArn(scope: constructs.Construct, id: string, clusterArn: string): ICluster {
     class Import extends ClusterBase {
       public readonly clusterArn = clusterArn;
       public readonly clusterName = core.Fn.select(1, core.Fn.split('/', clusterArn)); // ['arn:partition:kafka:region:account-id', clusterName, clusterId]
@@ -494,17 +490,11 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    if (
-      props.clientAuthentication?.saslProps?.iam &&
-      props.clientAuthentication?.saslProps?.scram
-    ) {
+    if (props.clientAuthentication?.saslProps?.iam && props.clientAuthentication?.saslProps?.scram) {
       throw Error('Only one client authentication method can be enabled.');
     }
 
-    if (
-      props.encryptionInTransit?.clientBroker === ClientBrokerEncryption.PLAINTEXT &&
-      props.clientAuthentication
-    ) {
+    if (props.encryptionInTransit?.clientBroker === ClientBrokerEncryption.PLAINTEXT && props.clientAuthentication) {
       throw Error(
         'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.'
       );
@@ -533,10 +523,7 @@ export class Cluster extends ClusterBase {
           `To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`
         );
       }
-      if (
-        instanceType ===
-        this.mskInstanceType(ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL))
-      ) {
+      if (instanceType === this.mskInstanceType(ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL))) {
         throw Error("Tiered storage doesn't support broker type t3.small");
       }
     }
@@ -553,16 +540,11 @@ export class Cluster extends ClusterBase {
     };
 
     const openMonitoring =
-      props.monitoring?.enablePrometheusJmxExporter ||
-      props.monitoring?.enablePrometheusNodeExporter
+      props.monitoring?.enablePrometheusJmxExporter || props.monitoring?.enablePrometheusNodeExporter
         ? {
             prometheus: {
-              jmxExporter: props.monitoring?.enablePrometheusJmxExporter
-                ? { enabledInBroker: true }
-                : undefined,
-              nodeExporter: props.monitoring?.enablePrometheusNodeExporter
-                ? { enabledInBroker: true }
-                : undefined,
+              jmxExporter: props.monitoring?.enablePrometheusJmxExporter ? { enabledInBroker: true } : undefined,
+              nodeExporter: props.monitoring?.enablePrometheusNodeExporter ? { enabledInBroker: true } : undefined,
             },
           }
         : undefined;
@@ -629,10 +611,7 @@ export class Cluster extends ClusterBase {
       },
     };
 
-    if (
-      props.clientAuthentication?.saslProps?.scram &&
-      props.clientAuthentication?.saslProps?.key === undefined
-    ) {
+    if (props.clientAuthentication?.saslProps?.scram && props.clientAuthentication?.saslProps?.key === undefined) {
       this.saslScramAuthenticationKey = new kms.Key(this, 'SASLKey', {
         description: 'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
         alias: `msk/${props.clusterName}/sasl/scram`,
@@ -671,10 +650,9 @@ export class Cluster extends ClusterBase {
         clientAuthentication = {
           sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
           tls: {
-            certificateAuthorityArnList:
-              props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
-                (ca) => ca.certificateAuthorityArn
-              ),
+            certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
+              (ca) => ca.certificateAuthorityArn
+            ),
           },
         };
       }
@@ -689,10 +667,9 @@ export class Cluster extends ClusterBase {
     } else if (props.clientAuthentication?.tlsProps?.certificateAuthorities !== undefined) {
       clientAuthentication = {
         tls: {
-          certificateAuthorityArnList:
-            props.clientAuthentication?.tlsProps?.certificateAuthorities.map(
-              (ca) => ca.certificateAuthorityArn
-            ),
+          certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities.map(
+            (ca) => ca.certificateAuthorityArn
+          ),
         },
       };
     }
@@ -726,9 +703,7 @@ export class Cluster extends ClusterBase {
       clientAuthentication,
     });
 
-    this.clusterName = this.getResourceNameAttribute(
-      core.Fn.select(1, core.Fn.split('/', resource.ref))
-    );
+    this.clusterName = this.getResourceNameAttribute(core.Fn.select(1, core.Fn.split('/', resource.ref)));
     this.clusterArn = resource.ref;
 
     resource.applyRemovalPolicy(props.removalPolicy, {
@@ -759,10 +734,7 @@ export class Cluster extends ClusterBase {
           },
           physicalResourceId: cr.PhysicalResourceId.of('ZooKeeperConnectionString'),
           // Limit the output of describeCluster that is otherwise too large
-          outputPaths: [
-            'ClusterInfo.ZookeeperConnectString',
-            'ClusterInfo.ZookeeperConnectStringTls',
-          ],
+          outputPaths: ['ClusterInfo.ZookeeperConnectString', 'ClusterInfo.ZookeeperConnectStringTls'],
         },
         policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
           resources: [this.clusterArn],
@@ -805,25 +777,21 @@ export class Cluster extends ClusterBase {
    */
   private _bootstrapBrokers(responseField: string): string {
     if (!this._clusterBootstrapBrokers) {
-      this._clusterBootstrapBrokers = new cr.AwsCustomResource(
-        this,
-        `BootstrapBrokers${responseField}`,
-        {
-          onUpdate: {
-            service: 'Kafka',
-            action: 'getBootstrapBrokers',
-            parameters: {
-              ClusterArn: this.clusterArn,
-            },
-            physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
+      this._clusterBootstrapBrokers = new cr.AwsCustomResource(this, `BootstrapBrokers${responseField}`, {
+        onUpdate: {
+          service: 'Kafka',
+          action: 'getBootstrapBrokers',
+          parameters: {
+            ClusterArn: this.clusterArn,
           },
-          policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-            resources: [this.clusterArn],
-          }),
-          // APIs are available in 2.1055.0
-          installLatestAwsSdk: false,
-        }
-      );
+          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.clusterArn],
+        }),
+        // APIs are available in 2.1055.0
+        installLatestAwsSdk: false,
+      });
     }
     return this._clusterBootstrapBrokers.getResponseField(responseField);
   }
@@ -917,9 +885,7 @@ export class Cluster extends ClusterBase {
         installLatestAwsSdk: false,
       });
     } else {
-      throw Error(
-        'Cannot create users if an authentication KMS key has not been created/provided.'
-      );
+      throw Error('Cannot create users if an authentication KMS key has not been created/provided.');
     }
   }
 }

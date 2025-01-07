@@ -171,8 +171,7 @@ export class Bundling implements cdk.BundlingOptions {
       // only if Docker is not forced
 
       const osPlatform = os.platform();
-      const createLocalCommand = (outputDir: string) =>
-        this.createBundlingCommand(projectRoot, outputDir, osPlatform);
+      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(projectRoot, outputDir, osPlatform);
 
       this.local = {
         tryBundle(outputDir: string) {
@@ -182,32 +181,24 @@ export class Bundling implements cdk.BundlingOptions {
           }
 
           const localCommand = createLocalCommand(outputDir);
-          exec(
-            osPlatform === 'win32' ? 'cmd' : 'bash',
-            [osPlatform === 'win32' ? '/c' : '-c', localCommand],
-            {
-              env: { ...process.env, ...(environment ?? {}) },
-              stdio: [
-                // show output
-                'ignore', // ignore stdio
-                process.stderr, // redirect stdout to stderr
-                'inherit', // inherit stderr
-              ],
-              cwd: path.dirname(props.moduleDir),
-              windowsVerbatimArguments: osPlatform === 'win32',
-            }
-          );
+          exec(osPlatform === 'win32' ? 'cmd' : 'bash', [osPlatform === 'win32' ? '/c' : '-c', localCommand], {
+            env: { ...process.env, ...(environment ?? {}) },
+            stdio: [
+              // show output
+              'ignore', // ignore stdio
+              process.stderr, // redirect stdout to stderr
+              'inherit', // inherit stderr
+            ],
+            cwd: path.dirname(props.moduleDir),
+            windowsVerbatimArguments: osPlatform === 'win32',
+          });
           return true;
         },
       };
     }
   }
 
-  public createBundlingCommand(
-    inputDir: string,
-    outputDir: string,
-    osPlatform: NodeJS.Platform = 'linux'
-  ): string {
+  public createBundlingCommand(inputDir: string, outputDir: string, osPlatform: NodeJS.Platform = 'linux'): string {
     const pathJoin = osPathJoin(osPlatform);
 
     const hasVendor = findUp('vendor', path.dirname(this.props.entry));

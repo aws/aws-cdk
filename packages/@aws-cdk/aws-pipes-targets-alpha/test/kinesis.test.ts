@@ -27,10 +27,7 @@ describe('Kinesis', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyStream5C050E93',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
       },
       TargetParameters: {
         KinesisStreamParameters: {
@@ -131,10 +128,7 @@ describe('Kinesis target parameters validation', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyStream5C050E93',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
       },
       TargetParameters: {
         KinesisStreamParameters: {

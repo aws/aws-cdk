@@ -14,9 +14,7 @@ describe('vpc from lookup', () => {
         Vpc.fromLookup(stack, 'Vpc', {
           vpcId: Lazy.string({ produce: () => 'some-id' }),
         });
-
       }).toThrow('All arguments to Vpc.fromLookup() must be concrete');
-
     });
 
     test('selecting subnets by name from a looked-up VPC does not throw', () => {
@@ -30,63 +28,65 @@ describe('vpc from lookup', () => {
       vpc.selectSubnets({ subnetName: 'Bleep' });
 
       // THEN: no exception
-
     });
 
     test('accepts asymmetric subnets', () => {
-      const previous = mockVpcContextProviderWith({
-        vpcId: 'vpc-1234',
-        subnetGroups: [
-          {
-            name: 'Public',
-            type: cxapi.VpcSubnetGroupType.PUBLIC,
-            subnets: [
-              {
-                subnetId: 'pub-sub-in-us-east-1a',
-                availabilityZone: 'us-east-1a',
-                routeTableId: 'rt-123',
-              },
-              {
-                subnetId: 'pub-sub-in-us-east-1b',
-                availabilityZone: 'us-east-1b',
-                routeTableId: 'rt-123',
-              },
-            ],
-          },
-          {
-            name: 'Private',
-            type: cxapi.VpcSubnetGroupType.PRIVATE,
-            subnets: [
-              {
-                subnetId: 'pri-sub-1-in-us-east-1c',
-                availabilityZone: 'us-east-1c',
-                routeTableId: 'rt-123',
-              },
-              {
-                subnetId: 'pri-sub-2-in-us-east-1c',
-                availabilityZone: 'us-east-1c',
-                routeTableId: 'rt-123',
-              },
-              {
-                subnetId: 'pri-sub-1-in-us-east-1d',
-                availabilityZone: 'us-east-1d',
-                routeTableId: 'rt-123',
-              },
-              {
-                subnetId: 'pri-sub-2-in-us-east-1d',
-                availabilityZone: 'us-east-1d',
-                routeTableId: 'rt-123',
-              },
-            ],
-          },
-        ],
-      }, options => {
-        expect(options.filter).toEqual({
-          isDefault: 'true',
-        });
+      const previous = mockVpcContextProviderWith(
+        {
+          vpcId: 'vpc-1234',
+          subnetGroups: [
+            {
+              name: 'Public',
+              type: cxapi.VpcSubnetGroupType.PUBLIC,
+              subnets: [
+                {
+                  subnetId: 'pub-sub-in-us-east-1a',
+                  availabilityZone: 'us-east-1a',
+                  routeTableId: 'rt-123',
+                },
+                {
+                  subnetId: 'pub-sub-in-us-east-1b',
+                  availabilityZone: 'us-east-1b',
+                  routeTableId: 'rt-123',
+                },
+              ],
+            },
+            {
+              name: 'Private',
+              type: cxapi.VpcSubnetGroupType.PRIVATE,
+              subnets: [
+                {
+                  subnetId: 'pri-sub-1-in-us-east-1c',
+                  availabilityZone: 'us-east-1c',
+                  routeTableId: 'rt-123',
+                },
+                {
+                  subnetId: 'pri-sub-2-in-us-east-1c',
+                  availabilityZone: 'us-east-1c',
+                  routeTableId: 'rt-123',
+                },
+                {
+                  subnetId: 'pri-sub-1-in-us-east-1d',
+                  availabilityZone: 'us-east-1d',
+                  routeTableId: 'rt-123',
+                },
+                {
+                  subnetId: 'pri-sub-2-in-us-east-1d',
+                  availabilityZone: 'us-east-1d',
+                  routeTableId: 'rt-123',
+                },
+              ],
+            },
+          ],
+        },
+        (options) => {
+          expect(options.filter).toEqual({
+            isDefault: 'true',
+          });
 
-        expect(options.subnetGroupNameTag).toEqual(undefined);
-      });
+          expect(options.subnetGroupNameTag).toEqual(undefined);
+        }
+      );
 
       const stack = new Stack();
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
@@ -99,63 +99,65 @@ describe('vpc from lookup', () => {
       expect(vpc.isolatedSubnets.length).toEqual(0);
 
       restoreContextProvider(previous);
-
     });
 
     test('selectSubnets onePerAz works on imported VPC', () => {
-      const previous = mockVpcContextProviderWith({
-        vpcId: 'vpc-1234',
-        subnetGroups: [
-          {
-            name: 'Public',
-            type: cxapi.VpcSubnetGroupType.PUBLIC,
-            subnets: [
-              {
-                subnetId: 'pub-sub-in-us-east-1a',
-                availabilityZone: 'us-east-1a',
-                routeTableId: 'rt-123',
-              },
-              {
-                subnetId: 'pub-sub-in-us-east-1b',
-                availabilityZone: 'us-east-1b',
-                routeTableId: 'rt-123',
-              },
-            ],
-          },
-          {
-            name: 'Private',
-            type: cxapi.VpcSubnetGroupType.PRIVATE,
-            subnets: [
-              {
-                subnetId: 'pri-sub-1-in-us-east-1c',
-                availabilityZone: 'us-east-1c',
-                routeTableId: 'rt-123',
-              },
-              {
-                subnetId: 'pri-sub-2-in-us-east-1c',
-                availabilityZone: 'us-east-1c',
-                routeTableId: 'rt-123',
-              },
-              {
-                subnetId: 'pri-sub-1-in-us-east-1d',
-                availabilityZone: 'us-east-1d',
-                routeTableId: 'rt-123',
-              },
-              {
-                subnetId: 'pri-sub-2-in-us-east-1d',
-                availabilityZone: 'us-east-1d',
-                routeTableId: 'rt-123',
-              },
-            ],
-          },
-        ],
-      }, options => {
-        expect(options.filter).toEqual({
-          isDefault: 'true',
-        });
+      const previous = mockVpcContextProviderWith(
+        {
+          vpcId: 'vpc-1234',
+          subnetGroups: [
+            {
+              name: 'Public',
+              type: cxapi.VpcSubnetGroupType.PUBLIC,
+              subnets: [
+                {
+                  subnetId: 'pub-sub-in-us-east-1a',
+                  availabilityZone: 'us-east-1a',
+                  routeTableId: 'rt-123',
+                },
+                {
+                  subnetId: 'pub-sub-in-us-east-1b',
+                  availabilityZone: 'us-east-1b',
+                  routeTableId: 'rt-123',
+                },
+              ],
+            },
+            {
+              name: 'Private',
+              type: cxapi.VpcSubnetGroupType.PRIVATE,
+              subnets: [
+                {
+                  subnetId: 'pri-sub-1-in-us-east-1c',
+                  availabilityZone: 'us-east-1c',
+                  routeTableId: 'rt-123',
+                },
+                {
+                  subnetId: 'pri-sub-2-in-us-east-1c',
+                  availabilityZone: 'us-east-1c',
+                  routeTableId: 'rt-123',
+                },
+                {
+                  subnetId: 'pri-sub-1-in-us-east-1d',
+                  availabilityZone: 'us-east-1d',
+                  routeTableId: 'rt-123',
+                },
+                {
+                  subnetId: 'pri-sub-2-in-us-east-1d',
+                  availabilityZone: 'us-east-1d',
+                  routeTableId: 'rt-123',
+                },
+              ],
+            },
+          ],
+        },
+        (options) => {
+          expect(options.filter).toEqual({
+            isDefault: 'true',
+          });
 
-        expect(options.subnetGroupNameTag).toEqual(undefined);
-      });
+          expect(options.subnetGroupNameTag).toEqual(undefined);
+        }
+      );
 
       const stack = new Stack();
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
@@ -166,10 +168,9 @@ describe('vpc from lookup', () => {
       const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_EGRESS, onePerAz: true });
 
       // THEN: we got 2 subnets and not 4
-      expect(subnets.subnets.map(s => s.availabilityZone)).toEqual(['us-east-1c', 'us-east-1d']);
+      expect(subnets.subnets.map((s) => s.availabilityZone)).toEqual(['us-east-1c', 'us-east-1d']);
 
       restoreContextProvider(previous);
-
     });
 
     test('AZ in dummy lookup VPC matches AZ in Stack', () => {
@@ -184,10 +185,9 @@ describe('vpc from lookup', () => {
 
       // THEN
       expect(subnets.subnets.length).toEqual(2);
-
     });
 
-    test('don\'t crash when using subnetgroup name in lookup VPC', () => {
+    test("don't crash when using subnetgroup name in lookup VPC", () => {
       // GIVEN
       const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
       const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
@@ -203,32 +203,34 @@ describe('vpc from lookup', () => {
       });
 
       // THEN -- no exception occurred
-
     });
     test('subnets in imported VPC has all expected attributes', () => {
-      const previous = mockVpcContextProviderWith({
-        vpcId: 'vpc-1234',
-        subnetGroups: [
-          {
-            name: 'Public',
-            type: cxapi.VpcSubnetGroupType.PUBLIC,
-            subnets: [
-              {
-                subnetId: 'pub-sub-in-us-east-1a',
-                availabilityZone: 'us-east-1a',
-                routeTableId: 'rt-123',
-                cidr: '10.100.0.0/24',
-              },
-            ],
-          },
-        ],
-      }, options => {
-        expect(options.filter).toEqual({
-          isDefault: 'true',
-        });
+      const previous = mockVpcContextProviderWith(
+        {
+          vpcId: 'vpc-1234',
+          subnetGroups: [
+            {
+              name: 'Public',
+              type: cxapi.VpcSubnetGroupType.PUBLIC,
+              subnets: [
+                {
+                  subnetId: 'pub-sub-in-us-east-1a',
+                  availabilityZone: 'us-east-1a',
+                  routeTableId: 'rt-123',
+                  cidr: '10.100.0.0/24',
+                },
+              ],
+            },
+          ],
+        },
+        (options) => {
+          expect(options.filter).toEqual({
+            isDefault: 'true',
+          });
 
-        expect(options.subnetGroupNameTag).toEqual(undefined);
-      });
+          expect(options.subnetGroupNameTag).toEqual(undefined);
+        }
+      );
 
       const stack = new Stack();
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
@@ -243,15 +245,17 @@ describe('vpc from lookup', () => {
       expect(subnet.ipv4CidrBlock).toEqual('10.100.0.0/24');
 
       restoreContextProvider(previous);
-
     });
     test('passes account and region', () => {
-      const previous = mockVpcContextProviderWith({
-        vpcId: 'vpc-1234',
-        subnetGroups: [],
-      }, options => {
-        expect(options.region).toEqual('region-1234');
-      });
+      const previous = mockVpcContextProviderWith(
+        {
+          vpcId: 'vpc-1234',
+          subnetGroups: [],
+        },
+        (options) => {
+          expect(options.region).toEqual('region-1234');
+        }
+      );
 
       const stack = new Stack();
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
@@ -265,13 +269,16 @@ describe('vpc from lookup', () => {
     });
 
     test('passes region to LookedUpVpc correctly', () => {
-      const previous = mockVpcContextProviderWith({
-        vpcId: 'vpc-1234',
-        subnetGroups: [],
-        region: 'region-1234',
-      }, options => {
-        expect(options.region).toEqual('region-1234');
-      });
+      const previous = mockVpcContextProviderWith(
+        {
+          vpcId: 'vpc-1234',
+          subnetGroups: [],
+          region: 'region-1234',
+        },
+        (options) => {
+          expect(options.region).toEqual('region-1234');
+        }
+      );
 
       const stack = new Stack();
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
@@ -300,14 +307,17 @@ describe('vpc from lookup', () => {
     });
 
     test('passes owner account id to context query correctly', () => {
-      const previous = mockVpcContextProviderWith({
-        vpcId: 'vpc-1234',
-        subnetGroups: [],
-        region: 'region-1234',
-        ownerAccountId: '123456789012',
-      }, options => {
-        expect(options.filter['owner-id']).toEqual('123456789012');
-      });
+      const previous = mockVpcContextProviderWith(
+        {
+          vpcId: 'vpc-1234',
+          subnetGroups: [],
+          region: 'region-1234',
+          ownerAccountId: '123456789012',
+        },
+        (options) => {
+          expect(options.filter['owner-id']).toEqual('123456789012');
+        }
+      );
 
       const stack = new Stack();
       const vpc = Vpc.fromLookup(stack, 'Vpc', {
@@ -344,7 +354,7 @@ describe('vpc from lookup', () => {
       restoreContextProvider(previous);
     });
 
-    test('a looked up VPC falls back to the parent stack\'s account and region', () => {
+    test("a looked up VPC falls back to the parent stack's account and region", () => {
       const previous = mockVpcContextProviderWith({
         vpcId: 'vpc-1234',
         subnetGroups: [],
@@ -387,7 +397,8 @@ interface MockVpcContextResponse {
 
 function mockVpcContextProviderWith(
   response: MockVpcContextResponse,
-  paramValidator?: (options: cxschema.VpcContextQuery) => void) {
+  paramValidator?: (options: cxschema.VpcContextQuery) => void
+) {
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks
@@ -417,6 +428,8 @@ function mockVpcContextProviderWith(
   return previous;
 }
 
-function restoreContextProvider(previous: (scope: Construct, options: GetContextValueOptions) => GetContextValueResult): void {
+function restoreContextProvider(
+  previous: (scope: Construct, options: GetContextValueOptions) => GetContextValueResult
+): void {
   ContextProvider.getValue = previous;
 }

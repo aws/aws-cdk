@@ -104,7 +104,8 @@ describe('Addon', () => {
 
   test('handles an ARN with a different resource name format', () => {
     // GIVEN
-    const addonArn = 'arn:aws:eks:us-east-1:123456789012:addon/my-cluster/my-addon/90c81310-edbe-f297-f08b-154e35476d85';
+    const addonArn =
+      'arn:aws:eks:us-east-1:123456789012:addon/my-cluster/my-addon/90c81310-edbe-f297-f08b-154e35476d85';
 
     // WHEN
     const addon = Addon.fromAddonArn(stack, 'ImportedAddon', addonArn);

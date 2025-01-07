@@ -10,10 +10,12 @@ describe('resource policy', () => {
     const logGroup = new LogGroup(stack, 'LogGroup');
 
     // WHEN
-    logGroup.addToResourcePolicy(new PolicyStatement({
-      actions: ['logs:CreateLogStream'],
-      resources: ['*'],
-    }));
+    logGroup.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['logs:CreateLogStream'],
+        resources: ['*'],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
@@ -38,11 +40,13 @@ describe('resource policy', () => {
 
     // WHEN
     const resourcePolicy = new ResourcePolicy(stack, 'ResourcePolicy');
-    resourcePolicy.document.addStatements(new PolicyStatement({
-      actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-      principals: [new ServicePrincipal('es.amazonaws.com')],
-      resources: [logGroup.logGroupArn],
-    }));
+    resourcePolicy.document.addStatements(
+      new PolicyStatement({
+        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        principals: [new ServicePrincipal('es.amazonaws.com')],
+        resources: [logGroup.logGroupArn],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {

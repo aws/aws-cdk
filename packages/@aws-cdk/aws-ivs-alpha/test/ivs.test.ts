@@ -70,15 +70,22 @@ test('channel latency mode', () => {
 });
 
 test('channel from arn', () => {
-  const channel = ivs.Channel.fromChannelArn(stack, 'Channel', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
+  const channel = ivs.Channel.fromChannelArn(
+    stack,
+    'Channel',
+    'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh'
+  );
 
   expect(stack.resolve(channel.channelArn)).toBe('arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
 });
 
 test('channel invalid name throws validation error', () => {
-  expect(() => new ivs.Channel(stack, 'Channel', {
-    channelName: 'Would you like a carrot?',
-  })).toThrow('channelName must contain only numbers, letters, hyphens and underscores, got: \'Would you like a carrot?\'');
+  expect(
+    () =>
+      new ivs.Channel(stack, 'Channel', {
+        channelName: 'Would you like a carrot?',
+      })
+  ).toThrow("channelName must contain only numbers, letters, hyphens and underscores, got: 'Would you like a carrot?'");
 });
 
 test('playback key pair mandatory properties', () => {
@@ -104,10 +111,15 @@ test('playback key pair name', () => {
 });
 
 test('playback key pair invalid name throws validation error', () => {
-  expect(() => new ivs.PlaybackKeyPair(stack, 'PlaybackKeyPair', {
-    publicKeyMaterial: 'Carrots Are Orange',
-    playbackKeyPairName: 'Would you like a carrot?',
-  })).toThrow('playbackKeyPairName must contain only numbers, letters, hyphens and underscores, got: \'Would you like a carrot?\'');
+  expect(
+    () =>
+      new ivs.PlaybackKeyPair(stack, 'PlaybackKeyPair', {
+        publicKeyMaterial: 'Carrots Are Orange',
+        playbackKeyPairName: 'Would you like a carrot?',
+      })
+  ).toThrow(
+    "playbackKeyPairName must contain only numbers, letters, hyphens and underscores, got: 'Would you like a carrot?'"
+  );
 });
 
 test('stream key mandatory properties', () => {
@@ -140,7 +152,11 @@ test('channel and stream key.. at the same time', () => {
 });
 
 test('stream key from channel reference', () => {
-  const channel = ivs.Channel.fromChannelArn(stack, 'Channel', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
+  const channel = ivs.Channel.fromChannelArn(
+    stack,
+    'Channel',
+    'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh'
+  );
   channel.addStreamKey('StreamKey');
 
   Template.fromStack(stack).hasResourceProperties('AWS::IVS::StreamKey', {
@@ -149,20 +165,23 @@ test('stream key from channel reference', () => {
 });
 
 test('channel from invalid channel arn throws error', () => {
-  expect(() => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'this is an invalid arn, in fact, it is a carrot 🥕'))
-    .toThrow('ARNs must start with \"arn:\" and have at least 6 components: this is an invalid arn, in fact, it is a carrot 🥕');
+  expect(() =>
+    ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'this is an invalid arn, in fact, it is a carrot 🥕')
+  ).toThrow(
+    'ARNs must start with \"arn:\" and have at least 6 components: this is an invalid arn, in fact, it is a carrot 🥕'
+  );
 });
 
 test('channel from invalid channel arn service throws error', () => {
-  expect(
-    () => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ec2:us-west-2:123456789012:instance/abcdABCDefgh'))
-    .toThrow('Invalid service, expected \'ivs\', got \'ec2\'');
+  expect(() =>
+    ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ec2:us-west-2:123456789012:instance/abcdABCDefgh')
+  ).toThrow("Invalid service, expected 'ivs', got 'ec2'");
 });
 
 test('channel from invalid channel arn resource throws error', () => {
-  expect(
-    () => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ivs:us-west-2:123456789012:stream-key/abcdABCDefgh'))
-    .toThrow('Invalid resource, expected \'channel\', got \'stream-key\'');
+  expect(() =>
+    ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ivs:us-west-2:123456789012:stream-key/abcdABCDefgh')
+  ).toThrow("Invalid resource, expected 'channel', got 'stream-key'");
 });
 
 test('channel type advanced without preset setting', () => {

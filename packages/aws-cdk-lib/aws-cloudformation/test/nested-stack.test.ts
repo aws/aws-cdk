@@ -15,7 +15,9 @@ import { NestedStack } from '../lib/nested-stack';
 describeDeprecated('NestedStack', () => {
   test('fails if defined as a root', () => {
     // THEN
-    expect(() => new NestedStack(undefined as any, 'boom')).toThrow(/Nested stacks cannot be defined as a root construct/);
+    expect(() => new NestedStack(undefined as any, 'boom')).toThrow(
+      /Nested stacks cannot be defined as a root construct/
+    );
   });
 
   test('fails if defined without a parent stack', () => {
@@ -61,7 +63,9 @@ describeDeprecated('NestedStack', () => {
     const assembly = app.synth();
 
     // THEN
-    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${Names.uniqueId(nested)}.nested.template.json`), 'utf-8'));
+    const template = JSON.parse(
+      fs.readFileSync(path.join(assembly.directory, `${Names.uniqueId(nested)}.nested.template.json`), 'utf-8')
+    );
     expect(template).toEqual({
       Resources: {
         ResourceInNestedStack: {
@@ -82,15 +86,20 @@ describeDeprecated('NestedStack', () => {
     const assembly = app.synth();
 
     // THEN
-    expect(assembly.getStackByName(parent.stackName).assets).toEqual([{
-      path: 'parentstacknestedstack844892C0.nested.template.json',
-      id: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
-      packaging: 'file',
-      sourceHash: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
-      s3BucketParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345',
-      s3KeyParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6',
-      artifactHashParameter: 'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096ArtifactHash8DE450C7',
-    }]);
+    expect(assembly.getStackByName(parent.stackName).assets).toEqual([
+      {
+        path: 'parentstacknestedstack844892C0.nested.template.json',
+        id: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
+        packaging: 'file',
+        sourceHash: 'c639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096',
+        s3BucketParameter:
+          'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3BucketDA8C3345',
+        s3KeyParameter:
+          'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096S3VersionKey09D03EE6',
+        artifactHashParameter:
+          'AssetParametersc639c0a5e7320758aa22589669ecebc98f185b711300b074f53998c8f9a45096ArtifactHash8DE450C7',
+      },
+    ]);
   });
 
   test('aws::cloudformation::stack is synthesized in the parent scope', () => {
@@ -240,7 +249,6 @@ describeDeprecated('NestedStack', () => {
   test('references to a resource from the parent stack in a nested stack is translated into a cfn parameter', () => {
     // WHEN
     class MyNestedStack extends NestedStack {
-
       constructor(scope: Construct, id: string, resourceFromParent: CfnResource) {
         super(scope, id);
 
@@ -273,26 +281,20 @@ describeDeprecated('NestedStack', () => {
 
     // nested template should use a parameter to reference the resource from the parent stack
     Template.fromStack(nested).templateMatches({
-      Resources:
-      {
-        resource:
-        {
+      Resources: {
+        resource: {
           Type: 'AWS::Child::Resource',
-          Properties:
-            { ReferenceToResourceInParentStack: { Ref: 'referencetoparentparentresourceD56EA8F7Ref' } },
+          Properties: { ReferenceToResourceInParentStack: { Ref: 'referencetoparentparentresourceD56EA8F7Ref' } },
         },
-        resource2:
-        {
+        resource2: {
           Type: 'My::Resource::2',
-          Properties:
-          {
+          Properties: {
             Prop1: { Ref: 'referencetoparentparentresourceD56EA8F7Attr' },
             Prop2: { Ref: 'referencetoparentparentresourceD56EA8F7Ref' },
           },
         },
       },
-      Parameters:
-      {
+      Parameters: {
         referencetoparentparentresourceD56EA8F7Ref: { Type: 'String' },
         referencetoparentparentresourceD56EA8F7Attr: { Type: 'String' },
       },
@@ -305,10 +307,7 @@ describeDeprecated('NestedStack', () => {
           Ref: 'parentresource',
         },
         referencetoparentparentresourceD56EA8F7Attr: {
-          'Fn::GetAtt': [
-            'parentresource',
-            'Attr',
-          ],
+          'Fn::GetAtt': ['parentresource', 'Attr'],
         },
       },
     });
@@ -355,10 +354,7 @@ describeDeprecated('NestedStack', () => {
     // parent template should pass in the value through the parameter
     Template.fromStack(parentStack).hasResourceProperties('AWS::Parent::Resource', {
       RefToResourceInNestedStack: {
-        'Fn::GetAtt': [
-          'nestedNestedStacknestedNestedStackResource3DD143BF',
-          'Outputs.parentnestedresource4D680677Ref',
-        ],
+        'Fn::GetAtt': ['nestedNestedStacknestedNestedStackResource3DD143BF', 'Outputs.parentnestedresource4D680677Ref'],
       },
     });
   });
@@ -436,7 +432,7 @@ describeDeprecated('NestedStack', () => {
 
     // THEN
     const manifest = app.synth();
-    const consumerDeps = manifest.getStackArtifact(consumerTopLevel.artifactId).dependencies.map(d => d.id);
+    const consumerDeps = manifest.getStackArtifact(consumerTopLevel.artifactId).dependencies.map((d) => d.id);
     expect(consumerDeps).toEqual(['ProducerTopLevel']);
   });
 
@@ -469,10 +465,7 @@ describeDeprecated('NestedStack', () => {
       Outputs: {
         Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute: {
           Value: {
-            'Fn::GetAtt': [
-              'ResourceInNestedStack',
-              'MyAttribute',
-            ],
+            'Fn::GetAtt': ['ResourceInNestedStack', 'MyAttribute'],
           },
         },
       },
@@ -480,10 +473,18 @@ describeDeprecated('NestedStack', () => {
 
     // parent stack (stack1) should export this value
     expect(assembly.getStackByName(stack1.stackName).template.Outputs).toEqual({
-      ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3: {
-        Value: { 'Fn::GetAtt': ['NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B', 'Outputs.Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute'] },
-        Export: { Name: 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3' },
-      },
+      ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3:
+        {
+          Value: {
+            'Fn::GetAtt': [
+              'NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B',
+              'Outputs.Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute',
+            ],
+          },
+          Export: {
+            Name: 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3',
+          },
+        },
     });
 
     // consuming stack should use ImportValue to import the value from the parent stack
@@ -493,7 +494,8 @@ describeDeprecated('NestedStack', () => {
           Type: 'JustResource',
           Properties: {
             RefToSibling: {
-              'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3',
+              'Fn::ImportValue':
+                'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3',
             },
           },
         },
@@ -701,27 +703,51 @@ describeDeprecated('NestedStack', () => {
     nested1Template.resourceCountIs('Resource::1', 1);
     const nested2Template = nested1Template.toJSON();
     expect(nested2Template.Parameters).toEqual({
-      referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Type: 'String' },
-      referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Type: 'String' },
+      referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef:
+        { Type: 'String' },
+      referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref:
+        { Type: 'String' },
     });
 
     // parent stack should have two sets of parameters. one for the first nested stack and the second
     // for the second nested stack, passed in as parameters to the first
     const template = Template.fromStack(parent).toJSON();
     expect(template.Parameters).toEqual({
-      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6: { Type: 'String', Description: 'S3 bucket for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
-      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA: { Type: 'String', Description: 'S3 key for asset version "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
-      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cArtifactHash7DC546E0: { Type: 'String', Description: 'Artifact hash for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
-      [`AssetParameters${middleStackHash}S3Bucket${bucketSuffix}`]: { Type: 'String', Description: `S3 bucket for asset "${middleStackHash}"` },
-      [`AssetParameters${middleStackHash}S3VersionKey${versionSuffix}`]: { Type: 'String', Description: `S3 key for asset version "${middleStackHash}"` },
-      [`AssetParameters${middleStackHash}ArtifactHash${hashSuffix}`]: { Type: 'String', Description: `Artifact hash for asset "${middleStackHash}"` },
+      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6: {
+        Type: 'String',
+        Description: 'S3 bucket for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"',
+      },
+      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA: {
+        Type: 'String',
+        Description: 'S3 key for asset version "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"',
+      },
+      AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cArtifactHash7DC546E0: {
+        Type: 'String',
+        Description: 'Artifact hash for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"',
+      },
+      [`AssetParameters${middleStackHash}S3Bucket${bucketSuffix}`]: {
+        Type: 'String',
+        Description: `S3 bucket for asset "${middleStackHash}"`,
+      },
+      [`AssetParameters${middleStackHash}S3VersionKey${versionSuffix}`]: {
+        Type: 'String',
+        Description: `S3 key for asset version "${middleStackHash}"`,
+      },
+      [`AssetParameters${middleStackHash}ArtifactHash${hashSuffix}`]: {
+        Type: 'String',
+        Description: `Artifact hash for asset "${middleStackHash}"`,
+      },
     });
 
     // proxy asset params to nested stack
     Template.fromStack(parent).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6' },
-        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA' },
+        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef:
+          { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6' },
+        referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref:
+          {
+            Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA',
+          },
       },
     });
 
@@ -750,7 +776,8 @@ describeDeprecated('NestedStack', () => {
     const consumerTemplate = casm.getStackArtifact(consumerStack.artifactId).template;
 
     // check that the consuming resource references the expected export name
-    const outputName = 'ExportsOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsProducerNested1Nested2NestedStackNested2NestedStackResource1E6FA3C3OutputsProducerNested1Nested238A89CC5Ref2E9E52EA';
+    const outputName =
+      'ExportsOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsProducerNested1Nested2NestedStackNested2NestedStackResource1E6FA3C3OutputsProducerNested1Nested238A89CC5Ref2E9E52EA';
     const exportName = producerTemplate.Outputs[outputName].Export.Name;
     const importName = consumerTemplate.Resources.ConsumingResource.Properties.RefToResource['Fn::ImportValue'];
     expect(exportName).toEqual(importName);
@@ -781,19 +808,41 @@ describeDeprecated('NestedStack', () => {
 
     // two sets of asset parameters: one for the nested stack itself and one as a proxy for the asset within the stack
     expect(template.Parameters).toEqual({
-      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637: { Type: 'String', Description: 'S3 bucket for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
-      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2: { Type: 'String', Description: 'S3 key for asset version "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
-      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281ArtifactHash373B14D2: { Type: 'String', Description: 'Artifact hash for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
-      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3Bucket3C4265E9: { Type: 'String', Description: 'S3 bucket for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
-      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3VersionKey8E981535: { Type: 'String', Description: 'S3 key for asset version "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
-      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71ArtifactHash45A28583: { Type: 'String', Description: 'Artifact hash for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637: {
+        Type: 'String',
+        Description: 'S3 bucket for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"',
+      },
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2: {
+        Type: 'String',
+        Description: 'S3 key for asset version "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"',
+      },
+      AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281ArtifactHash373B14D2: {
+        Type: 'String',
+        Description: 'Artifact hash for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"',
+      },
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3Bucket3C4265E9: {
+        Type: 'String',
+        Description: 'S3 bucket for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"',
+      },
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3VersionKey8E981535: {
+        Type: 'String',
+        Description: 'S3 key for asset version "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"',
+      },
+      AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71ArtifactHash45A28583: {
+        Type: 'String',
+        Description: 'Artifact hash for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"',
+      },
     });
 
     // asset proxy parameters are passed to the nested stack
     Template.fromStack(parent).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3Bucket82C55B96Ref: { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637' },
-        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyA43C3CC6Ref: { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2' },
+        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3Bucket82C55B96Ref:
+          { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637' },
+        referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyA43C3CC6Ref:
+          {
+            Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2',
+          },
       },
     });
 
@@ -838,9 +887,12 @@ describeDeprecated('NestedStack', () => {
         id: 'fcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5',
         packaging: 'file',
         sourceHash: 'fcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5',
-        s3BucketParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3Bucket67A749F8',
-        s3KeyParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3VersionKeyE1E6A8D4',
-        artifactHashParameter: 'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5ArtifactHash0AEDBE8A',
+        s3BucketParameter:
+          'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3Bucket67A749F8',
+        s3KeyParameter:
+          'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5S3VersionKeyE1E6A8D4',
+        artifactHashParameter:
+          'AssetParametersfcdaee79eb79f37eca3a9b1cc0cc9ba150e4eea8c5d6d0c343cb6cd9dc68e2e5ArtifactHash0AEDBE8A',
       },
     ]);
   });
@@ -893,10 +945,7 @@ describeDeprecated('NestedStack', () => {
       Outputs: {
         nestedresourceinnested59B1F01CConsumedAttribute: {
           Value: {
-            'Fn::GetAtt': [
-              'resourceinnested',
-              'Consumed.Attribute',
-            ],
+            'Fn::GetAtt': ['resourceinnested', 'Consumed.Attribute'],
           },
         },
       },
@@ -932,9 +981,12 @@ describeDeprecated('NestedStack', () => {
     const asm = app.synth();
     const missing = asm.manifest.missing;
 
-    expect(missing && missing.find(m => {
-      return (m.key === expectedKey);
-    })).toBeTruthy();
+    expect(
+      missing &&
+        missing.find((m) => {
+          return m.key === expectedKey;
+        })
+    ).toBeTruthy();
   });
 
   test('3-level stacks: legacy synthesizer parameters are added to the middle-level stack', () => {
@@ -953,7 +1005,9 @@ describeDeprecated('NestedStack', () => {
 
     // THEN
     const asm = app.synth();
-    const middleTemplate = JSON.parse(fs.readFileSync(path.join(asm.directory, middle.templateFile), { encoding: 'utf-8' }));
+    const middleTemplate = JSON.parse(
+      fs.readFileSync(path.join(asm.directory, middle.templateFile), { encoding: 'utf-8' })
+    );
 
     const hash = 'bc3c51e4d3545ee0a0069401e5a32c37b66d044b983f12de416ba1576ecaf0a4';
     expect(middleTemplate.Parameters ?? {}).toEqual({
@@ -983,12 +1037,14 @@ describeDeprecated('NestedStack', () => {
     // THEN
     Template.fromStack(top).hasResourceProperties('AWS::CloudFormation::Stack', {
       Parameters: {
-        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3Bucket5DA5D2E7Ref: {
-          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3BucketDD4D96B5',
-        },
-        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey8FBE5C12Ref: {
-          Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey83E381F3',
-        },
+        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3Bucket5DA5D2E7Ref:
+          {
+            Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3BucketDD4D96B5',
+          },
+        referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey8FBE5C12Ref:
+          {
+            Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3VersionKey83E381F3',
+          },
         referencetostacktoplevelBB16BF13Ref: {
           Ref: 'toplevel',
         },
@@ -1072,12 +1128,14 @@ describeDeprecated('NestedStack', () => {
         [paramName]: { Ref: 'ResourceInGrandparent' },
 
         // these are for the asset of the bottom nested stack
-        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket06EEE58DRef: {
-          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket01877C2E',
-        },
-        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKeyD3B04909Ref: {
-          Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKey5765F084',
-        },
+        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket06EEE58DRef:
+          {
+            Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3Bucket01877C2E',
+          },
+        referencetoGrandparentAssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKeyD3B04909Ref:
+          {
+            Ref: 'AssetParameters3208f43b793a1dbe28ca02cf31fb975489071beb42c492b22dc3d32decc3b4b7S3VersionKey5765F084',
+          },
       },
     });
   });

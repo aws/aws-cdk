@@ -66,8 +66,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
     private readonly queue: sqs.IQueue,
     private readonly props: SendToQueueProps
   ) {
-    this.integrationPattern =
-      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -75,16 +74,12 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(
-        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SQS.`
-      );
+      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SQS.`);
     }
 
     if (props.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new Error(
-          'Task Token is missing in messageBody (pass JsonPath.taskToken somewhere in messageBody)'
-        );
+        throw new Error('Task Token is missing in messageBody (pass JsonPath.taskToken somewhere in messageBody)');
       }
     }
   }

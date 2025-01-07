@@ -4,16 +4,7 @@ import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import {
-  IResource,
-  PhysicalName,
-  RemovalPolicy,
-  Resource,
-  FeatureFlags,
-  Stack,
-  Tags,
-  CfnResource,
-} from '../../core';
+import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
 /**
@@ -197,10 +188,7 @@ export abstract class FlowLogDestination {
   /**
    * Use CloudWatch logs as the destination
    */
-  public static toCloudWatchLogs(
-    logGroup?: logs.ILogGroup,
-    iamRole?: iam.IRole
-  ): FlowLogDestination {
+  public static toCloudWatchLogs(logGroup?: logs.ILogGroup, iamRole?: iam.IRole): FlowLogDestination {
     return new CloudWatchLogsDestination({
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,
@@ -216,11 +204,7 @@ export abstract class FlowLogDestination {
    * @param keyPrefix optional prefix within the bucket to write logs to
    * @param options additional s3 destination options
    */
-  public static toS3(
-    bucket?: s3.IBucket,
-    keyPrefix?: string,
-    options?: S3DestinationOptions
-  ): FlowLogDestination {
+  public static toS3(bucket?: s3.IBucket, keyPrefix?: string, options?: S3DestinationOptions): FlowLogDestination {
     return new S3Destination({
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket: bucket,
@@ -382,8 +366,7 @@ class S3Destination extends FlowLogDestination {
           ? {
               fileFormat: this.props.destinationOptions.fileFormat ?? FlowLogFileFormat.PLAIN_TEXT,
               perHourPartition: this.props.destinationOptions.perHourPartition ?? false,
-              hiveCompatiblePartitions:
-                this.props.destinationOptions.hiveCompatiblePartitions ?? false,
+              hiveCompatiblePartitions: this.props.destinationOptions.hiveCompatiblePartitions ?? false,
             }
           : undefined,
     };
@@ -880,9 +863,7 @@ export class FlowLog extends FlowLogBase {
 
     let logDestination: string | undefined = undefined;
     if (this.bucket) {
-      logDestination = this.keyPrefix
-        ? this.bucket.arnForObjects(this.keyPrefix)
-        : this.bucket.bucketArn;
+      logDestination = this.keyPrefix ? this.bucket.arnForObjects(this.keyPrefix) : this.bucket.bucketArn;
     }
     if (this.deliveryStreamArn) {
       logDestination = this.deliveryStreamArn;
@@ -902,14 +883,9 @@ export class FlowLog extends FlowLogBase {
       props.resourceType.resourceType === 'TransitGatewayAttachment'
     ) {
       if (props.trafficType) {
-        throw new Error(
-          'trafficType is not supported for Transit Gateway and Transit Gateway Attachment'
-        );
+        throw new Error('trafficType is not supported for Transit Gateway and Transit Gateway Attachment');
       }
-      if (
-        props.maxAggregationInterval &&
-        props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE
-      ) {
+      if (props.maxAggregationInterval && props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE) {
         throw new Error(
           'maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment'
         );
@@ -937,8 +913,7 @@ export class FlowLog extends FlowLogBase {
     }
 
     // we must remove a flow log configuration first before deleting objects.
-    const deleteObjects = this.bucket?.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node
-      .defaultChild;
+    const deleteObjects = this.bucket?.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
     if (deleteObjects instanceof CfnResource) {
       flowLog.addDependency(deleteObjects);
     }

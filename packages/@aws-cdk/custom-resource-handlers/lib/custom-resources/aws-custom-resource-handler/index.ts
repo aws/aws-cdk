@@ -35,8 +35,7 @@ export async function handler(
       case 'Update':
       case 'Delete':
         physicalResourceId =
-          event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ??
-          event.PhysicalResourceId;
+          event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
         break;
     }
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
@@ -46,10 +45,7 @@ export async function handler(
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 
-      let awsSdk = await loadAwsSdk(
-        apiCall.v3PackageName,
-        event.ResourceProperties.InstallLatestAwsSdk
-      );
+      let awsSdk = await loadAwsSdk(apiCall.v3PackageName, event.ResourceProperties.InstallLatestAwsSdk);
 
       console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
 
@@ -78,10 +74,7 @@ export async function handler(
       } catch (e: any) {
         // empirecal evidence show e.name is not always set
         const exceptionName = e.name ?? e.constructor.name;
-        if (
-          !call.ignoreErrorCodesMatching ||
-          !new RegExp(call.ignoreErrorCodesMatching).test(exceptionName)
-        ) {
+        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(exceptionName)) {
           throw e;
         }
       }

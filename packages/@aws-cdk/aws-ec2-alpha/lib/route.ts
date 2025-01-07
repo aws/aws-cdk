@@ -518,9 +518,7 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
     const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
     if (overlap) {
-      throw new Error(
-        'CIDR block should not overlap with each other for establishing a peering connection'
-      );
+      throw new Error('CIDR block should not overlap with each other for establishing a peering connection');
     }
     if (props.vpcPeeringConnectionName) {
       Tags.of(this).add(NAME_TAG, props.vpcPeeringConnectionName);
@@ -747,15 +745,10 @@ export class Route extends Resource implements IRouteV2 {
       this.destinationIpv4Cidr = props.destination;
     }
 
-    if (
-      this.target.gateway?.routerType === RouterType.EGRESS_ONLY_INTERNET_GATEWAY &&
-      isDestinationIpv4
-    ) {
+    if (this.target.gateway?.routerType === RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
       throw new Error('Egress only internet gateway does not support IPv4 routing');
     }
-    this.targetRouterType = this.target.gateway
-      ? this.target.gateway.routerType
-      : RouterType.VPC_ENDPOINT;
+    this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
     if (!(this.target.endpoint instanceof GatewayVpcEndpoint)) {
       this.resource = new CfnRoute(this, 'Route', {

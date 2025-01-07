@@ -9,14 +9,7 @@
  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-import {
-  AddressFamily,
-  AwsServiceName,
-  IpCidr,
-  Ipam,
-  IpamPoolPublicIpSource,
-  SubnetV2,
-} from '../lib';
+import { AddressFamily, AwsServiceName, IpCidr, Ipam, IpamPoolPublicIpSource, SubnetV2 } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';

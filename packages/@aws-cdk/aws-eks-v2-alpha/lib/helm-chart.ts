@@ -145,9 +145,7 @@ export class HelmChart extends Construct {
     }
 
     if (this.chartAsset && (this.repository || this.version)) {
-      throw new Error(
-        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'"
-      );
+      throw new Error("Neither 'repository' nor 'version' can be used when configuring 'chartAsset'");
     }
 
     // default not to wait

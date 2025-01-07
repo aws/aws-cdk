@@ -25,7 +25,7 @@ test('simple use case', () => {
 
   // verify that metadata contains an "aws:cdk:asset" entry with
   // the correct information
-  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.node.metadata.find((m) => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // verify that now the template contains parameters for this asset
@@ -36,15 +36,26 @@ test('simple use case', () => {
     id: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
     packaging: 'zip',
     sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-    s3BucketParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
-    s3KeyParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9',
-    artifactHashParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
+    s3BucketParameter:
+      'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
+    s3KeyParameter:
+      'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9',
+    artifactHashParameter:
+      'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
   });
 
-  const template = JSON.parse(fs.readFileSync(path.join(session.directory, 'MyStack.template.json'), { encoding: 'utf-8' }));
+  const template = JSON.parse(
+    fs.readFileSync(path.join(session.directory, 'MyStack.template.json'), { encoding: 'utf-8' })
+  );
 
-  expect(template.Parameters.AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B.Type).toBe('String');
-  expect(template.Parameters.AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9.Type).toBe('String');
+  expect(
+    template.Parameters.AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B
+      .Type
+  ).toBe('String');
+  expect(
+    template.Parameters
+      .AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9.Type
+  ).toBe('String');
 });
 
 test('verify that the app resolves tokens in metadata', () => {
@@ -69,9 +80,12 @@ test('verify that the app resolves tokens in metadata', () => {
     id: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
     packaging: 'zip',
     sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-    s3BucketParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
-    s3KeyParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9',
-    artifactHashParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
+    s3BucketParameter:
+      'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
+    s3KeyParameter:
+      'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9',
+    artifactHashParameter:
+      'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
   });
 });
 
@@ -84,7 +98,7 @@ test('"file" assets', () => {
   const stack = new cdk.Stack(app);
   const filePath = path.join(__dirname, 'file-asset.txt');
   new Asset(stack, 'MyAsset', { path: filePath });
-  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.node.metadata.find((m) => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // synthesize first so "prepare" is called
@@ -95,18 +109,25 @@ test('"file" assets', () => {
     packaging: 'file',
     id: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197',
     sourceHash: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197',
-    s3BucketParameter: 'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A',
-    s3KeyParameter: 'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35',
-    artifactHashParameter: 'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67',
+    s3BucketParameter:
+      'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A',
+    s3KeyParameter:
+      'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35',
+    artifactHashParameter:
+      'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197ArtifactHash22BFFA67',
   });
 
   // verify that now the template contains parameters for this asset
-  expect(template.findParameters('AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A')
-    .AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A.Type)
-    .toBe('String');
-  expect(template.findParameters('AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35')
-    .AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35.Type)
-    .toBe('String');
+  expect(
+    template.findParameters(
+      'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A'
+    ).AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3Bucket2C60F94A.Type
+  ).toBe('String');
+  expect(
+    template.findParameters(
+      'AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35'
+    ).AssetParameters78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197S3VersionKey9482DC35.Type
+  ).toBe('String');
 });
 
 test('"readers" or "grantRead" can be used to grant read permissions on the asset to a principal', () => {
@@ -134,8 +155,33 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }]] },
-            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }, '/*']] },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':s3:::',
+                  {
+                    Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
+                  },
+                ],
+              ],
+            },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':s3:::',
+                  {
+                    Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
+                  },
+                  '/*',
+                ],
+              ],
+            },
           ],
         },
       ],
@@ -145,16 +191,22 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
 
 test('fails if path is empty', () => {
   const stack = new cdk.Stack();
-  expect(() => new Asset(stack, 'MyDirectory', {
-    path: '',
-  })).toThrow(/Asset path cannot be empty/);
+  expect(
+    () =>
+      new Asset(stack, 'MyDirectory', {
+        path: '',
+      })
+  ).toThrow(/Asset path cannot be empty/);
 });
 
 test('fails if directory not found', () => {
   const stack = new cdk.Stack();
-  expect(() => new Asset(stack, 'MyDirectory', {
-    path: '/path/not/found/' + Math.random() * 999999,
-  })).toThrow(/Cannot find asset/);
+  expect(
+    () =>
+      new Asset(stack, 'MyDirectory', {
+        path: '/path/not/found/' + Math.random() * 999999,
+      })
+  ).toThrow(/Cannot find asset/);
 });
 
 test('multiple assets under the same parent', () => {
@@ -162,8 +214,12 @@ test('multiple assets under the same parent', () => {
   const stack = new cdk.Stack();
 
   // WHEN
-  expect(() => new Asset(stack, 'MyDirectory1', { path: path.join(__dirname, 'sample-asset-directory') })).not.toThrow();
-  expect(() => new Asset(stack, 'MyDirectory2', { path: path.join(__dirname, 'sample-asset-directory') })).not.toThrow();
+  expect(
+    () => new Asset(stack, 'MyDirectory1', { path: path.join(__dirname, 'sample-asset-directory') })
+  ).not.toThrow();
+  expect(
+    () => new Asset(stack, 'MyDirectory2', { path: path.join(__dirname, 'sample-asset-directory') })
+  ).not.toThrow();
 });
 
 test('isFile indicates if the asset represents a single file', () => {
@@ -245,20 +301,27 @@ test('asset metadata is only emitted if ASSET_RESOURCE_METADATA_ENABLED_CONTEXT 
   asset.addResourceMetadata(resource, 'PropName');
 
   // THEN
-  Template.fromStack(stack).hasResource('My::Resource::Type', Match.not({
-    Metadata: {
-      'aws:asset:path': SAMPLE_ASSET_DIR,
-      'aws:asset:is-bundled': false,
-      'aws:asset:property': 'PropName',
-    },
-  }));
+  Template.fromStack(stack).hasResource(
+    'My::Resource::Type',
+    Match.not({
+      Metadata: {
+        'aws:asset:path': SAMPLE_ASSET_DIR,
+        'aws:asset:is-bundled': false,
+        'aws:asset:property': 'PropName',
+      },
+    })
+  );
 });
 
 test('nested assemblies share assets: legacy synth edition', () => {
   // GIVEN
   const app = new cdk.App();
-  const stack1 = new cdk.Stack(new cdk.Stage(app, 'Stage1'), 'Stack', { synthesizer: new cdk.LegacyStackSynthesizer() });
-  const stack2 = new cdk.Stack(new cdk.Stage(app, 'Stage2'), 'Stack', { synthesizer: new cdk.LegacyStackSynthesizer() });
+  const stack1 = new cdk.Stack(new cdk.Stage(app, 'Stage1'), 'Stack', {
+    synthesizer: new cdk.LegacyStackSynthesizer(),
+  });
+  const stack2 = new cdk.Stack(new cdk.Stage(app, 'Stage2'), 'Stack', {
+    synthesizer: new cdk.LegacyStackSynthesizer(),
+  });
 
   // WHEN
   new Asset(stack1, 'MyAsset', { path: SAMPLE_ASSET_DIR });
@@ -277,7 +340,7 @@ test('nested assemblies share assets: legacy synth edition', () => {
           packaging: 'zip',
           path: `../asset.${SAMPLE_ASSET_HASH}`,
         }),
-      }),
+      })
     );
   }
 });
@@ -285,8 +348,12 @@ test('nested assemblies share assets: legacy synth edition', () => {
 test('nested assemblies share assets: default synth edition', () => {
   // GIVEN
   const app = new cdk.App();
-  const stack1 = new cdk.Stack(new cdk.Stage(app, 'Stage1'), 'Stack', { synthesizer: new cdk.DefaultStackSynthesizer() });
-  const stack2 = new cdk.Stack(new cdk.Stage(app, 'Stage2'), 'Stack', { synthesizer: new cdk.DefaultStackSynthesizer() });
+  const stack1 = new cdk.Stack(new cdk.Stage(app, 'Stage1'), 'Stack', {
+    synthesizer: new cdk.DefaultStackSynthesizer(),
+  });
+  const stack2 = new cdk.Stack(new cdk.Stage(app, 'Stage2'), 'Stack', {
+    synthesizer: new cdk.DefaultStackSynthesizer(),
+  });
 
   // WHEN
   new Asset(stack1, 'MyAsset', { path: SAMPLE_ASSET_DIR });
@@ -297,7 +364,9 @@ test('nested assemblies share assets: default synth edition', () => {
 
   // Read the asset manifests to verify the file paths
   for (const stageName of ['Stage1', 'Stage2']) {
-    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
+    const manifestArtifact = assembly
+      .getNestedAssembly(`assembly-${stageName}`)
+      .artifacts.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact)[0];
     const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 
     expect(manifest.files[SAMPLE_ASSET_HASH].source).toEqual({
@@ -328,7 +397,9 @@ describe('staging', () => {
     // THEN
     app.synth();
     expect(fs.existsSync(tempdir)).toBe(true);
-    expect(fs.existsSync(path.join(tempdir, 'asset.a7a79cdf84b802ea8b198059ff899cffc095a1b9606e919f98e05bf80779756b.zip'))).toBe(true);
+    expect(
+      fs.existsSync(path.join(tempdir, 'asset.a7a79cdf84b802ea8b198059ff899cffc095a1b9606e919f98e05bf80779756b.zip'))
+    ).toBe(true);
   });
 
   test('copy directory under .assets/fingerprint/**', () => {

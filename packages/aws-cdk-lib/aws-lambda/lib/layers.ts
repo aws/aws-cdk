@@ -98,9 +98,7 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
 
   public addPermission(id: string, permission: LayerVersionPermission) {
     if (permission.organizationId != null && permission.accountId !== '*') {
-      throw new Error(
-        `OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`
-      );
+      throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`);
     }
 
     new CfnLayerVersionPermission(this, id, {
@@ -152,11 +150,7 @@ export class LayerVersion extends LayerVersionBase {
   /**
    * Imports a layer version by ARN. Assumes it is compatible with all Lambda runtimes.
    */
-  public static fromLayerVersionArn(
-    scope: Construct,
-    id: string,
-    layerVersionArn: string
-  ): ILayerVersion {
+  public static fromLayerVersionArn(scope: Construct, id: string, layerVersionArn: string): ILayerVersion {
     return LayerVersion.fromLayerVersionAttributes(scope, id, {
       layerVersionArn,
       compatibleRuntimes: Runtime.ALL,
@@ -170,11 +164,7 @@ export class LayerVersion extends LayerVersionBase {
    * @param id    the id of the imported layer in the construct tree.
    * @param attrs the properties of the imported layer.
    */
-  public static fromLayerVersionAttributes(
-    scope: Construct,
-    id: string,
-    attrs: LayerVersionAttributes
-  ): ILayerVersion {
+  public static fromLayerVersionAttributes(scope: Construct, id: string, attrs: LayerVersionAttributes): ILayerVersion {
     if (attrs.compatibleRuntimes && attrs.compatibleRuntimes.length === 0) {
       throw new Error('Attempted to import a Lambda layer that supports no runtime!');
     }

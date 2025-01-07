@@ -53,9 +53,7 @@ export class KinesisStream implements events.IRuleTarget {
       role,
       input: this.props.message,
       targetResource: this.stream,
-      kinesisParameters: this.props.partitionKeyPath
-        ? { partitionKeyPath: this.props.partitionKeyPath }
-        : undefined,
+      kinesisParameters: this.props.partitionKeyPath ? { partitionKeyPath: this.props.partitionKeyPath } : undefined,
     };
   }
 }

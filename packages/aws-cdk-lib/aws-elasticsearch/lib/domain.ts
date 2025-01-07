@@ -993,12 +993,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantIndexRead(index: string, identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_ACTIONS,
-      `${this.domainArn}/${index}`,
-      `${this.domainArn}/${index}/*`
-    );
+    return this.grant(identity, perms.ES_READ_ACTIONS, `${this.domainArn}/${index}`, `${this.domainArn}/${index}/*`);
   }
 
   /**
@@ -1010,12 +1005,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantIndexWrite(index: string, identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_WRITE_ACTIONS,
-      `${this.domainArn}/${index}`,
-      `${this.domainArn}/${index}/*`
-    );
+    return this.grant(identity, perms.ES_WRITE_ACTIONS, `${this.domainArn}/${index}`, `${this.domainArn}/${index}/*`);
   }
 
   /**
@@ -1356,11 +1346,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @param attrs A `DomainAttributes` object.
    * @deprecated use opensearchservice module instead
    */
-  public static fromDomainAttributes(
-    scope: Construct,
-    id: string,
-    attrs: DomainAttributes
-  ): IDomain {
+  public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
     const { domainArn, domainEndpoint } = attrs;
     const domainName =
       cdk.Stack.of(scope).splitArn(domainArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName ??
@@ -1446,25 +1432,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const defaultInstanceType = 'r5.large.elasticsearch';
     const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
 
-    const dedicatedMasterType = initializeInstanceType(
-      defaultInstanceType,
-      props.capacity?.masterNodeInstanceType
-    );
+    const dedicatedMasterType = initializeInstanceType(defaultInstanceType, props.capacity?.masterNodeInstanceType);
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
-    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount)
-      ? true
-      : dedicatedMasterCount > 0;
+    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount) ? true : dedicatedMasterCount > 0;
 
-    const instanceType = initializeInstanceType(
-      defaultInstanceType,
-      props.capacity?.dataNodeInstanceType
-    );
+    const instanceType = initializeInstanceType(defaultInstanceType, props.capacity?.dataNodeInstanceType);
     const instanceCount = props.capacity?.dataNodes ?? 1;
 
-    const warmType = initializeInstanceType(
-      warmDefaultInstanceType,
-      props.capacity?.warmInstanceType
-    );
+    const warmType = initializeInstanceType(warmDefaultInstanceType, props.capacity?.warmInstanceType);
     const warmCount = props.capacity?.warmNodes ?? 0;
     const warmEnabled = cdk.Token.isUnresolved(warmCount) ? true : warmCount > 0;
 
@@ -1474,17 +1449,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3');
     }
 
-    const zoneAwarenessEnabled =
-      props.zoneAwareness?.enabled ?? props.zoneAwareness?.availabilityZoneCount != null;
+    const zoneAwarenessEnabled = props.zoneAwareness?.enabled ?? props.zoneAwareness?.availabilityZoneCount != null;
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     let subnets: ec2.ISubnet[] | undefined;
 
     if (props.vpc) {
-      subnets = selectSubnets(
-        props.vpc,
-        props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]
-      );
+      subnets = selectSubnets(props.vpc, props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]);
       securityGroups = props.securityGroups ?? [
         new ec2.SecurityGroup(this, 'SecurityGroup', {
           vpc: props.vpc,
@@ -1500,9 +1471,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       zoneAwarenessEnabled &&
       new Set(subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount
     ) {
-      throw new Error(
-        'When providing vpc options you need to provide a subnet for each AZ you are using'
-      );
+      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
     }
 
     if (
@@ -1510,9 +1479,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         (t) => !cdk.Token.isUnresolved(t) && !t.endsWith('.elasticsearch')
       )
     ) {
-      throw new Error(
-        'Master, data and UltraWarm node instance types must end with ".elasticsearch".'
-      );
+      throw new Error('Master, data and UltraWarm node instance types must end with ".elasticsearch".');
     }
 
     if (!cdk.Token.isUnresolved(warmType) && !warmType.startsWith('ultrawarm')) {
@@ -1586,8 +1553,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       : undefined;
 
     const encryptionAtRestEnabled =
-      props.encryptionAtRest?.enabled ??
-      (props.encryptionAtRest?.kmsKey != null || unsignedBasicAuthEnabled);
+      props.encryptionAtRest?.enabled ?? (props.encryptionAtRest?.kmsKey != null || unsignedBasicAuthEnabled);
     const nodeToNodeEncryptionEnabled = props.nodeToNodeEncryption ?? unsignedBasicAuthEnabled;
     const volumeSize = props.ebs?.volumeSize ?? 10;
     const volumeType = props.ebs?.volumeType ?? ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
@@ -1616,14 +1582,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
       }
       if (props.cognitoKibanaAuth != null) {
-        throw new Error(
-          'Cognito authentication for Kibana requires Elasticsearch version 5.1 or later.'
-        );
+        throw new Error('Cognito authentication for Kibana requires Elasticsearch version 5.1 or later.');
       }
       if (isSomeInstanceType('c5', 'i3', 'm5', 'r5')) {
-        throw new Error(
-          'C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later.'
-        );
+        throw new Error('C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later.');
       }
     }
 
@@ -1657,9 +1619,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (isInstanceType('t2.micro') && elasticsearchVersionNum > 2.3) {
-      throw new Error(
-        'The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.'
-      );
+      throw new Error('The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.');
     }
 
     if (isSomeInstanceType('t2', 't3') && warmEnabled) {
@@ -1669,23 +1629,17 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Only R3, I3 and r6gd support instance storage, per
     // https://aws.amazon.com/elasticsearch-service/pricing/
     if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd')) {
-      throw new Error(
-        'EBS volumes are required when using instance types other than r3, i3 or r6gd.'
-      );
+      throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
     }
 
     // Fine-grained access control requires node-to-node encryption, encryption at rest,
     // and enforced HTTPS.
     if (advancedSecurityEnabled) {
       if (!nodeToNodeEncryptionEnabled) {
-        throw new Error(
-          'Node-to-node encryption is required when fine-grained access control is enabled.'
-        );
+        throw new Error('Node-to-node encryption is required when fine-grained access control is enabled.');
       }
       if (!encryptionAtRestEnabled) {
-        throw new Error(
-          'Encryption-at-rest is required when fine-grained access control is enabled.'
-        );
+        throw new Error('Encryption-at-rest is required when fine-grained access control is enabled.');
       }
       if (!enforceHttps) {
         throw new Error('Enforce HTTPS is required when fine-grained access control is enabled.');
@@ -1695,9 +1649,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Validate fine grained access control enabled for audit logs, per
     // https://aws.amazon.com/about-aws/whats-new/2020/09/elasticsearch-audit-logs-now-available-on-amazon-elasticsearch-service/
     if (props.logging?.auditLogEnabled && !advancedSecurityEnabled) {
-      throw new Error(
-        'Fine-grained access control is required when audit logs publishing is enabled.'
-      );
+      throw new Error('Fine-grained access control is required when audit logs publishing is enabled.');
     }
 
     // Validate UltraWarm requirement for dedicated master nodes, per
@@ -1769,15 +1721,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
       // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
       // https://github.com/aws/aws-cdk/issues/5343
-      logGroupResourcePolicy = new LogGroupResourcePolicy(
-        this,
-        `ESLogGroupPolicy${this.node.addr}`,
-        {
-          // create a cloudwatch logs resource policy name that is unique to this domain instance
-          policyName: `ESLogPolicy${this.node.addr}`,
-          policyStatements: [logPolicyStatement],
-        }
-      );
+      logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
+        // create a cloudwatch logs resource policy name that is unique to this domain instance
+        policyName: `ESLogPolicy${this.node.addr}`,
+        policyStatements: [logPolicyStatement],
+      });
     }
 
     const logPublishing: Record<string, any> = {};
@@ -1906,14 +1854,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           );
         }
         if (props.domainName.length < 3 || props.domainName.length > 28) {
-          throw new Error(
-            `Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`
-          );
+          throw new Error(`Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`);
         }
         if (props.domainName[0] < 'a' || props.domainName[0] > 'z') {
-          throw new Error(
-            `Invalid domainName '${props.domainName}'. It must start with a lowercase letter`
-          );
+          throw new Error(`Invalid domainName '${props.domainName}'. It must start with a lowercase letter`);
         }
       }
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);

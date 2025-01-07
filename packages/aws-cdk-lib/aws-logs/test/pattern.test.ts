@@ -15,18 +15,13 @@ describe('pattern', () => {
     });
 
     test('disjunction of conjunctions', () => {
-      const pattern = FilterPattern.anyTermGroup(
-        ['foo', 'bar'],
-        ['baz'],
-      );
+      const pattern = FilterPattern.anyTermGroup(['foo', 'bar'], ['baz']);
 
       expect('?"foo" "bar" ?"baz"').toEqual(pattern.logPatternString);
     });
 
     test('dont prefix with ? if only one disjunction', () => {
-      const pattern = FilterPattern.anyTermGroup(
-        ['foo', 'bar'],
-      );
+      const pattern = FilterPattern.anyTermGroup(['foo', 'bar']);
 
       expect('"foo" "bar"').toEqual(pattern.logPatternString);
     });

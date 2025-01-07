@@ -407,17 +407,11 @@ abstract class SecretBase extends Resource implements ISecret {
     if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantDecrypt(
-        new kms.ViaServicePrincipal(
-          `secretsmanager.${Stack.of(this).region}.amazonaws.com`,
-          grantee.grantPrincipal
-        )
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal)
       );
     }
 
-    const crossAccount = Token.compareStrings(
-      Stack.of(this).account,
-      grantee.grantPrincipal.principalAccount || ''
-    );
+    const crossAccount = Token.compareStrings(Stack.of(this).account, grantee.grantPrincipal.principalAccount || '');
 
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
     if (
@@ -444,10 +438,7 @@ abstract class SecretBase extends Resource implements ISecret {
     if (this.encryptionKey) {
       // See https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantEncrypt(
-        new kms.ViaServicePrincipal(
-          `secretsmanager.${Stack.of(this).region}.amazonaws.com`,
-          grantee.grantPrincipal
-        )
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal)
       );
     }
 
@@ -541,27 +532,17 @@ export class Secret extends SecretBase {
 
   /** @deprecated use `fromSecretCompleteArn` or `fromSecretPartialArn` */
   public static fromSecretArn(scope: Construct, id: string, secretArn: string): ISecret {
-    const attrs = arnIsComplete(secretArn)
-      ? { secretCompleteArn: secretArn }
-      : { secretPartialArn: secretArn };
+    const attrs = arnIsComplete(secretArn) ? { secretCompleteArn: secretArn } : { secretPartialArn: secretArn };
     return Secret.fromSecretAttributes(scope, id, attrs);
   }
 
   /** Imports a secret by complete ARN. The complete ARN is the ARN with the Secrets Manager-supplied suffix. */
-  public static fromSecretCompleteArn(
-    scope: Construct,
-    id: string,
-    secretCompleteArn: string
-  ): ISecret {
+  public static fromSecretCompleteArn(scope: Construct, id: string, secretCompleteArn: string): ISecret {
     return Secret.fromSecretAttributes(scope, id, { secretCompleteArn });
   }
 
   /** Imports a secret by partial ARN. The partial ARN is the ARN without the Secrets Manager-supplied suffix. */
-  public static fromSecretPartialArn(
-    scope: Construct,
-    id: string,
-    secretPartialArn: string
-  ): ISecret {
+  public static fromSecretPartialArn(scope: Construct, id: string, secretPartialArn: string): ISecret {
     return Secret.fromSecretAttributes(scope, id, { secretPartialArn });
   }
 
@@ -629,11 +610,7 @@ export class Secret extends SecretBase {
    * @param id    the ID of the imported Secret in the construct tree.
    * @param attrs the attributes of the imported secret.
    */
-  public static fromSecretAttributes(
-    scope: Construct,
-    id: string,
-    attrs: SecretAttributes
-  ): ISecret {
+  public static fromSecretAttributes(scope: Construct, id: string, attrs: SecretAttributes): ISecret {
     let secretArn: string;
     let secretArnIsPartial: boolean;
 
@@ -651,9 +628,7 @@ export class Secret extends SecretBase {
         throw new Error('must use only one of `secretCompleteArn` or `secretPartialArn`');
       }
       if (attrs.secretCompleteArn && !arnIsComplete(attrs.secretCompleteArn)) {
-        throw new Error(
-          '`secretCompleteArn` does not appear to be complete; missing 6-character suffix'
-        );
+        throw new Error('`secretCompleteArn` does not appear to be complete; missing 6-character suffix');
       }
       [secretArn, secretArnIsPartial] = attrs.secretCompleteArn
         ? [attrs.secretCompleteArn, false]
@@ -695,12 +670,8 @@ export class Secret extends SecretBase {
 
     if (
       props.generateSecretString &&
-      (props.generateSecretString.secretStringTemplate ||
-        props.generateSecretString.generateStringKey) &&
-      !(
-        props.generateSecretString.secretStringTemplate &&
-        props.generateSecretString.generateStringKey
-      )
+      (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
+      !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)
     ) {
       throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
     }
@@ -742,9 +713,7 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
-    const parseOwnedSecretName = FeatureFlags.of(this).isEnabled(
-      cxapi.SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME
-    );
+    const parseOwnedSecretName = FeatureFlags.of(this).isEnabled(cxapi.SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME);
     this.secretName = parseOwnedSecretName
       ? parseSecretNameForOwnedSecret(this, this.secretArn, props.secretName)
       : parseSecretName(this, this.secretArn);
@@ -794,11 +763,7 @@ export class Secret extends SecretBase {
    */
   public addReplicaRegion(region: string, encryptionKey?: kms.IKey): void {
     const stack = Stack.of(this);
-    if (
-      !Token.isUnresolved(stack.region) &&
-      !Token.isUnresolved(region) &&
-      region === stack.region
-    ) {
+    if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
       throw new Error('Cannot add the region where this stack is deployed as a replica region.');
     }
 
@@ -1056,10 +1021,7 @@ export interface SecretStringGenerator {
 
 /** Parses the secret name from the ARN. */
 function parseSecretName(construct: IConstruct, secretArn: string) {
-  const resourceName = Stack.of(construct).splitArn(
-    secretArn,
-    ArnFormat.COLON_RESOURCE_NAME
-  ).resourceName;
+  const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (resourceName) {
     // Can't operate on the token to remove the SecretsManager suffix, so just return the full secret name
     if (Token.isUnresolved(resourceName)) {
@@ -1069,8 +1031,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
     // Secret resource names are in the format `${secretName}-${6-character SecretsManager suffix}`
     // If there is no hyphen (or 6-character suffix) assume no suffix was provided, and return the whole name.
     const lastHyphenIndex = resourceName.lastIndexOf('-');
-    const hasSecretsSuffix =
-      lastHyphenIndex !== -1 && resourceName.slice(lastHyphenIndex + 1).length === 6;
+    const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.slice(lastHyphenIndex + 1).length === 6;
     return hasSecretsSuffix ? resourceName.slice(0, lastHyphenIndex) : resourceName;
   }
   throw new Error('invalid ARN format; no secret name provided');
@@ -1085,15 +1046,8 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
  * Note: This is done rather than just returning the secret name passed in by the user to keep the relationship
  * explicit between the Secret and wherever the secretName might be used (i.e., using Tokens).
  */
-function parseSecretNameForOwnedSecret(
-  construct: Construct,
-  secretArn: string,
-  secretName?: string
-) {
-  const resourceName = Stack.of(construct).splitArn(
-    secretArn,
-    ArnFormat.COLON_RESOURCE_NAME
-  ).resourceName;
+function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, secretName?: string) {
+  const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (!resourceName) {
     throw new Error('invalid ARN format; no secret name provided');
   }

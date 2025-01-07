@@ -109,10 +109,7 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
  * Class representing the SageMaker Create Training Job task.
  *
  */
-export class SageMakerCreateTrainingJob
-  extends sfn.TaskStateBase
-  implements iam.IGrantable, ec2.IConnectable
-{
+export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -162,10 +159,7 @@ export class SageMakerCreateTrainingJob
     super(scope, id, props);
 
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(
-      this.integrationPattern,
-      SageMakerCreateTrainingJob.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, SageMakerCreateTrainingJob.SUPPORTED_INTEGRATION_PATTERNS);
 
     // set the default resource config if not defined.
     this.resourceConfig = props.resourceConfig || {
@@ -180,20 +174,13 @@ export class SageMakerCreateTrainingJob
     };
 
     // check that either algorithm name or image is defined
-    if (
-      !props.algorithmSpecification.algorithmName &&
-      !props.algorithmSpecification.trainingImage
-    ) {
-      throw new Error(
-        'Must define either an algorithm name or training image URI in the algorithm specification'
-      );
+    if (!props.algorithmSpecification.algorithmName && !props.algorithmSpecification.trainingImage) {
+      throw new Error('Must define either an algorithm name or training image URI in the algorithm specification');
     }
 
     // check that both algorithm name and image are not defined
     if (props.algorithmSpecification.algorithmName && props.algorithmSpecification.trainingImage) {
-      throw new Error(
-        'Cannot define both an algorithm name and training image URI in the algorithm specification'
-      );
+      throw new Error('Cannot define both an algorithm name and training image URI in the algorithm specification');
     }
 
     // validate algorithm name
@@ -347,9 +334,7 @@ export class SageMakerCreateTrainingJob
           ? config.instanceType.toString()
           : `ml.${config.instanceType}`,
         VolumeSizeInGB: config.volumeSize.toGibibytes(),
-        ...(config.volumeEncryptionKey
-          ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn }
-          : {}),
+        ...(config.volumeEncryptionKey ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {}),
       },
     };
   }
@@ -387,17 +372,13 @@ export class SageMakerCreateTrainingJob
     }
 
     if (algorithmName.length < 1 || 170 < algorithmName.length) {
-      throw new Error(
-        `Algorithm name length must be between 1 and 170, but got ${algorithmName.length}`
-      );
+      throw new Error(`Algorithm name length must be between 1 and 170, but got ${algorithmName.length}`);
     }
 
     const regex =
       /^(arn:aws[a-z\-]*:sagemaker:[a-z0-9\-]*:[0-9]{12}:[a-z\-]*\/)?([a-zA-Z0-9]([a-zA-Z0-9-]){0,62})(?<!-)$/;
     if (!regex.test(algorithmName)) {
-      throw new Error(
-        `Expected algorithm name to match pattern ${regex.source}, but got ${algorithmName}`
-      );
+      throw new Error(`Expected algorithm name to match pattern ${regex.source}, but got ${algorithmName}`);
     }
   }
 
@@ -461,11 +442,7 @@ export class SageMakerCreateTrainingJob
     // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
     const policyStatements = [
       new iam.PolicyStatement({
-        actions: [
-          'sagemaker:CreateTrainingJob',
-          'sagemaker:DescribeTrainingJob',
-          'sagemaker:StopTrainingJob',
-        ],
+        actions: ['sagemaker:CreateTrainingJob', 'sagemaker:DescribeTrainingJob', 'sagemaker:StopTrainingJob'],
         resources: [
           stack.formatArn({
             service: 'sagemaker',

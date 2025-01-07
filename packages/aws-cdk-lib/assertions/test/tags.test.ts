@@ -40,20 +40,22 @@ describe('Tags', () => {
       });
       const tags = Tags.fromStack(stack);
 
-      test('partial match succeeds', ()=>{
+      test('partial match succeeds', () => {
         tags.hasValues({
           'tag-one': Match.anyValue(),
         });
       });
 
-      test('complex match succeeds', ()=>{
-        tags.hasValues(Match.objectEquals({
-          'tag-one': Match.anyValue(),
-          'non-existent': Match.absent(),
-          'tag-three': Match.stringLikeRegexp('-3-'),
-          'tag-two': 'tag-2-value',
-          'tag-four': Match.anyValue(),
-        }));
+      test('complex match succeeds', () => {
+        tags.hasValues(
+          Match.objectEquals({
+            'tag-one': Match.anyValue(),
+            'non-existent': Match.absent(),
+            'tag-three': Match.stringLikeRegexp('-3-'),
+            'tag-two': 'tag-2-value',
+            'tag-four': Match.anyValue(),
+          })
+        );
       });
     });
 
@@ -63,9 +65,7 @@ describe('Tags', () => {
 
       // Since the tags are defaulted to the empty object, using the `absent()`
       // matcher will never work, instead throwing an error.
-      expect(() => tags.hasValues(Match.absent())).toThrow(
-        /^match.absent\(\) will never match Tags/i,
-      );
+      expect(() => tags.hasValues(Match.absent())).toThrow(/^match.absent\(\) will never match Tags/i);
     });
 
     test('no tags matches empty object successfully', () => {
@@ -84,7 +84,7 @@ describe('Tags', () => {
       expect(() =>
         tags.hasValues({
           'tag-one': 'mismatched value',
-        }),
+        })
       ).toThrow(/Expected mismatched value but received tag-one-value/);
     });
   });

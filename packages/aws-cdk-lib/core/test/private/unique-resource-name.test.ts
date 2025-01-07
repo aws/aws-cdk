@@ -12,7 +12,9 @@ describe('makeUniqueResourceName tests', () => {
   });
 
   test('unique resource name is shortened with a hash added when resource is top level and resource name is too long', () => {
-    const tooLongName = ['anamethatisslightlylongerthan256charactersthatisalsoatoplevelresourcesothereisonlyonevalueinthisarrayandapparentlybrevityisnotthestrongpointofthepersonwhonamedthisresourcewhichIbettheywillcometoregretlaterbutitiswhatitisanywhodlethisfunctionshouldshortenthis'];
+    const tooLongName = [
+      'anamethatisslightlylongerthan256charactersthatisalsoatoplevelresourcesothereisonlyonevalueinthisarrayandapparentlybrevityisnotthestrongpointofthepersonwhonamedthisresourcewhichIbettheywillcometoregretlaterbutitiswhatitisanywhodlethisfunctionshouldshortenthis',
+    ];
     const uniqueResourceName = makeUniqueResourceName(tooLongName, {});
 
     const expectedName = `anamethatisslightlylongerthan256charactersthatisalsoatoplevelresourcesothereisonlyonevalueinthisarrayandapparentlybrevityisngpointofthepersonwhonamedthisresourcewhichIbettheywillcometoregretlaterbutitiswhatitisanywhodlethisfunctionshouldshortenthis${pathHash(tooLongName)}`;
@@ -42,8 +44,11 @@ describe('makeUniqueResourceName tests', () => {
   });
 
   test('unique resource name removes special characters and makes no other changes when resouce is top level and too long with special characters but proper length without', () => {
-    const tooLongName = ['a-name-that-is-slightly-longer-than-256-characters-that-is-also-a-top-level-resource-so-there-is-only-one-value-in-this-array-and-apparently-brevity-is-not-the-strong-point-of-the-person-who-named-this-resource-which-I-bet-they-will-come-to-regret-later-but-it-is-what-it-is'];
-    const expectedName = 'anamethatisslightlylongerthan256charactersthatisalsoatoplevelresourcesothereisonlyonevalueinthisarrayandapparentlybrevityisnotthestrongpointofthepersonwhonamedthisresourcewhichIbettheywillcometoregretlaterbutitiswhatitis';
+    const tooLongName = [
+      'a-name-that-is-slightly-longer-than-256-characters-that-is-also-a-top-level-resource-so-there-is-only-one-value-in-this-array-and-apparently-brevity-is-not-the-strong-point-of-the-person-who-named-this-resource-which-I-bet-they-will-come-to-regret-later-but-it-is-what-it-is',
+    ];
+    const expectedName =
+      'anamethatisslightlylongerthan256charactersthatisalsoatoplevelresourcesothereisonlyonevalueinthisarrayandapparentlybrevityisnotthestrongpointofthepersonwhonamedthisresourcewhichIbettheywillcometoregretlaterbutitiswhatitis';
 
     expect(makeUniqueResourceName(tooLongName, {})).toEqual(expectedName);
   });
@@ -52,18 +57,24 @@ describe('makeUniqueResourceName tests', () => {
     const componentsPath = ['¯\\\_(ツ)_/¯-shruggie-gets-to-stay-¯\\\_(ツ)_/¯'];
     const expectedName = '¯\_(ツ)_/¯shruggiegetstostay¯\_(ツ)_/¯';
 
-    expect(makeUniqueResourceName(componentsPath, { allowedSpecialCharacters: '¯\\\_(ツ)/', maxLength: 200 })).toEqual(expectedName);
+    expect(makeUniqueResourceName(componentsPath, { allowedSpecialCharacters: '¯\\\_(ツ)/', maxLength: 200 })).toEqual(
+      expectedName
+    );
   });
 
   test('unique resource name leaves in allowed special characters and adds no hash or separators when resource is top level and resouce name is short enougn', () => {
     const componentsPath = ['¯\\\_(ツ)_/¯-shruggie-gets-to-stay-¯\\\_(ツ)_/¯'];
     const expectedName = '¯\_(ツ)_/¯shruggiegetstostay¯\_(ツ)_/¯';
 
-    expect(makeUniqueResourceName(componentsPath, { allowedSpecialCharacters: '¯\\\_(ツ)/', maxLength: 200, separator: '-' })).toEqual(expectedName);
+    expect(
+      makeUniqueResourceName(componentsPath, { allowedSpecialCharacters: '¯\\\_(ツ)/', maxLength: 200, separator: '-' })
+    ).toEqual(expectedName);
   });
 
   test('unique resource name is shortened with a hash and separator added when resource is top level, resource name is too long, and separator is provided', () => {
-    const tooLongName = ['anamethatisslightlylongerthan256charactersthatisalsoatoplevelresourcesothereisonlyonevalueinthisarrayandapparentlybrevityisnotthestrongpointofthepersonwhonamedthisresourcewhichIbettheywillcometoregretlaterbutitiswhatitisanywhodlethisfunctionshouldshortenthis'];
+    const tooLongName = [
+      'anamethatisslightlylongerthan256charactersthatisalsoatoplevelresourcesothereisonlyonevalueinthisarrayandapparentlybrevityisnotthestrongpointofthepersonwhonamedthisresourcewhichIbettheywillcometoregretlaterbutitiswhatitisanywhodlethisfunctionshouldshortenthis',
+    ];
     const uniqueResourceName = makeUniqueResourceName(tooLongName, { separator: '~' });
 
     const expectedName = `anamethatisslightlylongerthan256charactersthatisalsoatoplevelresourcesothereisonlyonevalueinthisarrayandapparentlybrevityisnpointofthepersonwhonamedthisresourcewhichIbettheywillcometoregretlaterbutitiswhatitisanywhodlethisfunctionshouldshortenthis~${pathHash(tooLongName)}`;

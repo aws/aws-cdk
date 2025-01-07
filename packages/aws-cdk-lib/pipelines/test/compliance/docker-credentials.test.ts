@@ -31,7 +31,6 @@ afterEach(() => {
 });
 
 test('synth action receives install commands and access to relevant credentials', () => {
-
   const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
   pipeline.addStage(new DockerAssetApp(app, 'App1'));
 
@@ -43,29 +42,33 @@ test('synth action receives install commands and access to relevant credentials'
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          pre_build: {
-            commands: Match.arrayWith([
-              'mkdir $HOME/.cdk',
-              `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
-            ]),
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            pre_build: {
+              commands: Match.arrayWith([
+                'mkdir $HOME/.cdk',
+                `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
+              ]),
+            },
+            // Prove we're looking at the Synth project
+            build: {
+              commands: Match.arrayWith([stringLike('*cdk*synth*')]),
+            },
           },
-          // Prove we're looking at the Synth project
-          build: {
-            commands: Match.arrayWith([stringLike('*cdk*synth*')]),
-          },
-        },
-      })),
+        })
+      ),
     },
   });
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-        Effect: 'Allow',
-        Resource: secretSynthArn,
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: secretSynthArn,
+        },
+      ]),
       Version: '2012-10-17',
     },
     Roles: [{ Ref: stringLike('Cdk*BuildProjectRole*') }],
@@ -94,20 +97,22 @@ test('synth action receives Windows install commands if a Windows image is detec
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Environment: { Image: 'aws/codebuild/windows-base:2.0' },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          pre_build: {
-            commands: Match.arrayWith([
-              'mkdir %USERPROFILE%\\.cdk',
-              `echo '${expectedCredsConfig}' > %USERPROFILE%\\.cdk\\cdk-docker-creds.json`,
-            ]),
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            pre_build: {
+              commands: Match.arrayWith([
+                'mkdir %USERPROFILE%\\.cdk',
+                `echo '${expectedCredsConfig}' > %USERPROFILE%\\.cdk\\cdk-docker-creds.json`,
+              ]),
+            },
+            // Prove we're looking at the Synth project
+            build: {
+              commands: Match.arrayWith([stringLike('*cdk*synth*')]),
+            },
           },
-          // Prove we're looking at the Synth project
-          build: {
-            commands: Match.arrayWith([stringLike('*cdk*synth*')]),
-          },
-        },
-      })),
+        })
+      ),
     },
   });
 });
@@ -124,31 +129,33 @@ test('self-update receives install commands and access to relevant credentials',
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          pre_build: {
-            commands: Match.arrayWith([
-              'mkdir $HOME/.cdk',
-              `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
-            ]),
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            pre_build: {
+              commands: Match.arrayWith([
+                'mkdir $HOME/.cdk',
+                `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
+              ]),
+            },
+            // Prove we're looking at the SelfMutate project
+            build: {
+              commands: Match.arrayWith([stringLike('cdk * deploy PipelineStack*')]),
+            },
           },
-          // Prove we're looking at the SelfMutate project
-          build: {
-            commands: Match.arrayWith([
-              stringLike('cdk * deploy PipelineStack*'),
-            ]),
-          },
-        },
-      })),
+        })
+      ),
     },
   });
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-        Effect: 'Allow',
-        Resource: secretUpdateArn,
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: secretUpdateArn,
+        },
+      ]),
       Version: '2012-10-17',
     },
     Roles: [{ Ref: stringLike('*SelfMutat*Role*') }],
@@ -156,7 +163,6 @@ test('self-update receives install commands and access to relevant credentials',
 });
 
 test('asset publishing receives install commands and access to relevant credentials', () => {
-
   const pipeline = new ModernPipelineWithCreds(pipelineStack, 'Cdk');
   pipeline.addStage(new DockerAssetApp(app, 'App1'));
 
@@ -168,29 +174,33 @@ test('asset publishing receives install commands and access to relevant credenti
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Environment: { Image: CDKP_DEFAULT_CODEBUILD_IMAGE.imageId },
     Source: {
-      BuildSpec: Match.serializedJson(Match.objectLike({
-        phases: {
-          pre_build: {
-            commands: Match.arrayWith([
-              'mkdir $HOME/.cdk',
-              `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
-            ]),
+      BuildSpec: Match.serializedJson(
+        Match.objectLike({
+          phases: {
+            pre_build: {
+              commands: Match.arrayWith([
+                'mkdir $HOME/.cdk',
+                `echo '${expectedCredsConfig}' > $HOME/.cdk/cdk-docker-creds.json`,
+              ]),
+            },
+            // Prove we're looking at the Publishing project
+            build: {
+              commands: Match.arrayWith([stringLike('cdk-assets*')]),
+            },
           },
-          // Prove we're looking at the Publishing project
-          build: {
-            commands: Match.arrayWith([stringLike('cdk-assets*')]),
-          },
-        },
-      })),
+        })
+      ),
     },
   });
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-        Effect: 'Allow',
-        Resource: secretPublishArn,
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+          Effect: 'Allow',
+          Resource: secretPublishArn,
+        },
+      ]),
       Version: '2012-10-17',
     },
     Roles: [{ Ref: 'CdkAssetsDockerRole484B6DD3' }],

@@ -1,8 +1,15 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, Stack } from 'aws-cdk-lib/core';
 import {
-  AccessEntry, AccessEntryProps, AccessEntryType,
-  AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion, AuthenticationMode,
+  AccessEntry,
+  AccessEntryProps,
+  AccessEntryType,
+  AccessScopeType,
+  IAccessPolicy,
+  Cluster,
+  AccessPolicy,
+  KubernetesVersion,
+  AuthenticationMode,
 } from '../lib';
 
 describe('AccessEntry', () => {
@@ -61,25 +68,22 @@ describe('AccessEntry', () => {
     });
   });
 
-  test.each(Object.values(AccessEntryType))(
-    'creates a new AccessEntry for AccessEntryType %s',
-    (accessEntryType) => {
-      // WHEN
-      new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
-        cluster,
-        accessPolicies: mockAccessPolicies,
-        principal: 'mock-principal-arn',
-        accessEntryType,
-      });
+  test.each(Object.values(AccessEntryType))('creates a new AccessEntry for AccessEntryType %s', (accessEntryType) => {
+    // WHEN
+    new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
+      cluster,
+      accessPolicies: mockAccessPolicies,
+      principal: 'mock-principal-arn',
+      accessEntryType,
+    });
 
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-        ClusterName: { Ref: 'ClusterEB0386A7' },
-        PrincipalArn: 'mock-principal-arn',
-        Type: accessEntryType,
-      });
-    },
-  );
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+      ClusterName: { Ref: 'ClusterEB0386A7' },
+      PrincipalArn: 'mock-principal-arn',
+      Type: accessEntryType,
+    });
+  });
 
   test('adds new access policies with addAccessPolicies()', () => {
     // GIVEN

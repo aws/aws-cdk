@@ -7,7 +7,6 @@ import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
 
 describe('HttpLambdaAuthorizer', () => {
-
   test('default', () => {
     // GIVEN
     const stack = new Stack();
@@ -34,9 +33,7 @@ describe('HttpLambdaAuthorizer', () => {
       AuthorizerType: 'REQUEST',
       AuthorizerResultTtlInSeconds: 300,
       AuthorizerPayloadFormatVersion: '1.0',
-      IdentitySource: [
-        '$request.header.Authorization',
-      ],
+      IdentitySource: ['$request.header.Authorization'],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {

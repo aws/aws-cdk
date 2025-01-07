@@ -37,10 +37,7 @@ describe('Content', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                's3:GetObject',
-                's3:GetObjectVersion',
-              ],
+              Action: ['s3:GetObject', 's3:GetObjectVersion'],
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
@@ -78,7 +75,7 @@ describe('Content', () => {
         content: content,
       });
 
-      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadata.find((m) => m.type === 'aws:cdk:asset')).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
         StorageLocation: {
           Bucket: {
@@ -118,10 +115,7 @@ describe('Content', () => {
             ],
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'Build1ServiceRole24FABCB7',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Build1ServiceRole24FABCB7', 'Arn'],
           },
         },
       });
@@ -130,10 +124,7 @@ describe('Content', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                's3:GetObject',
-                's3:GetObjectVersion',
-              ],
+              Action: ['s3:GetObject', 's3:GetObjectVersion'],
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
@@ -193,8 +184,9 @@ describe('Content', () => {
       const fileAsset = gamelift.Content.fromAsset(path.join(__dirname, 'my-game-build', 'TestApplicationServer'));
 
       // THEN
-      expect(() => new gamelift.Build(stack, 'Build1', { content: fileAsset }))
-        .toThrow(/Asset must be a \.zip file or a directory/);
+      expect(() => new gamelift.Build(stack, 'Build1', { content: fileAsset })).toThrow(
+        /Asset must be a \.zip file or a directory/
+      );
     });
 
     test('used in more than 1 build in the same stack should be reused', () => {
@@ -242,14 +234,11 @@ describe('Content', () => {
           ],
         },
         RoleArn: {
-          'Fn::GetAtt': [
-            'Build1ServiceRole24FABCB7',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Build1ServiceRole24FABCB7', 'Arn'],
         },
       };
 
-      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadata.find((m) => m.type === 'aws:cdk:asset')).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
         StorageLocation,
       });
@@ -264,9 +253,12 @@ describe('Content', () => {
       });
       const differentStack = new cdk.Stack();
 
-      expect(() => new gamelift.Build(differentStack, 'Build2', {
-        content,
-      })).toThrow(/Asset is already associated with another stack/);
+      expect(
+        () =>
+          new gamelift.Build(differentStack, 'Build2', {
+            content,
+          })
+      ).toThrow(/Asset is already associated with another stack/);
     });
   });
 });

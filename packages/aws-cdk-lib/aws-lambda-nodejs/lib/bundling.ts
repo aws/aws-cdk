@@ -4,13 +4,7 @@ import { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
-import {
-  exec,
-  extractDependencies,
-  findUp,
-  getTsconfigCompilerOptions,
-  isSdkV2Runtime,
-} from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
@@ -112,16 +106,12 @@ export class Bundling implements cdk.BundlingOptions {
   ) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
-    Bundling.esbuildInstallation =
-      Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
+    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
     Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('typescript');
 
     this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
-    this.relativeDepsLockFilePath = path.relative(
-      this.projectRoot,
-      path.resolve(props.depsLockFilePath)
-    );
+    this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
 
     if (this.relativeDepsLockFilePath.includes('..')) {
       throw new Error(
@@ -138,9 +128,7 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     if (props.format === OutputFormat.ESM && !isEsmRuntime(props.runtime)) {
-      throw new Error(
-        `ECMAScript module output format is not supported by the ${props.runtime.name} runtime`
-      );
+      throw new Error(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`);
     }
 
     /**
@@ -150,9 +138,7 @@ export class Bundling implements cdk.BundlingOptions {
      *
      * Issue reference: https://github.com/aws/aws-cdk/issues/31610#issuecomment-2389983347
      */
-    const sdkV3Externals = cdk.FeatureFlags.of(scope).isEnabled(
-      LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES
-    )
+    const sdkV3Externals = cdk.FeatureFlags.of(scope).isEnabled(LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES)
       ? ['@aws-sdk/*', '@smithy/*']
       : ['@aws-sdk/*'];
     // Modules to externalize when using a constant known version of the runtime.
@@ -163,8 +149,7 @@ export class Bundling implements cdk.BundlingOptions {
     // update versions in the future.
     // Don't automatically externalize aws sdk if `bundleAwsSDK` is true so it can be
     // include in the bundle asset
-    const defaultExternals =
-      props.runtime?.isVariable || props.bundleAwsSDK ? [] : versionedExternals;
+    const defaultExternals = props.runtime?.isVariable || props.bundleAwsSDK ? [] : versionedExternals;
 
     const externals = props.externalModules ?? defaultExternals;
 
@@ -253,8 +238,7 @@ export class Bundling implements cdk.BundlingOptions {
     let tscCommand = '';
 
     if (this.props.preCompilation) {
-      const tsconfig =
-        this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
+      const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
       if (!tsconfig) {
         throw new Error(
           'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`'
@@ -274,8 +258,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
     const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
-    const sourceMapValue =
-      sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
     const sourcesContent = this.props.sourcesContent ?? true;
 
     const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
@@ -295,12 +278,8 @@ export class Bundling implements cdk.BundlingOptions {
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
       ...(this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : []),
       ...(this.props.keepNames ? ['--keep-names'] : []),
-      ...(this.relativeTsconfigPath
-        ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`]
-        : []),
-      ...(this.props.metafile
-        ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`]
-        : []),
+      ...(this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : []),
+      ...(this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : []),
       ...(this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : []),
       ...(this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : []),
       ...(this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : []),
@@ -314,19 +293,14 @@ export class Bundling implements cdk.BundlingOptions {
       // modules versions from it.
       const pkgPath = findUp('package.json', path.dirname(this.props.entry));
       if (!pkgPath) {
-        throw new Error(
-          'Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.'
-        );
+        throw new Error('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.');
       }
 
       // Determine dependencies versions, lock file and installer
       const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
       const osCommand = new OsCommand(options.osPlatform);
 
-      const lockFilePath = pathJoin(
-        options.inputDir,
-        this.relativeDepsLockFilePath ?? this.packageManager.lockFile
-      );
+      const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
 
       const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
       const isBun = this.packageManager.lockFile === LockFile.BUN;
@@ -338,9 +312,7 @@ export class Bundling implements cdk.BundlingOptions {
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
-        isPnpm
-          ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true)
-          : '', // Remove '.modules.yaml' file which changes on each deployment
+        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '', // Remove '.modules.yaml' file which changes on each deployment
         isBun ? osCommand.removeDir(pathJoin(options.outputDir, 'node_modules', '.cache')) : '', // Remove node_modules/.cache folder since you can't disable its creation
       ]);
     }
@@ -349,8 +321,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...(this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []),
       tscCommand,
       esbuildCommand.join(' '),
-      ...((this.props.nodeModules &&
-        this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ??
+      ...((this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ??
         []),
       depsCommand,
       ...(this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []),
@@ -359,11 +330,7 @@ export class Bundling implements cdk.BundlingOptions {
 
   private getLocalBundlingProvider(): cdk.ILocalBundling {
     const osPlatform = os.platform();
-    const createLocalCommand = (
-      outputDir: string,
-      esbuild: PackageInstallation,
-      tsc?: PackageInstallation
-    ) =>
+    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) =>
       this.createBundlingCommand({
         inputDir: this.projectRoot,
         outputDir,
@@ -387,27 +354,19 @@ export class Bundling implements cdk.BundlingOptions {
           );
         }
 
-        const localCommand = createLocalCommand(
-          outputDir,
-          Bundling.esbuildInstallation,
-          Bundling.tscInstallation
-        );
+        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
 
-        exec(
-          osPlatform === 'win32' ? 'cmd' : 'bash',
-          [osPlatform === 'win32' ? '/c' : '-c', localCommand],
-          {
-            env: { ...process.env, ...environment },
-            stdio: [
-              // show output
-              'ignore', // ignore stdio
-              process.stderr, // redirect stdout to stderr
-              'inherit', // inherit stderr
-            ],
-            cwd,
-            windowsVerbatimArguments: osPlatform === 'win32',
-          }
-        );
+        exec(osPlatform === 'win32' ? 'cmd' : 'bash', [osPlatform === 'win32' ? '/c' : '-c', localCommand], {
+          env: { ...process.env, ...environment },
+          stdio: [
+            // show output
+            'ignore', // ignore stdio
+            process.stderr, // redirect stdout to stderr
+            'inherit', // inherit stderr
+          ],
+          cwd,
+          windowsVerbatimArguments: osPlatform === 'win32',
+        });
 
         return true;
       },

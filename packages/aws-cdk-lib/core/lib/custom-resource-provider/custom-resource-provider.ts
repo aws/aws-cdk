@@ -96,11 +96,7 @@ export class CustomResourceProvider extends CustomResourceProviderBase {
    * @returns the service token of the custom resource provider, which should be
    * used when defining a `CustomResource`.
    */
-  public static getOrCreate(
-    scope: Construct,
-    uniqueid: string,
-    props: CustomResourceProviderProps
-  ) {
+  public static getOrCreate(scope: Construct, uniqueid: string, props: CustomResourceProviderProps) {
     return this.getOrCreateProvider(scope, uniqueid, props).serviceToken;
   }
 
@@ -115,16 +111,11 @@ export class CustomResourceProvider extends CustomResourceProviderBase {
    * @returns the service token of the custom resource provider, which should be
    * used when defining a `CustomResource`.
    */
-  public static getOrCreateProvider(
-    scope: Construct,
-    uniqueid: string,
-    props: CustomResourceProviderProps
-  ) {
+  public static getOrCreateProvider(scope: Construct, uniqueid: string, props: CustomResourceProviderProps) {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
     const provider =
-      (stack.node.tryFindChild(id) as CustomResourceProvider) ??
-      new CustomResourceProvider(stack, id, props);
+      (stack.node.tryFindChild(id) as CustomResourceProvider) ?? new CustomResourceProvider(stack, id, props);
     return provider;
   }
 

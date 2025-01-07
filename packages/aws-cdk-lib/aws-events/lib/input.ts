@@ -250,10 +250,7 @@ class FieldAwareEventInput extends RuleTargetInput {
         }
         return resolved;
       } else if (typeof resolved === 'string') {
-        return keys.reduce(
-          (r, key) => r.replace(new RegExp(`(?<!\\\\)\"\<${key}\>\"`, 'g'), `<${key}>`),
-          resolved
-        );
+        return keys.reduce((r, key) => r.replace(new RegExp(`(?<!\\\\)\"\<${key}\>\"`, 'g'), `<${key}>`), resolved);
       }
       return resolved;
     }

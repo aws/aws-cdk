@@ -132,16 +132,11 @@ export class VirtualGateway extends VirtualGatewayBase {
   /**
    * Import an existing VirtualGateway given an ARN
    */
-  public static fromVirtualGatewayArn(
-    scope: Construct,
-    id: string,
-    virtualGatewayArn: string
-  ): IVirtualGateway {
+  public static fromVirtualGatewayArn(scope: Construct, id: string, virtualGatewayArn: string): IVirtualGateway {
     return new (class extends VirtualGatewayBase {
       private readonly parsedArn = cdk.Fn.split(
         '/',
-        cdk.Stack.of(scope).splitArn(virtualGatewayArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-          .resourceName!
+        cdk.Stack.of(scope).splitArn(virtualGatewayArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!
       );
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
       readonly virtualGatewayArn = virtualGatewayArn;
@@ -187,8 +182,7 @@ export class VirtualGateway extends VirtualGatewayBase {
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
-      physicalName:
-        props.virtualGatewayName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.virtualGatewayName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;

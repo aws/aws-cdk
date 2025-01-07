@@ -61,8 +61,7 @@ export class Database extends Resource implements IDatabase {
 
     class Import extends Resource implements IDatabase {
       public databaseArn = databaseArn;
-      public databaseName = stack.splitArn(databaseArn, ArnFormat.SLASH_RESOURCE_NAME)
-        .resourceName!;
+      public databaseName = stack.splitArn(databaseArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public catalogArn = stack.formatArn({ service: 'glue', resource: 'catalog' });
       public catalogId = stack.account;
     }
@@ -146,16 +145,12 @@ export class Database extends Resource implements IDatabase {
 
 function validateLocationUri(locationUri: string): void {
   if (locationUri.length < 1 || locationUri.length > 1024) {
-    throw new Error(
-      `locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`
-    );
+    throw new Error(`locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
   }
 }
 
 function validateDescription(description: string): void {
   if (description.length > 2048) {
-    throw new Error(
-      `description length must be less than or equal to 2048, got ${description.length}`
-    );
+    throw new Error(`description length must be less than or equal to 2048, got ${description.length}`);
   }
 }

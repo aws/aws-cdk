@@ -69,10 +69,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
           Ref: 'MyDGApplication57B1E402',
         },
         ServiceRoleArn: {
-          'Fn::GetAtt': [
-            'MyDGServiceRole5E94FD88',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyDGServiceRole5E94FD88', 'Arn'],
         },
         AlarmConfiguration: {
           Enabled: false,
@@ -80,9 +77,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
         },
         AutoRollbackConfiguration: {
           Enabled: true,
-          Events: [
-            'DEPLOYMENT_FAILURE',
-          ],
+          Events: ['DEPLOYMENT_FAILURE'],
         },
         BlueGreenDeploymentConfiguration: {
           DeploymentReadyOption: {
@@ -136,25 +131,20 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'codedeploy.amazonaws.com',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'codedeploy.amazonaws.com',
+            },
           },
-        }],
+        ],
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
         {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AWSCodeDeployRoleForECS',
-            ],
-          ],
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AWSCodeDeployRoleForECS']],
         },
       ],
     });
@@ -241,7 +231,9 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
     });
 
-    expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
+    expect(() => app.synth()).toThrow(
+      'Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).'
+    );
   });
 
   test('fail when ECS service does not use CODE_DEPLOY deployment controller', () => {
@@ -263,15 +255,20 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
     });
 
-    expect(() => new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      deploymentGroupName: 'a'.repeat(101),
-      service,
-      blueGreenDeploymentConfig: {
-        blueTargetGroup: mockTargetGroup(stack, 'blue'),
-        greenTargetGroup: mockTargetGroup(stack, 'green'),
-        listener: mockListener(stack, 'prod'),
-      },
-    })).toThrow('The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type');
+    expect(
+      () =>
+        new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
+          deploymentGroupName: 'a'.repeat(101),
+          service,
+          blueGreenDeploymentConfig: {
+            blueTargetGroup: mockTargetGroup(stack, 'blue'),
+            greenTargetGroup: mockTargetGroup(stack, 'green'),
+            listener: mockListener(stack, 'prod'),
+          },
+        })
+    ).toThrow(
+      'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type'
+    );
   });
 
   test('fail when ECS service uses CODE_DEPLOY deployment controller, but did not strip the revision ID from the task definition', () => {
@@ -292,17 +289,23 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
         type: ecs.DeploymentControllerType.CODE_DEPLOY,
       },
     });
-    (service.node.defaultChild as ecs.CfnService).taskDefinition = 'arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world:8';
+    (service.node.defaultChild as ecs.CfnService).taskDefinition =
+      'arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world:8';
 
-    expect(() => new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
-      deploymentGroupName: 'a'.repeat(101),
-      service,
-      blueGreenDeploymentConfig: {
-        blueTargetGroup: mockTargetGroup(stack, 'blue'),
-        greenTargetGroup: mockTargetGroup(stack, 'green'),
-        listener: mockListener(stack, 'prod'),
-      },
-    })).toThrow('The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack');
+    expect(
+      () =>
+        new codedeploy.EcsDeploymentGroup(stack, 'MyDG', {
+          deploymentGroupName: 'a'.repeat(101),
+          service,
+          blueGreenDeploymentConfig: {
+            blueTargetGroup: mockTargetGroup(stack, 'blue'),
+            greenTargetGroup: mockTargetGroup(stack, 'green'),
+            listener: mockListener(stack, 'prod'),
+          },
+        })
+    ).toThrow(
+      'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack'
+    );
   });
 
   test('can be created with explicit role', () => {
@@ -323,25 +326,20 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'not-codedeploy.test',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'not-codedeploy.test',
+            },
           },
-        }],
+        ],
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
         {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AWSCodeDeployRoleForECS',
-            ],
-          ],
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AWSCodeDeployRoleForECS']],
         },
       ],
     });
@@ -404,10 +402,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-          'DEPLOYMENT_STOP_ON_ALARM',
-        ],
+        Events: ['DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_ALARM'],
       },
     });
   });
@@ -438,19 +433,21 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
     });
 
-    dg.addAlarm(new cloudwatch.Alarm(stack, 'GreenTGUnHealthyHosts', {
-      metric: new cloudwatch.Metric({
-        namespace: 'AWS/ApplicationELB',
-        metricName: 'UnHealthyHostCount',
-        dimensionsMap: {
-          TargetGroup: 'green/f7a80aba5edd5980',
-          LoadBalancer: 'app/myloadbalancer/lb-12345',
-        },
-      }),
-      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-      threshold: 1,
-      evaluationPeriods: 1,
-    }));
+    dg.addAlarm(
+      new cloudwatch.Alarm(stack, 'GreenTGUnHealthyHosts', {
+        metric: new cloudwatch.Metric({
+          namespace: 'AWS/ApplicationELB',
+          metricName: 'UnHealthyHostCount',
+          dimensionsMap: {
+            TargetGroup: 'green/f7a80aba5edd5980',
+            LoadBalancer: 'app/myloadbalancer/lb-12345',
+          },
+        }),
+        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+        threshold: 1,
+        evaluationPeriods: 1,
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AlarmConfiguration: {
@@ -470,10 +467,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-          'DEPLOYMENT_STOP_ON_ALARM',
-        ],
+        Events: ['DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_ALARM'],
       },
     });
   });
@@ -493,7 +487,9 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
     });
 
-    expect(() => app.synth()).toThrow('The auto-rollback setting \'deploymentInAlarm\' does not have any effect unless you associate at least one CloudWatch alarm with the Deployment Group.');
+    expect(() => app.synth()).toThrow(
+      "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate at least one CloudWatch alarm with the Deployment Group."
+    );
   });
 
   test('can disable rollback when alarm polling fails', () => {
@@ -554,10 +550,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-          'DEPLOYMENT_STOP_ON_ALARM',
-        ],
+        Events: ['DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_ALARM'],
       },
     });
   });
@@ -583,10 +576,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
           Ref: 'MyDGApplication57B1E402',
         },
         ServiceRoleArn: {
-          'Fn::GetAtt': [
-            'MyDGServiceRole5E94FD88',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyDGServiceRole5E94FD88', 'Arn'],
         },
         BlueGreenDeploymentConfiguration: {
           DeploymentReadyOption: {
@@ -649,10 +639,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-          'DEPLOYMENT_STOP_ON_REQUEST',
-        ],
+        Events: ['DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_REQUEST'],
       },
     });
   });
@@ -717,9 +704,7 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
       },
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-        ],
+        Events: ['DEPLOYMENT_FAILURE'],
       },
     });
   });
@@ -857,7 +842,11 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     beforeEach(() => {
       stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
 
-      application = codedeploy.EcsApplication.fromEcsApplicationArn(stack, 'Application', `arn:aws:codedeploy:${region}:${account}:application:MyApplication`);
+      application = codedeploy.EcsApplication.fromEcsApplicationArn(
+        stack,
+        'Application',
+        `arn:aws:codedeploy:${region}:${account}:application:MyApplication`
+      );
       group = codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(stack, 'Group', {
         application,
         deploymentGroupName: 'DeploymentGroup',
@@ -871,9 +860,9 @@ describe('CodeDeploy ECS DeploymentGroup', () => {
     });
 
     test('references the predefined DeploymentGroupConfig in the right region', () => {
-      expect(group.deploymentConfig.deploymentConfigArn).toEqual(expect.stringContaining(
-        `:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.ECSAllAtOnce`,
-      ));
+      expect(group.deploymentConfig.deploymentConfigArn).toEqual(
+        expect.stringContaining(`:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.ECSAllAtOnce`)
+      );
     });
   });
 

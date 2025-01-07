@@ -1,6 +1,13 @@
 import { Template } from '../../assertions';
 import { Names, Stack } from '../../core';
-import { FunctionUrlOriginAccessControl, S3OriginAccessControl, SigningBehavior, SigningProtocol, OriginAccessControlOriginType, Signing } from '../lib';
+import {
+  FunctionUrlOriginAccessControl,
+  S3OriginAccessControl,
+  SigningBehavior,
+  SigningProtocol,
+  OriginAccessControlOriginType,
+  Signing,
+} from '../lib';
 
 describe('S3OriginAccessControl', () => {
   let stack: Stack;
@@ -55,7 +62,11 @@ describe('S3OriginAccessControl', () => {
   test('imports an S3OriginAccessControl from ID', () => {
     const originAccessControlId = 'ABC123ABC123AB';
 
-    const imported = S3OriginAccessControl.fromOriginAccessControlId(stack, 'ImportedS3OriginAccessControl', originAccessControlId);
+    const imported = S3OriginAccessControl.fromOriginAccessControlId(
+      stack,
+      'ImportedS3OriginAccessControl',
+      originAccessControlId
+    );
 
     expect(imported.originAccessControlId).toEqual(originAccessControlId);
   });
@@ -106,9 +117,12 @@ describe('S3OriginAccessControl', () => {
   test('imports a FunctionUrlOriginAccessControl from ID', () => {
     const originAccessControlId = 'XYZ789XYZ789XY';
 
-    const imported = FunctionUrlOriginAccessControl.fromOriginAccessControlId(stack, 'ImportedFunctionUrlOriginAccessControl', originAccessControlId);
+    const imported = FunctionUrlOriginAccessControl.fromOriginAccessControlId(
+      stack,
+      'ImportedFunctionUrlOriginAccessControl',
+      originAccessControlId
+    );
 
     expect(imported.originAccessControlId).toEqual(originAccessControlId);
   });
-
 });

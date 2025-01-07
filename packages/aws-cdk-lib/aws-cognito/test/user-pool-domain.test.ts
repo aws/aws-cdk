@@ -11,8 +11,11 @@ describe('User Pool Domain', () => {
     const pool = new UserPool(stack, 'Pool');
 
     // WHEN
-    const certificate = Certificate.fromCertificateArn(stack, 'cert',
-      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
+    const certificate = Certificate.fromCertificateArn(
+      stack,
+      'cert',
+      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8'
+    );
     new UserPoolDomain(stack, 'Domain', {
       userPool: pool,
       customDomain: {
@@ -54,43 +57,58 @@ describe('User Pool Domain', () => {
   test('fails when neither cognitoDomain nor customDomain are specified', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
-    const certificate = Certificate.fromCertificateArn(stack, 'cert',
-      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
+    const certificate = Certificate.fromCertificateArn(
+      stack,
+      'cert',
+      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8'
+    );
 
-    expect(() => new UserPoolDomain(stack, 'Domain', {
-      userPool: pool,
-      cognitoDomain: {
-        domainPrefix: 'cognito-domain-prefix',
-      },
-      customDomain: {
-        domainName: 'mydomain.com',
-        certificate,
-      },
-    })).toThrow(/cognitoDomain or customDomain must be specified/);
+    expect(
+      () =>
+        new UserPoolDomain(stack, 'Domain', {
+          userPool: pool,
+          cognitoDomain: {
+            domainPrefix: 'cognito-domain-prefix',
+          },
+          customDomain: {
+            domainName: 'mydomain.com',
+            certificate,
+          },
+        })
+    ).toThrow(/cognitoDomain or customDomain must be specified/);
   });
 
   test('fails when both cognitoDomain and customDomain are specified', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
-    expect(() => new UserPoolDomain(stack, 'Domain', {
-      userPool: pool,
-    })).toThrow(/cognitoDomain or customDomain must be specified/);
+    expect(
+      () =>
+        new UserPoolDomain(stack, 'Domain', {
+          userPool: pool,
+        })
+    ).toThrow(/cognitoDomain or customDomain must be specified/);
   });
 
   test('fails when domainPrefix has characters outside the allowed charset', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
-    expect(() => pool.addDomain('Domain1', {
-      cognitoDomain: { domainPrefix: 'domain.prefix' },
-    })).toThrow(/lowercase alphabets, numbers and hyphens/);
-    expect(() => pool.addDomain('Domain2', {
-      cognitoDomain: { domainPrefix: 'Domain-Prefix' },
-    })).toThrow(/lowercase alphabets, numbers and hyphens/);
-    expect(() => pool.addDomain('Domain3', {
-      cognitoDomain: { domainPrefix: 'dómäin-prefix' },
-    })).toThrow(/lowercase alphabets, numbers and hyphens/);
+    expect(() =>
+      pool.addDomain('Domain1', {
+        cognitoDomain: { domainPrefix: 'domain.prefix' },
+      })
+    ).toThrow(/lowercase alphabets, numbers and hyphens/);
+    expect(() =>
+      pool.addDomain('Domain2', {
+        cognitoDomain: { domainPrefix: 'Domain-Prefix' },
+      })
+    ).toThrow(/lowercase alphabets, numbers and hyphens/);
+    expect(() =>
+      pool.addDomain('Domain3', {
+        cognitoDomain: { domainPrefix: 'dómäin-prefix' },
+      })
+    ).toThrow(/lowercase alphabets, numbers and hyphens/);
   });
 
   test('does not fail when domainPrefix is a token', () => {
@@ -99,9 +117,11 @@ describe('User Pool Domain', () => {
 
     const parameter = new CfnParameter(stack, 'Paraeter');
 
-    expect(() => pool.addDomain('Domain', {
-      cognitoDomain: { domainPrefix: parameter.valueAsString },
-    })).not.toThrow();
+    expect(() =>
+      pool.addDomain('Domain', {
+        cognitoDomain: { domainPrefix: parameter.valueAsString },
+      })
+    ).not.toThrow();
   });
 
   testDeprecated('custom resource is added when cloudFrontDomainName property is used', () => {
@@ -119,20 +139,19 @@ describe('User Pool Domain', () => {
 
     // THEN
     expect(stack.resolve(cfDomainName)).toEqual({
-      'Fn::GetAtt': [
-        'PoolDomainCloudFrontDomainName340BF87E',
-        'DomainDescription.CloudFrontDistribution',
-      ],
+      'Fn::GetAtt': ['PoolDomainCloudFrontDomainName340BF87E', 'DomainDescription.CloudFrontDistribution'],
     });
 
     Template.fromStack(stack).resourceCountIs('Custom::UserPoolCloudFrontDomainName', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 'cognito-idp:DescribeUserPoolDomain',
-          Effect: 'Allow',
-          Resource: '*',
-        }],
+        Statement: [
+          {
+            Action: 'cognito-idp:DescribeUserPoolDomain',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -165,10 +184,7 @@ describe('User Pool Domain', () => {
     const cloudFrontEndpoint = domain.cloudFrontEndpoint;
 
     expect(stack.resolve(cloudFrontEndpoint)).toEqual({
-      'Fn::GetAtt': [
-        'PoolDomainCFC71F56',
-        'CloudFrontDistribution',
-      ],
+      'Fn::GetAtt': ['PoolDomainCFC71F56', 'CloudFrontDistribution'],
     });
 
     Template.fromStack(stack).resourceCountIs('Custom::UserPoolCloudFrontDomainName', 0);
@@ -203,13 +219,8 @@ describe('User Pool Domain', () => {
       // THEN
       expect(stack.resolve(baseUrl)).toEqual({
         'Fn::Join': [
-          '', [
-            'https://',
-            { Ref: 'PoolDomainCFC71F56' },
-            '.auth.',
-            { Ref: 'AWS::Region' },
-            '.amazoncognito.com',
-          ],
+          '',
+          ['https://', { Ref: 'PoolDomainCFC71F56' }, '.auth.', { Ref: 'AWS::Region' }, '.amazoncognito.com'],
         ],
       });
     });
@@ -230,13 +241,8 @@ describe('User Pool Domain', () => {
       // THEN
       expect(stack.resolve(baseUrl)).toEqual({
         'Fn::Join': [
-          '', [
-            'https://',
-            { Ref: 'PoolDomainCFC71F56' },
-            '.auth-fips.',
-            { Ref: 'AWS::Region' },
-            '.amazoncognito.com',
-          ],
+          '',
+          ['https://', { Ref: 'PoolDomainCFC71F56' }, '.auth-fips.', { Ref: 'AWS::Region' }, '.amazoncognito.com'],
         ],
       });
     });
@@ -266,7 +272,8 @@ describe('User Pool Domain', () => {
       // THEN
       expect(stack.resolve(signInUrl)).toEqual({
         'Fn::Join': [
-          '', [
+          '',
+          [
             'https://',
             { Ref: 'PoolDomainCFC71F56' },
             '.auth.',

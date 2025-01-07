@@ -143,8 +143,7 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   const pkgJson = require(pkgPath); // eslint-disable-line @typescript-eslint/no-require-imports
 
   for (const mod of modules) {
-    const version =
-      tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath) ?? tryGetModuleVersionFromRequire(mod);
+    const version = tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath) ?? tryGetModuleVersionFromRequire(mod);
     if (!version) {
       throw new Error(
         `Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`
@@ -212,10 +211,7 @@ function extractTsConfig(
     ...(previousCompilerOptions ?? {}),
   };
   if (extendedConfig) {
-    return extractTsConfig(
-      path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig),
-      updatedCompilerOptions
-    );
+    return extractTsConfig(path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig), updatedCompilerOptions);
   }
   return updatedCompilerOptions;
 }

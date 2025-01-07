@@ -150,11 +150,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     return new Import(scope, id);
   }
 
-  public static fromVersionAttributes(
-    scope: Construct,
-    id: string,
-    attrs: VersionAttributes
-  ): IVersion {
+  public static fromVersionAttributes(scope: Construct, id: string, attrs: VersionAttributes): IVersion {
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = attrs.version;
       public readonly lambda = attrs.lambda;
@@ -214,12 +210,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.functionName = `${this.lambda.functionName}:${this.version}`;
     this.qualifier = version.attrVersion;
 
-    if (
-      props.onFailure ||
-      props.onSuccess ||
-      props.maxEventAge ||
-      props.retryAttempts !== undefined
-    ) {
+    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       this.configureAsyncInvoke({
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,

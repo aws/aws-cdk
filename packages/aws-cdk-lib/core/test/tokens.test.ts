@@ -1,7 +1,12 @@
 import { evaluateCFN } from './evaluate-cfn';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 import { CfnResource, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
-import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens, STRINGIFIED_NUMBER_PATTERN } from '../lib/private/encoding';
+import {
+  createTokenDouble,
+  extractTokenDouble,
+  stringContainsNumberTokens,
+  STRINGIFIED_NUMBER_PATTERN,
+} from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
@@ -73,16 +78,16 @@ describe('tokens', () => {
   });
 
   test('empty arrays or objects are kept', () => {
-    expect(resolve({ })).toEqual({ });
+    expect(resolve({})).toEqual({});
     expect(resolve([])).toEqual([]);
 
     const obj = {
       Prop1: 1234,
-      Prop2: { },
+      Prop2: {},
       Prop3: [],
       Prop4: 'hello',
       Prop5: {
-        PropA: { },
+        PropA: {},
         PropB: {
           PropC: [undefined, undefined],
           PropD: 'Yoohoo',
@@ -92,11 +97,11 @@ describe('tokens', () => {
 
     expect(resolve(obj)).toEqual({
       Prop1: 1234,
-      Prop2: { },
+      Prop2: {},
       Prop3: [],
       Prop4: 'hello',
       Prop5: {
-        PropA: { },
+        PropA: {},
         PropB: {
           PropC: [],
           PropD: 'Yoohoo',
@@ -156,7 +161,7 @@ describe('tokens', () => {
 
   test('Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join', () => {
     // GIVEN
-    const token = new Intrinsic( ({ woof: 'woof' }));
+    const token = new Intrinsic({ woof: 'woof' });
 
     // WHEN
     const stringified = `The dog says: ${token}`;
@@ -170,8 +175,8 @@ describe('tokens', () => {
 
   test('Doubly nested strings evaluate correctly in scalar context', () => {
     // GIVEN
-    const token1 = new Intrinsic( 'world');
-    const token2 = new Intrinsic( `hello ${token1}`);
+    const token1 = new Intrinsic('world');
+    const token2 = new Intrinsic(`hello ${token1}`);
 
     // WHEN
     const resolved1 = resolve(token2.toString());
@@ -232,7 +237,7 @@ describe('tokens', () => {
 
   test('tokens can be used in hash keys but must resolve to a string', () => {
     // GIVEN
-    const token = new Intrinsic( 'I am a string');
+    const token = new Intrinsic('I am a string');
 
     // WHEN
     const s = {
@@ -245,7 +250,7 @@ describe('tokens', () => {
 
   test('tokens can be nested in hash keys', () => {
     // GIVEN
-    const token = new Intrinsic(Lazy.string({ produce: () => Lazy.string({ produce: (() => 'I am a string') }) }));
+    const token = new Intrinsic(Lazy.string({ produce: () => Lazy.string({ produce: () => 'I am a string' }) }));
 
     // WHEN
     const s = {
@@ -301,8 +306,8 @@ describe('tokens', () => {
 
   test('tokens can be nested and concatenated in hash keys', () => {
     // GIVEN
-    const innerToken = new Intrinsic( 'toot');
-    const token = new Intrinsic( `${innerToken} the woot`);
+    const innerToken = new Intrinsic('toot');
+    const token = new Intrinsic(`${innerToken} the woot`);
 
     // WHEN
     const s = {
@@ -315,8 +320,8 @@ describe('tokens', () => {
 
   test('can find nested tokens in hash keys', () => {
     // GIVEN
-    const innerToken = new Intrinsic( 'toot');
-    const token = new Intrinsic( `${innerToken} the woot`);
+    const innerToken = new Intrinsic('toot');
+    const token = new Intrinsic(`${innerToken} the woot`);
 
     // WHEN
     const s = {
@@ -325,8 +330,8 @@ describe('tokens', () => {
 
     // THEN
     const tokens = findTokens(new Stack(), () => s);
-    expect(tokens.some(t => t === innerToken)).toEqual(true);
-    expect(tokens.some(t => t === token)).toEqual(true);
+    expect(tokens.some((t) => t === innerToken)).toEqual(true);
+    expect(tokens.some((t) => t === token)).toEqual(true);
   });
 
   test('fails if token in a hash key resolves to a non-string', () => {
@@ -457,12 +462,12 @@ describe('tokens', () => {
     test('arbitrary numbers are correctly detected as not being tokens', () => {
       expect(undefined).toEqual(extractTokenDouble(0));
       expect(undefined).toEqual(extractTokenDouble(1243));
-      expect(undefined).toEqual(extractTokenDouble(4835e+532));
+      expect(undefined).toEqual(extractTokenDouble(4835e532));
     });
 
     test('can number-encode and resolve Token objects', () => {
       // GIVEN
-      const x = new Intrinsic( 123);
+      const x = new Intrinsic(123);
 
       // THEN
       const encoded = Token.asNumber(x);
@@ -544,9 +549,8 @@ describe('tokens', () => {
     const previousValue = reEnableStackTraceCollection();
     const token = fn1();
     restoreStackTraceColection(previousValue);
-    expect(token.creationTrace.find(x => x.includes('fn1'))).toBeDefined();
-    expect(token.creationTrace.find(x => x.includes('fn2'))).toBeDefined();
-
+    expect(token.creationTrace.find((x) => x.includes('fn1'))).toBeDefined();
+    expect(token.creationTrace.find((x) => x.includes('fn2'))).toBeDefined();
   });
 
   test('newError returns an error with the creation stack trace', () => {
@@ -573,13 +577,7 @@ describe('tokens', () => {
   });
 
   describe('type coercion', () => {
-    const inputs = [
-      'a string',
-      1234,
-      { an_object: 1234 },
-      [1, 2, 3],
-      false,
-    ];
+    const inputs = ['a string', 1234, { an_object: 1234 }, [1, 2, 3], false];
 
     for (const input of inputs) {
       // GIVEN
@@ -630,7 +628,11 @@ describe('tokens', () => {
 
   test('creation stack is attached to errors emitted during resolve with CDK_DEBUG=true', () => {
     function showMeInTheStackTrace() {
-      return Lazy.string({ produce: () => { throw new Error('fooError'); } });
+      return Lazy.string({
+        produce: () => {
+          throw new Error('fooError');
+        },
+      });
     }
 
     const previousValue = process.env.CDK_DEBUG;
@@ -651,7 +653,11 @@ describe('tokens', () => {
 
   test('creation stack is omitted without CDK_DEBUG=true', () => {
     function showMeInTheStackTrace() {
-      return Lazy.string({ produce: () => { throw new Error('fooError'); } });
+      return Lazy.string({
+        produce: () => {
+          throw new Error('fooError');
+        },
+      });
     }
 
     const previousValue = process.env.CDK_DEBUG;
@@ -676,9 +682,13 @@ describe('tokens', () => {
     });
 
     test('converts tokenized number to string', () => {
-      expect(resolve(Tokenization.stringifyNumber({
-        resolve: () => 100,
-      } as any))).toEqual('100');
+      expect(
+        resolve(
+          Tokenization.stringifyNumber({
+            resolve: () => 100,
+          } as any)
+        )
+      ).toEqual('100');
     });
 
     test('string remains the same', () => {
@@ -719,7 +729,7 @@ class Promise2 implements IResolvable {
         stringProp: 'hello',
         numberProp: 1234,
       },
-      Recurse: new Intrinsic( 42),
+      Recurse: new Intrinsic(42),
     };
   }
 }
@@ -734,8 +744,7 @@ class Promise1 implements IResolvable {
 }
 
 class BaseDataType {
-  constructor(readonly foo: number) {
-  }
+  constructor(readonly foo: number) {}
 }
 
 class DataType extends BaseDataType {
@@ -750,10 +759,7 @@ class DataType extends BaseDataType {
  * Return Tokens in both flavors that resolve to the given string
  */
 function tokensThatResolveTo(value: any): Token[] {
-  return [
-    new Intrinsic(value),
-    Lazy.any({ produce: () => value }),
-  ];
+  return [new Intrinsic(value), Lazy.any({ produce: () => value })];
 }
 
 /**
@@ -764,4 +770,3 @@ function tokensThatResolveTo(value: any): Token[] {
 function resolve(x: any) {
   return new Stack().resolve(x);
 }
-

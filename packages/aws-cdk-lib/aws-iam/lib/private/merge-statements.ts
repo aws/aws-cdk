@@ -5,11 +5,7 @@
 
 import { IConstruct } from 'constructs';
 import { partitionPrincipals } from './comparable-principal';
-import {
-  PolicyStatement,
-  EstimateSizeOptions,
-  deriveEstimateSizeOptions,
-} from '../policy-statement';
+import { PolicyStatement, EstimateSizeOptions, deriveEstimateSizeOptions } from '../policy-statement';
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
 
@@ -55,10 +51,7 @@ export interface MergeStatementOptions {
  * Good Enough(tm). If it merges anything, it's at least going to produce a smaller output
  * than the input.
  */
-export function mergeStatements(
-  statements: PolicyStatement[],
-  options: MergeStatementOptions
-): MergeStatementResult {
+export function mergeStatements(statements: PolicyStatement[], options: MergeStatementOptions): MergeStatementResult {
   const sizeOptions = deriveEstimateSizeOptions(options.scope);
   const compStatements = statements.map(makeComparable);
   const mergeFn = (options?.mergeIfCombinable ?? true) ? mergeIfCombinable : mergeIfEqual;
@@ -85,12 +78,7 @@ export function mergeStatements(
     for (let i = 0; i < compStatements.length; i++) {
       let j = i + 1;
       while (j < compStatements.length) {
-        const merged = mergeFn(
-          compStatements[i],
-          compStatements[j],
-          !!options.limitSize,
-          sizeOptions
-        );
+        const merged = mergeFn(compStatements[i], compStatements[j], !!options.limitSize, sizeOptions);
 
         if (merged) {
           compStatements[i] = merged;
@@ -187,10 +175,7 @@ function mergeIfCombinable(
 /**
  * We merge two statements only if they are exactly the same
  */
-function mergeIfEqual(
-  a: ComparableStatement,
-  b: ComparableStatement
-): ComparableStatement | undefined {
+function mergeIfEqual(a: ComparableStatement, b: ComparableStatement): ComparableStatement | undefined {
   if (a.statement.effect !== b.statement.effect) {
     return;
   }
@@ -245,12 +230,8 @@ function makeComparable(s: PolicyStatement): ComparableStatement {
  * therefore be preserved.
  */
 function unmergeablePrincipals(a: ComparableStatement, b: ComparableStatement) {
-  const aHasLiteral = a.statement.principals.some(
-    (v) => LITERAL_STRING_KEY in v.policyFragment.principalJson
-  );
-  const bHasLiteral = b.statement.principals.some(
-    (v) => LITERAL_STRING_KEY in v.policyFragment.principalJson
-  );
+  const aHasLiteral = a.statement.principals.some((v) => LITERAL_STRING_KEY in v.policyFragment.principalJson);
+  const bHasLiteral = b.statement.principals.some((v) => LITERAL_STRING_KEY in v.policyFragment.principalJson);
   return aHasLiteral !== bHasLiteral;
 }
 

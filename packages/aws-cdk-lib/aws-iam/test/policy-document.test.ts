@@ -1,8 +1,20 @@
 import { Template } from '../../assertions';
 import { Lazy, Stack, Token } from '../../core';
 import {
-  AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
-  Effect, FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal, Role,
+  AccountPrincipal,
+  Anyone,
+  AnyPrincipal,
+  ArnPrincipal,
+  CanonicalUserPrincipal,
+  CompositePrincipal,
+  Effect,
+  FederatedPrincipal,
+  IPrincipal,
+  PolicyDocument,
+  PolicyStatement,
+  PrincipalPolicyFragment,
+  ServicePrincipal,
+  Role,
 } from '../lib';
 
 describe('IAM policy document', () => {
@@ -20,24 +32,13 @@ describe('IAM policy document', () => {
     p.addAccountCondition('12221121221');
 
     expect(stack.resolve(p.toStatementJson())).toEqual({
-      Action:
-      ['sqs:SendMessage',
-        'dynamodb:CreateTable',
-        'dynamodb:DeleteTable'],
+      Action: ['sqs:SendMessage', 'dynamodb:CreateTable', 'dynamodb:DeleteTable'],
       Resource: ['myQueue', 'yourQueue', '*'],
       Effect: 'Allow',
-      Principal:
-      {
-        AWS:
-         {
-           'Fn::Join':
-          ['',
-            ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::my',
-              { account: 'account' },
-              'name:root']],
-         },
+      Principal: {
+        AWS: {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::my', { account: 'account' }, 'name:root']],
+        },
       },
       Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } },
     });
@@ -92,11 +93,16 @@ describe('IAM policy document', () => {
 
     expect(stack.resolve(doc)).toEqual({
       Version: '2012-10-17',
-      Statement:
-        [{ Effect: 'Allow', Action: 'sqs:SendMessage', NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue' },
-          { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
-          { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' },
-          { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } }],
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'sqs:SendMessage',
+          NotResource: 'arn:aws:sqs:us-east-1:123456789012:forbidden_queue',
+        },
+        { Effect: 'Deny', Action: 'cloudformation:CreateStack' },
+        { Effect: 'Allow', NotAction: 'cloudformation:UpdateTerminationProtection' },
+        { Effect: 'Deny', NotPrincipal: { CanonicalUser: 'OnlyAuthorizedUser' } },
+      ],
     });
   });
 
@@ -206,16 +212,7 @@ describe('IAM policy document', () => {
       Effect: 'Allow',
       Principal: {
         AWS: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::',
-              { Ref: 'AWS::AccountId' },
-              ':root',
-            ],
-          ],
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
         },
       },
     });
@@ -305,9 +302,7 @@ describe('IAM policy document', () => {
       p.addStatements(new PolicyStatement({ principals: [new Anyone()] }));
 
       expect(stack.resolve(p)).toEqual({
-        Statement: [
-          { Effect: 'Allow', Principal: { AWS: '*' } },
-        ],
+        Statement: [{ Effect: 'Allow', Principal: { AWS: '*' } }],
         Version: '2012-10-17',
       });
     });
@@ -319,9 +314,7 @@ describe('IAM policy document', () => {
       p.addStatements(new PolicyStatement({ principals: [new AnyPrincipal()] }));
 
       expect(stack.resolve(p)).toEqual({
-        Statement: [
-          { Effect: 'Allow', Principal: { AWS: '*' } },
-        ],
+        Statement: [{ Effect: 'Allow', Principal: { AWS: '*' } }],
         Version: '2012-10-17',
       });
     });
@@ -335,9 +328,7 @@ describe('IAM policy document', () => {
       p.addStatements(s);
 
       expect(stack.resolve(p)).toEqual({
-        Statement: [
-          { Effect: 'Allow', Principal: { AWS: '*' } },
-        ],
+        Statement: [{ Effect: 'Allow', Principal: { AWS: '*' } }],
         Version: '2012-10-17',
       });
     });
@@ -416,11 +407,17 @@ describe('IAM policy document', () => {
   test('addPrincipal correctly merges array in', () => {
     const stack = new Stack();
     const arrayPrincipal: IPrincipal = {
-      get grantPrincipal() { return this; },
+      get grantPrincipal() {
+        return this;
+      },
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
-      addToPolicy() { return false; },
-      addToPrincipalPolicy() { return { statementAdded: false }; },
+      addToPolicy() {
+        return false;
+      },
+      addToPrincipalPolicy() {
+        return { statementAdded: false };
+      },
     };
     const s = new PolicyStatement();
     s.addAccountRootPrincipal();
@@ -430,7 +427,8 @@ describe('IAM policy document', () => {
       Principal: {
         AWS: [
           { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
-          'foo', 'bar',
+          'foo',
+          'bar',
         ],
       },
     });
@@ -482,13 +480,15 @@ describe('IAM policy document', () => {
   });
 
   describe('CompositePrincipal can be used to represent a principal that has multiple types', () => {
-
     test('with a single principal', () => {
       const stack = new Stack();
       const p = new CompositePrincipal(new ArnPrincipal('i:am:an:arn'));
       const statement = new PolicyStatement();
       statement.addPrincipals(p);
-      expect(stack.resolve(statement.toStatementJson())).toEqual({ Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
+      expect(stack.resolve(statement.toStatementJson())).toEqual({
+        Effect: 'Allow',
+        Principal: { AWS: 'i:am:an:arn' },
+      });
     });
 
     test('conditions are allowed in an assumerolepolicydocument', () => {
@@ -496,7 +496,7 @@ describe('IAM policy document', () => {
       new Role(stack, 'Role', {
         assumedBy: new CompositePrincipal(
           new ArnPrincipal('i:am'),
-          new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } }),
+          new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } })
         ),
       });
 
@@ -522,13 +522,15 @@ describe('IAM policy document', () => {
     });
 
     test('conditions are not allowed when used in a single statement', () => {
-
       expect(() => {
         new PolicyStatement({
           actions: ['s3:test'],
-          principals: [new CompositePrincipal(
-            new ArnPrincipal('i:am'),
-            new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } }))],
+          principals: [
+            new CompositePrincipal(
+              new ArnPrincipal('i:am'),
+              new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } })
+            ),
+          ],
         });
       }).toThrow(/Components of a CompositePrincipal must not have conditions/);
     });
@@ -536,15 +538,10 @@ describe('IAM policy document', () => {
     test('principals and conditions are a big nice merge', () => {
       const stack = new Stack();
       // add via ctor
-      const p = new CompositePrincipal(
-        new ArnPrincipal('i:am:an:arn'),
-        new ServicePrincipal('amazon.com'));
+      const p = new CompositePrincipal(new ArnPrincipal('i:am:an:arn'), new ServicePrincipal('amazon.com'));
 
       // add via `addPrincipals` (with condition)
-      p.addPrincipals(
-        new Anyone(),
-        new ServicePrincipal('another.service'),
-      );
+      p.addPrincipals(new Anyone(), new ServicePrincipal('another.service'));
 
       const statement = new PolicyStatement();
       statement.addPrincipals(p);
@@ -570,9 +567,7 @@ describe('IAM policy document', () => {
 
       // WHEN
       new Role(stack, 'Role', {
-        assumedBy: new CompositePrincipal(
-          new ArnPrincipal('arn'),
-          new FederatedPrincipal('fed', {}, 'sts:Boom')),
+        assumedBy: new CompositePrincipal(new ArnPrincipal('arn'), new FederatedPrincipal('fed', {}, 'sts:Boom')),
       });
 
       // THEN
@@ -605,8 +600,9 @@ describe('IAM policy document', () => {
           },
         },
       };
-      const p = new ServicePrincipal('s3.amazonaws.com', principalOpts)
-        .withConditions({ StringEquals: { 'wrapper-key': ['val-1', 'val-2'] } });
+      const p = new ServicePrincipal('s3.amazonaws.com', principalOpts).withConditions({
+        StringEquals: { 'wrapper-key': ['val-1', 'val-2'] },
+      });
       const statement = new PolicyStatement();
       statement.addPrincipals(p);
       expect(stack.resolve(statement.toStatementJson())).toEqual({
@@ -700,30 +696,34 @@ describe('IAM policy document', () => {
 
       const statement = new PolicyStatement();
 
-      expect(() => statement.addPrincipals(p)).toThrow(/multiple "StringEquals" conditions cannot be merged if one of them contains an unresolved token/);
+      expect(() => statement.addPrincipals(p)).toThrow(
+        /multiple "StringEquals" conditions cannot be merged if one of them contains an unresolved token/
+      );
     });
 
-    test('values passed to `withConditions` overwrite values from the wrapped principal ' +
-      'when keys conflict within an operator', () => {
-      const p = new FederatedPrincipal('fed', {
-        Operator: { key: 'p-val' },
-      }).withConditions({
-        Operator: { key: 'with-val' },
-      });
-      const statement = new PolicyStatement();
-      statement.addPrincipals(p);
-      expect(statement.toStatementJson()).toEqual({
-        Effect: 'Allow',
-        Principal: { Federated: 'fed' },
-        Condition: {
+    test(
+      'values passed to `withConditions` overwrite values from the wrapped principal ' +
+        'when keys conflict within an operator',
+      () => {
+        const p = new FederatedPrincipal('fed', {
+          Operator: { key: 'p-val' },
+        }).withConditions({
           Operator: { key: 'with-val' },
-        },
-      });
-    });
+        });
+        const statement = new PolicyStatement();
+        statement.addPrincipals(p);
+        expect(statement.toStatementJson()).toEqual({
+          Effect: 'Allow',
+          Principal: { Federated: 'fed' },
+          Condition: {
+            Operator: { key: 'with-val' },
+          },
+        });
+      }
+    );
   });
 
   describe('duplicate statements', () => {
-
     test('without tokens', () => {
       // GIVEN
       const stack = new Stack();
@@ -810,14 +810,16 @@ describe('IAM policy document', () => {
     doc1.addStatements(s);
 
     const doc2 = new PolicyDocument();
-    doc2.addStatements(new PolicyStatement({
-      actions: ['service:action1', 'service:action2'],
-      resources: ['*'],
-      principals: [new ArnPrincipal('arn')],
-      conditions: {
-        key: { equals: 'value' },
-      },
-    }));
+    doc2.addStatements(
+      new PolicyStatement({
+        actions: ['service:action1', 'service:action2'],
+        resources: ['*'],
+        principals: [new ArnPrincipal('arn')],
+        conditions: {
+          key: { equals: 'value' },
+        },
+      })
+    );
 
     expect(stack.resolve(doc1)).toEqual(stack.resolve(doc2));
   });
@@ -830,7 +832,6 @@ describe('IAM policy document', () => {
         });
       }).toThrow(/Statement must be an array/);
     });
-
   });
 
   test('adding another condition with the same operator does not delete the original', () => {
@@ -856,7 +857,9 @@ describe('IAM policy document', () => {
     // THEN
     const validationErrorsForResourcePolicy: string[] = policyStatement.validateForResourcePolicy();
     // const validationErrorsForIdentityPolicy: string[] = policyStatement.validateForIdentityPolicy();
-    expect(validationErrorsForResourcePolicy).toEqual(['A PolicyStatement must specify at least one \'action\' or \'notAction\'.']);
+    expect(validationErrorsForResourcePolicy).toEqual([
+      "A PolicyStatement must specify at least one 'action' or 'notAction'.",
+    ]);
   });
 
   test('validation error if policy statement for resource-based policy has no principals specified', () => {
@@ -866,6 +869,8 @@ describe('IAM policy document', () => {
 
     // THEN
     const validationErrors: string[] = policyStatement.validateForResourcePolicy();
-    expect(validationErrors).toEqual(['A PolicyStatement used in a resource-based policy must specify at least one IAM principal.']);
+    expect(validationErrors).toEqual([
+      'A PolicyStatement used in a resource-based policy must specify at least one IAM principal.',
+    ]);
   });
 });

@@ -131,15 +131,11 @@ export class Domain extends Resource {
 
     const domainName = props.domainName || id;
     if (!Token.isUnresolved(domainName) && domainName.length > 255) {
-      throw new Error(
-        `Domain name must be 255 characters or less, got: ${domainName.length} characters.`
-      );
+      throw new Error(`Domain name must be 255 characters or less, got: ${domainName.length} characters.`);
     }
     if (
       !Token.isUnresolved(domainName) &&
-      !/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(
-        domainName
-      )
+      !/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(domainName)
     ) {
       throw new Error(`Domain name must be a valid hostname, got: ${domainName}.`);
     }
@@ -147,10 +143,7 @@ export class Domain extends Resource {
     const domain = new CfnDomain(this, 'Resource', {
       appId: props.app.appId,
       domainName,
-      subDomainSettings: Lazy.any(
-        { produce: () => this.renderSubDomainSettings() },
-        { omitEmptyArray: true }
-      ),
+      subDomainSettings: Lazy.any({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
       enableAutoSubDomain: !!props.enableAutoSubdomain,
       autoSubDomainCreationPatterns: props.autoSubdomainCreationPatterns || ['*', 'pr*'],
       autoSubDomainIamRole: props.autoSubDomainIamRole?.roleArn,

@@ -312,11 +312,7 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
   /**
    * Restrict where the pattern applies
    */
-  public whereString(
-    columnName: string,
-    comparison: string,
-    value: string
-  ): SpaceDelimitedTextPattern {
+  public whereString(columnName: string, comparison: string, value: string): SpaceDelimitedTextPattern {
     if (columnName === COL_ELLIPSIS) {
       throw new Error("Can't use '...' in a restriction");
     }
@@ -338,11 +334,7 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
   /**
    * Restrict where the pattern applies
    */
-  public whereNumber(
-    columnName: string,
-    comparison: string,
-    value: number
-  ): SpaceDelimitedTextPattern {
+  public whereNumber(columnName: string, comparison: string, value: number): SpaceDelimitedTextPattern {
     if (columnName === COL_ELLIPSIS) {
       throw new Error("Can't use '...' in a restriction");
     }
@@ -464,9 +456,7 @@ function validateNumericalOperator(operator: string) {
   }
 
   if (VALID_OPERATORS.indexOf(operator) === -1) {
-    throw new Error(
-      `Invalid comparison operator ('${operator}'), must be one of ${VALID_OPERATORS.join(', ')}`
-    );
+    throw new Error(`Invalid comparison operator ('${operator}'), must be one of ${VALID_OPERATORS.join(', ')}`);
   }
 
   return operator;

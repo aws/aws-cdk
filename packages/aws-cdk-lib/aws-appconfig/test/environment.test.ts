@@ -270,12 +270,10 @@ describe('environment', () => {
     const alarm = new Alarm(stack, 'Alarm', {
       threshold: 5,
       evaluationPeriods: 5,
-      metric: new Metric(
-        {
-          namespace: 'aws',
-          metricName: 'myMetric',
-        },
-      ),
+      metric: new Metric({
+        namespace: 'aws',
+        metricName: 'myMetric',
+      }),
     });
     const alarmRole = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
@@ -297,16 +295,10 @@ describe('environment', () => {
       Monitors: [
         {
           AlarmArn: {
-            'Fn::GetAtt': [
-              'Alarm7103F465',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Alarm7103F465', 'Arn'],
           },
           AlarmRoleArn: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
           },
         },
       ],
@@ -318,12 +310,10 @@ describe('environment', () => {
     const alarm = new Alarm(stack, 'Alarm', {
       threshold: 5,
       evaluationPeriods: 5,
-      metric: new Metric(
-        {
-          namespace: 'aws',
-          metricName: 'myMetric',
-        },
-      ),
+      metric: new Metric({
+        namespace: 'aws',
+        metricName: 'myMetric',
+      }),
     });
     const app = new Application(stack, 'MyAppConfig');
     const env = new Environment(stack, 'MyEnvironment', {
@@ -342,16 +332,10 @@ describe('environment', () => {
       Monitors: [
         {
           AlarmArn: {
-            'Fn::GetAtt': [
-              'Alarm7103F465',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Alarm7103F465', 'Arn'],
           },
           AlarmRoleArn: {
-            'Fn::GetAtt': [
-              'MyEnvironmentRole1E6113D2F07A1',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEnvironmentRole1E6113D2F07A1', 'Arn'],
           },
         },
       ],
@@ -440,12 +424,10 @@ describe('environment', () => {
     const alarm = new Alarm(stack, 'Alarm', {
       threshold: 5,
       evaluationPeriods: 5,
-      metric: new Metric(
-        {
-          namespace: 'aws',
-          metricName: 'myMetric',
-        },
-      ),
+      metric: new Metric({
+        namespace: 'aws',
+        metricName: 'myMetric',
+      }),
     });
     const compositeAlarm = new CompositeAlarm(stack, 'MyCompositeAlarm', {
       alarmRule: alarm,
@@ -453,9 +435,7 @@ describe('environment', () => {
     const env = new Environment(stack, 'MyEnvironment', {
       environmentName: 'TestEnv',
       application: app,
-      monitors: [
-        Monitor.fromCloudWatchAlarm(compositeAlarm),
-      ],
+      monitors: [Monitor.fromCloudWatchAlarm(compositeAlarm)],
     });
 
     expect(env).toBeDefined();
@@ -469,16 +449,10 @@ describe('environment', () => {
       Monitors: [
         {
           AlarmArn: {
-            'Fn::GetAtt': [
-              'MyCompositeAlarm0F045229',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyCompositeAlarm0F045229', 'Arn'],
           },
           AlarmRoleArn: {
-            'Fn::GetAtt': [
-              'MyEnvironmentRole1E6113D2F07A1',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEnvironmentRole1E6113D2F07A1', 'Arn'],
           },
         },
       ],
@@ -507,12 +481,10 @@ describe('environment', () => {
     const alarm = new Alarm(stack, 'Alarm', {
       threshold: 5,
       evaluationPeriods: 5,
-      metric: new Metric(
-        {
-          namespace: 'aws',
-          metricName: 'myMetric',
-        },
-      ),
+      metric: new Metric({
+        namespace: 'aws',
+        metricName: 'myMetric',
+      }),
     });
     const compositeAlarm1 = new CompositeAlarm(stack, 'MyCompositeAlarm1', {
       alarmRule: alarm,
@@ -523,10 +495,7 @@ describe('environment', () => {
     const env = new Environment(stack, 'MyEnvironment', {
       environmentName: 'TestEnv',
       application: app,
-      monitors: [
-        Monitor.fromCloudWatchAlarm(compositeAlarm1),
-        Monitor.fromCloudWatchAlarm(compositeAlarm2),
-      ],
+      monitors: [Monitor.fromCloudWatchAlarm(compositeAlarm1), Monitor.fromCloudWatchAlarm(compositeAlarm2)],
     });
 
     expect(env).toBeDefined();
@@ -541,30 +510,18 @@ describe('environment', () => {
       Monitors: [
         {
           AlarmArn: {
-            'Fn::GetAtt': [
-              'MyCompositeAlarm159A950D0',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyCompositeAlarm159A950D0', 'Arn'],
           },
           AlarmRoleArn: {
-            'Fn::GetAtt': [
-              'MyEnvironmentRole1E6113D2F07A1',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEnvironmentRole1E6113D2F07A1', 'Arn'],
           },
         },
         {
           AlarmArn: {
-            'Fn::GetAtt': [
-              'MyCompositeAlarm2195BFA48',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyCompositeAlarm2195BFA48', 'Arn'],
           },
           AlarmRoleArn: {
-            'Fn::GetAtt': [
-              'MyEnvironmentRole1E6113D2F07A1',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEnvironmentRole1E6113D2F07A1', 'Arn'],
           },
         },
       ],
@@ -593,32 +550,26 @@ describe('environment', () => {
     const alarm1 = new Alarm(stack, 'Alarm1', {
       threshold: 5,
       evaluationPeriods: 5,
-      metric: new Metric(
-        {
-          namespace: 'aws',
-          metricName: 'myMetric',
-        },
-      ),
+      metric: new Metric({
+        namespace: 'aws',
+        metricName: 'myMetric',
+      }),
     });
     const alarm2 = new Alarm(stack, 'Alarm2', {
       threshold: 5,
       evaluationPeriods: 5,
-      metric: new Metric(
-        {
-          namespace: 'aws',
-          metricName: 'myMetric',
-        },
-      ),
+      metric: new Metric({
+        namespace: 'aws',
+        metricName: 'myMetric',
+      }),
     });
     const alarm3 = new Alarm(stack, 'Alarm3', {
       threshold: 5,
       evaluationPeriods: 5,
-      metric: new Metric(
-        {
-          namespace: 'aws',
-          metricName: 'myMetric',
-        },
-      ),
+      metric: new Metric({
+        namespace: 'aws',
+        metricName: 'myMetric',
+      }),
     });
     new Environment(stack, 'MyEnvironment', {
       environmentName: 'TestEnv',
@@ -640,44 +591,26 @@ describe('environment', () => {
       Monitors: [
         {
           AlarmArn: {
-            'Fn::GetAtt': [
-              'Alarm1F9009D71',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'],
           },
           AlarmRoleArn: {
-            'Fn::GetAtt': [
-              'MyEnvironmentRole1E6113D2F07A1',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEnvironmentRole1E6113D2F07A1', 'Arn'],
           },
         },
         {
           AlarmArn: {
-            'Fn::GetAtt': [
-              'Alarm2A7122E13',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'],
           },
           AlarmRoleArn: {
-            'Fn::GetAtt': [
-              'MyEnvironmentRole1E6113D2F07A1',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEnvironmentRole1E6113D2F07A1', 'Arn'],
           },
         },
         {
           AlarmArn: {
-            'Fn::GetAtt': [
-              'Alarm32341D8D9',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Alarm32341D8D9', 'Arn'],
           },
           AlarmRoleArn: {
-            'Fn::GetAtt': [
-              'MyEnvironmentRole1E6113D2F07A1',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyEnvironmentRole1E6113D2F07A1', 'Arn'],
           },
         },
       ],
@@ -686,8 +619,11 @@ describe('environment', () => {
 
   test('from environment arn', () => {
     const stack = new cdk.Stack();
-    const env = Environment.fromEnvironmentArn(stack, 'MyEnvironment',
-      'arn:aws:appconfig:us-west-2:123456789012:application/abc123/environment/def456');
+    const env = Environment.fromEnvironmentArn(
+      stack,
+      'MyEnvironment',
+      'arn:aws:appconfig:us-west-2:123456789012:application/abc123/environment/def456'
+    );
 
     expect(env.applicationId).toEqual('abc123');
     expect(env.environmentId).toEqual('def456');
@@ -698,47 +634,66 @@ describe('environment', () => {
   test('from environment arn; cannot add new deployment', () => {
     const stack = new cdk.Stack();
     const application = new Application(stack, 'MyAppConfig');
-    const env = Environment.fromEnvironmentArn(stack, 'MyEnvironment',
-      'arn:aws:appconfig:us-west-2:123456789012:application/abc123/environment/def456');
+    const env = Environment.fromEnvironmentArn(
+      stack,
+      'MyEnvironment',
+      'arn:aws:appconfig:us-west-2:123456789012:application/abc123/environment/def456'
+    );
 
     expect(() => {
-      env.addDeployment(new HostedConfiguration(stack, 'FirstConfig', {
-        application,
-        content: ConfigurationContent.fromInlineText('This is my content 1'),
-      }));
+      env.addDeployment(
+        new HostedConfiguration(stack, 'FirstConfig', {
+          application,
+          content: ConfigurationContent.fromInlineText('This is my content 1'),
+        })
+      );
     }).toThrow('Environment name must be known to add a Deployment');
   });
 
   test('from environment arn with no resource name', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      Environment.fromEnvironmentArn(stack, 'MyEnvironment',
-        'arn:aws:appconfig:us-west-2:123456789012:application/');
+      Environment.fromEnvironmentArn(stack, 'MyEnvironment', 'arn:aws:appconfig:us-west-2:123456789012:application/');
     }).toThrow('Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN:');
   });
 
   test('from environment arn with missing slash', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      Environment.fromEnvironmentArn(stack, 'MyEnvironment',
-        'arn:aws:appconfig:us-west-2:123456789012:application/abc123environment/def456');
-    }).toThrow('Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}');
+      Environment.fromEnvironmentArn(
+        stack,
+        'MyEnvironment',
+        'arn:aws:appconfig:us-west-2:123456789012:application/abc123environment/def456'
+      );
+    }).toThrow(
+      'Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}'
+    );
   });
 
   test('from environment arn with no application id', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      Environment.fromEnvironmentArn(stack, 'MyEnvironment',
-        'arn:aws:appconfig:us-west-2:123456789012:application//environment/def456');
-    }).toThrow('Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}');
+      Environment.fromEnvironmentArn(
+        stack,
+        'MyEnvironment',
+        'arn:aws:appconfig:us-west-2:123456789012:application//environment/def456'
+      );
+    }).toThrow(
+      'Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}'
+    );
   });
 
   test('from environment arn with no environment id', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      Environment.fromEnvironmentArn(stack, 'MyEnvironment',
-        'arn:aws:appconfig:us-west-2:123456789012:application/abc123/environment/');
-    }).toThrow('Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}');
+      Environment.fromEnvironmentArn(
+        stack,
+        'MyEnvironment',
+        'arn:aws:appconfig:us-west-2:123456789012:application/abc123/environment/'
+      );
+    }).toThrow(
+      'Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}'
+    );
   });
 
   test('from environment attributes', () => {
@@ -770,10 +725,12 @@ describe('environment', () => {
     });
 
     expect(() => {
-      env.addDeployment(new HostedConfiguration(stack, 'FirstConfig', {
-        application,
-        content: ConfigurationContent.fromInlineText('This is my content 1'),
-      }));
+      env.addDeployment(
+        new HostedConfiguration(stack, 'FirstConfig', {
+          application,
+          content: ConfigurationContent.fromInlineText('This is my content 1'),
+        })
+      );
     }).toThrow('Environment name must be known to add a Deployment');
   });
 
@@ -785,10 +742,12 @@ describe('environment', () => {
       environmentId: 'def456',
       name: 'NamedEnv',
     });
-    env.addDeployment(new HostedConfiguration(stack, 'FirstConfig', {
-      application,
-      content: ConfigurationContent.fromInlineText('This is my content 1'),
-    }));
+    env.addDeployment(
+      new HostedConfiguration(stack, 'FirstConfig', {
+        application,
+        content: ConfigurationContent.fromInlineText('This is my content 1'),
+      })
+    );
 
     const actual = Template.fromStack(stack);
 
@@ -844,25 +803,25 @@ describe('environment', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'appconfig:GetLatestConfiguration',
-              'appconfig:StartConfigurationSession',
-            ],
+            Action: ['appconfig:GetLatestConfiguration', 'appconfig:StartConfigurationSession'],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appconfig:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':application/',
-                { Ref: 'MyAppConfigB4B63E75' },
-                '/environment/',
-                { Ref: 'MyEnvironment465E4DEA' },
-                '/configuration/*',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appconfig:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':application/',
+                  { Ref: 'MyAppConfigB4B63E75' },
+                  '/environment/',
+                  { Ref: 'MyEnvironment465E4DEA' },
+                  '/configuration/*',
+                ],
+              ],
             },
           },
         ],

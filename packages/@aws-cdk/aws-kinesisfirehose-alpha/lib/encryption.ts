@@ -25,10 +25,7 @@ export abstract class StreamEncryption {
    * @param encryptionKey the KMS key for the delivery stream.
    */
   public static customerManagedKey(encryptionKey?: IKey): StreamEncryption {
-    return new (class extends StreamEncryption {})(
-      StreamEncryptionType.CUSTOMER_MANAGED,
-      encryptionKey
-    );
+    return new (class extends StreamEncryption {})(StreamEncryptionType.CUSTOMER_MANAGED, encryptionKey);
   }
 
   /**

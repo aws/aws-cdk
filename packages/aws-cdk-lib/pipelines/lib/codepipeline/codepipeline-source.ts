@@ -9,12 +9,7 @@ import * as codecommit from '../../../aws-codecommit';
 import * as cp from '../../../aws-codepipeline';
 import { Artifact } from '../../../aws-codepipeline';
 import * as cp_actions from '../../../aws-codepipeline-actions';
-import {
-  Action,
-  CodeCommitTrigger,
-  GitHubTrigger,
-  S3Trigger,
-} from '../../../aws-codepipeline-actions';
+import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '../../../aws-codepipeline-actions';
 import { IRepository } from '../../../aws-ecr';
 import * as iam from '../../../aws-iam';
 import { IBucket } from '../../../aws-s3';
@@ -54,11 +49,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * If you need access to symlinks or the repository history, use a source of type
    * `connection` instead.
    */
-  public static gitHub(
-    repoString: string,
-    branch: string,
-    props: GitHubSourceOptions = {}
-  ): CodePipelineSource {
+  public static gitHub(repoString: string, branch: string, props: GitHubSourceOptions = {}): CodePipelineSource {
     return new GitHubSource(repoString, branch, props);
   }
 
@@ -73,11 +64,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * declare const bucket: s3.Bucket;
    * pipelines.CodePipelineSource.s3(bucket, 'path/to/file.zip');
    */
-  public static s3(
-    bucket: IBucket,
-    objectKey: string,
-    props: S3SourceOptions = {}
-  ): CodePipelineSource {
+  public static s3(bucket: IBucket, objectKey: string, props: S3SourceOptions = {}): CodePipelineSource {
     return new S3Source(bucket, objectKey, props);
   }
 
@@ -124,11 +111,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html
    */
-  public static connection(
-    repoString: string,
-    branch: string,
-    props: ConnectionSourceOptions
-  ): CodePipelineSource {
+  public static connection(repoString: string, branch: string, props: ConnectionSourceOptions): CodePipelineSource {
     return new CodeStarConnectionSource(repoString, branch, props);
   }
 
@@ -158,18 +141,10 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   // tells `PipelineGraph` to hoist a "Source" step
   public readonly isSource = true;
 
-  public produceAction(
-    stage: cp.IStage,
-    options: ProduceActionOptions
-  ): CodePipelineActionFactoryResult {
+  public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const output = options.artifacts.toCodePipeline(this.primaryOutput!);
 
-    const action = this.getAction(
-      output,
-      options.actionName,
-      options.runOrder,
-      options.variablesNamespace
-    );
+    const action = this.getAction(output, options.actionName, options.runOrder, options.variablesNamespace);
     stage.addAction(action);
     return { runOrdersConsumed: 1 };
   }
@@ -299,9 +274,7 @@ class GitHubSource extends CodePipelineSource {
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
-      throw new Error(
-        `GitHub repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`
-      );
+      throw new Error(`GitHub repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
     }
     this.owner = parts[0];
     this.repo = parts[1];
@@ -309,12 +282,7 @@ class GitHubSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(
-    output: Artifact,
-    actionName: string,
-    runOrder: number,
-    variablesNamespace?: string
-  ) {
+  protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.GitHubSourceAction({
       output,
       actionName: this.props.actionName ?? actionName,
@@ -370,12 +338,7 @@ class S3Source extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(
-    output: Artifact,
-    _actionName: string,
-    runOrder: number,
-    variablesNamespace?: string
-  ) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.S3SourceAction({
       output,
       // Bucket names are guaranteed to conform to ActionName restrictions
@@ -419,12 +382,7 @@ class ECRSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(
-    output: Artifact,
-    _actionName: string,
-    runOrder: number,
-    variablesNamespace: string
-  ) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace: string) {
     // RepositoryName can contain '/' that is not a valid ActionName character, use '_' instead
     const formattedRepositoryName = Fn.join('_', Fn.split('/', this.repository.repositoryName));
     return new cp_actions.EcrSourceAction({
@@ -525,12 +483,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
     return parts.every((element) => element !== '');
   }
 
-  protected getAction(
-    output: Artifact,
-    actionName: string,
-    runOrder: number,
-    variablesNamespace?: string
-  ) {
+  protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeStarConnectionsSourceAction({
       output,
       actionName: this.props.actionName ?? actionName,
@@ -592,21 +545,12 @@ class CodeCommitSource extends CodePipelineSource {
     private readonly branch: string,
     private readonly props: CodeCommitSourceOptions
   ) {
-    super(
-      Token.isUnresolved(repository.repositoryName)
-        ? Node.of(repository).addr
-        : repository.repositoryName
-    );
+    super(Token.isUnresolved(repository.repositoryName) ? Node.of(repository).addr : repository.repositoryName);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(
-    output: Artifact,
-    _actionName: string,
-    runOrder: number,
-    variablesNamespace?: string
-  ) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeCommitSourceAction({
       output,
       // Guaranteed to be okay as action name

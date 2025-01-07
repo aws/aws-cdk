@@ -26,7 +26,7 @@ describe('Cidr split results', () => {
   });
 
   test('small big small', () => {
-    expect (calculateCidrSplits(22, [28, 24, 28])).toEqual([
+    expect(calculateCidrSplits(22, [28, 24, 28])).toEqual([
       { netmask: 28, count: 64, index: 0 },
       { netmask: 24, count: 4, index: 1 },
       { netmask: 28, count: 64, index: 32 },

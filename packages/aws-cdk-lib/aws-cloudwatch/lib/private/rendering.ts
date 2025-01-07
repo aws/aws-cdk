@@ -26,8 +26,7 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
 
   // Render all metrics from the set.
   return mset.entries.map(
-    (entry) =>
-      new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id))
+    (entry) => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id))
   );
 }
 

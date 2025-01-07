@@ -188,10 +188,7 @@ export interface FairshareSchedulingPolicyProps extends SchedulingPolicyProps {
  *
  * @resource AWS::Batch::SchedulingPolicy
  */
-export class FairshareSchedulingPolicy
-  extends SchedulingPolicyBase
-  implements IFairshareSchedulingPolicy
-{
+export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements IFairshareSchedulingPolicy {
   /**
    * Reference an exisiting Scheduling Policy by its ARN
    */
@@ -203,10 +200,8 @@ export class FairshareSchedulingPolicy
     const stack = Stack.of(scope);
     class Import extends SchedulingPolicyBase implements IFairshareSchedulingPolicy {
       public readonly schedulingPolicyArn = fairshareSchedulingPolicyArn;
-      public readonly schedulingPolicyName = stack.splitArn(
-        fairshareSchedulingPolicyArn,
-        ArnFormat.SLASH_RESOURCE_NAME
-      ).resourceName!;
+      public readonly schedulingPolicyName = stack.splitArn(fairshareSchedulingPolicyArn, ArnFormat.SLASH_RESOURCE_NAME)
+        .resourceName!;
       public readonly shares = [];
     }
 

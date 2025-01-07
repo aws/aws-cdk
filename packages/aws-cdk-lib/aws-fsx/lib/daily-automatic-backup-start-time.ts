@@ -59,14 +59,10 @@ export class DailyAutomaticBackupStartTime {
    */
   private validate(hour: number, minute: number) {
     if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
-      throw new Error(
-        `dailyAutomaticBackupStartTime hour must be an integer between 0 and 24. received: ${hour}`
-      );
+      throw new Error(`dailyAutomaticBackupStartTime hour must be an integer between 0 and 24. received: ${hour}`);
     }
     if (!Number.isInteger(minute) || minute < 0 || minute > 59) {
-      throw new Error(
-        `dailyAutomaticBackupStartTime minute must be an integer between 0 and 59. received: ${minute}`
-      );
+      throw new Error(`dailyAutomaticBackupStartTime minute must be an integer between 0 and 59. received: ${minute}`);
     }
   }
 }

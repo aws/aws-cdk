@@ -48,15 +48,12 @@ export const ENABLE_DIFF_NO_FAIL = ENABLE_DIFF_NO_FAIL_CONTEXT;
 export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSynthesis';
 export const STACK_RELATIVE_EXPORTS_CONTEXT = '@aws-cdk/core:stackRelativeExports';
 export const DOCKER_IGNORE_SUPPORT = '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport';
-export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME =
-  '@aws-cdk/aws-secretsmanager:parseOwnedSecretName';
+export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME = '@aws-cdk/aws-secretsmanager:parseOwnedSecretName';
 export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl';
-export const ECS_REMOVE_DEFAULT_DESIRED_COUNT =
-  '@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount';
+export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount';
 export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifier';
-export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID =
-  '@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId';
+export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId';
 export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
@@ -75,48 +72,36 @@ export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotR
 export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME =
   '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
 export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
-export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY =
-  '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
+export const SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY = '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption';
 export const APIGATEWAY_DISABLE_CLOUDWATCH_ROLE = '@aws-cdk/aws-apigateway:disableCloudWatchRole';
 export const ENABLE_PARTITION_LITERALS = '@aws-cdk/core:enablePartitionLiterals';
 export const EVENTS_TARGET_QUEUE_SAME_ACCOUNT = '@aws-cdk/aws-events:eventsTargetQueueSameAccount';
 export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER =
   '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker';
-export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY =
-  '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
+export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
-export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT =
-  '@aws-cdk/customresources:installLatestAwsSdkDefault';
-export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME =
-  '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
-export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP =
-  '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
+export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
+export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
+export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
 export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID =
   '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId';
-export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA =
-  '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
+export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY =
   '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
-export const ENABLE_EMR_SERVICE_POLICY_V2 =
-  '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
+export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
-export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID =
-  '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
-export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION =
-  '@aws-cdk/core:includePrefixInUniqueNameGeneration';
+export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
+export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
-export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID =
-  '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
+export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE =
   '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY =
   '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
-export const LAMBDA_NODEJS_USE_LATEST_RUNTIME =
-  '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
-export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS =
-  '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials';
+export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
+export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials';
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS =
   '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION =
@@ -127,25 +112,19 @@ export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION =
   '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE =
   '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
-export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 =
-  '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
-export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE =
-  '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
-export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE =
-  '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
+export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
+export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
+export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT =
   '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
-export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET =
-  '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
+export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK =
   '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
-export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS =
-  '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
-export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA =
-  '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
+export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
+export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
 export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION =
   '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
@@ -153,12 +132,9 @@ export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY =
   '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
 export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS =
   '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
-export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES =
-  '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
-export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY =
-  '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
-export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT =
-  '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
+export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
+export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
+export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE =
   '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
@@ -215,8 +191,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [STACK_RELATIVE_EXPORTS_CONTEXT]: {
     type: FlagType.BugFix,
-    summary:
-      'Name exports based on the construct paths relative to the stack, rather than the global construct path',
+    summary: 'Name exports based on the construct paths relative to the stack, rather than the global construct path',
     detailsMd: `
       Combined with the stack name this relative construct path is good enough to
       ensure uniqueness, and makes the export names robust against refactoring
@@ -319,8 +294,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v1: '1.92.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd:
-      'You can pass `desiredCount: 1` explicitly, but you should never need this.',
+    compatibilityWithOldBehaviorMd: 'You can pass `desiredCount: 1` explicitly, but you should never need this.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -421,8 +395,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [CHECK_SECRET_USAGE]: {
     type: FlagType.VisibleContext,
-    summary:
-      'Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations',
+    summary: 'Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations',
     detailsMd: `
       With this flag enabled, \`SecretValue\` instances can only be passed to
       constructs that accept \`SecretValue\`s; otherwise, \`unsafeUnwrap()\` must be
@@ -476,8 +449,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: {
     type: FlagType.BugFix,
-    summary:
-      'ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID.',
+    summary: 'ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID.',
     detailsMd: `
       If this flag is not set, the old ARN format (without cluster name) for ECS is used.
       If this flag is set, the new ARN format (with cluster name) for ECS is used.
@@ -572,8 +544,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_DISABLE_CLOUDWATCH_ROLE]: {
     type: FlagType.BugFix,
-    summary:
-      'Make default CloudWatch Role behavior safe for multiple API Gateways in one environment',
+    summary: 'Make default CloudWatch Role behavior safe for multiple API Gateways in one environment',
     detailsMd: `
       Enable this feature flag to change the default behavior for aws-apigateway.RestApi and aws-apigateway.SpecRestApi
       to _not_ create a CloudWatch role and Account. There is only a single ApiGateway account per AWS
@@ -750,8 +721,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID]: {
     type: FlagType.BugFix,
-    summary:
-      'Include authorizer configuration in the calculation of the API deployment logical ID.',
+    summary: 'Include authorizer configuration in the calculation of the API deployment logical ID.',
     detailsMd: `
       The logical ID of the AWS::ApiGateway::Deployment resource is calculated by hashing
       the API configuration, including methods, and resources, etc. Enable this feature flag
@@ -936,8 +906,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       that can access over the network.`,
     introducedIn: { v2: '2.93.0' },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd:
-      'You can pass `allowAnonymousAccess: true` so allow anonymous clients access.',
+    compatibilityWithOldBehaviorMd: 'You can pass `allowAnonymousAccess: true` so allow anonymous clients access.',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -957,8 +926,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: {
     type: FlagType.ApiDefault,
-    summary:
-      'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
+    summary: 'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
     detailsMd: `
       If this is set, and a \`runtime\` prop is not passed to, Lambda NodeJs
       functions will us the latest version of the runtime provided by the Lambda
@@ -974,8 +942,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID]: {
     type: FlagType.BugFix,
-    summary:
-      'When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.',
+    summary: 'When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.',
     detailsMd: `
       When this feature flag is enabled, each mount target will have a stable
       logicalId that is linked to the associated subnet. If the flag is set to
@@ -1058,8 +1025,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: {
     type: FlagType.BugFix,
-    summary:
-      'When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID.',
+    summary: 'When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID.',
     detailsMd: `
       When this feature flag is enabled, a logical ID of \`LambdaPermission\` for a
       \`LambdaAction\` will include an alarm ID. Therefore multiple alarms for the same Lambda
@@ -1103,8 +1069,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE]: {
     type: FlagType.BugFix,
-    summary:
-      'When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only.',
+    summary: 'When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only.',
     detailsMd: `
       When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
       '*' to this specific granting KMS key.
@@ -1124,8 +1089,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.141.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd:
-      'Disable the feature flag to add the root account principal back',
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1217,8 +1181,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.156.0' },
     defaults: { v2: true },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd:
-      'Disable the feature flag to use input and output path fields for s3 URI',
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use input and output path fields for s3 URI',
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1257,8 +1220,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [EC2_SUM_TIMEOUT_ENABLED]: {
     type: FlagType.BugFix,
-    summary:
-      'When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.',
+    summary: 'When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together.',
     detailsMd: `
       Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance,
       only the value from 'resourceSignalTimeout' will be used.
@@ -1369,8 +1331,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [ASPECT_STABILIZATION]: {
     type: FlagType.VisibleContext,
-    summary:
-      'When enabled, a stabilization loop will be run when invoking Aspects during synthesis.',
+    summary: 'When enabled, a stabilization loop will be run when invoking Aspects during synthesis.',
     detailsMd: `
       Currently, when Aspects are invoked in one single pass of the construct tree.
       This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
@@ -1423,10 +1384,7 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
  */
 export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
-    .filter(
-      ([_, flag]) =>
-        flag.recommendedValue !== flag.defaults?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV]
-    )
+    .filter(([_, flag]) => flag.recommendedValue !== flag.defaults?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue])
 );
 
@@ -1448,9 +1406,7 @@ export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
-    throw new Error(
-      `futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`
-    );
+    throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;
 }

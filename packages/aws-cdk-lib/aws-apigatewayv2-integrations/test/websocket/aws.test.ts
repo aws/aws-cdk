@@ -40,7 +40,7 @@ describe('AwsWebSocketIntegration', () => {
           integrationMethod: 'POST',
           credentialsRole: role,
           requestParameters: {
-            'integration.request.header.Content-Type': '\'application/x-www-form-urlencoded\'',
+            'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'",
           },
           requestTemplates: { 'application/json': '{ "statusCode": 200 }' },
           templateSelectionExpression: '\\$default',
@@ -58,7 +58,7 @@ describe('AwsWebSocketIntegration', () => {
       IntegrationMethod: 'POST',
       CredentialsArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
       RequestParameters: {
-        'integration.request.header.Content-Type': '\'application/x-www-form-urlencoded\'',
+        'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'",
       },
       RequestTemplates: { 'application/json': '{ "statusCode": 200 }' },
       TemplateSelectionExpression: '\\$default',

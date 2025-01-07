@@ -70,10 +70,7 @@ export interface ClusterParameterGroupProps {
  *
  * @resource AWS::DocDB::DBClusterParameterGroup
  */
-export class ClusterParameterGroup
-  extends ClusterParameterGroupBase
-  implements IClusterParameterGroup
-{
+export class ClusterParameterGroup extends ClusterParameterGroupBase implements IClusterParameterGroup {
   /**
    * The name of the parameter group
    */

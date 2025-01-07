@@ -132,7 +132,10 @@ describe('WebSocketApi', () => {
   test('import', () => {
     // GIVEN
     const stack = new Stack();
-    const imported = WebSocketApi.fromWebSocketApiAttributes(stack, 'imported', { webSocketId: 'ws-1234', apiEndpoint: 'api-endpoint' });
+    const imported = WebSocketApi.fromWebSocketApiAttributes(stack, 'imported', {
+      webSocketId: 'ws-1234',
+      apiEndpoint: 'api-endpoint',
+    });
 
     // THEN
     expect(imported.apiId).toEqual('ws-1234');
@@ -153,17 +156,20 @@ describe('WebSocketApi', () => {
     const api = new WebSocketApi(stack, 'api');
 
     expect(stack.resolve(api.arnForExecuteApi('method', '/path', 'stage'))).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        stack.resolve(api.apiId),
-        '/stage/method/path',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          stack.resolve(api.apiId),
+          '/stage/method/path',
+        ],
+      ],
     });
   });
 
@@ -172,17 +178,20 @@ describe('WebSocketApi', () => {
     const api = new WebSocketApi(stack, 'api');
 
     expect(stack.resolve(api.arnForExecuteApi())).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        stack.resolve(api.apiId),
-        '/*/*/*',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          stack.resolve(api.apiId),
+          '/*/*/*',
+        ],
+      ],
     });
   });
 
@@ -191,17 +200,20 @@ describe('WebSocketApi', () => {
     const api = new WebSocketApi(stack, 'api');
 
     expect(stack.resolve(api.arnForExecuteApi('ANY', '/path', 'stage'))).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        stack.resolve(api.apiId),
-        '/stage/*/path',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          stack.resolve(api.apiId),
+          '/stage/*/path',
+        ],
+      ],
     });
   });
 
@@ -209,8 +221,7 @@ describe('WebSocketApi', () => {
     const stack = new Stack();
     const api = new WebSocketApi(stack, 'api');
 
-    expect(() => api.arnForExecuteApi('method', 'path', 'stage'))
-      .toThrow("Path must start with '/': path");
+    expect(() => api.arnForExecuteApi('method', 'path', 'stage')).toThrow("Path must start with '/': path");
   });
 
   describe('grantManageConnections', () => {
@@ -226,31 +237,36 @@ describe('WebSocketApi', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([{
-            Action: 'execute-api:ManageConnections',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':execute-api:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':',
-                {
-                  Ref: 'apiC8550315',
-                },
-                '/*/*/@connections/*',
-              ]],
+          Statement: Match.arrayWith([
+            {
+              Action: 'execute-api:ManageConnections',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':execute-api:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':',
+                    {
+                      Ref: 'apiC8550315',
+                    },
+                    '/*/*/@connections/*',
+                  ],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
     });

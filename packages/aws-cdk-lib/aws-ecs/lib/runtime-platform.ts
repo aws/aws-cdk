@@ -43,51 +43,37 @@ export class OperatingSystemFamily {
   /**
    * WINDOWS_SERVER_2004_CORE
    */
-  public static readonly WINDOWS_SERVER_2004_CORE = OperatingSystemFamily.of(
-    'WINDOWS_SERVER_2004_CORE'
-  );
+  public static readonly WINDOWS_SERVER_2004_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_2004_CORE');
 
   /**
    * WINDOWS_SERVER_2016_FULL
    */
-  public static readonly WINDOWS_SERVER_2016_FULL = OperatingSystemFamily.of(
-    'WINDOWS_SERVER_2016_FULL'
-  );
+  public static readonly WINDOWS_SERVER_2016_FULL = OperatingSystemFamily.of('WINDOWS_SERVER_2016_FULL');
 
   /**
    * WINDOWS_SERVER_2019_CORE
    */
-  public static readonly WINDOWS_SERVER_2019_CORE = OperatingSystemFamily.of(
-    'WINDOWS_SERVER_2019_CORE'
-  );
+  public static readonly WINDOWS_SERVER_2019_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_2019_CORE');
 
   /**
    * WINDOWS_SERVER_2019_FULL
    */
-  public static readonly WINDOWS_SERVER_2019_FULL = OperatingSystemFamily.of(
-    'WINDOWS_SERVER_2019_FULL'
-  );
+  public static readonly WINDOWS_SERVER_2019_FULL = OperatingSystemFamily.of('WINDOWS_SERVER_2019_FULL');
 
   /**
    * WINDOWS_SERVER_2022_CORE
    */
-  public static readonly WINDOWS_SERVER_2022_CORE = OperatingSystemFamily.of(
-    'WINDOWS_SERVER_2022_CORE'
-  );
+  public static readonly WINDOWS_SERVER_2022_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_2022_CORE');
 
   /**
    * WINDOWS_SERVER_2022_FULL
    */
-  public static readonly WINDOWS_SERVER_2022_FULL = OperatingSystemFamily.of(
-    'WINDOWS_SERVER_2022_FULL'
-  );
+  public static readonly WINDOWS_SERVER_2022_FULL = OperatingSystemFamily.of('WINDOWS_SERVER_2022_FULL');
 
   /**
    * WINDOWS_SERVER_20H2_CORE
    */
-  public static readonly WINDOWS_SERVER_20H2_CORE = OperatingSystemFamily.of(
-    'WINDOWS_SERVER_20H2_CORE'
-  );
+  public static readonly WINDOWS_SERVER_20H2_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_20H2_CORE');
 
   /**
    * Other operating system family.

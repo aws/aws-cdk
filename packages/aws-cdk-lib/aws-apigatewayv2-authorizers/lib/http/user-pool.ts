@@ -73,9 +73,7 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
       const region = this.props.userPoolRegion ?? Stack.of(options.scope).region;
-      const clients = this.props.userPoolClients ?? [
-        this.pool.addClient('UserPoolAuthorizerClient'),
-      ];
+      const clients = this.props.userPoolClients ?? [this.pool.addClient('UserPoolAuthorizerClient')];
 
       this.authorizer = new HttpAuthorizer(options.scope, this.id, {
         httpApi: options.route.httpApi,

@@ -1,5 +1,13 @@
 import { Template } from '../../../assertions';
-import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, VpcLink } from '../../../aws-apigatewayv2';
+import {
+  HttpApi,
+  HttpMethod,
+  HttpRoute,
+  HttpRouteKey,
+  MappingValue,
+  ParameterMapping,
+  VpcLink,
+} from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { Duration, Stack } from '../../../core';
@@ -117,16 +125,20 @@ describe('HttpAlbIntegration', () => {
     const stack = new Stack();
     const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySecurityGroup', 'sg-903004f8');
     const listener = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack, 'Listener', {
-      listenerArn: 'arn:aws:elasticloadbalancing:us-east-1:012345655:listener/app/myloadbalancer/lb-12345/listener-12345',
+      listenerArn:
+        'arn:aws:elasticloadbalancing:us-east-1:012345655:listener/app/myloadbalancer/lb-12345/listener-12345',
       securityGroup,
     });
     const api = new HttpApi(stack, 'HttpApi');
 
-    expect(() => new HttpRoute(stack, 'HttpProxyPrivateRoute', {
-      httpApi: api,
-      integration: new HttpAlbIntegration('Integration', listener),
-      routeKey: HttpRouteKey.with('/pets'),
-    })).toThrow(/vpcLink property must be specified/);
+    expect(
+      () =>
+        new HttpRoute(stack, 'HttpProxyPrivateRoute', {
+          httpApi: api,
+          integration: new HttpAlbIntegration('Integration', listener),
+          routeKey: HttpRouteKey.with('/pets'),
+        })
+    ).toThrow(/vpcLink property must be specified/);
   });
 
   test('tlsConfig option is correctly recognized', () => {

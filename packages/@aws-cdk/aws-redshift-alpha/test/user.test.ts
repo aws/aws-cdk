@@ -39,11 +39,13 @@ describe('cluster user', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-          Effect: 'Allow',
-          Resource: { Ref: 'UserSecretAttachment02022609' },
-        }]),
+        Statement: Match.arrayWith([
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'UserSecretAttachment02022609' },
+          },
+        ]),
       },
       Roles: [{ Ref: 'QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717' }],
     });
@@ -66,10 +68,7 @@ describe('cluster user', () => {
     const user = new redshift.User(stack, 'User', databaseOptions);
 
     expect(stack.resolve(user.username)).toStrictEqual({
-      'Fn::GetAtt': [
-        'UserFDDCDD17',
-        'username',
-      ],
+      'Fn::GetAtt': ['UserFDDCDD17', 'username'],
     });
   });
 
@@ -209,7 +208,10 @@ describe('cluster user', () => {
     });
     const table = redshift.Table.fromTableAttributes(stack, 'Table', {
       tableName: 'tableName',
-      tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+      tableColumns: [
+        { name: 'col1', dataType: 'varchar(4)' },
+        { name: 'col2', dataType: 'float' },
+      ],
       cluster,
       databaseName: 'databaseName',
     });

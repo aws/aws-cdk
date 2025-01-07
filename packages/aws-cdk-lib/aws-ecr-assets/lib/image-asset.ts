@@ -573,11 +573,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       dockerCacheDisabled: this.dockerCacheDisabled,
     });
 
-    this.repository = ecr.Repository.fromRepositoryName(
-      this,
-      'Repository',
-      location.repositoryName
-    );
+    this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
     this.imageTag = location.imageTag ?? this.assetHash;
   }
@@ -607,34 +603,23 @@ export class DockerImageAsset extends Construct implements IAsset {
     // in order to enable local invocation of this function.
     resource.cfnOptions.metadata = resource.cfnOptions.metadata || {};
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] =
-      this.dockerfilePath;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] =
-      this.dockerBuildArgs;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY] =
-      this.dockerBuildSecrets;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY] =
-      this.dockerBuildSsh;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] =
-      this.dockerBuildTarget;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY] = this.dockerBuildSecrets;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY] = this.dockerBuildSsh;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] =
-      this.dockerOutputs;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY] =
-      this.dockerCacheFrom;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY] =
-      this.dockerCacheTo;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY] =
-      this.dockerCacheDisabled;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] = this.dockerOutputs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY] = this.dockerCacheFrom;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY] = this.dockerCacheTo;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY] = this.dockerCacheDisabled;
   }
 }
 
 function validateProps(props: DockerImageAssetProps) {
   for (const [key, value] of Object.entries(props)) {
     if (Token.isUnresolved(value)) {
-      throw new Error(
-        `Cannot use Token as value of '${key}': this value is used before deployment starts`
-      );
+      throw new Error(`Cannot use Token as value of '${key}': this value is used before deployment starts`);
     }
   }
 

@@ -275,12 +275,7 @@ export class Role extends Resource implements IRole {
    * @param roleArn the ARN of the role to import
    * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleArn(
-    scope: Construct,
-    id: string,
-    roleArn: string,
-    options: FromRoleArnOptions = {}
-  ): IRole {
+  public static fromRoleArn(scope: Construct, id: string, roleArn: string, options: FromRoleArnOptions = {}): IRole {
     const scopeStack = Stack.of(scope);
     const parsedArn = scopeStack.splitArn(roleArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = parsedArn.resourceName!;
@@ -306,10 +301,7 @@ export class Role extends Resource implements IRole {
       throw new Error("'addGrantsToResources' can only be passed if 'mutable: false'");
     }
 
-    const roleArnAndScopeStackAccountComparison = Token.compareStrings(
-      roleAccount ?? '',
-      scopeStack.account
-    );
+    const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
     const equalOrAnyUnresolved =
       roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
       roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
@@ -317,8 +309,7 @@ export class Role extends Resource implements IRole {
 
     // if we are returning an immutable role then the 'importedRole' is just a throwaway construct
     // so give it a different id
-    const mutableRoleId =
-      options.mutable !== false && equalOrAnyUnresolved ? id : `MutableRole${id}`;
+    const mutableRoleId = options.mutable !== false && equalOrAnyUnresolved ? id : `MutableRole${id}`;
     const importedRole = new ImportedRole(scope, mutableRoleId, {
       roleArn,
       roleName,
@@ -350,12 +341,7 @@ export class Role extends Resource implements IRole {
    * @param roleName the name of the role to import
    * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleName(
-    scope: Construct,
-    id: string,
-    roleName: string,
-    options: FromRoleNameOptions = {}
-  ) {
+  public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
     return Role.fromRoleArn(
       scope,
       id,
@@ -399,9 +385,7 @@ export class Role extends Resource implements IRole {
     const preventSynthesis = options?.preventSynthesis ?? true;
     const useRoles: { [constructPath: string]: string } = {};
     for (const [constructPath, roleName] of Object.entries(options?.usePrecreatedRoles ?? {})) {
-      const absPath = constructPath.startsWith(scope.node.path)
-        ? constructPath
-        : `${scope.node.path}/${constructPath}`;
+      const absPath = constructPath.startsWith(scope.node.path) ? constructPath : `${scope.node.path}/${constructPath}`;
       useRoles[absPath] = roleName;
     }
     scope.node.setContext(CUSTOMIZE_ROLES_CONTEXT_KEY, {
@@ -456,11 +440,7 @@ export class Role extends Resource implements IRole {
       physicalName: props.roleName,
     });
 
-    if (
-      props.roleName &&
-      !Token.isUnresolved(props.roleName) &&
-      !/^[\w+=,.@-]{1,64}$/.test(props.roleName)
-    ) {
+    if (props.roleName && !Token.isUnresolved(props.roleName) && !/^[\w+=,.@-]{1,64}$/.test(props.roleName)) {
       throw new Error(
         'Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.'
       );
@@ -477,8 +457,7 @@ export class Role extends Resource implements IRole {
     this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
-    const description =
-      props.description && props.description?.length > 0 ? props.description : undefined;
+    const description = props.description && props.description?.length > 0 ? props.description : undefined;
 
     if (description && description.length > 1000) {
       throw new Error('Role description must be no longer than 1000 characters.');
@@ -519,14 +498,10 @@ export class Role extends Resource implements IRole {
     if (!config.preventSynthesis) {
       const role = new CfnRole(this, 'Resource', {
         assumeRolePolicyDocument: this.assumeRolePolicy as any,
-        managedPolicyArns: UniqueStringSet.from(() =>
-          this.managedPolicies.map((p) => p.managedPolicyArn)
-        ),
+        managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map((p) => p.managedPolicyArn)),
         policies: _flatten(this.inlinePolicies),
         path: props.path,
-        permissionsBoundary: this.permissionsBoundary
-          ? this.permissionsBoundary.managedPolicyArn
-          : undefined,
+        permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
         roleName: this.physicalName,
         maxSessionDuration,
         description,
@@ -655,9 +630,7 @@ export class Role extends Resource implements IRole {
   public grantAssumeRole(identity: IPrincipal) {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new Error(
-        'Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.'
-      );
+      throw new Error('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
     }
     return this.grant(identity, 'sts:AssumeRole');
   }
@@ -863,9 +836,7 @@ function validateMaxSessionDuration(duration?: number) {
   }
 
   if (duration < 3600 || duration > 43200) {
-    throw new Error(
-      `maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`
-    );
+    throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
   }
 }
 

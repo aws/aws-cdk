@@ -8,7 +8,9 @@ test('check immutable role is not getting edited with addManagedPolicy()', () =>
   // GIVEN
   const app = new cdk.App();
   const stack1 = new cdk.Stack(app, 'MyStackId', { env: { account: '123456789012' } });
-  const existingRole = Role.fromRoleArn(stack1, 'ImportedRole', 'arn:aws:iam::123456789012:role/ExistingRoleName', { mutable: false });
+  const existingRole = Role.fromRoleArn(stack1, 'ImportedRole', 'arn:aws:iam::123456789012:role/ExistingRoleName', {
+    mutable: false,
+  });
   const managedPolicy = new ManagedPolicy(stack1, 'MyPolicy', {
     managedPolicyName: 'MyCustomManagedPolicy',
     statements: [
@@ -42,7 +44,9 @@ test('check mutable role is getting edited with addManagedPolicy()', () => {
   // GIVEN
   const app = new cdk.App();
   const stack1 = new cdk.Stack(app, 'MyStackId', { env: { account: '123456789012' } });
-  const existingRole = Role.fromRoleArn(stack1, 'ImportedRole', 'arn:aws:iam::123456789012:role/ExistingRoleName', { mutable: true });
+  const existingRole = Role.fromRoleArn(stack1, 'ImportedRole', 'arn:aws:iam::123456789012:role/ExistingRoleName', {
+    mutable: true,
+  });
   const managedPolicy = new ManagedPolicy(stack1, 'MyPolicy', {
     managedPolicyName: 'MyCustomManagedPolicy',
     statements: [
@@ -78,7 +82,9 @@ test('throw warning when IRole and IManagedPolicy is used with', () => {
   const stack1 = new cdk.Stack(app, 'MyStackId', { env: { account: '123456789012' } });
   const policyArn = 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess';
   const importedPolicy = ManagedPolicy.fromManagedPolicyArn(stack1, 'PolicyAttachmentSample', policyArn);
-  const existingRole = Role.fromRoleArn(stack1, 'ImportedRole', 'arn:aws:iam::123456789012:role/ExistingRoleName', { mutable: true });
+  const existingRole = Role.fromRoleArn(stack1, 'ImportedRole', 'arn:aws:iam::123456789012:role/ExistingRoleName', {
+    mutable: true,
+  });
 
   // WHEN
   existingRole.addManagedPolicy(importedPolicy);

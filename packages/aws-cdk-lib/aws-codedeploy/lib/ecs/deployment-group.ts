@@ -230,12 +230,8 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     this.application = props.application || new EcsApplication(this, 'Application');
     this.alarms = props.alarms || [];
 
-    this.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS')
-    );
-    this.deploymentConfig = this._bindDeploymentConfig(
-      props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE
-    );
+    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
 
     if (cdk.Resource.isOwnedResource(props.service)) {
       const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
@@ -318,9 +314,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
   ): CfnDeploymentGroup.BlueGreenDeploymentConfigurationProperty {
     return {
       deploymentReadyOption: {
-        actionOnTimeout: options.deploymentApprovalWaitTime
-          ? 'STOP_DEPLOYMENT'
-          : 'CONTINUE_DEPLOYMENT',
+        actionOnTimeout: options.deploymentApprovalWaitTime ? 'STOP_DEPLOYMENT' : 'CONTINUE_DEPLOYMENT',
         waitTimeInMinutes: options.deploymentApprovalWaitTime?.toMinutes() ?? 0,
       },
       terminateBlueInstancesOnDeploymentSuccess: {
@@ -330,9 +324,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     };
   }
 
-  private renderLoadBalancerInfo(
-    options: EcsBlueGreenDeploymentConfig
-  ): CfnDeploymentGroup.LoadBalancerInfoProperty {
+  private renderLoadBalancerInfo(options: EcsBlueGreenDeploymentConfig): CfnDeploymentGroup.LoadBalancerInfoProperty {
     return {
       targetGroupPairInfoList: [
         {
@@ -384,10 +376,7 @@ export interface EcsDeploymentGroupAttributes {
   readonly deploymentConfig?: IEcsDeploymentConfig;
 }
 
-class ImportedEcsDeploymentGroup
-  extends ImportedDeploymentGroupBase
-  implements IEcsDeploymentGroup
-{
+class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements IEcsDeploymentGroup {
   public readonly application: IEcsApplication;
   public readonly deploymentConfig: IEcsDeploymentConfig;
 
@@ -398,8 +387,6 @@ class ImportedEcsDeploymentGroup
     });
 
     this.application = props.application;
-    this.deploymentConfig = this._bindDeploymentConfig(
-      props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE
-    );
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
   }
 }

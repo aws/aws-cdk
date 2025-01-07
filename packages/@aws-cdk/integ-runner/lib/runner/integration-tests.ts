@@ -119,8 +119,7 @@ export class IntegTest {
     // Looks either like `integ.mytest` or `package/test/integ.mytest`.
     const relDiscoveryRoot = path.relative(process.cwd(), info.discoveryRoot);
     this.testName =
-      this.directory === path.join(relDiscoveryRoot, 'test') ||
-      this.directory === path.join(relDiscoveryRoot)
+      this.directory === path.join(relDiscoveryRoot, 'test') || this.directory === path.join(relDiscoveryRoot)
         ? parsed.name
         : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
 
@@ -140,12 +139,7 @@ export class IntegTest {
    * - The absolute filename
    */
   public matches(name: string) {
-    return [
-      this.fileName,
-      this.discoveryRelativeFileName,
-      this.testName,
-      this.absoluteFileName,
-    ].includes(name);
+    return [this.fileName, this.discoveryRelativeFileName, this.testName, this.absoluteFileName].includes(name);
   }
 }
 
@@ -276,9 +270,7 @@ export class IntegrationTests {
    * Get the config for all selected languages
    */
   private getLanguagePresets(languages: string[] = []) {
-    return Object.fromEntries(
-      languages.map((language) => this.getLanguagePreset(language)).filter(Boolean)
-    );
+    return Object.fromEntries(languages.map((language) => this.getLanguagePreset(language)).filter(Boolean));
   }
 
   /**
@@ -288,11 +280,7 @@ export class IntegrationTests {
    *   If they have provided a test name that we don't find, then we write out that error message.
    * - If it is a list of tests to exclude, then we discover all available tests and filter out the tests that were provided by the user.
    */
-  private filterTests(
-    discoveredTests: IntegTest[],
-    requestedTests?: string[],
-    exclude?: boolean
-  ): IntegTest[] {
+  private filterTests(discoveredTests: IntegTest[], requestedTests?: string[], exclude?: boolean): IntegTest[] {
     if (!requestedTests) {
       return discoveredTests;
     }
@@ -304,16 +292,12 @@ export class IntegrationTests {
 
     // If not excluding, all patterns must have matched at least one test
     if (!exclude) {
-      const unmatchedPatterns = requestedTests.filter(
-        (pattern) => !discoveredTests.some((t) => t.matches(pattern))
-      );
+      const unmatchedPatterns = requestedTests.filter((pattern) => !discoveredTests.some((t) => t.matches(pattern)));
       for (const unmatched of unmatchedPatterns) {
         process.stderr.write(`No such integ test: ${unmatched}\n`);
       }
       if (unmatchedPatterns.length > 0) {
-        process.stderr.write(
-          `Available tests: ${discoveredTests.map((t) => t.discoveryRelativeFileName).join(' ')}\n`
-        );
+        process.stderr.write(`Available tests: ${discoveredTests.map((t) => t.discoveryRelativeFileName).join(' ')}\n`);
         return [];
       }
     }
@@ -352,9 +336,7 @@ export class IntegrationTests {
         )
     );
 
-    const discoveredTests = ignoreUncompiledTypeScript
-      ? this.filterUncompiledTypeScript(testCases)
-      : testCases;
+    const discoveredTests = ignoreUncompiledTypeScript ? this.filterUncompiledTypeScript(testCases) : testCases;
 
     return this.filterTests(discoveredTests, options.tests, options.exclude);
   }

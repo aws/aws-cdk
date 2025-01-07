@@ -284,16 +284,11 @@ export class AssetStaging extends Construct {
     const assetHash = this.calculateHash(this.hashType);
     const targetPath = this.stagingDisabled
       ? this.sourcePath
-      : path.resolve(
-          this.assetOutdir,
-          renderAssetFilename(assetHash, getExtension(this.sourcePath))
-        );
+      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
     const stagedPath = this.renderStagedPath(this.sourcePath, targetPath);
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
-      throw new Error(
-        `Asset ${this.sourcePath} is expected to be either a directory or a regular file`
-      );
+      throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
     }
 
     this.stageAsset(this.sourcePath, stagedPath, 'copy');
@@ -301,12 +296,9 @@ export class AssetStaging extends Construct {
     return {
       assetHash,
       stagedPath,
-      packaging: this.sourceStats.isDirectory()
-        ? FileAssetPackaging.ZIP_DIRECTORY
-        : FileAssetPackaging.FILE,
+      packaging: this.sourceStats.isDirectory() ? FileAssetPackaging.ZIP_DIRECTORY : FileAssetPackaging.FILE,
       isArchive:
-        this.sourceStats.isDirectory() ||
-        ARCHIVE_EXTENSIONS.includes(getExtension(this.sourcePath).toLowerCase()),
+        this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(getExtension(this.sourcePath).toLowerCase()),
     };
   }
 
@@ -498,17 +490,11 @@ export class AssetStaging extends Construct {
 
     if (FileSystem.isEmpty(bundleDir)) {
       const outputDir = localBundling ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
-      throw new Error(
-        `Bundling did not produce any output. Check that content is written to ${outputDir}.`
-      );
+      throw new Error(`Bundling did not produce any output. Check that content is written to ${outputDir}.`);
     }
   }
 
-  private calculateHash(
-    hashType: AssetHashType,
-    bundling?: BundlingOptions,
-    outputDir?: string
-  ): string {
+  private calculateHash(hashType: AssetHashType, bundling?: BundlingOptions, outputDir?: string): string {
     // When bundling a CUSTOM or SOURCE asset hash type, we want the hash to include
     // the bundling configuration. We handle CUSTOM and bundled SOURCE hash types
     // as a special case to preserve existing user asset hashes in all other cases.
@@ -516,10 +502,7 @@ export class AssetStaging extends Construct {
       const hash = crypto.createHash('sha256');
 
       // if asset hash is provided by user, use it, otherwise fingerprint the source.
-      hash.update(
-        this.customSourceFingerprint ??
-          FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions)
-      );
+      hash.update(this.customSourceFingerprint ?? FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions));
 
       // If we're bundling an asset, include the bundling configuration in the hash
       if (bundling) {
@@ -535,9 +518,7 @@ export class AssetStaging extends Construct {
       case AssetHashType.BUNDLE:
       case AssetHashType.OUTPUT:
         if (!outputDir) {
-          throw new Error(
-            `Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`
-          );
+          throw new Error(`Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`);
         }
         return FileSystem.fingerprint(outputDir, this.fingerprintOptions);
       default:
@@ -578,9 +559,7 @@ function determineHashType(assetHashType?: AssetHashType, customSourceFingerprin
     );
   }
   if (hashType === AssetHashType.CUSTOM && !customSourceFingerprint) {
-    throw new Error(
-      '`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.'
-    );
+    throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
   }
 
   return hashType;

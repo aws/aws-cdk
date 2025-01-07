@@ -320,9 +320,7 @@ export class CodeBuildStep extends ShellStep {
    */
   public exportedVariable(variableName: string): string {
     if (this.exportedVarsRendered && !this.exportedVariables.has(variableName)) {
-      throw new Error(
-        'exportVariable(): Pipeline has already been produced, cannot call this function anymore'
-      );
+      throw new Error('exportVariable(): Pipeline has already been produced, cannot call this function anymore');
     }
 
     this.exportedVariables.add(variableName);

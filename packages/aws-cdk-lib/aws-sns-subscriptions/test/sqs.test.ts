@@ -18,7 +18,7 @@ test('can add subscription to queue that has encryptionType auto changed', () =>
   someTopic.addSubscription(
     new subscriptions.SqsSubscription(queue, {
       rawMessageDelivery: true,
-    }),
+    })
   );
 
   // THEN

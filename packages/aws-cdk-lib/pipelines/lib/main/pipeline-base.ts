@@ -1,13 +1,6 @@
 import { Construct } from 'constructs';
 import { AspectPriority, Aspects, Stage } from '../../../core';
-import {
-  AddStageOpts as StageOptions,
-  WaveOptions,
-  Wave,
-  IFileSetProducer,
-  ShellStep,
-  FileSet,
-} from '../blueprint';
+import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet } from '../blueprint';
 
 const PIPELINE_SYMBOL = Symbol.for('@aws-cdk/pipelines.PipelineBase');
 
@@ -88,10 +81,7 @@ export abstract class PipelineBase extends Construct {
     this.waves = [];
     this.cloudAssemblyFileSet = props.synth.primaryOutput;
 
-    Aspects.of(this).add(
-      { visit: () => this.buildJustInTime() },
-      { priority: AspectPriority.MUTATING }
-    );
+    Aspects.of(this).add({ visit: () => this.buildJustInTime() }, { priority: AspectPriority.MUTATING });
   }
 
   /**

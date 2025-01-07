@@ -23,10 +23,7 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
     DomainName: 'test.example.com',
     SubjectAlternativeNames: ['test2.example.com'],
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CertificateCertificateRequestorFunction5E845413',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CertificateCertificateRequestorFunction5E845413', 'Arn'],
     },
     HostedZoneId: {
       Ref: 'ExampleDotCom4D1B83AA',
@@ -77,12 +74,7 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
           Resource: {
             'Fn::Join': [
               '',
-              [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':route53:::hostedzone/',
-                { Ref: 'ExampleDotCom4D1B83AA' },
-              ],
+              ['arn:', { Ref: 'AWS::Partition' }, ':route53:::hostedzone/', { Ref: 'ExampleDotCom4D1B83AA' }],
             ],
           },
           Condition: {
@@ -91,10 +83,7 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
               'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
             },
             'ForAllValues:StringLike': {
-              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
-                '*.test.example.com',
-                '*.test2.example.com',
-              ],
+              'route53:ChangeResourceRecordSetsNormalizedRecordNames': ['*.test.example.com', '*.test2.example.com'],
             },
           },
         },
@@ -149,10 +138,7 @@ testDeprecated('test root certificate', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CertCertificateRequestorFunction98FDF273',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CertCertificateRequestorFunction98FDF273', 'Arn'],
     },
     DomainName: 'example.com',
     HostedZoneId: {
@@ -176,10 +162,7 @@ testDeprecated('test tags are passed to customresource', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CertCertificateRequestorFunction98FDF273',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CertCertificateRequestorFunction98FDF273', 'Arn'],
     },
     DomainName: 'example.com',
     HostedZoneId: {
@@ -211,10 +194,7 @@ testDeprecated('works with imported zone', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CertCertificateRequestorFunction98FDF273',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CertCertificateRequestorFunction98FDF273', 'Arn'],
     },
     DomainName: 'mydomain.com',
     HostedZoneId: 'DUMMY',
@@ -259,47 +239,43 @@ testDeprecated('throws when domain name is longer than 64 characters', () => {
     });
   }).toThrow(/Domain name must be 64 characters or less/);
 }),
+  testDeprecated('does not throw when domain name is longer than 64 characters with tokens', () => {
+    const stack = new Stack();
+    const zoneName = 'example.com';
+    const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+      zoneName,
+    });
+    const embededToken = Aws.REGION;
+    const baseSubDomain = 'a'.repeat(65 - embededToken.length - 1 - zoneName.length);
+    const domainName = `${embededToken}${baseSubDomain}.${zoneName}`;
 
-testDeprecated('does not throw when domain name is longer than 64 characters with tokens', () => {
-  const stack = new Stack();
-  const zoneName = 'example.com';
-  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
-    zoneName,
-  });
-  const embededToken = Aws.REGION;
-  const baseSubDomain = 'a'.repeat(65 - embededToken.length -1 -zoneName.length);
-  const domainName = `${embededToken}${baseSubDomain}.${zoneName}`;
+    new DnsValidatedCertificate(stack, 'Cert', {
+      domainName,
+      hostedZone: exampleDotComZone,
+      transparencyLoggingEnabled: false,
+    });
 
-  new DnsValidatedCertificate(stack, 'Cert', {
-    domainName,
-    hostedZone: exampleDotComZone,
-    transparencyLoggingEnabled: false,
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
-    ServiceToken: {
-      'Fn::GetAtt': [
-        'CertCertificateRequestorFunction98FDF273',
-        'Arn',
-      ],
-    },
-    DomainName: {
-      'Fn::Join': [
-        '',
-        [
-          {
-            Ref: 'AWS::Region',
-          },
-          `${baseSubDomain}.${zoneName}`,
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
+      ServiceToken: {
+        'Fn::GetAtt': ['CertCertificateRequestorFunction98FDF273', 'Arn'],
+      },
+      DomainName: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              Ref: 'AWS::Region',
+            },
+            `${baseSubDomain}.${zoneName}`,
+          ],
         ],
-      ],
-    },
-    HostedZoneId: {
-      Ref: 'ExampleDotCom4D1B83AA',
-    },
-    CertificateTransparencyLoggingPreference: 'DISABLED',
+      },
+      HostedZoneId: {
+        Ref: 'ExampleDotCom4D1B83AA',
+      },
+      CertificateTransparencyLoggingPreference: 'DISABLED',
+    });
   });
-});
 
 testDeprecated('test transparency logging settings is passed to the custom resource', () => {
   const stack = new Stack();
@@ -316,10 +292,7 @@ testDeprecated('test transparency logging settings is passed to the custom resou
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CertCertificateRequestorFunction98FDF273',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CertCertificateRequestorFunction98FDF273', 'Arn'],
     },
     DomainName: 'example.com',
     HostedZoneId: {
@@ -349,10 +322,7 @@ testDeprecated('can set removal policy', () => {
     SubjectAlternativeNames: ['test2.example.com'],
     RemovalPolicy: 'retain',
     ServiceToken: {
-      'Fn::GetAtt': [
-        'CertificateCertificateRequestorFunction5E845413',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['CertificateCertificateRequestorFunction5E845413', 'Arn'],
     },
     HostedZoneId: {
       Ref: 'ExampleDotCom4D1B83AA',

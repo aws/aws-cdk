@@ -59,16 +59,19 @@ test('can get input ARN', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('Test::Resource', {
     InputArn: {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':iotevents:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':input/',
-        { Ref: 'MyInput08947B23' },
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iotevents:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':input/',
+          { Ref: 'MyInput08947B23' },
+        ],
+      ],
     },
   });
 });
@@ -122,16 +125,19 @@ test('can grant the permission to put message', () => {
           Action: 'iotevents:BatchPutMessage',
           Effect: 'Allow',
           Resource: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iotevents:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':input/',
-              { Ref: 'MyInput08947B23' },
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iotevents:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':input/',
+                { Ref: 'MyInput08947B23' },
+              ],
+            ],
           },
         },
       ],

@@ -97,11 +97,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
   /**
    * Imports an IVS Recording Configuration from its ARN
    */
-  public static fromArn(
-    scope: Construct,
-    id: string,
-    recordingConfigurationArn: string
-  ): IRecordingConfiguration {
+  public static fromArn(scope: Construct, id: string, recordingConfigurationArn: string): IRecordingConfiguration {
     const resourceParts = Fn.split('/', recordingConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 2) {
@@ -158,9 +154,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     this.recordingConfigurationArn = resource.attrArn;
   }
 
-  private _renderRenditionConfiguration():
-    | CfnRecordingConfiguration.RenditionConfigurationProperty
-    | undefined {
+  private _renderRenditionConfiguration(): CfnRecordingConfiguration.RenditionConfigurationProperty | undefined {
     if (!this.props.renditionConfiguration) {
       return;
     }
@@ -171,9 +165,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     };
   }
 
-  private _renderThumbnailConfiguration():
-    | CfnRecordingConfiguration.ThumbnailConfigurationProperty
-    | undefined {
+  private _renderThumbnailConfiguration(): CfnRecordingConfiguration.ThumbnailConfigurationProperty | undefined {
     if (!this.props.thumbnailConfiguration) {
       return;
     }

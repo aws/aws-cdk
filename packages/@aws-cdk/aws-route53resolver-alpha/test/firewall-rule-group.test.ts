@@ -1,7 +1,13 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Duration, Stack } from 'aws-cdk-lib';
-import { DnsBlockResponse, FirewallDomainList, FirewallRuleAction, FirewallRuleGroup, IFirewallDomainList } from '../lib';
+import {
+  DnsBlockResponse,
+  FirewallDomainList,
+  FirewallRuleAction,
+  FirewallRuleGroup,
+  IFirewallDomainList,
+} from '../lib';
 
 let stack: Stack;
 let firewallDomainList: IFirewallDomainList;
@@ -112,10 +118,7 @@ test('associate rule group with a vpc', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallRuleGroupAssociation', {
     FirewallRuleGroupId: {
-      'Fn::GetAtt': [
-        'RuleGroup06BA8844',
-        'Id',
-      ],
+      'Fn::GetAtt': ['RuleGroup06BA8844', 'Id'],
     },
     Priority: 101,
     VpcId: {
@@ -130,8 +133,10 @@ test('throws when associating with a priority not between 100-9,000', () => {
   const ruleGroup = new FirewallRuleGroup(stack, 'RuleGroup');
 
   // THEN
-  expect(() => ruleGroup.associate('Association', {
-    priority: 100,
-    vpc,
-  })).toThrow(/Priority must be greater than 100 and less than 9000/);
+  expect(() =>
+    ruleGroup.associate('Association', {
+      priority: 100,
+      vpc,
+    })
+  ).toThrow(/Priority must be greater than 100 and less than 9000/);
 });

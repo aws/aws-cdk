@@ -7,11 +7,12 @@ import { LambdaEnrichment } from '../lib';
 
 describe('lambda', () => {
   let lambda: Function;
-  let stack : Stack;
+  let stack: Stack;
   beforeEach(() => {
     const app = new App();
     stack = new Stack(app, 'TestStack');
-    const enrichmentHandlerCode = 'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-${record.name}-${record.static}` }) ) };';
+    const enrichmentHandlerCode =
+      'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-${record.name}-${record.static}` }) ) };';
     lambda = new Function(stack, 'EnrichmentLambda', {
       code: Code.fromInline(enrichmentHandlerCode),
       handler: 'index.handler',
@@ -35,10 +36,7 @@ describe('lambda', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Enrichment: {
-        'Fn::GetAtt': [
-          'EnrichmentLambda3D6CE785',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['EnrichmentLambda3D6CE785', 'Arn'],
       },
       EnrichmentParameters: {},
     });
@@ -87,4 +85,3 @@ describe('lambda', () => {
     expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
   });
 });
-

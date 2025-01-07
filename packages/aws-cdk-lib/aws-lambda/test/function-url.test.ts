@@ -22,10 +22,7 @@ describe('FunctionUrl', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
       AuthType: 'AWS_IAM',
       TargetFunctionArn: {
-        'Fn::GetAtt': [
-          'MyLambdaCCE802FB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
       },
     });
   });
@@ -56,32 +53,20 @@ describe('FunctionUrl', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Url', {
       AuthType: 'NONE',
       TargetFunctionArn: {
-        'Fn::GetAtt': [
-          'MyLambdaCCE802FB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
       },
       Cors: {
         AllowCredentials: true,
-        AllowHeaders: [
-          'X-Custom-Header',
-        ],
-        AllowMethods: [
-          'GET',
-        ],
-        AllowOrigins: [
-          'https://example.com',
-        ],
+        AllowHeaders: ['X-Custom-Header'],
+        AllowMethods: ['GET'],
+        AllowOrigins: ['https://example.com'],
         MaxAge: 300,
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunctionUrl',
       FunctionName: {
-        'Fn::GetAtt': [
-          'MyLambdaCCE802FB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
       },
       Principal: '*',
       FunctionUrlAuthType: 'NONE',
@@ -187,10 +172,7 @@ describe('FunctionUrl', () => {
             Action: 'lambda:InvokeFunctionUrl',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'MyLambdaCCE802FB',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
             },
           },
         ],
@@ -246,5 +228,4 @@ describe('FunctionUrl', () => {
       },
     });
   });
-
 });

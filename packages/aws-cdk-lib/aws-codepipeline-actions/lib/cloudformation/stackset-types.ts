@@ -48,9 +48,7 @@ export abstract class StackSetTemplate {
    */
   public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath): StackSetTemplate {
     return new (class extends StackSetTemplate {
-      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [
-        artifactPath.artifact,
-      ];
+      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
 
       public _render() {
         return artifactPath.location;
@@ -131,18 +129,13 @@ export abstract class StackInstances {
    * If this is set of Organizational Units, you must have selected `StackSetDeploymentModel.organizations()`
    * as deployment model.
    */
-  public static fromArtifactPath(
-    artifactPath: codepipeline.ArtifactPath,
-    regions: string[]
-  ): StackInstances {
+  public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath, regions: string[]): StackInstances {
     if (regions.length === 0) {
       throw new Error("'regions' may not be an empty list");
     }
 
     return new (class extends StackInstances {
-      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [
-        artifactPath.artifact,
-      ];
+      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
       public _bind(_scope: Construct): StackInstancesBindResult {
         return {
           stackSetConfiguration: {
@@ -240,18 +233,13 @@ export abstract class StackSetParameters {
    *  Asset1: 'true',
    * });
    */
-  public static fromLiteral(
-    parameters: Record<string, string>,
-    usePreviousValues?: string[]
-  ): StackSetParameters {
+  public static fromLiteral(parameters: Record<string, string>, usePreviousValues?: string[]): StackSetParameters {
     return new (class extends StackSetParameters {
       public readonly _artifactsReferenced: codepipeline.Artifact[] = [];
 
       _render(): string {
         return [
-          ...Object.entries(parameters).map(
-            ([key, value]) => `ParameterKey=${key},ParameterValue=${value}`
-          ),
+          ...Object.entries(parameters).map(([key, value]) => `ParameterKey=${key},ParameterValue=${value}`),
           ...(usePreviousValues ?? []).map((key) => `ParameterKey=${key},UsePreviousValue=true`),
         ].join(' ');
       }

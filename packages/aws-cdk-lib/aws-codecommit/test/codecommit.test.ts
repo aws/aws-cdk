@@ -28,9 +28,7 @@ describe('codecommit', () => {
               RepositoryName: 'MyRepository',
               Triggers: [
                 {
-                  Events: [
-                    'all',
-                  ],
+                  Events: ['all'],
                   DestinationArn: 'arn:aws:sns:*:123456789012:my_topic',
                   Name: 'Default/MyRepository/arn:aws:sns:*:123456789012:my_topic',
                 },
@@ -39,7 +37,6 @@ describe('codecommit', () => {
           },
         },
       });
-
     });
 
     test('fails when triggers have duplicate names', () => {
@@ -50,7 +47,6 @@ describe('codecommit', () => {
       }).notify('myTrigger');
 
       expect(() => myRepository.notify('myTrigger')).toThrow();
-
     });
 
     test('can be imported using a Repository ARN', () => {
@@ -64,7 +60,6 @@ describe('codecommit', () => {
       // THEN
       expect(stack.resolve(repo.repositoryArn)).toEqual(repositoryArn);
       expect(stack.resolve(repo.repositoryName)).toEqual('my-repo');
-
     });
 
     test('Repository can be initialized with contents from a ZIP file', () => {
@@ -171,32 +166,17 @@ describe('codecommit', () => {
       // THEN
       // a fully qualified arn should use the region from the arn
       expect(stack.resolve(repo.repositoryCloneUrlHttp)).toEqual({
-        'Fn::Join': [
-          '',
-          [
-            'https://git-codecommit.us-west-2.',
-            { Ref: 'AWS::URLSuffix' },
-            '/v1/repos/my-repo',
-          ],
-        ],
+        'Fn::Join': ['', ['https://git-codecommit.us-west-2.', { Ref: 'AWS::URLSuffix' }, '/v1/repos/my-repo']],
       });
 
       expect(stack.resolve(repo.repositoryCloneUrlSsh)).toEqual({
-        'Fn::Join': [
-          '',
-          [
-            'ssh://git-codecommit.us-west-2.',
-            { Ref: 'AWS::URLSuffix' },
-            '/v1/repos/my-repo',
-          ],
-        ],
+        'Fn::Join': ['', ['ssh://git-codecommit.us-west-2.', { Ref: 'AWS::URLSuffix' }, '/v1/repos/my-repo']],
       });
 
       expect(stack.resolve(repo.repositoryCloneUrlGrc)).toEqual('codecommit::us-west-2://my-repo');
 
       expect(repo.env.account).toEqual('585695036304');
       expect(repo.env.region).toEqual('us-west-2');
-
     });
 
     test('can be imported using just a Repository name (the ARN is deduced)', () => {
@@ -208,15 +188,18 @@ describe('codecommit', () => {
 
       // THEN
       expect(stack.resolve(repo.repositoryArn)).toEqual({
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':codecommit:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':my-repo',
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':codecommit:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':my-repo',
+          ],
+        ],
       });
       expect(stack.resolve(repo.repositoryName)).toEqual('my-repo');
 
@@ -224,27 +207,13 @@ describe('codecommit', () => {
       expect(stack.resolve(repo.repositoryCloneUrlHttp)).toEqual({
         'Fn::Join': [
           '',
-          [
-            'https://git-codecommit.',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
-            '/v1/repos/my-repo',
-          ],
+          ['https://git-codecommit.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/v1/repos/my-repo'],
         ],
       });
 
       expect(stack.resolve(repo.repositoryCloneUrlGrc)).toEqual({
-        'Fn::Join': [
-          '',
-          [
-            'codecommit::',
-            { Ref: 'AWS::Region' },
-            '://my-repo',
-          ],
-        ],
+        'Fn::Join': ['', ['codecommit::', { Ref: 'AWS::Region' }, '://my-repo']],
       });
-
     });
 
     test('grant push', () => {
@@ -268,27 +237,20 @@ describe('codecommit', () => {
               Action: 'codecommit:GitPull',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'Repo02AC86CF',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Repo02AC86CF', 'Arn'],
               },
             },
             {
               Action: 'codecommit:GitPush',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'Repo02AC86CF',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Repo02AC86CF', 'Arn'],
               },
             },
           ],
           Version: '2012-10-17',
         },
       });
-
     });
 
     test('HTTPS (GRC) clone URL', () => {
@@ -301,15 +263,9 @@ describe('codecommit', () => {
       expect(stack.resolve(repository.repositoryCloneUrlGrc)).toEqual({
         'Fn::Join': [
           '',
-          [
-            'codecommit::',
-            { Ref: 'AWS::Region' },
-            '://',
-            { 'Fn::GetAtt': ['Repository22E53BBD', 'Name'] },
-          ],
+          ['codecommit::', { Ref: 'AWS::Region' }, '://', { 'Fn::GetAtt': ['Repository22E53BBD', 'Name'] }],
         ],
       });
-
     });
 
     test('specify a kms key', () => {

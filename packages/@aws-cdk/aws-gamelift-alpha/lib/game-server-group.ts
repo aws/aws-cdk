@@ -356,14 +356,11 @@ export class GameServerGroup extends GameServerGroupBase {
     attrs: GameServerGroupAttributes
   ): IGameServerGroup {
     if (!attrs.gameServerGroupArn && !attrs.gameServerGroupName) {
-      throw new Error(
-        'Either gameServerGroupName or gameServerGroupArn must be provided in GameServerGroupAttributes'
-      );
+      throw new Error('Either gameServerGroupName or gameServerGroupArn must be provided in GameServerGroupAttributes');
     }
     const gameServerGroupName =
       attrs.gameServerGroupName ??
-      cdk.Stack.of(scope).splitArn(attrs.gameServerGroupArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-        .resourceName;
+      cdk.Stack.of(scope).splitArn(attrs.gameServerGroupArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!gameServerGroupName) {
       throw new Error(`No game server group name found in ARN: '${attrs.gameServerGroupArn}'`);
@@ -465,9 +462,7 @@ export class GameServerGroup extends GameServerGroupBase {
     }
 
     if (subnetIds.length > 20) {
-      throw new Error(
-        `No more than 20 subnets are allowed per game server group, given ${subnetIds.length}`
-      );
+      throw new Error(`No more than 20 subnets are allowed per game server group, given ${subnetIds.length}`);
     }
 
     // Add all instance definitions
@@ -484,9 +479,7 @@ export class GameServerGroup extends GameServerGroupBase {
           new iam.ServicePrincipal('gamelift.amazonaws.com'),
           new iam.ServicePrincipal('autoscaling.amazonaws.com')
         ),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('GameLiftGameServerGroupPolicy'),
-        ],
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('GameLiftGameServerGroupPolicy')],
       });
     this.grantPrincipal = this.role;
 
@@ -519,9 +512,7 @@ export class GameServerGroup extends GameServerGroupBase {
     });
   }
 
-  protected parseLaunchTemplate(
-    props: GameServerGroupProps
-  ): CfnGameServerGroup.LaunchTemplateProperty {
+  protected parseLaunchTemplate(props: GameServerGroupProps): CfnGameServerGroup.LaunchTemplateProperty {
     return {
       launchTemplateId: props.launchTemplate.launchTemplateId,
       launchTemplateName: props.launchTemplate.launchTemplateName,
@@ -544,9 +535,7 @@ export class GameServerGroup extends GameServerGroupBase {
     };
   }
 
-  protected parseInstanceDefinitions(
-    props: GameServerGroupProps
-  ): CfnGameServerGroup.InstanceDefinitionProperty[] {
+  protected parseInstanceDefinitions(props: GameServerGroupProps): CfnGameServerGroup.InstanceDefinitionProperty[] {
     return props.instanceDefinitions.map(parseInstanceDefinition);
 
     function parseInstanceDefinition(

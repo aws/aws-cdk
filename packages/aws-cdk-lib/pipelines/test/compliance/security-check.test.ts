@@ -18,7 +18,6 @@ afterEach(() => {
 });
 
 test('security check option generates lambda/codebuild at pipeline scope', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const stage = new OneStackApp(app, 'App');
   pipeline.addStage(stage, {
@@ -33,10 +32,7 @@ test('security check option generates lambda/codebuild at pipeline scope', () =>
   template.resourceCountIs('AWS::Lambda::Function', 1);
   template.hasResourceProperties('AWS::Lambda::Function', {
     Role: {
-      'Fn::GetAtt': [
-        stringLike('CdkPipeline*SecurityCheckCDKPipelinesAutoApproveServiceRole*'),
-        'Arn',
-      ],
+      'Fn::GetAtt': [stringLike('CdkPipeline*SecurityCheckCDKPipelinesAutoApproveServiceRole*'), 'Arn'],
     },
   });
   // 1 for github build, 1 for synth stage, and 1 for the application security check
@@ -54,7 +50,6 @@ test('security check option generates lambda/codebuild at pipeline scope', () =>
 });
 
 test('security check option passes correct environment variables to check project', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const stage = new OneStackApp(pipelineStack, 'App');
   pipeline.addStage(stage, {
@@ -87,7 +82,6 @@ test('security check option passes correct environment variables to check projec
 });
 
 test('pipeline created with auto approve tags and lambda/codebuild w/ valid permissions', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const stage = new OneStackApp(app, 'App');
   pipeline.addStage(stage, {
@@ -130,9 +124,7 @@ test('pipeline created with auto approve tags and lambda/codebuild w/ valid perm
           Action: 'sts:AssumeRole',
           Condition: {
             'ForAnyValue:StringEquals': {
-              'iam:ResourceTag/aws-cdk:bootstrap-role': [
-                'deploy',
-              ],
+              'iam:ResourceTag/aws-cdk:bootstrap-role': ['deploy'],
             },
           },
           Effect: 'Allow',
@@ -143,20 +135,14 @@ test('pipeline created with auto approve tags and lambda/codebuild w/ valid perm
           Effect: 'Allow',
           Resource: [
             {
-              'Fn::GetAtt': [
-                stringLike('*AutoApprove*'),
-                'Arn',
-              ],
+              'Fn::GetAtt': [stringLike('*AutoApprove*'), 'Arn'],
             },
             {
               'Fn::Join': [
                 '',
                 [
                   {
-                    'Fn::GetAtt': [
-                      stringLike('*AutoApprove*'),
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': [stringLike('*AutoApprove*'), 'Arn'],
                   },
                   ':*',
                 ],
@@ -170,7 +156,6 @@ test('pipeline created with auto approve tags and lambda/codebuild w/ valid perm
 });
 
 test('confirmBroadeningPermissions and notification topic options generates the right resources', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const topic = new Topic(pipelineStack, 'NotificationTopic');
   const stage = new OneStackApp(app, 'MyStack');
@@ -193,11 +178,7 @@ test('confirmBroadeningPermissions and notification topic options generates the 
             Configuration: {
               ProjectName: { Ref: stringLike('*SecurityCheck*') },
               EnvironmentVariables: {
-                'Fn::Join': ['', [
-                  stringLike('*'),
-                  { Ref: 'NotificationTopicEB7A0DF1' },
-                  stringLike('*'),
-                ]],
+                'Fn::Join': ['', [stringLike('*'), { Ref: 'NotificationTopicEB7A0DF1' }, stringLike('*')]],
               },
             },
             Name: stringLike('*Check'),

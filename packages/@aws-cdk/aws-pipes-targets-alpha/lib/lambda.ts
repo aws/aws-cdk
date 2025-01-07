@@ -52,8 +52,7 @@ export class LambdaFunction implements ITarget {
   constructor(lambdaFunction: lambda.IFunction, parameters: LambdaFunctionParameters) {
     this.lambdaFunction = lambdaFunction;
     this.targetArn = lambdaFunction.functionArn;
-    this.invocationType =
-      parameters.invocationType ?? LambdaFunctionInvocationType.REQUEST_RESPONSE;
+    this.invocationType = parameters.invocationType ?? LambdaFunctionInvocationType.REQUEST_RESPONSE;
     this.inputTemplate = parameters.inputTransformation;
   }
 

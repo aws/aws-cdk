@@ -8,13 +8,17 @@ test('private certificate authority', () => {
 
   new PrivateCertificate(stack, 'Certificate', {
     domainName: 'test.example.com',
-    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+      stack,
+      'CA',
+      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'
+    ),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
-    CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
+    CertificateAuthorityArn:
+      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
   });
 });
 
@@ -24,14 +28,18 @@ test('private certificate authority with subjectAlternativeNames', () => {
   new PrivateCertificate(stack, 'Certificate', {
     domainName: 'test.example.com',
     subjectAlternativeNames: ['extra.example.com'],
-    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+      stack,
+      'CA',
+      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'
+    ),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
     SubjectAlternativeNames: ['extra.example.com'],
-    CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
+    CertificateAuthorityArn:
+      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
   });
 });
 
@@ -41,14 +49,18 @@ test('private certificate authority with multiple subjectAlternativeNames', () =
   new PrivateCertificate(stack, 'Certificate', {
     domainName: 'test.example.com',
     subjectAlternativeNames: ['*.test.example.com', '*.foo.test.example.com', 'bar.test.example.com'],
-    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+      stack,
+      'CA',
+      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'
+    ),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
     SubjectAlternativeNames: ['*.test.example.com', '*.foo.test.example.com', 'bar.test.example.com'],
-    CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
+    CertificateAuthorityArn:
+      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
   });
 });
 
@@ -76,7 +88,8 @@ test('private certificate authority with tokens', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
     SubjectAlternativeNames: ['extra.example.com'],
-    CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
+    CertificateAuthorityArn:
+      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
   });
 });
 
@@ -85,8 +98,11 @@ test('metricDaysToExpiry', () => {
 
   const certificate = new PrivateCertificate(stack, 'Certificate', {
     domainName: 'test.example.com',
-    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+      stack,
+      'CA',
+      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'
+    ),
   });
 
   expect(stack.resolve(certificate.metricDaysToExpiry().toMetricConfig())).toEqual({
@@ -107,8 +123,11 @@ describe('Key Algorithm', () => {
 
     new PrivateCertificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+        stack,
+        'CA',
+        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'
+      ),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
@@ -121,8 +140,11 @@ describe('Key Algorithm', () => {
 
     new PrivateCertificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+        stack,
+        'CA',
+        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'
+      ),
       keyAlgorithm: KeyAlgorithm.EC_SECP384R1,
     });
 
@@ -136,8 +158,11 @@ describe('Key Algorithm', () => {
 
     new PrivateCertificate(stack, 'Certificate', {
       domainName: 'test.example.com',
-      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+        stack,
+        'CA',
+        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'
+      ),
       keyAlgorithm: new KeyAlgorithm('any value'),
     });
 

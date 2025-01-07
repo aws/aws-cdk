@@ -12,7 +12,9 @@ describe('AccessPolicy', () => {
         type: AccessScopeType.CLUSTER,
         namespaces: undefined,
       });
-      expect(accessPolicy.policy).toEqual(`arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy`);
+      expect(accessPolicy.policy).toEqual(
+        `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy`
+      );
     });
 
     test('creates an AccessPolicy with namespace scope', () => {
@@ -45,7 +47,6 @@ describe('AccessPolicy', () => {
 
   describe('constructor', () => {
     test('creates an AccessPolicy with the provided props', () => {
-
       const accessPolicy = new AccessPolicy({
         accessScope: {
           type: AccessScopeType.NAMESPACE,
@@ -71,7 +72,9 @@ describe('AccessPolicyArn', () => {
     ];
 
     test.each(policyTestCases)('static property %s', (propertyName, policyName) => {
-      expect(AccessPolicyArn[propertyName].policyArn).toEqual(`arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`);
+      expect(AccessPolicyArn[propertyName].policyArn).toEqual(
+        `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`
+      );
     });
 
     test('of', () => {

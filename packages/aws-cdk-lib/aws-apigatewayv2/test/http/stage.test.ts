@@ -113,7 +113,7 @@ describe('HttpStage', () => {
       });
       expect(metric.color).toEqual(color);
     }
-    const metricNames = metrics.map(m => m.metricName);
+    const metricNames = metrics.map((m) => m.metricName);
     expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
   });
 });
@@ -141,9 +141,7 @@ describe('HttpStage with domain mapping', () => {
     });
 
     expect(stack.resolve(stage.domainUrl)).toEqual({
-      'Fn::Join': ['', [
-        'https://', { Ref: 'DNFDC76583' }, '/',
-      ]],
+      'Fn::Join': ['', ['https://', { Ref: 'DNFDC76583' }, '/']],
     });
   });
 

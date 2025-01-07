@@ -9,9 +9,7 @@ describe('Test BuildSpec merge', () => {
     const lhs = codebuild.BuildSpec.fromObject({
       phases: {
         pre_build: {
-          commands: [
-            'install',
-          ],
+          commands: ['install'],
         },
       },
     });
@@ -28,14 +26,10 @@ describe('Test BuildSpec merge', () => {
     expect((merged as any).spec).toEqual({
       phases: {
         pre_build: {
-          commands: [
-            'install',
-          ],
+          commands: ['install'],
         },
         build: {
-          commands: [
-            'build',
-          ],
+          commands: ['build'],
         },
       },
     });
@@ -45,9 +39,7 @@ describe('Test BuildSpec merge', () => {
     const lhs = codebuild.BuildSpec.fromObject({
       phases: {
         build: {
-          commands: [
-            'build1',
-          ],
+          commands: ['build1'],
         },
       },
     });
@@ -64,10 +56,7 @@ describe('Test BuildSpec merge', () => {
     expect((merged as any).spec).toEqual({
       phases: {
         build: {
-          commands: [
-            'build1',
-            'build2',
-          ],
+          commands: ['build1', 'build2'],
         },
       },
     });
@@ -77,9 +66,7 @@ describe('Test BuildSpec merge', () => {
     const lhs = codebuild.BuildSpec.fromObject({
       phases: {
         build: {
-          commands: [
-            'build1',
-          ],
+          commands: ['build1'],
         },
       },
       artifacts: {
@@ -89,9 +76,7 @@ describe('Test BuildSpec merge', () => {
     const rhs = codebuild.BuildSpec.fromObject({
       phases: {
         build: {
-          commands: [
-            'build2',
-          ],
+          commands: ['build2'],
         },
       },
       artifacts: {
@@ -107,29 +92,23 @@ describe('Test BuildSpec merge', () => {
   test('merge complex example', () => {
     const cdkSpec = codebuild.BuildSpec.fromObject({
       env: {
-        'variables': {
+        variables: {
           NPM_TOKEN: 'supersecret',
         },
       },
       phases: {
         pre_build: {
-          commands: [
-            'install1',
-          ],
+          commands: ['install1'],
         },
         build: {
-          commands: [
-            'build1',
-            'test1',
-            'cdk synth',
-          ],
+          commands: ['build1', 'test1', 'cdk synth'],
         },
       },
     });
     const userSpec = codebuild.BuildSpec.fromObject({
       version: 0.2,
       env: {
-        'variables': {
+        variables: {
           JAVA_HOME: '/usr/lib/jvm/java-8-openjdk-amd64',
         },
         'parameter-store': {
@@ -138,81 +117,49 @@ describe('Test BuildSpec merge', () => {
       },
       phases: {
         install: {
-          commands: [
-            'echo Entered the install phase...',
-            'apt-get update -y',
-            'apt-get install -y maven',
-          ],
-          finally: [
-            'echo This always runs even if the update or install command fails',
-          ],
+          commands: ['echo Entered the install phase...', 'apt-get update -y', 'apt-get install -y maven'],
+          finally: ['echo This always runs even if the update or install command fails'],
         },
         pre_build: {
-          commands: [
-            'echo Entered the pre_build phase...',
-            'docker login -u User -p $LOGIN_PASSWORD',
-          ],
-          finally: [
-            'echo This always runs even if the login command fails',
-          ],
+          commands: ['echo Entered the pre_build phase...', 'docker login -u User -p $LOGIN_PASSWORD'],
+          finally: ['echo This always runs even if the login command fails'],
         },
         build: {
-          commands: [
-            'echo Entered the build phase...',
-            'echo Build started on `date`',
-            'mvn install',
-          ],
-          finally: [
-            'echo This always runs even if the install command fails',
-          ],
+          commands: ['echo Entered the build phase...', 'echo Build started on `date`', 'mvn install'],
+          finally: ['echo This always runs even if the install command fails'],
         },
         post_build: {
-          commands: [
-            'echo Entered the post_build phase...',
-            'echo Build completed on `date`',
-          ],
+          commands: ['echo Entered the post_build phase...', 'echo Build completed on `date`'],
         },
       },
       reports: {
         'arn:aws:codebuild:your-region:your-aws-account-id:report-group/report-group-name-1': {
-          'files': [
-            '**/*',
-          ],
+          files: ['**/*'],
           'base-directory': 'target/tests/reports',
           'discard-paths': 'no',
         },
-        'reportGroupCucumberJson': {
-          'files': [
-            'cucumber/target/cucumber-tests.xml',
-          ],
+        reportGroupCucumberJson: {
+          files: ['cucumber/target/cucumber-tests.xml'],
           'discard-paths': 'yes',
           'file-format': 'CUCUMBERJSON',
         },
       },
       artifacts: {
-        'files': [
-          'target/messageUtil-1.0.jar',
-        ],
+        files: ['target/messageUtil-1.0.jar'],
         'discard-paths': 'yes',
         'secondary-artifacts': {
           artifact1: {
-            'files': [
-              'target/artifact-1.0.jar',
-            ],
+            files: ['target/artifact-1.0.jar'],
             'discard-paths': 'yes',
           },
           artifact2: {
-            'files': [
-              'target/artifact-2.0.jar',
-            ],
+            files: ['target/artifact-2.0.jar'],
             'discard-paths': 'yes',
           },
         },
       },
       cache: {
-        paths: [
-          '/root/.m2/**/*',
-        ],
+        paths: ['/root/.m2/**/*'],
       },
     });
 
@@ -221,7 +168,7 @@ describe('Test BuildSpec merge', () => {
     expect((merged as any).spec).toEqual({
       version: 0.2,
       env: {
-        'variables': {
+        variables: {
           JAVA_HOME: '/usr/lib/jvm/java-8-openjdk-amd64',
           NPM_TOKEN: 'supersecret',
         },
@@ -231,24 +178,12 @@ describe('Test BuildSpec merge', () => {
       },
       phases: {
         install: {
-          commands: [
-            'echo Entered the install phase...',
-            'apt-get update -y',
-            'apt-get install -y maven',
-          ],
-          finally: [
-            'echo This always runs even if the update or install command fails',
-          ],
+          commands: ['echo Entered the install phase...', 'apt-get update -y', 'apt-get install -y maven'],
+          finally: ['echo This always runs even if the update or install command fails'],
         },
         pre_build: {
-          commands: [
-            'echo Entered the pre_build phase...',
-            'docker login -u User -p $LOGIN_PASSWORD',
-            'install1',
-          ],
-          finally: [
-            'echo This always runs even if the login command fails',
-          ],
+          commands: ['echo Entered the pre_build phase...', 'docker login -u User -p $LOGIN_PASSWORD', 'install1'],
+          finally: ['echo This always runs even if the login command fails'],
         },
         build: {
           commands: [
@@ -259,57 +194,40 @@ describe('Test BuildSpec merge', () => {
             'test1',
             'cdk synth',
           ],
-          finally: [
-            'echo This always runs even if the install command fails',
-          ],
+          finally: ['echo This always runs even if the install command fails'],
         },
         post_build: {
-          commands: [
-            'echo Entered the post_build phase...',
-            'echo Build completed on `date`',
-          ],
+          commands: ['echo Entered the post_build phase...', 'echo Build completed on `date`'],
         },
       },
       reports: {
         'arn:aws:codebuild:your-region:your-aws-account-id:report-group/report-group-name-1': {
-          'files': [
-            '**/*',
-          ],
+          files: ['**/*'],
           'base-directory': 'target/tests/reports',
           'discard-paths': 'no',
         },
-        'reportGroupCucumberJson': {
-          'files': [
-            'cucumber/target/cucumber-tests.xml',
-          ],
+        reportGroupCucumberJson: {
+          files: ['cucumber/target/cucumber-tests.xml'],
           'discard-paths': 'yes',
           'file-format': 'CUCUMBERJSON',
         },
       },
       artifacts: {
-        'files': [
-          'target/messageUtil-1.0.jar',
-        ],
+        files: ['target/messageUtil-1.0.jar'],
         'discard-paths': 'yes',
         'secondary-artifacts': {
           artifact1: {
-            'files': [
-              'target/artifact-1.0.jar',
-            ],
+            files: ['target/artifact-1.0.jar'],
             'discard-paths': 'yes',
           },
           artifact2: {
-            'files': [
-              'target/artifact-2.0.jar',
-            ],
+            files: ['target/artifact-2.0.jar'],
             'discard-paths': 'yes',
           },
         },
       },
       cache: {
-        paths: [
-          '/root/.m2/**/*',
-        ],
+        paths: ['/root/.m2/**/*'],
       },
     });
   });
@@ -318,23 +236,17 @@ describe('Test BuildSpec merge', () => {
     const lhs = codebuild.BuildSpec.fromObject({
       phases: {
         pre_build: {
-          commands: [
-            'install',
-          ],
+          commands: ['install'],
         },
       },
       reports: {
-        'report1': {
-          'files': [
-            'report1/a',
-          ],
+        report1: {
+          files: ['report1/a'],
           'discard-paths': 'no',
           'base-directory': 'target/tests/reports',
         },
-        'report2': {
-          'files': [
-            'cucumber/target/cucumber-tests.xml',
-          ],
+        report2: {
+          files: ['cucumber/target/cucumber-tests.xml'],
           'discard-paths': 'yes',
           'file-format': 'CUCUMBERJSON',
         },
@@ -343,23 +255,16 @@ describe('Test BuildSpec merge', () => {
     const rhs = codebuild.BuildSpec.fromObject({
       phases: {
         build: {
-          commands: [
-            'build',
-          ],
+          commands: ['build'],
         },
       },
       reports: {
-        'report1': {
-          'files': [
-            'report1/b',
-            'report1/b2',
-          ],
+        report1: {
+          files: ['report1/b', 'report1/b2'],
           'base-directory': 'target/tests/reportsB',
         },
-        'report3': {
-          'files': [
-            'cucumber/target/cucumber-tests.xml',
-          ],
+        report3: {
+          files: ['cucumber/target/cucumber-tests.xml'],
           'discard-paths': 'yes',
           'file-format': 'CUCUMBERJSON',
         },
@@ -371,35 +276,24 @@ describe('Test BuildSpec merge', () => {
     expect((merged as any).spec).toEqual({
       phases: {
         pre_build: {
-          commands: [
-            'install',
-          ],
+          commands: ['install'],
         },
         build: {
-          commands: [
-            'build',
-          ],
+          commands: ['build'],
         },
       },
       reports: {
-        'report1': {
-          'files': [
-            'report1/b',
-            'report1/b2',
-          ],
+        report1: {
+          files: ['report1/b', 'report1/b2'],
           'base-directory': 'target/tests/reportsB',
         },
-        'report2': {
-          'files': [
-            'cucumber/target/cucumber-tests.xml',
-          ],
+        report2: {
+          files: ['cucumber/target/cucumber-tests.xml'],
           'discard-paths': 'yes',
           'file-format': 'CUCUMBERJSON',
         },
-        'report3': {
-          'files': [
-            'cucumber/target/cucumber-tests.xml',
-          ],
+        report3: {
+          files: ['cucumber/target/cucumber-tests.xml'],
           'discard-paths': 'yes',
           'file-format': 'CUCUMBERJSON',
         },

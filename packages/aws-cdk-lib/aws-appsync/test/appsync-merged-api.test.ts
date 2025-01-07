@@ -13,11 +13,13 @@ let api3: appsync.GraphqlApi;
 let api4: appsync.GraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
-  stackWithFlag = new cdk.Stack(new cdk.App({
-    context: {
-      [cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: true,
-    },
-  }));
+  stackWithFlag = new cdk.Stack(
+    new cdk.App({
+      context: {
+        [cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION]: true,
+      },
+    })
+  );
 
   api1 = new appsync.GraphqlApi(stack, 'api1', {
     authorizationConfig: {},
@@ -66,8 +68,12 @@ test('appsync supports merged API', () => {
     }),
   });
 
-  validateSourceApiAssociations(stack, 'mergedapiMergedApiExecutionRole2053D32E',
-    'mergedapiMergedApiExecutionRoleDefaultPolicy6F79FCAF', 'ApiId');
+  validateSourceApiAssociations(
+    stack,
+    'mergedapiMergedApiExecutionRole2053D32E',
+    'mergedapiMergedApiExecutionRoleDefaultPolicy6F79FCAF',
+    'ApiId'
+  );
 });
 
 test('appsync supports merged API - ARN identifier flag enabled', () => {
@@ -88,8 +94,12 @@ test('appsync supports merged API - ARN identifier flag enabled', () => {
     }),
   });
 
-  validateSourceApiAssociations(stackWithFlag, 'mergedapiMergedApiExecutionRole2053D32E',
-    'mergedapiMergedApiExecutionRoleDefaultPolicy6F79FCAF', 'Arn');
+  validateSourceApiAssociations(
+    stackWithFlag,
+    'mergedapiMergedApiExecutionRole2053D32E',
+    'mergedapiMergedApiExecutionRoleDefaultPolicy6F79FCAF',
+    'Arn'
+  );
 });
 
 test('appsync supports merged API with default merge type', () => {
@@ -108,19 +118,13 @@ test('appsync supports merged API with default merge type', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::SourceApiAssociation', {
     MergedApiIdentifier: {
-      'Fn::GetAtt': [
-        'mergedapiCE4CAF34',
-        'ApiId',
-      ],
+      'Fn::GetAtt': ['mergedapiCE4CAF34', 'ApiId'],
     },
     SourceApiAssociationConfig: {
       MergeType: 'AUTO_MERGE',
     },
     SourceApiIdentifier: {
-      'Fn::GetAtt': [
-        'api1A91238E2',
-        'ApiId',
-      ],
+      'Fn::GetAtt': ['api1A91238E2', 'ApiId'],
     },
   });
 });
@@ -148,8 +152,12 @@ test('appsync merged API with custom merged API execution role', () => {
   });
 
   // THEN
-  validateSourceApiAssociations(stack, 'CustomMergedApiExecutionRoleB795A9C4',
-    'CustomMergedApiExecutionRoleDefaultPolicy012408A1', 'ApiId');
+  validateSourceApiAssociations(
+    stack,
+    'CustomMergedApiExecutionRoleB795A9C4',
+    'CustomMergedApiExecutionRoleDefaultPolicy012408A1',
+    'ApiId'
+  );
 });
 
 test('Merged API throws when accessing schema property', () => {
@@ -191,90 +199,63 @@ test('source api association depends on source schema', () => {
 
   // THEN
   Template.fromStack(stack).hasResource('AWS::AppSync::SourceApiAssociation', {
-    DependsOn: [
-      'api1SchemaFFA53DB6',
-    ],
+    DependsOn: ['api1SchemaFFA53DB6'],
     Properties: {
       MergedApiIdentifier: {
-        'Fn::GetAtt': [
-          'mergedapiCE4CAF34',
-          'ApiId',
-        ],
+        'Fn::GetAtt': ['mergedapiCE4CAF34', 'ApiId'],
       },
       SourceApiIdentifier: {
-        'Fn::GetAtt': [
-          'api1A91238E2',
-          'ApiId',
-        ],
+        'Fn::GetAtt': ['api1A91238E2', 'ApiId'],
       },
     },
   });
 });
 
-function validateSourceApiAssociations(stackToValidate: cdk.Stack,
+function validateSourceApiAssociations(
+  stackToValidate: cdk.Stack,
   expectedMergedApiExecutionRole: string,
   expectedPolicyName: string,
-  expectedIdentifier: string) {
+  expectedIdentifier: string
+) {
   // THEN
   Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     ApiType: 'MERGED',
     MergedApiExecutionRoleArn: {
-      'Fn::GetAtt': [
-        expectedMergedApiExecutionRole,
-        'Arn',
-      ],
+      'Fn::GetAtt': [expectedMergedApiExecutionRole, 'Arn'],
     },
   });
 
   Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::SourceApiAssociation', {
     MergedApiIdentifier: {
-      'Fn::GetAtt': [
-        'mergedapiCE4CAF34',
-        expectedIdentifier,
-      ],
+      'Fn::GetAtt': ['mergedapiCE4CAF34', expectedIdentifier],
     },
     SourceApiAssociationConfig: {
       MergeType: 'MANUAL_MERGE',
     },
     SourceApiIdentifier: {
-      'Fn::GetAtt': [
-        'api1A91238E2',
-        expectedIdentifier,
-      ],
+      'Fn::GetAtt': ['api1A91238E2', expectedIdentifier],
     },
   });
   Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::SourceApiAssociation', {
     MergedApiIdentifier: {
-      'Fn::GetAtt': [
-        'mergedapiCE4CAF34',
-        expectedIdentifier,
-      ],
+      'Fn::GetAtt': ['mergedapiCE4CAF34', expectedIdentifier],
     },
     SourceApiAssociationConfig: {
       MergeType: 'AUTO_MERGE',
     },
     SourceApiIdentifier: {
-      'Fn::GetAtt': [
-        'api2C4850CEA',
-        expectedIdentifier,
-      ],
+      'Fn::GetAtt': ['api2C4850CEA', expectedIdentifier],
     },
   });
   Template.fromStack(stackToValidate).hasResourceProperties('AWS::AppSync::SourceApiAssociation', {
     MergedApiIdentifier: {
-      'Fn::GetAtt': [
-        'mergedapiCE4CAF34',
-        expectedIdentifier,
-      ],
+      'Fn::GetAtt': ['mergedapiCE4CAF34', expectedIdentifier],
     },
     SourceApiAssociationConfig: {
       MergeType: 'AUTO_MERGE',
     },
     SourceApiIdentifier: {
-      'Fn::GetAtt': [
-        'api2C4850CEA',
-        expectedIdentifier,
-      ],
+      'Fn::GetAtt': ['api2C4850CEA', expectedIdentifier],
     },
   });
 
@@ -301,20 +282,14 @@ function validateSourceApiAssociations(stackToValidate: cdk.Stack,
           Effect: 'Allow',
           Resource: [
             {
-              'Fn::GetAtt': [
-                'mergedapiapi1Association63F38E0D',
-                'SourceApiArn',
-              ],
+              'Fn::GetAtt': ['mergedapiapi1Association63F38E0D', 'SourceApiArn'],
             },
             {
               'Fn::Join': [
                 '',
                 [
                   {
-                    'Fn::GetAtt': [
-                      'mergedapiapi1Association63F38E0D',
-                      'SourceApiArn',
-                    ],
+                    'Fn::GetAtt': ['mergedapiapi1Association63F38E0D', 'SourceApiArn'],
                   },
                   '/*',
                 ],
@@ -327,20 +302,14 @@ function validateSourceApiAssociations(stackToValidate: cdk.Stack,
           Effect: 'Allow',
           Resource: [
             {
-              'Fn::GetAtt': [
-                'mergedapiapi2AssociationC4E5E15E',
-                'SourceApiArn',
-              ],
+              'Fn::GetAtt': ['mergedapiapi2AssociationC4E5E15E', 'SourceApiArn'],
             },
             {
               'Fn::Join': [
                 '',
                 [
                   {
-                    'Fn::GetAtt': [
-                      'mergedapiapi2AssociationC4E5E15E',
-                      'SourceApiArn',
-                    ],
+                    'Fn::GetAtt': ['mergedapiapi2AssociationC4E5E15E', 'SourceApiArn'],
                   },
                   '/*',
                 ],
@@ -352,10 +321,7 @@ function validateSourceApiAssociations(stackToValidate: cdk.Stack,
           Action: 'appsync:StartSchemaMerge',
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'mergedapiapi2AssociationC4E5E15E',
-              'AssociationArn',
-            ],
+            'Fn::GetAtt': ['mergedapiapi2AssociationC4E5E15E', 'AssociationArn'],
           },
         },
       ],

@@ -129,10 +129,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(
-      this.integrationPattern,
-      SageMakerCreateTransformJob.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, SageMakerCreateTransformJob.SUPPORTED_INTEGRATION_PATTERNS);
 
     // set the sagemaker role or create new one
     if (props.role) {
@@ -186,13 +183,9 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     return {
       ...(this.props.batchStrategy ? { BatchStrategy: this.props.batchStrategy } : {}),
       ...renderEnvironment(this.props.environment),
-      ...(this.props.maxConcurrentTransforms
-        ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms }
-        : {}),
+      ...(this.props.maxConcurrentTransforms ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {}),
       ...(this.props.maxPayload ? { MaxPayloadInMB: this.props.maxPayload.toMebibytes() } : {}),
-      ...(this.props.modelClientOptions
-        ? this.renderModelClientOptions(this.props.modelClientOptions)
-        : {}),
+      ...(this.props.modelClientOptions ? this.renderModelClientOptions(this.props.modelClientOptions) : {}),
       ModelName: this.props.modelName,
       ...renderTags(this.props.tags),
       ...this.renderTransformInput(this.transformInput),
@@ -209,9 +202,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     }
     const timeout = options.invocationsTimeout?.toSeconds();
     if (!Token.isUnresolved(timeout) && timeout ? timeout < 1 || timeout > 3600 : false) {
-      throw new Error(
-        `invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`
-      );
+      throw new Error(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`);
     }
     return {
       ModelClientConfig: {
@@ -255,9 +246,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
         InstanceType: sfn.JsonPath.isEncodedJsonPath(resources.instanceType.toString())
           ? resources.instanceType.toString()
           : `ml.${resources.instanceType}`,
-        ...(resources.volumeEncryptionKey
-          ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn }
-          : {}),
+        ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
       },
     };
   }
@@ -276,11 +265,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
     const policyStatements = [
       new iam.PolicyStatement({
-        actions: [
-          'sagemaker:CreateTransformJob',
-          'sagemaker:DescribeTransformJob',
-          'sagemaker:StopTransformJob',
-        ],
+        actions: ['sagemaker:CreateTransformJob', 'sagemaker:DescribeTransformJob', 'sagemaker:StopTransformJob'],
         resources: [
           stack.formatArn({
             service: 'sagemaker',

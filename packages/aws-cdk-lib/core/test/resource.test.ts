@@ -2,9 +2,16 @@ import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import {
-  App, App as Root, CfnCondition,
-  CfnDeletionPolicy, CfnResource,
-  Fn, IResource, RemovalPolicy, Resource, Stack,
+  App,
+  App as Root,
+  CfnCondition,
+  CfnDeletionPolicy,
+  CfnResource,
+  Fn,
+  IResource,
+  RemovalPolicy,
+  Resource,
+  Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
@@ -15,7 +22,8 @@ describe('resource', () => {
     new CfnResource(stack, 'MyResource', {
       type: 'MyResourceType',
       properties: {
-        Prop1: 'p1', Prop2: 123,
+        Prop1: 'p1',
+        Prop2: 123,
       },
     });
 
@@ -134,10 +142,7 @@ describe('resource', () => {
         Counter2: {
           Type: 'My::Counter',
           Properties: { Count: 1 },
-          DependsOn: [
-            'Counter1',
-            'Resource3',
-          ],
+          DependsOn: ['Counter1', 'Resource3'],
         },
         Resource3: { Type: 'MyResourceType' },
       },
@@ -168,9 +173,7 @@ describe('resource', () => {
         },
         Dependent: {
           Type: 'R',
-          DependsOn: [
-            'Counter1',
-          ],
+          DependsOn: ['Counter1'],
         },
       },
     });
@@ -329,7 +332,6 @@ describe('resource', () => {
   });
 
   test('addDependency adds all dependencyElements of dependent constructs', () => {
-
     class C1 extends Construct {
       public readonly r1: CfnResource;
       public readonly r2: CfnResource;
@@ -374,20 +376,14 @@ describe('resource', () => {
     synthesize(stack);
 
     expect(toCloudFormation(stack)).toEqual({
-      Resources:
-      {
+      Resources: {
         MyC1R1FB2A562F: { Type: 'T1' },
         MyC1R2AE2B5066: { Type: 'T2' },
         MyC2R3809EEAD6: { Type: 'T3' },
         MyC3C2R38CE6F9F7: { Type: 'T3' },
-        MyResource:
-        {
+        MyResource: {
           Type: 'R',
-          DependsOn:
-          ['MyC1R1FB2A562F',
-            'MyC1R2AE2B5066',
-            'MyC2R3809EEAD6',
-            'MyC3C2R38CE6F9F7'],
+          DependsOn: ['MyC1R1FB2A562F', 'MyC1R2AE2B5066', 'MyC2R3809EEAD6', 'MyC3C2R38CE6F9F7'],
         },
       },
     });
@@ -413,10 +409,8 @@ describe('resource', () => {
 
       // THEN
       expect(toCloudFormation(stack)).toEqual({
-        Resources:
-        {
-          MyResource:
-          {
+        Resources: {
+          MyResource: {
             Type: 'YouCanEvenOverrideTheType',
             Use: { Dot: { Notation: 'To create subtrees' } },
             Metadata: { Key: 12 },
@@ -475,10 +469,8 @@ describe('resource', () => {
 
       // THEN
       expect(toCloudFormation(stack)).toEqual({
-        Resources:
-        {
-          MyResource:
-          {
+        Resources: {
+          MyResource: {
             Type: 'AWS::Resource::Type',
             Properties: { Hello: { World: { Value1: 'Hello', Value2: null } } },
           },
@@ -507,10 +499,8 @@ describe('resource', () => {
 
       // THEN
       expect(toCloudFormation(stack)).toEqual({
-        Resources:
-        {
-          MyResource:
-          {
+        Resources: {
+          MyResource: {
             Type: 'AWS::Resource::Type',
             Properties: { Hello: { World: { Value1: 'Hello' } } },
           },
@@ -530,10 +520,8 @@ describe('resource', () => {
 
       // THEN
       expect(toCloudFormation(stack)).toEqual({
-        Resources:
-        {
-          MyResource:
-          {
+        Resources: {
+          MyResource: {
             Type: 'AWS::Resource::Type',
             Properties: { Tree: { Exists: 42 } },
           },
@@ -564,10 +552,8 @@ describe('resource', () => {
 
       // THEN
       expect(toCloudFormation(stack)).toEqual({
-        Resources:
-        {
-          MyResource:
-          {
+        Resources: {
+          MyResource: {
             Type: 'AWS::Resource::Type',
             Properties: { Hello: { World: { Value1: 'Hello' } } },
           },
@@ -594,13 +580,10 @@ describe('resource', () => {
 
       // THEN
       expect(toCloudFormation(stack)).toEqual({
-        Resources:
-        {
-          MyResource:
-          {
+        Resources: {
+          MyResource: {
             Type: 'AWS::Resource::Type',
-            Properties:
-            {
+            Properties: {
               Hello: { World: { Foo: { Bar: 42 } } },
               Override1: {
                 Override2: { Heyy: [1] },
@@ -625,15 +608,12 @@ describe('resource', () => {
 
       // THEN
       expect(toCloudFormation(stack)).toEqual({
-        Resources:
-        {
-          MyResource:
-          {
+        Resources: {
+          MyResource: {
             Type: 'AWS::Resource::Type',
-            Properties:
-            {
+            Properties: {
               'Hello.World': { 'Foo.Bar.Baz': 42 },
-              'SingleBackSlashes': 42,
+              SingleBackSlashes: 42,
               'Escaped\\': { 'Back\\': { Slashes: 42 } },
               'DoublyEscaped\\\\Back\\\\Slashes': 42,
               'EndWith\\': 42,
@@ -656,10 +636,8 @@ describe('resource', () => {
 
       // THEN
       expect(toCloudFormation(stack)).toEqual({
-        Resources:
-        {
-          MyResource:
-          {
+        Resources: {
+          MyResource: {
             Type: 'AWS::Resource::Type',
             Properties: { Hello: { World: { Hey: 'Jude' } } },
           },
@@ -749,11 +727,15 @@ describe('resource', () => {
           },
         },
       });
-      const isEnabled = Fn.conditionIf(condition.logicalId, {
-        Ref: 'AWS::NoValue',
-      }, {
-        name: Fn.getAtt('resource', 'abc'),
-      });
+      const isEnabled = Fn.conditionIf(
+        condition.logicalId,
+        {
+          Ref: 'AWS::NoValue',
+        },
+        {
+          name: Fn.getAtt('resource', 'abc'),
+        }
+      );
 
       // WHEN
       resource.addPropertyOverride('prop1.subprop', isEnabled);
@@ -772,10 +754,7 @@ describe('resource', () => {
                 },
                 {
                   name: {
-                    'Fn::GetAtt': [
-                      'resource',
-                      'abc',
-                    ],
+                    'Fn::GetAtt': ['resource', 'abc'],
                   },
                 },
               ],
@@ -837,9 +816,7 @@ describe('resource', () => {
       res2.addPropertyOverride('Key', res1.getAtt('Value'));
 
       // THEN
-      expect(
-        app.synth().getStackByName(stack2.stackName).template?.Resources,
-      ).toEqual({
+      expect(app.synth().getStackByName(stack2.stackName).template?.Resources).toEqual({
         SomeResource2: {
           Properties: {
             Key: {
@@ -862,10 +839,8 @@ describe('resource', () => {
         r.prop2 = 'bar';
 
         expect(toCloudFormation(stack)).toEqual({
-          Resources:
-          {
-            MyResource:
-            {
+          Resources: {
+            MyResource: {
               Type: 'MyResourceType',
               Properties: { PROP1: 'foo', PROP2: 'bar' },
             },
@@ -881,10 +856,8 @@ describe('resource', () => {
         r.prop3 = 'zoo';
 
         expect(toCloudFormation(stack)).toEqual({
-          Resources:
-          {
-            MyResource:
-            {
+          Resources: {
+            MyResource: {
               Type: 'MyResourceType',
               Properties: { PROP3: 'zoo' },
             },
@@ -895,16 +868,14 @@ describe('resource', () => {
       test('"properties" is empty', () => {
         const stack = new Stack();
 
-        const r = new CustomizableResource(stack, 'MyResource', { });
+        const r = new CustomizableResource(stack, 'MyResource', {});
 
         r.prop3 = 'zoo';
         r.prop2 = 'hey';
 
         expect(toCloudFormation(stack)).toEqual({
-          Resources:
-          {
-            MyResource:
-            {
+          Resources: {
+            MyResource: {
               Type: 'MyResourceType',
               Properties: { PROP2: 'hey', PROP3: 'zoo' },
             },
@@ -925,13 +896,11 @@ describe('resource', () => {
     });
 
     expect(toCloudFormation(stack)).toEqual({
-      Resources:
-      {
-        ParentMyResource4B1FDBCC:
-         {
-           Type: 'MyResourceType',
-           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Default/Parent/MyResource' },
-         },
+      Resources: {
+        ParentMyResource4B1FDBCC: {
+          Type: 'MyResourceType',
+          Metadata: { [cxapi.PATH_METADATA_KEY]: 'Default/Parent/MyResource' },
+        },
       },
     });
   });
@@ -955,7 +924,7 @@ describe('resource', () => {
       Type: 'R',
       // Notice absence of 'DependsOn'
     });
-    expect(stackB.dependencies.map(s => s.node.id)).toEqual(['StackA']);
+    expect(stackB.dependencies.map((s) => s.node.id)).toEqual(['StackA']);
   });
 
   test('enableVersionUpgrade can be set on a resource', () => {
@@ -1051,7 +1020,7 @@ class CustomizableResource extends CfnResource {
       prop2: this.prop2,
       prop3: this.prop3,
     };
-    const cleanProps: { [key: string]: any } = { };
+    const cleanProps: { [key: string]: any } = {};
     for (const key of Object.keys(props)) {
       if (props[key] === undefined) {
         continue;

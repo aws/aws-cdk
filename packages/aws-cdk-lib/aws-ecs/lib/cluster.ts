@@ -2,11 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import {
-  CfnCluster,
-  CfnCapacityProvider,
-  CfnClusterCapacityProviderAssociations,
-} from './ecs.generated';
+import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -131,11 +127,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Import an existing cluster to the stack from its attributes.
    */
-  public static fromClusterAttributes(
-    scope: Construct,
-    id: string,
-    attrs: ClusterAttributes
-  ): ICluster {
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
   }
 
@@ -269,9 +261,7 @@ export class Cluster extends Resource implements ICluster {
         (props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
         (props.executeCommandConfiguration.logConfiguration !== undefined)
       ) {
-        throw new Error(
-          'Execute command log configuration must only be specified when logging is OVERRIDE.'
-        );
+        throw new Error('Execute command log configuration must only be specified when logging is OVERRIDE.');
       }
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
@@ -299,9 +289,7 @@ export class Cluster extends Resource implements ICluster {
         : undefined;
 
     this._autoscalingGroup =
-      props.capacity !== undefined
-        ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
-        : undefined;
+      props.capacity !== undefined ? this.addCapacity('DefaultAutoScalingGroup', props.capacity) : undefined;
 
     this.updateKeyPolicyForEphemeralStorageConfiguration(props.clusterName);
 
@@ -380,9 +368,7 @@ export class Cluster extends Resource implements ICluster {
    *   }
    * ]
    */
-  public addDefaultCapacityProviderStrategy(
-    defaultCapacityProviderStrategy: CapacityProviderStrategy[]
-  ) {
+  public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
     if (this._defaultCapacityProviderStrategy.length > 0) {
       throw new Error('Cluster default capacity provider strategy is already set.');
     }
@@ -404,13 +390,9 @@ export class Cluster extends Resource implements ICluster {
       }
     });
 
-    const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(
-      (dcp) => !!dcp.base
-    );
+    const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter((dcp) => !!dcp.base);
     if (defaultCapacityProvidersWithBase.length > 1) {
-      throw new Error(
-        'Only 1 capacity provider in a capacity provider strategy can have a nonzero base.'
-      );
+      throw new Error('Only 1 capacity provider in a capacity provider strategy can have a nonzero base.');
     }
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
@@ -421,13 +403,11 @@ export class Cluster extends Resource implements ICluster {
       executeCommandConfiguration: this._executeCommandConfiguration && {
         kmsKeyId: this._executeCommandConfiguration.kmsKey?.keyArn,
         logConfiguration:
-          this._executeCommandConfiguration.logConfiguration &&
-          this.renderExecuteCommandLogConfiguration(),
+          this._executeCommandConfiguration.logConfiguration && this.renderExecuteCommandLogConfiguration(),
         logging: this._executeCommandConfiguration.logging,
       },
       managedStorageConfiguration: this._managedStorageConfiguration && {
-        fargateEphemeralStorageKmsKeyId:
-          this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
+        fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
       },
     };
   }
@@ -463,8 +443,7 @@ export class Cluster extends Resource implements ICluster {
       throw new Error('Can only add default namespace once.');
     }
 
-    const namespaceType =
-      options.type !== undefined ? options.type : cloudmap.NamespaceType.DNS_PRIVATE;
+    const namespaceType = options.type !== undefined ? options.type : cloudmap.NamespaceType.DNS_PRIVATE;
 
     let sdNamespace;
     switch (namespaceType) {
@@ -546,9 +525,7 @@ export class Cluster extends Resource implements ICluster {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
       machineImage,
-      updateType: !!options.updatePolicy
-        ? undefined
-        : options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
+      updateType: !!options.updatePolicy ? undefined : options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
       ...options,
     });
 
@@ -565,10 +542,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addAsgCapacityProvider(
-    provider: AsgCapacityProvider,
-    options: AddAutoScalingGroupCapacityOptions = {}
-  ) {
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
       return;
@@ -633,17 +607,13 @@ export class Cluster extends Resource implements ICluster {
           );
           // required managed policy
           autoScalingGroup.role.addManagedPolicy(
-            iam.ManagedPolicy.fromAwsManagedPolicyName(
-              'service-role/AmazonEC2ContainerServiceforEC2Role'
-            )
+            iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
           );
           break;
         }
         default:
           // Amazon ECS-optimized AMI for Amazon Linux 2
-          autoScalingGroup.addUserData(
-            `echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`
-          );
+          autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
           if (!options.canContainersAccessInstanceRole) {
             // Deny containers access to instance metadata service
             // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
@@ -656,9 +626,7 @@ export class Cluster extends Resource implements ICluster {
           }
 
           if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-            autoScalingGroup.addUserData(
-              'echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config'
-            );
+            autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
           }
       }
     }
@@ -670,11 +638,7 @@ export class Cluster extends Resource implements ICluster {
     //   - 'ecs:CreateCluster' removed. The cluster already exists.
     autoScalingGroup.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: [
-          'ecs:DeregisterContainerInstance',
-          'ecs:RegisterContainerInstance',
-          'ecs:Submit*',
-        ],
+        actions: ['ecs:DeregisterContainerInstance', 'ecs:RegisterContainerInstance', 'ecs:Submit*'],
         resources: [this.clusterArn],
       })
     );
@@ -802,9 +766,7 @@ export class Cluster extends Resource implements ICluster {
       autoScalingGroup.addUserData(
         '[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")'
       );
-      autoScalingGroup.addUserData(
-        `Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`
-      );
+      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`);
     } else {
       autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
     }
@@ -1523,8 +1485,7 @@ export class AsgCapacityProvider extends Construct {
         // 255 is the max length, subtract 3 because of 'cp-'
         // if the regex condition isn't met, CFN will name the capacity provider
         capacityProviderName =
-          'cp-' +
-          Names.uniqueResourceName(this, { maxLength: 252, allowedSpecialCharacters: '-_' });
+          'cp-' + Names.uniqueResourceName(this, { maxLength: 252, allowedSpecialCharacters: '-_' });
       }
     }
 
@@ -1550,9 +1511,7 @@ export class AsgCapacityProvider extends Construct {
                 minimumScalingStepSize: props.minimumScalingStepSize,
                 instanceWarmupPeriod: props.instanceWarmupPeriod,
               },
-        managedTerminationProtection: this.enableManagedTerminationProtection
-          ? 'ENABLED'
-          : 'DISABLED',
+        managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
         managedDraining: managedDraining,
       },
     });

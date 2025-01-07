@@ -29,7 +29,6 @@ enum ClusterLoggingTypes {
 }
 
 describe('compareLoggingProps', () => {
-
   type Props = Partial<CreateClusterRequest>;
   const oldEnabledTypes: LogType[] = [ClusterLoggingTypes.API, ClusterLoggingTypes.AUDIT];
 
@@ -78,8 +77,10 @@ describe('compareLoggingProps', () => {
 
     const result = compareLoggingProps(oldProps, newProps);
 
-    expect(result.logging?.clusterLogging).toEqual([{ types: [ClusterLoggingTypes.AUDIT], enabled: true },
-      { types: [ClusterLoggingTypes.API], enabled: false }]);
+    expect(result.logging?.clusterLogging).toEqual([
+      { types: [ClusterLoggingTypes.AUDIT], enabled: true },
+      { types: [ClusterLoggingTypes.API], enabled: false },
+    ]);
   });
 
   test('when oldProps.logging.clusterLogging is undefined and newProps.logging.clusterLogging is undefined, result should be newProps', () => {
@@ -111,5 +112,4 @@ describe('compareLoggingProps', () => {
 
     expect(result.logging?.clusterLogging).toEqual([{ types: oldEnabledTypes, enabled: false }]);
   });
-
 });

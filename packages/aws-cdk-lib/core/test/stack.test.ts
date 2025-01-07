@@ -5,11 +5,23 @@ import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import { Fact, RegionInfo } from '../../region-info';
 import {
-  App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Lazy, ScopedAws, Stack, validateString,
-  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  App,
+  CfnCondition,
+  CfnInclude,
+  CfnOutput,
+  CfnParameter,
+  CfnResource,
+  Lazy,
+  ScopedAws,
+  Stack,
+  validateString,
+  Tags,
+  LegacyStackSynthesizer,
+  DefaultStackSynthesizer,
   NestedStack,
-  Aws, Fn, ResolutionTypeHint,
+  Aws,
+  Fn,
+  ResolutionTypeHint,
   PermissionsBoundary,
   PERMISSIONS_BOUNDARY_CONTEXT_KEY,
   Aspects,
@@ -20,15 +32,16 @@ import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
 
 describe('stack', () => {
-  test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {
+  test("a stack can be serialized into a CloudFormation template, initially it's empty", () => {
     const stack = new Stack();
-    expect(toCloudFormation(stack)).toEqual({ });
+    expect(toCloudFormation(stack)).toEqual({});
   });
 
   test('stack name cannot exceed 128 characters', () => {
     // GIVEN
     const app = new App({});
-    const reallyLongStackName = 'LookAtMyReallyLongStackNameThisStackNameIsLongerThan128CharactersThatIsNutsIDontThinkThereIsEnoughAWSAvailableToLetEveryoneHaveStackNamesThisLong';
+    const reallyLongStackName =
+      'LookAtMyReallyLongStackNameThisStackNameIsLongerThan128CharactersThatIsNutsIDontThinkThereIsEnoughAWSAvailableToLetEveryoneHaveStackNamesThisLong';
 
     // THEN
     expect(() => {
@@ -77,7 +90,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
+    }).toThrow("Number of resources in stack 'MyStack': 1000 is greater than allowed maximum of 500");
   });
 
   test('when stackResourceLimit is defined, should give the proper error', () => {
@@ -97,7 +110,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources in stack \'MyStack\': 200 is greater than allowed maximum of 100');
+    }).toThrow("Number of resources in stack 'MyStack': 200 is greater than allowed maximum of 100");
   });
 
   test('when stackResourceLimit is 0, should not give error', () => {
@@ -166,7 +179,6 @@ describe('stack', () => {
   // We should come up with a proper solution that involved jsii callbacks (when they exist)
   // so this can be implemented by jsii languages as well.
   test('Overriding `Stack._toCloudFormation` allows arbitrary post-processing of the generated template during synthesis', () => {
-
     const stack = new StackWithPostProcessor();
 
     new CfnResource(stack, 'myResource', {
@@ -181,24 +193,20 @@ describe('stack', () => {
     });
 
     expect(stack._toCloudFormation()).toEqual({
-      Resources:
-      {
-        myResource:
-         {
-           Type: 'AWS::MyResource',
-           Properties:
-          {
+      Resources: {
+        myResource: {
+          Type: 'AWS::MyResource',
+          Properties: {
             MyProp1: 'hello',
             MyProp2: 'howdy',
             Environment: { key: 'value' },
           },
-         },
+        },
       },
     });
   });
 
   test('Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)', () => {
-
     const stack = new Stack();
 
     const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
@@ -461,7 +469,9 @@ describe('stack', () => {
       Parameters: {
         SomeParameter: {
           Type: 'String',
-          Default: { 'Fn::Join': ['', ['TheAccountIs', { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }]] },
+          Default: {
+            'Fn::Join': ['', ['TheAccountIs', { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }]],
+          },
         },
       },
     });
@@ -496,11 +506,9 @@ describe('stack', () => {
         ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
           Value: {
             'Fn::Join': [
-              '||', {
-                'Fn::GetAtt': [
-                  'exportedResource',
-                  'List',
-                ],
+              '||',
+              {
+                'Fn::GetAtt': ['exportedResource', 'List'],
               },
             ],
           },
@@ -557,11 +565,9 @@ describe('stack', () => {
         ExportsOutputFnGetAttexportedResourceList0EA3E0D9: {
           Value: {
             'Fn::Join': [
-              '||', {
-                'Fn::GetAtt': [
-                  'exportedResource',
-                  'List',
-                ],
+              '||',
+              {
+                'Fn::GetAtt': ['exportedResource', 'List'],
               },
             ],
           },
@@ -622,7 +628,8 @@ describe('stack', () => {
         ExportsOutputRefmagicParameter4CC6F7BE: {
           Value: {
             'Fn::Join': [
-              '||', {
+              '||',
+              {
                 Ref: 'magicParameter',
               },
             ],
@@ -685,19 +692,13 @@ describe('stack', () => {
             WriterProps: {
               exports: {
                 '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'name',
-                  ],
+                  'Fn::GetAtt': ['SomeResourceExport', 'name'],
                 },
               },
               region: 'us-east-2',
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
             },
           },
         },
@@ -782,11 +783,7 @@ describe('stack', () => {
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: [
-                        'ssm:AddTagsToResource',
-                        'ssm:RemoveTagsFromResource',
-                        'ssm:GetParameters',
-                      ],
+                      Action: ['ssm:AddTagsToResource', 'ssm:RemoveTagsFromResource', 'ssm:GetParameters'],
                       Effect: 'Allow',
                       Resource: {
                         'Fn::Join': [
@@ -819,18 +816,18 @@ describe('stack', () => {
           Properties: {
             ReaderProps: {
               imports: {
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1}}',
-                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': '{{resolve:ssm:/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B}}',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F':
+                  '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1':
+                  '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1}}',
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B':
+                  '{{resolve:ssm:/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B}}',
               },
               region: 'us-east-2',
               prefix: 'Stack2',
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68', 'Arn'],
             },
           },
           Type: 'Custom::CrossRegionExportReader',
@@ -873,19 +870,13 @@ describe('stack', () => {
             WriterProps: {
               exports: {
                 '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'other2',
-                  ],
+                  'Fn::GetAtt': ['SomeResourceExport', 'other2'],
                 },
               },
               region: 'us-east-2',
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
             },
           },
         },
@@ -903,25 +894,16 @@ describe('stack', () => {
             WriterProps: {
               exports: {
                 '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'name',
-                  ],
+                  'Fn::GetAtt': ['SomeResourceExport', 'name'],
                 },
                 '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'other',
-                  ],
+                  'Fn::GetAtt': ['SomeResourceExport', 'other'],
                 },
               },
               region: 'us-east-2',
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
             },
           },
         },
@@ -1004,19 +986,13 @@ describe('stack', () => {
             WriterProps: {
               exports: {
                 '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'other2',
-                  ],
+                  'Fn::GetAtt': ['SomeResourceExport', 'other2'],
                 },
               },
               region: 'us-east-2',
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
             },
           },
         },
@@ -1034,25 +1010,16 @@ describe('stack', () => {
             WriterProps: {
               exports: {
                 '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'name',
-                  ],
+                  'Fn::GetAtt': ['SomeResourceExport', 'name'],
                 },
                 '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'other',
-                  ],
+                  'Fn::GetAtt': ['SomeResourceExport', 'other'],
                 },
               },
               region: 'us-east-2',
             },
             ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
             },
           },
         },
@@ -1114,7 +1081,9 @@ describe('stack', () => {
     });
 
     expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
+    expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([
+      'ParentChild18FAEF419',
+    ]);
   });
 
   test('_addAssemblyDependency adds to _stackDependencies', () => {
@@ -1134,13 +1103,14 @@ describe('stack', () => {
     childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
     childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
 
-    expect(childA._obtainAssemblyDependencies({ source: resourceA }))
-      .toEqual([resource1, resource2]);
+    expect(childA._obtainAssemblyDependencies({ source: resourceA })).toEqual([resource1, resource2]);
 
     const assembly = app.synth();
 
     expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([
+      'ParentChild18FAEF419',
+    ]);
   });
 
   test('_addAssemblyDependency adds one StackDependencyReason with defaults', () => {
@@ -1156,13 +1126,14 @@ describe('stack', () => {
 
     childA._addAssemblyDependency(child1);
 
-    expect(childA._obtainAssemblyDependencies({ source: childA }))
-      .toEqual([child1]);
+    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([child1]);
 
     const assembly = app.synth();
 
     expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([
+      'ParentChild18FAEF419',
+    ]);
   });
 
   test('_addAssemblyDependency raises error on cycle', () => {
@@ -1234,7 +1205,9 @@ describe('stack', () => {
     const assembly = app.synth();
 
     expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([
+      'ParentChild18FAEF419',
+    ]);
   });
 
   test('_removeAssemblyDependency removes a StackDependency from _stackDependencies with the last reason', () => {
@@ -1392,10 +1365,7 @@ describe('stack', () => {
             Name: 'Producer:ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019',
           },
           Value: {
-            'Fn::GetAtt': [
-              'OVERRIDE_LOGICAL_ID',
-              'Att',
-            ],
+            'Fn::GetAtt': ['OVERRIDE_LOGICAL_ID', 'Att'],
           },
         },
       },
@@ -1464,16 +1434,14 @@ describe('stack', () => {
 
     const importV = stack.exportStringListValue(['someValue', 'anotherValue'], { name: 'MyExport' });
 
-    expect(stack.resolve(importV)).toEqual(
-      {
-        'Fn::Split': [
-          '||',
-          {
-            'Fn::ImportValue': 'MyExport',
-          },
-        ],
-      },
-    );
+    expect(stack.resolve(importV)).toEqual({
+      'Fn::Split': [
+        '||',
+        {
+          'Fn::ImportValue': 'MyExport',
+        },
+      ],
+    });
 
     const template = app.synth().getStackByName(stack.stackName).template;
 
@@ -1574,11 +1542,14 @@ describe('stack', () => {
     // WHEN
     class CfnTest extends CfnResource {
       public _toCloudFormation() {
-        return new PostResolveToken({
-          xoo: 1234,
-        }, (props, _context) => {
-          validateString(props).assertSuccess();
-        });
+        return new PostResolveToken(
+          {
+            xoo: 1234,
+          },
+          (props, _context) => {
+            validateString(props).assertSuccess();
+          }
+        );
       }
     }
 
@@ -1600,8 +1571,12 @@ describe('stack', () => {
 
     // THEN
     const assembly = app.synth();
-    expect(assembly.getStackByName(parentStack.stackName).template?.Resources).toEqual({ MyParentResource: { Type: 'Resource::Parent' } });
-    expect(assembly.getStackByName(childStack.stackName).template?.Resources).toEqual({ MyChildResource: { Type: 'Resource::Child' } });
+    expect(assembly.getStackByName(parentStack.stackName).template?.Resources).toEqual({
+      MyParentResource: { Type: 'Resource::Parent' },
+    });
+    expect(assembly.getStackByName(childStack.stackName).template?.Resources).toEqual({
+      MyChildResource: { Type: 'Resource::Child' },
+    });
   });
 
   test('Nested Stacks are synthesized with DESTROY policy', () => {
@@ -1613,14 +1588,16 @@ describe('stack', () => {
     new CfnResource(childStack, 'ChildResource', { type: 'Resource::Child' });
 
     const assembly = app.synth();
-    expect(assembly.getStackByName(parentStack.stackName).template).toEqual(expect.objectContaining({
-      Resources: {
-        childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
-          Type: 'AWS::CloudFormation::Stack',
-          DeletionPolicy: 'Delete',
-        }),
-      },
-    }));
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual(
+      expect.objectContaining({
+        Resources: {
+          childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
+            Type: 'AWS::CloudFormation::Stack',
+            DeletionPolicy: 'Delete',
+          }),
+        },
+      })
+    );
   });
 
   test('asset metadata added to NestedStack resource that contains asset path and property', () => {
@@ -1633,16 +1610,18 @@ describe('stack', () => {
     new CfnResource(childStack, 'ChildResource', { type: 'Resource::Child' });
 
     const assembly = app.synth();
-    expect(assembly.getStackByName(parentStack.stackName).template).toEqual(expect.objectContaining({
-      Resources: {
-        childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
-          Metadata: {
-            'aws:asset:path': 'parentchild13F9359B.nested.template.json',
-            'aws:asset:property': 'TemplateURL',
-          },
-        }),
-      },
-    }));
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual(
+      expect.objectContaining({
+        Resources: {
+          childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
+            Metadata: {
+              'aws:asset:path': 'parentchild13F9359B.nested.template.json',
+              'aws:asset:property': 'TemplateURL',
+            },
+          }),
+        },
+      })
+    );
   });
 
   test('cross-stack reference (substack references parent stack)', () => {
@@ -1713,7 +1692,10 @@ describe('stack', () => {
         MyParentResource: {
           Type: 'Resource::Parent',
           Properties: {
-            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264' },
+            ParentProp: {
+              'Fn::ImportValue':
+                'parentchild13F9359B:ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264',
+            },
           },
         },
       },
@@ -1745,7 +1727,9 @@ describe('stack', () => {
     expect(() => {
       app.synth();
       // eslint-disable-next-line max-len
-    }).toThrow("'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
+    }).toThrow(
+      "'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference."
+    );
   });
 
   test('stacks know about their dependencies', () => {
@@ -1761,7 +1745,7 @@ describe('stack', () => {
     app.synth();
 
     // THEN
-    expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
+    expect(stack2.dependencies.map((s) => s.node.id)).toEqual(['Stack1']);
   });
 
   test('cannot create references to stacks in other accounts', () => {
@@ -1808,7 +1792,9 @@ describe('stack', () => {
   describe('stack partition literal feature flag', () => {
     // GIVEN
     const featureFlag = { [cxapi.ENABLE_PARTITION_LITERALS]: true };
-    const envForRegion = (region: string) => { return { env: { account: '123456789012', region: region } }; };
+    const envForRegion = (region: string) => {
+      return { env: { account: '123456789012', region: region } };
+    };
 
     // THEN
     describe('does not change missing or unknown region behaviors', () => {
@@ -1826,7 +1812,7 @@ describe('stack', () => {
     describe('changes known region behaviors only when enabled', () => {
       test('(disabled)', () => {
         const app = new App();
-        RegionInfo.regions.forEach(function(region) {
+        RegionInfo.regions.forEach(function (region) {
           const regionStack = new Stack(app, `Region-${region.name}`, envForRegion(region.name));
           expect(regionStack.partition).toEqual(Aws.PARTITION);
         });
@@ -1834,7 +1820,7 @@ describe('stack', () => {
 
       test('(enabled)', () => {
         const app = new App({ context: featureFlag });
-        RegionInfo.regions.forEach(function(region) {
+        RegionInfo.regions.forEach(function (region) {
           const regionStack = new Stack(app, `Region-${region.name}`, envForRegion(region.name));
           expect(regionStack.partition).toEqual(RegionInfo.get(region.name).partition);
         });
@@ -1860,18 +1846,15 @@ describe('stack', () => {
 
     // THEN
     expect(toCloudFormation(stack)).toEqual({
-      Resources:
-      {
+      Resources: {
         BOOM: { Type: 'Resource::Type' },
-        RefToBonjour:
-         {
-           Type: 'Other::Resource',
-           Properties:
-            {
-              RefToBonjour: { Ref: 'BOOM' },
-              GetAttBonjour: { 'Fn::GetAtt': ['BOOM', 'TheAtt'] },
-            },
-         },
+        RefToBonjour: {
+          Type: 'Other::Resource',
+          Properties: {
+            RefToBonjour: { Ref: 'BOOM' },
+            GetAttBonjour: { 'Fn::GetAtt': ['BOOM', 'TheAtt'] },
+          },
+        },
       },
     });
   });
@@ -1897,12 +1880,17 @@ describe('stack', () => {
   test('generated stack names will not exceed 128 characters', () => {
     // WHEN
     const root = new App();
-    const app = new Construct(root, 'ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackName' + 'z'.repeat(60));
+    const app = new Construct(
+      root,
+      'ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStackName' + 'z'.repeat(60)
+    );
     const stack = new Stack(app, 'ThisNameIsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack');
 
     // THEN
     expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStaceryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack864CC1D3');
+    expect(stack.stackName).toEqual(
+      'ProdAppThisNameButItWillOnlyBeTooLongWhenCombinedWithTheStaceryLongButItWillOnlyBeTooLongWhenCombinedWithTheAppNameStack864CC1D3'
+    );
   });
 
   test('stack construct id does not go through stack name validation if there is an explicit stack name', () => {
@@ -1925,8 +1913,9 @@ describe('stack', () => {
     const app = new App();
 
     // THEN
-    expect(() => new Stack(app, 'boom', { stackName: 'invalid:stack:name' }))
-      .toThrow(/Stack name must match the regular expression/);
+    expect(() => new Stack(app, 'boom', { stackName: 'invalid:stack:name' })).toThrow(
+      /Stack name must match the regular expression/
+    );
   });
 
   test('Stack.of(stack) returns the correct stack', () => {
@@ -2098,7 +2087,6 @@ describe('stack', () => {
   });
 
   test('stack notification arns defaults to undefined', () => {
-
     const app = new App({ stackTraces: false });
     const stack1 = new Stack(app, 'stack1', {});
 
@@ -2133,9 +2121,12 @@ describe('stack', () => {
     const app = new App({ stackTraces: false });
 
     // THEN
-    expect(() => new Stack(app, 'stack1', {
-      notificationArns: [...NOTIFICATION_ARNS, Aws.URL_SUFFIX],
-    })).toThrow('includes one or more tokens in its notification ARNs');
+    expect(
+      () =>
+        new Stack(app, 'stack1', {
+          notificationArns: [...NOTIFICATION_ARNS, Aws.URL_SUFFIX],
+        })
+    ).toThrow('includes one or more tokens in its notification ARNs');
   });
 
   test('Termination Protection is reflected in Cloud Assembly artifact', () => {
@@ -2252,7 +2243,7 @@ describe('stack', () => {
       new Stack(app, 'Stack', {
         env: envConfig,
       });
-    }).toThrow('Account id of stack environment must be a \'string\' but received \'number\'');
+    }).toThrow("Account id of stack environment must be a 'string' but received 'number'");
   });
 
   test('region passed in stack environment must be a string', () => {
@@ -2269,7 +2260,7 @@ describe('stack', () => {
       new Stack(app, 'Stack', {
         env: envConfig,
       });
-    }).toThrow('Region of stack environment must be a \'string\' but received \'number\'');
+    }).toThrow("Region of stack environment must be a 'string' but received 'number'");
   });
 
   test('indent templates when suppressTemplateIndentation is not set', () => {
@@ -2282,7 +2273,9 @@ describe('stack', () => {
     const artifact = assembly.getStackArtifact(stack.artifactId);
     const templateData = fs.readFileSync(artifact.templateFullPath, 'utf-8');
 
-    expect(templateData).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+    expect(templateData).toMatch(
+      /^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/
+    );
   });
 
   test('do not indent templates when suppressTemplateIndentation is true', () => {
@@ -2431,7 +2424,6 @@ describe('regionalFact', () => {
         },
       },
     });
-
   });
 
   test('regional facts generate a mapping if necessary', () => {
@@ -2450,11 +2442,7 @@ describe('regionalFact', () => {
       Outputs: {
         TheFact: {
           Value: {
-            'Fn::FindInMap': [
-              'WeirdFactMap',
-              { Ref: 'AWS::Region' },
-              'value',
-            ],
+            'Fn::FindInMap': ['WeirdFactMap', { Ref: 'AWS::Region' }, 'value'],
           },
         },
       },
@@ -2465,7 +2453,7 @@ describe('regionalFact', () => {
     const stack = new Stack();
 
     stack.addMetadata('Instances', { Description: 'Information about the instances' });
-    stack.addMetadata('Databases', { Description: 'Information about the databases' } );
+    stack.addMetadata('Databases', { Description: 'Information about the databases' });
 
     expect(toCloudFormation(stack)).toEqual({
       Metadata: {
@@ -2477,15 +2465,13 @@ describe('regionalFact', () => {
 });
 
 class StackWithPostProcessor extends Stack {
-
   // ...
 
   public _toCloudFormation() {
     const template = super._toCloudFormation();
 
     // manipulate template (e.g. rename "Key" to "key")
-    template.Resources.myResource.Properties.Environment.key =
-      template.Resources.myResource.Properties.Environment.Key;
+    template.Resources.myResource.Properties.Environment.key = template.Resources.myResource.Properties.Environment.Key;
     delete template.Resources.myResource.Properties.Environment.Key;
 
     return template;

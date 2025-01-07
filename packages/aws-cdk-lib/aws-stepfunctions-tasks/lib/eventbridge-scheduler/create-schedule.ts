@@ -234,8 +234,7 @@ export class EventBridgeSchedulerTarget {
         );
       }
       if (
-        props.retryPolicy.maximumEventAge.toMilliseconds() <
-          Duration.seconds(60).toMilliseconds() ||
+        props.retryPolicy.maximumEventAge.toMilliseconds() < Duration.seconds(60).toMilliseconds() ||
         props.retryPolicy.maximumEventAge.toSeconds() > 86400
       ) {
         throw new Error('MaximumEventAgeInSeconds must be between 60 and 86400 seconds');
@@ -305,11 +304,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn(
-        'aws-sdk:scheduler',
-        'createSchedule',
-        this.integrationPattern
-      ),
+      Resource: integrationResourceArn('aws-sdk:scheduler', 'createSchedule', this.integrationPattern),
       Parameters: {
         ActionAfterCompletion: this.props.actionAfterCompletion ?? ActionAfterCompletion.NONE,
         ClientToken: this.props.clientToken,
@@ -338,9 +333,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
 
     if (props.clientToken !== undefined && !Token.isUnresolved(props.clientToken)) {
       if (props.clientToken.length > 64 || props.clientToken.length < 1) {
-        throw new Error(
-          `ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`
-        );
+        throw new Error(`ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`);
       }
       if (!/^[a-zA-Z0-9-_]+$/.test(props.clientToken)) {
         throw new Error(
@@ -349,14 +342,8 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
       }
     }
 
-    if (
-      props.description !== undefined &&
-      !Token.isUnresolved(props.description) &&
-      props.description.length > 512
-    ) {
-      throw new Error(
-        `Description must be less than 512 characters long. Got: ${props.description.length}`
-      );
+    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 512) {
+      throw new Error(`Description must be less than 512 characters long. Got: ${props.description.length}`);
     }
 
     if (
@@ -370,9 +357,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
 
     if (props.groupName !== undefined && !Token.isUnresolved(props.groupName)) {
       if (props.groupName.length < 1 || props.groupName.length > 64) {
-        throw new Error(
-          `GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`
-        );
+        throw new Error(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`);
       }
       if (!/^[a-zA-Z0-9-_.]+$/.test(props.groupName)) {
         throw new Error(
@@ -386,9 +371,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
       !Token.isUnresolved(props.timezone) &&
       (props.timezone.length < 1 || props.timezone.length > 50)
     ) {
-      throw new Error(
-        `Timezone must be between 1 and 50 characters long. Got: ${props.timezone.length}`
-      );
+      throw new Error(`Timezone must be between 1 and 50 characters long. Got: ${props.timezone.length}`);
     }
   }
 }

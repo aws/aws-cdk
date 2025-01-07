@@ -1,8 +1,35 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
 import { Template, Match, Annotations } from '../../assertions';
-import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary, Token } from '../../core';
-import { AccountPrincipal, AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
+import {
+  Duration,
+  Stack,
+  App,
+  CfnResource,
+  RemovalPolicy,
+  Lazy,
+  Stage,
+  DefaultStackSynthesizer,
+  CliCredentialsStackSynthesizer,
+  PERMISSIONS_BOUNDARY_CONTEXT_KEY,
+  PermissionsBoundary,
+  Token,
+} from '../../core';
+import {
+  AccountPrincipal,
+  AnyPrincipal,
+  ArnPrincipal,
+  CompositePrincipal,
+  FederatedPrincipal,
+  ManagedPolicy,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+  User,
+  Policy,
+  PolicyDocument,
+  Effect,
+} from '../lib';
 
 describe('isRole() returns', () => {
   test('true if given Role instance', () => {
@@ -47,7 +74,10 @@ describe('customizeRoles', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasError('/MyStack/Role', Match.stringLikeRegexp('IAM Role is being created at path "MyStack/Role"'));
+    Annotations.fromStack(stack).hasError(
+      '/MyStack/Role',
+      Match.stringLikeRegexp('IAM Role is being created at path "MyStack/Role"')
+    );
   });
 
   test('throws if precreatedRoles has a token', () => {
@@ -66,7 +96,10 @@ describe('customizeRoles', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasError('/MyStack/Role', Match.stringLikeRegexp('Cannot resolve precreated role name at path "MyStack/Role"'));
+    Annotations.fromStack(stack).hasError(
+      '/MyStack/Role',
+      Match.stringLikeRegexp('Cannot resolve precreated role name at path "MyStack/Role"')
+    );
   });
 
   test('does not throw if preventSynthesis=false', () => {
@@ -196,11 +229,13 @@ describe('customizeRoles', () => {
     });
     const importedRole = Role.fromRoleName(stack, 'ImportedRole', 'ImportedRole');
     importedRole.grant(role, 'sts:AssumeRole');
-    role.addToPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['*'],
-      resources: ['*'],
-    }));
+    role.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['*'],
+        resources: ['*'],
+      })
+    );
 
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::IAM::Policy', 0);
@@ -225,13 +260,17 @@ describe('customizeRoles', () => {
     role.grantPassRole(principal);
     role.grantAssumeRole(principal);
     role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
-    role.addManagedPolicy(new ManagedPolicy(stack, 'MyPolicy', {
-      statements: [new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['sns:Publish'],
-        resources: ['*'],
-      })],
-    }));
+    role.addManagedPolicy(
+      new ManagedPolicy(stack, 'MyPolicy', {
+        statements: [
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['sns:Publish'],
+            resources: ['*'],
+          }),
+        ],
+      })
+    );
     role.withoutPolicyUpdates();
     new CfnResource(stack, 'MyResource', {
       type: 'AWS::Custom',
@@ -317,25 +356,22 @@ describe('IAM role', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyRoleF48FFE04:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' },
-            }],
-             Version: '2012-10-17',
-           },
+      Resources: {
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'sns.amazonaws.com' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
           },
-         },
+        },
       },
     });
   });
@@ -399,8 +435,9 @@ describe('IAM role', () => {
     });
 
     // THEN
-    expect(() => role.grantAssumeRole(new ServicePrincipal('beep-boop.amazonaws.com')))
-      .toThrow('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+    expect(() => role.grantAssumeRole(new ServicePrincipal('beep-boop.amazonaws.com'))).toThrow(
+      'Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.'
+    );
   });
 
   test('a role cannot grant AssumeRole permission to an Account Principal', () => {
@@ -414,8 +451,9 @@ describe('IAM role', () => {
     });
 
     // THEN
-    expect(() => role.grantAssumeRole(new AccountPrincipal('123456789')))
-      .toThrow('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+    expect(() => role.grantAssumeRole(new AccountPrincipal('123456789'))).toThrow(
+      'Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.'
+    );
   });
 
   testDeprecated('can supply externalId', () => {
@@ -530,7 +568,6 @@ describe('IAM role', () => {
         },
       ],
     });
-
   });
 
   test('managed policy arns can be supplied upon initialization and also added later', () => {
@@ -543,37 +580,30 @@ describe('IAM role', () => {
 
     role.addManagedPolicy({ managedPolicyArn: 'managed3' });
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyRoleF48FFE04:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'test.service' },
-            }],
-             Version: '2012-10-17',
-           },
+      Resources: {
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
             ManagedPolicyArns: ['managed1', 'managed2', 'managed3'],
           },
-         },
+        },
       },
     });
-
   });
 
   test('federated principal can change AssumeRoleAction', () => {
     const stack = new Stack();
-    const cognitoPrincipal = new FederatedPrincipal(
-      'foo',
-      { StringEquals: { key: 'value' } },
-      'sts:AssumeSomething');
+    const cognitoPrincipal = new FederatedPrincipal('foo', { StringEquals: { key: 'value' } }, 'sts:AssumeSomething');
 
     new Role(stack, 'MyRole', { assumedBy: cognitoPrincipal });
 
@@ -617,8 +647,9 @@ describe('IAM role', () => {
 
     const assumedBy = new ServicePrincipal('bla');
 
-    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '' }))
-      .toThrow('Role path must be between 1 and 512 characters. The provided role path is 0 characters.');
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '' })).toThrow(
+      'Role path must be between 1 and 512 characters. The provided role path is 0 characters.'
+    );
   });
 
   test('role path must be less than or equal to 512', () => {
@@ -626,8 +657,9 @@ describe('IAM role', () => {
 
     const assumedBy = new ServicePrincipal('bla');
 
-    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' + Array(512).join('a') + '/' }))
-      .toThrow('Role path must be between 1 and 512 characters. The provided role path is 513 characters.');
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' + Array(512).join('a') + '/' })).toThrow(
+      'Role path must be between 1 and 512 characters. The provided role path is 513 characters.'
+    );
   });
 
   test('role path must start with a forward slash', () => {
@@ -635,8 +667,9 @@ describe('IAM role', () => {
 
     const assumedBy = new ServicePrincipal('bla');
 
-    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
-    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    const expected = (val: any) =>
+      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. ' +
+      `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
     expect(() => new Role(stack, 'MyRole', { assumedBy, path: 'aaa' })).toThrow(expected('aaa'));
   });
 
@@ -645,8 +678,9 @@ describe('IAM role', () => {
 
     const assumedBy = new ServicePrincipal('bla');
 
-    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
-    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    const expected = (val: any) =>
+      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. ' +
+      `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
     expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/a' })).toThrow(expected('/a'));
   });
 
@@ -655,13 +689,13 @@ describe('IAM role', () => {
 
     const assumedBy = new ServicePrincipal('bla');
 
-    const expected = (val: any) => 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
-    + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
+    const expected = (val: any) =>
+      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. ' +
+      `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${val} is provided.`;
     expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/\u0020\u0080/' })).toThrow(expected('/\u0020\u0080/'));
   });
 
   describe('maxSessionDuration', () => {
-
     test('is not specified by default', () => {
       const stack = new Stack();
       new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
@@ -691,7 +725,10 @@ describe('IAM role', () => {
     test('can be used to specify the maximum session duration for assuming the role', () => {
       const stack = new Stack();
 
-      new Role(stack, 'MyRole', { maxSessionDuration: Duration.seconds(3700), assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+      new Role(stack, 'MyRole', {
+        maxSessionDuration: Duration.seconds(3700),
+        assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         MaxSessionDuration: 3700,
@@ -706,13 +743,17 @@ describe('IAM role', () => {
       new Role(stack, 'MyRole1', { assumedBy, maxSessionDuration: Duration.hours(1) });
       new Role(stack, 'MyRole2', { assumedBy, maxSessionDuration: Duration.hours(12) });
 
-      const expected = (val: any) => `maxSessionDuration is set to ${val}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`;
-      expect(() => new Role(stack, 'MyRole3', { assumedBy, maxSessionDuration: Duration.minutes(1) }))
-        .toThrow(expected(60));
-      expect(() => new Role(stack, 'MyRole4', { assumedBy, maxSessionDuration: Duration.seconds(3599) }))
-        .toThrow(expected(3599));
-      expect(() => new Role(stack, 'MyRole5', { assumedBy, maxSessionDuration: Duration.seconds(43201) }))
-        .toThrow(expected(43201));
+      const expected = (val: any) =>
+        `maxSessionDuration is set to ${val}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`;
+      expect(() => new Role(stack, 'MyRole3', { assumedBy, maxSessionDuration: Duration.minutes(1) })).toThrow(
+        expected(60)
+      );
+      expect(() => new Role(stack, 'MyRole4', { assumedBy, maxSessionDuration: Duration.seconds(3599) })).toThrow(
+        expected(3599)
+      );
+      expect(() => new Role(stack, 'MyRole5', { assumedBy, maxSessionDuration: Duration.seconds(43201) })).toThrow(
+        expected(43201)
+      );
     });
   });
 
@@ -720,10 +761,7 @@ describe('IAM role', () => {
     const stack = new Stack();
 
     new Role(stack, 'MyRole', {
-      assumedBy: new CompositePrincipal(
-        new ServicePrincipal('boom.amazonaws.test'),
-        new ArnPrincipal('1111111'),
-      ),
+      assumedBy: new CompositePrincipal(new ServicePrincipal('boom.amazonaws.test'), new ArnPrincipal('1111111')),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -811,26 +849,23 @@ describe('IAM role', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyRoleF48FFE04:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' },
-            }],
-             Version: '2012-10-17',
-           },
+      Resources: {
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'sns.amazonaws.com' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
             Description: 'This is a role description.',
           },
-         },
+        },
       },
     });
   });
@@ -844,25 +879,22 @@ describe('IAM role', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyRoleF48FFE04:
-         {
-           Type: 'AWS::IAM::Role',
-           Properties:
-          {
-            AssumeRolePolicyDocument:
-           {
-             Statement:
-            [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' },
-            }],
-             Version: '2012-10-17',
-           },
+      Resources: {
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'sns.amazonaws.com' },
+                },
+              ],
+              Version: '2012-10-17',
+            },
           },
-         },
+        },
       },
     });
   });
@@ -873,7 +905,8 @@ describe('IAM role', () => {
     expect(() => {
       new Role(stack, 'MyRole', {
         assumedBy: new ServicePrincipal('sns.amazonaws.com'),
-        description: '1000+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
+        description:
+          '1000+ character long description: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. \
         Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, \
         nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat \
         massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, \
@@ -892,16 +925,22 @@ describe('IAM role', () => {
     const stack = new Stack(app, 'my-stack');
     new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
-      managedPolicies: [new ManagedPolicy(stack, 'MyManagedPolicy', {
-        statements: [new PolicyStatement({
-          resources: ['*'],
-          actions: ['*'],
-          principals: [new ServicePrincipal('sns.amazonaws.com')],
-        })],
-      })],
+      managedPolicies: [
+        new ManagedPolicy(stack, 'MyManagedPolicy', {
+          statements: [
+            new PolicyStatement({
+              resources: ['*'],
+              actions: ['*'],
+              principals: [new ServicePrincipal('sns.amazonaws.com')],
+            }),
+          ],
+        }),
+      ],
     });
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+    expect(() => app.synth()).toThrow(
+      /A PolicyStatement used in an identity-based policy cannot specify any IAM principals/
+    );
   });
 
   test('fails if default role policy is invalid', () => {
@@ -910,13 +949,17 @@ describe('IAM role', () => {
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
-    role.addToPrincipalPolicy(new PolicyStatement({
-      resources: ['*'],
-      actions: ['*'],
-      principals: [new ServicePrincipal('sns.amazonaws.com')],
-    }));
+    role.addToPrincipalPolicy(
+      new PolicyStatement({
+        resources: ['*'],
+        actions: ['*'],
+        principals: [new ServicePrincipal('sns.amazonaws.com')],
+      })
+    );
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+    expect(() => app.synth()).toThrow(
+      /A PolicyStatement used in an identity-based policy cannot specify any IAM principals/
+    );
   });
 
   test('fails if inline policy from props is invalid', () => {
@@ -926,16 +969,20 @@ describe('IAM role', () => {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
       inlinePolicies: {
         testPolicy: new PolicyDocument({
-          statements: [new PolicyStatement({
-            resources: ['*'],
-            actions: ['*'],
-            principals: [new ServicePrincipal('sns.amazonaws.com')],
-          })],
+          statements: [
+            new PolicyStatement({
+              resources: ['*'],
+              actions: ['*'],
+              principals: [new ServicePrincipal('sns.amazonaws.com')],
+            }),
+          ],
         }),
       },
     });
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+    expect(() => app.synth()).toThrow(
+      /A PolicyStatement used in an identity-based policy cannot specify any IAM principals/
+    );
   });
 
   test('fails if attached inline policy is invalid', () => {
@@ -944,15 +991,21 @@ describe('IAM role', () => {
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
-    role.attachInlinePolicy(new Policy(stack, 'MyPolicy', {
-      statements: [new PolicyStatement({
-        resources: ['*'],
-        actions: ['*'],
-        principals: [new ServicePrincipal('sns.amazonaws.com')],
-      })],
-    }));
+    role.attachInlinePolicy(
+      new Policy(stack, 'MyPolicy', {
+        statements: [
+          new PolicyStatement({
+            resources: ['*'],
+            actions: ['*'],
+            principals: [new ServicePrincipal('sns.amazonaws.com')],
+          }),
+        ],
+      })
+    );
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+    expect(() => app.synth()).toThrow(
+      /A PolicyStatement used in an identity-based policy cannot specify any IAM principals/
+    );
   });
 
   test('fails if assumeRolePolicy is invalid', () => {
@@ -964,7 +1017,9 @@ describe('IAM role', () => {
     });
     role.assumeRolePolicy?.addStatements(new PolicyStatement({ actions: ['*'] }));
 
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    expect(() => app.synth()).toThrow(
+      /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/
+    );
   });
 });
 
@@ -1048,7 +1103,9 @@ describe('permissions boundary', () => {
         region: 'test-region',
         account: '123456789012',
       },
-      permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'),
+      permissionsBoundary: PermissionsBoundary.fromName(
+        'cdk-${Qualifier}-PermissionsBoundary-${AWS::AccountId}-${AWS::Region}'
+      ),
     });
     const stack = new Stack(stage);
 
@@ -1183,7 +1240,6 @@ describe('permissions boundary', () => {
       },
     });
   });
-
 });
 
 test('managed policy ARNs are deduplicated', () => {
@@ -1200,7 +1256,7 @@ test('managed policy ARNs are deduplicated', () => {
     new PolicyStatement({
       actions: ['s3:*'],
       resources: ['*'],
-    }),
+    })
   );
 
   for (let i = 0; i < 20; i++) {
@@ -1212,14 +1268,7 @@ test('managed policy ARNs are deduplicated', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     ManagedPolicyArns: [
       {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':iam::aws:policy/SuperDeveloper',
-          ],
-        ],
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/SuperDeveloper']],
       },
     ],
   });
@@ -1235,7 +1284,7 @@ test('too many managed policies warning', () => {
     new PolicyStatement({
       actions: ['s3:*'],
       resources: ['*'],
-    }),
+    })
   );
 
   for (let i = 0; i < 20; i++) {
@@ -1259,10 +1308,12 @@ describe('role with too large inline policy', () => {
     });
 
     for (let i = 0; i < N; i++) {
-      role.addToPrincipalPolicy(new PolicyStatement({
-        actions: ['aws:DoAThing'],
-        resources: [`arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${i}`],
-      }));
+      role.addToPrincipalPolicy(
+        new PolicyStatement({
+          actions: ['aws:DoAThing'],
+          resources: [`arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${i}`],
+        })
+      );
     }
   });
 
@@ -1283,10 +1334,12 @@ describe('role with too large inline policy', () => {
 
   test('Dependables track the final declaring construct', () => {
     // WHEN
-    const result = role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['aws:DoAThing'],
-      resources: [`arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${N}`],
-    }));
+    const result = role.addToPrincipalPolicy(
+      new PolicyStatement({
+        actions: ['aws:DoAThing'],
+        resources: [`arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource${N}`],
+      })
+    );
 
     const res = new CfnResource(stack, 'Depender', {
       type: 'AWS::Some::Resource',
@@ -1298,9 +1351,7 @@ describe('role with too large inline policy', () => {
     // THEN
     const template = Template.fromStack(stack);
     template.hasResource('AWS::Some::Resource', {
-      DependsOn: [
-        'MyRoleOverflowPolicy13EF5596A',
-      ],
+      DependsOn: ['MyRoleOverflowPolicy13EF5596A'],
     });
   });
 });
@@ -1315,10 +1366,12 @@ test('many copies of the same statement do not result in overflow policies', () 
   });
 
   for (let i = 0; i < N; i++) {
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['aws:DoAThing'],
-      resources: ['arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource'],
-    }));
+    role.addToPrincipalPolicy(
+      new PolicyStatement({
+        actions: ['aws:DoAThing'],
+        resources: ['arn:aws:service:us-east-1:111122223333:someResource/SomeSpecificResource'],
+      })
+    );
   }
 
   // THEN
@@ -1356,7 +1409,7 @@ test('cross-env role ARNs include path', () => {
   });
 });
 
-test('doesn\'t throw with roleName of 64 chars', () => {
+test("doesn't throw with roleName of 64 chars", () => {
   const app = new App();
   const stack = new Stack(app, 'MyStack');
   const valdName = 'a'.repeat(64);
@@ -1396,7 +1449,7 @@ describe('roleName validation', () => {
     }).toThrow('Invalid roleName');
   });
 
-  invalidChars.split('').forEach(char => {
+  invalidChars.split('').forEach((char) => {
     it(`rejects name with ${char}`, () => {
       expect(() => {
         new Role(stack, `test ${char}`, {
@@ -1406,10 +1459,9 @@ describe('roleName validation', () => {
       }).toThrow('Invalid roleName');
     });
   });
-
 });
 
-test('roleName validation with Tokens', () =>{
+test('roleName validation with Tokens', () => {
   const app = new App();
   const stack = new Stack(app, 'MyStack');
   const token = Lazy.string({ produce: () => 'token' });

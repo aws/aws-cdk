@@ -23,10 +23,7 @@ async function main() {
   // as if it was an installed module.
   await withTemporaryDirectory(async (tmpDir) => {
     await fs.mkdirp(path.join(tmpDir, 'node_modules'));
-    await fs.symlink(
-      path.resolve(__dirname, '..'),
-      path.join(tmpDir, 'node_modules', 'aws-cdk-lib')
-    );
+    await fs.symlink(path.resolve(__dirname, '..'), path.join(tmpDir, 'node_modules', 'aws-cdk-lib'));
 
     const import1 = 'import { aws_ec2 } from "aws-cdk-lib";';
     const import2 = 'import * as aws_ec2 from "aws-cdk-lib/aws-ec2";';
@@ -108,9 +105,7 @@ export async function withTemporaryDirectory<T>(callback: (dir: string) => Promi
 
 function assertNode<A extends ts.Node>(x: ts.Node, assert: (x: ts.Node) => x is A): A {
   if (!assert(x)) {
-    throw new Error(
-      `Not the right type of node, expecting ${assert.name}, got ${ts.SyntaxKind[x.kind]}`
-    );
+    throw new Error(`Not the right type of node, expecting ${assert.name}, got ${ts.SyntaxKind[x.kind]}`);
   }
   return x;
 }

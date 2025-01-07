@@ -273,16 +273,12 @@ export interface ScalaJobExecutableProps extends SharedSparkJobExecutableProps {
 /**
  * Props for creating a Python Spark (ETL or Streaming) job executable
  */
-export interface PythonSparkJobExecutableProps
-  extends SharedSparkJobExecutableProps,
-    PythonExecutableProps {}
+export interface PythonSparkJobExecutableProps extends SharedSparkJobExecutableProps, PythonExecutableProps {}
 
 /**
  * Props for creating a Python shell job executable
  */
-export interface PythonShellExecutableProps
-  extends SharedJobExecutableProps,
-    PythonExecutableProps {}
+export interface PythonShellExecutableProps extends SharedJobExecutableProps, PythonExecutableProps {}
 
 /**
  * Props for creating a Python Ray job executable
@@ -398,34 +394,24 @@ export class JobExecutable {
         throw new Error('Ray requires the language to be set to Python');
       }
       if (
-        [
-          GlueVersion.V0_9.name,
-          GlueVersion.V1_0.name,
-          GlueVersion.V2_0.name,
-          GlueVersion.V3_0.name,
-        ].includes(glueVersion)
+        [GlueVersion.V0_9.name, GlueVersion.V1_0.name, GlueVersion.V2_0.name, GlueVersion.V3_0.name].includes(
+          glueVersion
+        )
       ) {
         throw new Error(`Specified GlueVersion ${glueVersion} does not support Ray`);
       }
     }
-    if (
-      config.extraJarsFirst &&
-      [GlueVersion.V0_9.name, GlueVersion.V1_0.name].includes(glueVersion)
-    ) {
+    if (config.extraJarsFirst && [GlueVersion.V0_9.name, GlueVersion.V1_0.name].includes(glueVersion)) {
       throw new Error(`Specified GlueVersion ${glueVersion} does not support extraJarsFirst`);
     }
     if (
       config.pythonVersion === PythonVersion.TWO &&
       ![GlueVersion.V0_9.name, GlueVersion.V1_0.name].includes(glueVersion)
     ) {
-      throw new Error(
-        `Specified GlueVersion ${glueVersion} does not support PythonVersion ${config.pythonVersion}`
-      );
+      throw new Error(`Specified GlueVersion ${glueVersion} does not support PythonVersion ${config.pythonVersion}`);
     }
     if (JobLanguage.PYTHON !== config.language && config.extraPythonFiles) {
-      throw new Error(
-        'extraPythonFiles is not supported for languages other than JobLanguage.PYTHON'
-      );
+      throw new Error('extraPythonFiles is not supported for languages other than JobLanguage.PYTHON');
     }
     if (config.extraPythonFiles && type === JobType.RAY.name) {
       throw new Error('extraPythonFiles is not supported for Ray jobs');

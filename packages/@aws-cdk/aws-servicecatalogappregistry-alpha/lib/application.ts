@@ -73,10 +73,7 @@ export interface IApplication extends cdk.IResource {
    * @param id name of the AttributeGroup construct to be created.
    * @param attributeGroupProps AppRegistry attribute group props
    */
-  addAttributeGroup(
-    id: string,
-    attributeGroupProps: AttributeGroupAssociationProps
-  ): IAttributeGroup;
+  addAttributeGroup(id: string, attributeGroupProps: AttributeGroupAssociationProps): IAttributeGroup;
 
   /**
    * Associate this application with a CloudFormation stack.
@@ -199,21 +196,13 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   public associateApplicationWithStack(stack: cdk.Stack): void {
     if (!this.associatedResources.has(stack.node.addr)) {
       new CfnResourceAssociation(stack, 'AppRegistryAssociation', {
-        application:
-          stack === cdk.Stack.of(this)
-            ? this.applicationId
-            : (this.applicationName ?? this.applicationId),
+        application: stack === cdk.Stack.of(this) ? this.applicationId : (this.applicationName ?? this.applicationId),
         resource: stack.stackId,
         resourceType: 'CFN_STACK',
       });
 
       this.associatedResources.add(stack.node.addr);
-      if (
-        stack !== cdk.Stack.of(this) &&
-        this.isSameAccount(stack) &&
-        !this.isStageScope(stack) &&
-        !stack.nested
-      ) {
+      if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack) && !stack.nested) {
         stack.addDependency(cdk.Stack.of(this));
       }
     }
@@ -283,9 +272,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    * Verifies if application and the visited node is deployed in different account.
    */
   private isSameAccount(stack: cdk.Stack): boolean {
-    return (
-      isAccountUnresolved(this.env.account, stack.account) || this.env.account === stack.account
-    );
+    return isAccountUnresolved(this.env.account, stack.account) || this.env.account === stack.account;
   }
 }
 
@@ -300,15 +287,8 @@ export class Application extends ApplicationBase {
    * @param id The construct's name.
    * @param applicationArn the Amazon Resource Name of the existing AppRegistry Application
    */
-  public static fromApplicationArn(
-    scope: Construct,
-    id: string,
-    applicationArn: string
-  ): IApplication {
-    const arn = cdk.Stack.of(scope).splitArn(
-      applicationArn,
-      cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME
-    );
+  public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
+    const arn = cdk.Stack.of(scope).splitArn(applicationArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
     const applicationId = arn.resourceName;
 
     if (!applicationId) {
@@ -363,25 +343,8 @@ export class Application extends ApplicationBase {
   }
 
   private validateApplicationProps(props: ApplicationProps) {
-    InputValidator.validateLength(
-      this.node.path,
-      'application name',
-      1,
-      256,
-      props.applicationName
-    );
-    InputValidator.validateRegex(
-      this.node.path,
-      'application name',
-      /^[a-zA-Z0-9-_]+$/,
-      props.applicationName
-    );
-    InputValidator.validateLength(
-      this.node.path,
-      'application description',
-      0,
-      1024,
-      props.description
-    );
+    InputValidator.validateLength(this.node.path, 'application name', 1, 256, props.applicationName);
+    InputValidator.validateRegex(this.node.path, 'application name', /^[a-zA-Z0-9-_]+$/, props.applicationName);
+    InputValidator.validateLength(this.node.path, 'application description', 0, 1024, props.description);
   }
 }

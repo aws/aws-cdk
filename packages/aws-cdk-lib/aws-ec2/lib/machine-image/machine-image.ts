@@ -9,11 +9,7 @@ import {
   AmazonLinux2023ImageSsmParameterProps,
   AmazonLinux2023Kernel,
 } from './amazon-linux-2023';
-import {
-  AmazonLinux2ImageSsmParameter,
-  AmazonLinux2ImageSsmParameterProps,
-  AmazonLinux2Kernel,
-} from './amazon-linux2';
+import { AmazonLinux2ImageSsmParameter, AmazonLinux2ImageSsmParameterProps, AmazonLinux2Kernel } from './amazon-linux2';
 import {
   AmazonLinuxCpuType,
   AmazonLinuxEdition,
@@ -74,9 +70,7 @@ export abstract class MachineImage {
    *
    * @deprecated - use latestAmazonLinux2023() instead
    */
-  public static latestAmazonLinux2022(
-    props?: AmazonLinux2022ImageSsmParameterProps
-  ): IMachineImage {
+  public static latestAmazonLinux2022(props?: AmazonLinux2022ImageSsmParameterProps): IMachineImage {
     return new AmazonLinux2022ImageSsmParameter({
       cachedInContext: false,
       ...props,
@@ -92,9 +86,7 @@ export abstract class MachineImage {
    * new version of the image becomes available. Do not store stateful information
    * on the instance if you are using this image.
    */
-  public static latestAmazonLinux2023(
-    props?: AmazonLinux2023ImageSsmParameterProps
-  ): IMachineImage {
+  public static latestAmazonLinux2023(props?: AmazonLinux2023ImageSsmParameterProps): IMachineImage {
     return new AmazonLinux2023ImageSsmParameter({
       cachedInContext: false,
       ...props,
@@ -136,10 +128,7 @@ export abstract class MachineImage {
    * specify the AMI ID for that region.
    * @param props Customize the image by supplying additional props
    */
-  public static genericLinux(
-    amiMap: Record<string, string>,
-    props?: GenericLinuxImageProps
-  ): IMachineImage {
+  public static genericLinux(amiMap: Record<string, string>, props?: GenericLinuxImageProps): IMachineImage {
     return new GenericLinuxImage(amiMap, props);
   }
 
@@ -150,10 +139,7 @@ export abstract class MachineImage {
    * specify the AMI ID for that region.
    * @param props Customize the image by supplying additional props
    */
-  public static genericWindows(
-    amiMap: Record<string, string>,
-    props?: GenericWindowsImageProps
-  ): IMachineImage {
+  public static genericWindows(amiMap: Record<string, string>, props?: GenericWindowsImageProps): IMachineImage {
     return new GenericWindowsImage(amiMap, props);
   }
 
@@ -170,11 +156,7 @@ export abstract class MachineImage {
    * @param userData optional user data for the given image
    * @deprecated Use `MachineImage.fromSsmParameter()` instead
    */
-  public static fromSSMParameter(
-    parameterName: string,
-    os: OperatingSystemType,
-    userData?: UserData
-  ): IMachineImage {
+  public static fromSSMParameter(parameterName: string, os: OperatingSystemType, userData?: UserData): IMachineImage {
     return new GenericSSMParameterImage(parameterName, os, userData);
   }
 
@@ -189,10 +171,7 @@ export abstract class MachineImage {
    * will have to remember to periodically invalidate the context to refresh
    * to the newest AMI ID.
    */
-  public static fromSsmParameter(
-    parameterName: string,
-    options?: SsmParameterImageOptions
-  ): IMachineImage {
+  public static fromSsmParameter(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
     return new GenericSsmParameterImage(parameterName, options);
   }
 
@@ -207,10 +186,7 @@ export abstract class MachineImage {
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html
    *
    */
-  public static resolveSsmParameterAtLaunch(
-    parameterName: string,
-    options?: SsmParameterImageOptions
-  ): IMachineImage {
+  public static resolveSsmParameterAtLaunch(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
     return new ResolveSsmParameterAtLaunchImage(parameterName, options);
   }
 
@@ -274,8 +250,7 @@ export class GenericSSMParameterImage implements IMachineImage {
       imageId: ami,
       osType: this.os,
       userData:
-        this.userData ??
-        (this.os === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+        this.userData ?? (this.os === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
     };
   }
 }
@@ -313,8 +288,7 @@ export class ResolveSsmParameterAtLaunchImage implements IMachineImage {
       imageId: `resolve:ssm:${this.parameterName}${versionString}`,
       osType,
       userData:
-        this.props.userData ??
-        (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+        this.props.userData ?? (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
     };
   }
 }
@@ -393,8 +367,7 @@ class GenericSsmParameterImage implements IMachineImage {
       imageId,
       osType,
       userData:
-        this.props.userData ??
-        (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+        this.props.userData ?? (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
     };
   }
 }
@@ -425,8 +398,7 @@ export interface WindowsImageProps {
  */
 export class WindowsImage extends GenericSSMParameterImage {
   private static DEPRECATED_VERSION_NAME_MAP: Partial<Record<WindowsVersion, WindowsVersion>> = {
-    [WindowsVersion.WINDOWS_SERVER_2016_GERMAL_FULL_BASE]:
-      WindowsVersion.WINDOWS_SERVER_2016_GERMAN_FULL_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2016_GERMAL_FULL_BASE]: WindowsVersion.WINDOWS_SERVER_2016_GERMAN_FULL_BASE,
     [WindowsVersion.WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE]:
       WindowsVersion.WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE,
     [WindowsVersion.WINDOWS_SERVER_2016_PORTUGESE_PORTUGAL_FULL_BASE]:
@@ -454,11 +426,7 @@ export class WindowsImage extends GenericSSMParameterImage {
   };
   constructor(version: WindowsVersion, props: WindowsImageProps = {}) {
     const nonDeprecatedVersionName = WindowsImage.DEPRECATED_VERSION_NAME_MAP[version] ?? version;
-    super(
-      '/aws/service/ami-windows-latest/' + nonDeprecatedVersionName,
-      OperatingSystemType.WINDOWS,
-      props.userData
-    );
+    super('/aws/service/ami-windows-latest/' + nonDeprecatedVersionName, OperatingSystemType.WINDOWS, props.userData);
   }
 }
 
@@ -562,26 +530,18 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
       kernel = AmazonLinuxKernel.KERNEL5_X;
       if (props && props.storage) {
-        throw new Error(
-          'Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.'
-        );
+        throw new Error('Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
       if (props && props.virtualization) {
-        throw new Error(
-          'Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.'
-        );
+        throw new Error('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
     } else if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2023) {
       kernel = AmazonLinuxKernel.KERNEL6_1;
       if (props && props.storage) {
-        throw new Error(
-          'Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.'
-        );
+        throw new Error('Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
       if (props && props.virtualization) {
-        throw new Error(
-          'Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.'
-        );
+        throw new Error('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
     } else {
       virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;

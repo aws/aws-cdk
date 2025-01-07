@@ -25,7 +25,6 @@ beforeEach(() => {
 });
 
 describe('grant Permissions', () => {
-
   test('IamResource throws error when custom is called with no arguments', () => {
     //THEN
     expect(() => {
@@ -45,17 +44,20 @@ describe('grant Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Mutation/fields/addTest',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Mutation/fields/addTest',
+                ],
+              ],
             },
           },
         ],
@@ -75,17 +77,20 @@ describe('grant Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Mutation/*',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Mutation/*',
+                ],
+              ],
             },
           },
         ],
@@ -105,17 +110,20 @@ describe('grant Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Mutation/fields/addTest',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Mutation/fields/addTest',
+                ],
+              ],
             },
           },
         ],
@@ -135,17 +143,20 @@ describe('grant Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/*',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/*',
+                ],
+              ],
             },
           },
         ],
@@ -166,43 +177,52 @@ describe('grant Permissions', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/I',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/I',
+                  ],
+                ],
               },
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/am',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/am',
+                  ],
+                ],
               },
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/custom',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/custom',
+                  ],
+                ],
               },
             ],
           },
@@ -224,30 +244,36 @@ describe('grant Permissions', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/types/I/fields/am',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/types/I/fields/am',
+                  ],
+                ],
               },
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/types/I/fields/custom',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/types/I/fields/custom',
+                  ],
+                ],
               },
             ],
           },
@@ -258,7 +284,6 @@ describe('grant Permissions', () => {
 });
 
 describe('grantMutation Permissions', () => {
-
   test('grantMutation provides Mutation/* permissions when called with no `fields` argument', () => {
     // WHEN
     api.grantMutation(role);
@@ -271,17 +296,20 @@ describe('grantMutation Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Mutation/*',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Mutation/*',
+                ],
+              ],
             },
           },
         ],
@@ -301,17 +329,20 @@ describe('grantMutation Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Mutation/fields/addTest',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Mutation/fields/addTest',
+                ],
+              ],
             },
           },
         ],
@@ -332,30 +363,36 @@ describe('grantMutation Permissions', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/types/Mutation/fields/addTest',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/types/Mutation/fields/addTest',
+                  ],
+                ],
               },
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/types/Mutation/fields/removeTest',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/types/Mutation/fields/removeTest',
+                  ],
+                ],
               },
             ],
           },
@@ -366,7 +403,6 @@ describe('grantMutation Permissions', () => {
 });
 
 describe('grantQuery Permissions', () => {
-
   test('grantQuery provides Query/* permissions when called without the `fields` argument', () => {
     // WHEN
     api.grantQuery(role);
@@ -379,17 +415,20 @@ describe('grantQuery Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Query/*',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Query/*',
+                ],
+              ],
             },
           },
         ],
@@ -409,17 +448,20 @@ describe('grantQuery Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Query/fields/getTest',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Query/fields/getTest',
+                ],
+              ],
             },
           },
         ],
@@ -440,30 +482,36 @@ describe('grantQuery Permissions', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/types/Query/fields/getTests',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/types/Query/fields/getTests',
+                  ],
+                ],
               },
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/types/Query/fields/getTest',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/types/Query/fields/getTest',
+                  ],
+                ],
               },
             ],
           },
@@ -474,7 +522,6 @@ describe('grantQuery Permissions', () => {
 });
 
 describe('grantSubscription Permissions', () => {
-
   test('grantSubscription provides Subscription/* permissions when called without `fields` argument', () => {
     // WHEN
     api.grantSubscription(role);
@@ -487,17 +534,20 @@ describe('grantSubscription Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Subscription/*',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Subscription/*',
+                ],
+              ],
             },
           },
         ],
@@ -516,17 +566,20 @@ describe('grantSubscription Permissions', () => {
             Action: 'appsync:GraphQL',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                '/types/Subscription/fields/subscribe',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                  '/types/Subscription/fields/subscribe',
+                ],
+              ],
             },
           },
         ],
@@ -547,30 +600,36 @@ describe('grantSubscription Permissions', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/types/Subscription/fields/subscribe',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/types/Subscription/fields/subscribe',
+                  ],
+                ],
               },
               {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':appsync:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':apis/',
-                  { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
-                  '/types/Subscription/fields/custom',
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':appsync:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':apis/',
+                    { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
+                    '/types/Subscription/fields/custom',
+                  ],
+                ],
               },
             ],
           },
@@ -598,11 +657,7 @@ describe('imported API', () => {
 
     test('grant provides custom permissions when called with `custom` argument', () => {
       // WHEN
-      importedApi.grant(
-        role,
-        appsync.IamResource.custom('types/Mutation/fields/addTest'),
-        'appsync:GraphQL',
-      );
+      importedApi.grant(role, appsync.IamResource.custom('types/Mutation/fields/addTest'), 'appsync:GraphQL');
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

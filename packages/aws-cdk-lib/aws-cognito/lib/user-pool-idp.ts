@@ -19,11 +19,7 @@ export class UserPoolIdentityProvider {
   /**
    * Import an existing UserPoolIdentityProvider
    */
-  public static fromProviderName(
-    scope: Construct,
-    id: string,
-    providerName: string
-  ): IUserPoolIdentityProvider {
+  public static fromProviderName(scope: Construct, id: string, providerName: string): IUserPoolIdentityProvider {
     class Import extends Resource implements IUserPoolIdentityProvider {
       public readonly providerName: string = providerName;
     }

@@ -44,15 +44,10 @@ describe('CompositeAlarm', () => {
 
     const alarmRule = AlarmRule.anyOf(
       AlarmRule.allOf(
-        AlarmRule.anyOf(
-          alarm1,
-          AlarmRule.fromAlarm(alarm2, AlarmState.OK),
-          alarm3,
-          alarm5,
-        ),
-        AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
+        AlarmRule.anyOf(alarm1, AlarmRule.fromAlarm(alarm2, AlarmState.OK), alarm3, alarm5),
+        AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA))
       ),
-      AlarmRule.fromBoolean(false),
+      AlarmRule.fromBoolean(false)
     );
 
     new CompositeAlarm(stack, 'CompositeAlarm', {
@@ -67,45 +62,29 @@ describe('CompositeAlarm', () => {
           [
             '(((ALARM("',
             {
-              'Fn::GetAtt': [
-                'Alarm1F9009D71',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'],
             },
             '") OR OK("',
             {
-              'Fn::GetAtt': [
-                'Alarm2A7122E13',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Alarm2A7122E13', 'Arn'],
             },
             '") OR ALARM("',
             {
-              'Fn::GetAtt': [
-                'Alarm32341D8D9',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Alarm32341D8D9', 'Arn'],
             },
             '") OR ALARM("',
             {
-              'Fn::GetAtt': [
-                'Alarm548383B2F',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Alarm548383B2F', 'Arn'],
             },
             '")) AND (NOT (INSUFFICIENT_DATA("',
             {
-              'Fn::GetAtt': [
-                'Alarm4671832C8',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Alarm4671832C8', 'Arn'],
             },
             '")))) OR FALSE)',
           ],
         ],
       },
     });
-
   });
 
   test('test action suppressor translates to a correct CFN properties', () => {
@@ -134,10 +113,7 @@ describe('CompositeAlarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
       AlarmName: 'CompositeAlarm',
       ActionsSuppressor: {
-        'Fn::GetAtt': [
-          'Alarm1F9009D71',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'],
       },
       ActionsSuppressorExtensionPeriod: 120,
       ActionsSuppressorWaitPeriod: 300,
@@ -149,11 +125,12 @@ describe('CompositeAlarm', () => {
 
     const alarmRule = AlarmRule.fromBoolean(true);
 
-    var createAlarm = () => new CompositeAlarm(stack, 'CompositeAlarm', {
-      alarmRule,
-      actionsSuppressorExtensionPeriod: Duration.minutes(2),
-      actionsSuppressorWaitPeriod: Duration.minutes(5),
-    });
+    var createAlarm = () =>
+      new CompositeAlarm(stack, 'CompositeAlarm', {
+        alarmRule,
+        actionsSuppressorExtensionPeriod: Duration.minutes(2),
+        actionsSuppressorWaitPeriod: Duration.minutes(5),
+      });
 
     expect(createAlarm).toThrow('ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.');
   });
@@ -182,10 +159,7 @@ describe('CompositeAlarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
       AlarmName: 'CompositeAlarm',
       ActionsSuppressor: {
-        'Fn::GetAtt': [
-          'Alarm1F9009D71',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Alarm1F9009D71', 'Arn'],
       },
       ActionsSuppressorExtensionPeriod: 60,
       ActionsSuppressorWaitPeriod: 60,
@@ -195,7 +169,11 @@ describe('CompositeAlarm', () => {
   test('imported alarm arn and name generated correctly', () => {
     const stack = new Stack();
 
-    const alarmFromArn = CompositeAlarm.fromCompositeAlarmArn(stack, 'AlarmFromArn', 'arn:aws:cloudwatch:us-west-2:123456789012:alarm:TestAlarmName');
+    const alarmFromArn = CompositeAlarm.fromCompositeAlarmArn(
+      stack,
+      'AlarmFromArn',
+      'arn:aws:cloudwatch:us-west-2:123456789012:alarm:TestAlarmName'
+    );
 
     expect(alarmFromArn.alarmName).toEqual('TestAlarmName');
     expect(alarmFromArn.alarmArn).toMatch(/:alarm:TestAlarmName$/);
@@ -205,5 +183,4 @@ describe('CompositeAlarm', () => {
     expect(alarmFromName.alarmName).toEqual('TestAlarmName');
     expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);
   });
-
 });

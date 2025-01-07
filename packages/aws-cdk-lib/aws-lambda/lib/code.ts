@@ -77,15 +77,9 @@ export abstract class Code {
    * @param command The command which will be executed to generate the output, for example, [ 'node', 'bundle_code.js' ]
    * @param options options for the custom command, and other asset options -- but bundling options are not allowed.
    */
-  public static fromCustomCommand(
-    output: string,
-    command: string[],
-    options?: CustomCommandOptions
-  ): AssetCode {
+  public static fromCustomCommand(output: string, command: string[], options?: CustomCommandOptions): AssetCode {
     if (command.length === 0) {
-      throw new Error(
-        'command must contain at least one argument. For example, ["node", "buildFile.js"].'
-      );
+      throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
     }
 
     const cmd = command[0];
@@ -511,9 +505,7 @@ export class CfnParametersCode extends Code {
     if (this._bucketNameParam) {
       return this._bucketNameParam.logicalId;
     } else {
-      throw new Error(
-        'Pass CfnParametersCode to a Lambda Function before accessing the bucketNameParam property'
-      );
+      throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the bucketNameParam property');
     }
   }
 
@@ -521,9 +513,7 @@ export class CfnParametersCode extends Code {
     if (this._objectKeyParam) {
       return this._objectKeyParam.logicalId;
     } else {
-      throw new Error(
-        'Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property'
-      );
+      throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
     }
   }
 }
@@ -589,9 +579,7 @@ export class EcrImageCode extends Code {
 
     return {
       image: {
-        imageUri: this.repository.repositoryUriForTagOrDigest(
-          this.props?.tagOrDigest ?? this.props?.tag ?? 'latest'
-        ),
+        imageUri: this.repository.repositoryUriForTagOrDigest(this.props?.tagOrDigest ?? this.props?.tag ?? 'latest'),
         cmd: this.props.cmd,
         entrypoint: this.props.entrypoint,
         workingDirectory: this.props.workingDirectory,

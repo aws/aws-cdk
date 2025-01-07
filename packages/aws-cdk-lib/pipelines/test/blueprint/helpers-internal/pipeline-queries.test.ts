@@ -14,7 +14,6 @@ afterEach(() => {
 });
 
 describe('pipeline-queries', () => {
-
   describe('stackOutputsReferenced', () => {
     let blueprint: Blueprint;
     let stageDeployment: cdkp.StageDeployment;
@@ -72,13 +71,12 @@ describe('pipeline-queries', () => {
       },
       {
         description: 'output not referenced',
-        additionalSetup: () => { },
+        additionalSetup: () => {},
         expectedResultGetter: () => [],
       },
-
     ];
 
-    cases.forEach(testCase => {
+    cases.forEach((testCase) => {
       test(testCase.description, () => {
         //WHEN
         testCase.additionalSetup();
@@ -87,11 +85,9 @@ describe('pipeline-queries', () => {
         expect(queries.stackOutputsReferenced(stackDeployment)).toEqual(testCase.expectedResultGetter());
       });
     });
-
   });
 });
 
 class Blueprint extends cdkp.PipelineBase {
-  protected doBuildPipeline(): void {
-  }
+  protected doBuildPipeline(): void {}
 }

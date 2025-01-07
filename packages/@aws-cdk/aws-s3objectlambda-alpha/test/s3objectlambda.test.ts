@@ -50,134 +50,121 @@ test('Can create a valid access point', () => {
     value: accessPoint.s3AccessPointArn,
   });
 
-  expect(Template.fromStack(stack).findOutputs('*')).toEqual(
-    {
-      AccessPointName: {
-        Value: {
-          Ref: 'MyObjectLambda3F9602DC',
-        },
-      },
-      DomainName: {
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              {
-                Ref: 'MyObjectLambda3F9602DC',
-              },
-              '-',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.s3-object-lambda.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-            ],
-          ],
-        },
-      },
-      RegionalDomainName: {
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              {
-                Ref: 'MyObjectLambda3F9602DC',
-              },
-              '-',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.s3-object-lambda.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-            ],
-          ],
-        },
-      },
-      S3AccessPointArn: {
-        Value: {
-          'Fn::GetAtt': [
-            'MyObjectLambdaSupportingAccessPointA2D2026E',
-            'Arn',
-          ],
-        },
-      },
-      VirtualHostedRegionalUrl: {
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              'https://',
-              {
-                Ref: 'MyObjectLambda3F9602DC',
-              },
-              '-',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.s3-object-lambda.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/key',
-            ],
-          ],
-        },
-      },
-      VirtualHostedUrl: {
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              'https://',
-              {
-                Ref: 'MyObjectLambda3F9602DC',
-              },
-              '-',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.s3-object-lambda.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/key',
-            ],
-          ],
-        },
+  expect(Template.fromStack(stack).findOutputs('*')).toEqual({
+    AccessPointName: {
+      Value: {
+        Ref: 'MyObjectLambda3F9602DC',
       },
     },
-  );
+    DomainName: {
+      Value: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              Ref: 'MyObjectLambda3F9602DC',
+            },
+            '-',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '.s3-object-lambda.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+          ],
+        ],
+      },
+    },
+    RegionalDomainName: {
+      Value: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              Ref: 'MyObjectLambda3F9602DC',
+            },
+            '-',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '.s3-object-lambda.',
+            {
+              Ref: 'AWS::Region',
+            },
+            '.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+          ],
+        ],
+      },
+    },
+    S3AccessPointArn: {
+      Value: {
+        'Fn::GetAtt': ['MyObjectLambdaSupportingAccessPointA2D2026E', 'Arn'],
+      },
+    },
+    VirtualHostedRegionalUrl: {
+      Value: {
+        'Fn::Join': [
+          '',
+          [
+            'https://',
+            {
+              Ref: 'MyObjectLambda3F9602DC',
+            },
+            '-',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '.s3-object-lambda.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+            '/key',
+          ],
+        ],
+      },
+    },
+    VirtualHostedUrl: {
+      Value: {
+        'Fn::Join': [
+          '',
+          [
+            'https://',
+            {
+              Ref: 'MyObjectLambda3F9602DC',
+            },
+            '-',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '.s3-object-lambda.',
+            {
+              Ref: 'AWS::Region',
+            },
+            '.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+            '/key',
+          ],
+        ],
+      },
+    },
+  });
 
   Template.fromStack(stack).hasResourceProperties('AWS::S3ObjectLambda::AccessPoint', {
     ObjectLambdaConfiguration: {
-      AllowedFeatures: [
-        'GetObject-PartNumber',
-        'GetObject-Range',
-      ],
+      AllowedFeatures: ['GetObject-PartNumber', 'GetObject-Range'],
       TransformationConfigurations: [
         {
-          Actions: [
-            'GetObject',
-          ],
+          Actions: ['GetObject'],
           ContentTransformation: {
             AwsLambda: {
               FunctionArn: {
-                'Fn::GetAtt': [
-                  'MyFunction3BAA72D1',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyFunction3BAA72D1', 'Arn'],
               },
               FunctionPayload: '{"foo":10}',
             },
@@ -214,7 +201,7 @@ test('Slashes are removed from the virtual hosted url', () => {
   new cdk.CfnOutput(stack, 'VirtualHostedUrlKeyEndsSlash', {
     value: accessPoint.virtualHostedUrlForObject('key1/key2/'),
   });
-  expect(Template.fromStack(stack).findOutputs('*')).toEqual( {
+  expect(Template.fromStack(stack).findOutputs('*')).toEqual({
     VirtualHostedUrlKeyBeginsSlash: {
       Value: {
         'Fn::Join': [
@@ -296,54 +283,94 @@ test('Slashes are removed from the virtual hosted url', () => {
 });
 
 test('Validates the access point name', () => {
-  expect(() => new AccessPoint(stack, 'MyObjectLambda1', {
-    bucket,
-    handler,
-    accessPointName: 'aa',
-  })).toThrow(/name must be between 3 and 50 characters long/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda2', {
-    bucket,
-    handler,
-    accessPointName: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-  })).toThrow(/name must be between 3 and 50 characters long/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda3', {
-    bucket,
-    handler,
-    accessPointName: 'aaaa-s3alias',
-  })).toThrow(/name cannot end with the suffix -s3alias/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda4', {
-    bucket,
-    handler,
-    accessPointName: '-aaaaa',
-  })).toThrow(/name cannot begin or end with a dash/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda5', {
-    bucket,
-    handler,
-    accessPointName: 'aaaaa-',
-  })).toThrow(/name cannot begin or end with a dash/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda6', {
-    bucket,
-    handler,
-    accessPointName: 'Aaaaa',
-  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda7', {
-    bucket,
-    handler,
-    accessPointName: '$aaaaa',
-  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda8', {
-    bucket,
-    handler,
-    accessPointName: 'aaaAaaa',
-  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda9', {
-    bucket,
-    handler,
-    accessPointName: 'aaa_aaa',
-  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
-  expect(() => new AccessPoint(stack, 'MyObjectLambda10', {
-    bucket,
-    handler,
-    accessPointName: 'aaa.aaa',
-  })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda1', {
+        bucket,
+        handler,
+        accessPointName: 'aa',
+      })
+  ).toThrow(/name must be between 3 and 50 characters long/);
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda2', {
+        bucket,
+        handler,
+        accessPointName: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      })
+  ).toThrow(/name must be between 3 and 50 characters long/);
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda3', {
+        bucket,
+        handler,
+        accessPointName: 'aaaa-s3alias',
+      })
+  ).toThrow(/name cannot end with the suffix -s3alias/);
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda4', {
+        bucket,
+        handler,
+        accessPointName: '-aaaaa',
+      })
+  ).toThrow(/name cannot begin or end with a dash/);
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda5', {
+        bucket,
+        handler,
+        accessPointName: 'aaaaa-',
+      })
+  ).toThrow(/name cannot begin or end with a dash/);
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda6', {
+        bucket,
+        handler,
+        accessPointName: 'Aaaaa',
+      })
+  ).toThrow(
+    /name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/
+  );
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda7', {
+        bucket,
+        handler,
+        accessPointName: '$aaaaa',
+      })
+  ).toThrow(
+    /name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/
+  );
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda8', {
+        bucket,
+        handler,
+        accessPointName: 'aaaAaaa',
+      })
+  ).toThrow(
+    /name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/
+  );
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda9', {
+        bucket,
+        handler,
+        accessPointName: 'aaa_aaa',
+      })
+  ).toThrow(
+    /name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/
+  );
+  expect(
+    () =>
+      new AccessPoint(stack, 'MyObjectLambda10', {
+        bucket,
+        handler,
+        accessPointName: 'aaa.aaa',
+      })
+  ).toThrow(
+    /name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/
+  );
 });

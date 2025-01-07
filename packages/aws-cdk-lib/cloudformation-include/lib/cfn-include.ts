@@ -184,9 +184,7 @@ export class CfnInclude extends core.CfnElement {
     // verify that all nestedStacks have been instantiated
     for (const nestedStackId of Object.keys(props.loadNestedStacks || {})) {
       if (!(nestedStackId in this.resources)) {
-        throw new Error(
-          `Nested Stack with logical ID '${nestedStackId}' was not found in the template`
-        );
+        throw new Error(`Nested Stack with logical ID '${nestedStackId}' was not found in the template`);
       }
     }
 
@@ -344,9 +342,7 @@ export class CfnInclude extends core.CfnElement {
   public getNestedStack(logicalId: string): IncludedNestedStack {
     if (!this.nestedStacks[logicalId]) {
       if (!this.template.Resources[logicalId]) {
-        throw new Error(
-          `Nested Stack with logical ID '${logicalId}' was not found in the template`
-        );
+        throw new Error(`Nested Stack with logical ID '${logicalId}' was not found in the template`);
       } else if (this.template.Resources[logicalId].Type !== 'AWS::CloudFormation::Stack') {
         throw new Error(`Resource with logical ID '${logicalId}' is not a CloudFormation Stack`);
       } else {
@@ -370,10 +366,7 @@ export class CfnInclude extends core.CfnElement {
    * @param nestedStackProps the properties of the included child Stack
    * @returns the same `IncludedNestedStack` object that `getNestedStack` returns for this logical ID
    */
-  public loadNestedStack(
-    logicalId: string,
-    nestedStackProps: CfnIncludeProps
-  ): IncludedNestedStack {
+  public loadNestedStack(logicalId: string, nestedStackProps: CfnIncludeProps): IncludedNestedStack {
     if (logicalId in this.nestedStacks) {
       throw new Error(`Nested Stack '${logicalId}' was already included in its parent template`);
     }
@@ -392,9 +385,7 @@ export class CfnInclude extends core.CfnElement {
       this.getOrCreateResource(logicalId);
       return this.nestedStacks[logicalId];
     } else {
-      throw new Error(
-        `Nested Stack with logical ID '${logicalId}' is not an AWS::CloudFormation::Stack resource`
-      );
+      throw new Error(`Nested Stack with logical ID '${logicalId}' is not an AWS::CloudFormation::Stack resource`);
     }
   }
 
@@ -560,14 +551,9 @@ export class CfnInclude extends core.CfnElement {
     let hook: core.CfnHook;
     switch (hookAttributes.Type) {
       case 'AWS::CodeDeploy::BlueGreen':
-        hook = (core.CfnCodeDeployBlueGreenHook as any)._fromCloudFormation(
-          this.hooksScope,
-          hookName,
-          hookAttributes,
-          {
-            parser: cfnParser,
-          }
-        );
+        hook = (core.CfnCodeDeployBlueGreenHook as any)._fromCloudFormation(this.hooksScope, hookName, hookAttributes, {
+          parser: cfnParser,
+        });
         break;
       default: {
         const hookProperties = cfnParser.parseValue(hookAttributes.Properties) ?? {};
@@ -638,9 +624,7 @@ export class CfnInclude extends core.CfnElement {
           return self.parameters[elementName];
         },
         findCondition(cName: string): core.CfnCondition | undefined {
-          return cName in (self.template.Conditions || {})
-            ? self.getOrCreateCondition(cName)
-            : undefined;
+          return cName in (self.template.Conditions || {}) ? self.getOrCreateCondition(cName) : undefined;
         },
         findMapping(mappingName: string): core.CfnMapping | undefined {
           return self.mappings[mappingName];
@@ -666,9 +650,7 @@ export class CfnInclude extends core.CfnElement {
     cycleChain = cycleChain.concat([logicalId]);
     if (cycleChain.length !== new Set(cycleChain).size) {
       if (!this.allowCyclicalReferences) {
-        throw new Error(
-          `Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`
-        );
+        throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
       }
       //only allow one placeholder per logical id
       if (this.logicalIdToPlaceholderMap.get(logicalId)) {
@@ -725,9 +707,7 @@ export class CfnInclude extends core.CfnElement {
     const resourceAttributes: any = this.template.Resources[logicalId];
     let l1Instance: core.CfnResource;
     if (this.nestedStacksToInclude[logicalId] && this.dehydratedResources.includes(logicalId)) {
-      throw new Error(
-        `nested stack '${logicalId}' was marked as dehydrated - nested stacks cannot be dehydrated`
-      );
+      throw new Error(`nested stack '${logicalId}' was marked as dehydrated - nested stacks cannot be dehydrated`);
     } else if (this.nestedStacksToInclude[logicalId]) {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
     } else if (this.dehydratedResources.includes(logicalId)) {
@@ -759,12 +739,7 @@ export class CfnInclude extends core.CfnElement {
         const [moduleName, ...className] = l1ClassFqn.split('.');
         const module = require(moduleName); // eslint-disable-line @typescript-eslint/no-require-imports
         const jsClassFromModule = module[className.join('.')];
-        l1Instance = jsClassFromModule._fromCloudFormation(
-          this,
-          logicalId,
-          resourceAttributes,
-          options
-        );
+        l1Instance = jsClassFromModule._fromCloudFormation(this, logicalId, resourceAttributes, options);
       } else {
         l1Instance = new core.CfnResource(this, logicalId, {
           type: resourceAttributes.Type,
@@ -811,17 +786,12 @@ export class CfnInclude extends core.CfnElement {
     return l1Instance;
   }
 
-  private createNestedStack(
-    nestedStackId: string,
-    cfnParser: cfn_parse.CfnParser
-  ): core.CfnResource {
+  private createNestedStack(nestedStackId: string, cfnParser: cfn_parse.CfnParser): core.CfnResource {
     const templateResources = this.template.Resources || {};
     const nestedStackAttributes = templateResources[nestedStackId] || {};
 
     if (nestedStackAttributes.Type !== 'AWS::CloudFormation::Stack') {
-      throw new Error(
-        `Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`
-      );
+      throw new Error(`Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`);
     }
     if (nestedStackAttributes.CreationPolicy) {
       throw new Error('CreationPolicy is not supported by the AWS::CloudFormation::Stack resource');
@@ -833,16 +803,10 @@ export class CfnInclude extends core.CfnElement {
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
       parameters: this.parametersForNestedStack(nestedStackProps.Parameters, nestedStackId),
-      notificationArns: cfn_parse.FromCloudFormation.getStringArray(
-        nestedStackProps.NotificationARNs
-      ).value,
+      notificationArns: cfn_parse.FromCloudFormation.getStringArray(nestedStackProps.NotificationARNs).value,
       timeout: this.timeoutForNestedStack(nestedStackProps.TimeoutInMinutes),
     });
-    const template = new CfnInclude(
-      nestedStack,
-      nestedStackId,
-      this.nestedStacksToInclude[nestedStackId]
-    );
+    const template = new CfnInclude(nestedStack, nestedStackId, this.nestedStacksToInclude[nestedStackId]);
     this.nestedStacks[nestedStackId] = { stack: nestedStack, includedTemplate: template };
 
     // we know this is never undefined for nested stacks
@@ -851,10 +815,7 @@ export class CfnInclude extends core.CfnElement {
     return nestedStackResource;
   }
 
-  private parametersForNestedStack(
-    parameters: any,
-    nestedStackId: string
-  ): { [key: string]: string } | undefined {
+  private parametersForNestedStack(parameters: any, nestedStackId: string): { [key: string]: string } | undefined {
     if (parameters == null) {
       return undefined;
     }

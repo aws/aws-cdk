@@ -21,7 +21,8 @@ jest.mock('@aws-sdk/client-s3', () => {
 
 beforeEach(() => {
   mockS3Client.getBucketPolicy.mockResolvedValue({
-    Policy: '{"Version":"2012-10-17","Statement":[{"Principal":"arn:iam:stackowner","Effect":"Allow","Action":["s3:PutBucketPolicy","s3:GetBucket*","s3:List*","s3:DeleteObject*"],"Resource":["arn:aws:s3:::MyBucket/*"]}]}',
+    Policy:
+      '{"Version":"2012-10-17","Statement":[{"Principal":"arn:iam:stackowner","Effect":"Allow","Action":["s3:PutBucketPolicy","s3:GetBucket*","s3:List*","s3:DeleteObject*"],"Resource":["arn:aws:s3:::MyBucket/*"]}]}',
   });
   mockS3Client.putBucketPolicy.mockReturnThis();
   mockS3Client.listObjectVersions.mockReturnThis();
@@ -29,7 +30,8 @@ beforeEach(() => {
   givenTaggedForDeletion();
 });
 
-const BUCKET_DENY_POLICY = '{"Version":"2012-10-17","Statement":[{"Principal":"arn:iam:stackowner","Effect":"Allow","Action":["s3:PutBucketPolicy","s3:GetBucket*","s3:List*","s3:DeleteObject*"],"Resource":["arn:aws:s3:::MyBucket/*"]},{"Principal":"*","Effect":"Deny","Action":["s3:PutObject"],"Resource":["arn:aws:s3:::MyBucket/*"]}]}';
+const BUCKET_DENY_POLICY =
+  '{"Version":"2012-10-17","Statement":[{"Principal":"arn:iam:stackowner","Effect":"Allow","Action":["s3:PutBucketPolicy","s3:GetBucket*","s3:List*","s3:DeleteObject*"],"Resource":["arn:aws:s3:::MyBucket/*"]},{"Principal":"*","Effect":"Deny","Action":["s3:PutObject"],"Resource":["arn:aws:s3:::MyBucket/*"]}]}';
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -218,7 +220,7 @@ test('deletes no objects on delete event when bucket has no objects', async () =
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
     Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
+    Policy: BUCKET_DENY_POLICY,
   });
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
@@ -249,7 +251,7 @@ test('deletes all objects on delete event', async () => {
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
     Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
+    Policy: BUCKET_DENY_POLICY,
   });
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
@@ -291,7 +293,7 @@ test('deletes all objects on delete event when bucket has no existing policy', a
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
     Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
+    Policy: BUCKET_DENY_POLICY,
   });
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
@@ -311,11 +313,13 @@ test('deletes all objects on delete event even when deny policy assignment fails
   // GIVEN
   mockS3Client.putBucketPolicy.mockImplementation(async () => {
     const { S3ServiceException } = jest.requireActual('@aws-sdk/client-s3');
-    return Promise.reject(new S3ServiceException({
-      name: 'InvalidObjectState',
-      $fault: 'client',
-      $metadata: {},
-    }));
+    return Promise.reject(
+      new S3ServiceException({
+        name: 'InvalidObjectState',
+        $fault: 'client',
+        $metadata: {},
+      })
+    );
   });
 
   mockS3Client.listObjectVersions.mockResolvedValue({
@@ -356,11 +360,13 @@ test('deletes all objects on delete event even when bucket policy cannot be read
   // GIVEN
   mockS3Client.getBucketPolicy.mockImplementation(async () => {
     const { S3ServiceException } = jest.requireActual('@aws-sdk/client-s3');
-    return Promise.reject(new S3ServiceException({
-      name: 'InvalidObjectState',
-      $fault: 'client',
-      $metadata: {},
-    }));
+    return Promise.reject(
+      new S3ServiceException({
+        name: 'InvalidObjectState',
+        $fault: 'client',
+        $metadata: {},
+      })
+    );
   });
 
   mockS3Client.listObjectVersions.mockResolvedValue({
@@ -453,7 +459,7 @@ test('delete event where bucket has many objects does recurse appropriately', as
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
     Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
+    Policy: BUCKET_DENY_POLICY,
   });
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(2);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });

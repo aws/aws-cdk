@@ -135,8 +135,7 @@ export class Alarm extends AlarmBase {
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
-      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME)
-        .resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -170,8 +169,7 @@ export class Alarm extends AlarmBase {
       physicalName: props.alarmName,
     });
 
-    const comparisonOperator =
-      props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
+    const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
     // Render metric, process potential overrides from the alarm
     // (It would be preferable if the statistic etc. was worked into the metric,
@@ -262,9 +260,7 @@ export class Alarm extends AlarmBase {
       this.alarmActionArns = [];
     }
 
-    this.alarmActionArns.push(
-      ...actions.map((a) => this.validateActionArn(a.bind(this, this).alarmActionArn))
-    );
+    this.alarmActionArns.push(...actions.map((a) => this.validateActionArn(a.bind(this, this).alarmActionArn)));
   }
 
   private validateActionArn(actionArn: string): string {
@@ -289,8 +285,7 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-        const canRenderAsLegacyMetric =
-          conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
+        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
         // Do this to disturb existing templates as little as possible
         if (canRenderAsLegacyMetric) {
           return dropUndefined({

@@ -23,7 +23,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
@@ -70,7 +71,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
@@ -119,7 +121,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'GET,PUT'",
@@ -166,7 +169,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
@@ -200,10 +204,12 @@ describe('cors', () => {
     const resource = api.root.addResource('MyResource');
 
     // THEN
-    expect(() => resource.addCorsPreflight({
-      allowOrigins: ['https://aws.amazon.com'],
-      allowMethods: ['ANY', 'PUT'],
-    })).toThrow(/ANY cannot be used with any other method. Received: ANY,PUT/);
+    expect(() =>
+      resource.addCorsPreflight({
+        allowOrigins: ['https://aws.amazon.com'],
+        allowMethods: ['ANY', 'PUT'],
+      })
+    ).toThrow(/ANY cannot be used with any other method. Received: ANY,PUT/);
   });
 
   test('statusCode can be used to set the response status code', () => {
@@ -226,7 +232,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://aws.amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
@@ -260,9 +267,11 @@ describe('cors', () => {
     const resource = api.root.addResource('MyResource');
 
     // WHEN
-    expect(() => resource.addCorsPreflight({
-      allowOrigins: [],
-    })).toThrow(/allowOrigins must contain at least one origin/);
+    expect(() =>
+      resource.addCorsPreflight({
+        allowOrigins: [],
+      })
+    ).toThrow(/allowOrigins must contain at least one origin/);
   });
 
   test('allowOrigins can be used to specify multiple origins', () => {
@@ -284,7 +293,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://twitch.tv'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
@@ -342,7 +352,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
@@ -391,11 +402,12 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
-              'method.response.header.Access-Control-Max-Age': '\'-1\'',
+              'method.response.header.Access-Control-Max-Age': "'-1'",
             },
             StatusCode: '204',
           },
@@ -427,11 +439,13 @@ describe('cors', () => {
     const resource = api.root.addResource('MyResource');
 
     // THEN
-    expect(() => resource.addCorsPreflight({
-      allowOrigins: ['https://amazon.com'],
-      disableCache: true,
-      maxAge: Duration.seconds(10),
-    })).toThrow(/The options "maxAge" and "disableCache" are mutually exclusive/);
+    expect(() =>
+      resource.addCorsPreflight({
+        allowOrigins: ['https://amazon.com'],
+        disableCache: true,
+        maxAge: Duration.seconds(10),
+      })
+    ).toThrow(/The options "maxAge" and "disableCache" are mutually exclusive/);
   });
 
   test('exposeHeaders can be used to specify Access-Control-Expose-Headers', () => {
@@ -454,7 +468,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
@@ -564,7 +579,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'*'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
@@ -595,7 +611,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'http://specific.com'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
               'method.response.header.Vary': "'Origin'",
@@ -628,11 +645,15 @@ describe('cors', () => {
     const api = new apigw.RestApi(stack, 'api');
 
     // WHEN
-    expect(() => api.root.addResource('AllowAll', {
-      defaultCorsPreflightOptions: {
-        allowOrigins: ['https://bla.com', '*', 'https://specific'],
-      },
-    })).toThrow(/Invalid "allowOrigins" - cannot mix "\*" with specific origins: https:\/\/bla\.com,\*,https:\/\/specific/);
+    expect(() =>
+      api.root.addResource('AllowAll', {
+        defaultCorsPreflightOptions: {
+          allowOrigins: ['https://bla.com', '*', 'https://specific'],
+        },
+      })
+    ).toThrow(
+      /Invalid "allowOrigins" - cannot mix "\*" with specific origins: https:\/\/bla\.com,\*,https:\/\/specific/
+    );
   });
 
   test('defaultCorsPreflightOptions can be used to specify CORS for all resource tree [LambdaRestApi]', () => {
@@ -658,10 +679,7 @@ describe('cors', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: {
-        'Fn::GetAtt': [
-          'lambdarestapiAAD10924',
-          'RootResourceId',
-        ],
+        'Fn::GetAtt': ['lambdarestapiAAD10924', 'RootResourceId'],
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
@@ -690,7 +708,8 @@ describe('cors', () => {
         IntegrationResponses: [
           {
             ResponseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+              'method.response.header.Access-Control-Allow-Headers':
+                "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
               'method.response.header.Access-Control-Allow-Origin': "'https://amazon.com'",
               'method.response.header.Vary': "'Origin'",
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",

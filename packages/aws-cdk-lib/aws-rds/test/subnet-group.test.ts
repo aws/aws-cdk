@@ -20,10 +20,7 @@ describe('subnet group', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'MyGroup',
-      SubnetIds: [
-        { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-        { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-      ],
+      SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
     });
   });
 
@@ -38,10 +35,7 @@ describe('subnet group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'My Shared Group',
       DBSubnetGroupName: 'sharedgroup',
-      SubnetIds: [
-        { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-        { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-      ],
+      SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
     });
   });
 
@@ -70,10 +64,7 @@ describe('subnet group', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
         DBSubnetGroupDescription: 'MyGroup',
-        SubnetIds: [
-          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-        ],
+        SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
       });
     });
 
@@ -86,10 +77,7 @@ describe('subnet group', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
         DBSubnetGroupDescription: 'MyGroup',
-        SubnetIds: [
-          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
-        ],
+        SubnetIds: [{ Ref: 'VPCPublicSubnet1SubnetB4246D30' }, { Ref: 'VPCPublicSubnet2Subnet74179F39' }],
       });
     });
   });

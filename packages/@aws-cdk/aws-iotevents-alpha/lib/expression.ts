@@ -189,8 +189,6 @@ class BinaryOperationExpression extends Expression {
 
   public evaluate(parentPriority?: number) {
     const expression = `${this.left.evaluate(this.priority)} ${this.operator} ${this.right.evaluate(this.priority)}`;
-    return parentPriority === undefined || parentPriority <= this.priority
-      ? expression
-      : `(${expression})`;
+    return parentPriority === undefined || parentPriority <= this.priority ? expression : `(${expression})`;
   }
 }

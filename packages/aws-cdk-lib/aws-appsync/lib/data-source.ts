@@ -118,12 +118,7 @@ export abstract class BaseDataSource extends Construct {
   protected api: IGraphqlApi;
   protected serviceRole?: IRole;
 
-  constructor(
-    scope: Construct,
-    id: string,
-    props: BackedDataSourceProps,
-    extended: ExtendedDataSourceProps
-  ) {
+  constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
     super(scope, id);
 
     if (extended.type !== 'NONE') {
@@ -177,12 +172,7 @@ export abstract class BackedDataSource extends BaseDataSource implements IGranta
    */
   public readonly grantPrincipal: IPrincipal;
 
-  constructor(
-    scope: Construct,
-    id: string,
-    props: BackedDataSourceProps,
-    extended: ExtendedDataSourceProps
-  ) {
+  constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
     super(scope, id, props, extended);
 
     this.grantPrincipal = this.serviceRole!;

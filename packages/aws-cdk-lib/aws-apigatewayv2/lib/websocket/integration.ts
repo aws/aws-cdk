@@ -233,10 +233,7 @@ export abstract class WebSocketRouteIntegration {
   public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): {
     readonly integrationId: string;
   } {
-    if (
-      this.integration &&
-      this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr
-    ) {
+    if (this.integration && this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr) {
       throw new Error('A single integration cannot be associated with multiple APIs.');
     }
 
@@ -264,9 +261,7 @@ export abstract class WebSocketRouteIntegration {
   /**
    * Bind this integration to the route.
    */
-  public abstract bind(
-    options: WebSocketRouteIntegrationBindOptions
-  ): WebSocketRouteIntegrationConfig;
+  public abstract bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
 }
 
 /**

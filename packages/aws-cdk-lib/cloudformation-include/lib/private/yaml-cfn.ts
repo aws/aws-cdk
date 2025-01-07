@@ -29,10 +29,7 @@ export function deserialize(str: string): any {
   return parseYamlStrWithCfnTags(str);
 }
 
-function makeTagForCfnIntrinsic(
-  intrinsicName: string,
-  addFnPrefix: boolean
-): yaml_types.Schema.CustomTag {
+function makeTagForCfnIntrinsic(intrinsicName: string, addFnPrefix: boolean): yaml_types.Schema.CustomTag {
   return {
     identify(value: any) {
       return typeof value === 'string';

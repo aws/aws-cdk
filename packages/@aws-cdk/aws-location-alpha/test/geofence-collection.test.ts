@@ -27,9 +27,12 @@ test('creates geofence collection with empty description', () => {
 });
 
 test('throws with invalid description', () => {
-  expect(() => new GeofenceCollection(stack, 'GeofenceCollection', {
-    description: 'a'.repeat(1001),
-  })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
+  expect(
+    () =>
+      new GeofenceCollection(stack, 'GeofenceCollection', {
+        description: 'a'.repeat(1001),
+      })
+  ).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
 test('create a geofence collection with name', () => {
@@ -43,20 +46,29 @@ test('create a geofence collection with name', () => {
 });
 
 test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (geofenceCollectionName) => {
-  expect(() => new GeofenceCollection(stack, 'GeofenceCollection', {
-    geofenceCollectionName,
-  })).toThrow(`\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${geofenceCollectionName.length} characters.`);
+  expect(
+    () =>
+      new GeofenceCollection(stack, 'GeofenceCollection', {
+        geofenceCollectionName,
+      })
+  ).toThrow(
+    `\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${geofenceCollectionName.length} characters.`
+  );
 });
 
 test('throws with invalid name', () => {
-  expect(() => new GeofenceCollection(stack, 'GeofenceCollection', {
-    geofenceCollectionName: 'inv@lid',
-  })).toThrow('`geofenceCollectionName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
+  expect(
+    () =>
+      new GeofenceCollection(stack, 'GeofenceCollection', {
+        geofenceCollectionName: 'inv@lid',
+      })
+  ).toThrow(
+    '`geofenceCollectionName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.'
+  );
 });
 
 test('grant read actions', () => {
-  const geofenceCollection = new GeofenceCollection(stack, 'GeofenceCollection', {
-  });
+  const geofenceCollection = new GeofenceCollection(stack, 'GeofenceCollection', {});
 
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('foo'),
@@ -64,25 +76,22 @@ test('grant read actions', () => {
 
   geofenceCollection.grantRead(role);
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
-    PolicyDocument: Match.objectLike({
-      Statement: [
-        {
-          Action: [
-            'geo:ListGeofences',
-            'geo:GetGeofence',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'GeofenceCollection6FAC681F',
-              'Arn',
-            ],
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::IAM::Policy',
+    Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: ['geo:ListGeofences', 'geo:GetGeofence'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['GeofenceCollection6FAC681F', 'Arn'],
+            },
           },
-        },
-      ],
-    }),
-  }));
+        ],
+      }),
+    })
+  );
 });
 
 test('import from arn', () => {
@@ -91,7 +100,11 @@ test('import from arn', () => {
     resource: 'geofence-collection',
     resourceName: 'MyGeofenceCollection',
   });
-  const geofenceCollection = GeofenceCollection.fromGeofenceCollectionArn(stack, 'GeofenceCollection', geofenceCollectionArn);
+  const geofenceCollection = GeofenceCollection.fromGeofenceCollectionArn(
+    stack,
+    'GeofenceCollection',
+    geofenceCollectionArn
+  );
 
   // THEN
   expect(geofenceCollection.geofenceCollectionName).toEqual('MyGeofenceCollection');
@@ -101,15 +114,21 @@ test('import from arn', () => {
 test('import from name', () => {
   // WHEN
   const geofenceCollectionName = 'MyGeofenceCollection';
-  const geofenceCollection = GeofenceCollection.fromGeofenceCollectionName(stack, 'GeofenceCollection', geofenceCollectionName);
+  const geofenceCollection = GeofenceCollection.fromGeofenceCollectionName(
+    stack,
+    'GeofenceCollection',
+    geofenceCollectionName
+  );
 
   // THEN
   expect(geofenceCollection.geofenceCollectionName).toEqual(geofenceCollectionName);
-  expect(geofenceCollection.geofenceCollectionArn).toEqual(stack.formatArn({
-    service: 'geo',
-    resource: 'geofence-collection',
-    resourceName: 'MyGeofenceCollection',
-  }));
+  expect(geofenceCollection.geofenceCollectionArn).toEqual(
+    stack.formatArn({
+      service: 'geo',
+      resource: 'geofence-collection',
+      resourceName: 'MyGeofenceCollection',
+    })
+  );
 });
 
 test('create a geofence collection with a customer managed key)', () => {
@@ -117,9 +136,7 @@ test('create a geofence collection with a customer managed key)', () => {
   const kmsKey = new kms.Key(stack, 'Key');
 
   // WHEN
-  new GeofenceCollection(stack, 'GeofenceCollection',
-    { kmsKey },
-  );
+  new GeofenceCollection(stack, 'GeofenceCollection', { kmsKey });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Location::GeofenceCollection', {

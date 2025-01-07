@@ -131,16 +131,9 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   /**
    * refer to an existing JobDefinition by its arn
    */
-  public static fromJobDefinitionArn(
-    scope: Construct,
-    id: string,
-    jobDefinitionArn: string
-  ): IJobDefinition {
+  public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
     const stack = Stack.of(scope);
-    const jobDefinitionName = stack.splitArn(
-      jobDefinitionArn,
-      ArnFormat.SLASH_RESOURCE_NAME
-    ).resourceName!;
+    const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends JobDefinitionBase implements IJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;

@@ -38,10 +38,7 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      EmrContainersDeleteVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, EmrContainersDeleteVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -51,11 +48,7 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn(
-        'emr-containers',
-        'deleteVirtualCluster',
-        this.integrationPattern
-      ),
+      Resource: integrationResourceArn('emr-containers', 'deleteVirtualCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Id: this.props.virtualClusterId.value,
       }),

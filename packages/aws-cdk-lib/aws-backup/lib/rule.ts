@@ -216,13 +216,10 @@ export class BackupPlanRule {
       throw new Error('`scheduleExpression` must be of type `cron`');
     }
 
-    const deleteAfter =
-      props.enableContinuousBackup && !props.deleteAfter ? Duration.days(35) : props.deleteAfter;
+    const deleteAfter = props.enableContinuousBackup && !props.deleteAfter ? Duration.days(35) : props.deleteAfter;
 
     if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
-      throw new Error(
-        '`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled'
-      );
+      throw new Error('`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
     }
 
     if (

@@ -1,11 +1,5 @@
 import * as workerpool from 'workerpool';
-import {
-  printResults,
-  printSummary,
-  IntegBatchResponse,
-  IntegTestOptions,
-  IntegRunnerMetrics,
-} from './common';
+import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, IntegRunnerMetrics } from './common';
 import * as logger from '../logger';
 import { IntegTestInfo } from '../runner/integration-tests';
 import { flatten } from '../utils';
@@ -117,9 +111,7 @@ function getAccountWorkers(regions: string[], profiles?: string[]): AccountWorke
  * Only a single test can be run at a time in a given region. Once a region
  * is done running a test, the next test will be pulled from the queue
  */
-export async function runIntegrationTestsInParallel(
-  options: IntegTestRunOptions
-): Promise<IntegBatchResponse> {
+export async function runIntegrationTestsInParallel(options: IntegTestRunOptions): Promise<IntegBatchResponse> {
   const queue = options.tests;
   const results: IntegBatchResponse = {
     metrics: [],

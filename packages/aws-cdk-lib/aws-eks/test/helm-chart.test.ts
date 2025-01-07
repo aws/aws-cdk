@@ -233,7 +233,6 @@ describe('helm chart', () => {
       //THEN
       const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
       expect(Object.keys(charts).length).toEqual(0);
-
     });
 
     test('should timeout only after 10 minutes', () => {
@@ -277,10 +276,16 @@ describe('helm chart', () => {
       const { stack, cluster } = testFixtureCluster();
 
       // WHEN
-      new eks.HelmChart(stack, 'MyPrivateChart', { cluster, chart: 'chart', repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
+      new eks.HelmChart(stack, 'MyPrivateChart', {
+        cluster,
+        chart: 'chart',
+        repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo',
+      });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, {
+        Repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo',
+      });
     });
   });
 });

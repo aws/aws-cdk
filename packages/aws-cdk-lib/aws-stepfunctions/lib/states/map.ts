@@ -2,14 +2,7 @@ import { Construct } from 'constructs';
 import { MapBase, MapBaseProps } from './map-base';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import {
-  CatchProps,
-  IChainable,
-  INextable,
-  ProcessorConfig,
-  ProcessorMode,
-  RetryProps,
-} from '../types';
+import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
 
 /**
  * Properties for defining a Map state

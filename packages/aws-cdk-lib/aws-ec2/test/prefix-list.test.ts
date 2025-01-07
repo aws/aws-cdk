@@ -36,20 +36,14 @@ describe('prefix list', () => {
     // GIVEN
     const stack = new Stack();
     new PrefixList(stack, 'prefix-list', {
-      entries: [
-        { cidr: '10.0.0.1/32' },
-        { cidr: '10.0.0.2/32', description: 'sample1' },
-      ],
+      entries: [{ cidr: '10.0.0.1/32' }, { cidr: '10.0.0.2/32', description: 'sample1' }],
       prefixListName: 'prefix-list',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::PrefixList', {
       AddressFamily: 'IPv4',
       MaxEntries: 2,
-      Entries: [
-        { Cidr: '10.0.0.1/32' },
-        { Cidr: '10.0.0.2/32', Description: 'sample1' },
-      ],
+      Entries: [{ Cidr: '10.0.0.1/32' }, { Cidr: '10.0.0.2/32', Description: 'sample1' }],
     });
   });
 
@@ -61,7 +55,7 @@ describe('prefix list', () => {
         maxEntries: 100,
         prefixListName: 'com.amazonawsprefix-list',
       });
-    }).toThrow('The name cannot start with \'com.amazonaws.\'');
+    }).toThrow("The name cannot start with 'com.amazonaws.'");
   });
 
   test('invalid prefixlist-name over 255 characters', () => {
@@ -80,10 +74,7 @@ describe('prefix list', () => {
     const stack = new Stack();
     expect(() => {
       new PrefixList(stack, 'prefix-list', {
-        entries: [
-          { cidr: '10.0.0.1/32' },
-          { cidr: '::/0', description: 'sample1' },
-        ],
+        entries: [{ cidr: '10.0.0.1/32' }, { cidr: '::/0', description: 'sample1' }],
       });
     }).toThrow('Invalid IPv4 address range: ::/0');
   });
@@ -94,10 +85,7 @@ describe('prefix list', () => {
     expect(() => {
       new PrefixList(stack, 'prefix-list', {
         addressFamily: AddressFamily.IP_V6,
-        entries: [
-          { cidr: '10.0.0.1/32' },
-          { cidr: '::/0', description: 'sample1' },
-        ],
+        entries: [{ cidr: '10.0.0.1/32' }, { cidr: '::/0', description: 'sample1' }],
       });
     }).toThrow('Invalid IPv6 address range: 10.0.0.1/32');
   });

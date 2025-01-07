@@ -63,10 +63,7 @@ test('task policies are generated', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'elasticmapreduce:ModifyInstanceFleet',
-            'elasticmapreduce:ListInstanceFleets',
-          ],
+          Action: ['elasticmapreduce:ModifyInstanceFleet', 'elasticmapreduce:ListInstanceFleets'],
           Effect: 'Allow',
           Resource: {
             'Fn::Join': [
@@ -121,8 +118,8 @@ test('Modify an InstanceFleet with ClusterId from payload and static InstanceFle
     End: true,
     Parameters: {
       'ClusterId.$': '$.ClusterId',
-      'InstanceFleetName': 'InstanceFleetName',
-      'InstanceFleet': {
+      InstanceFleetName: 'InstanceFleetName',
+      InstanceFleet: {
         TargetOnDemandCapacity: 2,
         TargetSpotCapacity: 0,
       },
@@ -156,9 +153,9 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
     },
     End: true,
     Parameters: {
-      'ClusterId': 'ClusterId',
+      ClusterId: 'ClusterId',
       'InstanceFleetName.$': '$.InstanceFleetName',
-      'InstanceFleet': {
+      InstanceFleet: {
         TargetOnDemandCapacity: 2,
         TargetSpotCapacity: 0,
       },

@@ -422,11 +422,7 @@ export class Extension extends Resource implements IExtension {
    * @param id The name of the extension construct
    * @param attrs The attributes of the extension
    */
-  public static fromExtensionAttributes(
-    scope: Construct,
-    id: string,
-    attrs: ExtensionAttributes
-  ): IExtension {
+  public static fromExtensionAttributes(scope: Construct, id: string, attrs: ExtensionAttributes): IExtension {
     const stack = Stack.of(scope);
     const extensionArn =
       attrs.extensionArn ||
@@ -530,9 +526,7 @@ export class Extension extends Resource implements IExtension {
                 ...(sourceType === SourceType.EVENTS || cur.invokeWithoutExecutionRole
                   ? {}
                   : {
-                      RoleArn:
-                        this.executionRole?.roleArn ||
-                        this.getExecutionRole(cur.eventDestination, name).roleArn,
+                      RoleArn: this.executionRole?.roleArn || this.getExecutionRole(cur.eventDestination, name).roleArn,
                     }),
                 ...(cur.description ? { Description: cur.description } : {}),
               },
@@ -545,16 +539,13 @@ export class Extension extends Resource implements IExtension {
       name: this.name,
       description: this.description,
       latestVersionNumber: this.latestVersionNumber,
-      parameters: this.parameters?.reduce(
-        (acc: { [key: string]: CfnExtension.ParameterProperty }, cur: Parameter) => {
-          acc[cur.name] = {
-            required: cur.isRequired,
-            description: cur.description,
-          };
-          return acc;
-        },
-        {}
-      ),
+      parameters: this.parameters?.reduce((acc: { [key: string]: CfnExtension.ParameterProperty }, cur: Parameter) => {
+        acc[cur.name] = {
+          required: cur.isRequired,
+          description: cur.description,
+        };
+        return acc;
+      }, {}),
     });
     this._cfnExtension = resource;
 
@@ -645,23 +636,12 @@ export class ExtensibleBase implements IExtensible {
     this.scope = scope;
   }
 
-  public on(
-    actionPoint: ActionPoint,
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ) {
+  public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.getExtensionForActionPoint(eventDestination, actionPoint, options);
   }
 
-  public preCreateHostedConfigurationVersion(
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ) {
-    this.getExtensionForActionPoint(
-      eventDestination,
-      ActionPoint.PRE_CREATE_HOSTED_CONFIGURATION_VERSION,
-      options
-    );
+  public preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.getExtensionForActionPoint(eventDestination, ActionPoint.PRE_CREATE_HOSTED_CONFIGURATION_VERSION, options);
   }
 
   public preStartDeployment(eventDestination: IEventDestination, options?: ExtensionOptions) {
@@ -685,11 +665,7 @@ export class ExtensibleBase implements IExtensible {
   }
 
   public onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions) {
-    this.getExtensionForActionPoint(
-      eventDestination,
-      ActionPoint.ON_DEPLOYMENT_ROLLED_BACK,
-      options
-    );
+    this.getExtensionForActionPoint(eventDestination, ActionPoint.ON_DEPLOYMENT_ROLLED_BACK, options);
   }
 
   public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
@@ -707,24 +683,18 @@ export class ExtensibleBase implements IExtensible {
   ) {
     const name = options?.extensionName || this.getExtensionDefaultName();
     const versionNumber = options?.latestVersionNumber ? options?.latestVersionNumber + 1 : 1;
-    const extension = new Extension(
-      this.scope,
-      `Extension${this.getExtensionHash(name, versionNumber)}`,
-      {
-        actions: [
-          new Action({
-            eventDestination,
-            actionPoints: [actionPoint],
-          }),
-        ],
-        extensionName: name,
-        ...(options?.description ? { description: options.description } : {}),
-        ...(options?.latestVersionNumber
-          ? { latestVersionNumber: options.latestVersionNumber }
-          : {}),
-        ...(options?.parameters ? { parameters: options.parameters } : {}),
-      }
-    );
+    const extension = new Extension(this.scope, `Extension${this.getExtensionHash(name, versionNumber)}`, {
+      actions: [
+        new Action({
+          eventDestination,
+          actionPoints: [actionPoint],
+        }),
+      ],
+      extensionName: name,
+      ...(options?.description ? { description: options.description } : {}),
+      ...(options?.latestVersionNumber ? { latestVersionNumber: options.latestVersionNumber } : {}),
+      ...(options?.parameters ? { parameters: options.parameters } : {}),
+    });
     this.addExtensionAssociation(extension);
   }
 
@@ -738,15 +708,12 @@ export class ExtensibleBase implements IExtensible {
         extensionIdentifier: extension.extensionId,
         resourceIdentifier: this.resourceArn,
         extensionVersionNumber: extension.extensionVersionNumber,
-        parameters: extension.parameters?.reduce(
-          (acc: { [key: string]: string }, cur: Parameter) => {
-            if (cur.value) {
-              acc[cur.name] = cur.value;
-            }
-            return acc;
-          },
-          {}
-        ),
+        parameters: extension.parameters?.reduce((acc: { [key: string]: string }, cur: Parameter) => {
+          if (cur.value) {
+            acc[cur.name] = cur.value;
+          }
+          return acc;
+        }, {}),
       }
     );
   }
@@ -784,11 +751,7 @@ export interface IExtensible {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  on(
-    actionPoint: ActionPoint,
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ): void;
+  on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds a PRE_CREATE_HOSTED_CONFIGURATION_VERSION extension with the provided event
@@ -797,10 +760,7 @@ export interface IExtensible {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  preCreateHostedConfigurationVersion(
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ): void;
+  preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds a PRE_START_DEPLOYMENT extension with the provided event destination and

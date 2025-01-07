@@ -1,9 +1,4 @@
-import {
-  addToDeadLetterQueueResourcePolicy,
-  bindBaseTargetConfig,
-  singletonEventRole,
-  TargetBaseProps,
-} from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as appsync from '../../aws-appsync';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -54,9 +49,7 @@ export class AppSync implements events.IRuleTarget {
 
     // make sure the API has AWS_IAM configured.
     if (!this.appsyncApi.modes.includes(appsync.AuthorizationType.IAM)) {
-      throw new Error(
-        'You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target'
-      );
+      throw new Error('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
     }
 
     // make sure this is a 'public' (i.e.: 'GLOBAL') API

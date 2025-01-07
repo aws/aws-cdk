@@ -300,9 +300,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    const pathMatchConfig = (this.match?.path ?? HttpGatewayRoutePathMatch.startsWith('/')).bind(
-      scope
-    );
+    const pathMatchConfig = (this.match?.path ?? HttpGatewayRoutePathMatch.startsWith('/')).bind(scope);
     const rewriteRequestHostname = this.match?.rewriteRequestHostname;
 
     const prefixPathRewrite = pathMatchConfig.prefixPathRewrite;
@@ -390,9 +388,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
               ? undefined
               : {
                   hostname: {
-                    defaultTargetHostname: this.match.rewriteRequestHostname
-                      ? 'ENABLED'
-                      : 'DISABLED',
+                    defaultTargetHostname: this.match.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
                   },
                 },
         },

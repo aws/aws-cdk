@@ -1,20 +1,10 @@
 import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
 import { StringDecoder } from 'string_decoder';
-import {
-  fullDiff,
-  formatDifferences,
-  ResourceDifference,
-  ResourceImpact,
-} from '@aws-cdk/cloudformation-diff';
+import { fullDiff, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
-import {
-  Diagnostic,
-  DiagnosticReason,
-  DestructiveChange,
-  SnapshotVerificationOptions,
-} from '../workers/common';
+import { Diagnostic, DiagnosticReason, DestructiveChange, SnapshotVerificationOptions } from '../workers/common';
 
 interface SnapshotAssembly {
   /**
@@ -56,10 +46,7 @@ export class IntegSnapshotRunner extends IntegRunner {
   } {
     let doClean = true;
     try {
-      const expectedSnapshotAssembly = this.getSnapshotAssembly(
-        this.snapshotDir,
-        this.expectedTestSuite?.stacks
-      );
+      const expectedSnapshotAssembly = this.getSnapshotAssembly(this.snapshotDir, this.expectedTestSuite?.stacks);
 
       // synth the integration test
       // FIXME: ideally we should not need to run this again if
@@ -81,10 +68,7 @@ export class IntegSnapshotRunner extends IntegRunner {
       });
 
       // read the "actual" snapshot
-      const actualSnapshotAssembly = this.getSnapshotAssembly(
-        this.cdkOutDir,
-        this.actualTestSuite.stacks
-      );
+      const actualSnapshotAssembly = this.getSnapshotAssembly(this.cdkOutDir, this.actualTestSuite.stacks);
 
       // diff the existing snapshot (expected) with the integration test (actual)
       const diagnostics = this.diffAssembly(expectedSnapshotAssembly, actualSnapshotAssembly);
@@ -138,10 +122,7 @@ export class IntegSnapshotRunner extends IntegRunner {
    * @param pickStacks Pick only these stacks from the cloud assembly
    * @returns A SnapshotAssembly, the collection of all templates in this snapshot and required meta data
    */
-  private getSnapshotAssembly(
-    cloudAssemblyDir: string,
-    pickStacks: string[] = []
-  ): SnapshotAssembly {
+  private getSnapshotAssembly(cloudAssemblyDir: string, pickStacks: string[] = []): SnapshotAssembly {
     const assembly = this.readAssembly(cloudAssemblyDir);
     const stacks = assembly.stacks;
     const snapshots: SnapshotAssembly = {};
@@ -232,10 +213,7 @@ export class IntegSnapshotRunner extends IntegRunner {
           // comparison
           if (!config.diffAssets) {
             actualTemplate = this.canonicalizeTemplate(actualTemplate, actual[stackId].assets);
-            expectedTemplate = this.canonicalizeTemplate(
-              expectedTemplate,
-              expected[stackId].assets
-            );
+            expectedTemplate = this.canonicalizeTemplate(expectedTemplate, expected[stackId].assets);
           }
           const templateDiff = fullDiff(expectedTemplate, actualTemplate);
           if (!templateDiff.isEmpty) {
@@ -243,37 +221,35 @@ export class IntegSnapshotRunner extends IntegRunner {
 
             // go through all the resource differences and check for any
             // "destructive" changes
-            templateDiff.resources.forEachDifference(
-              (logicalId: string, change: ResourceDifference) => {
-                // if the change is a removal it will not show up as a 'changeImpact'
-                // so need to check for it separately, unless it is a resourceType that
-                // has been "allowed" to be destroyed
-                const resourceType = change.oldValue?.Type ?? change.newValue?.Type;
-                if (resourceType && allowedDestroyTypes.includes(resourceType)) {
-                  return;
-                }
-                if (change.isRemoval) {
-                  destructiveChanges.push({
-                    impact: ResourceImpact.WILL_DESTROY,
-                    logicalId,
-                    stackName: templateId,
-                  });
-                } else {
-                  switch (change.changeImpact) {
-                    case ResourceImpact.MAY_REPLACE:
-                    case ResourceImpact.WILL_ORPHAN:
-                    case ResourceImpact.WILL_DESTROY:
-                    case ResourceImpact.WILL_REPLACE:
-                      destructiveChanges.push({
-                        impact: change.changeImpact,
-                        logicalId,
-                        stackName: templateId,
-                      });
-                      break;
-                  }
+            templateDiff.resources.forEachDifference((logicalId: string, change: ResourceDifference) => {
+              // if the change is a removal it will not show up as a 'changeImpact'
+              // so need to check for it separately, unless it is a resourceType that
+              // has been "allowed" to be destroyed
+              const resourceType = change.oldValue?.Type ?? change.newValue?.Type;
+              if (resourceType && allowedDestroyTypes.includes(resourceType)) {
+                return;
+              }
+              if (change.isRemoval) {
+                destructiveChanges.push({
+                  impact: ResourceImpact.WILL_DESTROY,
+                  logicalId,
+                  stackName: templateId,
+                });
+              } else {
+                switch (change.changeImpact) {
+                  case ResourceImpact.MAY_REPLACE:
+                  case ResourceImpact.WILL_ORPHAN:
+                  case ResourceImpact.WILL_DESTROY:
+                  case ResourceImpact.WILL_REPLACE:
+                    destructiveChanges.push({
+                      impact: change.changeImpact,
+                      logicalId,
+                      stackName: templateId,
+                    });
+                    break;
                 }
               }
-            );
+            });
             const writable = new StringWritable({});
             formatDifferences(writable, templateDiff);
             failures.push({
@@ -309,8 +285,7 @@ export class IntegSnapshotRunner extends IntegRunner {
     const stringSubstitutions = new Array<[RegExp, string]>();
 
     // Find assets via parameters (for LegacyStackSynthesizer)
-    const paramRe =
-      /^AssetParameters([a-zA-Z0-9]{64})(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})$/;
+    const paramRe = /^AssetParameters([a-zA-Z0-9]{64})(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})$/;
     for (const paramName of Object.keys(template?.Parameters || {})) {
       const m = paramRe.exec(paramName);
       if (!m) {

@@ -110,10 +110,7 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      GlueStartJobRun.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, GlueStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.getPolicies();
 
@@ -144,19 +141,13 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     if (this.props.workerConfiguration) {
       const workerConfiguration = this.props.workerConfiguration;
       if (workerConfiguration?.workerTypeV2 && workerConfiguration.workerType) {
-        throw new Error(
-          "You cannot set both 'workerType' and 'workerTypeV2' properties in 'workerConfiguration'."
-        );
+        throw new Error("You cannot set both 'workerType' and 'workerTypeV2' properties in 'workerConfiguration'.");
       }
       if (!workerConfiguration.workerTypeV2 && !workerConfiguration.workerType) {
-        throw new Error(
-          "You must set either 'workerType' or 'workerTypeV2' property in 'workerConfiguration'."
-        );
+        throw new Error("You must set either 'workerType' or 'workerTypeV2' property in 'workerConfiguration'.");
       }
     }
-    const workerType =
-      this.props.workerConfiguration?.workerType ??
-      this.props.workerConfiguration?.workerTypeV2?.name;
+    const workerType = this.props.workerConfiguration?.workerType ?? this.props.workerConfiguration?.workerTypeV2?.name;
 
     return {
       Resource: integrationResourceArn('glue', 'startJobRun', this.integrationPattern),
@@ -180,12 +171,7 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     if (this.integrationPattern === sfn.IntegrationPattern.REQUEST_RESPONSE) {
       iamActions = ['glue:StartJobRun'];
     } else if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      iamActions = [
-        'glue:StartJobRun',
-        'glue:GetJobRun',
-        'glue:GetJobRuns',
-        'glue:BatchStopJobRun',
-      ];
+      iamActions = ['glue:StartJobRun', 'glue:GetJobRun', 'glue:GetJobRuns', 'glue:BatchStopJobRun'];
     }
 
     return [

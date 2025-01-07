@@ -319,8 +319,7 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
         },
       },
       additionalOptions: {
-        terminationWaitTimeInMinutes:
-          hookProperties?.AdditionalOptions?.TerminationWaitTimeInMinutes,
+        terminationWaitTimeInMinutes: hookProperties?.AdditionalOptions?.TerminationWaitTimeInMinutes,
       },
       lifecycleEventHooks: {
         beforeInstall: hookProperties?.LifecycleEventHooks?.BeforeInstall,
@@ -333,16 +332,14 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
 
     function applicationFromCloudFormation(app: any) {
       const target = findResource(app?.Target?.LogicalID);
-      const taskDefinitions: Array<CfnResource | undefined> | undefined =
-        app?.ECSAttributes?.TaskDefinitions?.map((td: any) => findResource(td));
-      const taskSets: Array<CfnResource | undefined> | undefined =
-        app?.ECSAttributes?.TaskSets?.map((ts: any) => findResource(ts));
-      const prodTrafficRoute = findResource(
-        app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.LogicalID
+      const taskDefinitions: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TaskDefinitions?.map(
+        (td: any) => findResource(td)
       );
-      const testTrafficRoute = findResource(
-        app?.ECSAttributes?.TrafficRouting?.TestTrafficRoute?.LogicalID
+      const taskSets: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TaskSets?.map((ts: any) =>
+        findResource(ts)
       );
+      const prodTrafficRoute = findResource(app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.LogicalID);
+      const testTrafficRoute = findResource(app?.ECSAttributes?.TrafficRouting?.TestTrafficRoute?.LogicalID);
       const targetGroups: Array<CfnResource | undefined> | undefined =
         app?.ECSAttributes?.TrafficRouting?.TargetGroups?.map((tg: any) => findResource(tg));
 
@@ -375,9 +372,7 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
       }
       const ret = options.parser.finder.findResource(logicalId);
       if (!ret) {
-        throw new Error(
-          `Hook '${id}' references resource '${logicalId}' that was not found in the template`
-        );
+        throw new Error(`Hook '${id}' references resource '${logicalId}' that was not found in the template`);
       }
       return ret;
     }

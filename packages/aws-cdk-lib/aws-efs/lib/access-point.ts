@@ -177,22 +177,14 @@ export class AccessPoint extends AccessPointBase {
   /**
    * Import an existing Access Point by attributes
    */
-  public static fromAccessPointAttributes(
-    scope: Construct,
-    id: string,
-    attrs: AccessPointAttributes
-  ): IAccessPoint {
+  public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     return new ImportedAccessPoint(scope, id, attrs);
   }
 
   /**
    * Import an existing Access Point by id
    */
-  public static fromAccessPointId(
-    scope: Construct,
-    id: string,
-    accessPointId: string
-  ): IAccessPoint {
+  public static fromAccessPointId(scope: Construct, id: string, accessPointId: string): IAccessPoint {
     return new ImportedAccessPoint(scope, id, {
       accessPointId: accessPointId,
     });
@@ -219,10 +211,7 @@ export class AccessPoint extends AccessPointBase {
     super(scope, id);
 
     const clientToken = props.clientToken;
-    if (
-      (clientToken?.length === 0 || (clientToken && clientToken.length > 64)) &&
-      !Token.isUnresolved(clientToken)
-    ) {
+    if ((clientToken?.length === 0 || (clientToken && clientToken.length > 64)) && !Token.isUnresolved(clientToken)) {
       throw new Error(
         `The length of \'clientToken\' must range from 1 to 64 characters, got: ${clientToken.length} characters`
       );
@@ -276,10 +265,7 @@ class ImportedAccessPoint extends AccessPointBase {
       }
 
       this.accessPointArn = attrs.accessPointArn;
-      let maybeApId = Stack.of(scope).splitArn(
-        attrs.accessPointArn,
-        ArnFormat.SLASH_RESOURCE_NAME
-      ).resourceName;
+      let maybeApId = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
       if (!maybeApId) {
         throw new Error('ARN for AccessPoint must provide the resource name.');

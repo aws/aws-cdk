@@ -11,7 +11,7 @@ test.each([
   'a'.repeat(64) + 'y',
   'b'.repeat(115),
   'c'.repeat(128),
-])('test md5 equality for %p', s => {
+])('test md5 equality for %p', (s) => {
   expect(jsMd5(s)).toEqual(cryptoMd5(s));
 });
 

@@ -26,12 +26,9 @@ describe('WebSocketLambdaAuthorizer', () => {
       },
     });
 
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::ApiGatewayV2::Route',
-      {
-        RouteKey: '$connect',
-        AuthorizationType: 'AWS_IAM',
-      },
-    );
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      RouteKey: '$connect',
+      AuthorizationType: 'AWS_IAM',
+    });
   });
 });

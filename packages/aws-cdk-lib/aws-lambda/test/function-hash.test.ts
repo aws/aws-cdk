@@ -13,7 +13,6 @@ const THE_RUNTIME = new lambda.Runtime('nodejs99.x', lambda.RuntimeFamily.NODEJS
 
 describe('function hash', () => {
   describe('trimFromStart', () => {
-
     test('trim not needed', () => {
       expect(trimFromStart('foo', 100)).toEqual('foo');
       expect(trimFromStart('foo', 3)).toEqual('foo');
@@ -260,7 +259,11 @@ describe('function hash', () => {
       const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
 
       const stack2 = new Stack(app, 'stack2');
-      const importedLayer1 = lambda.LayerVersion.fromLayerVersionArn(stack2, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version1>');
+      const importedLayer1 = lambda.LayerVersion.fromLayerVersionArn(
+        stack2,
+        'imported-layer',
+        'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version1>'
+      );
       const fn1 = new lambda.Function(stack2, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromInline('foo'),
@@ -269,7 +272,11 @@ describe('function hash', () => {
       });
 
       const stack3 = new Stack(app, 'stack3');
-      const importedLayer2 = lambda.LayerVersion.fromLayerVersionArn(stack3, 'imported-layer', 'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version2>');
+      const importedLayer2 = lambda.LayerVersion.fromLayerVersionArn(
+        stack3,
+        'imported-layer',
+        'arn:aws:lambda:<region>:<account>:layer:<layer-name>:<version2>'
+      );
       const fn2 = new lambda.Function(stack3, 'MyFunction', {
         runtime: THE_RUNTIME,
         code: lambda.Code.fromInline('foo'),
@@ -463,8 +470,11 @@ test('imported layer hashes are consistent', () => {
     handler: 'index.handler',
     runtime: lambda.Runtime.NODEJS_18_X,
     layers: [
-      lambda.LayerVersion.fromLayerVersionArn(stack1, 'MyLayer',
-        `arn:aws:lambda:${stack1.region}:<AccountID>:layer:IndexCFN:${param1.stringValue}`),
+      lambda.LayerVersion.fromLayerVersionArn(
+        stack1,
+        'MyLayer',
+        `arn:aws:lambda:${stack1.region}:<AccountID>:layer:IndexCFN:${param1.stringValue}`
+      ),
     ],
   });
   fn1.currentVersion; // Force creation of version
@@ -476,8 +486,11 @@ test('imported layer hashes are consistent', () => {
     handler: 'index.handler',
     runtime: lambda.Runtime.NODEJS_18_X,
     layers: [
-      lambda.LayerVersion.fromLayerVersionArn(stack2, 'MyLayer',
-        `arn:aws:lambda:${stack1.region}:<AccountID>:layer:IndexCFN:${param2.stringValue}`),
+      lambda.LayerVersion.fromLayerVersionArn(
+        stack2,
+        'MyLayer',
+        `arn:aws:lambda:${stack1.region}:<AccountID>:layer:IndexCFN:${param2.stringValue}`
+      ),
     ],
   });
   fn2.currentVersion; // Force creation of version
@@ -525,5 +538,4 @@ test.each([false, true])('can invalidate version hash using invalidateVersionBas
   } else {
     expect(template1.toJSON()).toEqual(template2.toJSON());
   }
-
 });

@@ -14,10 +14,12 @@ describe('State Machine Resources', () => {
       task: {
         bind: () => ({
           resourceArn: 'resource',
-          policyStatements: [new iam.PolicyStatement({
-            actions: ['resource:Everything'],
-            resources: ['resource'],
-          })],
+          policyStatements: [
+            new iam.PolicyStatement({
+              actions: ['resource:Everything'],
+              resources: ['resource'],
+            }),
+          ],
         }),
       },
     });
@@ -41,768 +43,722 @@ describe('State Machine Resources', () => {
       },
     });
   }),
-
-  test('Tasks hidden inside a Parallel state are also included', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task', {
-      policies: [
-        new iam.PolicyStatement({
-          actions: ['resource:Everything'],
-          resources: ['resource'],
-        }),
-      ],
-    });
-
-    const para = new stepfunctions.Parallel(stack, 'Para');
-    para.branch(task);
-
-    // WHEN
-    new stepfunctions.StateMachine(stack, 'SM', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(para),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Action: 'resource:Everything',
-            Effect: 'Allow',
-            Resource: 'resource',
-          },
+    test('Tasks hidden inside a Parallel state are also included', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new FakeTask(stack, 'Task', {
+        policies: [
+          new iam.PolicyStatement({
+            actions: ['resource:Everything'],
+            resources: ['resource'],
+          }),
         ],
-      },
-    });
-  }),
+      });
 
-  test('Fail should render ErrorPath / CausePath correctly', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fail = new stepfunctions.Fail(stack, 'Fail', {
-      errorPath: stepfunctions.JsonPath.stringAt('$.error'),
-      causePath: stepfunctions.JsonPath.stringAt('$.cause'),
-    });
+      const para = new stepfunctions.Parallel(stack, 'Para');
+      para.branch(task);
 
-    // WHEN
-    const failState = stack.resolve(fail.toStateJson());
+      // WHEN
+      new stepfunctions.StateMachine(stack, 'SM', {
+        definitionBody: stepfunctions.DefinitionBody.fromChainable(para),
+      });
 
-    // THEN
-    expect(failState).toStrictEqual({
-      CausePath: '$.cause',
-      ErrorPath: '$.error',
-      Type: 'Fail',
-    });
-  }),
-
-  test.each([
-    [
-      "States.Format('error: {}.', $.error)",
-      "States.Format('cause: {}.', $.cause)",
-    ],
-    [
-      stepfunctions.JsonPath.format('error: {}.', stepfunctions.JsonPath.stringAt('$.error')),
-      stepfunctions.JsonPath.format('cause: {}.', stepfunctions.JsonPath.stringAt('$.cause')),
-    ],
-  ])('Fail should render ErrorPath / CausePath correctly when specifying ErrorPath / CausePath using intrinsics', (errorPath, causePath) => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-    const fail = new stepfunctions.Fail(stack, 'Fail', {
-      errorPath,
-      causePath,
-    });
-
-    // WHEN
-    const failState = stack.resolve(fail.toStateJson());
-
-    // THEN
-    expect(failState).toStrictEqual({
-      CausePath: "States.Format('cause: {}.', $.cause)",
-      ErrorPath: "States.Format('error: {}.', $.error)",
-      Type: 'Fail',
-    });
-    expect(() => app.synth()).not.toThrow();
-  }),
-
-  test('fails in synthesis if error and errorPath are defined in Fail state', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-
-    // WHEN
-    new stepfunctions.Fail(stack, 'Fail', {
-      error: 'error',
-      errorPath: '$.error',
-    });
-
-    expect(() => app.synth()).toThrow(/Fail state cannot have both error and errorPath/);
-  }),
-
-  test('fails in synthesis if cause and causePath are defined in Fail state', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-
-    // WHEN
-    new stepfunctions.Fail(stack, 'Fail', {
-      cause: 'cause',
-      causePath: '$.cause',
-    });
-
-    expect(() => app.synth()).toThrow(/Fail state cannot have both cause and causePath/);
-  }),
-
-  test.each([
-    'States.Array($.Id)',
-    'States.ArrayPartition($.inputArray, 4)',
-    'States.ArrayContains($.inputArray, $.lookingFor)',
-    'States.ArrayRange(1, 9, 2)',
-    'States.ArrayLength($.inputArray)',
-    'States.JsonMerge($.json1, $.json2, false)',
-    'States.StringToJson($.escapedJsonString)',
-    'plainString',
-  ])('fails in synthesis if specifying invalid intrinsic functions in the causePath and errorPath (%s)', (intrinsic) => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-
-    // WHEN
-    new stepfunctions.Fail(stack, 'Fail', {
-      causePath: intrinsic,
-      errorPath: intrinsic,
-    });
-
-    expect(() => app.synth()).toThrow(/You must specify a valid intrinsic function in causePath. Must be one of States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, States.UUID/);
-    expect(() => app.synth()).toThrow(/You must specify a valid intrinsic function in errorPath. Must be one of States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, States.UUID/);
-  }),
-
-  testDeprecated('Task should render InputPath / Parameters / OutputPath correctly', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      inputPath: '$',
-      outputPath: '$.state',
-      task: {
-        bind: () => ({
-          resourceArn: 'resource',
-          parameters: {
-            'input.$': '$',
-            'stringArgument': 'inital-task',
-            'numberArgument': 123,
-            'booleanArgument': true,
-            'arrayArgument': ['a', 'b', 'c'],
-          },
-        }),
-      },
-    });
-
-    // WHEN
-    const taskState = task.toStateJson();
-
-    // THEN
-    expect(taskState).toStrictEqual({
-      End: true,
-      Retry: undefined,
-      Catch: undefined,
-      InputPath: '$',
-      Parameters:
-        {
-          'input.$': '$',
-          'stringArgument': 'inital-task',
-          'numberArgument': 123,
-          'booleanArgument': true,
-          'arrayArgument': ['a', 'b', 'c'],
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'resource:Everything',
+              Effect: 'Allow',
+              Resource: 'resource',
+            },
+          ],
         },
-      OutputPath: '$.state',
-      Type: 'Task',
-      Comment: undefined,
-      Resource: 'resource',
-      ResultPath: undefined,
-      TimeoutSeconds: undefined,
-      HeartbeatSeconds: undefined,
-    });
-  }),
+      });
+    }),
+    test('Fail should render ErrorPath / CausePath correctly', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fail = new stepfunctions.Fail(stack, 'Fail', {
+        errorPath: stepfunctions.JsonPath.stringAt('$.error'),
+        causePath: stepfunctions.JsonPath.stringAt('$.cause'),
+      });
 
-  testDeprecated('Task combines taskobject parameters with direct parameters', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      inputPath: '$',
-      outputPath: '$.state',
-      task: {
-        bind: () => ({
-          resourceArn: 'resource',
-          parameters: {
-            a: 'aa',
-          },
-        }),
-      },
-      parameters: {
-        b: 'bb',
-      },
-    });
+      // WHEN
+      const failState = stack.resolve(fail.toStateJson());
 
-    // WHEN
-    const taskState = task.toStateJson();
+      // THEN
+      expect(failState).toStrictEqual({
+        CausePath: '$.cause',
+        ErrorPath: '$.error',
+        Type: 'Fail',
+      });
+    }),
+    test.each([
+      ["States.Format('error: {}.', $.error)", "States.Format('cause: {}.', $.cause)"],
+      [
+        stepfunctions.JsonPath.format('error: {}.', stepfunctions.JsonPath.stringAt('$.error')),
+        stepfunctions.JsonPath.format('cause: {}.', stepfunctions.JsonPath.stringAt('$.cause')),
+      ],
+    ])(
+      'Fail should render ErrorPath / CausePath correctly when specifying ErrorPath / CausePath using intrinsics',
+      (errorPath, causePath) => {
+        // GIVEN
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app);
+        const fail = new stepfunctions.Fail(stack, 'Fail', {
+          errorPath,
+          causePath,
+        });
 
-    // THEN
-    expect(taskState).toStrictEqual({
-      End: true,
-      Retry: undefined,
-      Catch: undefined,
-      InputPath: '$',
-      Parameters:
-        {
+        // WHEN
+        const failState = stack.resolve(fail.toStateJson());
+
+        // THEN
+        expect(failState).toStrictEqual({
+          CausePath: "States.Format('cause: {}.', $.cause)",
+          ErrorPath: "States.Format('error: {}.', $.error)",
+          Type: 'Fail',
+        });
+        expect(() => app.synth()).not.toThrow();
+      }
+    ),
+    test('fails in synthesis if error and errorPath are defined in Fail state', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // WHEN
+      new stepfunctions.Fail(stack, 'Fail', {
+        error: 'error',
+        errorPath: '$.error',
+      });
+
+      expect(() => app.synth()).toThrow(/Fail state cannot have both error and errorPath/);
+    }),
+    test('fails in synthesis if cause and causePath are defined in Fail state', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // WHEN
+      new stepfunctions.Fail(stack, 'Fail', {
+        cause: 'cause',
+        causePath: '$.cause',
+      });
+
+      expect(() => app.synth()).toThrow(/Fail state cannot have both cause and causePath/);
+    }),
+    test.each([
+      'States.Array($.Id)',
+      'States.ArrayPartition($.inputArray, 4)',
+      'States.ArrayContains($.inputArray, $.lookingFor)',
+      'States.ArrayRange(1, 9, 2)',
+      'States.ArrayLength($.inputArray)',
+      'States.JsonMerge($.json1, $.json2, false)',
+      'States.StringToJson($.escapedJsonString)',
+      'plainString',
+    ])(
+      'fails in synthesis if specifying invalid intrinsic functions in the causePath and errorPath (%s)',
+      (intrinsic) => {
+        // GIVEN
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app);
+
+        // WHEN
+        new stepfunctions.Fail(stack, 'Fail', {
+          causePath: intrinsic,
+          errorPath: intrinsic,
+        });
+
+        expect(() => app.synth()).toThrow(
+          /You must specify a valid intrinsic function in causePath. Must be one of States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, States.UUID/
+        );
+        expect(() => app.synth()).toThrow(
+          /You must specify a valid intrinsic function in errorPath. Must be one of States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, States.UUID/
+        );
+      }
+    ),
+    testDeprecated('Task should render InputPath / Parameters / OutputPath correctly', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new stepfunctions.Task(stack, 'Task', {
+        inputPath: '$',
+        outputPath: '$.state',
+        task: {
+          bind: () => ({
+            resourceArn: 'resource',
+            parameters: {
+              'input.$': '$',
+              stringArgument: 'inital-task',
+              numberArgument: 123,
+              booleanArgument: true,
+              arrayArgument: ['a', 'b', 'c'],
+            },
+          }),
+        },
+      });
+
+      // WHEN
+      const taskState = task.toStateJson();
+
+      // THEN
+      expect(taskState).toStrictEqual({
+        End: true,
+        Retry: undefined,
+        Catch: undefined,
+        InputPath: '$',
+        Parameters: {
+          'input.$': '$',
+          stringArgument: 'inital-task',
+          numberArgument: 123,
+          booleanArgument: true,
+          arrayArgument: ['a', 'b', 'c'],
+        },
+        OutputPath: '$.state',
+        Type: 'Task',
+        Comment: undefined,
+        Resource: 'resource',
+        ResultPath: undefined,
+        TimeoutSeconds: undefined,
+        HeartbeatSeconds: undefined,
+      });
+    }),
+    testDeprecated('Task combines taskobject parameters with direct parameters', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new stepfunctions.Task(stack, 'Task', {
+        inputPath: '$',
+        outputPath: '$.state',
+        task: {
+          bind: () => ({
+            resourceArn: 'resource',
+            parameters: {
+              a: 'aa',
+            },
+          }),
+        },
+        parameters: {
+          b: 'bb',
+        },
+      });
+
+      // WHEN
+      const taskState = task.toStateJson();
+
+      // THEN
+      expect(taskState).toStrictEqual({
+        End: true,
+        Retry: undefined,
+        Catch: undefined,
+        InputPath: '$',
+        Parameters: {
           a: 'aa',
           b: 'bb',
         },
-      OutputPath: '$.state',
-      Type: 'Task',
-      Comment: undefined,
-      Resource: 'resource',
-      ResultPath: undefined,
-      TimeoutSeconds: undefined,
-      HeartbeatSeconds: undefined,
-    });
-  }),
+        OutputPath: '$.state',
+        Type: 'Task',
+        Comment: undefined,
+        Resource: 'resource',
+        ResultPath: undefined,
+        TimeoutSeconds: undefined,
+        HeartbeatSeconds: undefined,
+      });
+    }),
+    test('Created state machine can grant start execution to a role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new FakeTask(stack, 'Task');
+      const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+        definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
 
-  test('Created state machine can grant start execution to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task');
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
+      // WHEN
+      stateMachine.grantStartExecution(role);
 
-    // WHEN
-    stateMachine.grantStartExecution(role);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([Match.objectLike({
-          Action: 'states:StartExecution',
-          Effect: 'Allow',
-          Resource: {
-            Ref: 'StateMachine2E01A3A5',
-          },
-        })]),
-      },
-    });
-
-  }),
-
-  test('Created state machine can grant start sync execution to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task');
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-      stateMachineType: stepfunctions.StateMachineType.EXPRESS,
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grantStartSyncExecution(role);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([Match.objectLike({
-          Action: 'states:StartSyncExecution',
-          Effect: 'Allow',
-          Resource: {
-            Ref: 'StateMachine2E01A3A5',
-          },
-        })]),
-      },
-    });
-
-  }),
-
-  test('Created state machine can grant read access to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task');
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grantRead(role);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'states:ListExecutions',
-              'states:ListStateMachines',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'StateMachine2E01A3A5',
-            },
-          },
-          {
-            Action: [
-              'states:DescribeExecution',
-              'states:DescribeStateMachineForExecution',
-              'states:GetExecutionHistory',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:',
-                  {
-                    'Fn::Select': [
-                      6,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          {
-                            Ref: 'StateMachine2E01A3A5',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  ':*',
-                ],
-              ],
-            },
-          },
-          {
-            Action: [
-              'states:ListActivities',
-              'states:DescribeStateMachine',
-              'states:DescribeActivity',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-      },
-    },
-    );
-
-  }),
-
-  test('Created state machine can grant task response actions to the state machine', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task');
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grantTaskResponse(role);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'states:SendTaskSuccess',
-              'states:SendTaskFailure',
-              'states:SendTaskHeartbeat',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'StateMachine2E01A3A5',
-            },
-          },
-        ],
-      },
-    });
-  }),
-
-  test('Created state machine can grant actions to the executions', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task');
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grantExecution(role, 'states:GetExecutionHistory');
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'states:GetExecutionHistory',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:',
-                  {
-                    'Fn::Select': [
-                      6,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          {
-                            Ref: 'StateMachine2E01A3A5',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  ':*',
-                ],
-              ],
-            },
-          },
-        ],
-      },
-    });
-  }),
-
-  test('Created state machine can grant actions to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task');
-    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grant(role, 'states:ListExecution');
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'states:ListExecution',
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'StateMachine2E01A3A5',
-            },
-          },
-        ],
-      },
-    });
-
-  }),
-
-  test('Imported state machine can grant start execution to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const stateMachineArn = 'arn:aws:states:::my-state-machine';
-    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    // WHEN
-    stateMachine.grantStartExecution(role);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'states:StartExecution',
-            Effect: 'Allow',
-            Resource: stateMachineArn,
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'RoleDefaultPolicy5FFB7DAB',
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'states:StartExecution',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'StateMachine2E01A3A5',
+              },
+            }),
+          ]),
         },
-      ],
-    });
-  }),
+      });
+    }),
+    test('Created state machine can grant start sync execution to a role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new FakeTask(stack, 'Task');
+      const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+        definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
 
-  test('Imported state machine can grant read access to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const stateMachineArn = 'arn:aws:states:::my-state-machine';
-    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
+      // WHEN
+      stateMachine.grantStartSyncExecution(role);
 
-    // WHEN
-    stateMachine.grantRead(role);
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'states:StartSyncExecution',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'StateMachine2E01A3A5',
+              },
+            }),
+          ]),
+        },
+      });
+    }),
+    test('Created state machine can grant read access to a role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new FakeTask(stack, 'Task');
+      const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+        definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'states:ListExecutions',
-              'states:ListStateMachines',
-            ],
-            Effect: 'Allow',
-            Resource: stateMachineArn,
-          },
-          {
-            Action: [
-              'states:DescribeExecution',
-              'states:DescribeStateMachineForExecution',
-              'states:GetExecutionHistory',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:*',
-                ],
-              ],
+      // WHEN
+      stateMachine.grantRead(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['states:ListExecutions', 'states:ListStateMachines'],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'StateMachine2E01A3A5',
+              },
             },
-          },
+            {
+              Action: [
+                'states:DescribeExecution',
+                'states:DescribeStateMachineForExecution',
+                'states:GetExecutionHistory',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':states:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':execution:',
+                    {
+                      'Fn::Select': [
+                        6,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              Ref: 'StateMachine2E01A3A5',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: ['states:ListActivities', 'states:DescribeStateMachine', 'states:DescribeActivity'],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+        },
+      });
+    }),
+    test('Created state machine can grant task response actions to the state machine', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new FakeTask(stack, 'Task');
+      const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+        definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      stateMachine.grantTaskResponse(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['states:SendTaskSuccess', 'states:SendTaskFailure', 'states:SendTaskHeartbeat'],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'StateMachine2E01A3A5',
+              },
+            },
+          ],
+        },
+      });
+    }),
+    test('Created state machine can grant actions to the executions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new FakeTask(stack, 'Task');
+      const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+        definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      stateMachine.grantExecution(role, 'states:GetExecutionHistory');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'states:GetExecutionHistory',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':states:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':execution:',
+                    {
+                      'Fn::Select': [
+                        6,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              Ref: 'StateMachine2E01A3A5',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    }),
+    test('Created state machine can grant actions to a role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new FakeTask(stack, 'Task');
+      const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+        definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      stateMachine.grant(role, 'states:ListExecution');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'states:ListExecution',
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'StateMachine2E01A3A5',
+              },
+            },
+          ],
+        },
+      });
+    }),
+    test('Imported state machine can grant start execution to a role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const stateMachineArn = 'arn:aws:states:::my-state-machine';
+      const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      stateMachine.grantStartExecution(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'states:StartExecution',
+              Effect: 'Allow',
+              Resource: stateMachineArn,
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+        Roles: [
           {
-            Action: [
-              'states:ListActivities',
-              'states:DescribeStateMachine',
-              'states:DescribeActivity',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
+            Ref: 'Role1ABCC5F0',
           },
         ],
-      },
-    },
-    );
-  }),
+      });
+    }),
+    test('Imported state machine can grant read access to a role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const stateMachineArn = 'arn:aws:states:::my-state-machine';
+      const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
 
-  test('Imported state machine can task response permissions to the state machine', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const stateMachineArn = 'arn:aws:states:::my-state-machine';
-    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
+      // WHEN
+      stateMachine.grantRead(role);
 
-    // WHEN
-    stateMachine.grantTaskResponse(role);
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['states:ListExecutions', 'states:ListStateMachines'],
+              Effect: 'Allow',
+              Resource: stateMachineArn,
+            },
+            {
+              Action: [
+                'states:DescribeExecution',
+                'states:DescribeStateMachineForExecution',
+                'states:GetExecutionHistory',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':states:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':execution:*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: ['states:ListActivities', 'states:DescribeStateMachine', 'states:DescribeActivity'],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+        },
+      });
+    }),
+    test('Imported state machine can task response permissions to the state machine', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const stateMachineArn = 'arn:aws:states:::my-state-machine';
+      const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'states:SendTaskSuccess',
-              'states:SendTaskFailure',
-              'states:SendTaskHeartbeat',
-            ],
-            Effect: 'Allow',
-            Resource: stateMachineArn,
-          },
-        ],
-      },
-    });
-  }),
+      // WHEN
+      stateMachine.grantTaskResponse(role);
 
-  test('Imported state machine can grant access to a role', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const stateMachineArn = 'arn:aws:states:::my-state-machine';
-    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['states:SendTaskSuccess', 'states:SendTaskFailure', 'states:SendTaskHeartbeat'],
+              Effect: 'Allow',
+              Resource: stateMachineArn,
+            },
+          ],
+        },
+      });
+    }),
+    test('Imported state machine can grant access to a role', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const stateMachineArn = 'arn:aws:states:::my-state-machine';
+      const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
 
-    // WHEN
-    stateMachine.grant(role, 'states:ListExecution');
+      // WHEN
+      stateMachine.grant(role, 'states:ListExecution');
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'states:ListExecution',
-            Effect: 'Allow',
-            Resource: stateMachine.stateMachineArn,
-          },
-        ],
-      },
-    });
-  }),
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'states:ListExecution',
+              Effect: 'Allow',
+              Resource: stateMachine.stateMachineArn,
+            },
+          ],
+        },
+      });
+    }),
+    test('Imported state machine can provide metrics', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const stateMachineArn = 'arn:aws:states:us-east-1:123456789012:stateMachine:my-state-machine';
+      const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+      const color = '#00ff00';
 
-  test('Imported state machine can provide metrics', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const stateMachineArn = 'arn:aws:states:us-east-1:123456789012:stateMachine:my-state-machine';
-    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
-    const color = '#00ff00';
+      // WHEN
+      const metrics = new Array<cloudwatch.Metric>();
+      metrics.push(stateMachine.metricAborted({ color }));
+      metrics.push(stateMachine.metricFailed({ color }));
+      metrics.push(stateMachine.metricStarted({ color }));
+      metrics.push(stateMachine.metricSucceeded({ color }));
+      metrics.push(stateMachine.metricThrottled({ color }));
+      metrics.push(stateMachine.metricTime({ color }));
+      metrics.push(stateMachine.metricTimedOut({ color }));
 
-    // WHEN
-    const metrics = new Array<cloudwatch.Metric>();
-    metrics.push(stateMachine.metricAborted({ color }));
-    metrics.push(stateMachine.metricFailed({ color }));
-    metrics.push(stateMachine.metricStarted({ color }));
-    metrics.push(stateMachine.metricSucceeded({ color }));
-    metrics.push(stateMachine.metricThrottled({ color }));
-    metrics.push(stateMachine.metricTime({ color }));
-    metrics.push(stateMachine.metricTimedOut({ color }));
-
-    // THEN
-    for (const metric of metrics) {
-      expect(metric.namespace).toEqual('AWS/States');
-      expect(metric.dimensions).toEqual({ StateMachineArn: stateMachineArn });
-      expect(metric.color).toEqual(color);
-    }
-  }),
-
-  test('Pass should render InputPath / Parameters / OutputPath correctly', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new stepfunctions.Pass(stack, 'Pass', {
-      stateName: 'my-pass-state',
-      inputPath: '$',
-      outputPath: '$.state',
-      parameters: {
-        'input.$': '$',
-        'stringArgument': 'inital-task',
-        'numberArgument': 123,
-        'booleanArgument': true,
-        'arrayArgument': ['a', 'b', 'c'],
-      },
-    });
-
-    // WHEN
-    const taskState = task.toStateJson();
-
-    // THEN
-    expect(taskState).toStrictEqual({
-      End: true,
-      InputPath: '$',
-      OutputPath: '$.state',
-      Parameters:
-        {
+      // THEN
+      for (const metric of metrics) {
+        expect(metric.namespace).toEqual('AWS/States');
+        expect(metric.dimensions).toEqual({ StateMachineArn: stateMachineArn });
+        expect(metric.color).toEqual(color);
+      }
+    }),
+    test('Pass should render InputPath / Parameters / OutputPath correctly', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new stepfunctions.Pass(stack, 'Pass', {
+        stateName: 'my-pass-state',
+        inputPath: '$',
+        outputPath: '$.state',
+        parameters: {
           'input.$': '$',
-          'stringArgument': 'inital-task',
-          'numberArgument': 123,
-          'booleanArgument': true,
-          'arrayArgument': ['a', 'b', 'c'],
+          stringArgument: 'inital-task',
+          numberArgument: 123,
+          booleanArgument: true,
+          arrayArgument: ['a', 'b', 'c'],
         },
-      Type: 'Pass',
-      Comment: undefined,
-      Result: undefined,
-      ResultPath: undefined,
-    });
-  }),
+      });
 
-  test('parameters can be selected from the input with a path', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new stepfunctions.Pass(stack, 'Pass', {
-      parameters: {
-        input: stepfunctions.JsonPath.stringAt('$.myField'),
-      },
-    });
+      // WHEN
+      const taskState = task.toStateJson();
 
-    // WHEN
-    const taskState = task.toStateJson();
+      // THEN
+      expect(taskState).toStrictEqual({
+        End: true,
+        InputPath: '$',
+        OutputPath: '$.state',
+        Parameters: {
+          'input.$': '$',
+          stringArgument: 'inital-task',
+          numberArgument: 123,
+          booleanArgument: true,
+          arrayArgument: ['a', 'b', 'c'],
+        },
+        Type: 'Pass',
+        Comment: undefined,
+        Result: undefined,
+        ResultPath: undefined,
+      });
+    }),
+    test('parameters can be selected from the input with a path', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new stepfunctions.Pass(stack, 'Pass', {
+        parameters: {
+          input: stepfunctions.JsonPath.stringAt('$.myField'),
+        },
+      });
 
-    // THEN
-    expect(taskState).toEqual({
-      End: true,
-      Parameters:
-          { 'input.$': '$.myField' },
-      Type: 'Pass',
-    });
-  }),
+      // WHEN
+      const taskState = task.toStateJson();
 
-  test('State machines must depend on their roles', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const task = new FakeTask(stack, 'Task', {
-      policies: [
-        new iam.PolicyStatement({
-          resources: ['resource'],
-          actions: ['lambda:InvokeFunction'],
-        }),
-      ],
-    });
-    new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
-    });
+      // THEN
+      expect(taskState).toEqual({
+        End: true,
+        Parameters: { 'input.$': '$.myField' },
+        Type: 'Pass',
+      });
+    }),
+    test('State machines must depend on their roles', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const task = new FakeTask(stack, 'Task', {
+        policies: [
+          new iam.PolicyStatement({
+            resources: ['resource'],
+            actions: ['lambda:InvokeFunction'],
+          }),
+        ],
+      });
+      new stepfunctions.StateMachine(stack, 'StateMachine', {
+        definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
+      });
 
-    // THEN
-    Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
-      DependsOn: [
-        'StateMachineRoleDefaultPolicyDF1E6607',
-        'StateMachineRoleB840431D',
-      ],
+      // THEN
+      Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
+        DependsOn: ['StateMachineRoleDefaultPolicyDF1E6607', 'StateMachineRoleB840431D'],
+      });
     });
-  });
 });
 
 interface FakeTaskProps extends stepfunctions.TaskStateBaseProps {

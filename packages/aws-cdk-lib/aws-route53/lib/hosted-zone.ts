@@ -129,11 +129,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * @param id  the logical name of this Construct
    * @param attrs the HostedZoneAttributes (hosted zone ID and hosted zone name)
    */
-  public static fromHostedZoneAttributes(
-    scope: Construct,
-    id: string,
-    attrs: HostedZoneAttributes
-  ): IHostedZone {
+  public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
@@ -156,11 +152,7 @@ export class HostedZone extends Resource implements IHostedZone {
    *
    * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
-  public static fromLookup(
-    scope: Construct,
-    id: string,
-    query: HostedZoneProviderProps
-  ): IHostedZone {
+  public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
     if (!query.domainName) {
       throw new Error('Cannot use undefined value for attribute `domainName`');
     }
@@ -214,9 +206,7 @@ export class HostedZone extends Resource implements IHostedZone {
 
     // Add a dot at the end if the addTrailingDot property is not false.
     const zoneName =
-      props.addTrailingDot === false || props.zoneName.endsWith('.')
-        ? props.zoneName
-        : `${props.zoneName}.`;
+      props.addTrailingDot === false || props.zoneName.endsWith('.') ? props.zoneName : `${props.zoneName}.`;
 
     const resource = new CfnHostedZone(this, 'Resource', {
       name: zoneName,
@@ -335,11 +325,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
    * @param id the logical name of this Construct
    * @param publicHostedZoneId the ID of the public hosted zone to import
    */
-  public static fromPublicHostedZoneId(
-    scope: Construct,
-    id: string,
-    publicHostedZoneId: string
-  ): IPublicHostedZone {
+  public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
       public get zoneName(): string {
@@ -509,11 +495,7 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
    * @param id the logical name of this Construct
    * @param privateHostedZoneId the ID of the private hosted zone to import
    */
-  public static fromPrivateHostedZoneId(
-    scope: Construct,
-    id: string,
-    privateHostedZoneId: string
-  ): IPrivateHostedZone {
+  public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
       public get zoneName(): string {

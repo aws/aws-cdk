@@ -121,9 +121,7 @@ export class CodeBuildAction extends Action {
     super({
       ...props,
       category:
-        props.type === CodeBuildActionType.TEST
-          ? codepipeline.ActionCategory.TEST
-          : codepipeline.ActionCategory.BUILD,
+        props.type === CodeBuildActionType.TEST ? codepipeline.ActionCategory.TEST : codepipeline.ActionCategory.BUILD,
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       inputs: [props.input, ...(props.extraInputs || [])],
@@ -198,9 +196,7 @@ export class CodeBuildAction extends Action {
       // if any of the inputs come from the CodeStarConnectionsSourceAction
       // with codeBuildCloneOutput=true,
       // grant the Project's Role to use the connection
-      const connectionArn = inputArtifact.getMetadata(
-        CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY
-      );
+      const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
       if (connectionArn) {
         this.props.project.addToRolePolicy(
           new iam.PolicyStatement({
@@ -213,9 +209,7 @@ export class CodeBuildAction extends Action {
       // if any of the inputs come from the CodeCommitSourceAction
       // with codeBuildCloneOutput=true,
       // grant the Project's Role git pull access to the repository
-      const codecommitRepositoryArn = inputArtifact.getMetadata(
-        CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY
-      );
+      const codecommitRepositoryArn = inputArtifact.getMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY);
       if (codecommitRepositoryArn) {
         this.props.project.addToRolePolicy(
           new iam.PolicyStatement({

@@ -16,16 +16,18 @@ describe('KinesisEventSource', () => {
     const stream = new kinesis.Stream(stack, 'S');
 
     // WHEN
-    fn.addEventSource(new sources.KinesisEventSource(stream, {
-      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-    }));
+    fn.addEventSource(
+      new sources.KinesisEventSource(stream, {
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': [
+            Action: [
               'kinesis:DescribeStreamSummary',
               'kinesis:GetRecords',
               'kinesis:GetShardIterator',
@@ -35,47 +37,39 @@ describe('KinesisEventSource', () => {
               'kinesis:ListStreams',
               'kinesis:DescribeStreamConsumer',
             ],
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::GetAtt': [
-                'S509448A1',
-                'Arn',
-              ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['S509448A1', 'Arn'],
             },
           },
           {
-            'Action': 'kinesis:DescribeStream',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::GetAtt': [
-                'S509448A1',
-                'Arn',
-              ],
+            Action: 'kinesis:DescribeStream',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['S509448A1', 'Arn'],
             },
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
-      'Roles': [{
-        'Ref': 'FnServiceRoleB9001A96',
-      }],
+      PolicyName: 'FnServiceRoleDefaultPolicyC6A839BF',
+      Roles: [
+        {
+          Ref: 'FnServiceRoleB9001A96',
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      'EventSourceArn': {
-        'Fn::GetAtt': [
-          'S509448A1',
-          'Arn',
-        ],
+      EventSourceArn: {
+        'Fn::GetAtt': ['S509448A1', 'Arn'],
       },
-      'FunctionName': {
-        'Ref': 'Fn9270CBC0',
+      FunctionName: {
+        Ref: 'Fn9270CBC0',
       },
-      'BatchSize': 100,
-      'StartingPosition': 'TRIM_HORIZON',
+      BatchSize: 100,
+      StartingPosition: 'TRIM_HORIZON',
     });
-
   });
 
   test('specific tumblingWindowInSeconds', () => {
@@ -85,28 +79,26 @@ describe('KinesisEventSource', () => {
     const stream = new kinesis.Stream(stack, 'S');
 
     // WHEN
-    fn.addEventSource(new sources.KinesisEventSource(stream, {
-      batchSize: 50,
-      startingPosition: lambda.StartingPosition.LATEST,
-      tumblingWindow: cdk.Duration.seconds(60),
-    }));
+    fn.addEventSource(
+      new sources.KinesisEventSource(stream, {
+        batchSize: 50,
+        startingPosition: lambda.StartingPosition.LATEST,
+        tumblingWindow: cdk.Duration.seconds(60),
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      'EventSourceArn': {
-        'Fn::GetAtt': [
-          'S509448A1',
-          'Arn',
-        ],
+      EventSourceArn: {
+        'Fn::GetAtt': ['S509448A1', 'Arn'],
       },
-      'FunctionName': {
-        'Ref': 'Fn9270CBC0',
+      FunctionName: {
+        Ref: 'Fn9270CBC0',
       },
-      'BatchSize': 50,
-      'StartingPosition': 'LATEST',
-      'TumblingWindowInSeconds': 60,
+      BatchSize: 50,
+      StartingPosition: 'LATEST',
+      TumblingWindowInSeconds: 60,
     });
-
   });
 
   test('specific batch size', () => {
@@ -116,26 +108,24 @@ describe('KinesisEventSource', () => {
     const stream = new kinesis.Stream(stack, 'S');
 
     // WHEN
-    fn.addEventSource(new sources.KinesisEventSource(stream, {
-      batchSize: 50,
-      startingPosition: lambda.StartingPosition.LATEST,
-    }));
+    fn.addEventSource(
+      new sources.KinesisEventSource(stream, {
+        batchSize: 50,
+        startingPosition: lambda.StartingPosition.LATEST,
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      'EventSourceArn': {
-        'Fn::GetAtt': [
-          'S509448A1',
-          'Arn',
-        ],
+      EventSourceArn: {
+        'Fn::GetAtt': ['S509448A1', 'Arn'],
       },
-      'FunctionName': {
-        'Ref': 'Fn9270CBC0',
+      FunctionName: {
+        Ref: 'Fn9270CBC0',
       },
-      'BatchSize': 50,
-      'StartingPosition': 'LATEST',
+      BatchSize: 50,
+      StartingPosition: 'LATEST',
     });
-
   });
 
   test('fails if batch size < 1', () => {
@@ -145,11 +135,14 @@ describe('KinesisEventSource', () => {
     const stream = new kinesis.Stream(stack, 'S');
 
     // WHEN
-    expect(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
-      batchSize: 0,
-      startingPosition: lambda.StartingPosition.LATEST,
-    }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
-
+    expect(() =>
+      fn.addEventSource(
+        new sources.KinesisEventSource(stream, {
+          batchSize: 0,
+          startingPosition: lambda.StartingPosition.LATEST,
+        })
+      )
+    ).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
   });
 
   test('fails if batch size > 10000', () => {
@@ -159,11 +152,14 @@ describe('KinesisEventSource', () => {
     const stream = new kinesis.Stream(stack, 'S');
 
     // WHEN
-    expect(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
-      batchSize: 10001,
-      startingPosition: lambda.StartingPosition.LATEST,
-    }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
-
+    expect(() =>
+      fn.addEventSource(
+        new sources.KinesisEventSource(stream, {
+          batchSize: 10001,
+          startingPosition: lambda.StartingPosition.LATEST,
+        })
+      )
+    ).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
   });
 
   test('accepts if batch size is a token', () => {
@@ -173,11 +169,12 @@ describe('KinesisEventSource', () => {
     const stream = new kinesis.Stream(stack, 'S');
 
     // WHEN
-    fn.addEventSource(new sources.KinesisEventSource(stream, {
-      batchSize: cdk.Lazy.number({ produce: () => 10 }),
-      startingPosition: lambda.StartingPosition.LATEST,
-    }));
-
+    fn.addEventSource(
+      new sources.KinesisEventSource(stream, {
+        batchSize: cdk.Lazy.number({ produce: () => 10 }),
+        startingPosition: lambda.StartingPosition.LATEST,
+      })
+    );
   });
 
   test('specific maxBatchingWindow', () => {
@@ -187,26 +184,24 @@ describe('KinesisEventSource', () => {
     const stream = new kinesis.Stream(stack, 'S');
 
     // WHEN
-    fn.addEventSource(new sources.KinesisEventSource(stream, {
-      maxBatchingWindow: cdk.Duration.minutes(2),
-      startingPosition: lambda.StartingPosition.LATEST,
-    }));
+    fn.addEventSource(
+      new sources.KinesisEventSource(stream, {
+        maxBatchingWindow: cdk.Duration.minutes(2),
+        startingPosition: lambda.StartingPosition.LATEST,
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      'EventSourceArn': {
-        'Fn::GetAtt': [
-          'S509448A1',
-          'Arn',
-        ],
+      EventSourceArn: {
+        'Fn::GetAtt': ['S509448A1', 'Arn'],
       },
-      'FunctionName': {
-        'Ref': 'Fn9270CBC0',
+      FunctionName: {
+        Ref: 'Fn9270CBC0',
       },
-      'MaximumBatchingWindowInSeconds': 120,
-      'StartingPosition': 'LATEST',
+      MaximumBatchingWindowInSeconds: 120,
+      StartingPosition: 'LATEST',
     });
-
   });
 
   test('contains eventSourceMappingId after lambda binding', () => {
@@ -223,7 +218,6 @@ describe('KinesisEventSource', () => {
 
     // THEN
     expect(eventSource.eventSourceMappingId).toBeDefined();
-
   });
 
   test('contains eventSourceMappingArn after lambda binding', () => {
@@ -240,7 +234,6 @@ describe('KinesisEventSource', () => {
 
     // THEN
     expect(eventSource.eventSourceMappingArn).toBeDefined();
-
   });
 
   test('eventSourceMappingId throws error before binding to lambda', () => {
@@ -252,8 +245,9 @@ describe('KinesisEventSource', () => {
     });
 
     // WHEN/THEN
-    expect(() => eventSource.eventSourceMappingId).toThrow(/KinesisEventSource is not yet bound to an event source mapping/);
-
+    expect(() => eventSource.eventSourceMappingId).toThrow(
+      /KinesisEventSource is not yet bound to an event source mapping/
+    );
   });
 
   test('eventSourceMappingArn throws error before binding to lambda', () => {
@@ -265,8 +259,9 @@ describe('KinesisEventSource', () => {
     });
 
     // WHEN/THEN
-    expect(() => eventSource.eventSourceMappingArn).toThrow(/KinesisEventSource is not yet bound to an event source mapping/);
-
+    expect(() => eventSource.eventSourceMappingArn).toThrow(
+      /KinesisEventSource is not yet bound to an event source mapping/
+    );
   });
 
   test('event source disabled', () => {
@@ -284,9 +279,8 @@ describe('KinesisEventSource', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
-      'Enabled': false,
+      Enabled: false,
     });
-
   });
 
   test('AT_TIMESTAMP starting position', () => {
@@ -321,14 +315,15 @@ describe('KinesisEventSource', () => {
 
     expect(() => {
       // WHEN
-      testLambdaFunction.addEventSource(new sources.KinesisEventSource(stream, {
-        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
-        startingPositionTimestamp: 1640995200,
-        onFailure: s3OnFailureDestination,
-      }));
-    //THEN
+      testLambdaFunction.addEventSource(
+        new sources.KinesisEventSource(stream, {
+          startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+          startingPositionTimestamp: 1640995200,
+          onFailure: s3OnFailureDestination,
+        })
+      );
+      //THEN
     }).toThrow('S3 onFailure Destination is not supported for this event source');
-
   });
 
   test('metrics config', () => {

@@ -23,21 +23,17 @@ const ExpectedBucketPolicyProperties = {
         },
         Resource: [
           {
-            'Fn::GetAtt': [
-              'MyAmazingCloudTrailS3A580FE27',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyAmazingCloudTrailS3A580FE27', 'Arn'],
           },
           {
             'Fn::Join': [
               '',
-              [{
-                'Fn::GetAtt': [
-                  'MyAmazingCloudTrailS3A580FE27',
-                  'Arn',
-                ],
-              },
-              '/*'],
+              [
+                {
+                  'Fn::GetAtt': ['MyAmazingCloudTrailS3A580FE27', 'Arn'],
+                },
+                '/*',
+              ],
             ],
           },
         ],
@@ -49,10 +45,7 @@ const ExpectedBucketPolicyProperties = {
           Service: 'cloudtrail.amazonaws.com',
         },
         Resource: {
-          'Fn::GetAtt': [
-            'MyAmazingCloudTrailS3A580FE27',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyAmazingCloudTrailS3A580FE27', 'Arn'],
         },
       },
       {
@@ -71,10 +64,7 @@ const ExpectedBucketPolicyProperties = {
             '',
             [
               {
-                'Fn::GetAtt': [
-                  'MyAmazingCloudTrailS3A580FE27',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyAmazingCloudTrailS3A580FE27', 'Arn'],
               },
               '/AWSLogs/123456789012/*',
             ],
@@ -110,20 +100,24 @@ describe('cloudtrail', () => {
       const stack = getTestStack();
       const Trailbucket = new s3.Bucket(stack, 'S3');
       const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
-      Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [Trailbucket.bucketArn],
-        actions: ['s3:GetBucketAcl'],
-        principals: [cloudTrailPrincipal],
-      }));
+      Trailbucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: [Trailbucket.bucketArn],
+          actions: ['s3:GetBucketAcl'],
+          principals: [cloudTrailPrincipal],
+        })
+      );
 
-      Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [Trailbucket.arnForObjects(`AWSLogs/${Stack.of(stack).account}/*`)],
-        actions: ['s3:PutObject'],
-        principals: [cloudTrailPrincipal],
-        conditions: {
-          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
-        },
-      }));
+      Trailbucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: [Trailbucket.arnForObjects(`AWSLogs/${Stack.of(stack).account}/*`)],
+          actions: ['s3:PutObject'],
+          principals: [cloudTrailPrincipal],
+          conditions: {
+            StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+          },
+        })
+      );
 
       new Trail(stack, 'Trail', { bucket: Trailbucket });
 
@@ -196,20 +190,14 @@ describe('cloudtrail', () => {
               },
               Resource: [
                 {
-                  'Fn::GetAtt': [
-                    'TrailS30071F172',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['TrailS30071F172', 'Arn'],
                 },
                 {
                   'Fn::Join': [
                     '',
                     [
                       {
-                        'Fn::GetAtt': [
-                          'TrailS30071F172',
-                          'Arn',
-                        ],
+                        'Fn::GetAtt': ['TrailS30071F172', 'Arn'],
                       },
                       '/*',
                     ],
@@ -231,13 +219,7 @@ describe('cloudtrail', () => {
               Effect: 'Allow',
               Principal: { Service: 'cloudtrail.amazonaws.com' },
               Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    { 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] },
-                    '/someprefix/AWSLogs/123456789012/*',
-                  ],
-                ],
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['TrailS30071F172', 'Arn'] }, '/someprefix/AWSLogs/123456789012/*']],
               },
             },
           ],
@@ -272,20 +254,14 @@ describe('cloudtrail', () => {
               },
               Resource: [
                 {
-                  'Fn::GetAtt': [
-                    'TrailS30071F172',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['TrailS30071F172', 'Arn'],
                 },
                 {
                   'Fn::Join': [
                     '',
                     [
                       {
-                        'Fn::GetAtt': [
-                          'TrailS30071F172',
-                          'Arn',
-                        ],
+                        'Fn::GetAtt': ['TrailS30071F172', 'Arn'],
                       },
                       '/*',
                     ],
@@ -300,10 +276,7 @@ describe('cloudtrail', () => {
                 Service: 'cloudtrail.amazonaws.com',
               },
               Resource: {
-                'Fn::GetAtt': [
-                  'TrailS30071F172',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['TrailS30071F172', 'Arn'],
               },
             },
             {
@@ -322,10 +295,7 @@ describe('cloudtrail', () => {
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'TrailS30071F172',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['TrailS30071F172', 'Arn'],
                     },
                     '/AWSLogs/123456789012/*',
                   ],
@@ -360,10 +330,7 @@ describe('cloudtrail', () => {
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'TrailS30071F172',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['TrailS30071F172', 'Arn'],
                     },
                     '/AWSLogs/o-xxxxxxxxx/*',
                   ],
@@ -413,11 +380,14 @@ describe('cloudtrail', () => {
       const stack = new Stack();
       const key = new kms.Key(stack, 'key');
 
-      expect(() => new Trail(stack, 'ErrorTrail', {
-        trailName: 'ErrorTrail',
-        encryptionKey: key,
-        kmsKey: key,
-      })).toThrow(/Both kmsKey and encryptionKey must not be specified/);
+      expect(
+        () =>
+          new Trail(stack, 'ErrorTrail', {
+            trailName: 'ErrorTrail',
+            encryptionKey: key,
+            kmsKey: key,
+          })
+      ).toThrow(/Both kmsKey and encryptionKey must not be specified/);
     });
 
     describe('with cloud watch logs', () => {
@@ -436,13 +406,15 @@ describe('cloudtrail', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Version: '2012-10-17',
-            Statement: [{
-              Effect: 'Allow',
-              Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-              Resource: {
-                'Fn::GetAtt': ['MyAmazingCloudTrailLogGroup2BE67F87', 'Arn'],
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+                Resource: {
+                  'Fn::GetAtt': ['MyAmazingCloudTrailLogGroup2BE67F87', 'Arn'],
+                },
               },
-            }],
+            ],
           },
           PolicyName: logsRolePolicyName,
           Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
@@ -491,9 +463,11 @@ describe('cloudtrail', () => {
 
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
-            Statement: [Match.objectLike({
-              Resource: stack.resolve(cloudWatchLogGroup.logGroupArn),
-            })],
+            Statement: [
+              Match.objectLike({
+                Resource: stack.resolve(cloudWatchLogGroup.logGroupArn),
+              }),
+            ],
           },
         });
       });
@@ -519,23 +493,25 @@ describe('cloudtrail', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
-              DataResources: [{
-                Type: 'AWS::S3::Object',
-                Values: [
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':s3:::',
+              DataResources: [
+                {
+                  Type: 'AWS::S3::Object',
+                  Values: [
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':s3:::',
+                        ],
                       ],
-                    ],
-                  },
-                ],
-              }],
+                    },
+                  ],
+                },
+              ],
               IncludeManagementEvents: Match.absent(),
               ReadWriteType: Match.absent(),
             },
@@ -549,40 +525,38 @@ describe('cloudtrail', () => {
 
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.addS3EventSelector([{ bucket }]);
-        cloudTrail.addS3EventSelector([{
-          bucket,
-          objectPrefix: 'prefix-1/prefix-2',
-        }]);
+        cloudTrail.addS3EventSelector([
+          {
+            bucket,
+            objectPrefix: 'prefix-1/prefix-2',
+          },
+        ]);
 
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
-              DataResources: [{
-                Type: 'AWS::S3::Object',
-                Values: [{
-                  'Fn::Join': [
-                    '',
-                    [
-                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
-                      '/',
-                    ],
+              DataResources: [
+                {
+                  Type: 'AWS::S3::Object',
+                  Values: [
+                    {
+                      'Fn::Join': ['', [{ 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] }, '/']],
+                    },
                   ],
-                }],
-              }],
+                },
+              ],
             },
             {
-              DataResources: [{
-                Type: 'AWS::S3::Object',
-                Values: [{
-                  'Fn::Join': [
-                    '',
-                    [
-                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
-                      '/prefix-1/prefix-2',
-                    ],
+              DataResources: [
+                {
+                  Type: 'AWS::S3::Object',
+                  Values: [
+                    {
+                      'Fn::Join': ['', [{ 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] }, '/prefix-1/prefix-2']],
+                    },
                   ],
-                }],
-              }],
+                },
+              ],
             },
           ],
         });
@@ -606,23 +580,25 @@ describe('cloudtrail', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
-              DataResources: [{
-                Type: 'AWS::S3::Object',
-                Values: [
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':s3:::',
+              DataResources: [
+                {
+                  Type: 'AWS::S3::Object',
+                  Values: [
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':s3:::',
+                        ],
                       ],
-                    ],
-                  },
-                ],
-              }],
+                    },
+                  ],
+                },
+              ],
               IncludeManagementEvents: false,
               ReadWriteType: 'ReadOnly',
             },
@@ -650,10 +626,7 @@ describe('cloudtrail', () => {
         const bucket = new s3.Bucket(stack, 'testBucket', { bucketName: 'test-bucket' });
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.addS3EventSelector([{ bucket }], {
-          excludeManagementEventSources: [
-            ManagementEventSources.KMS,
-            ManagementEventSources.RDS_DATA_API,
-          ],
+          excludeManagementEventSources: [ManagementEventSources.KMS, ManagementEventSources.RDS_DATA_API],
         });
         cloudTrail.addS3EventSelector([{ bucket }], {
           excludeManagementEventSources: [],
@@ -662,36 +635,29 @@ describe('cloudtrail', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
-              DataResources: [{
-                Type: 'AWS::S3::Object',
-                Values: [{
-                  'Fn::Join': [
-                    '',
-                    [
-                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
-                      '/',
-                    ],
+              DataResources: [
+                {
+                  Type: 'AWS::S3::Object',
+                  Values: [
+                    {
+                      'Fn::Join': ['', [{ 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] }, '/']],
+                    },
                   ],
-                }],
-              }],
-              ExcludeManagementEventSources: [
-                'kms.amazonaws.com',
-                'rdsdata.amazonaws.com',
+                },
               ],
+              ExcludeManagementEventSources: ['kms.amazonaws.com', 'rdsdata.amazonaws.com'],
             },
             {
-              DataResources: [{
-                Type: 'AWS::S3::Object',
-                Values: [{
-                  'Fn::Join': [
-                    '',
-                    [
-                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
-                      '/',
-                    ],
+              DataResources: [
+                {
+                  Type: 'AWS::S3::Object',
+                  Values: [
+                    {
+                      'Fn::Join': ['', [{ 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] }, '/']],
+                    },
                   ],
-                }],
-              }],
+                },
+              ],
               ExcludeManagementEventSources: [],
             },
           ],
@@ -712,12 +678,16 @@ describe('cloudtrail', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
-              DataResources: [{
-                Type: 'AWS::Lambda::Function',
-                Values: [{
-                  'Fn::GetAtt': ['LambdaFunctionBF21E41F', 'Arn'],
-                }],
-              }],
+              DataResources: [
+                {
+                  Type: 'AWS::Lambda::Function',
+                  Values: [
+                    {
+                      'Fn::GetAtt': ['LambdaFunctionBF21E41F', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
           ],
         });
@@ -732,23 +702,25 @@ describe('cloudtrail', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
-              DataResources: [{
-                Type: 'AWS::Lambda::Function',
-                Values: [
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':lambda',
+              DataResources: [
+                {
+                  Type: 'AWS::Lambda::Function',
+                  Values: [
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':lambda',
+                        ],
                       ],
-                    ],
-                  },
-                ],
-              }],
+                    },
+                  ],
+                },
+              ],
             },
           ],
         });
@@ -777,21 +749,21 @@ describe('cloudtrail', () => {
         cloudTrail.addS3EventSelector([{ bucket }]);
 
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
-          EventSelectors: [{
-            DataResources: [{
-              Type: 'AWS::S3::Object',
-              Values: [{
-                'Fn::Join': [
-                  '',
-                  [
-                    { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
-                    '/',
+          EventSelectors: [
+            {
+              DataResources: [
+                {
+                  Type: 'AWS::S3::Object',
+                  Values: [
+                    {
+                      'Fn::Join': ['', [{ 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] }, '/']],
+                    },
                   ],
-                ],
-              }],
-            }],
-            IncludeManagementEvents: false,
-          }],
+                },
+              ],
+              IncludeManagementEvents: false,
+            },
+          ],
         });
       });
 
@@ -809,22 +781,22 @@ describe('cloudtrail', () => {
         });
 
         Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
-          EventSelectors: [{
-            DataResources: [{
-              Type: 'AWS::S3::Object',
-              Values: [{
-                'Fn::Join': [
-                  '',
-                  [
-                    { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
-                    '/',
+          EventSelectors: [
+            {
+              DataResources: [
+                {
+                  Type: 'AWS::S3::Object',
+                  Values: [
+                    {
+                      'Fn::Join': ['', [{ 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] }, '/']],
+                    },
                   ],
-                ],
-              }],
-            }],
-            IncludeManagementEvents: true,
-            ReadWriteType: 'WriteOnly',
-          }],
+                },
+              ],
+              IncludeManagementEvents: true,
+              ReadWriteType: 'WriteOnly',
+            },
+          ],
         });
       });
 
@@ -845,14 +817,17 @@ describe('cloudtrail', () => {
 
         new Trail(stack, 'OrganizationTrail');
 
-        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', Match.objectEquals({
-          IsLogging: true,
-          S3BucketName: Match.anyValue(),
-          EnableLogFileValidation: true,
-          EventSelectors: [],
-          IncludeGlobalServiceEvents: true,
-          IsMultiRegionTrail: true,
-        }));
+        Template.fromStack(stack).hasResourceProperties(
+          'AWS::CloudTrail::Trail',
+          Match.objectEquals({
+            IsLogging: true,
+            S3BucketName: Match.anyValue(),
+            EnableLogFileValidation: true,
+            EventSelectors: [],
+            IncludeGlobalServiceEvents: true,
+            IsMultiRegionTrail: true,
+          })
+        );
       });
     });
   });
@@ -875,9 +850,7 @@ describe('cloudtrail', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         EventPattern: {
-          'detail-type': [
-            'AWS API Call via CloudTrail',
-          ],
+          'detail-type': ['AWS API Call via CloudTrail'],
         },
         State: 'ENABLED',
         Targets: [
@@ -902,36 +875,33 @@ describe('cloudtrail', () => {
     test('API Call Rate properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightTypes: [
-          InsightType.API_CALL_RATE,
-        ],
+        insightTypes: [InsightType.API_CALL_RATE],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
-        InsightSelectors: [{
-          InsightType: 'ApiCallRateInsight',
-        }],
+        InsightSelectors: [
+          {
+            InsightType: 'ApiCallRateInsight',
+          },
+        ],
       });
     });
     test('API Error Rate properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightTypes: [
-          InsightType.API_ERROR_RATE,
-        ],
+        insightTypes: [InsightType.API_ERROR_RATE],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
-        InsightSelectors: [{
-          InsightType: 'ApiErrorRateInsight',
-        }],
+        InsightSelectors: [
+          {
+            InsightType: 'ApiErrorRateInsight',
+          },
+        ],
       });
     });
     test('duplicate properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightTypes: [
-          InsightType.API_CALL_RATE,
-          InsightType.API_CALL_RATE,
-        ],
+        insightTypes: [InsightType.API_CALL_RATE, InsightType.API_CALL_RATE],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
         InsightSelectors: [
@@ -947,10 +917,7 @@ describe('cloudtrail', () => {
     test('ALL properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail', {
-        insightTypes: [
-          InsightType.API_CALL_RATE,
-          InsightType.API_ERROR_RATE,
-        ],
+        insightTypes: [InsightType.API_CALL_RATE, InsightType.API_ERROR_RATE],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
         InsightSelectors: [

@@ -22,9 +22,7 @@ export class AlbArnTarget implements elbv2.INetworkLoadBalancerTarget {
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(
-    targetGroup: elbv2.INetworkTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this._attach(targetGroup);
   }
 
@@ -86,9 +84,7 @@ export class AlbListenerTarget extends AlbArnTarget {
    * This adds dependency on albListener because creation of ALB listener and NLB can vary during runtime.
    * More Details on - https://github.com/aws/aws-cdk/issues/17208
    */
-  public attachToNetworkTargetGroup(
-    targetGroup: elbv2.INetworkTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 }

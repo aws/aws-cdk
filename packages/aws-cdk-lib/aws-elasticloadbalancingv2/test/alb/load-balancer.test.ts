@@ -22,10 +22,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
-      Subnets: [
-        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
-        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
-      ],
+      Subnets: [{ Ref: 'StackPublicSubnet1Subnet0AD81D22' }, { Ref: 'StackPublicSubnet2Subnet3C7D2288' }],
       Type: 'application',
     });
   });
@@ -63,10 +60,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
-      Subnets: [
-        { Ref: 'StackPrivateSubnet1Subnet47AC2BC7' },
-        { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' },
-      ],
+      Subnets: [{ Ref: 'StackPrivateSubnet1Subnet47AC2BC7' }, { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' }],
       Type: 'application',
     });
   });
@@ -163,7 +157,7 @@ describe('tests', () => {
         vpc,
         clientKeepAlive: cdk.Duration.millis(100),
       });
-    }).toThrow('\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: 100 milliseconds');
+    }).toThrow("'clientKeepAlive' must be between 60 and 604800 seconds. Got: 100 milliseconds");
   });
 
   test.each([
@@ -171,20 +165,25 @@ describe('tests', () => {
     [true, undefined],
     [false, elbv2.IpAddressType.IPV4],
     [true, elbv2.IpAddressType.IPV4],
-  ])('throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.', (denyAllIgwTraffic, ipAddressType) => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Stack');
+  ])(
+    'throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.',
+    (denyAllIgwTraffic, ipAddressType) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
 
-    // THEN
-    expect(() => {
-      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
-        vpc,
-        denyAllIgwTraffic: denyAllIgwTraffic,
-        ipAddressType: ipAddressType,
-      });
-    }).toThrow(`'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`);
-  });
+      // THEN
+      expect(() => {
+        new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+          vpc,
+          denyAllIgwTraffic: denyAllIgwTraffic,
+          ipAddressType: ipAddressType,
+        });
+      }).toThrow(
+        `'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`
+      );
+    }
+  );
 
   describe('Desync mitigation mode', () => {
     test('Defensive', () => {
@@ -283,7 +282,7 @@ describe('tests', () => {
               Key: 'routing.http2.enabled',
               Value: Match.anyValue(),
             },
-          ]),
+          ])
         ),
       });
     });
@@ -353,7 +352,6 @@ describe('tests', () => {
   });
 
   describe('logAccessLogs', () => {
-
     class ExtendedLB extends elbv2.ApplicationLoadBalancer {
       constructor(scope: Construct, id: string, vpc: ec2.IVpc) {
         super(scope, id, { vpc });
@@ -370,7 +368,11 @@ describe('tests', () => {
       }
     }
 
-    function loggingSetup(withEncryption: boolean = false): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
+    function loggingSetup(withEncryption: boolean = false): {
+      stack: cdk.Stack;
+      bucket: s3.Bucket;
+      lb: elbv2.ApplicationLoadBalancer;
+    } {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -442,8 +444,10 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
+                'Fn::Join': [
+                  '',
+                  [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/', { Ref: 'AWS::AccountId' }, '/*'],
+                ],
               },
             },
             {
@@ -451,8 +455,10 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
+                'Fn::Join': [
+                  '',
+                  [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/', { Ref: 'AWS::AccountId' }, '/*'],
+                ],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
             },
@@ -505,8 +511,15 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] },
+                    '/prefix-of-access-logs/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
               },
             },
             {
@@ -514,8 +527,15 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] },
+                    '/prefix-of-access-logs/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
             },
@@ -541,8 +561,9 @@ describe('tests', () => {
 
       // THEN
       // verify failure in case the access log bucket is encrypted with KMS
-      expect(logAccessLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
-
+      expect(logAccessLogFunctionTest).toThrow(
+        'Encryption key detected. Bucket encryption using KMS keys is unsupported'
+      );
     });
 
     test('access logging on imported bucket', () => {
@@ -622,14 +643,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':s3:::imported-bucket',
-                  ],
-                ],
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::imported-bucket']],
               },
             },
           ],
@@ -691,7 +705,6 @@ describe('tests', () => {
   });
 
   describe('logConnectionLogs', () => {
-
     class ExtendedLB extends elbv2.ApplicationLoadBalancer {
       constructor(scope: Construct, id: string, vpc: ec2.IVpc) {
         super(scope, id, { vpc });
@@ -708,7 +721,11 @@ describe('tests', () => {
       }
     }
 
-    function loggingSetup(withEncryption: boolean = false ): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
+    function loggingSetup(withEncryption: boolean = false): {
+      stack: cdk.Stack;
+      bucket: s3.Bucket;
+      lb: elbv2.ApplicationLoadBalancer;
+    } {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -780,8 +797,15 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] }, '/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] },
+                    '/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
               },
             },
             {
@@ -789,8 +813,15 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] }, '/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] },
+                    '/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
             },
@@ -843,8 +874,15 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] }, '/prefix-of-connection-logs/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] },
+                    '/prefix-of-connection-logs/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
               },
             },
             {
@@ -852,8 +890,15 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] }, '/prefix-of-connection-logs/AWSLogs/',
-                  { Ref: 'AWS::AccountId' }, '/*']],
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::GetAtt': ['ConnectionLogBucketFDE8490A', 'Arn'] },
+                    '/prefix-of-connection-logs/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
             },
@@ -879,8 +924,9 @@ describe('tests', () => {
 
       // THEN
       // verify failure in case the connection log bucket is encrypted with KMS
-      expect(logConnectionLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
-
+      expect(logConnectionLogFunctionTest).toThrow(
+        'Encryption key detected. Bucket encryption using KMS keys is unsupported'
+      );
     });
 
     test('connection logging on imported bucket', () => {
@@ -960,14 +1006,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':s3:::imported-bucket',
-                  ],
-                ],
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::imported-bucket']],
               },
             },
           ],
@@ -1112,7 +1151,8 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const albArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const sg = new ec2.SecurityGroup(stack, 'sg', {
       vpc,
       securityGroupName: 'mySg',
@@ -1131,7 +1171,8 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const albArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const sg = new ec2.SecurityGroup(stack, 'sg', {
       vpc,
       securityGroupName: 'mySg',
@@ -1151,7 +1192,8 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const albArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const sg = new ec2.SecurityGroup(stack, 'sg', {
       vpc,
       securityGroupName: 'mySg',
@@ -1175,7 +1217,8 @@ describe('tests', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const albArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
       loadBalancerArn: albArn,
       securityGroupId: 'sg-1234',
@@ -1189,7 +1232,8 @@ describe('tests', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const albArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const alb = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ALB', {
       loadBalancerArn: albArn,
       securityGroupId: 'sg-1234',
@@ -1286,7 +1330,6 @@ describe('tests', () => {
           crossZoneEnabled: false,
         });
       }).toThrow('crossZoneEnabled cannot be false with Application Load Balancers.');
-
     });
   });
 
@@ -1310,7 +1353,9 @@ describe('tests', () => {
 
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::ApplicationLoadBalancer', 0);
-      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/application/my-load-balancer/50dc6c495c0c9188');
+      expect(loadBalancer.loadBalancerArn).toEqual(
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/application/my-load-balancer/50dc6c495c0c9188'
+      );
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
       expect(loadBalancer.ipAddressType).toEqual(elbv2.IpAddressType.DUAL_STACK);
@@ -1433,26 +1478,29 @@ describe('tests', () => {
       });
     });
 
-    test.each([undefined, false])('Can create internal dualstack ApplicationLoadBalancer with denyAllIgwTraffic set to true', (internetFacing) => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
+    test.each([undefined, false])(
+      'Can create internal dualstack ApplicationLoadBalancer with denyAllIgwTraffic set to true',
+      (internetFacing) => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'Stack');
 
-      // WHEN
-      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
-        vpc,
-        denyAllIgwTraffic: true,
-        internetFacing: internetFacing,
-        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-      });
+        // WHEN
+        new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+          vpc,
+          denyAllIgwTraffic: true,
+          internetFacing: internetFacing,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+        });
 
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        Scheme: 'internal',
-        Type: 'application',
-        IpAddressType: 'dualstack',
-      });
-    });
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+          Scheme: 'internal',
+          Type: 'application',
+          IpAddressType: 'dualstack',
+        });
+      }
+    );
   });
 
   describe('dualstack without public ipv4', () => {

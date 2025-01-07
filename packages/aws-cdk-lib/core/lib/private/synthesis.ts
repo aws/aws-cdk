@@ -15,10 +15,7 @@ import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import {
-  PolicyValidationReportFormatter,
-  NamedValidationPluginReport,
-} from '../validation/private/report';
+import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
@@ -58,9 +55,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = {}): cx
 
   // in unit tests, we support creating free-standing stacks, so we create the
   // assembly builder here.
-  const builder = Stage.isStage(root)
-    ? root._assemblyBuilder
-    : new cxapi.CloudAssemblyBuilder(options.outdir);
+  const builder = Stage.isStage(root) ? root._assemblyBuilder : new cxapi.CloudAssemblyBuilder(options.outdir);
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
@@ -108,9 +103,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
         }
         let assemblyToUse = assemblies.get(construct.artifactId);
         if (!assemblyToUse)
-          throw new Error(
-            `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`
-          );
+          throw new Error(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
         templatePathsByPlugin
           .get(plugin)!
           .push(...assemblyToUse.stacksRecursively.map((stack) => stack.templateFullPath));
@@ -144,9 +137,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       });
     }
     if (FileSystem.fingerprint(outdir) !== hash) {
-      throw new Error(
-        `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`
-      );
+      throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
   }
 
@@ -154,9 +145,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
     const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
-    const output = formatJson
-      ? formatter.formatJson(reports)
-      : formatter.formatPrettyPrinted(reports);
+    const output = formatJson ? formatter.formatJson(reports) : formatter.formatPrettyPrinted(reports);
 
     const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
     if (formatJson) {
@@ -382,9 +371,7 @@ function getAspectApplications(node: IConstruct): AspectApplication[] {
 
   // Fallback: Create AspectApplications from `aspects.all`
   const typedAspects = aspects as Aspects;
-  return typedAspects.all.map(
-    (aspect) => new AspectApplication(node, aspect, AspectPriority.DEFAULT)
-  );
+  return typedAspects.all.map((aspect) => new AspectApplication(node, aspect, AspectPriority.DEFAULT));
 }
 
 /**
@@ -442,11 +429,7 @@ function injectTreeMetadata(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function synthesizeTree(
-  root: IConstruct,
-  builder: cxapi.CloudAssemblyBuilder,
-  validateOnSynth: boolean = false
-) {
+function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
   visit(root, 'post', (construct) => {
     const session = {
       outdir: builder.outdir,

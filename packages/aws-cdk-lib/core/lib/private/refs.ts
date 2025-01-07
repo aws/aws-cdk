@@ -42,18 +42,10 @@ export function resolveReferences(scope: IConstruct): void {
  */
 function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   const producer = Stack.of(reference.target);
-  const producerAccount = !Token.isUnresolved(producer.account)
-    ? producer.account
-    : cxapi.UNKNOWN_ACCOUNT;
-  const producerRegion = !Token.isUnresolved(producer.region)
-    ? producer.region
-    : cxapi.UNKNOWN_REGION;
-  const consumerAccount = !Token.isUnresolved(consumer.account)
-    ? consumer.account
-    : cxapi.UNKNOWN_ACCOUNT;
-  const consumerRegion = !Token.isUnresolved(consumer.region)
-    ? consumer.region
-    : cxapi.UNKNOWN_REGION;
+  const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : cxapi.UNKNOWN_ACCOUNT;
+  const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
+  const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
+  const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
 
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
@@ -127,10 +119,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
           'Cross stack/region references are only supported for stacks with an explicit region defined. '
       );
     }
-    consumer.addDependency(
-      producer,
-      `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`
-    );
+    consumer.addDependency(producer, `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
     return createCrossRegionImportValue(reference, consumer);
   }
 
@@ -140,10 +129,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
   // top-level stacks).
-  consumer.addDependency(
-    producer,
-    `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`
-  );
+  consumer.addDependency(producer, `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
   return createImportValue(reference);
 }
@@ -241,9 +227,7 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
   const id = JSON.stringify(exportingStack.resolve(exportable));
   const exportName = generateExportName(importStack, reference, id);
   if (Token.isUnresolved(exportName)) {
-    throw new Error(
-      `unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`
-    );
+    throw new Error(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
   }
 
   // get or create the export writer

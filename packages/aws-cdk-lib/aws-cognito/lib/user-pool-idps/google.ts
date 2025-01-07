@@ -47,10 +47,7 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
     const scopes = props.scopes ?? ['profile'];
 
     //at least one of the properties must be configured
-    if (
-      (!props.clientSecret && !props.clientSecretValue) ||
-      (props.clientSecret && props.clientSecretValue)
-    ) {
+    if ((!props.clientSecret && !props.clientSecretValue) || (props.clientSecret && props.clientSecretValue)) {
       throw new Error('Exactly one of "clientSecret" or "clientSecretValue" must be configured.');
     }
 
@@ -60,9 +57,7 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
       providerType: 'Google',
       providerDetails: {
         client_id: props.clientId,
-        client_secret: props.clientSecretValue
-          ? props.clientSecretValue.unsafeUnwrap()
-          : props.clientSecret,
+        client_secret: props.clientSecretValue ? props.clientSecretValue.unsafeUnwrap() : props.clientSecret,
         authorize_scopes: scopes.join(' '),
       },
       attributeMapping: super.configureAttributeMapping(),

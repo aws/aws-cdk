@@ -1,6 +1,18 @@
 import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
-import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags, ITaggable, ITaggableV2 } from '../lib';
+import {
+  CfnResource,
+  CfnResourceProps,
+  RemoveTag,
+  Stack,
+  Tag,
+  TagManager,
+  TagType,
+  Aspects,
+  Tags,
+  ITaggable,
+  ITaggableV2,
+} from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
 class TaggableResource extends CfnResource implements ITaggable {
@@ -53,7 +65,8 @@ class MapTaggableResource extends CfnResource implements ITaggable {
 
 describe('tag aspect', () => {
   test.each([
-    ['TaggableResource', TaggableResource], ['TaggableResource2', TaggableResource2],
+    ['TaggableResource', TaggableResource],
+    ['TaggableResource2', TaggableResource2],
   ])('Tag visit all children of the applied node, using class %s', (_, taggableClass) => {
     const root = new Stack();
     const res = new taggableClass(root, 'FakeResource', {
@@ -236,14 +249,15 @@ describe('tag aspect', () => {
     const cfnBranch = new TaggableResource(root, 'FakeBranchB', {
       type: 'AWS::Fake::Thing',
       properties: {
-        tags: [
-          { key: 'cfn', value: 'is cool' },
-        ],
+        tags: [{ key: 'cfn', value: 'is cool' }],
       },
     });
     Aspects.of(aspectBranch).add(new Tag('aspects', 'rule'));
     synthesize(root);
-    expect(aspectBranch.testProperties().tags).toEqual([{ key: 'aspects', value: 'rule' }, { key: 'cfn', value: 'is cool' }]);
+    expect(aspectBranch.testProperties().tags).toEqual([
+      { key: 'aspects', value: 'rule' },
+      { key: 'cfn', value: 'is cool' },
+    ]);
     expect(asgResource.testProperties().tags).toEqual([
       { key: 'aspects', value: 'rule', propagateAtLaunch: true },
       { key: 'cfn', value: 'is cool', propagateAtLaunch: true },

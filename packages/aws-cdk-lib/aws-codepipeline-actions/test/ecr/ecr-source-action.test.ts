@@ -41,17 +41,18 @@ describe('ecr source action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': Match.arrayWith([
+        Stages: Match.arrayWith([
           Match.objectLike({
-            'Name': 'Source',
+            Name: 'Source',
           }),
           Match.objectLike({
-            'Name': 'Build',
-            'Actions': Match.arrayWith([
+            Name: 'Build',
+            Actions: Match.arrayWith([
               Match.objectLike({
-                'Name': 'Build',
-                'Configuration': {
-                  'EnvironmentVariables': '[{"name":"ImageDigest","type":"PLAINTEXT","value":"#{Source_Source_NS.ImageDigest}"}]',
+                Name: 'Build',
+                Configuration: {
+                  EnvironmentVariables:
+                    '[{"name":"ImageDigest","type":"PLAINTEXT","value":"#{Source_Source_NS.ImageDigest}"}]',
                 },
               }),
             ]),
@@ -60,9 +61,9 @@ describe('ecr source action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'detail': {
-            'result': ['SUCCESS'],
+        EventPattern: {
+          detail: {
+            result: ['SUCCESS'],
             'repository-name': ['repo'],
             'image-tag': ['latest'],
             'action-type': ['PUSH'],
@@ -105,12 +106,10 @@ describe('ecr source action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'aws.ecr',
-          ],
-          'detail': {
-            'result': ['SUCCESS'],
+        EventPattern: {
+          source: ['aws.ecr'],
+          detail: {
+            result: ['SUCCESS'],
             'repository-name': ['repo'],
             'image-tag': [],
             'action-type': ['PUSH'],
@@ -119,14 +118,14 @@ describe('ecr source action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': Match.arrayWith([
+        Stages: Match.arrayWith([
           Match.objectLike({
-            'Name': 'Source',
-            'Actions': Match.arrayWith([
+            Name: 'Source',
+            Actions: Match.arrayWith([
               Match.objectLike({
-                'Name': 'Source',
-                'Configuration': {
-                  'ImageTag': Match.absent(),
+                Name: 'Source',
+                Configuration: {
+                  ImageTag: Match.absent(),
                 },
               }),
             ]),

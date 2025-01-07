@@ -100,16 +100,12 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       });
     if (!props.disableDefaultBackupPolicy) {
       role.addManagedPolicy(
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'service-role/AWSBackupServiceRolePolicyForBackup'
-        )
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForBackup')
       );
     }
     if (props.allowRestores) {
       role.addManagedPolicy(
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'service-role/AWSBackupServiceRolePolicyForRestores'
-        )
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForRestores')
       );
     }
     this.grantPrincipal = role;

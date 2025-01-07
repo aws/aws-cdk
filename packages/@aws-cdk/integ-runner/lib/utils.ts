@@ -4,10 +4,7 @@ import { spawnSync } from 'child_process';
 /**
  * Our own execute function which doesn't use shells and strings.
  */
-export function exec(
-  commandLine: string[],
-  options: { cwd?: string; verbose?: boolean; env?: any } = {}
-): any {
+export function exec(commandLine: string[], options: { cwd?: string; verbose?: boolean; env?: any } = {}): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
     stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {
@@ -25,9 +22,7 @@ export function exec(
       // will be 'null' in verbose mode
       process.stderr.write(proc.stderr);
     }
-    throw new Error(
-      `Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`
-    );
+    throw new Error(`Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`);
   }
 
   const output = proc.stdout.toString('utf-8').trim();

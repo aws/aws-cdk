@@ -54,7 +54,7 @@ test('use ALB as record target with health check', () => {
     target: route53.RecordTarget.fromAlias(
       new targets.LoadBalancerTarget(lb, {
         evaluateTargetHealth: true,
-      }),
+      })
     ),
   });
 

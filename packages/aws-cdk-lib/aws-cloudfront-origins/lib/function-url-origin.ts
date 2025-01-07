@@ -75,9 +75,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
-  protected renderCustomOriginConfig():
-    | cloudfront.CfnDistribution.CustomOriginConfigProperty
-    | undefined {
+  protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
     return {
       originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_2],
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
@@ -107,9 +105,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
-  protected renderCustomOriginConfig():
-    | cloudfront.CfnDistribution.CustomOriginConfigProperty
-    | undefined {
+  protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
     return {
       originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_2],
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
@@ -118,17 +114,11 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     };
   }
 
-  public bind(
-    scope: Construct,
-    options: cloudfront.OriginBindOptions
-  ): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     const originBindConfig = super.bind(scope, options);
 
     if (!this.originAccessControl) {
-      this.originAccessControl = new cloudfront.FunctionUrlOriginAccessControl(
-        scope,
-        'FunctionUrlOriginAccessControl'
-      );
+      this.originAccessControl = new cloudfront.FunctionUrlOriginAccessControl(scope, 'FunctionUrlOriginAccessControl');
     }
     this.validateAuthType();
 
@@ -169,8 +159,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       originAccessControlConfig.signingBehavior === cloudfront.SigningBehavior.ALWAYS &&
       originAccessControlConfig.signingProtocol === cloudfront.SigningProtocol.SIGV4;
 
-    const isAuthTypeIsNone: boolean =
-      this.functionUrl.authType !== lambda.FunctionUrlAuthType.AWS_IAM;
+    const isAuthTypeIsNone: boolean = this.functionUrl.authType !== lambda.FunctionUrlAuthType.AWS_IAM;
 
     if (isAlwaysSigning && isAuthTypeIsNone) {
       throw new Error(

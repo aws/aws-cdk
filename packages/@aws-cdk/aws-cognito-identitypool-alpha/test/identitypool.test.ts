@@ -1,6 +1,17 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { UserPool, UserPoolClient, UserPoolIdentityProvider } from 'aws-cdk-lib/aws-cognito';
-import { Role, ServicePrincipal, ArnPrincipal, AnyPrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument, PolicyStatement, Effect, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import {
+  Role,
+  ServicePrincipal,
+  ArnPrincipal,
+  AnyPrincipal,
+  OpenIdConnectProvider,
+  SamlProvider,
+  SamlMetadataDocument,
+  PolicyStatement,
+  Effect,
+  PolicyDocument,
+} from 'aws-cdk-lib/aws-iam';
 import { Fn, Lazy, Stack } from 'aws-cdk-lib';
 import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
 import { RoleMappingMatchType } from '../lib/identitypool-role-attachment';
@@ -24,7 +35,7 @@ describe('identity pool', () => {
           {
             Action: 'sts:AssumeRoleWithWebIdentity',
             Condition: {
-              'StringEquals': {
+              StringEquals: {
                 'cognito-identity.amazonaws.com:aud': {
                   Ref: 'TestIdentityPoolMinimal44837852',
                 },
@@ -48,7 +59,7 @@ describe('identity pool', () => {
           {
             Action: 'sts:AssumeRoleWithWebIdentity',
             Condition: {
-              'StringEquals': {
+              StringEquals: {
                 'cognito-identity.amazonaws.com:aud': {
                   Ref: 'TestIdentityPoolMinimal44837852',
                 },
@@ -76,18 +87,24 @@ describe('identity pool', () => {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
     const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
-      authenticatedRole, unauthenticatedRole, allowUnauthenticatedIdentities: true,
+      authenticatedRole,
+      unauthenticatedRole,
+      allowUnauthenticatedIdentities: true,
     });
-    identityPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['execute-api:*', 'dynamodb:*'],
-      resources: ['*'],
-    }));
-    identityPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['execute-api:*'],
-      resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
-    }));
+    identityPool.authenticatedRole.addToPrincipalPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['execute-api:*', 'dynamodb:*'],
+        resources: ['*'],
+      })
+    );
+    identityPool.unauthenticatedRole.addToPrincipalPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['execute-api:*'],
+        resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+      })
+    );
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.resourceCountIs('AWS::IAM::Policy', 2);
@@ -134,16 +151,20 @@ describe('identity pool', () => {
   test('adding actions and resources to default roles', () => {
     const stack = new Stack();
     const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions');
-    identityPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['execute-api:*', 'dynamodb:*'],
-      resources: ['*'],
-    }));
-    identityPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: ['execute-api:*'],
-      resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
-    }));
+    identityPool.authenticatedRole.addToPrincipalPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['execute-api:*', 'dynamodb:*'],
+        resources: ['*'],
+      })
+    );
+    identityPool.unauthenticatedRole.addToPrincipalPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['execute-api:*'],
+        resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+      })
+    );
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.resourceCountIs('AWS::IAM::Policy', 2);
@@ -179,9 +200,19 @@ describe('identity pool', () => {
         account: '1234567891011',
       },
     });
-    expect(() => IdentityPool.fromIdentityPoolId(stack, 'idPoolIdError', 'idPool')).toThrow('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
-    expect(() => IdentityPool.fromIdentityPoolId(stack, 'idPoolIdRegionError', 'your-region:idPool')).toThrow('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
-    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'idPoolArnError', 'arn:aws:cognito-identity:my-region:1234567891011:identitypool\/your-region:idPool/')).toThrow('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+    expect(() => IdentityPool.fromIdentityPoolId(stack, 'idPoolIdError', 'idPool')).toThrow(
+      'Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>'
+    );
+    expect(() => IdentityPool.fromIdentityPoolId(stack, 'idPoolIdRegionError', 'your-region:idPool')).toThrow(
+      'Invalid Identity Pool Id: Region in Identity Pool Id must match stack region'
+    );
+    expect(() =>
+      IdentityPool.fromIdentityPoolArn(
+        stack,
+        'idPoolArnError',
+        'arn:aws:cognito-identity:my-region:1234567891011:identitypool\/your-region:idPool/'
+      )
+    ).toThrow('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
     const idPool = IdentityPool.fromIdentityPoolId(stack, 'staticIdPool', 'my-region:idPool');
 
     expect(idPool.identityPoolId).toEqual('my-region:idPool');
@@ -190,21 +221,41 @@ describe('identity pool', () => {
 
   test('fromIdentityPoolId accept token', () => {
     const stack = new Stack();
-    expect(() => IdentityPool.fromIdentityPoolId(stack, 'IdPool1', Lazy.string({ produce: () => 'lazy-id' }))).not.toThrow();
+    expect(() =>
+      IdentityPool.fromIdentityPoolId(stack, 'IdPool1', Lazy.string({ produce: () => 'lazy-id' }))
+    ).not.toThrow();
     expect(() => IdentityPool.fromIdentityPoolId(stack, 'IdPool2', 'id-region:pool-id')).not.toThrow();
   });
 
   test('fromIdentityPoolArn accepts token', () => {
     const stack = new Stack();
-    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'IdPool1', Lazy.string({ produce: () => 'lazy-arn' }))).not.toThrow();
-    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'IdPool2', `arn:aws:cognito-identity:${stack.region}:${stack.account}:identitypool/id-region:pool-id`)).not.toThrow();
-    expect(() => IdentityPool.fromIdentityPoolArn(stack, 'IdPool3', `arn:aws:cognito-identity:arn-region:${stack.account}:identitypool/${Lazy.string({ produce: () => 'lazy-region' })}:pool-id`)).not.toThrow();
+    expect(() =>
+      IdentityPool.fromIdentityPoolArn(stack, 'IdPool1', Lazy.string({ produce: () => 'lazy-arn' }))
+    ).not.toThrow();
+    expect(() =>
+      IdentityPool.fromIdentityPoolArn(
+        stack,
+        'IdPool2',
+        `arn:aws:cognito-identity:${stack.region}:${stack.account}:identitypool/id-region:pool-id`
+      )
+    ).not.toThrow();
+    expect(() =>
+      IdentityPool.fromIdentityPoolArn(
+        stack,
+        'IdPool3',
+        `arn:aws:cognito-identity:arn-region:${stack.account}:identitypool/${Lazy.string({ produce: () => 'lazy-region' })}:pool-id`
+      )
+    ).not.toThrow();
   });
 
   test('user pools are properly configured', () => {
     const stack = new Stack();
     const poolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'poolProvider', 'poolProvider');
-    const otherPoolProvider = UserPoolIdentityProvider.fromProviderName(stack, 'otherPoolProvider', 'otherPoolProvider');
+    const otherPoolProvider = UserPoolIdentityProvider.fromProviderName(
+      stack,
+      'otherPoolProvider',
+      'otherPoolProvider'
+    );
     const pool = new UserPool(stack, 'Pool');
     const otherPool = new UserPool(stack, 'OtherPool');
     pool.registerIdentityProvider(poolProvider);
@@ -218,7 +269,7 @@ describe('identity pool', () => {
       new UserPoolAuthenticationProvider({
         userPool: otherPool,
         disableServerSideTokenCheck: true,
-      }),
+      })
     );
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::Cognito::UserPool', 2);
@@ -227,49 +278,21 @@ describe('identity pool', () => {
       UserPoolId: {
         Ref: 'PoolD3F588B8',
       },
-      AllowedOAuthFlows: [
-        'implicit',
-        'code',
-      ],
+      AllowedOAuthFlows: ['implicit', 'code'],
       AllowedOAuthFlowsUserPoolClient: true,
-      AllowedOAuthScopes: [
-        'profile',
-        'phone',
-        'email',
-        'openid',
-        'aws.cognito.signin.user.admin',
-      ],
-      CallbackURLs: [
-        'https://example.com',
-      ],
-      SupportedIdentityProviders: [
-        'poolProvider',
-        'COGNITO',
-      ],
+      AllowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
+      CallbackURLs: ['https://example.com'],
+      SupportedIdentityProviders: ['poolProvider', 'COGNITO'],
     });
     temp.hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: {
         Ref: 'OtherPool7DA7F2F7',
       },
-      AllowedOAuthFlows: [
-        'implicit',
-        'code',
-      ],
+      AllowedOAuthFlows: ['implicit', 'code'],
       AllowedOAuthFlowsUserPoolClient: true,
-      AllowedOAuthScopes: [
-        'profile',
-        'phone',
-        'email',
-        'openid',
-        'aws.cognito.signin.user.admin',
-      ],
-      CallbackURLs: [
-        'https://example.com',
-      ],
-      SupportedIdentityProviders: [
-        'otherPoolProvider',
-        'COGNITO',
-      ],
+      AllowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
+      CallbackURLs: ['https://example.com'],
+      SupportedIdentityProviders: ['otherPoolProvider', 'COGNITO'],
     });
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       AllowUnauthenticatedIdentities: false,
@@ -391,11 +414,13 @@ describe('role mappings', () => {
   test('mappingKey respected when identity provider is not a token', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
-      roleMappings: [{
-        mappingKey: 'amazon',
-        providerUrl: IdentityPoolProviderUrl.AMAZON,
-        useToken: true,
-      }],
+      roleMappings: [
+        {
+          mappingKey: 'amazon',
+          providerUrl: IdentityPoolProviderUrl.AMAZON,
+          useToken: true,
+        },
+      ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
@@ -410,16 +435,10 @@ describe('role mappings', () => {
       },
       Roles: {
         authenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043', 'Arn'],
         },
         unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800', 'Arn'],
         },
       },
     });
@@ -428,23 +447,30 @@ describe('role mappings', () => {
   test('mappingKey required when identity provider is not a token', () => {
     const stack = new Stack();
     const providerUrl = Fn.importValue('ProviderUrl');
-    expect(() => new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
-      roleMappings: [{
-        providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
-        useToken: true,
-      }],
-    })).toThrow('mappingKey must be provided when providerUrl.value is a token');
+    expect(
+      () =>
+        new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
+          roleMappings: [
+            {
+              providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
+              useToken: true,
+            },
+          ],
+        })
+    ).toThrow('mappingKey must be provided when providerUrl.value is a token');
   });
 
   test('mappingKey respected when identity provider is a token', () => {
     const stack = new Stack();
     const providerUrl = Fn.importValue('ProviderUrl');
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
-      roleMappings: [{
-        mappingKey: 'theKey',
-        providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
-        useToken: true,
-      }],
+      roleMappings: [
+        {
+          mappingKey: 'theKey',
+          providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
+          useToken: true,
+        },
+      ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
@@ -461,16 +487,10 @@ describe('role mappings', () => {
       },
       Roles: {
         authenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043', 'Arn'],
         },
         unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800', 'Arn'],
         },
       },
     });
@@ -478,10 +498,12 @@ describe('role mappings', () => {
   test('using token', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
-      roleMappings: [{
-        providerUrl: IdentityPoolProviderUrl.AMAZON,
-        useToken: true,
-      }],
+      roleMappings: [
+        {
+          providerUrl: IdentityPoolProviderUrl.AMAZON,
+          useToken: true,
+        },
+      ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
@@ -496,16 +518,10 @@ describe('role mappings', () => {
       },
       Roles: {
         authenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043', 'Arn'],
         },
         unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800', 'Arn'],
         },
       },
     });
@@ -513,11 +529,16 @@ describe('role mappings', () => {
 
   test('rules type without rules throws', () => {
     const stack = new Stack();
-    expect(() => new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
-      roleMappings: [{
-        providerUrl: IdentityPoolProviderUrl.AMAZON,
-      }],
-    })).toThrow('IdentityPoolRoleMapping.rules is required when useToken is false');
+    expect(
+      () =>
+        new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
+          roleMappings: [
+            {
+              providerUrl: IdentityPoolProviderUrl.AMAZON,
+            },
+          ],
+        })
+    ).toThrow('IdentityPoolRoleMapping.rules is required when useToken is false');
   });
 
   test('role mapping with rules configuration', () => {
@@ -548,49 +569,53 @@ describe('role mappings', () => {
       assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/CustomUser'),
     });
     const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
-      roleMappings: [{
-        mappingKey: 'cognito',
-        providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
-        useToken: true,
-      },
+      roleMappings: [
+        {
+          mappingKey: 'cognito',
+          providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
+          useToken: true,
+        },
+        {
+          providerUrl: IdentityPoolProviderUrl.AMAZON,
+          resolveAmbiguousRoles: true,
+          rules: [
+            {
+              claim: 'custom:admin',
+              claimValue: 'admin',
+              mappedRole: adminRole,
+            },
+            {
+              claim: 'custom:admin',
+              claimValue: 'admin',
+              matchType: RoleMappingMatchType.NOTEQUAL,
+              mappedRole: nonAdminRole,
+            },
+          ],
+        },
+      ],
+    });
+    idPool.addRoleMappings(
       {
-        providerUrl: IdentityPoolProviderUrl.AMAZON,
-        resolveAmbiguousRoles: true,
+        providerUrl: IdentityPoolProviderUrl.FACEBOOK,
         rules: [
           {
-            claim: 'custom:admin',
-            claimValue: 'admin',
-            mappedRole: adminRole,
-          },
-          {
-            claim: 'custom:admin',
-            claimValue: 'admin',
-            matchType: RoleMappingMatchType.NOTEQUAL,
-            mappedRole: nonAdminRole,
+            claim: 'iss',
+            claimValue: 'https://graph.facebook.com',
+            mappedRole: facebookRole,
           },
         ],
-      }],
-    });
-    idPool.addRoleMappings({
-      providerUrl: IdentityPoolProviderUrl.FACEBOOK,
-      rules: [
-        {
-          claim: 'iss',
-          claimValue: 'https://graph.facebook.com',
-          mappedRole: facebookRole,
-        },
-      ],
-    },
-    {
-      providerUrl: IdentityPoolProviderUrl.custom('example.com'),
-      rules: [
-        {
-          claim: 'iss',
-          claimValue: 'https://example.com',
-          mappedRole: customRole,
-        },
-      ],
-    });
+      },
+      {
+        providerUrl: IdentityPoolProviderUrl.custom('example.com'),
+        rules: [
+          {
+            claim: 'iss',
+            claimValue: 'https://example.com',
+            mappedRole: customRole,
+          },
+        ],
+      }
+    );
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 2);
     temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
@@ -598,13 +623,9 @@ describe('role mappings', () => {
         Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
       },
       RoleMappings: {
-        'cognito': {
+        cognito: {
           IdentityProvider: {
-            'Fn::Join': ['', [
-              { 'Fn::GetAtt': ['PoolD3F588B8', 'ProviderName'] },
-              ':',
-              { Ref: 'PoolClient8A3E5EB7' },
-            ]],
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['PoolD3F588B8', 'ProviderName'] }, ':', { Ref: 'PoolClient8A3E5EB7' }]],
           },
           Type: 'Token',
         },
@@ -617,10 +638,7 @@ describe('role mappings', () => {
                 Claim: 'custom:admin',
                 MatchType: 'Equals',
                 RoleARN: {
-                  'Fn::GetAtt': [
-                    'adminRoleC345D70B',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['adminRoleC345D70B', 'Arn'],
                 },
                 Value: 'admin',
               },
@@ -628,10 +646,7 @@ describe('role mappings', () => {
                 Claim: 'custom:admin',
                 MatchType: 'NotEqual',
                 RoleARN: {
-                  'Fn::GetAtt': [
-                    'nonAdminRole43C19D5C',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['nonAdminRole43C19D5C', 'Arn'],
                 },
                 Value: 'admin',
               },
@@ -642,16 +657,10 @@ describe('role mappings', () => {
       },
       Roles: {
         authenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingRulesAuthenticatedRole14D102C7',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestIdentityPoolRoleMappingRulesAuthenticatedRole14D102C7', 'Arn'],
         },
         unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingRulesUnauthenticatedRole79A7AF99',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['TestIdentityPoolRoleMappingRulesUnauthenticatedRole79A7AF99', 'Arn'],
         },
       },
     });
@@ -669,10 +678,7 @@ describe('role mappings', () => {
                 Claim: 'iss',
                 MatchType: 'Equals',
                 RoleARN: {
-                  'Fn::GetAtt': [
-                    'facebookRole9D649CD8',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['facebookRole9D649CD8', 'Arn'],
                 },
                 Value: 'https://graph.facebook.com',
               },
@@ -689,10 +695,7 @@ describe('role mappings', () => {
                 Claim: 'iss',
                 MatchType: 'Equals',
                 RoleARN: {
-                  'Fn::GetAtt': [
-                    'customRole4C920FF0',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['customRole4C920FF0', 'Arn'],
                 },
                 Value: 'https://example.com',
               },
@@ -706,14 +709,20 @@ describe('role mappings', () => {
 
   test('role mapping with an imported user pool and client', () => {
     const stack = new Stack();
-    const importedPool = UserPool.fromUserPoolArn(stack, 'ImportedPool', 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    const importedPool = UserPool.fromUserPoolArn(
+      stack,
+      'ImportedPool',
+      'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool'
+    );
     const importedClient = UserPoolClient.fromUserPoolClientId(stack, 'ImportedPoolClient', 'client-id');
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
-      roleMappings: [{
-        mappingKey: 'cognito',
-        providerUrl: IdentityPoolProviderUrl.userPool(importedPool, importedClient),
-        useToken: true,
-      }],
+      roleMappings: [
+        {
+          mappingKey: 'cognito',
+          providerUrl: IdentityPoolProviderUrl.userPool(importedPool, importedClient),
+          useToken: true,
+        },
+      ],
     });
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 1);
@@ -724,14 +733,7 @@ describe('role mappings', () => {
       RoleMappings: {
         cognito: {
           IdentityProvider: {
-            'Fn::Join': [
-              '',
-              [
-                'cognito-idp.us-east-1.',
-                { Ref: 'AWS::URLSuffix' },
-                '/test-user-pool:client-id',
-              ],
-            ],
+            'Fn::Join': ['', ['cognito-idp.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/test-user-pool:client-id']],
           },
           Type: 'Token',
         },

@@ -81,11 +81,7 @@ export class WaiterStateMachine extends Construct {
     super(scope, id);
     const interval = props.interval || Duration.seconds(5);
     const totalTimeout = props.totalTimeout || Duration.minutes(30);
-    const maxAttempts = calculateMaxRetries(
-      totalTimeout.toSeconds(),
-      interval.toSeconds(),
-      props.backoffRate ?? 1
-    );
+    const maxAttempts = calculateMaxRetries(totalTimeout.toSeconds(), interval.toSeconds(), props.backoffRate ?? 1);
 
     if (Math.round(maxAttempts) !== maxAttempts) {
       throw new Error(

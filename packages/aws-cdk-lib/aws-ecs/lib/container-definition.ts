@@ -568,8 +568,7 @@ export class ContainerDefinition extends Construct {
     }
     this.essential = props.essential ?? true;
     this.taskDefinition = props.taskDefinition;
-    this.memoryLimitSpecified =
-      props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
+    this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
 
@@ -636,11 +635,7 @@ export class ContainerDefinition extends Construct {
       this.addUlimits(...props.ulimits);
     }
 
-    this.validateRestartPolicy(
-      props.enableRestartPolicy,
-      props.restartIgnoredExitCodes,
-      props.restartAttemptPeriod
-    );
+    this.validateRestartPolicy(props.enableRestartPolicy, props.restartIgnoredExitCodes, props.restartAttemptPeriod);
   }
 
   /**
@@ -850,10 +845,7 @@ export class ContainerDefinition extends Construct {
         `Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`
       );
     }
-    if (
-      restartAttemptPeriod &&
-      (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)
-    ) {
+    if (restartAttemptPeriod && (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)) {
       throw new Error(
         `The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`
       );
@@ -880,9 +872,7 @@ export class ContainerDefinition extends Construct {
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(
-        `Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`
-      );
+      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -895,9 +885,7 @@ export class ContainerDefinition extends Construct {
     }
 
     if (defaultPortMapping.containerPortRange !== undefined) {
-      throw new Error(
-        `The first port mapping of the container ${this.containerName} must expose a single port.`
-      );
+      throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
     }
 
     return defaultPortMapping.containerPort;
@@ -908,16 +896,12 @@ export class ContainerDefinition extends Construct {
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(
-        `Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`
-      );
+      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
 
     if (defaultPortMapping.containerPortRange !== undefined) {
-      throw new Error(
-        `The first port mapping of the container ${this.containerName} must expose a single port.`
-      );
+      throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
     }
 
     return defaultPortMapping.containerPort;
@@ -928,9 +912,7 @@ export class ContainerDefinition extends Construct {
    *
    * @param _taskDefinition [disable-awslint:ref-via-interface] (unused but kept to avoid breaking change)
    */
-  public renderContainerDefinition(
-    _taskDefinition?: TaskDefinition
-  ): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       credentialSpecs: this.credentialSpecs && this.credentialSpecs.map(renderCredentialSpec),
@@ -951,30 +933,18 @@ export class ContainerDefinition extends Construct {
       interactive: this.props.interactive,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: cdk.Lazy.any(
-        { produce: () => this.mountPoints.map(renderMountPoint) },
-        { omitEmptyArray: true }
-      ),
+      mountPoints: cdk.Lazy.any({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
       name: this.containerName,
-      portMappings: cdk.Lazy.any(
-        { produce: () => this.portMappings.map(renderPortMapping) },
-        { omitEmptyArray: true }
-      ),
+      portMappings: cdk.Lazy.any({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
       privileged: this.props.privileged,
       pseudoTerminal: this.props.pseudoTerminal,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
       startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
       stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
-      ulimits: cdk.Lazy.any(
-        { produce: () => this.ulimits.map(renderUlimit) },
-        { omitEmptyArray: true }
-      ),
+      ulimits: cdk.Lazy.any({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
-      volumesFrom: cdk.Lazy.any(
-        { produce: () => this.volumesFrom.map(renderVolumeFrom) },
-        { omitEmptyArray: true }
-      ),
+      volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment:
@@ -982,8 +952,7 @@ export class ContainerDefinition extends Construct {
           ? renderKV(this.environment, 'name', 'value')
           : undefined,
       environmentFiles:
-        this.environmentFiles &&
-        renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
+        this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
       secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
@@ -1062,10 +1031,7 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
   return ret;
 }
 
-function renderEnvironmentFiles(
-  partition: string,
-  environmentFiles: EnvironmentFileConfig[]
-): any[] {
+function renderEnvironmentFiles(partition: string, environmentFiles: EnvironmentFileConfig[]): any[] {
   const ret = [];
   for (const environmentFile of environmentFiles) {
     const s3Location = environmentFile.s3Location;
@@ -1408,15 +1374,11 @@ export class PortMap {
       }
 
       if (this.networkmode !== NetworkMode.BRIDGE && this.networkmode !== NetworkMode.AWS_VPC) {
-        throw new Error(
-          'Either AwsVpc or Bridge network mode is required to set a port range for the container.'
-        );
+        throw new Error('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
       }
 
       if (!/^\d+-\d+$/.test(this.portmapping.containerPortRange)) {
-        throw new Error(
-          'The containerPortRange must be a string in the format [start port]-[end port].'
-        );
+        throw new Error('The containerPortRange must be a string in the format [start port]-[end port].');
       }
     }
   }
@@ -1470,9 +1432,7 @@ export class ServiceConnect {
       );
     }
     if (!this.isValidPortName()) {
-      throw new Error(
-        "Service connect-related port mapping field 'appProtocol' cannot be set without 'name'"
-      );
+      throw new Error("Service connect-related port mapping field 'appProtocol' cannot be set without 'name'");
     }
   }
 
@@ -1533,10 +1493,7 @@ export class AppProtocol {
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
-    containerPort:
-      pm.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE
-        ? pm.containerPort
-        : undefined,
+    containerPort: pm.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE ? pm.containerPort : undefined,
     containerPortRange: pm.containerPortRange,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,
@@ -1644,9 +1601,7 @@ export interface SystemControl {
   readonly value: string;
 }
 
-function renderSystemControls(
-  systemControls: SystemControl[]
-): CfnTaskDefinition.SystemControlProperty[] {
+function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinition.SystemControlProperty[] {
   return systemControls.map((sc) => ({
     namespace: sc.namespace,
     value: sc.value,

@@ -1,11 +1,6 @@
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import * as perms from './perms';
-import {
-  Operation,
-  SystemErrorsForOperationsMetricOptions,
-  OperationsMetricOptions,
-  ITable,
-} from './shared';
+import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
 import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import {
   AddToResourcePolicyResult,
@@ -196,9 +191,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal to grant access to
    */
   public grantReadWriteData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(
-      perms.DESCRIBE_TABLE
-    );
+    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions });
   }
@@ -295,9 +288,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public metricSuccessfulRequestLatency(props?: MetricOptions): Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      throw new Error(
-        '`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric'
-      );
+      throw new Error('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric');
     }
 
     const dimensionsMap = {
@@ -319,10 +310,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * By default, the metric will be calculated as an average over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
    */
-  public metricThrottledRequestsForOperation(
-    operation: string,
-    props?: OperationsMetricOptions
-  ): IMetric {
+  public metricThrottledRequestsForOperation(operation: string, props?: OperationsMetricOptions): IMetric {
     const metricProps: MetricProps = {
       ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
       ...props,
@@ -337,11 +325,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricThrottledRequestsForOperations(props?: OperationsMetricOptions): IMetric {
-    return this.sumMetricsForOperations(
-      'ThrottledRequests',
-      'Sum of throttled requests across all operations',
-      props
-    );
+    return this.sumMetricsForOperations('ThrottledRequests', 'Sum of throttled requests across all operations', props);
   }
 
   /**
@@ -351,11 +335,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): IMetric {
-    return this.sumMetricsForOperations(
-      'SystemErrors',
-      'Sum of errors across all operations',
-      props
-    );
+    return this.sumMetricsForOperations('SystemErrors', 'Sum of errors across all operations', props);
   }
 
   /**
@@ -393,11 +373,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   /**
    * Create a math expression for operations.
    */
-  private sumMetricsForOperations(
-    metricName: string,
-    expressionLabel: string,
-    props?: OperationsMetricOptions
-  ) {
+  private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions) {
     if (props?.dimensions?.Operation) {
       throw new Error('The Operation dimension is not supported. Use the `operations` property');
     }
@@ -434,9 +410,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     const mapper = metricNameMapper ?? ((op) => op.toLowerCase());
 
     if (props?.dimensions?.Operation) {
-      throw new Error(
-        'Invalid properties. Operation dimension is not supported when calculating operational metrics'
-      );
+      throw new Error('Invalid properties. Operation dimension is not supported when calculating operational metrics');
     }
 
     for (const operation of operations) {

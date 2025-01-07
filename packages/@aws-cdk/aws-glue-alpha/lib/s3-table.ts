@@ -264,11 +264,7 @@ const encryptionMappings = {
 function createBucket(table: S3Table, props: S3TableProps) {
   let bucket = props.bucket;
 
-  if (
-    bucket &&
-    props.encryption !== undefined &&
-    props.encryption !== TableEncryption.CLIENT_SIDE_KMS
-  ) {
+  if (bucket && props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS) {
     throw new Error('you can not specify encryption settings if you also provide a bucket');
   }
 

@@ -4,10 +4,7 @@ import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { InputValidator } from './private/validation';
-import {
-  CfnAttributeGroup,
-  CfnAttributeGroupAssociation,
-} from 'aws-cdk-lib/aws-servicecatalogappregistry';
+import { CfnAttributeGroup, CfnAttributeGroupAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
 
 const ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly`;
 const ATTRIBUTE_GROUP_ALLOW_ACCESS_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation`;
@@ -128,21 +125,12 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
    * @param id The construct's name.
    * @param attributeGroupArn the Amazon Resource Name of the existing AppRegistry attribute group
    */
-  public static fromAttributeGroupArn(
-    scope: Construct,
-    id: string,
-    attributeGroupArn: string
-  ): IAttributeGroup {
-    const arn = cdk.Stack.of(scope).splitArn(
-      attributeGroupArn,
-      cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME
-    );
+  public static fromAttributeGroupArn(scope: Construct, id: string, attributeGroupArn: string): IAttributeGroup {
+    const arn = cdk.Stack.of(scope).splitArn(attributeGroupArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
     const attributeGroupId = arn.resourceName;
 
     if (!attributeGroupId) {
-      throw new Error(
-        'Missing required Attribute Group ID from Attribute Group ARN: ' + attributeGroupArn
-      );
+      throw new Error('Missing required Attribute Group ID from Attribute Group ARN: ' + attributeGroupArn);
     }
 
     class Import extends AttributeGroupBase {
@@ -184,25 +172,8 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
   }
 
   private validateAttributeGroupProps(props: AttributeGroupProps) {
-    InputValidator.validateLength(
-      this.node.path,
-      'attribute group name',
-      1,
-      256,
-      props.attributeGroupName
-    );
-    InputValidator.validateRegex(
-      this.node.path,
-      'attribute group name',
-      /^[a-zA-Z0-9-_]+$/,
-      props.attributeGroupName
-    );
-    InputValidator.validateLength(
-      this.node.path,
-      'attribute group description',
-      0,
-      1024,
-      props.description
-    );
+    InputValidator.validateLength(this.node.path, 'attribute group name', 1, 256, props.attributeGroupName);
+    InputValidator.validateRegex(this.node.path, 'attribute group name', /^[a-zA-Z0-9-_]+$/, props.attributeGroupName);
+    InputValidator.validateLength(this.node.path, 'attribute group description', 0, 1024, props.description);
   }
 }

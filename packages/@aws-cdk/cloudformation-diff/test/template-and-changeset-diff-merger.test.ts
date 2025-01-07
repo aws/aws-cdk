@@ -432,14 +432,16 @@ describe('fullDiff tests that include changeset', () => {
             LogicalResourceId: 'BucketResource',
             ResourceType: 'AWS::S3::Bucket',
             Replacement: 'True',
-            Details: [{
-              Evaluation: 'Static',
-              Target: {
-                Attribute: 'Properties',
-                Name: 'BucketName',
-                RequiresRecreation: 'Always',
+            Details: [
+              {
+                Evaluation: 'Static',
+                Target: {
+                  Attribute: 'Properties',
+                  Name: 'BucketName',
+                  RequiresRecreation: 'Always',
+                },
               },
-            }],
+            ],
           },
         },
       ],
@@ -481,14 +483,16 @@ describe('fullDiff tests that include changeset', () => {
             LogicalResourceId: 'ServerlessFunction',
             ResourceType: 'AWS::Lambda::Function', // The SAM transform is applied before the changeset is created, so the changeset has a Lambda resource here!
             Replacement: 'False',
-            Details: [{
-              Evaluation: 'Static',
-              Target: {
-                Attribute: 'Properties',
-                Name: 'Code',
-                RequiresRecreation: 'Never',
+            Details: [
+              {
+                Evaluation: 'Static',
+                Target: {
+                  Attribute: 'Properties',
+                  Name: 'Code',
+                  RequiresRecreation: 'Never',
+                },
               },
-            }],
+            ],
           },
         },
       ],
@@ -560,15 +564,12 @@ describe('fullDiff tests that include changeset', () => {
     expect(differences.resources.differenceCount).toBe(1);
     expect(differences.resources.get('BucketResource')?.changeImpact === ResourceImpact.WILL_IMPORT);
   });
-
 });
 
 describe('method tests', () => {
-
   describe('TemplateAndChangeSetDiffMerger constructor', () => {
-
     test('InspectChangeSet correctly parses changeset', async () => {
-    // WHEN
+      // WHEN
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: utils.changeSet });
 
       // THEN
@@ -597,7 +598,7 @@ describe('method tests', () => {
     });
 
     test('TemplateAndChangeSetDiffMerger constructor can handle undefined changeset', async () => {
-    // WHEN
+      // WHEN
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: {} });
 
       // THEN
@@ -606,8 +607,10 @@ describe('method tests', () => {
     });
 
     test('TemplateAndChangeSetDiffMerger constructor can handle undefined changes in changset.Changes', async () => {
-    // WHEN
-      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: utils.changeSetWithMissingChanges });
+      // WHEN
+      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+        changeSet: utils.changeSetWithMissingChanges,
+      });
 
       // THEN
       expect(templateAndChangeSetDiffMerger.changeSetResources).toEqual({});
@@ -616,7 +619,9 @@ describe('method tests', () => {
 
     test('TemplateAndChangeSetDiffMerger constructor can handle partially defined changes in changset.Changes', async () => {
       // WHEN
-      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: utils.changeSetWithPartiallyFilledChanges });
+      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+        changeSet: utils.changeSetWithPartiallyFilledChanges,
+      });
 
       // THEN
       expect(templateAndChangeSetDiffMerger.changeSet).toEqual(utils.changeSetWithPartiallyFilledChanges);
@@ -642,8 +647,10 @@ describe('method tests', () => {
     });
 
     test('TemplateAndChangeSetDiffMerger constructor can handle undefined Details in changset.Changes', async () => {
-    // WHEN
-      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: utils.changeSetWithUndefinedDetails });
+      // WHEN
+      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+        changeSet: utils.changeSetWithUndefinedDetails,
+      });
 
       // THEN
       expect(templateAndChangeSetDiffMerger.changeSet).toEqual(utils.changeSetWithUndefinedDetails);
@@ -654,86 +661,96 @@ describe('method tests', () => {
         propertyReplacementModes: {},
       });
     });
-
   });
 
   describe('determineChangeSetReplacementMode ', () => {
     test('can evaluate missing Target', async () => {
-    // GIVEN
+      // GIVEN
       const propertyChangeWithMissingTarget = {
         Target: undefined,
       };
 
       // WHEN
-      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithMissingTarget);
+      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(
+        propertyChangeWithMissingTarget
+      );
 
       // THEN
       expect(replacementMode).toEqual('Conditionally');
     });
 
     test('can evaluate missing RequiresRecreation', async () => {
-    // GIVEN
+      // GIVEN
       const propertyChangeWithMissingTargetDetail = {
         Target: { RequiresRecreation: undefined },
       };
 
       // WHEN
-      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithMissingTargetDetail);
+      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(
+        propertyChangeWithMissingTargetDetail
+      );
 
       // THEN
       expect(replacementMode).toEqual('Conditionally');
     });
 
     test('can evaluate Always and Static', async () => {
-    // GIVEN
+      // GIVEN
       const propertyChangeWithAlwaysStatic: ResourceChangeDetail = {
         Target: { RequiresRecreation: 'Always' },
         Evaluation: 'Static',
       };
 
       // WHEN
-      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithAlwaysStatic);
+      const replacementMode =
+        TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithAlwaysStatic);
 
       // THEN
       expect(replacementMode).toEqual('Always');
     });
 
     test('can evaluate always dynamic', async () => {
-    // GIVEN
+      // GIVEN
       const propertyChangeWithAlwaysDynamic: ResourceChangeDetail = {
         Target: { RequiresRecreation: 'Always' },
         Evaluation: 'Dynamic',
       };
 
       // WHEN
-      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithAlwaysDynamic);
+      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(
+        propertyChangeWithAlwaysDynamic
+      );
 
       // THEN
       expect(replacementMode).toEqual('Conditionally');
     });
 
     test('missing Evaluation', async () => {
-    // GIVEN
+      // GIVEN
       const propertyChangeWithMissingEvaluation: ResourceChangeDetail = {
         Target: { RequiresRecreation: 'Always' },
         Evaluation: undefined,
       };
 
       // WHEN
-      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithMissingEvaluation);
+      const replacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(
+        propertyChangeWithMissingEvaluation
+      );
 
       // THEN
       expect(replacementMode).toEqual('Always');
     });
-
   });
 
   describe('overrideDiffResourceChangeImpactWithChangeSetChangeImpact', () => {
-
     test('can handle blank change', async () => {
       // GIVEN
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: {} });
-      const queue = new ResourceDifference(undefined, undefined, { resourceType: {}, propertyDiffs: {}, otherDiffs: {} });
+      const queue = new ResourceDifference(undefined, undefined, {
+        resourceType: {},
+        propertyDiffs: {},
+        otherDiffs: {},
+      });
       const logicalId = 'Queue';
 
       //WHEN
@@ -754,9 +771,11 @@ describe('method tests', () => {
         { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
         {
           resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
-          propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+          propertyDiffs: {
+            QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }),
+          },
           otherDiffs: {},
-        },
+        }
       );
       const logicalId = 'Queue';
 
@@ -769,7 +788,7 @@ describe('method tests', () => {
     });
 
     test('can handle undefined properties', async () => {
-    // GIVEN
+      // GIVEN
       const logicalId = 'Queue';
 
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
@@ -783,9 +802,11 @@ describe('method tests', () => {
         { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
         {
           resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
-          propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+          propertyDiffs: {
+            QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }),
+          },
           otherDiffs: {},
-        },
+        }
       );
 
       //WHEN
@@ -797,7 +818,7 @@ describe('method tests', () => {
     });
 
     test('can handle empty properties', async () => {
-    // GIVEN
+      // GIVEN
       const logicalId = 'Queue';
 
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
@@ -813,9 +834,11 @@ describe('method tests', () => {
         { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
         {
           resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
-          propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+          propertyDiffs: {
+            QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }),
+          },
           otherDiffs: {},
-        },
+        }
       );
 
       //WHEN
@@ -827,7 +850,7 @@ describe('method tests', () => {
     });
 
     test('can handle property without replacementMode', async () => {
-    // GIVEN
+      // GIVEN
       const logicalId = 'Queue';
 
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
@@ -845,9 +868,11 @@ describe('method tests', () => {
         { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
         {
           resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
-          propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+          propertyDiffs: {
+            QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }),
+          },
           otherDiffs: {},
-        },
+        }
       );
 
       //WHEN
@@ -859,7 +884,7 @@ describe('method tests', () => {
     });
 
     test('handles Never case', async () => {
-    // GIVEN
+      // GIVEN
       const logicalId = 'Queue';
 
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
@@ -879,9 +904,11 @@ describe('method tests', () => {
         { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
         {
           resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
-          propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }) },
+          propertyDiffs: {
+            QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }),
+          },
           otherDiffs: {},
-        },
+        }
       );
 
       //WHEN
@@ -893,7 +920,7 @@ describe('method tests', () => {
     });
 
     test('handles Conditionally case', async () => {
-    // GIVEN
+      // GIVEN
       const logicalId = 'Queue';
 
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
@@ -913,9 +940,11 @@ describe('method tests', () => {
         { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
         {
           resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
-          propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }) },
+          propertyDiffs: {
+            QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }),
+          },
           otherDiffs: {},
-        },
+        }
       );
 
       //WHEN
@@ -927,7 +956,7 @@ describe('method tests', () => {
     });
 
     test('handles Always case', async () => {
-    // GIVEN
+      // GIVEN
       const logicalId = 'Queue';
 
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
@@ -947,9 +976,11 @@ describe('method tests', () => {
         { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
         {
           resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
-          propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }) },
+          propertyDiffs: {
+            QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }),
+          },
           otherDiffs: {},
-        },
+        }
       );
 
       //WHEN
@@ -961,7 +992,7 @@ describe('method tests', () => {
     });
 
     test('returns if AWS::Serverless is resourcetype', async () => {
-    // GIVEN
+      // GIVEN
       const logicalId = 'Queue';
 
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
@@ -982,11 +1013,10 @@ describe('method tests', () => {
         {
           resourceType: { oldType: 'AWS::Serverless::IDK', newType: 'AWS::Serverless::IDK' },
           propertyDiffs: {
-            QueueName: new PropertyDifference<string>( 'first', 'second',
-              { changeImpact: ResourceImpact.WILL_ORPHAN }), // choose will_orphan to show that we're ignoring changeset
+            QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.WILL_ORPHAN }), // choose will_orphan to show that we're ignoring changeset
           },
           otherDiffs: {},
-        },
+        }
       );
 
       //WHEN
@@ -996,7 +1026,5 @@ describe('method tests', () => {
       expect(queue.changeImpact).toBe('WILL_ORPHAN');
       expect(queue.isDifferent).toBe(true);
     });
-
   });
-
 });

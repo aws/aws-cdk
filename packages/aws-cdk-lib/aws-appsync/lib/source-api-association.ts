@@ -206,10 +206,7 @@ export function addSourceGraphQLPermission(
     new PolicyStatement({
       effect: Effect.ALLOW,
       actions: ['appsync:SourceGraphQL'],
-      resources: [
-        sourceApiAssociation.attrSourceApiArn,
-        sourceApiAssociation.attrSourceApiArn.concat('/*'),
-      ],
+      resources: [sourceApiAssociation.attrSourceApiArn, sourceApiAssociation.attrSourceApiArn.concat('/*')],
     })
   );
 }

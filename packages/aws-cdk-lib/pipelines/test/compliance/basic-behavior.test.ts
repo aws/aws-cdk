@@ -4,7 +4,14 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../../../assertions';
 import { Stack, Stage, StageProps, Tags } from '../../../core';
-import { OneStackApp, BucketStack, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, stringLike } from '../testhelpers';
+import {
+  OneStackApp,
+  BucketStack,
+  PIPELINE_ENV,
+  TestApp,
+  ModernTestGitHubNpmPipeline,
+  stringLike,
+} from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -19,30 +26,30 @@ afterEach(() => {
 });
 
 test('stack templates in nested assemblies are correctly addressed', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new OneStackApp(app, 'App'));
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'App',
-      Actions: Match.arrayWith([
-        Match.objectLike({
-          Name: stringLike('*Prepare'),
-          InputArtifacts: [Match.objectLike({})],
-          Configuration: Match.objectLike({
-            StackName: 'App-Stack',
-            TemplatePath: stringLike('*::assembly-App/*.template.json'),
+    Stages: Match.arrayWith([
+      {
+        Name: 'App',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: stringLike('*Prepare'),
+            InputArtifacts: [Match.objectLike({})],
+            Configuration: Match.objectLike({
+              StackName: 'App-Stack',
+              TemplatePath: stringLike('*::assembly-App/*.template.json'),
+            }),
           }),
-        }),
-      ]),
-    }]),
+        ]),
+      },
+    ]),
   });
 });
 
 test('obvious error is thrown when stage contains no stacks', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   // WHEN
@@ -52,7 +59,6 @@ test('obvious error is thrown when stage contains no stacks', () => {
 });
 
 test('overridden stack names are respected', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new OneStackAppWithCustomName(app, 'App1'));
   pipeline.addStage(new OneStackAppWithCustomName(app, 'App2'));
@@ -61,21 +67,25 @@ test('overridden stack names are respected', () => {
     Stages: Match.arrayWith([
       {
         Name: 'App1',
-        Actions: Match.arrayWith([Match.objectLike({
-          Name: stringLike('*Prepare'),
-          Configuration: Match.objectLike({
-            StackName: 'MyFancyStack',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: stringLike('*Prepare'),
+            Configuration: Match.objectLike({
+              StackName: 'MyFancyStack',
+            }),
           }),
-        })]),
+        ]),
       },
       {
         Name: 'App2',
-        Actions: Match.arrayWith([Match.objectLike({
-          Name: stringLike('*Prepare'),
-          Configuration: Match.objectLike({
-            StackName: 'MyFancyStack',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: stringLike('*Prepare'),
+            Configuration: Match.objectLike({
+              StackName: 'MyFancyStack',
+            }),
           }),
-        })]),
+        ]),
       },
     ]),
   });
@@ -109,7 +119,6 @@ test('two stacks can have the same name', () => {
 });
 
 test('changing CLI version leads to a different pipeline structure (restarting it)', () => {
-
   // GIVEN
   const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
   const stack3 = new Stack(app, 'Stack3', { env: PIPELINE_ENV });
@@ -137,7 +146,6 @@ test('changing CLI version leads to a different pipeline structure (restarting i
 });
 
 test('tags get reflected in pipeline', () => {
-
   // WHEN
   const stage = new OneStackApp(app, 'App');
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -147,30 +155,34 @@ test('tags get reflected in pipeline', () => {
   // THEN
   const templateConfig = new Capture();
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'App',
-      Actions: Match.arrayWith([
-        Match.objectLike({
-          Name: stringLike('*Prepare'),
-          InputArtifacts: [Match.objectLike({})],
-          Configuration: Match.objectLike({
-            StackName: 'App-Stack',
-            TemplateConfiguration: templateConfig,
+    Stages: Match.arrayWith([
+      {
+        Name: 'App',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: stringLike('*Prepare'),
+            InputArtifacts: [Match.objectLike({})],
+            Configuration: Match.objectLike({
+              StackName: 'App-Stack',
+              TemplateConfiguration: templateConfig,
+            }),
           }),
-        }),
-      ]),
-    }]),
+        ]),
+      },
+    ]),
   });
 
   expect(templateConfig.asString()).toMatch(/::assembly-App\/.*\.template\..*json/);
   const [, relConfigFile] = templateConfig.asString().split('::');
   const absConfigFile = path.join(app.outdir, relConfigFile);
   const configFile = JSON.parse(fs.readFileSync(absConfigFile, { encoding: 'utf-8' }));
-  expect(configFile).toEqual(expect.objectContaining({
-    Tags: {
-      CostCenter: 'F00B4R',
-    },
-  }));
+  expect(configFile).toEqual(
+    expect.objectContaining({
+      Tags: {
+        CostCenter: 'F00B4R',
+      },
+    })
+  );
 });
 
 class OneStackAppWithCustomName extends Stage {

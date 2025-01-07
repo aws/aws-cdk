@@ -66,11 +66,7 @@ export async function main(): Promise<void> {
     registerFact(region, 'PARTITION', partition);
     registerFact(region, 'DOMAIN_SUFFIX', domainSuffix);
 
-    registerFact(
-      region,
-      'CDK_METADATA_RESOURCE_AVAILABLE',
-      AWS_CDK_METADATA.has(region) ? 'YES' : 'NO'
-    );
+    registerFact(region, 'CDK_METADATA_RESOURCE_AVAILABLE', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
 
     registerFact(
       region,
@@ -86,17 +82,9 @@ export async function main(): Promise<void> {
         : `s3-website.${region}.${domainSuffix}`
     );
 
-    registerFact(
-      region,
-      'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID',
-      ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || ''
-    );
+    registerFact(region, 'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID', ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || '');
 
-    registerFact(
-      region,
-      'EBS_ENV_ENDPOINT_HOSTED_ZONE_ID',
-      EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS[region] || ''
-    );
+    registerFact(region, 'EBS_ENV_ENDPOINT_HOSTED_ZONE_ID', EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS[region] || '');
 
     registerFact(region, 'ELBV2_ACCOUNT', ELBV2_ACCOUNTS[region]);
 
@@ -163,10 +151,7 @@ export async function main(): Promise<void> {
   lines.push('  private constructor() {}');
   lines.push('}');
 
-  await fs.writeFile(
-    path.resolve(__dirname, '..', 'lib', 'built-ins.generated.ts'),
-    lines.join('\n')
-  );
+  await fs.writeFile(path.resolve(__dirname, '..', 'lib', 'built-ins.generated.ts'), lines.join('\n'));
 
   function registerFact(region: string, name: string | string[], value: string) {
     const factName =

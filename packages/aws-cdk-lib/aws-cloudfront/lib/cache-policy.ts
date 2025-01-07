@@ -94,27 +94,22 @@ export class CachePolicy extends Resource implements ICachePolicy {
   /**
    * This policy is designed for use with an origin that is an AWS Amplify web app.
    */
-  public static readonly AMPLIFY = CachePolicy.fromManagedCachePolicy(
-    '2e54312d-136d-493c-8eb9-b001f22f67d2'
-  );
+  public static readonly AMPLIFY = CachePolicy.fromManagedCachePolicy('2e54312d-136d-493c-8eb9-b001f22f67d2');
   /**
    * Optimize cache efficiency by minimizing the values that CloudFront includes in the cache key.
    * Query strings and cookies are not included in the cache key, and only the normalized 'Accept-Encoding' header is included.
    */
-  public static readonly CACHING_OPTIMIZED = CachePolicy.fromManagedCachePolicy(
-    '658327ea-f89d-4fab-a63d-7e88639e58f6'
-  );
+  public static readonly CACHING_OPTIMIZED = CachePolicy.fromManagedCachePolicy('658327ea-f89d-4fab-a63d-7e88639e58f6');
   /**
    * Optimize cache efficiency by minimizing the values that CloudFront includes in the cache key.
    * Query strings and cookies are not included in the cache key, and only the normalized 'Accept-Encoding' header is included.
    * Disables cache compression.
    */
-  public static readonly CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS =
-    CachePolicy.fromManagedCachePolicy('b2884449-e4de-46a7-ac36-70bc7f1ddd6d');
-  /** Disables caching. This policy is useful for dynamic content and for requests that are not cacheable. */
-  public static readonly CACHING_DISABLED = CachePolicy.fromManagedCachePolicy(
-    '4135ea2d-6df8-44a3-9df3-4b5a84be39ad'
+  public static readonly CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS = CachePolicy.fromManagedCachePolicy(
+    'b2884449-e4de-46a7-ac36-70bc7f1ddd6d'
   );
+  /** Disables caching. This policy is useful for dynamic content and for requests that are not cacheable. */
+  public static readonly CACHING_DISABLED = CachePolicy.fromManagedCachePolicy('4135ea2d-6df8-44a3-9df3-4b5a84be39ad');
   /** Designed for use with an origin that is an AWS Elemental MediaPackage endpoint. */
   public static readonly ELEMENTAL_MEDIA_PACKAGE = CachePolicy.fromManagedCachePolicy(
     '08627262-05a9-4f76-9ded-b50ca2e3a84f'
@@ -130,15 +125,12 @@ export class CachePolicy extends Resource implements ICachePolicy {
   /**
    * Designed for use with an origin that returns Cache-Control HTTP response headers and serves different content based on values present in the query string.
    */
-  public static readonly USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS =
-    CachePolicy.fromManagedCachePolicy('4cc15a8a-d715-48a4-82b8-cc0b614638fe');
+  public static readonly USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS = CachePolicy.fromManagedCachePolicy(
+    '4cc15a8a-d715-48a4-82b8-cc0b614638fe'
+  );
 
   /** Imports a Cache Policy from its id. */
-  public static fromCachePolicyId(
-    scope: Construct,
-    id: string,
-    cachePolicyId: string
-  ): ICachePolicy {
+  public static fromCachePolicyId(scope: Construct, id: string, cachePolicyId: string): ICachePolicy {
     return new (class extends Resource implements ICachePolicy {
       public readonly cachePolicyId = cachePolicyId;
     })(scope, id);
@@ -158,8 +150,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
-    const cachePolicyName =
-      props.cachePolicyName ?? `${Names.uniqueId(this).slice(0, 110)}-${Stack.of(this).region}`;
+    const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this).slice(0, 110)}-${Stack.of(this).region}`;
 
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
       throw new Error(
@@ -168,15 +159,11 @@ export class CachePolicy extends Resource implements ICachePolicy {
     }
 
     if (cachePolicyName.length > 128) {
-      throw new Error(
-        `'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`
-      );
+      throw new Error(`'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`);
     }
 
     if (props.comment && !Token.isUnresolved(props.comment) && props.comment.length > 128) {
-      throw new Error(
-        `'comment' cannot be longer than 128 characters, got: ${props.comment.length}`
-      );
+      throw new Error(`'comment' cannot be longer than 128 characters, got: ${props.comment.length}`);
     }
 
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();
@@ -204,9 +191,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
     this.cachePolicyId = resource.ref;
   }
 
-  private renderCacheKey(
-    props: CachePolicyProps
-  ): CfnCachePolicy.ParametersInCacheKeyAndForwardedToOriginProperty {
+  private renderCacheKey(props: CachePolicyProps): CfnCachePolicy.ParametersInCacheKeyAndForwardedToOriginProperty {
     const cookies = props.cookieBehavior ?? CacheCookieBehavior.none();
     const headers = props.headerBehavior ?? CacheHeaderBehavior.none();
     const queryStrings = props.queryStringBehavior ?? CacheQueryStringBehavior.none();

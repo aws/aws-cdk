@@ -4,9 +4,7 @@ import * as cdk from '../../core';
 import * as lambda from '../lib';
 
 describe('ADOT Lambda Layer', () => {
-
   describe('when the stack region is specified and supported', () => {
-
     let fn: lambda.Function;
 
     beforeEach(() => {
@@ -23,22 +21,17 @@ describe('ADOT Lambda Layer', () => {
     test('is added properly when the region information is available at synthesis time', () => {
       const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_32_0.layerArn(fn.stack, fn.architecture);
 
-      expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:3',
-      );
+      expect(layerArn).toEqual('arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:3');
     });
 
     test('is added properly when using "LATEST" version', () => {
       const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
 
-      expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:3',
-      );
+      expect(layerArn).toEqual('arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:3');
     });
   });
 
   describe('when the Python ADOT version is specified', () => {
-
     let fn: lambda.Function;
 
     beforeEach(() => {
@@ -55,17 +48,13 @@ describe('ADOT Lambda Layer', () => {
     test('is added properly when the region information is available at synthesis time', () => {
       const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0.layerArn(fn.stack, fn.architecture);
 
-      expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-25-0:1',
-      );
+      expect(layerArn).toEqual('arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-25-0:1');
     });
 
     test('is added properly when using "LATEST" version', () => {
       const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
 
-      expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-25-0:1',
-      );
+      expect(layerArn).toEqual('arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-25-0:1');
     });
   });
 
@@ -81,9 +70,7 @@ describe('ADOT Lambda Layer', () => {
       });
 
       expect(() => {
-        lambda.AdotLayerVersion.fromJavaSdkLayerVersion(
-          lambda.AdotLambdaLayerJavaSdkVersion.LATEST,
-        )._bind(fn).arn;
+        lambda.AdotLayerVersion.fromJavaSdkLayerVersion(lambda.AdotLambdaLayerJavaSdkVersion.LATEST)._bind(fn).arn;
       }).toThrow(/Could not find the ARN information for the ADOT Lambda Layer/);
     });
   });

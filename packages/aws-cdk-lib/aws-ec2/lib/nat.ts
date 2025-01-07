@@ -313,9 +313,7 @@ export class NatGatewayProvider extends NatProvider {
     // Create the NAT gateways
     let i = 0;
     for (const sub of options.natSubnets) {
-      const eipAllocationId = this.props.eipAllocationIds
-        ? pickN(i, this.props.eipAllocationIds)
-        : undefined;
+      const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
       const gateway = sub.addNatGateway(eipAllocationId);
       this.gateways.add(sub.availabilityZone, gateway.ref);
       i++;
@@ -546,9 +544,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
       new AmazonLinuxImage({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
         cpuType:
-          this.props.instanceType.architecture == InstanceArchitecture.ARM_64
-            ? AmazonLinuxCpuType.ARM_64
-            : undefined,
+          this.props.instanceType.architecture == InstanceArchitecture.ARM_64 ? AmazonLinuxCpuType.ARM_64 : undefined,
       });
     this._securityGroup =
       this.props.securityGroup ??
@@ -643,10 +639,7 @@ export class NatInstanceImage extends LookupMachineImage {
 }
 
 function isOutboundAllowed(direction: NatTrafficDirection) {
-  return (
-    direction === NatTrafficDirection.INBOUND_AND_OUTBOUND ||
-    direction === NatTrafficDirection.OUTBOUND_ONLY
-  );
+  return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND || direction === NatTrafficDirection.OUTBOUND_ONLY;
 }
 
 function isInboundAllowed(direction: NatTrafficDirection) {

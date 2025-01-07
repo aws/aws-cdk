@@ -2,12 +2,7 @@ import { format } from 'util';
 import * as chalk from 'chalk';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
-import {
-  Difference,
-  isPropertyDifference,
-  ResourceDifference,
-  ResourceImpact,
-} from './diff-template';
+import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
@@ -168,9 +163,7 @@ export class Formatter {
       value = oldValue;
     }
 
-    this.print(
-      `${this.formatPrefix(diff)} ${chalk.cyan(type)} ${this.formatLogicalId(logicalId)}: ${value}`
-    );
+    this.print(`${this.formatPrefix(diff)} ${chalk.cyan(type)} ${this.formatLogicalId(logicalId)}: ${value}`);
   }
 
   /**
@@ -276,13 +269,7 @@ export class Formatter {
         additionalInfo = ' (requires replacement)';
       }
     }
-    this.print(
-      ' %s─ %s %s%s',
-      last ? '└' : '├',
-      this.changeTag(diff.oldValue, diff.newValue),
-      name,
-      additionalInfo
-    );
+    this.print(' %s─ %s %s%s', last ? '└' : '├', this.changeTag(diff.oldValue, diff.newValue), name, additionalInfo);
     return this.formatObjectDiff(diff.oldValue, diff.newValue, ` ${last ? ' ' : '│'}`);
   }
 
@@ -311,12 +298,7 @@ export class Formatter {
           }
         } else {
           this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, chalk.red));
-          this.print(
-            '%s   └─ %s %s',
-            linePrefix,
-            ADDITION,
-            this.formatValue(newObject, chalk.green)
-          );
+          this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, chalk.green));
         }
       } else if (oldObject !== undefined /* && newObject === undefined */) {
         this.print('%s   └─ %s', linePrefix, this.formatValue(oldObject, chalk.red));
@@ -343,21 +325,9 @@ export class Formatter {
         );
         this.formatObjectDiff(oldValue, newValue, `${linePrefix}   ${key === lastKey ? ' ' : '│'}`);
       } else if (oldValue !== undefined /* && newValue === undefined */) {
-        this.print(
-          '%s   %s─ %s Removed: %s',
-          linePrefix,
-          treePrefix,
-          REMOVAL,
-          chalk.blue(`.${key}`)
-        );
+        this.print('%s   %s─ %s Removed: %s', linePrefix, treePrefix, REMOVAL, chalk.blue(`.${key}`));
       } /* if (oldValue === undefined && newValue !== undefined */ else {
-        this.print(
-          '%s   %s─ %s Added: %s',
-          linePrefix,
-          treePrefix,
-          ADDITION,
-          chalk.blue(`.${key}`)
-        );
+        this.print('%s   %s─ %s Added: %s', linePrefix, treePrefix, ADDITION, chalk.blue(`.${key}`));
       }
     }
   }
@@ -454,21 +424,13 @@ export class Formatter {
 
     if (changes.statements.hasChanges) {
       this.printSectionHeader('IAM Statement Changes');
-      this.print(
-        formatTable(
-          this.deepSubstituteBracedLogicalIds(changes.summarizeStatements()),
-          this.stream.columns
-        )
-      );
+      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements()), this.stream.columns));
     }
 
     if (changes.managedPolicies.hasChanges) {
       this.printSectionHeader('IAM Policy Changes');
       this.print(
-        formatTable(
-          this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()),
-          this.stream.columns
-        )
+        formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()), this.stream.columns)
       );
     }
 
@@ -480,10 +442,7 @@ export class Formatter {
       this.printSectionHeader('IAM Identity Center Changes');
       if (changes.ssoPermissionSets.hasChanges) {
         this.print(
-          formatTable(
-            this.deepSubstituteBracedLogicalIds(changes.summarizeSsoPermissionSets()),
-            this.stream.columns
-          )
+          formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoPermissionSets()), this.stream.columns)
         );
       }
       if (changes.ssoInstanceACAConfigs.hasChanges) {
@@ -496,10 +455,7 @@ export class Formatter {
       }
       if (changes.ssoAssignments.hasChanges) {
         this.print(
-          formatTable(
-            this.deepSubstituteBracedLogicalIds(changes.summarizeSsoAssignments()),
-            this.stream.columns
-          )
+          formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoAssignments()), this.stream.columns)
         );
       }
     }
@@ -511,9 +467,7 @@ export class Formatter {
     }
 
     this.printSectionHeader('Security Group Changes');
-    this.print(
-      formatTable(this.deepSubstituteBracedLogicalIds(changes.summarize()), this.stream.columns)
-    );
+    this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarize()), this.stream.columns));
   }
 
   public deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
@@ -564,9 +518,7 @@ function _diffStrings(oldStr: string, newStr: string, context: number): string[]
   const patch: Patch = structuredPatch(null, null, oldStr, newStr, null, null, { context });
   const result = new Array<string>();
   for (const hunk of patch.hunks) {
-    result.push(
-      chalk.magenta(`@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`)
-    );
+    result.push(chalk.magenta(`@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`));
     const baseIndent = _findIndent(hunk.lines);
     for (const line of hunk.lines) {
       // Don't care about termination newline.

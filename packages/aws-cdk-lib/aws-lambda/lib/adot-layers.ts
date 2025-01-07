@@ -60,12 +60,7 @@ interface AdotLambdaLayerBindConfig {
  * @param version The version of the ADOT Lambda layer
  * @param architecture the architecture of the Lambda layer ('amd64' or 'arm64')
  */
-function getLayerArn(
-  scope: IConstruct,
-  type: string,
-  version: string,
-  architecture: string
-): string {
+function getLayerArn(scope: IConstruct, type: string, version: string, architecture: string): string {
   const scopeStack = Stack.of(scope);
   const region = scopeStack.region;
 
@@ -128,9 +123,7 @@ export abstract class AdotLayerVersion {
    *
    * @param version The version of the Lambda layer to use
    */
-  public static fromJavaScriptSdkLayerVersion(
-    version: AdotLambdaLayerJavaScriptSdkVersion
-  ): AdotLayerVersion {
+  public static fromJavaScriptSdkLayerVersion(version: AdotLambdaLayerJavaScriptSdkVersion): AdotLayerVersion {
     return AdotLayerVersion.fromAdotVersion(version);
   }
 
@@ -139,9 +132,7 @@ export abstract class AdotLayerVersion {
    *
    * @param version The version of the Lambda layer to use
    */
-  public static fromPythonSdkLayerVersion(
-    version: AdotLambdaLayerPythonSdkVersion
-  ): AdotLayerVersion {
+  public static fromPythonSdkLayerVersion(version: AdotLambdaLayerPythonSdkVersion): AdotLayerVersion {
     return AdotLayerVersion.fromAdotVersion(version);
   }
 

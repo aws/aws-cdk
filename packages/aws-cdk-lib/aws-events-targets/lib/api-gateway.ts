@@ -1,9 +1,4 @@
-import {
-  addToDeadLetterQueueResourcePolicy,
-  bindBaseTargetConfig,
-  singletonEventRole,
-  TargetBaseProps,
-} from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as api from '../../aws-apigateway';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -120,9 +115,7 @@ export class ApiGateway implements events.IRuleTarget {
 
     const wildcardCountsInPath = this.props?.path?.match(/\*/g)?.length ?? 0;
     if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
-      throw new Error(
-        'The number of wildcards in the path does not match the number of path pathParameterValues.'
-      );
+      throw new Error('The number of wildcards in the path does not match the number of path pathParameterValues.');
     }
 
     const restApiArn = this._restApi.arnForExecuteApi(

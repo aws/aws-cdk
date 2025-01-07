@@ -10,7 +10,14 @@ import { Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
+import {
+  PIPELINE_ENV,
+  TestApp,
+  ModernTestGitHubNpmPipeline,
+  FileAssetApp,
+  TwoStackApp,
+  StageWithStackOutput,
+} from '../testhelpers';
 
 let app: TestApp;
 
@@ -79,33 +86,43 @@ describe('CodePipeline support stack reuse', () => {
 
 describe('Providing codePipeline parameter and prop(s) of codePipeline parameter to CodePipeline constructor should throw error', () => {
   test('Providing codePipeline parameter and pipelineName parameter should throw error', () => {
-    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
-      pipelineName: 'randomName',
-    }).create()).toThrow('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
+    expect(() =>
+      new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+        pipelineName: 'randomName',
+      }).create()
+    ).toThrow("Cannot set 'pipelineName' if an existing CodePipeline is given using 'codePipeline'");
   });
   test('Providing codePipeline parameter and enableKeyRotation parameter should throw error', () => {
-    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
-      enableKeyRotation: true,
-    }).create()).toThrow('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+    expect(() =>
+      new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+        enableKeyRotation: true,
+      }).create()
+    ).toThrow("Cannot set 'enableKeyRotation' if an existing CodePipeline is given using 'codePipeline'");
   });
   test('Providing codePipeline parameter and crossAccountKeys parameter should throw error', () => {
-    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
-      crossAccountKeys: true,
-    }).create()).toThrow('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
+    expect(() =>
+      new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+        crossAccountKeys: true,
+      }).create()
+    ).toThrow("Cannot set 'crossAccountKeys' if an existing CodePipeline is given using 'codePipeline'");
   });
   test('Providing codePipeline parameter and reuseCrossRegionSupportStacks parameter should throw error', () => {
-    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
-      reuseCrossRegionSupportStacks: true,
-    }).create()).toThrow('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
+    expect(() =>
+      new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+        reuseCrossRegionSupportStacks: true,
+      }).create()
+    ).toThrow("Cannot set 'reuseCrossRegionSupportStacks' if an existing CodePipeline is given using 'codePipeline'");
   });
   test('Providing codePipeline parameter and role parameter should throw error', () => {
     const stack = new Stack(app, 'Stack');
 
-    expect(() => new CodePipelinePropsCheckTest(stack, 'CodePipeline', {
-      role: new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
-      }),
-    }).create()).toThrow('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
+    expect(() =>
+      new CodePipelinePropsCheckTest(stack, 'CodePipeline', {
+        role: new iam.Role(stack, 'Role', {
+          assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+        }),
+      }).create()
+    ).toThrow("Cannot set 'role' if an existing CodePipeline is given using 'codePipeline'");
   });
 });
 
@@ -117,19 +134,31 @@ test('Policy sizes do not exceed the maximum size', () => {
   });
 
   // WHEN
-  const regions = ['us-east-1', 'us-east-2', 'eu-west-1', 'eu-west-2', 'somethingelse1', 'somethingelse-2', 'yapregion', 'more-region'];
+  const regions = [
+    'us-east-1',
+    'us-east-2',
+    'eu-west-1',
+    'eu-west-2',
+    'somethingelse1',
+    'somethingelse-2',
+    'yapregion',
+    'more-region',
+  ];
   for (let i = 0; i < 70; i++) {
-    pipeline.addStage(new FileAssetApp(pipelineStack, `App${i}`, {
-      env: {
-        account: `account${i}`,
-        region: regions[i % regions.length],
-      },
-    }), {
-      post: [
-        new cdkp.ShellStep('DoAThing', { commands: ['true'] }),
-        new cdkp.ShellStep('DoASecondThing', { commands: ['false'] }),
-      ],
-    });
+    pipeline.addStage(
+      new FileAssetApp(pipelineStack, `App${i}`, {
+        env: {
+          account: `account${i}`,
+          region: regions[i % regions.length],
+        },
+      }),
+      {
+        post: [
+          new cdkp.ShellStep('DoAThing', { commands: ['true'] }),
+          new cdkp.ShellStep('DoASecondThing', { commands: ['false'] }),
+        ],
+      }
+    );
   }
 
   // THEN
@@ -140,7 +169,9 @@ test('Policy sizes do not exceed the maximum size', () => {
   for (const pol of Object.values(template.findResources('AWS::IAM::Policy'))) {
     for (const roleName of pol.Properties?.Roles ?? []) {
       const roleLogicalId = roleName.Ref; // Roles: [ { Ref: MyRole } ]
-      if (!roleLogicalId) { continue; }
+      if (!roleLogicalId) {
+        continue;
+      }
 
       if (!rolePolicies[roleLogicalId]) {
         rolePolicies[roleLogicalId] = [];
@@ -156,19 +187,23 @@ test('Policy sizes do not exceed the maximum size', () => {
   // to ARNs... but it gives an order-of-magnitude indication.
   // 10% of margin for CFN intrinsics like { Fn::Join } and { Ref: 'AWS::Partition' } which don't contribute to
   // the ACTUAL size, but do contribute to the measured size here.
-  const cfnOverheadMargin = 1.10;
+  const cfnOverheadMargin = 1.1;
 
   for (const [logId, poldoc] of Object.entries(rolePolicies)) {
     const totalJson = JSON.stringify(poldoc);
     if (totalJson.length > 10000 * cfnOverheadMargin) {
-      throw new Error(`Policy for Role ${logId} is too large (${totalJson.length} bytes): ${JSON.stringify(poldoc, undefined, 2)}`);
+      throw new Error(
+        `Policy for Role ${logId} is too large (${totalJson.length} bytes): ${JSON.stringify(poldoc, undefined, 2)}`
+      );
     }
   }
 
   for (const [logId, poldoc] of Object.entries(template.findResources('AWS::IAM::ManagedPolicy'))) {
     const totalJson = JSON.stringify(poldoc);
     if (totalJson.length > 6000 * cfnOverheadMargin) {
-      throw new Error(`Managed Policy ${logId} is too large (${totalJson.length} bytes): ${JSON.stringify(poldoc, undefined, 2)}`);
+      throw new Error(
+        `Managed Policy ${logId} is too large (${totalJson.length} bytes): ${JSON.stringify(poldoc, undefined, 2)}`
+      );
     }
   }
 
@@ -203,21 +238,19 @@ test('CodeBuild asset role has the right Principal with the feature enabled', ()
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, true);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
   const template = Template.fromStack(pipelineStack);
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
-  expect(statementLength).toStrictEqual(
-    [
-      {
-        Action: 'sts:AssumeRole',
-        Effect: 'Allow',
-        Principal: {
-          Service: 'codebuild.amazonaws.com',
-        },
+  expect(statementLength).toStrictEqual([
+    {
+      Action: 'sts:AssumeRole',
+      Effect: 'Allow',
+      Principal: {
+        Service: 'codebuild.amazonaws.com',
       },
-    ],
-  );
+    },
+  ]);
 });
 
 test('CodeBuild asset role has the right Principal with the feature disabled', () => {
@@ -225,66 +258,55 @@ test('CodeBuild asset role has the right Principal with the feature disabled', (
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
   const template = Template.fromStack(pipelineStack);
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
-  expect(statementLength).toStrictEqual(
-    [
-      {
-        Action: 'sts:AssumeRole',
-        Effect: 'Allow',
-        Principal: {
-          Service: 'codebuild.amazonaws.com',
+  expect(statementLength).toStrictEqual([
+    {
+      Action: 'sts:AssumeRole',
+      Effect: 'Allow',
+      Principal: {
+        Service: 'codebuild.amazonaws.com',
+      },
+    },
+    {
+      Action: 'sts:AssumeRole',
+      Effect: 'Allow',
+      Principal: {
+        AWS: {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`]],
         },
       },
-      {
-        Action: 'sts:AssumeRole',
-        Effect: 'Allow',
-        Principal: {
-          AWS: {
-            'Fn::Join': ['', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ]],
-          },
-        },
-      },
-    ],
-  );
+    },
+  ]);
 });
 
-test('CodePipeline throws when key rotation is enabled without enabling cross account keys', ()=>{
+test('CodePipeline throws when key rotation is enabled without enabling cross account keys', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const repo = new ccommit.Repository(pipelineStack, 'Repo', {
     repositoryName: 'MyRepo',
   });
-  const cdkInput = cdkp.CodePipelineSource.codeCommit(
-    repo,
-    'main',
-  );
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(repo, 'main');
 
-  expect(() => new CodePipeline(pipelineStack, 'Pipeline', {
-    enableKeyRotation: true,
-    synth: new cdkp.ShellStep('Synth', {
-      input: cdkInput,
-      installCommands: ['npm ci'],
-      commands: [
-        'npm run build',
-        'npx cdk synth',
-      ],
-    }),
-  }).buildPipeline()).toThrow('Setting \'enableKeyRotation\' to true also requires \'crossAccountKeys\' to be enabled');
+  expect(() =>
+    new CodePipeline(pipelineStack, 'Pipeline', {
+      enableKeyRotation: true,
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkInput,
+        installCommands: ['npm ci'],
+        commands: ['npm run build', 'npx cdk synth'],
+      }),
+    }).buildPipeline()
+  ).toThrow("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
 });
 
-test('CodePipeline enables key rotation on cross account keys', ()=>{
+test('CodePipeline enables key rotation on cross account keys', () => {
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const repo = new ccommit.Repository(pipelineStack, 'Repo', {
     repositoryName: 'MyRepo',
   });
-  const cdkInput = cdkp.CodePipelineSource.codeCommit(
-    repo,
-    'main',
-  );
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(repo, 'main');
 
   new CodePipeline(pipelineStack, 'Pipeline', {
     enableKeyRotation: true,
@@ -292,10 +314,7 @@ test('CodePipeline enables key rotation on cross account keys', ()=>{
     synth: new cdkp.ShellStep('Synth', {
       input: cdkInput,
       installCommands: ['npm ci'],
-      commands: [
-        'npm run build',
-        'npx cdk synth',
-      ],
+      commands: ['npm run build', 'npx cdk synth'],
     }),
   });
 
@@ -311,19 +330,13 @@ test('CodePipeline supports use of existing role', () => {
   const repo = new ccommit.Repository(pipelineStack, 'Repo', {
     repositoryName: 'MyRepo',
   });
-  const cdkInput = cdkp.CodePipelineSource.codeCommit(
-    repo,
-    'main',
-  );
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(repo, 'main');
 
   new CodePipeline(pipelineStack, 'Pipeline', {
     synth: new cdkp.ShellStep('Synth', {
       input: cdkInput,
       installCommands: ['npm ci'],
-      commands: [
-        'npm run build',
-        'npx cdk synth',
-      ],
+      commands: ['npm run build', 'npx cdk synth'],
     }),
     role: new iam.Role(pipelineStack, 'CustomRole', {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
@@ -364,23 +377,25 @@ describe('deployment of stack', () => {
 
     // There should be Prepare step in piepline
     template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Actions: Match.arrayWith([
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CHANGE_SET_REPLACE',
+      Stages: Match.arrayWith([
+        {
+          Actions: Match.arrayWith([
+            Match.objectLike({
+              Configuration: Match.objectLike({
+                ActionMode: 'CHANGE_SET_REPLACE',
+              }),
+              Name: 'Prepare',
             }),
-            Name: 'Prepare',
-          }),
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CHANGE_SET_EXECUTE',
+            Match.objectLike({
+              Configuration: Match.objectLike({
+                ActionMode: 'CHANGE_SET_EXECUTE',
+              }),
+              Name: 'Deploy',
             }),
-            Name: 'Deploy',
-          }),
-        ]),
-        Name: 'App',
-      }]),
+          ]),
+          Name: 'App',
+        },
+      ]),
     });
   });
 
@@ -397,17 +412,19 @@ describe('deployment of stack', () => {
 
     // There should be Prepare step in piepline
     template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Actions: Match.arrayWith([
-          Match.objectLike({
-            Configuration: Match.objectLike({
-              ActionMode: 'CREATE_UPDATE',
+      Stages: Match.arrayWith([
+        {
+          Actions: Match.arrayWith([
+            Match.objectLike({
+              Configuration: Match.objectLike({
+                ActionMode: 'CREATE_UPDATE',
+              }),
+              Name: 'Deploy',
             }),
-            Name: 'Deploy',
-          }),
-        ]),
-        Name: 'App',
-      }]),
+          ]),
+          Name: 'App',
+        },
+      ]),
     });
   });
 });
@@ -437,13 +454,15 @@ test('action name is calculated properly if it has cross-stack dependencies', ()
   // THEN
   const template = Template.fromStack(pipelineStack);
   template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'TheApp',
-      Actions: Match.arrayWith([
-        Match.objectLike({ Name: 'Stack2.S2', RunOrder: 3 }),
-        Match.objectLike({ Name: 'Stack1.S1', RunOrder: 4 }),
-      ]),
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'TheApp',
+        Actions: Match.arrayWith([
+          Match.objectLike({ Name: 'Stack2.S2', RunOrder: 3 }),
+          Match.objectLike({ Name: 'Stack1.S1', RunOrder: 4 }),
+        ]),
+      },
+    ]),
   });
 });
 
@@ -468,16 +487,18 @@ test('synths with change set approvers', () => {
   // THEN
   const template = Template.fromStack(pipelineStack);
   template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'TheApp',
-      Actions: Match.arrayWith([
-        Match.objectLike({ Name: 'Stack1.Prepare', RunOrder: 1 }),
-        Match.objectLike({ Name: 'Stack2.Prepare', RunOrder: 1 }),
-        Match.objectLike({ Name: 'Stack1.ChangeSetApproval', RunOrder: 2 }),
-        Match.objectLike({ Name: 'Stack1.Deploy', RunOrder: 3 }),
-        Match.objectLike({ Name: 'Stack2.Deploy', RunOrder: 3 }),
-      ]),
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'TheApp',
+        Actions: Match.arrayWith([
+          Match.objectLike({ Name: 'Stack1.Prepare', RunOrder: 1 }),
+          Match.objectLike({ Name: 'Stack2.Prepare', RunOrder: 1 }),
+          Match.objectLike({ Name: 'Stack1.ChangeSetApproval', RunOrder: 2 }),
+          Match.objectLike({ Name: 'Stack1.Deploy', RunOrder: 3 }),
+          Match.objectLike({ Name: 'Stack2.Deploy', RunOrder: 3 }),
+        ]),
+      },
+    ]),
   });
 });
 
@@ -524,7 +545,6 @@ test('artifactBucket can be overridden', () => {
 });
 
 test('throws when deploy role session tags are used', () => {
-
   const synthesizer = new cdk.DefaultStackSynthesizer({
     deployRoleAdditionalOptions: {
       Tags: [{ Key: 'Departement', Value: 'Enginerring' }],
@@ -540,8 +560,9 @@ test('throws when deploy role session tags are used', () => {
         },
       },
     });
-  }).toThrow('Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with session tags, but assuming roles with session tags is not supported by CodePipeline.');
-
+  }).toThrow(
+    'Deployment of stack SampleStage-123456789012-us-east-1-SampleStack requires assuming the role arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1 with session tags, but assuming roles with session tags is not supported by CodePipeline.'
+  );
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
@@ -549,24 +570,18 @@ interface ReuseCodePipelineStackProps extends cdk.StackProps {
   reuseStageProps?: ReuseStageProps;
 }
 class ReuseCodePipelineStack extends cdk.Stack {
-  public constructor(scope: Construct, id: string, props: ReuseCodePipelineStackProps ) {
+  public constructor(scope: Construct, id: string, props: ReuseCodePipelineStackProps) {
     super(scope, id, props);
     const repo = new ccommit.Repository(this, 'Repo', {
       repositoryName: 'MyRepo',
     });
 
-    const cdkInput = cdkp.CodePipelineSource.codeCommit(
-      repo,
-      'main',
-    );
+    const cdkInput = cdkp.CodePipelineSource.codeCommit(repo, 'main');
 
     const synthStep = new cdkp.ShellStep('Synth', {
       input: cdkInput,
       installCommands: ['npm ci'],
-      commands: [
-        'npm run build',
-        'npx cdk synth',
-      ],
+      commands: ['npm run build', 'npx cdk synth'],
     });
 
     const pipeline = new cdkp.CodePipeline(this, 'Pipeline', {
@@ -576,16 +591,11 @@ class ReuseCodePipelineStack extends cdk.Stack {
       reuseCrossRegionSupportStacks: props.reuseCrossRegionSupportStacks,
     });
 
-    const stage = new ReuseStage(
-      this,
-      `SampleStage-${testStageEnv.account}-${testStageEnv.region}`,
-      {
-        env: testStageEnv,
-        ...(props.reuseStageProps ?? {}),
-      },
-    );
+    const stage = new ReuseStage(this, `SampleStage-${testStageEnv.account}-${testStageEnv.region}`, {
+      env: testStageEnv,
+      ...(props.reuseStageProps ?? {}),
+    });
     pipeline.addStage(stage);
-
   }
 }
 

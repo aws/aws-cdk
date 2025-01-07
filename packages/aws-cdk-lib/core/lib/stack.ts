@@ -5,12 +5,7 @@ import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
 import { AspectPriority, Aspects } from './aspect';
-import {
-  DockerImageAssetLocation,
-  DockerImageAssetSource,
-  FileAssetLocation,
-  FileAssetSource,
-} from './assets';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
@@ -447,9 +442,7 @@ export class Stack extends Construct implements ITaggable {
     this.templateOptions = {};
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation =
-      props.suppressTemplateIndentation ??
-      this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ??
-      false;
+      props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
@@ -466,9 +459,7 @@ export class Stack extends Construct implements ITaggable {
       // Max length 1024 bytes
       // Typically 2 bytes per character, may be more for more exotic characters
       if (props.description.length > 512) {
-        throw new Error(
-          `Stack description must be <= 1024 bytes. Received description: '${props.description}'`
-        );
+        throw new Error(`Stack description must be <= 1024 bytes. Received description: '${props.description}'`);
       }
       this.templateOptions.description = props.description;
     }
@@ -505,20 +496,15 @@ export class Stack extends Construct implements ITaggable {
     // people only have to flip one flag.
     const featureFlags = FeatureFlags.of(this);
     const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
-    const newStyleSynthesisContext = featureFlags.isEnabled(
-      cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT
-    );
+    const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
     this.artifactId =
-      stackNameDupeContext || newStyleSynthesisContext
-        ? this.generateStackArtifactId()
-        : this.stackName;
+      stackNameDupeContext || newStyleSynthesisContext ? this.generateStackArtifactId() : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
 
     // Not for nested stacks
     this._versionReportingEnabled =
-      (props.analyticsReporting ??
-        this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT)) &&
+      (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT)) &&
       !this.nestedStackParent;
 
     const synthesizer =
@@ -652,9 +638,7 @@ export class Stack extends Construct implements ITaggable {
    * @deprecated use `reportMissingContextKey()`
    */
   public reportMissingContext(report: cxapi.MissingContext) {
-    if (
-      !Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)
-    ) {
+    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
       throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
     }
     this.reportMissingContextKey(report as cxschema.MissingContext);
@@ -709,11 +693,7 @@ export class Stack extends Construct implements ITaggable {
    * app, and also supports nested stacks.
    */
   public addDependency(target: Stack, reason?: string) {
-    addDependency(
-      this,
-      target,
-      reason ?? `{${this.node.path}}.addDependency({${target.node.path}})`
-    );
+    addDependency(this, target, reason ?? `{${this.node.path}}.addDependency({${target.node.path}})`);
   }
 
   /**
@@ -746,10 +726,7 @@ export class Stack extends Construct implements ITaggable {
     // Return a non-scoped partition intrinsic when the stack's region is
     // unresolved or unknown.  Otherwise we will return the partition name as
     // a literal string.
-    if (
-      !FeatureFlags.of(this).isEnabled(cxapi.ENABLE_PARTITION_LITERALS) ||
-      Token.isUnresolved(this.region)
-    ) {
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ENABLE_PARTITION_LITERALS) || Token.isUnresolved(this.region)) {
       return Aws.PARTITION;
     } else {
       const partition = RegionInfo.get(this.region).partition;
@@ -904,9 +881,7 @@ export class Stack extends Construct implements ITaggable {
     }).value;
 
     if (!Array.isArray(value)) {
-      throw new Error(
-        `Provider ${cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER} expects a list`
-      );
+      throw new Error(`Provider ${cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER} expects a list`);
     }
 
     return value;
@@ -1039,9 +1014,7 @@ export class Stack extends Construct implements ITaggable {
 
     if (process.env.CDK_DEBUG_DEPS) {
       // eslint-disable-next-line no-console
-      console.error(
-        `[CDK_DEBUG_DEPS] stack "${reason.source.node.path}" depends on "${reason.target.node.path}"`
-      );
+      console.error(`[CDK_DEBUG_DEPS] stack "${reason.source.node.path}" depends on "${reason.target.node.path}"`);
     }
   }
 
@@ -1063,9 +1036,7 @@ export class Stack extends Construct implements ITaggable {
       dep.reasons.forEach((reason) => {
         if (reasonFilter.source == reason.source) {
           if (!reason.target) {
-            throw new Error(
-              `Encountered an invalid dependency target from source '${reasonFilter.source!.node.path}'`
-            );
+            throw new Error(`Encountered an invalid dependency target from source '${reasonFilter.source!.node.path}'`);
           }
           dependencies.add(reason.target);
         }
@@ -1112,9 +1083,7 @@ export class Stack extends Construct implements ITaggable {
       }
     });
     if (matchedReasons.size > 1) {
-      throw new Error(
-        `There cannot be more than one reason for dependency removal, found: ${matchedReasons}`
-      );
+      throw new Error(`There cannot be more than one reason for dependency removal, found: ${matchedReasons}`);
     }
     if (matchedReasons.size == 0) {
       // Reason is already not there - return now
@@ -1321,9 +1290,7 @@ export class Stack extends Construct implements ITaggable {
     const importValue = Fn.importValue(exportName);
 
     if (Array.isArray(importValue)) {
-      throw new Error(
-        'Attempted to export a list value from `exportValue()`: use `exportStringListValue()` instead'
-      );
+      throw new Error('Attempted to export a list value from `exportValue()`: use `exportStringListValue()` instead');
     }
 
     return importValue;
@@ -1379,9 +1346,7 @@ export class Stack extends Construct implements ITaggable {
     const importValue = Fn.split(STRING_LIST_REFERENCE_DELIMITER, Fn.importValue(exportName));
 
     if (!Array.isArray(importValue)) {
-      throw new Error(
-        'Attempted to export a string value from `exportStringListValue()`: use `exportValue()` instead'
-      );
+      throw new Error('Attempted to export a string value from `exportStringListValue()`: use `exportValue()` instead');
     }
 
     return importValue;
@@ -1527,15 +1492,11 @@ export class Stack extends Construct implements ITaggable {
     const containingAssembly = Stage.of(this);
 
     if (env.account && typeof env.account !== 'string') {
-      throw new Error(
-        `Account id of stack environment must be a 'string' but received '${typeof env.account}'`
-      );
+      throw new Error(`Account id of stack environment must be a 'string' but received '${typeof env.account}'`);
     }
 
     if (env.region && typeof env.region !== 'string') {
-      throw new Error(
-        `Region of stack environment must be a 'string' but received '${typeof env.region}'`
-      );
+      throw new Error(`Region of stack environment must be a 'string' but received '${typeof env.region}'`);
     }
 
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
@@ -1662,9 +1623,7 @@ export class Stack extends Construct implements ITaggable {
     const exportName = generateExportName(exportsScope, id);
 
     if (Token.isUnresolved(exportName)) {
-      throw new Error(
-        `unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`
-      );
+      throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
     }
 
     return {
@@ -1710,9 +1669,7 @@ function mergeSection(section: string, val1: any, val2: any): any {
       return `${val1}\n${val2}`;
     case 'AWSTemplateFormatVersion':
       if (val1 != null && val2 != null && val1 !== val2) {
-        throw new Error(
-          `Conflicting CloudFormation template versions provided: '${val1}' and '${val2}`
-        );
+        throw new Error(`Conflicting CloudFormation template versions provided: '${val1}' and '${val2}`);
       }
       return val1 ?? val2;
     case 'Transform':
@@ -1852,15 +1809,11 @@ function getCreateExportsScope(stack: Stack) {
 }
 
 function generateExportName(stackExports: Construct, id: string) {
-  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(
-    cxapi.STACK_RELATIVE_EXPORTS_CONTEXT
-  );
+  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
   const components = [
-    ...stackExports.node.scopes
-      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
-      .map((c) => c.node.id),
+    ...stackExports.node.scopes.slice(stackRelativeExports ? stack.node.scopes.length : 2).map((c) => c.node.id),
     id,
   ];
   const prefix = stack.stackName ? stack.stackName + ':' : '';

@@ -6,10 +6,7 @@ import { IScalableFunctionAttribute, UtilizationScalingOptions } from '../scalab
 /**
  * A scalable lambda alias attribute
  */
-export class ScalableFunctionAttribute
-  extends appscaling.BaseScalableAttribute
-  implements IScalableFunctionAttribute
-{
+export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute implements IScalableFunctionAttribute {
   constructor(scope: Construct, id: string, props: ScalableFunctionAttributeProps) {
     super(scope, id, props);
   }
@@ -24,9 +21,7 @@ export class ScalableFunctionAttribute
       !Token.isUnresolved(options.utilizationTarget) &&
       (options.utilizationTarget < 0.1 || options.utilizationTarget > 0.9)
     ) {
-      throw new Error(
-        `Utilization Target should be between 0.1 and 0.9. Found ${options.utilizationTarget}.`
-      );
+      throw new Error(`Utilization Target should be between 0.1 and 0.9. Found ${options.utilizationTarget}.`);
     }
     super.doScaleToTrackMetric('Tracking', {
       targetValue: options.utilizationTarget,

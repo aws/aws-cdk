@@ -38,20 +38,12 @@ queue.grantSendMessages(role);
 new scheduler.Schedule(stack, 'ScheduleToSendMessageToQueue', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
   description: 'test description from the ScheduleToSendMessageToQueue',
-  target: new SomeSqsTarget(
-    queue,
-    role,
-    scheduler.ScheduleTargetInput.fromText(`valueA-${stack.region}`)
-  ),
+  target: new SomeSqsTarget(queue, role, scheduler.ScheduleTargetInput.fromText(`valueA-${stack.region}`)),
 });
 const key = new kms.Key(stack, 'ScheduleKey');
 new scheduler.Schedule(stack, 'ScheduleWithCMK', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
-  target: new SomeSqsTarget(
-    queue,
-    role,
-    scheduler.ScheduleTargetInput.fromText(`valueB-${stack.region}`)
-  ),
+  target: new SomeSqsTarget(queue, role, scheduler.ScheduleTargetInput.fromText(`valueB-${stack.region}`)),
   key,
 });
 

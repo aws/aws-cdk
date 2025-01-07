@@ -36,7 +36,9 @@ describe('Boostrap Roles', () => {
     expect(manifestArtifact).toBeDefined();
     const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
     const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
-    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-super-long-app-id-th-file-role-us-east-1');
+    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual(
+      'arn:${AWS::Partition}:iam::000000000000:role/cdk-super-long-app-id-th-file-role-us-east-1'
+    );
   });
 
   test('can supply existing arns for bootstrapped roles', () => {
@@ -90,9 +92,15 @@ describe('Boostrap Roles', () => {
     const stackArtifact = synthStack(app);
 
     // Bootstrapped roles are as advertised
-    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-cfn-exec-role-000000000000-us-west-2');
-    expect(stackArtifact.lookupRole).toEqual({ arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-lookup-role-000000000000-us-west-2' });
-    expect(stackArtifact.assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-deploy-role-000000000000-us-west-2');
+    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual(
+      'arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-cfn-exec-role-000000000000-us-west-2'
+    );
+    expect(stackArtifact.lookupRole).toEqual({
+      arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-lookup-role-000000000000-us-west-2',
+    });
+    expect(stackArtifact.assumeRoleArn).toEqual(
+      'arn:${AWS::Partition}:iam::000000000000:role/cdk-hnb659fds-deploy-role-000000000000-us-west-2'
+    );
   });
 
   test('can request other qualifier', () => {
@@ -112,9 +120,15 @@ describe('Boostrap Roles', () => {
     const stackArtifact = synthStack(app);
 
     // Bootstrapped roles are as advertised
-    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-cfn-exec-role-000000000000-us-west-2');
-    expect(stackArtifact.lookupRole).toEqual({ arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-lookup-role-000000000000-us-west-2' });
-    expect(stackArtifact.assumeRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-deploy-role-000000000000-us-west-2');
+    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual(
+      'arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-cfn-exec-role-000000000000-us-west-2'
+    );
+    expect(stackArtifact.lookupRole).toEqual({
+      arn: 'arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-lookup-role-000000000000-us-west-2',
+    });
+    expect(stackArtifact.assumeRoleArn).toEqual(
+      'arn:${AWS::Partition}:iam::000000000000:role/cdk-Q-deploy-role-000000000000-us-west-2'
+    );
   });
 
   test('can supply existing arn for bucket staging role', () => {
@@ -145,7 +159,9 @@ describe('Boostrap Roles', () => {
     expect(manifestArtifact).toBeDefined();
     const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
     const firstFile: any = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
-    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:aws:iam::123456789012:role/S3Access');
+    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual(
+      'arn:aws:iam::123456789012:role/S3Access'
+    );
   });
 
   test('can provide existing arn for image staging role', () => {
@@ -177,8 +193,11 @@ describe('Boostrap Roles', () => {
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
     expect(manifestArtifact).toBeDefined();
     const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
-    const firstFile: any = (manifest.dockerImages ? manifest.dockerImages[Object.keys(manifest.dockerImages)[0]] : undefined) ?? {};
-    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual('arn:aws:iam::123456789012:role/ECRAccess');
+    const firstFile: any =
+      (manifest.dockerImages ? manifest.dockerImages[Object.keys(manifest.dockerImages)[0]] : undefined) ?? {};
+    expect(firstFile.destinations['000000000000-us-east-1'].assumeRoleArn).toEqual(
+      'arn:aws:iam::123456789012:role/ECRAccess'
+    );
   });
 
   test('bootstrap roles can be specified as current cli credentials instead', () => {
@@ -234,7 +253,9 @@ describe('Boostrap Roles', () => {
     const stackArtifact = asm.getStackArtifact('Stack');
 
     // Bootstrapped role's asset manifest tokens are resolved, where possible
-    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-abcdef-cfn-exec-role-000000000000-us-east-1');
+    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual(
+      'arn:${AWS::Partition}:iam::000000000000:role/cdk-abcdef-cfn-exec-role-000000000000-us-east-1'
+    );
   });
 });
 

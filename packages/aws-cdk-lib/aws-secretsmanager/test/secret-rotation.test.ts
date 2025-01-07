@@ -38,16 +38,10 @@ test('secret rotation single user', () => {
     Description: 'from SecretRotationSecurityGroupAEC520AB:3306',
     FromPort: 3306,
     GroupId: {
-      'Fn::GetAtt': [
-        'SecurityGroupDD263621',
-        'GroupId',
-      ],
+      'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
     },
     SourceSecurityGroupId: {
-      'Fn::GetAtt': [
-        'SecretRotationSecurityGroup9985012B',
-        'GroupId',
-      ],
+      'Fn::GetAtt': ['SecretRotationSecurityGroup9985012B', 'GroupId'],
     },
     ToPort: 3306,
   });
@@ -57,10 +51,7 @@ test('secret rotation single user', () => {
       Ref: 'SecretA720EF05',
     },
     RotationLambdaARN: {
-      'Fn::GetAtt': [
-        'SecretRotationA9FFCFA9',
-        'Outputs.RotationLambdaARN',
-      ],
+      'Fn::GetAtt': ['SecretRotationA9FFCFA9', 'Outputs.RotationLambdaARN'],
     },
     RotationRules: {
       ScheduleExpression: 'rate(30 days)',
@@ -100,10 +91,7 @@ test('secret rotation single user', () => {
         functionName: 'SecretRotation',
         excludeCharacters: excludeCharacters,
         vpcSecurityGroupIds: {
-          'Fn::GetAtt': [
-            'SecretRotationSecurityGroup9985012B',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SecretRotationSecurityGroup9985012B', 'GroupId'],
         },
         vpcSubnetIds: {
           'Fn::Join': [
@@ -193,10 +181,7 @@ test('secret rotation multi user', () => {
       },
       functionName: 'SecretRotation',
       vpcSecurityGroupIds: {
-        'Fn::GetAtt': [
-          'SecretRotationSecurityGroup9985012B',
-          'GroupId',
-        ],
+        'Fn::GetAtt': ['SecretRotationSecurityGroup9985012B', 'GroupId'],
       },
       vpcSubnetIds: {
         'Fn::Join': [
@@ -294,22 +279,28 @@ test('throws when connections object has no default port range', () => {
   });
 
   // THEN
-  expect(() => new secretsmanager.SecretRotation(stack, 'Rotation', {
-    secret,
-    application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
-    vpc,
-    target: targetWithoutDefaultPort,
-  })).toThrow(/`target`.+default port range/);
+  expect(
+    () =>
+      new secretsmanager.SecretRotation(stack, 'Rotation', {
+        secret,
+        application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+        vpc,
+        target: targetWithoutDefaultPort,
+      })
+  ).toThrow(/`target`.+default port range/);
 });
 
 test('throws when master secret is missing for a multi user application', () => {
   // THEN
-  expect(() => new secretsmanager.SecretRotation(stack, 'Rotation', {
-    secret,
-    application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
-    vpc,
-    target,
-  })).toThrow(/The `masterSecret` must be specified for application using the multi user scheme/);
+  expect(
+    () =>
+      new secretsmanager.SecretRotation(stack, 'Rotation', {
+        secret,
+        application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+        vpc,
+        target,
+      })
+  ).toThrow(/The `masterSecret` must be specified for application using the multi user scheme/);
 });
 
 test('rotation function name does not exceed 64 chars', () => {
@@ -385,14 +376,17 @@ test('with interface vpc endpoint', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
     Parameters: {
       endpoint: {
-        'Fn::Join': ['', [
-          'https://',
-          { Ref: 'SecretsManagerEndpoint5E83C66B' },
-          '.secretsmanager.',
-          { Ref: 'AWS::Region' },
-          '.',
-          { Ref: 'AWS::URLSuffix' },
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'https://',
+            { Ref: 'SecretsManagerEndpoint5E83C66B' },
+            '.secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ],
+        ],
       },
     },
   });

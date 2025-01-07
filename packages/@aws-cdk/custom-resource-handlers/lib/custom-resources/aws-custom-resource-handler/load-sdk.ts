@@ -29,10 +29,7 @@ function installLatestSdk(packageName: string): void {
 /**
  * Loads the SDK package that will be used to make the specified API call.
  */
-export async function loadAwsSdk(
-  packageName: string,
-  installLatestAwsSdk?: 'true' | 'false'
-): Promise<AwsSdk> {
+export async function loadAwsSdk(packageName: string, installLatestAwsSdk?: 'true' | 'false'): Promise<AwsSdk> {
   let awsSdk: AwsSdk;
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === 'true') {
@@ -42,9 +39,7 @@ export async function loadAwsSdk(
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         awsSdk = require(`/tmp/node_modules/${packageName}`);
       } catch (e) {
-        console.log(
-          `Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`
-        );
+        console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
         // MUST use require as dynamic import() does not support importing from directories
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         return require(packageName); // Fallback to pre-installed version

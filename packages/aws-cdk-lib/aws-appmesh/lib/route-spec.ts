@@ -3,11 +3,7 @@ import { CfnRoute } from './appmesh.generated';
 import { HeaderMatch } from './header-match';
 import { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
-import {
-  validateGrpcRouteMatch,
-  validateGrpcMatchArrayLength,
-  validateHttpMatchArrayLength,
-} from './private/utils';
+import { validateGrpcRouteMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
@@ -453,9 +449,7 @@ class HttpRouteSpec extends RouteSpec {
       const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
 
       if (httpRetryEvents.length + tcpRetryEvents.length === 0) {
-        throw new Error(
-          'You must specify one value for at least one of `httpRetryEvents` or `tcpRetryEvents`'
-        );
+        throw new Error('You must specify one value for at least one of `httpRetryEvents` or `tcpRetryEvents`');
       }
 
       this.retryPolicy = {
@@ -485,9 +479,7 @@ class HttpRouteSpec extends RouteSpec {
         headers: headers?.map((header) => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
-        queryParameters: queryParameters?.map(
-          (queryParameter) => queryParameter.bind(scope).queryParameterMatch
-        ),
+        queryParameters: queryParameters?.map((queryParameter) => queryParameter.bind(scope).queryParameterMatch),
         port: this.match?.port,
       },
       timeout: renderTimeout(this.timeout),
@@ -614,9 +606,7 @@ class GrpcRouteSpec extends RouteSpec {
 /**
  * Utility method to add weighted route targets to an existing route
  */
-function renderWeightedTargets(
-  weightedTargets: WeightedTarget[]
-): CfnRoute.WeightedTargetProperty[] {
+function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.WeightedTargetProperty[] {
   const renderedTargets: CfnRoute.WeightedTargetProperty[] = [];
   for (const t of weightedTargets) {
     renderedTargets.push({

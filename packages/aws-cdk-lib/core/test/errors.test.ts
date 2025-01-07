@@ -1,9 +1,7 @@
 import { App, Stack } from '../lib';
 import { Errors, ValidationError } from '../lib/errors';
 
-jest
-  .useFakeTimers()
-  .setSystemTime(new Date('2020-01-01'));
+jest.useFakeTimers().setSystemTime(new Date('2020-01-01'));
 
 describe('ValidationError', () => {
   test('ValidationError is ValidationError and ConstructError', () => {

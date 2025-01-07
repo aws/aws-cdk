@@ -4,8 +4,12 @@ const mockSyntheticsClient = {
 const mockLambdaClient = {
   send: jest.fn(),
 };
-const mockGetCanaryCommand = jest.fn().mockImplementation(() => { return {}; });
-const mockDeleteFunctionCommand = jest.fn().mockImplementation(() => { return {}; });
+const mockGetCanaryCommand = jest.fn().mockImplementation(() => {
+  return {};
+});
+const mockDeleteFunctionCommand = jest.fn().mockImplementation(() => {
+  return {};
+});
 
 import { autoDeleteHandler } from '../../lib/aws-synthetics/auto-delete-underlying-resources-handler';
 

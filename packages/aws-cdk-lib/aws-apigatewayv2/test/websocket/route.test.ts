@@ -4,10 +4,12 @@ import { Duration, Stack } from '../../../core';
 import {
   ContentHandling,
   PassthroughBehavior,
-  WebSocketApi, WebSocketIntegrationType,
+  WebSocketApi,
+  WebSocketIntegrationType,
   WebSocketRoute,
   WebSocketRouteIntegration,
-  WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
+  WebSocketRouteIntegrationBindOptions,
+  WebSocketRouteIntegrationConfig,
 } from '../../lib';
 
 describe('WebSocketRoute', () => {
@@ -100,11 +102,14 @@ describe('WebSocketRoute', () => {
       routeKey: 'route',
     });
 
-    expect(() => new WebSocketRoute(stack, 'WebSocketRoute2', {
-      webSocketApi: webSocketApi2,
-      integration,
-      routeKey: 'route',
-    })).toThrow(/cannot be associated with multiple APIs/);
+    expect(
+      () =>
+        new WebSocketRoute(stack, 'WebSocketRoute2', {
+          webSocketApi: webSocketApi2,
+          integration,
+          routeKey: 'route',
+        })
+    ).toThrow(/cannot be associated with multiple APIs/);
   });
 
   test('associating integrations in different APIs creates separate AWS::ApiGatewayV2::Integration', () => {
@@ -187,7 +192,7 @@ describe('WebSocketRoute', () => {
           credentialsRole,
           passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
           requestParameters: {
-            'integration.request.header.Content-Type': '\'application/x-www-form-urlencoded\'',
+            'integration.request.header.Content-Type': "'application/x-www-form-urlencoded'",
           },
           requestTemplates: { 'application/json': JSON.stringify({ test: 'value' }) },
           templateSelectionExpression: '\\$default',
@@ -242,17 +247,23 @@ describe('WebSocketRoute', () => {
       }
     }
 
-    expect(() => new WebSocketRoute(stack, 'MinimumWebSocketRoute', {
-      webSocketApi,
-      integration: new InvalidMinimumBoundIntegration('InvalidMinimumBoundIntegration'),
-      routeKey: '/books',
-    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
+    expect(
+      () =>
+        new WebSocketRoute(stack, 'MinimumWebSocketRoute', {
+          webSocketApi,
+          integration: new InvalidMinimumBoundIntegration('InvalidMinimumBoundIntegration'),
+          routeKey: '/books',
+        })
+    ).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
 
-    expect(() => new WebSocketRoute(stack, 'MaximumWebSocketRoute', {
-      webSocketApi,
-      integration: new InvalidMaximumBoundIntegration('InvalidMaximumBoundIntegration'),
-      routeKey: '/books',
-    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
+    expect(
+      () =>
+        new WebSocketRoute(stack, 'MaximumWebSocketRoute', {
+          webSocketApi,
+          integration: new InvalidMaximumBoundIntegration('InvalidMaximumBoundIntegration'),
+          routeKey: '/books',
+        })
+    ).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
   });
 });
 

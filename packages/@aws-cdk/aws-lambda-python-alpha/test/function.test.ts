@@ -13,10 +13,14 @@ jest.mock('../lib/bundling', () => {
         const mockObjectKey = (() => {
           const hashType = options.assetHashType ?? (options.assetHash ? 'custom' : 'source');
           switch (hashType) {
-            case 'source': return 'SOURCE_MOCK';
-            case 'output': return 'OUTPUT_MOCK';
+            case 'source':
+              return 'SOURCE_MOCK';
+            case 'output':
+              return 'OUTPUT_MOCK';
             case 'custom': {
-              if (!options.assetHash) { throw new Error('no custom hash'); }
+              if (!options.assetHash) {
+                throw new Error('no custom hash');
+              }
               return options.assetHash;
             }
           }
@@ -32,7 +36,9 @@ jest.mock('../lib/bundling', () => {
               objectKey: mockObjectKey,
             },
           }),
-          bindToResource: () => { return; },
+          bindToResource: () => {
+            return;
+          },
         };
       }),
       hasDependencies: jest.fn().mockReturnValue(false),
@@ -52,9 +58,11 @@ test('PythonFunction with defaults', () => {
     runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler$/),
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler$/),
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.handler',
@@ -69,9 +77,11 @@ test('PythonFunction with index in a subdirectory', () => {
     runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler-sub$/),
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler-sub$/),
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'inner.custom_index.custom_handler',
@@ -86,9 +96,11 @@ test('PythonFunction with index in a nested subdirectory', () => {
     runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler-sub-nested$/),
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      entry: expect.stringMatching(/aws-lambda-python-alpha\/test\/lambda-handler-sub-nested$/),
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'inner.inner2.custom_index.custom_handler',
@@ -96,25 +108,34 @@ test('PythonFunction with index in a nested subdirectory', () => {
 });
 
 test('throws when index is not py', () => {
-  expect(() => new PythonFunction(stack, 'Fn', {
-    entry: path.join(__dirname, 'lambda-handler'),
-    index: 'index.js',
-    runtime: Runtime.PYTHON_3_8,
-  })).toThrow(/Only Python \(\.py\) index files are supported/);
+  expect(
+    () =>
+      new PythonFunction(stack, 'Fn', {
+        entry: path.join(__dirname, 'lambda-handler'),
+        index: 'index.js',
+        runtime: Runtime.PYTHON_3_8,
+      })
+  ).toThrow(/Only Python \(\.py\) index files are supported/);
 });
 
 test('throws when entry does not exist', () => {
-  expect(() => new PythonFunction(stack, 'Fn', {
-    entry: 'notfound',
-    runtime: Runtime.PYTHON_3_8,
-  })).toThrow(/Cannot find index file at/);
+  expect(
+    () =>
+      new PythonFunction(stack, 'Fn', {
+        entry: 'notfound',
+        runtime: Runtime.PYTHON_3_8,
+      })
+  ).toThrow(/Cannot find index file at/);
 });
 
 test('throws with the wrong runtime family', () => {
-  expect(() => new PythonFunction(stack, 'handler1', {
-    entry: path.join(__dirname, 'lambda-handler'),
-    runtime: lambda.Runtime.NODEJS_LATEST,
-  })).toThrow(/Only `PYTHON` runtimes are supported/);
+  expect(
+    () =>
+      new PythonFunction(stack, 'handler1', {
+        entry: path.join(__dirname, 'lambda-handler'),
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      })
+  ).toThrow(/Only `PYTHON` runtimes are supported/);
 });
 
 test('allows specifying hash type', () => {
@@ -181,9 +202,11 @@ test('Allows use of custom bundling image', () => {
     bundling: { image },
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    image,
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      image,
+    })
+  );
 });
 
 test('Skip bundling when stack does not require it', () => {
@@ -195,9 +218,11 @@ test('Skip bundling when stack does not require it', () => {
     runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    skip: true,
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      skip: true,
+    })
+  );
 
   spy.mockRestore();
 });
@@ -211,9 +236,11 @@ test('Do not skip bundling when stack requires it', () => {
     runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    skip: false,
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      skip: false,
+    })
+  );
 
   spy.mockRestore();
 });
@@ -228,6 +255,6 @@ test('PythonFunction specifying architecture', () => {
   expect(Bundling.bundle).toHaveBeenCalledWith(
     expect.objectContaining({
       architecture: Architecture.ARM_64,
-    }),
+    })
   );
 });

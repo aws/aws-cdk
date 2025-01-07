@@ -21,30 +21,32 @@ describe('ImmutableRole', () => {
   test('ignores calls to attachInlinePolicy', () => {
     const user = new iam.User(stack, 'User');
     const policy = new iam.Policy(stack, 'Policy', {
-      statements: [new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['s3:*'],
-      })],
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['s3:*'],
+        }),
+      ],
       users: [user],
     });
 
     immutableRole.attachInlinePolicy(policy);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 's3:*',
-            'Resource': '*',
-            'Effect': 'Allow',
+            Action: 's3:*',
+            Resource: '*',
+            Effect: 'Allow',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'PolicyName': 'Policy23B91518',
-      'Users': [
+      PolicyName: 'Policy23B91518',
+      Users: [
         {
-          'Ref': 'User00B015A1',
+          Ref: 'User00B015A1',
         },
       ],
     });
@@ -59,10 +61,12 @@ describe('ImmutableRole', () => {
   test('remains mutable when called multiple times', () => {
     const user = new iam.User(stack, 'User');
     const policy = new iam.Policy(stack, 'Policy', {
-      statements: [new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['s3:*'],
-      })],
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['s3:*'],
+        }),
+      ],
       users: [user],
     });
 
@@ -81,21 +85,21 @@ describe('ImmutableRole', () => {
 
     expect(stack.node.tryFindChild('MutableRoleMyRole')).not.toBeUndefined();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 's3:*',
-            'Resource': '*',
-            'Effect': 'Allow',
+            Action: 's3:*',
+            Resource: '*',
+            Effect: 'Allow',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'PolicyName': 'Policy23B91518',
-      'Roles': Match.absent(),
-      'Users': [
+      PolicyName: 'Policy23B91518',
+      Roles: Match.absent(),
+      Users: [
         {
-          'Ref': 'User00B015A1',
+          Ref: 'User00B015A1',
         },
       ],
     });
@@ -107,31 +111,33 @@ describe('ImmutableRole', () => {
     immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-      'ManagedPolicyArns': [
-        'Arn1',
-      ],
+      ManagedPolicyArns: ['Arn1'],
     });
   });
 
   test('ignores calls to addToPolicy', () => {
-    immutableRole.addToPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['iam:*'],
-    }));
+    immutableRole.addToPolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['iam:*'],
+      })
+    );
 
-    mutableRole.addToPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['s3:*'],
-    }));
+    mutableRole.addToPolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['s3:*'],
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Version': '2012-10-17',
-        'Statement': [
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
           {
-            'Resource': '*',
-            'Action': 's3:*',
-            'Effect': 'Allow',
+            Resource: '*',
+            Action: 's3:*',
+            Effect: 'Allow',
           },
         ],
       },
@@ -139,24 +145,25 @@ describe('ImmutableRole', () => {
   });
 
   test('ignores grants', () => {
-
     iam.Grant.addToPrincipal({
       grantee: immutableRole,
       actions: ['s3:*'],
       resourceArns: ['*'],
     });
 
-    expect(Template.fromStack(stack).findResources('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
-          {
-            'Resource': '*',
-            'Action': 's3:*',
-            'Effect': 'Allow',
-          },
-        ],
-      },
-    })).toEqual({});
+    expect(
+      Template.fromStack(stack).findResources('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Resource: '*',
+              Action: 's3:*',
+              Effect: 'Allow',
+            },
+          ],
+        },
+      })
+    ).toEqual({});
   });
 
   // this pattern is used here:

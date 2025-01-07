@@ -21,9 +21,7 @@ test('Can create target groups with lambda targets', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
     Protocol: 'HTTP',
-    Targets: [
-      { Id: '1.2.3.4' },
-    ],
+    Targets: [{ Id: '1.2.3.4' }],
     TargetType: 'ip',
   });
 });

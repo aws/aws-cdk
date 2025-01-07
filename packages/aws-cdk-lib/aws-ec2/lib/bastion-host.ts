@@ -259,14 +259,8 @@ export class BastionHostLinux extends Resource implements IInstance {
    * Returns the machine image to use for the bastion host, respecting the feature flag
    * to default to Amazon Linux 2023 if enabled, otherwise defaulting to Amazon Linux 2.
    */
-  private getMachineImage(
-    scope: Construct,
-    instanceType: InstanceType,
-    props: BastionHostLinuxProps
-  ): IMachineImage {
-    const defaultMachineImage = FeatureFlags.of(scope).isEnabled(
-      BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT
-    )
+  private getMachineImage(scope: Construct, instanceType: InstanceType, props: BastionHostLinuxProps): IMachineImage {
+    const defaultMachineImage = FeatureFlags.of(scope).isEnabled(BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT)
       ? MachineImage.latestAmazonLinux2023({
           cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
         })

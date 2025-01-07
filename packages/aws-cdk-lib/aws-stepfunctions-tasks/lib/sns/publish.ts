@@ -166,9 +166,7 @@ export class SnsPublish extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new Error(
-          'Task Token is required in `message` Use JsonPath.taskToken to set the token.'
-        );
+        throw new Error('Task Token is required in `message` Use JsonPath.taskToken to set the token.');
       }
     }
 
@@ -177,9 +175,7 @@ export class SnsPublish extends sfn.TaskStateBase {
         throw new Error("'messageGroupId' is required for FIFO topics");
       }
       if (props.messageGroupId.length > 128) {
-        throw new Error(
-          `\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`
-        );
+        throw new Error(`\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`);
       }
       if (!props.topic.contentBasedDeduplication && !props.messageDeduplicationId) {
         throw new Error(
@@ -281,9 +277,7 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
   }
   if (Array.isArray(value)) {
     if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
-      throw new Error(
-        `Requested SNS message attribute type was ${dataType} but ${value} was of type Array`
-      );
+      throw new Error(`Requested SNS message attribute type was ${dataType} but ${value} was of type Array`);
     }
     const validArrayTypes = ['string', 'boolean', 'number'];
     value.forEach((v) => {
@@ -304,10 +298,7 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
       if (sfn.JsonPath.isEncodedJsonPath(attribute.value)) {
         return;
       }
-      if (
-        dataType === MessageAttributeDataType.STRING ||
-        dataType === MessageAttributeDataType.BINARY
-      ) {
+      if (dataType === MessageAttributeDataType.STRING || dataType === MessageAttributeDataType.BINARY) {
         return;
       }
       throw error;

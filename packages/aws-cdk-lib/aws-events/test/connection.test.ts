@@ -85,18 +85,22 @@ test('oauth connection', () => {
         },
         HttpMethod: 'GET',
         OAuthHttpParameters: {
-          HeaderParameters: [{
-            Key: 'oAuthHeaderKey',
-            Value: 'oAuthHeaderValue',
-            IsValueSecret: false,
-          }],
+          HeaderParameters: [
+            {
+              Key: 'oAuthHeaderKey',
+              Value: 'oAuthHeaderValue',
+              IsValueSecret: false,
+            },
+          ],
         },
       },
       InvocationHttpParameters: {
-        HeaderParameters: [{
-          Key: 'invocationHeaderKey',
-          Value: 'invocationHeaderValue',
-        }],
+        HeaderParameters: [
+          {
+            Key: 'invocationHeaderKey',
+            Value: 'invocationHeaderValue',
+          },
+        ],
       },
     },
     Name: 'testConnection',
@@ -121,11 +125,13 @@ test('Additional plaintext headers', () => {
   template.hasResourceProperties('AWS::Events::Connection', {
     AuthParameters: {
       InvocationHttpParameters: {
-        HeaderParameters: [{
-          Key: 'content-type',
-          Value: 'application/json',
-          IsValueSecret: false,
-        }],
+        HeaderParameters: [
+          {
+            Key: 'content-type',
+            Value: 'application/json',
+            IsValueSecret: false,
+          },
+        ],
       },
     },
   });
@@ -148,11 +154,13 @@ test('Additional secret headers', () => {
   template.hasResourceProperties('AWS::Events::Connection', {
     AuthParameters: {
       InvocationHttpParameters: {
-        HeaderParameters: [{
-          Key: 'client-secret',
-          Value: 'apiSecret',
-          IsValueSecret: true,
-        }],
+        HeaderParameters: [
+          {
+            Key: 'client-secret',
+            Value: 'apiSecret',
+            IsValueSecret: true,
+          },
+        ],
       },
     },
   });

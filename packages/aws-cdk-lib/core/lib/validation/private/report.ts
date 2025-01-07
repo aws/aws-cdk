@@ -167,9 +167,7 @@ export class PolicyValidationReportFormatter {
           output.push('');
           output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
           output.push(`    - Template Path: ${construct.templatePath}`);
-          output.push(
-            `    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`
-          );
+          output.push(`    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`);
           output.push(`    - Resource ID: ${construct.resourceLogicalId}`);
           if (construct.locations) {
             output.push('    - Template Locations:');
@@ -197,13 +195,7 @@ export class PolicyValidationReportFormatter {
     output.push('Policy Validation Report Summary');
     output.push('');
     output.push(
-      table(
-        [
-          ['Plugin', 'Status'],
-          ...reps.map((rep) => [rep.pluginName, rep.success ? 'success' : 'failure']),
-        ],
-        {}
-      )
+      table([['Plugin', 'Status'], ...reps.map((rep) => [rep.pluginName, rep.success ? 'success' : 'failure'])], {})
     );
 
     return output.join(os.EOL);

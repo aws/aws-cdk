@@ -55,9 +55,7 @@ export class SqsQueue implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const restrictToSameAccount = FeatureFlags.of(rule).isEnabled(
-      cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT
-    );
+    const restrictToSameAccount = FeatureFlags.of(rule).isEnabled(cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT);
 
     let conditions: any = {};
     if (!this.queue.encryptionMasterKey) {
@@ -83,9 +81,7 @@ export class SqsQueue implements events.IRuleTarget {
       arn: this.queue.queueArn,
       input: this.props.message,
       targetResource: this.queue,
-      sqsParameters: this.props.messageGroupId
-        ? { messageGroupId: this.props.messageGroupId }
-        : undefined,
+      sqsParameters: this.props.messageGroupId ? { messageGroupId: this.props.messageGroupId } : undefined,
     };
   }
 }

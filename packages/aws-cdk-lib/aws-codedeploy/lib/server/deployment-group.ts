@@ -56,10 +56,7 @@ export interface ServerDeploymentGroupAttributes {
   readonly deploymentConfig?: IServerDeploymentConfig;
 }
 
-class ImportedServerDeploymentGroup
-  extends ImportedDeploymentGroupBase
-  implements IServerDeploymentGroup
-{
+class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implements IServerDeploymentGroup {
   public readonly application: IServerApplication;
   public readonly role?: iam.Role = undefined;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
@@ -72,9 +69,7 @@ class ImportedServerDeploymentGroup
     });
 
     this.application = props.application;
-    this.deploymentConfig = this._bindDeploymentConfig(
-      props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME
-    );
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
   }
 }
 
@@ -296,22 +291,13 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
             ? cdk.PhysicalName.GENERATE_IF_NEEDED
             : undefined,
       });
-    this.deploymentConfig = this._bindDeploymentConfig(
-      props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME
-    );
+    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
 
-    this.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole')
-    );
+    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent ?? true;
-    this.codeDeployBucket = s3.Bucket.fromBucketName(
-      this,
-      'Bucket',
-      `aws-codedeploy-${cdk.Stack.of(this).region}`
-    );
-    this.loadBalancers =
-      props.loadBalancers || (props.loadBalancer ? [props.loadBalancer] : undefined);
+    this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
+    this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer] : undefined);
 
     if (this.loadBalancers && this.loadBalancers.length === 0) {
       throw new Error('loadBalancers must be a non-empty array');
@@ -438,9 +424,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     }
   }
 
-  private loadBalancersInfo(
-    loadBalancers?: LoadBalancer[]
-  ): CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
+  private loadBalancersInfo(loadBalancers?: LoadBalancer[]): CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
     return loadBalancers?.reduce(
       (
         accumulator: {
@@ -474,17 +458,13 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     return {
       ec2TagSetList: tagSet.instanceTagGroups.map((tagGroup) => {
         return {
-          ec2TagGroup: this.tagGroup2TagsArray(
-            tagGroup
-          ) as CfnDeploymentGroup.EC2TagFilterProperty[],
+          ec2TagGroup: this.tagGroup2TagsArray(tagGroup) as CfnDeploymentGroup.EC2TagFilterProperty[],
         };
       }),
     };
   }
 
-  private onPremiseTagSet(
-    tagSet?: InstanceTagSet
-  ): CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
+  private onPremiseTagSet(tagSet?: InstanceTagSet): CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
@@ -527,9 +507,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
               });
             }
           } else {
-            throw new Error(
-              'Cannot specify both an empty key and no values for an instance tag filter'
-            );
+            throw new Error('Cannot specify both an empty key and no values for an instance tag filter');
           }
         }
       }

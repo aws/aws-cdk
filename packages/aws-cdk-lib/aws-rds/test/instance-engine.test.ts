@@ -110,7 +110,6 @@ describe('instance engine', () => {
   });
 
   describe('Oracle engine bindToInstance', () => {
-
     test('returns s3 integration feature', () => {
       const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 });
 
@@ -131,10 +130,12 @@ describe('instance engine', () => {
       expect(engineConfig.optionGroup).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         EngineName: 'oracle-se2',
-        OptionConfigurations: [{
-          OptionName: 'S3_INTEGRATION',
-          OptionVersion: '1.0',
-        }],
+        OptionConfigurations: [
+          {
+            OptionName: 'S3_INTEGRATION',
+            OptionVersion: '1.0',
+          },
+        ],
       });
     });
 
@@ -143,9 +144,11 @@ describe('instance engine', () => {
       const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 });
       const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
         engine,
-        configurations: [{
-          name: 'MY_OPTION_CONFIG',
-        }],
+        configurations: [
+          {
+            name: 'MY_OPTION_CONFIG',
+          },
+        ],
       });
 
       const engineConfig = engine.bindToInstance(stack, {
@@ -156,20 +159,24 @@ describe('instance engine', () => {
       expect(engineConfig.optionGroup).toEqual(optionGroup);
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         EngineName: 'oracle-se2',
-        OptionConfigurations: [{
-          OptionName: 'MY_OPTION_CONFIG',
-        },
-        {
-          OptionName: 'S3_INTEGRATION',
-          OptionVersion: '1.0',
-        }],
+        OptionConfigurations: [
+          {
+            OptionName: 'MY_OPTION_CONFIG',
+          },
+          {
+            OptionName: 'S3_INTEGRATION',
+            OptionVersion: '1.0',
+          },
+        ],
       });
     });
   });
 
   describe('SQL Server engine bindToInstance', () => {
     test('returns s3 integration feature', () => {
-      const engine = rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 });
+      const engine = rds.DatabaseInstanceEngine.sqlServerSe({
+        version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1,
+      });
 
       const engineConfig = engine.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('S3_INTEGRATION');
@@ -178,12 +185,16 @@ describe('instance engine', () => {
 
     test('s3 import/export - throws if roles are not equal', () => {
       const stack = new cdk.Stack();
-      const engine = rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 });
+      const engine = rds.DatabaseInstanceEngine.sqlServerSe({
+        version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1,
+      });
 
       const s3ImportRole = new iam.Role(stack, 'ImportRole', { assumedBy: new iam.AccountRootPrincipal() });
       const s3ExportRole = new iam.Role(stack, 'ExportRole', { assumedBy: new iam.AccountRootPrincipal() });
 
-      expect(() => engine.bindToInstance(new cdk.Stack(), { s3ImportRole, s3ExportRole })).toThrow(/S3 import and export roles must be the same/);
+      expect(() => engine.bindToInstance(new cdk.Stack(), { s3ImportRole, s3ExportRole })).toThrow(
+        /S3 import and export roles must be the same/
+      );
       expect(() => engine.bindToInstance(new cdk.Stack(), { s3ImportRole })).not.toThrow();
       expect(() => engine.bindToInstance(new cdk.Stack(), { s3ExportRole })).not.toThrow();
       expect(() => engine.bindToInstance(new cdk.Stack(), { s3ImportRole, s3ExportRole: s3ImportRole })).not.toThrow();
@@ -191,7 +202,9 @@ describe('instance engine', () => {
 
     test('s3 import/export - creates an option group if needed', () => {
       const stack = new cdk.Stack();
-      const engine = rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 });
+      const engine = rds.DatabaseInstanceEngine.sqlServerSe({
+        version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1,
+      });
 
       const engineConfig = engine.bindToInstance(stack, {
         optionGroup: undefined,
@@ -201,24 +214,32 @@ describe('instance engine', () => {
       expect(engineConfig.optionGroup).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         EngineName: 'sqlserver-se',
-        OptionConfigurations: [{
-          OptionName: 'SQLSERVER_BACKUP_RESTORE',
-          OptionSettings: [{
-            Name: 'IAM_ROLE_ARN',
-            Value: { 'Fn::GetAtt': ['ImportRole0C9E6F9A', 'Arn'] },
-          }],
-        }],
+        OptionConfigurations: [
+          {
+            OptionName: 'SQLSERVER_BACKUP_RESTORE',
+            OptionSettings: [
+              {
+                Name: 'IAM_ROLE_ARN',
+                Value: { 'Fn::GetAtt': ['ImportRole0C9E6F9A', 'Arn'] },
+              },
+            ],
+          },
+        ],
       });
     });
 
     test('s3 import/export - appends to an existing option group if it exists', () => {
       const stack = new cdk.Stack();
-      const engine = rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 });
+      const engine = rds.DatabaseInstanceEngine.sqlServerSe({
+        version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1,
+      });
       const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
         engine,
-        configurations: [{
-          name: 'MY_OPTION_CONFIG',
-        }],
+        configurations: [
+          {
+            name: 'MY_OPTION_CONFIG',
+          },
+        ],
       });
 
       const engineConfig = engine.bindToInstance(stack, {
@@ -229,26 +250,42 @@ describe('instance engine', () => {
       expect(engineConfig.optionGroup).toEqual(optionGroup);
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         EngineName: 'sqlserver-se',
-        OptionConfigurations: [{
-          OptionName: 'MY_OPTION_CONFIG',
-        },
-        {
-          OptionName: 'SQLSERVER_BACKUP_RESTORE',
-          OptionSettings: [{
-            Name: 'IAM_ROLE_ARN',
-            Value: { 'Fn::GetAtt': ['ImportRole0C9E6F9A', 'Arn'] },
-          }],
-        }],
+        OptionConfigurations: [
+          {
+            OptionName: 'MY_OPTION_CONFIG',
+          },
+          {
+            OptionName: 'SQLSERVER_BACKUP_RESTORE',
+            OptionSettings: [
+              {
+                Name: 'IAM_ROLE_ARN',
+                Value: { 'Fn::GetAtt': ['ImportRole0C9E6F9A', 'Arn'] },
+              },
+            ],
+          },
+        ],
       });
     });
   });
 
   describe('SQL Server engine family', () => {
     test.each([
-      ['SQL Server Standard Edition', rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 })],
-      ['SQL Server Enterprise Edition', rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 })],
-      ['SQL Server Web Edition', rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 })],
-      ['SQL Server Express Edition', rds.DatabaseInstanceEngine.sqlServerEx({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 })],
+      [
+        'SQL Server Standard Edition',
+        rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 }),
+      ],
+      [
+        'SQL Server Enterprise Edition',
+        rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 }),
+      ],
+      [
+        'SQL Server Web Edition',
+        rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 }),
+      ],
+      [
+        'SQL Server Express Edition',
+        rds.DatabaseInstanceEngine.sqlServerEx({ version: rds.SqlServerEngineVersion.VER_15_00_4153_1_V1 }),
+      ],
     ])('is passed correctly for %s', (_, engine) => {
       expect(engine.engineFamily).toEqual('SQLSERVER');
     });
@@ -302,7 +339,6 @@ describe('instance engine', () => {
       ['11.4.3', rds.MariaDbEngineVersion.VER_11_4_3],
       ['11.4.4', rds.MariaDbEngineVersion.VER_11_4_4],
     ])('is passed correctly for %s', (engineVersion, version) => {
-
       // WHEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');

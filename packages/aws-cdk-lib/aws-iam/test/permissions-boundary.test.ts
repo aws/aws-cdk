@@ -22,11 +22,7 @@ test('apply imported boundary to a role', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     PermissionsBoundary: {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':iam::aws:policy/ReadOnlyAccess',
-      ]],
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/ReadOnlyAccess']],
     },
   });
 });
@@ -41,11 +37,7 @@ test('apply imported boundary to a user', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
     PermissionsBoundary: {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':iam::aws:policy/ReadOnlyAccess',
-      ]],
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/ReadOnlyAccess']],
     },
   });
 });
@@ -57,14 +49,16 @@ test('apply newly created boundary to a role', () => {
   });
 
   // WHEN
-  iam.PermissionsBoundary.of(role).apply(new iam.ManagedPolicy(stack, 'Policy', {
-    statements: [
-      new iam.PolicyStatement({
-        actions: ['*'],
-        resources: ['*'],
-      }),
-    ],
-  }));
+  iam.PermissionsBoundary.of(role).apply(
+    new iam.ManagedPolicy(stack, 'Policy', {
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['*'],
+          resources: ['*'],
+        }),
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -80,14 +74,16 @@ test('apply boundary to role created by a custom resource', () => {
   });
 
   // WHEN
-  iam.PermissionsBoundary.of(provider).apply(new iam.ManagedPolicy(stack, 'Policy', {
-    statements: [
-      new iam.PolicyStatement({
-        actions: ['*'],
-        resources: ['*'],
-      }),
-    ],
-  }));
+  iam.PermissionsBoundary.of(provider).apply(
+    new iam.ManagedPolicy(stack, 'Policy', {
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['*'],
+          resources: ['*'],
+        }),
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -102,14 +98,16 @@ test('apply boundary to users created via CfnResource', () => {
   });
 
   // WHEN
-  iam.PermissionsBoundary.of(user).apply(new iam.ManagedPolicy(stack, 'Policy', {
-    statements: [
-      new iam.PolicyStatement({
-        actions: ['*'],
-        resources: ['*'],
-      }),
-    ],
-  }));
+  iam.PermissionsBoundary.of(user).apply(
+    new iam.ManagedPolicy(stack, 'Policy', {
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['*'],
+          resources: ['*'],
+        }),
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
@@ -124,14 +122,16 @@ test('apply boundary to roles created via CfnResource', () => {
   });
 
   // WHEN
-  iam.PermissionsBoundary.of(role).apply(new iam.ManagedPolicy(stack, 'Policy', {
-    statements: [
-      new iam.PolicyStatement({
-        actions: ['*'],
-        resources: ['*'],
-      }),
-    ],
-  }));
+  iam.PermissionsBoundary.of(role).apply(
+    new iam.ManagedPolicy(stack, 'Policy', {
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['*'],
+          resources: ['*'],
+        }),
+      ],
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {

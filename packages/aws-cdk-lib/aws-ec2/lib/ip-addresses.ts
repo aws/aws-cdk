@@ -282,10 +282,7 @@ class AwsIpam implements IIpAddresses {
     const cidrSplit = calculateCidrSplits(
       this.props.ipv4NetmaskLength,
       input.requestedSubnets.map((mask) => {
-        if (
-          mask.configuration.cidrMask === undefined &&
-          this.props.defaultSubnetIpv4NetmaskLength === undefined
-        ) {
+        if (mask.configuration.cidrMask === undefined && this.props.defaultSubnetIpv4NetmaskLength === undefined) {
           throw new Error(
             'If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options'
           );
@@ -410,9 +407,7 @@ class Cidr implements IIpAddresses {
       }
     });
 
-    const cidrMaskForRemaining = this.networkBuilder.maskForRemainingSubnets(
-      subnetsWithoutDefinedCidr.length
-    );
+    const cidrMaskForRemaining = this.networkBuilder.maskForRemainingSubnets(subnetsWithoutDefinedCidr.length);
     subnetsWithoutDefinedCidr.forEach((subnet) => {
       allocatedSubnets.splice(subnet.index, 0, {
         cidr: this.networkBuilder.addSubnet(cidrMaskForRemaining),

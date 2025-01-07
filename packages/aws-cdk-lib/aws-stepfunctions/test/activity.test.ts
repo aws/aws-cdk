@@ -31,7 +31,7 @@ describe('Activity', () => {
       namespace: 'AWS/States',
       dimensions: { ActivityArn: { Ref: 'Activity04690B0A' } },
     };
-    expect((stack.resolve(activity.metricRunTime()))).toEqual({
+    expect(stack.resolve(activity.metricRunTime())).toEqual({
       ...sharedMetric,
       metricName: 'ActivityRunTime',
       statistic: 'Average',
@@ -60,16 +60,17 @@ describe('Activity', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([Match.objectLike({
-          Action: 'states:SendTaskSuccess',
-          Effect: 'Allow',
-          Resource: {
-            Ref: 'Activity04690B0A',
-          },
-        })]),
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'states:SendTaskSuccess',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'Activity04690B0A',
+            },
+          }),
+        ]),
       },
     });
-
   });
 
   test('Instantiate Activity with EncryptionConfiguration using Customer Managed Key', () => {
@@ -79,7 +80,10 @@ describe('Activity', () => {
 
     // WHEN
     new stepfunctions.Activity(stack, 'Activity', {
-      encryptionConfiguration: new stepfunctions.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(75)),
+      encryptionConfiguration: new stepfunctions.CustomerManagedEncryptionConfiguration(
+        kmsKey,
+        cdk.Duration.seconds(75)
+      ),
     });
 
     // THEN
@@ -119,10 +123,7 @@ describe('Activity', () => {
             Resource: '*',
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:GenerateDataKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
             Condition: {
               StringEquals: {
                 'kms:EncryptionContext:aws:states:activityArn': {
@@ -189,26 +190,28 @@ describe('Activity', () => {
     expect(() => {
       // WHEN
       new stepfunctions.Activity(stack, 'Activity', {
-        encryptionConfiguration: new stepfunctions.CustomerManagedEncryptionConfiguration(kmsKey, cdk.Duration.seconds(5)),
+        encryptionConfiguration: new stepfunctions.CustomerManagedEncryptionConfiguration(
+          kmsKey,
+          cdk.Duration.seconds(5)
+        ),
       });
     }).toThrow('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
   }),
+    test('Instantiate Activity with EncryptionConfiguration using AWS Owned Key', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-  test('Instantiate Activity with EncryptionConfiguration using AWS Owned Key', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
+      // WHEN
+      new stepfunctions.Activity(stack, 'Activity', {
+        encryptionConfiguration: new stepfunctions.AwsOwnedEncryptionConfiguration(),
+      });
 
-    // WHEN
-    new stepfunctions.Activity(stack, 'Activity', {
-      encryptionConfiguration: new stepfunctions.AwsOwnedEncryptionConfiguration(),
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
+        Name: 'Activity',
+        EncryptionConfiguration: Match.objectLike({
+          Type: 'AWS_OWNED_KEY',
+        }),
+      });
     });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
-      Name: 'Activity',
-      EncryptionConfiguration: Match.objectLike({
-        Type: 'AWS_OWNED_KEY',
-      }),
-    });
-  });
 });

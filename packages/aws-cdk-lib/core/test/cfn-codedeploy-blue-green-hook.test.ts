@@ -55,19 +55,10 @@ describe('CodeDeploy blue-green deployment Hook', () => {
             Applications: [
               {
                 ECSAttributes: {
-                  TaskDefinitions: [
-                    'blue-task-def',
-                    'green-task-def',
-                  ],
-                  TaskSets: [
-                    'blue-task-set',
-                    'green-task-set',
-                  ],
+                  TaskDefinitions: ['blue-task-def', 'green-task-def'],
+                  TaskSets: ['blue-task-set', 'green-task-set'],
                   TrafficRouting: {
-                    TargetGroups: [
-                      'blue-target-group',
-                      'green-target-group',
-                    ],
+                    TargetGroups: ['blue-target-group', 'green-target-group'],
                     ProdTrafficRoute: {
                       LogicalID: 'logicalId2',
                       Type: 'AWS::ElasticLoadBalancingV2::Listener',

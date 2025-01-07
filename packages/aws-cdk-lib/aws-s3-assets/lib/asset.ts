@@ -180,9 +180,7 @@ export class Asset extends Construct implements cdk.IAsset {
     this.httpUrl = location.httpUrl;
     this.s3Url = location.httpUrl; // for backwards compatibility
 
-    const kmsKey = location.kmsKeyArn
-      ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn)
-      : undefined;
+    const kmsKey = location.kmsKeyArn ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn) : undefined;
 
     this.bucket = s3.Bucket.fromBucketAttributes(this, 'AssetBucket', {
       bucketName: this.s3BucketName,

@@ -24,11 +24,7 @@ describe('With bucket', () => {
       domainName: { 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] },
       s3OriginConfig: {
         originAccessIdentity: {
-          'Fn::Join': ['',
-            [
-              'origin-access-identity/cloudfront/',
-              { Ref: 'S3Origin83A0717C' },
-            ]],
+          'Fn::Join': ['', ['origin-access-identity/cloudfront/', { Ref: 'S3Origin83A0717C' }]],
         },
       },
     });
@@ -51,17 +47,15 @@ describe('With bucket', () => {
       originPath: '/assets',
       connectionTimeout: 5,
       connectionAttempts: 2,
-      originCustomHeaders: [{
-        headerName: 'AUTH',
-        headerValue: 'NONE',
-      }],
+      originCustomHeaders: [
+        {
+          headerName: 'AUTH',
+          headerValue: 'NONE',
+        },
+      ],
       s3OriginConfig: {
         originAccessIdentity: {
-          'Fn::Join': ['',
-            [
-              'origin-access-identity/cloudfront/',
-              { Ref: 'S3Origin83A0717C' },
-            ]],
+          'Fn::Join': ['', ['origin-access-identity/cloudfront/', { Ref: 'S3Origin83A0717C' }]],
         },
       },
     });
@@ -85,16 +79,18 @@ describe('With bucket', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 's3:GetObject',
-          Effect: 'Allow',
-          Principal: {
-            CanonicalUser: { 'Fn::GetAtt': ['OriginAccessIdentityDF1E3CAC', 'S3CanonicalUserId'] },
+        Statement: [
+          {
+            Action: 's3:GetObject',
+            Effect: 'Allow',
+            Principal: {
+              CanonicalUser: { 'Fn::GetAtt': ['OriginAccessIdentityDF1E3CAC', 'S3CanonicalUserId'] },
+            },
+            Resource: {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
+            },
           },
-          Resource: {
-            'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
-          },
-        }],
+        ],
       },
     });
   });
@@ -112,16 +108,18 @@ describe('With bucket', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 's3:GetObject',
-          Effect: 'Allow',
-          Principal: {
-            CanonicalUser: { 'Fn::GetAtt': ['DistOrigin1S3Origin87D64058', 'S3CanonicalUserId'] },
+        Statement: [
+          {
+            Action: 's3:GetObject',
+            Effect: 'Allow',
+            Principal: {
+              CanonicalUser: { 'Fn::GetAtt': ['DistOrigin1S3Origin87D64058', 'S3CanonicalUserId'] },
+            },
+            Resource: {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
+            },
           },
-          Resource: {
-            'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
-          },
-        }],
+        ],
       },
     });
   });
@@ -144,11 +142,13 @@ describe('With bucket', () => {
     });
     Template.fromStack(bucketStack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
-        Statement: [Match.objectLike({
-          Principal: {
-            CanonicalUser: { 'Fn::GetAtt': ['StackDistOrigin15754CE84S3Origin25582A25', 'S3CanonicalUserId'] },
-          },
-        })],
+        Statement: [
+          Match.objectLike({
+            Principal: {
+              CanonicalUser: { 'Fn::GetAtt': ['StackDistOrigin15754CE84S3Origin25582A25', 'S3CanonicalUserId'] },
+            },
+          }),
+        ],
       },
     });
   });
@@ -223,9 +223,7 @@ describe('With website-configured bucket', () => {
       domainName: bucket.bucketWebsiteDomainName,
       customOriginConfig: {
         originProtocolPolicy: 'http-only',
-        originSslProtocols: [
-          'TLSv1.2',
-        ],
+        originSslProtocols: ['TLSv1.2'],
       },
     });
   });
@@ -244,9 +242,7 @@ describe('With website-configured bucket', () => {
       originPath: '/assets',
       customOriginConfig: {
         originProtocolPolicy: 'http-only',
-        originSslProtocols: [
-          'TLSv1.2',
-        ],
+        originSslProtocols: ['TLSv1.2'],
       },
     });
   });
@@ -259,9 +255,11 @@ describe('With website-configured bucket', () => {
     new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        Origins: [{
-          Id: 'MyCustomOrigin',
-        }],
+        Origins: [
+          {
+            Id: 'MyCustomOrigin',
+          },
+        ],
       },
     });
   });

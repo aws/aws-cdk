@@ -54,14 +54,10 @@ const scheduleStack = new cdk.Stack(app, 'aws-cdk-schedule');
 scheduleStack.addDependency(lambdaStack);
 
 // 1st case with imported lambda
-const importedFunc = lambda.Function.fromFunctionAttributes(
-  scheduleStack,
-  'importedFromFirstStack',
-  {
-    functionArn: funcToBeImportedStaticArn,
-    skipPermissions: true,
-  }
-);
+const importedFunc = lambda.Function.fromFunctionAttributes(scheduleStack, 'importedFromFirstStack', {
+  functionArn: funcToBeImportedStaticArn,
+  skipPermissions: true,
+});
 const importedLambdaTagValue = 'importedLambdaTagValue';
 new scheduler.Schedule(scheduleStack, 'ScheduleWithImportedLambda', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),

@@ -179,8 +179,7 @@ export class S3DeployAction extends Action {
         Extract: this.props.extract === false ? 'false' : 'true',
         ObjectKey: this.props.objectKey,
         CannedACL: acl ? toKebabCase(acl.toString()) : undefined,
-        CacheControl:
-          this.props.cacheControl && this.props.cacheControl.map((ac) => ac.value).join(', '),
+        CacheControl: this.props.cacheControl && this.props.cacheControl.map((ac) => ac.value).join(', '),
         KMSEncryptionKeyARN: this.props.encryptionKey?.keyArn,
       },
     };

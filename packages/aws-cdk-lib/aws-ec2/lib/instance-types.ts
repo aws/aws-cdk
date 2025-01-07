@@ -1951,9 +1951,7 @@ export class InstanceType {
    */
   public get architecture(): InstanceArchitecture {
     // capture the family, generation, capabilities, and size portions of the instance type id
-    const instanceTypeComponents = this.instanceTypeIdentifier.match(
-      /^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/
-    );
+    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
       throw new Error('Malformed instance type identifier');
     }

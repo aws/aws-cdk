@@ -27,10 +27,7 @@ test('use lambda as an event rule target', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
-      'Fn::GetAtt': [
-        lambdaId,
-        'Arn',
-      ],
+      'Fn::GetAtt': [lambdaId, 'Arn'],
     },
     Principal: 'events.amazonaws.com',
     SourceArn: { 'Fn::GetAtt': ['Rule4C995B7F', 'Arn'] },
@@ -39,10 +36,7 @@ test('use lambda as an event rule target', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
-      'Fn::GetAtt': [
-        lambdaId,
-        'Arn',
-      ],
+      'Fn::GetAtt': [lambdaId, 'Arn'],
     },
     Principal: 'events.amazonaws.com',
     SourceArn: { 'Fn::GetAtt': ['Rule270732244', 'Arn'] },
@@ -68,12 +62,16 @@ test('adding same lambda function as target mutiple times creates permission onl
   });
 
   // WHEN
-  rule.addTarget(new targets.LambdaFunction(fn, {
-    event: events.RuleTargetInput.fromObject({ key: 'value1' }),
-  }));
-  rule.addTarget(new targets.LambdaFunction(fn, {
-    event: events.RuleTargetInput.fromObject({ key: 'value2' }),
-  }));
+  rule.addTarget(
+    new targets.LambdaFunction(fn, {
+      event: events.RuleTargetInput.fromObject({ key: 'value1' }),
+    })
+  );
+  rule.addTarget(
+    new targets.LambdaFunction(fn, {
+      event: events.RuleTargetInput.fromObject({ key: 'value2' }),
+    })
+  );
 
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
@@ -89,12 +87,16 @@ test('adding different lambda functions as target mutiple times creates multiple
   });
 
   // WHEN
-  rule.addTarget(new targets.LambdaFunction(fn1, {
-    event: events.RuleTargetInput.fromObject({ key: 'value1' }),
-  }));
-  rule.addTarget(new targets.LambdaFunction(fn2, {
-    event: events.RuleTargetInput.fromObject({ key: 'value2' }),
-  }));
+  rule.addTarget(
+    new targets.LambdaFunction(fn1, {
+      event: events.RuleTargetInput.fromObject({ key: 'value1' }),
+    })
+  );
+  rule.addTarget(
+    new targets.LambdaFunction(fn2, {
+      event: events.RuleTargetInput.fromObject({ key: 'value2' }),
+    })
+  );
 
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
@@ -114,12 +116,16 @@ test('adding same singleton lambda function as target mutiple times creates perm
   });
 
   // WHEN
-  rule.addTarget(new targets.LambdaFunction(fn, {
-    event: events.RuleTargetInput.fromObject({ key: 'value1' }),
-  }));
-  rule.addTarget(new targets.LambdaFunction(fn, {
-    event: events.RuleTargetInput.fromObject({ key: 'value2' }),
-  }));
+  rule.addTarget(
+    new targets.LambdaFunction(fn, {
+      event: events.RuleTargetInput.fromObject({ key: 'value1' }),
+    })
+  );
+  rule.addTarget(
+    new targets.LambdaFunction(fn, {
+      event: events.RuleTargetInput.fromObject({ key: 'value2' }),
+    })
+  );
 
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
@@ -163,9 +169,11 @@ test('use a Dead Letter Queue for the rule target', () => {
 
   new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-    targets: [new targets.LambdaFunction(fn, {
-      deadLetterQueue: queue,
-    })],
+    targets: [
+      new targets.LambdaFunction(fn, {
+        deadLetterQueue: queue,
+      }),
+    ],
   });
 
   expect(() => app.synth()).not.toThrow();
@@ -175,17 +183,11 @@ test('use a Dead Letter Queue for the rule target', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'Queue4A7E3555',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
           },
         },
         Id: 'Target0',
@@ -201,10 +203,7 @@ test('use a Dead Letter Queue for the rule target', () => {
           Condition: {
             ArnEquals: {
               'aws:SourceArn': {
-                'Fn::GetAtt': [
-                  'Rule4C995B7F',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Rule4C995B7F', 'Arn'],
               },
             },
           },
@@ -213,10 +212,7 @@ test('use a Dead Letter Queue for the rule target', () => {
             Service: 'events.amazonaws.com',
           },
           Resource: {
-            'Fn::GetAtt': [
-              'Queue4A7E3555',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
           },
           Sid: 'AllowEventRuleStackRuleF6E31DD0',
         },
@@ -258,10 +254,14 @@ test('throw an error when using a Dead Letter Queue for the rule target in a dif
   });
 
   expect(() => {
-    rule.addTarget(new targets.LambdaFunction(fn, {
-      deadLetterQueue: queue,
-    }));
-  }).toThrow(/Cannot assign Dead Letter Queue in region eu-west-2 to the rule Stack1Rule92BA1111 in region eu-west-1. Both the queue and the rule must be in the same region./);
+    rule.addTarget(
+      new targets.LambdaFunction(fn, {
+        deadLetterQueue: queue,
+      })
+    );
+  }).toThrow(
+    /Cannot assign Dead Letter Queue in region eu-west-2 to the rule Stack1Rule92BA1111 in region eu-west-1. Both the queue and the rule must be in the same region./
+  );
 });
 
 test('must display a warning when using a Dead Letter Queue from another account', () => {
@@ -291,9 +291,11 @@ test('must display a warning when using a Dead Letter Queue from another account
 
   new events.Rule(stack1, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-    targets: [new targets.LambdaFunction(fn, {
-      deadLetterQueue: queue,
-    })],
+    targets: [
+      new targets.LambdaFunction(fn, {
+        deadLetterQueue: queue,
+      }),
+    ],
   });
 
   expect(() => app.synth()).not.toThrow();
@@ -305,10 +307,7 @@ test('must display a warning when using a Dead Letter Queue from another account
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         DeadLetterConfig: {
           Arn: 'arn:aws:sqs:eu-west-1:444455556666:queue1',
@@ -320,13 +319,14 @@ test('must display a warning when using a Dead Letter Queue from another account
 
   Template.fromStack(stack1).resourceCountIs('AWS::SQS::QueuePolicy', 0);
 
-  Annotations.fromStack(stack1).hasWarning('/Stack1/Rule', Match.objectLike({
-    'Fn::Join': Match.arrayWith([
-      Match.arrayWith([
-        'Cannot add a resource policy to your dead letter queue associated with rule ',
+  Annotations.fromStack(stack1).hasWarning(
+    '/Stack1/Rule',
+    Match.objectLike({
+      'Fn::Join': Match.arrayWith([
+        Match.arrayWith(['Cannot add a resource policy to your dead letter queue associated with rule ']),
       ]),
-    ]),
-  }));
+    })
+  );
 });
 
 test('specifying retry policy', () => {
@@ -343,10 +343,12 @@ test('specifying retry policy', () => {
   // WHEN
   new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-    targets: [new targets.LambdaFunction(fn, {
-      retryAttempts: 2,
-      maxEventAge: cdk.Duration.hours(2),
-    })],
+    targets: [
+      new targets.LambdaFunction(fn, {
+        retryAttempts: 2,
+        maxEventAge: cdk.Duration.hours(2),
+      }),
+    ],
   });
 
   // THEN
@@ -359,10 +361,7 @@ test('specifying retry policy', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         Id: 'Target0',
         RetryPolicy: {
@@ -388,9 +387,11 @@ test('specifying retry policy with 0 retryAttempts', () => {
   // WHEN
   new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-    targets: [new targets.LambdaFunction(fn, {
-      retryAttempts: 0,
-    })],
+    targets: [
+      new targets.LambdaFunction(fn, {
+        retryAttempts: 0,
+      }),
+    ],
   });
 
   // THEN
@@ -403,10 +404,7 @@ test('specifying retry policy with 0 retryAttempts', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyLambdaCCE802FB',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
         },
         Id: 'Target0',
         RetryPolicy: {

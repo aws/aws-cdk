@@ -42,15 +42,18 @@ describe('fargate resource provider', () => {
     test('respects physical name if provided', async () => {
       // GIVEN
       const client = newEksClientMock();
-      const handler = new FargateProfileResourceHandler(client, newRequestMock({
-        ResourceProperties: {
-          AssumeRoleArn: 'AssumeRoleArnMock',
-          Config: {
-            fargateProfileName: 'MyProfileNameBoom',
-            clusterName: 'MockClusterName',
+      const handler = new FargateProfileResourceHandler(
+        client,
+        newRequestMock({
+          ResourceProperties: {
+            AssumeRoleArn: 'AssumeRoleArnMock',
+            Config: {
+              fargateProfileName: 'MyProfileNameBoom',
+              clusterName: 'MockClusterName',
+            },
           },
-        },
-      }));
+        })
+      );
 
       // WHEN
       const onEventResponse = await handler.onEvent();
@@ -147,9 +150,12 @@ describe('fargate resource provider', () => {
     test('calls createFargateProfile with a new name', async () => {
       // GIVEN
       const client = newEksClientMock();
-      const handler = new FargateProfileResourceHandler(client, newRequestMock({
-        RequestType: 'Update',
-      }));
+      const handler = new FargateProfileResourceHandler(
+        client,
+        newRequestMock({
+          RequestType: 'Update',
+        })
+      );
 
       // WHEN
       const onEventResponse = await handler.onEvent();
@@ -173,13 +179,15 @@ describe('fargate resource provider', () => {
   });
 
   describe('delete', () => {
-
     test('calls deleteFargateProfile', async () => {
       // GIVEN
       const client = newEksClientMock();
-      const handler = new FargateProfileResourceHandler(client, newRequestMock({
-        RequestType: 'Delete',
-      }));
+      const handler = new FargateProfileResourceHandler(
+        client,
+        newRequestMock({
+          RequestType: 'Delete',
+        })
+      );
 
       // WHEN
       const onEventResponse = await handler.onEvent();
@@ -211,9 +219,12 @@ describe('fargate resource provider', () => {
       client.describeFargateProfile = sinon.fake.throws(resourceNotFoundError);
 
       // WHEN
-      const handler = new FargateProfileResourceHandler(client, newRequestMock({
-        RequestType: 'Delete',
-      }));
+      const handler = new FargateProfileResourceHandler(
+        client,
+        newRequestMock({
+          RequestType: 'Delete',
+        })
+      );
       const resp = await handler.isComplete();
 
       // THEN
@@ -258,7 +269,7 @@ describe('fargate resource provider', () => {
   });
 });
 
-function newRequestMock(props: any = { }): any {
+function newRequestMock(props: any = {}): any {
   return {
     RequestType: 'Create',
     ServiceToken: 'ServiceTokenMock',

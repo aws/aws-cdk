@@ -192,10 +192,7 @@ export interface MatchmakingConfigurationProps {
 /**
  * Base class for new and imported GameLift Matchmaking configuration.
  */
-export abstract class MatchmakingConfigurationBase
-  extends cdk.Resource
-  implements IMatchmakingConfiguration
-{
+export abstract class MatchmakingConfigurationBase extends cdk.Resource implements IMatchmakingConfiguration {
   /**
    * Import an existing matchmaking configuration from its attributes.
    */
@@ -211,15 +208,10 @@ export abstract class MatchmakingConfigurationBase
     }
     const matchmakingConfigurationName =
       attrs.matchmakingConfigurationName ??
-      cdk.Stack.of(scope).splitArn(
-        attrs.matchmakingConfigurationArn!,
-        cdk.ArnFormat.SLASH_RESOURCE_NAME
-      ).resourceName;
+      cdk.Stack.of(scope).splitArn(attrs.matchmakingConfigurationArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!matchmakingConfigurationName) {
-      throw new Error(
-        `No matchmaking configuration name found in ARN: '${attrs.matchmakingConfigurationArn}'`
-      );
+      throw new Error(`No matchmaking configuration name found in ARN: '${attrs.matchmakingConfigurationArn}'`);
     }
 
     const matchmakingConfigurationArn =

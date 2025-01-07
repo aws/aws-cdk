@@ -30,24 +30,44 @@ describe('action', () => {
 
   describe('action type validation', () => {
     test('must be source and is source', () => {
-      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
+      const result = validations.validateSourceAction(
+        true,
+        codepipeline.ActionCategory.SOURCE,
+        'test action',
+        'test stage'
+      );
       expect(result.length).toEqual(0);
     });
 
     test('must be source and is not source', () => {
-      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
+      const result = validations.validateSourceAction(
+        true,
+        codepipeline.ActionCategory.DEPLOY,
+        'test action',
+        'test stage'
+      );
       expect(result.length).toEqual(1);
       expect(result[0]).toMatch(/may only contain Source actions/);
     });
 
     test('cannot be source and is source', () => {
-      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
+      const result = validations.validateSourceAction(
+        false,
+        codepipeline.ActionCategory.SOURCE,
+        'test action',
+        'test stage'
+      );
       expect(result.length).toEqual(1);
       expect(result[0]).toMatch(/may only occur in first stage/);
     });
 
     test('cannot be source and is not source', () => {
-      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
+      const result = validations.validateSourceAction(
+        false,
+        codepipeline.ActionCategory.DEPLOY,
+        'test action',
+        'test stage'
+      );
       expect(result.length).toEqual(0);
     });
   });
@@ -84,11 +104,7 @@ describe('action', () => {
               new FakeSourceAction({
                 actionName: 'Source',
                 output: sourceOutput,
-                extraOutputs: [
-                  extraOutput1,
-                  extraOutput2,
-                  extraOutput3,
-                ],
+                extraOutputs: [extraOutput1, extraOutput2, extraOutput3],
               }),
             ],
           },
@@ -98,11 +114,7 @@ describe('action', () => {
               new FakeBuildAction({
                 actionName: 'Build',
                 input: sourceOutput,
-                extraInputs: [
-                  extraOutput1,
-                  extraOutput2,
-                  extraOutput3,
-                ],
+                extraInputs: [extraOutput1, extraOutput2, extraOutput3],
               }),
             ],
           },
@@ -110,8 +122,7 @@ describe('action', () => {
       });
 
       expect(() => {
-        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        });
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {});
       }).toThrow(/Build\/Fake cannot have more than 3 input artifacts/);
     });
 
@@ -131,12 +142,7 @@ describe('action', () => {
               new FakeSourceAction({
                 actionName: 'Source',
                 output: sourceOutput,
-                extraOutputs: [
-                  extraOutput1,
-                  extraOutput2,
-                  extraOutput3,
-                  extraOutput4,
-                ],
+                extraOutputs: [extraOutput1, extraOutput2, extraOutput3, extraOutput4],
               }),
             ],
           },
@@ -153,8 +159,7 @@ describe('action', () => {
       });
 
       expect(() => {
-        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        });
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {});
       }).toThrow(/Source\/Fake cannot have more than 4 output artifacts/);
     });
   });
@@ -185,33 +190,33 @@ describe('action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {
-          'Name': 'Source',
-          'Actions': [
+          Name: 'Source',
+          Actions: [
             {
-              'Name': 'CodeCommit',
-              'OutputArtifacts': [
+              Name: 'CodeCommit',
+              OutputArtifacts: [
                 {
-                  'Name': 'Artifact_Source_CodeCommit',
+                  Name: 'Artifact_Source_CodeCommit',
                 },
               ],
             },
           ],
         },
         {
-          'Name': 'Build',
-          'Actions': [
+          Name: 'Build',
+          Actions: [
             {
-              'Name': 'CodeBuild',
-              'InputArtifacts': [
+              Name: 'CodeBuild',
+              InputArtifacts: [
                 {
-                  'Name': 'Artifact_Source_CodeCommit',
+                  Name: 'Artifact_Source_CodeCommit',
                 },
               ],
-              'OutputArtifacts': [
+              OutputArtifacts: [
                 {
-                  'Name': 'Artifact_Build_CodeBuild',
+                  Name: 'Artifact_Build_CodeBuild',
                 },
               ],
             },
@@ -288,10 +293,7 @@ describe('action', () => {
         new FakeSourceAction({
           actionName: 'CodeBuild',
           output: new codepipeline.Artifact('Artifact1'),
-          extraOutputs: [
-            new codepipeline.Artifact('Artifact1'),
-            new codepipeline.Artifact('Artifact1'),
-          ],
+          extraOutputs: [new codepipeline.Artifact('Artifact1'), new codepipeline.Artifact('Artifact1')],
         });
       }).not.toThrow();
     });
@@ -329,7 +331,9 @@ describe('action', () => {
     // an attempt to add it to the Pipeline is where things blow up
     expect(() => {
       buildStage.addAction(buildAction);
-    }).toThrow(/Role is not supported for actions with an owner different than 'AWS' - got 'ThirdParty' \(Action: 'build' in Stage: 'Build'\)/);
+    }).toThrow(
+      /Role is not supported for actions with an owner different than 'AWS' - got 'ThirdParty' \(Action: 'build' in Stage: 'Build'\)/
+    );
   });
 
   test('actions can be retrieved from stages they have been added to', () => {

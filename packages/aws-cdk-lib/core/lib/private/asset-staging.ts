@@ -147,11 +147,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
    * @param sourcePath - path to folder where files should be copied from - without trailing slash
    */
   private copyInputFrom(sourcePath: string) {
-    dockerExec([
-      'cp',
-      `${sourcePath}/.`,
-      `${this.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
-    ]);
+    dockerExec(['cp', `${sourcePath}/.`, `${this.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`]);
   }
 
   /**
@@ -159,11 +155,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
    * @param outputPath - path to folder where files should be copied to - without trailing slash
    */
   private copyOutputTo(outputPath: string) {
-    dockerExec([
-      'cp',
-      `${this.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`,
-      outputPath,
-    ]);
+    dockerExec(['cp', `${this.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, outputPath]);
   }
 
   /**
@@ -214,10 +206,7 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
 
   if (proc.status !== 0) {
     const reason = proc.signal != null ? `signal ${proc.signal}` : `status ${proc.status}`;
-    const command = [
-      prog,
-      ...args.map((arg) => (/[^a-z0-9_-]/i.test(arg) ? JSON.stringify(arg) : arg)),
-    ].join(' ');
+    const command = [prog, ...args.map((arg) => (/[^a-z0-9_-]/i.test(arg) ? JSON.stringify(arg) : arg))].join(' ');
 
     function prependLines(firstLine: string, text: Buffer | string | undefined): string[] {
       if (!text || text.length === 0) {

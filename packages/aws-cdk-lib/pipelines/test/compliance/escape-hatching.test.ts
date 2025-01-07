@@ -26,7 +26,6 @@ describe('with empty existing CodePipeline', () => {
   });
 
   test('can give both actions', () => {
-
     // WHEN
     new cdkp.CodePipeline(pipelineStack, 'Cdk', {
       codePipeline,
@@ -44,8 +43,7 @@ describe('with empty existing CodePipeline', () => {
         Match.objectLike({ Name: 'UpdatePipeline' }),
       ],
     });
-  },
-  );
+  });
 });
 
 describe('with custom Source stage in existing Pipeline', () => {
@@ -54,21 +52,22 @@ describe('with custom Source stage in existing Pipeline', () => {
       stages: [
         {
           stageName: 'CustomSource',
-          actions: [new cpa.GitHubSourceAction({
-            actionName: 'GitHub',
-            output: sourceArtifact,
-            oauthToken: SecretValue.unsafePlainText('$3kr1t'),
-            owner: 'test',
-            repo: 'test',
-            trigger: cpa.GitHubTrigger.POLL,
-          })],
+          actions: [
+            new cpa.GitHubSourceAction({
+              actionName: 'GitHub',
+              output: sourceArtifact,
+              oauthToken: SecretValue.unsafePlainText('$3kr1t'),
+              owner: 'test',
+              repo: 'test',
+              trigger: cpa.GitHubTrigger.POLL,
+            }),
+          ],
         },
       ],
     });
   });
 
   test('Work with synthAction', () => {
-
     new cdkp.CodePipeline(pipelineStack, 'Cdk', {
       codePipeline,
       synth: new cdkp.ShellStep('Synth', {
@@ -85,30 +84,32 @@ describe('with custom Source stage in existing Pipeline', () => {
         Match.objectLike({ Name: 'UpdatePipeline' }),
       ],
     });
-  },
-  );
+  });
 });
 
 test('can add another action to an existing stage', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.buildPipeline();
 
-  pipeline.pipeline.stages[0].addAction(new cpa.GitHubSourceAction({
-    actionName: 'GitHub2',
-    oauthToken: SecretValue.unsafePlainText('oops'),
-    output: new cp.Artifact(),
-    owner: 'OWNER',
-    repo: 'REPO',
-  }));
+  pipeline.pipeline.stages[0].addAction(
+    new cpa.GitHubSourceAction({
+      actionName: 'GitHub2',
+      oauthToken: SecretValue.unsafePlainText('oops'),
+      output: new cp.Artifact(),
+      owner: 'OWNER',
+      repo: 'REPO',
+    })
+  );
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Name: 'Source',
-      Actions: [
-        Match.objectLike({ ActionTypeId: Match.objectLike({ Provider: 'GitHub' }) }),
-        Match.objectLike({ ActionTypeId: Match.objectLike({ Provider: 'GitHub' }), Name: 'GitHub2' }),
-      ],
-    }]),
+    Stages: Match.arrayWith([
+      {
+        Name: 'Source',
+        Actions: [
+          Match.objectLike({ ActionTypeId: Match.objectLike({ Provider: 'GitHub' }) }),
+          Match.objectLike({ ActionTypeId: Match.objectLike({ Provider: 'GitHub' }), Name: 'GitHub2' }),
+        ],
+      },
+    ]),
   });
 });
-

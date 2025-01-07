@@ -341,44 +341,57 @@ describe('Linux ARM build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
-              {
-                'Fn::Select': [4, {
-                  'Fn::Split': [':', {
-                    'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
-                  }],
-                }],
-              },
-              '.dkr.ecr.',
-              {
-                'Fn::Select': [3, {
-                  'Fn::Split': [':', {
-                    'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
-                  }],
-                }],
-              },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/',
-              { Ref: 'myrepo5DFA62E5' },
-              ':v1',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::Select': [
+                    4,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.dkr.ecr.',
+                {
+                  'Fn::Select': [
+                    3,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+                '/',
+                { Ref: 'myrepo5DFA62E5' },
+                ':v1',
+              ],
+            ],
           },
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([Match.objectLike({
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Resource: {
-              'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
-            },
-          })]),
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+              Resource: {
+                'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
+              },
+            }),
+          ]),
         },
       });
     });
@@ -404,38 +417,42 @@ describe('Linux ARM build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
-              { Ref: 'AWS::AccountId' },
-              '.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/test-repo:latest',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                { Ref: 'AWS::AccountId' },
+                '.dkr.ecr.',
+                { Ref: 'AWS::Region' },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+                '/test-repo:latest',
+              ],
+            ],
           },
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([Match.objectLike({
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':ecr:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':repository/test-repo',
-              ]],
-            },
-          })]),
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ecr:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':repository/test-repo',
+                  ],
+                ],
+              },
+            }),
+          ]),
         },
       });
     });
@@ -443,7 +460,11 @@ describe('Linux ARM build image', () => {
     test('allows creating a build image from an existing cross-account ECR repository', () => {
       const stack = new cdk.Stack();
 
-      const repository = ecr.Repository.fromRepositoryArn(stack, 'my-cross-acount-repo', 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
+      const repository = ecr.Repository.fromRepositoryArn(
+        stack,
+        'my-cross-acount-repo',
+        'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo'
+      );
 
       new codebuild.Project(stack, 'Project', {
         buildSpec: codebuild.BuildSpec.fromObject({
@@ -461,25 +482,22 @@ describe('Linux ARM build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
-              '585695036304.dkr.ecr.us-east-1.',
-              { Ref: 'AWS::URLSuffix' },
-              '/foo/bar/foo/fooo:latest',
-            ]],
+            'Fn::Join': [
+              '',
+              ['585695036304.dkr.ecr.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/foo/bar/foo/fooo:latest'],
+            ],
           },
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([Match.objectLike({
-            Action: [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            Resource: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo',
-          })]),
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
+              Resource: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo',
+            }),
+          ]),
         },
       });
     });

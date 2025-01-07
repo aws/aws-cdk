@@ -60,7 +60,11 @@ test('string is a single "Fn::Select" token', () => {
 
   expect(renderData(stack, bucket.bucketWebsiteDomainName)).toStrictEqual({
     text: '<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }] } },
+    markers: {
+      '<<marker:0xbaba:0>>': {
+        'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }],
+      },
+    },
   });
 });
 
@@ -70,7 +74,11 @@ test('string with a "Fn::Select" token', () => {
 
   expect(renderData(stack, `test.${bucket.bucketWebsiteDomainName}`)).toStrictEqual({
     text: 'test.<<marker:0xbaba:0>>',
-    markers: { '<<marker:0xbaba:0>>': { 'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }] } },
+    markers: {
+      '<<marker:0xbaba:0>>': {
+        'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::GetAtt': ['Bucket83908E77', 'WebsiteURL'] }] }],
+      },
+    },
   });
 });
 
@@ -119,7 +127,11 @@ test('json-encoded string', () => {
 
 test('markers are returned in the source config', () => {
   const stack = new Stack();
-  const handler = new lambda.Function(stack, 'Handler', { runtime: lambda.Runtime.NODEJS_LATEST, code: lambda.Code.fromInline('foo'), handler: 'index.handler' });
+  const handler = new lambda.Function(stack, 'Handler', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    code: lambda.Code.fromInline('foo'),
+    handler: 'index.handler',
+  });
   const actual = Source.data('file1.txt', `boom-${stack.account}`).bind(stack, { handlerRole: handler.role! });
   expect(actual.markers).toStrictEqual({
     '<<marker:0xbaba:0>>': { Ref: 'AWS::AccountId' },
@@ -131,7 +143,7 @@ test('lazy string which can be fully resolved', () => {
 
   expect(renderData(stack, Lazy.string({ produce: () => 'resolved!' }))).toStrictEqual({
     text: 'resolved!',
-    markers: { },
+    markers: {},
   });
 });
 
@@ -141,7 +153,7 @@ test('lazy within a string which can be fully resolved', () => {
 
   expect(renderData(stack, `hello, ${token}`)).toStrictEqual({
     text: 'hello, resolved!',
-    markers: { },
+    markers: {},
   });
 });
 
@@ -151,7 +163,6 @@ test('lazy string which resolves to something with a deploy-time value', () => {
 
   expect(renderData(stack, `hello, ${token}`)).toStrictEqual({
     text: 'hello, resolved!',
-    markers: { },
+    markers: {},
   });
-
 });

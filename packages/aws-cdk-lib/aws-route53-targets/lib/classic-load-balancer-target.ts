@@ -11,10 +11,7 @@ export class ClassicLoadBalancerTarget implements route53.IAliasRecordTarget {
     private readonly props?: IAliasRecordTargetProps
   ) {}
 
-  public bind(
-    _record: route53.IRecordSet,
-    _zone?: route53.IHostedZone
-  ): route53.AliasRecordTargetConfig {
+  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     return {
       hostedZoneId: this.loadBalancer.loadBalancerCanonicalHostedZoneNameId,
       dnsName: `dualstack.${this.loadBalancer.loadBalancerDnsName}`,

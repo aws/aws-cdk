@@ -1,33 +1,17 @@
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
-import {
-  IComputeEnvironment,
-  ComputeEnvironmentBase,
-  ComputeEnvironmentProps,
-} from './compute-environment-base';
+import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import { IRole } from '../../aws-iam';
-import {
-  ArnFormat,
-  Duration,
-  ITaggable,
-  Lazy,
-  Resource,
-  Stack,
-  TagManager,
-  TagType,
-} from '../../core';
+import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from '../../core';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
  * meet the requirements of the jobs executing in this ComputeEnvironment.
  */
-export interface IManagedComputeEnvironment
-  extends IComputeEnvironment,
-    ec2.IConnectable,
-    ITaggable {
+export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.IConnectable, ITaggable {
   /**
    * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
    *
@@ -642,10 +626,7 @@ export class ManagedEc2EcsComputeEnvironment
       public readonly maxvCpus = 1;
       public readonly connections = {} as any;
       public readonly securityGroups = [];
-      public readonly tags: TagManager = new TagManager(
-        TagType.MAP,
-        'AWS::Batch::ComputeEnvironment'
-      );
+      public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new Error(`cannot add instance class to imported ComputeEnvironment '${id}'`);
@@ -682,9 +663,7 @@ export class ManagedEc2EcsComputeEnvironment
 
     this.spotFleetRole =
       props.spotFleetRole ??
-      (this.spot && this.allocationStrategy === AllocationStrategy.BEST_FIT
-        ? createSpotFleetRole(this)
-        : undefined);
+      (this.spot && this.allocationStrategy === AllocationStrategy.BEST_FIT ? createSpotFleetRole(this) : undefined);
 
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
@@ -692,18 +671,13 @@ export class ManagedEc2EcsComputeEnvironment
       this.images?.find((image) => image.imageType === EcsMachineImageType.ECS_AL2023) &&
       (this.instanceClasses.includes(ec2.InstanceClass.A1) ||
         this.instanceTypes.find((instanceType) =>
-          instanceType.sameInstanceClassAs(
-            ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE)
-          )
+          instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE))
         ))
     ) {
       throw new Error('Amazon Linux 2023 does not support A1 instances.');
     }
 
-    const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(
-      this,
-      props.instanceRole
-    );
+    const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
     this.instanceRole = instanceRole;
     this.instanceProfile = instanceProfile;
 
@@ -724,12 +698,7 @@ export class ManagedEc2EcsComputeEnvironment
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
-          produce: () =>
-            renderInstances(
-              this.instanceTypes,
-              this.instanceClasses,
-              props.useOptimalInstanceClasses
-            ),
+          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
         }),
         type: this.spot ? 'SPOT' : 'EC2',
         spotIamFleetRole: this.spotFleetRole?.roleArn,
@@ -759,12 +728,7 @@ export class ManagedEc2EcsComputeEnvironment
     });
 
     this.node.addValidation({
-      validate: () =>
-        validateInstances(
-          this.instanceTypes,
-          this.instanceClasses,
-          props.useOptimalInstanceClasses
-        ),
+      validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
     });
   }
 
@@ -1069,10 +1033,7 @@ export class ManagedEc2EksComputeEnvironment
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
 
-    const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(
-      this,
-      props.instanceRole
-    );
+    const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
     this.instanceRole = instanceRole;
     this.instanceProfile = instanceProfile;
 
@@ -1097,12 +1058,7 @@ export class ManagedEc2EksComputeEnvironment
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
-          produce: () =>
-            renderInstances(
-              this.instanceTypes,
-              this.instanceClasses,
-              props.useOptimalInstanceClasses
-            ),
+          produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
         }),
         type: this.spot ? 'SPOT' : 'EC2',
         allocationStrategy: this.allocationStrategy,
@@ -1131,12 +1087,7 @@ export class ManagedEc2EksComputeEnvironment
     });
 
     this.node.addValidation({
-      validate: () =>
-        validateInstances(
-          this.instanceTypes,
-          this.instanceClasses,
-          props.useOptimalInstanceClasses
-        ),
+      validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses),
     });
   }
 
@@ -1164,10 +1115,7 @@ export interface FargateComputeEnvironmentProps extends ManagedComputeEnvironmen
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
-export class FargateComputeEnvironment
-  extends ManagedComputeEnvironmentBase
-  implements IFargateComputeEnvironment
-{
+export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
   /**
    * Reference an existing FargateComputeEnvironment by its arn
    */
@@ -1189,10 +1137,7 @@ export class FargateComputeEnvironment
       public readonly maxvCpus = 1;
       public readonly connections = {} as any;
       public readonly securityGroups = [];
-      public readonly tags: TagManager = new TagManager(
-        TagType.MAP,
-        'AWS::Batch::ComputeEnvironment'
-      );
+      public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
     }
 
     return new Import(scope, id);
@@ -1250,11 +1195,7 @@ function createInstanceRoleAndProfile(scope: Construct, instanceRole?: iam.IRole
     instanceRole ??
     new iam.Role(scope, 'InstanceProfileRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'service-role/AmazonEC2ContainerServiceforEC2Role'
-        ),
-      ],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')],
     });
 
   result.instanceProfile = new iam.CfnInstanceProfile(scope, 'InstanceProfile', {
@@ -1277,9 +1218,7 @@ function determineAllocationStrategy(
 ): AllocationStrategy | undefined {
   let result = allocationStrategy;
   if (!allocationStrategy) {
-    result = spot
-      ? AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED
-      : AllocationStrategy.BEST_FIT_PROGRESSIVE;
+    result = spot ? AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
   } else if (allocationStrategy === AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED && !spot) {
     throw new Error(
       `Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances`
@@ -1299,25 +1238,16 @@ function validateInstances(
   useOptimalInstanceClasses?: boolean
 ): string[] {
   if (renderInstances(types, classes, useOptimalInstanceClasses).length === 0) {
-    return [
-      "Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes",
-    ];
+    return ["Specifies 'useOptimalInstanceClasses: false' without specifying any instance types or classes"];
   }
 
   return [];
 }
 
-function validateSpotConfig(
-  id: string,
-  spot?: boolean,
-  spotBidPercentage?: number,
-  spotFleetRole?: iam.IRole
-): void {
+function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: number, spotFleetRole?: iam.IRole): void {
   if (spotBidPercentage) {
     if (!spot) {
-      throw new Error(
-        `Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' without specifying 'spot'`
-      );
+      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' without specifying 'spot'`);
     } else if (spotBidPercentage > 100) {
       throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' > 100`);
     } else if (spotBidPercentage < 0) {
@@ -1327,9 +1257,7 @@ function validateSpotConfig(
 
   if (spotFleetRole) {
     if (!spot) {
-      throw new Error(
-        `Managed ComputeEnvironment '${id}' specifies 'spotFleetRole' without specifying 'spot'`
-      );
+      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotFleetRole' without specifying 'spot'`);
     }
   }
 }
@@ -1347,10 +1275,7 @@ function validateVCpus(id: string, minvCpus: number, maxvCpus: number): void {
   }
 }
 
-function baseManagedResourceProperties(
-  baseComputeEnvironment: ManagedComputeEnvironmentBase,
-  subnetIds: string[]
-) {
+function baseManagedResourceProperties(baseComputeEnvironment: ManagedComputeEnvironmentBase, subnetIds: string[]) {
   return {
     serviceRole: baseComputeEnvironment.serviceRole?.roleArn,
     state: baseComputeEnvironment.enabled ? 'ENABLED' : 'DISABLED',
@@ -1358,9 +1283,7 @@ function baseManagedResourceProperties(
       maxvCpus: baseComputeEnvironment.maxvCpus,
       type: 'managed',
       updateToLatestImageVersion: baseComputeEnvironment.updateToLatestImageVersion,
-      securityGroupIds: baseComputeEnvironment.securityGroups.map(
-        (securityGroup) => securityGroup.securityGroupId
-      ),
+      securityGroupIds: baseComputeEnvironment.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
       subnets: subnetIds,
     },
     updatePolicy: {

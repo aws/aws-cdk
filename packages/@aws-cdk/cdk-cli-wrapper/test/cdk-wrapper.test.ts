@@ -16,11 +16,13 @@ beforeEach(() => {
     output: ['stdout', 'stderr'],
     signal: null,
   });
-  spawnMock = jest.spyOn(child_process, 'spawn').mockImplementation(jest.fn(() => {
-    return {
-      on: jest.fn(() => {}),
-    } as unknown as child_process.ChildProcess;
-  }));
+  spawnMock = jest.spyOn(child_process, 'spawn').mockImplementation(
+    jest.fn(() => {
+      return {
+        on: jest.fn(() => {}),
+      } as unknown as child_process.ChildProcess;
+    })
+  );
 });
 
 afterEach(() => {
@@ -46,7 +48,7 @@ test('default deploy', () => {
     expect.objectContaining({
       env: expect.anything(),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -78,10 +80,7 @@ test('deploy with all arguments', () => {
     rollback: false,
     exclusively: true,
     outputsFile: 'outputs.json',
-    reuseAssets: [
-      'asset1234',
-      'asset5678',
-    ],
+    reuseAssets: ['asset1234', 'asset5678'],
     caBundlePath: '/some/path',
     ignoreErrors: false,
     pathMetadata: false,
@@ -112,25 +111,37 @@ test('deploy with all arguments', () => {
       '--asset-metadata',
       '--notices',
       '--no-color',
-      '--profile', 'my-profile',
-      '--proxy', 'https://proxy',
-      '--ca-bundle-path', '/some/path',
-      '--role-arn', 'arn:aws:iam::1111111111:role/my-role',
-      '--output', 'cdk.out',
+      '--profile',
+      'my-profile',
+      '--proxy',
+      'https://proxy',
+      '--ca-bundle-path',
+      '/some/path',
+      '--role-arn',
+      'arn:aws:iam::1111111111:role/my-role',
+      '--output',
+      'cdk.out',
       '--no-ci',
       '--execute',
       '--exclusively',
       '--force',
       '--no-rollback',
       '--no-staging',
-      '--reuse-assets', 'asset1234',
-      '--reuse-assets', 'asset5678',
-      '--outputs-file', 'outputs.json',
-      '--require-approval', 'never',
-      '--change-set-name', 'my-change-set',
-      '--toolkit-stack-name', 'Toolkit',
+      '--reuse-assets',
+      'asset1234',
+      '--reuse-assets',
+      'asset5678',
+      '--outputs-file',
+      'outputs.json',
+      '--require-approval',
+      'never',
+      '--change-set-name',
+      'my-change-set',
+      '--toolkit-stack-name',
+      'Toolkit',
       '--previous-parameters',
-      '--progress', 'bar',
+      '--progress',
+      'bar',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
@@ -139,7 +150,7 @@ test('deploy with all arguments', () => {
       env: expect.anything(),
       stdio: ['ignore', 'pipe', 'pipe'],
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -158,20 +169,12 @@ test('can parse boolean arguments', () => {
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
     expect.stringMatching(/cdk/),
-    [
-      'deploy',
-      '--progress', 'events',
-      '--app',
-      'node bin/my-app.js',
-      '--json',
-      '--no-color',
-      'test-stack1',
-    ],
+    ['deploy', '--progress', 'events', '--app', 'node bin/my-app.js', '--json', '--no-color', 'test-stack1'],
     expect.objectContaining({
       env: expect.anything(),
       stdio: ['ignore', 'pipe', 'pipe'],
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -184,7 +187,7 @@ test('can parse parameters', () => {
     app: 'node bin/my-app.js',
     stacks: ['test-stack1'],
     parameters: {
-      'myparam': 'test',
+      myparam: 'test',
       'test-stack1:myotherparam': 'test',
     },
   });
@@ -194,9 +197,12 @@ test('can parse parameters', () => {
     expect.stringMatching(/cdk/),
     [
       'deploy',
-      '--parameters', 'myparam=test',
-      '--parameters', 'test-stack1:myotherparam=test',
-      '--progress', 'events',
+      '--parameters',
+      'myparam=test',
+      '--parameters',
+      'test-stack1:myotherparam=test',
+      '--progress',
+      'events',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
@@ -204,7 +210,7 @@ test('can parse parameters', () => {
     expect.objectContaining({
       env: expect.anything(),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -217,7 +223,7 @@ test('can parse context', () => {
     app: 'node bin/my-app.js',
     stacks: ['test-stack1'],
     context: {
-      'myContext': 'value',
+      myContext: 'value',
       'test-stack1:OtherContext': 'otherValue',
     },
   });
@@ -227,17 +233,20 @@ test('can parse context', () => {
     expect.stringMatching(/cdk/),
     [
       'deploy',
-      '--progress', 'events',
+      '--progress',
+      'events',
       '--app',
       'node bin/my-app.js',
-      '--context', 'myContext=value',
-      '--context', 'test-stack1:OtherContext=otherValue',
+      '--context',
+      'myContext=value',
+      '--context',
+      'test-stack1:OtherContext=otherValue',
       'test-stack1',
     ],
     expect.objectContaining({
       env: expect.anything(),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -260,9 +269,12 @@ test('can parse array arguments', () => {
     expect.stringMatching(/cdk/),
     [
       'deploy',
-      '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
-      '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
-      '--progress', 'events',
+      '--notification-arns',
+      'arn:aws:us-east-1:1111111111:some:resource',
+      '--notification-arns',
+      'arn:aws:us-east-1:1111111111:some:other-resource',
+      '--progress',
+      'events',
       '--app',
       'node bin/my-app.js',
       'test-stack1',
@@ -270,7 +282,7 @@ test('can parse array arguments', () => {
     expect.objectContaining({
       env: expect.anything(),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -296,7 +308,7 @@ test('can provide additional environment', () => {
         KEY: 'value',
       }),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -322,7 +334,7 @@ test('default synth', () => {
         KEY: 'value',
       }),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -348,7 +360,7 @@ test('watch arguments', () => {
         KEY: 'value',
       }),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -374,7 +386,7 @@ test('destroy arguments', () => {
         KEY: 'value',
       }),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -402,7 +414,7 @@ test('destroy arguments', () => {
         KEY: 'value',
       }),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -428,7 +440,7 @@ test('default ls', () => {
         KEY: 'value',
       }),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -463,7 +475,7 @@ test('ls arguments', () => {
         KEY: 'value',
       }),
       cwd: '/project',
-    }),
+    })
   );
 
   expect(list).toEqual('test-stack1\ntest-stack2');
@@ -500,7 +512,7 @@ test('can synth fast', () => {
         CDK_CONTEXT_JSON: '{\"CONTEXT\":\"value\"}',
       }),
       cwd: '/project',
-    }),
+    })
   );
 });
 
@@ -522,6 +534,6 @@ test('can show output', () => {
       env: expect.anything(),
       stdio: ['ignore', 'pipe', 'inherit'],
       cwd: '/project',
-    }),
+    })
   );
 });

@@ -68,7 +68,8 @@ test('can use yamlbuildspec literal', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     Source: {
-      BuildSpec: 'text: text\ndecimal: 10\nlist:\n  - say hi\nobj:\n  text: text\n  decimal: 10\n  list:\n    - say hi\n',
+      BuildSpec:
+        'text: text\ndecimal: 10\nlist:\n  - say hi\nobj:\n  text: text\n  decimal: 10\n  list:\n    - say hi\n',
     },
   });
 });
@@ -78,8 +79,7 @@ test('must supply buildspec when using nosource', () => {
   const stack = new cdk.Stack();
 
   expect(() => {
-    new codebuild.Project(stack, 'Project', {
-    });
+    new codebuild.Project(stack, 'Project', {});
   }).toThrow(/you need to provide a concrete buildSpec/);
 });
 
@@ -218,7 +218,9 @@ describe('GitHub source', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const filter = codebuild.FilterGroup.inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED).andRepositoryNameIs('testrepo');
+    const filter = codebuild.FilterGroup.inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED).andRepositoryNameIs(
+      'testrepo'
+    );
     new codebuild.Project(stack, 'Project', {
       source: codebuild.Source.gitHub({
         owner: 'testowner',
@@ -279,9 +281,9 @@ describe('GitHub source', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::SourceCredential', {
-      'ServerType': 'GITHUB',
-      'AuthType': 'PERSONAL_ACCESS_TOKEN',
-      'Token': 'my-access-token',
+      ServerType: 'GITHUB',
+      AuthType: 'PERSONAL_ACCESS_TOKEN',
+      Token: 'my-access-token',
     });
   });
 });
@@ -316,9 +318,9 @@ describe('GitHub Enterprise source', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::SourceCredential', {
-      'ServerType': 'GITHUB_ENTERPRISE',
-      'AuthType': 'PERSONAL_ACCESS_TOKEN',
-      'Token': 'my-access-token',
+      ServerType: 'GITHUB_ENTERPRISE',
+      AuthType: 'PERSONAL_ACCESS_TOKEN',
+      Token: 'my-access-token',
     });
   });
 });
@@ -355,10 +357,10 @@ describe('BitBucket source', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::SourceCredential', {
-      'ServerType': 'BITBUCKET',
-      'AuthType': 'BASIC_AUTH',
-      'Username': 'my-username',
-      'Token': 'password',
+      ServerType: 'BITBUCKET',
+      AuthType: 'BASIC_AUTH',
+      Username: 'my-username',
+      Token: 'password',
     });
   });
 });
@@ -406,7 +408,7 @@ describe('caching', () => {
             '/',
             [
               {
-                'Ref': 'Bucket83908E77',
+                Ref: 'Bucket83908E77',
               },
               'cache-prefix',
             ],
@@ -427,8 +429,11 @@ describe('caching', () => {
         path: 'path',
         version: 's3version',
       }),
-      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
-        codebuild.LocalCacheMode.SOURCE),
+      cache: codebuild.Cache.local(
+        codebuild.LocalCacheMode.CUSTOM,
+        codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE
+      ),
     });
 
     // THEN
@@ -447,19 +452,18 @@ describe('caching', () => {
         bucket: new s3.Bucket(stack, 'Bucket'),
         path: 'path',
       }),
-      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
-        codebuild.LocalCacheMode.SOURCE),
+      cache: codebuild.Cache.local(
+        codebuild.LocalCacheMode.CUSTOM,
+        codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE
+      ),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Cache: {
         Type: 'LOCAL',
-        Modes: [
-          'LOCAL_CUSTOM_CACHE',
-          'LOCAL_DOCKER_LAYER_CACHE',
-          'LOCAL_SOURCE_CACHE',
-        ],
+        Modes: ['LOCAL_CUSTOM_CACHE', 'LOCAL_DOCKER_LAYER_CACHE', 'LOCAL_SOURCE_CACHE'],
       },
     });
   });
@@ -522,7 +526,11 @@ test('if a role is shared between projects in a VPC, the VPC Policy is only atta
 test('can use an imported Role for a Project within a VPC', () => {
   const stack = new cdk.Stack();
 
-  const importedRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role');
+  const importedRole = iam.Role.fromRoleArn(
+    stack,
+    'Role',
+    'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role'
+  );
   const vpc = new ec2.Vpc(stack, 'Vpc');
 
   new codebuild.Project(stack, 'Project', {
@@ -541,10 +549,14 @@ test('can use an imported Role for a Project within a VPC', () => {
 test('can use an imported Role with mutable = false for a Project within a VPC', () => {
   const stack = new cdk.Stack();
 
-  const importedRole = iam.Role.fromRoleArn(stack, 'Role',
-    'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role', {
+  const importedRole = iam.Role.fromRoleArn(
+    stack,
+    'Role',
+    'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role',
+    {
       mutable: false,
-    });
+    }
+  );
   const vpc = new ec2.Vpc(stack, 'Vpc');
 
   new codebuild.Project(stack, 'Project', {
@@ -629,20 +641,13 @@ describe('CodeBuild test reports group', () => {
     reportGroup.grantWrite(project);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {},
           {
-            'Action': [
-              'codebuild:CreateReport',
-              'codebuild:UpdateReport',
-              'codebuild:BatchPutTestCases',
-            ],
-            'Resource': {
-              'Fn::GetAtt': [
-                'ReportGroup8A84C76D',
-                'Arn',
-              ],
+            Action: ['codebuild:CreateReport', 'codebuild:UpdateReport', 'codebuild:BatchPutTestCases'],
+            Resource: {
+              'Fn::GetAtt': ['ReportGroup8A84C76D', 'Arn'],
             },
           },
         ],
@@ -673,7 +678,7 @@ describe('Environment', () => {
       Environment: Match.objectLike({
         RegistryCredential: {
           CredentialProvider: 'SECRETS_MANAGER',
-          Credential: { 'Ref': 'SecretA720EF05' },
+          Credential: { Ref: 'SecretA720EF05' },
         },
       }),
     });
@@ -708,7 +713,7 @@ describe('Environment', () => {
       Environment: Match.objectLike({
         RegistryCredential: {
           CredentialProvider: 'SECRETS_MANAGER',
-          Credential: { 'Ref': 'SecretA720EF05' },
+          Credential: { Ref: 'SecretA720EF05' },
         },
       }),
     });
@@ -924,11 +929,7 @@ describe('Environment', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: Match.objectLike({
         Certificate: {
-          'Fn::Join': ['', [
-            'arn:',
-            { 'Ref': 'AWS::Partition' },
-            ':s3:::my-bucket/path',
-          ]],
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/path']],
         },
       }),
     });
@@ -939,8 +940,16 @@ describe('Environment', () => {
     ['Standard 6.0', codebuild.LinuxBuildImage.STANDARD_6_0, 'aws/codebuild/standard:6.0'],
     ['Amazon Linux 4.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_4, 'aws/codebuild/amazonlinux2-x86_64-standard:4.0'],
     ['Amazon Linux 5.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_5, 'aws/codebuild/amazonlinux2-x86_64-standard:5.0'],
-    ['Windows Server Core 2019 2.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0, 'aws/codebuild/windows-base:2019-2.0'],
-    ['Windows Server Core 2019 3.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0, 'aws/codebuild/windows-base:2019-3.0'],
+    [
+      'Windows Server Core 2019 2.0',
+      codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0,
+      'aws/codebuild/windows-base:2019-2.0',
+    ],
+    [
+      'Windows Server Core 2019 3.0',
+      codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0,
+      'aws/codebuild/windows-base:2019-3.0',
+    ],
   ])('has build image for %s', (_, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -965,39 +974,40 @@ describe('Environment', () => {
     });
   });
 
-  test.each([
-    ['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
-  ])('has build image for %s', (_, buildImage, expected) => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
-    const fleet = new codebuild.Fleet(stack, 'Fleet', {
-      fleetName: 'MyFleet',
-      baseCapacity: 1,
-      computeType: codebuild.FleetComputeType.MEDIUM,
-      environmentType: codebuild.EnvironmentType.MAC_ARM,
-    });
+  test.each([['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14']])(
+    'has build image for %s',
+    (_, buildImage, expected) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+      const fleet = new codebuild.Fleet(stack, 'Fleet', {
+        fleetName: 'MyFleet',
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.MEDIUM,
+        environmentType: codebuild.EnvironmentType.MAC_ARM,
+      });
 
-    // WHEN
-    new codebuild.Project(stack, 'Project', {
-      source: codebuild.Source.s3({
-        bucket,
-        path: 'path',
-      }),
-      environment: {
-        buildImage: buildImage,
-        fleet: fleet,
-        computeType: codebuild.ComputeType.MEDIUM,
-      },
-    });
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          buildImage: buildImage,
+          fleet: fleet,
+          computeType: codebuild.ComputeType.MEDIUM,
+        },
+      });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-      Environment: Match.objectLike({
-        Image: expected,
-      }),
-    });
-  });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
+          Image: expected,
+        }),
+      });
+    }
+  );
 
   test('can set fleet', () => {
     // GIVEN
@@ -1076,7 +1086,11 @@ describe('Environment', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
-    const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
+    const fleet = codebuild.Fleet.fromFleetArn(
+      stack,
+      'Fleet',
+      'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid'
+    );
 
     // WHEN
     new codebuild.Project(stack, 'Project', {
@@ -1107,7 +1121,11 @@ describe('Environment', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
-    const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
+    const fleet = codebuild.Fleet.fromFleetArn(
+      stack,
+      'Fleet',
+      'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid'
+    );
 
     // WHEN
     new codebuild.Project(stack, 'Project', {
@@ -1194,7 +1212,9 @@ describe('Environment', () => {
           buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0,
         },
       });
-    }).toThrow('The environment type of the fleet (LINUX_CONTAINER) must match the environment type of the build image (WINDOWS_SERVER_2019_CONTAINER)');
+    }).toThrow(
+      'The environment type of the fleet (LINUX_CONTAINER) must match the environment type of the build image (WINDOWS_SERVER_2019_CONTAINER)'
+    );
   });
 
   test('throws when Windows 2022 build image is used without a fleet', () => {
@@ -1232,7 +1252,7 @@ describe('Environment', () => {
           buildImage: codebuild.WindowsBuildImage.fromDockerRegistry(
             'aws/codebuild/future-windows-version:2099-9.0',
             {},
-            codebuild.WindowsImageType.SERVER_2022,
+            codebuild.WindowsImageType.SERVER_2022
           ),
         },
       });
@@ -1256,7 +1276,7 @@ describe('EnvironmentVariables', () => {
           buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('myimage'),
         },
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
             value: '/params/param1',
           },
@@ -1266,11 +1286,13 @@ describe('EnvironmentVariables', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: Match.objectLike({
-          EnvironmentVariables: [{
-            Name: 'ENV_VAR1',
-            Type: 'PARAMETER_STORE',
-            Value: '/params/param1',
-          }],
+          EnvironmentVariables: [
+            {
+              Name: 'ENV_VAR1',
+              Type: 'PARAMETER_STORE',
+              Value: '/params/param1',
+            },
+          ],
         }),
       });
     });
@@ -1297,7 +1319,7 @@ describe('EnvironmentVariables', () => {
           fleet: fleet,
         },
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
             value: '/params/param1',
           },
@@ -1307,11 +1329,13 @@ describe('EnvironmentVariables', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: Match.objectLike({
-          EnvironmentVariables: [{
-            Name: 'ENV_VAR1',
-            Type: 'PARAMETER_STORE',
-            Value: '/params/param1',
-          }],
+          EnvironmentVariables: [
+            {
+              Name: 'ENV_VAR1',
+              Type: 'PARAMETER_STORE',
+              Value: '/params/param1',
+            },
+          ],
         }),
       });
     });
@@ -1330,11 +1354,11 @@ describe('EnvironmentVariables', () => {
           buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('myimage'),
         },
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
             value: '/params/param1',
           },
-          'ENV_VAR2': {
+          ENV_VAR2: {
             type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
             value: 'params/param2',
           },
@@ -1343,57 +1367,60 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([Match.objectLike({
-            'Action': 'ssm:GetParameters',
-            'Effect': 'Allow',
-            'Resource': [{
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ssm:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':parameter/params/param1',
-                ],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'ssm:GetParameters',
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':ssm:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':parameter/params/param1',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':ssm:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':parameter/params/param2',
+                    ],
+                  ],
+                },
               ],
-            },
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ssm:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':parameter/params/param2',
-                ],
-              ],
-            }],
-          })]),
+            }),
+          ]),
         },
       });
     });
 
     test('does not grant read permissions when variables are not from parameter store', () => {
-
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -1407,7 +1434,7 @@ describe('EnvironmentVariables', () => {
           buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('myimage'),
         },
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: 'var1-value',
           },
@@ -1415,14 +1442,19 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.not({
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([Match.objectLike({
-            'Action': 'ssm:GetParameters',
-            'Effect': 'Allow',
-          })]),
-        },
-      }));
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        Match.not({
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Action: 'ssm:GetParameters',
+                Effect: 'Allow',
+              }),
+            ]),
+          },
+        })
+      );
     });
   });
 
@@ -1434,7 +1466,7 @@ describe('EnvironmentVariables', () => {
       // WHEN
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: 'my-secret',
           },
@@ -1443,12 +1475,12 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': 'my-secret',
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: 'my-secret',
             },
           ],
         },
@@ -1456,22 +1488,27 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':secretsmanager:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':secret:my-secret-??????',
-              ]],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':secret:my-secret-??????',
+                  ],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
     });
@@ -1483,7 +1520,7 @@ describe('EnvironmentVariables', () => {
       // WHEN
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: 'my-secret:json-key',
           },
@@ -1492,12 +1529,12 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': 'my-secret:json-key',
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: 'my-secret:json-key',
             },
           ],
         },
@@ -1505,22 +1542,27 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':secretsmanager:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':secret:my-secret-??????',
-              ]],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':secret:my-secret-??????',
+                  ],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
     });
@@ -1532,7 +1574,7 @@ describe('EnvironmentVariables', () => {
       // WHEN
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456:json-key',
           },
@@ -1541,12 +1583,12 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456:json-key',
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456:json-key',
             },
           ],
         },
@@ -1554,25 +1596,32 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456*',
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456*',
+            },
+          ]),
         },
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.not({
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'kms:Decrypt',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
-          }]),
-        },
-      }));
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        Match.not({
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              {
+                Action: 'kms:Decrypt',
+                Effect: 'Allow',
+                Resource: 'arn:aws:kms:us-west-2:123456789012:key/*',
+              },
+            ]),
+          },
+        })
+      );
     });
 
     test('can be provided as a verbatim partial secret ARN', () => {
@@ -1582,7 +1631,7 @@ describe('EnvironmentVariables', () => {
       // WHEN
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret',
           },
@@ -1591,12 +1640,12 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret',
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret',
             },
           ],
         },
@@ -1604,25 +1653,32 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret*',
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret*',
+            },
+          ]),
         },
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.not({
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'kms:Decrypt',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
-          }]),
-        },
-      }));
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        Match.not({
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              {
+                Action: 'kms:Decrypt',
+                Effect: 'Allow',
+                Resource: 'arn:aws:kms:us-west-2:123456789012:key/*',
+              },
+            ]),
+          },
+        })
+      );
     });
 
     test("when provided as a verbatim partial secret ARN from another account, adds permission to decrypt keys in the Secret's account", () => {
@@ -1635,7 +1691,7 @@ describe('EnvironmentVariables', () => {
       // WHEN
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
           },
@@ -1644,12 +1700,14 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'kms:Decrypt',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Resource: 'arn:aws:kms:us-west-2:901234567890:key/*',
+            },
+          ]),
         },
       });
     });
@@ -1664,11 +1722,11 @@ describe('EnvironmentVariables', () => {
       // WHEN
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
           },
-          'ENV_VAR2': {
+          ENV_VAR2: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:other-secret',
           },
@@ -1677,12 +1735,14 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'kms:Decrypt',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Resource: 'arn:aws:kms:us-west-2:901234567890:key/*',
+            },
+          ]),
         },
       });
     });
@@ -1695,7 +1755,7 @@ describe('EnvironmentVariables', () => {
       const secret = new secretsmanager.Secret(stack, 'Secret');
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: secret.secretArn,
           },
@@ -1704,12 +1764,12 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': { 'Ref': 'SecretA720EF05' },
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: { Ref: 'SecretA720EF05' },
             },
           ],
         },
@@ -1717,12 +1777,14 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': { 'Ref': 'SecretA720EF05' },
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: { Ref: 'SecretA720EF05' },
+            },
+          ]),
         },
       });
     });
@@ -1735,11 +1797,11 @@ describe('EnvironmentVariables', () => {
       const secret = new secretsmanager.Secret(stack, 'Secret');
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: `${secret.secretArn}:json-key1`,
           },
-          'ENV_VAR2': {
+          ENV_VAR2: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: `${secret.secretArn}:json-key2`,
           },
@@ -1748,17 +1810,17 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': { 'Fn::Join': ['', [{ 'Ref': 'SecretA720EF05' }, ':json-key1']] },
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: { 'Fn::Join': ['', [{ Ref: 'SecretA720EF05' }, ':json-key1']] },
             },
             {
-              'Name': 'ENV_VAR2',
-              'Type': 'SECRETS_MANAGER',
-              'Value': { 'Fn::Join': ['', [{ 'Ref': 'SecretA720EF05' }, ':json-key2']] },
+              Name: 'ENV_VAR2',
+              Type: 'SECRETS_MANAGER',
+              Value: { 'Fn::Join': ['', [{ Ref: 'SecretA720EF05' }, ':json-key2']] },
             },
           ],
         },
@@ -1766,12 +1828,14 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': { 'Ref': 'SecretA720EF05' },
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: { Ref: 'SecretA720EF05' },
+            },
+          ]),
         },
       });
     });
@@ -1784,7 +1848,7 @@ describe('EnvironmentVariables', () => {
       const secret = new secretsmanager.Secret(stack, 'Secret');
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: `${secret.secretArn}:json-key:version-stage`,
           },
@@ -1793,16 +1857,13 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': {
-                'Fn::Join': ['', [
-                  { 'Ref': 'SecretA720EF05' },
-                  ':json-key:version-stage',
-                ]],
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: {
+                'Fn::Join': ['', [{ Ref: 'SecretA720EF05' }, ':json-key:version-stage']],
               },
             },
           ],
@@ -1811,12 +1872,14 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': { 'Ref': 'SecretA720EF05' },
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: { Ref: 'SecretA720EF05' },
+            },
+          ]),
         },
       });
     });
@@ -1829,7 +1892,7 @@ describe('EnvironmentVariables', () => {
       const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'mysecret');
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: secret.secretName,
           },
@@ -1838,12 +1901,12 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': 'mysecret',
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: 'mysecret',
             },
           ],
         },
@@ -1851,22 +1914,27 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                'arn:',
-                { 'Ref': 'AWS::Partition' },
-                ':secretsmanager:',
-                { 'Ref': 'AWS::Region' },
-                ':',
-                { 'Ref': 'AWS::AccountId' },
-                ':secret:mysecret-??????',
-              ]],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':secret:mysecret-??????',
+                  ],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
     });
@@ -1876,11 +1944,14 @@ describe('EnvironmentVariables', () => {
       const stack = new cdk.Stack();
 
       // WHEN
-      const secret = secretsmanager.Secret.fromSecretPartialArn(stack, 'Secret',
-        'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret');
+      const secret = secretsmanager.Secret.fromSecretPartialArn(
+        stack,
+        'Secret',
+        'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret'
+      );
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: `${secret.secretArn}:json-key`,
           },
@@ -1889,12 +1960,12 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret:json-key',
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret:json-key',
             },
           ],
         },
@@ -1902,12 +1973,14 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret*',
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret*',
+            },
+          ]),
         },
       });
     });
@@ -1917,11 +1990,14 @@ describe('EnvironmentVariables', () => {
       const stack = new cdk.Stack();
 
       // WHEN
-      const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
-        'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456');
+      const secret = secretsmanager.Secret.fromSecretCompleteArn(
+        stack,
+        'Secret',
+        'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456'
+      );
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: `${secret.secretArn}:json-key`,
           },
@@ -1930,12 +2006,12 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456:json-key',
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456:json-key',
             },
           ],
         },
@@ -1943,12 +2019,14 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456*',
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456*',
+            },
+          ]),
         },
       });
     });
@@ -1967,7 +2045,7 @@ describe('EnvironmentVariables', () => {
       const secret = new secretsmanager.Secret(secretStack, 'Secret', { secretName: 'secret-name' });
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: secret.secretArn,
           },
@@ -1976,19 +2054,22 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  ':secretsmanager:',
-                  { 'Ref': 'AWS::Region' },
-                  ':012345678912:secret:secret-name',
-                ]],
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { Ref: 'AWS::Region' },
+                    ':012345678912:secret:secret-name',
+                  ],
+                ],
               },
             },
           ],
@@ -1996,38 +2077,42 @@ describe('EnvironmentVariables', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                'arn:',
-                { 'Ref': 'AWS::Partition' },
-                ':secretsmanager:',
-                { 'Ref': 'AWS::Region' },
-                ':012345678912:secret:secret-name-??????',
-              ]],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { Ref: 'AWS::Region' },
+                    ':012345678912:secret:secret-name-??????',
+                  ],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'kms:Decrypt',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                'arn:',
-                { 'Ref': 'AWS::Partition' },
-                ':kms:',
-                { 'Ref': 'AWS::Region' },
-                ':012345678912:key/*',
-              ]],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  ['arn:', { Ref: 'AWS::Partition' }, ':kms:', { Ref: 'AWS::Region' }, ':012345678912:key/*'],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
     });
@@ -2046,7 +2131,7 @@ describe('EnvironmentVariables', () => {
       const secret = secretsmanager.Secret.fromSecretNameV2(secretStack, 'Secret', 'secret-name');
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: `${secret.secretArn}:json-key`,
           },
@@ -2055,19 +2140,22 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  ':secretsmanager:',
-                  { 'Ref': 'AWS::Region' },
-                  ':012345678912:secret:secret-name:json-key',
-                ]],
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { Ref: 'AWS::Region' },
+                    ':012345678912:secret:secret-name:json-key',
+                  ],
+                ],
               },
             },
           ],
@@ -2075,38 +2163,42 @@ describe('EnvironmentVariables', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                'arn:',
-                { 'Ref': 'AWS::Partition' },
-                ':secretsmanager:',
-                { 'Ref': 'AWS::Region' },
-                ':012345678912:secret:secret-name*',
-              ]],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { Ref: 'AWS::Region' },
+                    ':012345678912:secret:secret-name*',
+                  ],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'kms:Decrypt',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                'arn:',
-                { 'Ref': 'AWS::Partition' },
-                ':kms:',
-                { 'Ref': 'AWS::Region' },
-                ':012345678912:key/*',
-              ]],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  ['arn:', { Ref: 'AWS::Partition' }, ':kms:', { Ref: 'AWS::Region' }, ':012345678912:key/*'],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
     });
@@ -2123,7 +2215,7 @@ describe('EnvironmentVariables', () => {
       const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'ENV_VAR1': {
+          ENV_VAR1: {
             type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
             value: secret.secretArn,
           },
@@ -2132,34 +2224,38 @@ describe('EnvironmentVariables', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'EnvironmentVariables': [
+        Environment: {
+          EnvironmentVariables: [
             {
-              'Name': 'ENV_VAR1',
-              'Type': 'SECRETS_MANAGER',
-              'Value': secretArn,
+              Name: 'ENV_VAR1',
+              Type: 'SECRETS_MANAGER',
+              Value: secretArn,
             },
           ],
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'secretsmanager:GetSecretValue',
-            'Effect': 'Allow',
-            'Resource': `${secretArn}*`,
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: `${secretArn}*`,
+            },
+          ]),
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([{
-            'Action': 'kms:Decrypt',
-            'Effect': 'Allow',
-            'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
-          }]),
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Resource: 'arn:aws:kms:us-west-2:901234567890:key/*',
+            },
+          ]),
         },
       });
     });
@@ -2172,7 +2268,7 @@ describe('EnvironmentVariables', () => {
       expect(() => {
         new codebuild.PipelineProject(stack, 'Project', {
           environmentVariables: {
-            'ENV_VAR1': {
+            ENV_VAR1: {
               type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
               value: 'arn:aws:secretsmanager:us-west-2:123456789012:secret',
             },
@@ -2190,7 +2286,7 @@ describe('EnvironmentVariables', () => {
     expect(() => {
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'a': {
+          a: {
             value: `a_${cdk.SecretValue.secretsManager('my-secret')}_b`,
           },
         },
@@ -2206,7 +2302,7 @@ describe('EnvironmentVariables', () => {
     expect(() => {
       new codebuild.PipelineProject(stack, 'Project', {
         environmentVariables: {
-          'b': {
+          b: {
             value: cdk.SecretValue.secretsManager('my-secret'),
           },
         },
@@ -2295,10 +2391,7 @@ test('can automatically add ssm permissions', () => {
     PolicyDocument: {
       Statement: Match.arrayWith([
         Match.objectLike({
-          Action: Match.arrayWith([
-            'ssmmessages:CreateControlChannel',
-            'ssmmessages:CreateDataChannel',
-          ]),
+          Action: Match.arrayWith(['ssmmessages:CreateControlChannel', 'ssmmessages:CreateDataChannel']),
         }),
       ]),
     },
@@ -2338,8 +2431,11 @@ test('can Setting Visibility', () => {
 describe('can be imported', () => {
   test('by ARN', () => {
     const stack = new cdk.Stack();
-    const project = codebuild.Project.fromProjectArn(stack, 'Project',
-      'arn:aws:codebuild:us-west-2:123456789012:project/My-Project');
+    const project = codebuild.Project.fromProjectArn(
+      stack,
+      'Project',
+      'arn:aws:codebuild:us-west-2:123456789012:project/My-Project'
+    );
 
     expect(project.projectName).toEqual('My-Project');
     expect(project.env.account).toEqual('123456789012');

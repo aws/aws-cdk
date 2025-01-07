@@ -75,10 +75,13 @@ describe('PublicKey', () => {
   });
 
   test('bad key example', () => {
-    expect(() => new PublicKey(stack, 'MyPublicKey', {
-      publicKeyName: 'pub-key',
-      encodedKey: 'bad-key',
-      comment: 'Key expiring on 1/1/1984',
-    })).toThrow(/Public key must be in PEM format [(]with the BEGIN\/END PUBLIC KEY lines[)]; got (.*?)/);
+    expect(
+      () =>
+        new PublicKey(stack, 'MyPublicKey', {
+          publicKeyName: 'pub-key',
+          encodedKey: 'bad-key',
+          comment: 'Key expiring on 1/1/1984',
+        })
+    ).toThrow(/Public key must be in PEM format [(]with the BEGIN\/END PUBLIC KEY lines[)]; got (.*?)/);
   });
 });

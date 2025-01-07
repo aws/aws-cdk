@@ -39,9 +39,7 @@ export function validateSourceAction(
   if (mustBeSource !== (category === ActionCategory.SOURCE)) {
     return [
       `Action ${actionName} in stage ${stageName}: ` +
-        (mustBeSource
-          ? 'first stage may only contain Source actions'
-          : 'Source actions may only occur in first stage'),
+        (mustBeSource ? 'first stage may only contain Source actions' : 'Source actions may only occur in first stage'),
     ];
   }
   return [];
@@ -82,8 +80,6 @@ function validateAgainstRegex(regex: RegExp, thing: string, name: string | undef
   }
 
   if (name !== undefined && !regex.test(name)) {
-    throw new Error(
-      `${thing} name must match regular expression: ${regex.toString()}, got '${name}'`
-    );
+    throw new Error(`${thing} name must match regular expression: ${regex.toString()}, got '${name}'`);
   }
 }

@@ -10,9 +10,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
-      sql: iot.IotSql.fromStringAsVer20160323(
-        "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'"
-      ),
+      sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'"),
     });
 
     const queue = new sqs.Queue(this, 'MyQueue', {

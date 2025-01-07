@@ -19,140 +19,166 @@ describe('resource dependencies', () => {
 
     // THEN
     expect(app.synth().getStackArtifact(stack.artifactId).template?.Resources).toEqual({
-      r1: { Type: 'r1', DependsOn: ['r2'] }, r2: { Type: 'r2' },
+      r1: { Type: 'r1', DependsOn: ['r2'] },
+      r2: { Type: 'r2' },
     });
   });
 
-  describeDeprecated('resource in nested stack depends on a resource in the parent stack', matrixForResourceDependencyTest((addDep) => {
-    // GIVEN
-    const parent = new Stack(undefined, 'root');
-    const nested = new NestedStack(parent, 'Nested');
-    const resourceInParent = new CfnResource(parent, 'ResourceInParent', { type: 'PARENT' });
-    const resourceInNested = new CfnResource(nested, 'ResourceInNested', { type: 'NESTED' });
+  describeDeprecated(
+    'resource in nested stack depends on a resource in the parent stack',
+    matrixForResourceDependencyTest((addDep) => {
+      // GIVEN
+      const parent = new Stack(undefined, 'root');
+      const nested = new NestedStack(parent, 'Nested');
+      const resourceInParent = new CfnResource(parent, 'ResourceInParent', { type: 'PARENT' });
+      const resourceInNested = new CfnResource(nested, 'ResourceInNested', { type: 'NESTED' });
 
-    // WHEN
-    addDep(resourceInNested, resourceInParent);
+      // WHEN
+      addDep(resourceInNested, resourceInParent);
 
-    // THEN: the dependency needs to transfer from the resource within the
-    // nested stack to the nested stack resource itself so the nested stack
-    // will only be deployed the dependent resource
-    Template.fromStack(parent).hasResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInParent'] });
-    Template.fromStack(nested).templateMatches({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
-  }));
+      // THEN: the dependency needs to transfer from the resource within the
+      // nested stack to the nested stack resource itself so the nested stack
+      // will only be deployed the dependent resource
+      Template.fromStack(parent).hasResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInParent'] });
+      Template.fromStack(nested).templateMatches({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
+    })
+  );
 
-  describeDeprecated('resource in nested stack depends on a resource in a grandparent stack', matrixForResourceDependencyTest((addDep) => {
-    // GIVEN
-    const grantparent = new Stack(undefined, 'Grandparent');
-    const parent = new NestedStack(grantparent, 'Parent');
-    const nested = new NestedStack(parent, 'Nested');
-    const resourceInGrandparent = new CfnResource(grantparent, 'ResourceInGrandparent', { type: 'GRANDPARENT' });
-    const resourceInNested = new CfnResource(nested, 'ResourceInNested', { type: 'NESTED' });
+  describeDeprecated(
+    'resource in nested stack depends on a resource in a grandparent stack',
+    matrixForResourceDependencyTest((addDep) => {
+      // GIVEN
+      const grantparent = new Stack(undefined, 'Grandparent');
+      const parent = new NestedStack(grantparent, 'Parent');
+      const nested = new NestedStack(parent, 'Nested');
+      const resourceInGrandparent = new CfnResource(grantparent, 'ResourceInGrandparent', { type: 'GRANDPARENT' });
+      const resourceInNested = new CfnResource(nested, 'ResourceInNested', { type: 'NESTED' });
 
-    // WHEN
-    addDep(resourceInNested, resourceInGrandparent);
+      // WHEN
+      addDep(resourceInNested, resourceInGrandparent);
 
-    // THEN: the dependency needs to transfer from the resource within the
-    // nested stack to the *parent* nested stack
-    Template.fromStack(grantparent).hasResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInGrandparent'] });
-    Template.fromStack(nested).templateMatches({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
-  }));
+      // THEN: the dependency needs to transfer from the resource within the
+      // nested stack to the *parent* nested stack
+      Template.fromStack(grantparent).hasResource('AWS::CloudFormation::Stack', {
+        DependsOn: ['ResourceInGrandparent'],
+      });
+      Template.fromStack(nested).templateMatches({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
+    })
+  );
 
-  describeDeprecated('resource in parent stack depends on resource in nested stack', matrixForResourceDependencyTest((addDep) => {
-    // GIVEN
-    const parent = new Stack(undefined, 'root');
-    const nested = new NestedStack(parent, 'Nested');
-    const resourceInParent = new CfnResource(parent, 'ResourceInParent', { type: 'PARENT' });
-    const resourceInNested = new CfnResource(nested, 'ResourceInNested', { type: 'NESTED' });
+  describeDeprecated(
+    'resource in parent stack depends on resource in nested stack',
+    matrixForResourceDependencyTest((addDep) => {
+      // GIVEN
+      const parent = new Stack(undefined, 'root');
+      const nested = new NestedStack(parent, 'Nested');
+      const resourceInParent = new CfnResource(parent, 'ResourceInParent', { type: 'PARENT' });
+      const resourceInNested = new CfnResource(nested, 'ResourceInNested', { type: 'NESTED' });
 
-    // WHEN
-    addDep(resourceInParent, resourceInNested);
+      // WHEN
+      addDep(resourceInParent, resourceInNested);
 
-    // THEN: resource in parent needs to depend on the nested stack
-    Template.fromStack(parent).hasResource('PARENT', {
-      DependsOn: [parent.resolve(nested.nestedStackResource!.logicalId)],
-    });
-  }));
+      // THEN: resource in parent needs to depend on the nested stack
+      Template.fromStack(parent).hasResource('PARENT', {
+        DependsOn: [parent.resolve(nested.nestedStackResource!.logicalId)],
+      });
+    })
+  );
 
-  describeDeprecated('resource in grantparent stack depends on resource in nested stack', matrixForResourceDependencyTest((addDep) => {
-    // GIVEN
-    const grandparent = new Stack(undefined, 'Grandparent');
-    const parent = new NestedStack(grandparent, 'Parent');
-    const nested = new NestedStack(parent, 'Nested');
-    const resourceInGrandparent = new CfnResource(grandparent, 'ResourceInGrandparent', { type: 'GRANDPARENT' });
-    const resourceInNested = new CfnResource(nested, 'ResourceInNested', { type: 'NESTED' });
+  describeDeprecated(
+    'resource in grantparent stack depends on resource in nested stack',
+    matrixForResourceDependencyTest((addDep) => {
+      // GIVEN
+      const grandparent = new Stack(undefined, 'Grandparent');
+      const parent = new NestedStack(grandparent, 'Parent');
+      const nested = new NestedStack(parent, 'Nested');
+      const resourceInGrandparent = new CfnResource(grandparent, 'ResourceInGrandparent', { type: 'GRANDPARENT' });
+      const resourceInNested = new CfnResource(nested, 'ResourceInNested', { type: 'NESTED' });
 
-    // WHEN
-    addDep(resourceInGrandparent, resourceInNested);
+      // WHEN
+      addDep(resourceInGrandparent, resourceInNested);
 
-    // THEN: resource in grantparent needs to depend on the top-level nested stack
-    Template.fromStack(grandparent).hasResource('GRANDPARENT', {
-      DependsOn: [grandparent.resolve(parent.nestedStackResource!.logicalId)],
-    });
-  }));
+      // THEN: resource in grantparent needs to depend on the top-level nested stack
+      Template.fromStack(grandparent).hasResource('GRANDPARENT', {
+        DependsOn: [grandparent.resolve(parent.nestedStackResource!.logicalId)],
+      });
+    })
+  );
 
-  describeDeprecated('resource in sibling stack depends on a resource in nested stack', matrixForResourceDependencyTest((addDep) => {
-    // GIVEN
-    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-    const stack1 = new Stack(app, 'Stack1');
-    const nested1 = new NestedStack(stack1, 'Nested1');
-    const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested', { type: 'NESTED' });
-    const stack2 = new Stack(app, 'Stack2');
-    const resourceInStack2 = new CfnResource(stack2, 'ResourceInSibling', { type: 'SIBLING' });
+  describeDeprecated(
+    'resource in sibling stack depends on a resource in nested stack',
+    matrixForResourceDependencyTest((addDep) => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack1 = new Stack(app, 'Stack1');
+      const nested1 = new NestedStack(stack1, 'Nested1');
+      const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested', { type: 'NESTED' });
+      const stack2 = new Stack(app, 'Stack2');
+      const resourceInStack2 = new CfnResource(stack2, 'ResourceInSibling', { type: 'SIBLING' });
 
-    // WHEN
-    addDep(resourceInStack2, resourceInNested1);
+      // WHEN
+      addDep(resourceInStack2, resourceInNested1);
 
-    // THEN: stack2 should depend on stack1 and no "DependsOn" inside templates
-    const assembly = app.synth();
-    assertAssemblyDependency(assembly, stack1, []);
-    assertAssemblyDependency(assembly, stack2, ['Stack1']);
-    assertNoDependsOn(assembly, stack1);
-    assertNoDependsOn(assembly, stack2);
-    assertNoDependsOn(assembly, nested1);
-  }));
+      // THEN: stack2 should depend on stack1 and no "DependsOn" inside templates
+      const assembly = app.synth();
+      assertAssemblyDependency(assembly, stack1, []);
+      assertAssemblyDependency(assembly, stack2, ['Stack1']);
+      assertNoDependsOn(assembly, stack1);
+      assertNoDependsOn(assembly, stack2);
+      assertNoDependsOn(assembly, nested1);
+    })
+  );
 
-  describeDeprecated('resource in nested stack depends on a resource in sibling stack', matrixForResourceDependencyTest((addDep) => {
-    // GIVEN
-    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-    const stack1 = new Stack(app, 'Stack1');
-    const nested1 = new NestedStack(stack1, 'Nested1');
-    const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested', { type: 'NESTED' });
-    const stack2 = new Stack(app, 'Stack2');
-    const resourceInStack2 = new CfnResource(stack2, 'ResourceInSibling', { type: 'SIBLING' });
+  describeDeprecated(
+    'resource in nested stack depends on a resource in sibling stack',
+    matrixForResourceDependencyTest((addDep) => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack1 = new Stack(app, 'Stack1');
+      const nested1 = new NestedStack(stack1, 'Nested1');
+      const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested', { type: 'NESTED' });
+      const stack2 = new Stack(app, 'Stack2');
+      const resourceInStack2 = new CfnResource(stack2, 'ResourceInSibling', { type: 'SIBLING' });
 
-    // WHEN
-    addDep(resourceInNested1, resourceInStack2);
+      // WHEN
+      addDep(resourceInNested1, resourceInStack2);
 
-    // THEN: stack1 should depend on stack2 and no "DependsOn" inside templates
-    const assembly = app.synth();
-    assertAssemblyDependency(assembly, stack1, ['Stack2']);
-    assertAssemblyDependency(assembly, stack2, []);
-    assertNoDependsOn(assembly, stack1);
-    assertNoDependsOn(assembly, stack2);
-    assertNoDependsOn(assembly, nested1);
-  }));
+      // THEN: stack1 should depend on stack2 and no "DependsOn" inside templates
+      const assembly = app.synth();
+      assertAssemblyDependency(assembly, stack1, ['Stack2']);
+      assertAssemblyDependency(assembly, stack2, []);
+      assertNoDependsOn(assembly, stack1);
+      assertNoDependsOn(assembly, stack2);
+      assertNoDependsOn(assembly, nested1);
+    })
+  );
 
-  describeDeprecated('resource in nested stack depends on a resource in nested sibling stack', matrixForResourceDependencyTest((addDep) => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'Stack1');
-    const nested1 = new NestedStack(stack, 'Nested1');
-    const nested2 = new NestedStack(stack, 'Nested2');
-    const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested1', { type: 'NESTED1' });
-    const resourceInNested2 = new CfnResource(nested2, 'ResourceInNested2', { type: 'NESTED2' });
+  describeDeprecated(
+    'resource in nested stack depends on a resource in nested sibling stack',
+    matrixForResourceDependencyTest((addDep) => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack1');
+      const nested1 = new NestedStack(stack, 'Nested1');
+      const nested2 = new NestedStack(stack, 'Nested2');
+      const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested1', { type: 'NESTED1' });
+      const resourceInNested2 = new CfnResource(nested2, 'ResourceInNested2', { type: 'NESTED2' });
 
-    // WHEN
-    addDep(resourceInNested1, resourceInNested2);
+      // WHEN
+      addDep(resourceInNested1, resourceInNested2);
 
-    // THEN: dependency transfered to nested stack resources
-    Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
-      DependsOn: [stack.resolve(nested2.nestedStackResource!.logicalId)],
-    });
+      // THEN: dependency transfered to nested stack resources
+      Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
+        DependsOn: [stack.resolve(nested2.nestedStackResource!.logicalId)],
+      });
 
-    expect(Template.fromStack(stack).findResources('AWS::CloudFormation::Stack', {
-      DependsOn: [stack.resolve(nested1.nestedStackResource!.logicalId)],
-    })).toEqual({});
-  }));
+      expect(
+        Template.fromStack(stack).findResources('AWS::CloudFormation::Stack', {
+          DependsOn: [stack.resolve(nested1.nestedStackResource!.logicalId)],
+        })
+      ).toEqual({});
+    })
+  );
 });
 
 describe('stack dependencies', () => {
@@ -190,9 +216,15 @@ describe('stack dependencies', () => {
     const nested2 = new NestedStack(nested1, 'Nested2');
 
     // THEN
-    expect(() => nested1.addDependency(root)).toThrow(/Nested stack 'Default\/Nested1' cannot depend on a parent stack 'Default'/);
-    expect(() => nested2.addDependency(nested1)).toThrow(/Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default\/Nested1'/);
-    expect(() => nested2.addDependency(root)).toThrow(/Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default'/);
+    expect(() => nested1.addDependency(root)).toThrow(
+      /Nested stack 'Default\/Nested1' cannot depend on a parent stack 'Default'/
+    );
+    expect(() => nested2.addDependency(nested1)).toThrow(
+      /Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default\/Nested1'/
+    );
+    expect(() => nested2.addDependency(root)).toThrow(
+      /Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default'/
+    );
   });
 
   testDeprecated('any parent stack is by definition dependent on the nested stack so dependency is ignored', () => {
@@ -301,7 +333,9 @@ describe('stack dependencies', () => {
  *
  * @param testFunction The test function
  */
-function matrixForResourceDependencyTest(testFunction: (addDep: (source: CfnResource, target: CfnResource) => void) => void) {
+function matrixForResourceDependencyTest(
+  testFunction: (addDep: (source: CfnResource, target: CfnResource) => void) => void
+) {
   return () => {
     test('construct dependency', () => {
       testFunction((source, target) => source.node.addDependency(target));
@@ -314,7 +348,7 @@ function matrixForResourceDependencyTest(testFunction: (addDep: (source: CfnReso
 
 function assertAssemblyDependency(assembly: cxapi.CloudAssembly, stack: Stack, expectedDeps: string[]) {
   const stack1Art = assembly.getStackArtifact(stack.artifactId);
-  const stack1Deps = stack1Art.dependencies.map(x => x.id);
+  const stack1Deps = stack1Art.dependencies.map((x) => x.id);
   expect(stack1Deps).toEqual(expectedDeps);
 }
 

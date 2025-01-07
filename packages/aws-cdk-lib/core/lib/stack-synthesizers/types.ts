@@ -1,10 +1,5 @@
 import { CloudAssemblyBuilder } from '../../../cx-api';
-import {
-  DockerImageAssetLocation,
-  DockerImageAssetSource,
-  FileAssetLocation,
-  FileAssetSource,
-} from '../assets';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Stack } from '../stack';
 
 /**

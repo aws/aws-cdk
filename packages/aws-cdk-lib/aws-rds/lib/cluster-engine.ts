@@ -135,9 +135,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
     this.multiUserRotationApplication = props.multiUserRotationApplication;
     this.defaultPort = props.defaultPort;
     this.engineVersion = props.engineVersion;
-    this.parameterGroupFamily = this.engineVersion
-      ? `${this.engineType}${this.engineVersion.majorVersion}`
-      : undefined;
+    this.parameterGroupFamily = this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined;
   }
 
   public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
@@ -172,13 +170,9 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
   constructor(props: MysqlClusterEngineBaseProps) {
     super({
       ...props,
-      singleUserRotationApplication:
-        secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
-      multiUserRotationApplication:
-        secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
-      engineVersion: props.engineVersion
-        ? props.engineVersion
-        : { majorVersion: props.defaultMajorVersion },
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
+      engineVersion: props.engineVersion ? props.engineVersion : { majorVersion: props.defaultMajorVersion },
     });
     this.combineImportAndExportRoles = props.combineImportAndExportRoles;
   }
@@ -195,15 +189,11 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
     if (options.s3ImportRole) {
       // versions which combine the import and export Roles (right now, this is only 8.0)
       // require a different parameter name (identical for both import and export)
-      const s3ImportParam = this.combineImportAndExportRoles
-        ? 'aws_default_s3_role'
-        : 'aurora_load_from_s3_role';
+      const s3ImportParam = this.combineImportAndExportRoles ? 'aws_default_s3_role' : 'aurora_load_from_s3_role';
       parameterGroup?.addParameter(s3ImportParam, options.s3ImportRole.roleArn);
     }
     if (options.s3ExportRole) {
-      const s3ExportParam = this.combineImportAndExportRoles
-        ? 'aws_default_s3_role'
-        : 'aurora_select_into_s3_role';
+      const s3ExportParam = this.combineImportAndExportRoles ? 'aws_default_s3_role' : 'aurora_select_into_s3_role';
       parameterGroup?.addParameter(s3ExportParam, options.s3ExportRole.roleArn);
     }
 
@@ -278,13 +268,8 @@ export class AuroraEngineVersion {
     return new AuroraEngineVersion(auroraFullVersion, auroraMajorVersion);
   }
 
-  private static builtIn_5_6(
-    minorVersion: string,
-    addStandardPrefix: boolean = true
-  ): AuroraEngineVersion {
-    return new AuroraEngineVersion(
-      `5.6.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`
-    );
+  private static builtIn_5_6(minorVersion: string, addStandardPrefix: boolean = true): AuroraEngineVersion {
+    return new AuroraEngineVersion(`5.6.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`);
   }
 
   /** The full version string, for example, "5.6.mysql_aurora.1.78.3.6". */
@@ -662,20 +647,12 @@ export class AuroraMysqlEngineVersion {
    * @param auroraMysqlMajorVersion the major version of the engine,
    *   defaults to "5.7"
    */
-  public static of(
-    auroraMysqlFullVersion: string,
-    auroraMysqlMajorVersion?: string
-  ): AuroraMysqlEngineVersion {
+  public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
     return new AuroraMysqlEngineVersion(auroraMysqlFullVersion, auroraMysqlMajorVersion);
   }
 
-  private static builtIn_5_7(
-    minorVersion: string,
-    addStandardPrefix: boolean = true
-  ): AuroraMysqlEngineVersion {
-    return new AuroraMysqlEngineVersion(
-      `5.7.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`
-    );
+  private static builtIn_5_7(minorVersion: string, addStandardPrefix: boolean = true): AuroraMysqlEngineVersion {
+    return new AuroraMysqlEngineVersion(`5.7.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`);
   }
 
   private static builtIn_8_0(minorVersion: string): AuroraMysqlEngineVersion {
@@ -1368,11 +1345,10 @@ export class AuroraPostgresEngineVersion {
     s3Export: true,
   });
   /** Version "16.4 limitless" */
-  public static readonly VER_16_4_LIMITLESS = AuroraPostgresEngineVersion.of(
-    '16.4-limitless',
-    '16',
-    { s3Import: true, s3Export: true }
-  );
+  public static readonly VER_16_4_LIMITLESS = AuroraPostgresEngineVersion.of('16.4-limitless', '16', {
+    s3Import: true,
+    s3Export: true,
+  });
   /** Version "16.5". */
   public static readonly VER_16_5 = AuroraPostgresEngineVersion.of('16.5', '16', {
     s3Import: true,
@@ -1466,10 +1442,8 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
   constructor(version?: AuroraPostgresEngineVersion) {
     super({
       engineType: 'aurora-postgresql',
-      singleUserRotationApplication:
-        secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
-      multiUserRotationApplication:
-        secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER,
       defaultPort: 5432,
       engineVersion: version
         ? {
@@ -1479,12 +1453,8 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
         : undefined,
       features: version
         ? {
-            s3Import: version._features.s3Import
-              ? AuroraPostgresClusterEngine.S3_IMPORT_FEATURE_NAME
-              : undefined,
-            s3Export: version._features.s3Export
-              ? AuroraPostgresClusterEngine.S3_EXPORT_FEATURE_NAME
-              : undefined,
+            s3Import: version._features.s3Import ? AuroraPostgresClusterEngine.S3_IMPORT_FEATURE_NAME : undefined,
+            s3Export: version._features.s3Export ? AuroraPostgresClusterEngine.S3_EXPORT_FEATURE_NAME : undefined,
           }
         : {
             s3Import: AuroraPostgresClusterEngine.S3_IMPORT_FEATURE_NAME,

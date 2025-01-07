@@ -304,10 +304,7 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.0
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_0 = new Runtime(
-    'syn-python-selenium-1.0',
-    RuntimeFamily.PYTHON
-  );
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_0 = new Runtime('syn-python-selenium-1.0', RuntimeFamily.PYTHON);
 
   /**
    * `syn-python-selenium-1.1` includes the following:
@@ -324,10 +321,7 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.1
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_1 = new Runtime(
-    'syn-python-selenium-1.1',
-    RuntimeFamily.PYTHON
-  );
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_1 = new Runtime('syn-python-selenium-1.1', RuntimeFamily.PYTHON);
 
   /**
    * `syn-python-selenium-1.2` includes the following:
@@ -341,10 +335,7 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.2
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_2 = new Runtime(
-    'syn-python-selenium-1.2',
-    RuntimeFamily.PYTHON
-  );
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_2 = new Runtime('syn-python-selenium-1.2', RuntimeFamily.PYTHON);
 
   /**
    * `syn-python-selenium-1.3` includes the following:
@@ -358,10 +349,7 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.3
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_3 = new Runtime(
-    'syn-python-selenium-1.3',
-    RuntimeFamily.PYTHON
-  );
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_3 = new Runtime('syn-python-selenium-1.3', RuntimeFamily.PYTHON);
 
   /**
    * `syn-python-selenium-2.0` includes the following:
@@ -380,10 +368,7 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-2.0
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_0 = new Runtime(
-    'syn-python-selenium-2.0',
-    RuntimeFamily.PYTHON
-  );
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_0 = new Runtime('syn-python-selenium-2.0', RuntimeFamily.PYTHON);
 
   /**
    * `syn-python-selenium-2.1` includes the following:
@@ -396,10 +381,7 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-2.0
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_1 = new Runtime(
-    'syn-python-selenium-2.1',
-    RuntimeFamily.PYTHON
-  );
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_1 = new Runtime('syn-python-selenium-2.1', RuntimeFamily.PYTHON);
 
   /**
    * `syn-python-selenium-3.0` includes the following:
@@ -412,10 +394,7 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-3.0
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_3_0 = new Runtime(
-    'syn-python-selenium-3.0',
-    RuntimeFamily.PYTHON
-  );
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_3_0 = new Runtime('syn-python-selenium-3.0', RuntimeFamily.PYTHON);
 
   /**
    * `syn-python-selenium-4.0` includes the following:
@@ -428,10 +407,7 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-4.0
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime(
-    'syn-python-selenium-4.0',
-    RuntimeFamily.PYTHON
-  );
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime('syn-python-selenium-4.0', RuntimeFamily.PYTHON);
 
   /**
    * @param name The name of the runtime version

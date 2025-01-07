@@ -11,8 +11,12 @@ import * as lambda from '../lib';
 describe('code', () => {
   describe('lambda.Code.fromInline', () => {
     test('fails if used with unsupported runtimes', () => {
-      expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X)).toThrow(/Inline source not allowed for go1\.x/);
-      expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8)).toThrow(/Inline source not allowed for java8/);
+      expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X)).toThrow(
+        /Inline source not allowed for go1\.x/
+      );
+      expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8)).toThrow(
+        /Inline source not allowed for java8/
+      );
     });
   });
 
@@ -37,7 +41,9 @@ describe('code', () => {
       const command = [];
 
       // THEN
-      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow('command must contain at least one argument. For example, ["node", "buildFile.js"].');
+      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow(
+        'command must contain at least one argument. For example, ["node", "buildFile.js"].'
+      );
     });
     test('properly splices arguments', () => {
       // GIVEN
@@ -45,10 +51,7 @@ describe('code', () => {
       lambda.Code.fromCustomCommand('', command);
 
       // THEN
-      expect(spawnSyncMock).toHaveBeenCalledWith(
-        'node',
-        ['is', 'a', 'great', 'command,', 'wow'],
-      );
+      expect(spawnSyncMock).toHaveBeenCalledWith('node', ['is', 'a', 'great', 'command,', 'wow']);
     });
     test('command of length 1 does not cause crash', () => {
       // WHEN
@@ -67,7 +70,7 @@ describe('code', () => {
       expect(spawnSyncMock).toHaveBeenCalledWith(
         'node',
         ['is', 'a', 'great', 'command,', 'wow'],
-        commandOptions.commandOptions,
+        commandOptions.commandOptions
       );
     });
     test('throws custom error message when spawnSync errors', () => {
@@ -91,7 +94,9 @@ describe('code', () => {
       });
 
       // THEN
-      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow('whatever exited with status: 1\n\nstdout: stdout\n\nstderr: stderr');
+      expect(() => lambda.Code.fromCustomCommand('', command)).toThrow(
+        'whatever exited with status: 1\n\nstdout: stdout\n\nstderr: stderr'
+      );
     });
   });
 
@@ -166,7 +171,8 @@ describe('code', () => {
       // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]:
+            'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
           [cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY]: false,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
@@ -186,11 +192,14 @@ describe('code', () => {
       });
 
       const stack2 = new cdk.Stack(app, 'Stack2');
-      expect(() => new lambda.Function(stack2, 'Func', {
-        code: asset,
-        runtime: lambda.Runtime.NODEJS_LATEST,
-        handler: 'foom',
-      })).toThrow(/already associated/);
+      expect(
+        () =>
+          new lambda.Function(stack2, 'Func', {
+            code: asset,
+            runtime: lambda.Runtime.NODEJS_LATEST,
+            handler: 'foom',
+          })
+      ).toThrow(/already associated/);
     });
   });
 
@@ -275,10 +284,12 @@ describe('code', () => {
       });
 
       // when
-      const overrides = stack.resolve(code.assign({
-        bucketName: 'SomeBucketName',
-        objectKey: 'SomeObjectKey',
-      }));
+      const overrides = stack.resolve(
+        code.assign({
+          bucketName: 'SomeBucketName',
+          objectKey: 'SomeObjectKey',
+        })
+      );
 
       // then
       expect(overrides['BucketNameParam']).toEqual('SomeBucketName');
@@ -355,7 +366,9 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Code: {
-          ImageUri: stack.resolve(repo.repositoryUriForDigest('sha256:afc607424cc02c92d4d6af5184a4fef46a69548e465a320808c6ff358b6a3a8d')),
+          ImageUri: stack.resolve(
+            repo.repositoryUriForDigest('sha256:afc607424cc02c92d4d6af5184a4fef46a69548e465a320808c6ff358b6a3a8d')
+          ),
         },
         ImageConfig: Match.absent(),
       });
@@ -378,11 +391,7 @@ describe('code', () => {
         RepositoryPolicyText: {
           Statement: [
             {
-              Action: [
-                'ecr:BatchCheckLayerAvailability',
-                'ecr:GetDownloadUrlForLayer',
-                'ecr:BatchGetImage',
-              ],
+              Action: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
               Effect: 'Allow',
               Principal: {
                 Service: 'lambda.amazonaws.com',
@@ -445,7 +454,8 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.94589594a9968c9eeb447189c1c5b83b4f8b95f12c392a82749abcd36ecbbfb8',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]:
+            'asset.94589594a9968c9eeb447189c1c5b83b4f8b95f12c392a82749abcd36ecbbfb8',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY]: dockerBuildSsh,
@@ -470,7 +480,8 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.1abd5e50b7a576ba32f8d038dfcd3665b4c34aa82ed17576969830142a99f254',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]:
+            'asset.1abd5e50b7a576ba32f8d038dfcd3665b4c34aa82ed17576969830142a99f254',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
         },
@@ -503,7 +514,8 @@ describe('code', () => {
       // then
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.94589594a9968c9eeb447189c1c5b83b4f8b95f12c392a82749abcd36ecbbfb8',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]:
+            'asset.94589594a9968c9eeb447189c1c5b83b4f8b95f12c392a82749abcd36ecbbfb8',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY]: dockerBuildSsh,
@@ -530,11 +542,14 @@ describe('code', () => {
       const stack2 = new cdk.Stack(app, 'Stack2');
 
       // then
-      expect(() => new lambda.Function(stack2, 'Fn', {
-        code: asset,
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      })).toThrow(/already associated/);
+      expect(
+        () =>
+          new lambda.Function(stack2, 'Fn', {
+            code: asset,
+            handler: lambda.Handler.FROM_IMAGE,
+            runtime: lambda.Runtime.FROM_IMAGE,
+          })
+      ).toThrow(/already associated/);
     });
   });
 

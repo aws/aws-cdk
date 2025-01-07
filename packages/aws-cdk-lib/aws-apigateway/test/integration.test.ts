@@ -12,26 +12,30 @@ describe('integration', () => {
     const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
 
     // THEN
-    expect(() => new apigw.Integration({
-      type: apigw.IntegrationType.AWS_PROXY,
-      integrationHttpMethod: 'ANY',
-      options: {
-        credentialsPassthrough: true,
-        credentialsRole: role,
-      },
-    })).toThrow(/'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
-
+    expect(
+      () =>
+        new apigw.Integration({
+          type: apigw.IntegrationType.AWS_PROXY,
+          integrationHttpMethod: 'ANY',
+          options: {
+            credentialsPassthrough: true,
+            credentialsRole: role,
+          },
+        })
+    ).toThrow(/'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
   });
 
   test('integration connectionType VpcLink requires vpcLink to be set', () => {
-    expect(() => new apigw.Integration({
-      type: apigw.IntegrationType.HTTP_PROXY,
-      integrationHttpMethod: 'ANY',
-      options: {
-        connectionType: apigw.ConnectionType.VPC_LINK,
-      },
-    })).toThrow(/'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
-
+    expect(
+      () =>
+        new apigw.Integration({
+          type: apigw.IntegrationType.HTTP_PROXY,
+          integrationHttpMethod: 'ANY',
+          options: {
+            connectionType: apigw.ConnectionType.VPC_LINK,
+          },
+        })
+    ).toThrow(/'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
   });
 
   test('uri is self determined from the NLB', () => {
@@ -60,10 +64,7 @@ describe('integration', () => {
             [
               'http://',
               {
-                'Fn::GetAtt': [
-                  'NLB55158F82',
-                  'DNSName',
-                ],
+                'Fn::GetAtt': ['NLB55158F82', 'DNSName'],
               },
             ],
           ],
@@ -123,14 +124,17 @@ describe('integration', () => {
     });
 
     // THEN
-    expect(() => new apigw.Integration({
-      type: apigw.IntegrationType.HTTP_PROXY,
-      integrationHttpMethod: 'ANY',
-      options: {
-        connectionType: apigw.ConnectionType.INTERNET,
-        vpcLink: link,
-      },
-    })).toThrow(/cannot set 'vpcLink' where 'connectionType' is INTERNET/);
+    expect(
+      () =>
+        new apigw.Integration({
+          type: apigw.IntegrationType.HTTP_PROXY,
+          integrationHttpMethod: 'ANY',
+          options: {
+            connectionType: apigw.ConnectionType.INTERNET,
+            vpcLink: link,
+          },
+        })
+    ).toThrow(/cannot set 'vpcLink' where 'connectionType' is INTERNET/);
   });
 
   test('connectionType is Match.absent() when vpcLink is not specified', () => {
@@ -186,26 +190,30 @@ describe('integration', () => {
   });
 
   test('validates timeout is valid', () => {
+    expect(
+      () =>
+        new apigw.Integration({
+          type: apigw.IntegrationType.HTTP_PROXY,
+          integrationHttpMethod: 'ANY',
+          options: {
+            timeout: cdk.Duration.millis(2),
+          },
+        })
+    ).toThrow(/Integration timeout must be greater than 50 milliseconds/);
 
-    expect(() => new apigw.Integration({
-      type: apigw.IntegrationType.HTTP_PROXY,
-      integrationHttpMethod: 'ANY',
-      options: {
-        timeout: cdk.Duration.millis(2),
-      },
-    })).toThrow(/Integration timeout must be greater than 50 milliseconds/);
-
-    expect(() => new apigw.Integration({
-      type: apigw.IntegrationType.HTTP_PROXY,
-      integrationHttpMethod: 'ANY',
-      options: {
-        timeout: cdk.Duration.seconds(50),
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new apigw.Integration({
+          type: apigw.IntegrationType.HTTP_PROXY,
+          integrationHttpMethod: 'ANY',
+          options: {
+            timeout: cdk.Duration.seconds(50),
+          },
+        })
+    ).not.toThrow();
   });
 
   test('sets timeout', () => {
-
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'restapi');
@@ -227,24 +235,29 @@ describe('integration', () => {
         TimeoutInMillis: 1000,
       },
     });
-
   });
 
   test('validates integrationHttpMethod is required for non-MOCK integration types', () => {
-    expect(() => new apigw.Integration({
-      type: apigw.IntegrationType.HTTP_PROXY,
-      options: {
-        timeout: cdk.Duration.seconds(15),
-      },
-    })).toThrow(/integrationHttpMethod is required for non-mock integration types/);
+    expect(
+      () =>
+        new apigw.Integration({
+          type: apigw.IntegrationType.HTTP_PROXY,
+          options: {
+            timeout: cdk.Duration.seconds(15),
+          },
+        })
+    ).toThrow(/integrationHttpMethod is required for non-mock integration types/);
   });
 
   test('integrationHttpMethod can be omitted for MOCK integration type', () => {
-    expect(() => new apigw.Integration({
-      type: apigw.IntegrationType.MOCK,
-      options: {
-        timeout: cdk.Duration.seconds(15),
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new apigw.Integration({
+          type: apigw.IntegrationType.MOCK,
+          options: {
+            timeout: cdk.Duration.seconds(15),
+          },
+        })
+    ).not.toThrow();
   });
 });

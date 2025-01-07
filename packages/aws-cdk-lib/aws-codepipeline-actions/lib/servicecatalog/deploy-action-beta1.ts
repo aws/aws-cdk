@@ -66,9 +66,7 @@ export class ServiceCatalogDeployActionBeta1 extends Action {
     _stage: codepipeline.IStage,
     options: codepipeline.ActionBindOptions
   ): codepipeline.ActionConfig {
-    options.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSServiceCatalogAdminFullAccess')
-    );
+    options.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSServiceCatalogAdminFullAccess'));
 
     // Attempt at least privilege; using this alone fails with "invalid template".
     // Should construct ARN: 'arn:aws:catalog:<region>:<accountID>:product/' + this.scProductId

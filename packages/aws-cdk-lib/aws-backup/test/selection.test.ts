@@ -29,17 +29,11 @@ test('create a selection', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupPlanId: {
-      'Fn::GetAtt': [
-        'PlanDAF4E53A',
-        'BackupPlanId',
-      ],
+      'Fn::GetAtt': ['PlanDAF4E53A', 'BackupPlanId'],
     },
     BackupSelection: {
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'SelectionRoleD0EAEC83',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['SelectionRoleD0EAEC83', 'Arn'],
       },
       ListOfTags: [
         {
@@ -53,10 +47,7 @@ test('create a selection', () => {
           ConditionValue: 'cloud',
         },
       ],
-      Resources: [
-        'arn1',
-        'arn2',
-      ],
+      Resources: ['arn1', 'arn2'],
       SelectionName: 'Selection',
     },
   });
@@ -83,9 +74,7 @@ test('no policy is attached if disableDefaultBackupPolicy is true', () => {
   // WHEN
   new BackupSelection(stack, 'Selection', {
     backupPlan: plan,
-    resources: [
-      BackupResource.fromArn('arn1'),
-    ],
+    resources: [BackupResource.fromArn('arn1')],
     disableDefaultBackupPolicy: true,
   });
 
@@ -99,9 +88,7 @@ test('allow restores', () => {
   // WHEN
   new BackupSelection(stack, 'Selection', {
     backupPlan: plan,
-    resources: [
-      BackupResource.fromArn('arn1'),
-    ],
+    resources: [BackupResource.fromArn('arn1')],
     allowRestores: true,
   });
 
@@ -176,7 +163,11 @@ test('fromConstruct', () => {
 
       new rds.ServerlessCluster(this, 'ServerlessCluster', {
         engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-        parameterGroup: rds.ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+        parameterGroup: rds.ParameterGroup.fromParameterGroupName(
+          stack,
+          'ParameterGroup',
+          'default.aurora-postgresql11'
+        ),
         vpc,
       });
     }
@@ -186,20 +177,14 @@ test('fromConstruct', () => {
 
   // WHEN
   plan.addSelection('Selection', {
-    resources: [
-      BackupResource.fromConstruct(myConstruct),
-      BackupResource.fromConstruct(efsConstruct),
-    ],
+    resources: [BackupResource.fromConstruct(myConstruct), BackupResource.fromConstruct(efsConstruct)],
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'PlanSelectionRole6D10F4B7',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['PlanSelectionRole6D10F4B7', 'Arn'],
       },
       Resources: [
         {
@@ -358,19 +343,14 @@ test('fromEc2Instance', () => {
 
   // WHEN
   plan.addSelection('Selection', {
-    resources: [
-      BackupResource.fromEc2Instance(instance),
-    ],
+    resources: [BackupResource.fromEc2Instance(instance)],
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'PlanSelectionRole6D10F4B7',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['PlanSelectionRole6D10F4B7', 'Arn'],
       },
       Resources: [
         {
@@ -410,31 +390,26 @@ test('fromDynamoDbTable', () => {
       type: dynamodb.AttributeType.STRING,
     },
   });
-  const existingTable = dynamodb.Table.fromTableArn(stack, 'Existing', 'arn:aws:dynamodb:eu-west-1:123456789012:table/existing');
+  const existingTable = dynamodb.Table.fromTableArn(
+    stack,
+    'Existing',
+    'arn:aws:dynamodb:eu-west-1:123456789012:table/existing'
+  );
 
   // WHEN
   plan.addSelection('Selection', {
-    resources: [
-      BackupResource.fromDynamoDbTable(newTable),
-      BackupResource.fromDynamoDbTable(existingTable),
-    ],
+    resources: [BackupResource.fromDynamoDbTable(newTable), BackupResource.fromDynamoDbTable(existingTable)],
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'PlanSelectionRole6D10F4B7',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['PlanSelectionRole6D10F4B7', 'Arn'],
       },
       Resources: [
         {
-          'Fn::GetAtt': [
-            'New8A81B073',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['New8A81B073', 'Arn'],
         },
         'arn:aws:dynamodb:eu-west-1:123456789012:table/existing',
       ],
@@ -470,10 +445,7 @@ test('fromRdsDatabaseInstance', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'PlanSelectionRole6D10F4B7',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['PlanSelectionRole6D10F4B7', 'Arn'],
       },
       Resources: [
         {
@@ -551,10 +523,7 @@ test('fromRdsDatabaseCluster', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'PlanSelectionRole6D10F4B7',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['PlanSelectionRole6D10F4B7', 'Arn'],
       },
       Resources: [
         {
@@ -630,10 +599,7 @@ test('fromRdsServerlessCluster', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
-        'Fn::GetAtt': [
-          'PlanSelectionRole6D10F4B7',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['PlanSelectionRole6D10F4B7', 'Arn'],
       },
       Resources: [
         {

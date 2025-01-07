@@ -21,9 +21,7 @@ export abstract class Schedule {
     if (duration.isUnresolved()) {
       const validDurationUnit = ['minute', 'minutes', 'hour', 'hours', 'day', 'days'];
       if (!validDurationUnit.includes(duration.unitLabel())) {
-        throw new Error(
-          "Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day' or 'days'"
-        );
+        throw new Error("Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day' or 'days'");
       }
       return new LiteralSchedule(`rate(${duration.formatTokenToNumber()})`);
     }

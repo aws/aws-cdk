@@ -16,11 +16,11 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket');
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -44,11 +44,11 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -61,22 +61,22 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'BucketEncryption': {
-              'ServerSideEncryptionConfiguration': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketEncryption: {
+              ServerSideEncryptionConfiguration: [
                 {
-                  'ServerSideEncryptionByDefault': {
-                    'SSEAlgorithm': 'AES256',
+                  ServerSideEncryptionByDefault: {
+                    SSEAlgorithm: 'AES256',
                   },
                 },
               ],
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -89,22 +89,22 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'BucketEncryption': {
-              'ServerSideEncryptionConfiguration': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketEncryption: {
+              ServerSideEncryptionConfiguration: [
                 {
-                  'ServerSideEncryptionByDefault': {
-                    'SSEAlgorithm': 'aws:kms',
+                  ServerSideEncryptionByDefault: {
+                    SSEAlgorithm: 'aws:kms',
                   },
                 },
               ],
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -117,22 +117,22 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'BucketEncryption': {
-              'ServerSideEncryptionConfiguration': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            BucketEncryption: {
+              ServerSideEncryptionConfiguration: [
                 {
-                  'ServerSideEncryptionByDefault': {
-                    'SSEAlgorithm': 'aws:kms:dsse',
+                  ServerSideEncryptionByDefault: {
+                    SSEAlgorithm: 'aws:kms:dsse',
                   },
                 },
               ],
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -141,13 +141,19 @@ describe('bucket', () => {
   test('valid bucket names', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: 'abc.xyz-34ab',
-    })).not.toThrow();
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket1', {
+          bucketName: 'abc.xyz-34ab',
+        })
+    ).not.toThrow();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: '124.pp--33',
-    })).not.toThrow();
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket2', {
+          bucketName: '124.pp--33',
+        })
+    ).not.toThrow();
   });
 
   test('creating bucket with underscore in name throws error', () => {
@@ -181,9 +187,12 @@ describe('bucket', () => {
   test('bucket validation skips tokenized values', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.Lazy.string({ produce: () => '_BUCKET' }),
-    })).not.toThrow();
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket', {
+          bucketName: cdk.Lazy.string({ produce: () => '_BUCKET' }),
+        })
+    ).not.toThrow();
   });
 
   test('fails with message on invalid bucket names', () => {
@@ -198,9 +207,12 @@ describe('bucket', () => {
       'Bucket name must not have dash next to period, or period next to dash, or consecutive periods (offset: 7)',
     ].join(EOL);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: bucket,
-    })).toThrow(expectedErrors);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket', {
+          bucketName: bucket,
+        })
+    ).toThrow(expectedErrors);
   });
 
   test('validateBucketName allows underscore when allowLegacyBucketNaming=true', () => {
@@ -242,121 +254,178 @@ describe('bucket', () => {
   test('fails if bucket name has less than 3 or more than 63 characters', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: 'a',
-    })).toThrow(/at least 3/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket1', {
+          bucketName: 'a',
+        })
+    ).toThrow(/at least 3/);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: new Array(65).join('x'),
-    })).toThrow(/no more than 63/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket2', {
+          bucketName: new Array(65).join('x'),
+        })
+    ).toThrow(/no more than 63/);
   });
 
   test('fails if bucket name has invalid characters', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: 'b@cket',
-    })).toThrow(/offset: 1/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket1', {
+          bucketName: 'b@cket',
+        })
+    ).toThrow(/offset: 1/);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: 'bucKet',
-    })).toThrow(/offset: 3/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket2', {
+          bucketName: 'bucKet',
+        })
+    ).toThrow(/offset: 3/);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: 'bučket',
-    })).toThrow(/offset: 2/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket3', {
+          bucketName: 'bučket',
+        })
+    ).toThrow(/offset: 2/);
   });
 
   test('fails if bucket name does not start or end with lowercase character or number', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: '-ucket',
-    })).toThrow(/offset: 0/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket1', {
+          bucketName: '-ucket',
+        })
+    ).toThrow(/offset: 0/);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: 'bucke.',
-    })).toThrow(/offset: 5/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket2', {
+          bucketName: 'bucke.',
+        })
+    ).toThrow(/offset: 5/);
   });
 
   test('fails only if bucket name has the consecutive symbols (..), (.-), (-.)', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: 'buc..ket',
-    })).toThrow(/offset: 3/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket1', {
+          bucketName: 'buc..ket',
+        })
+    ).toThrow(/offset: 3/);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: 'buck.-et',
-    })).toThrow(/offset: 4/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket2', {
+          bucketName: 'buck.-et',
+        })
+    ).toThrow(/offset: 4/);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: 'b-.ucket',
-    })).toThrow(/offset: 1/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket3', {
+          bucketName: 'b-.ucket',
+        })
+    ).toThrow(/offset: 1/);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: 'bu--cket',
-    })).not.toThrow();
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket4', {
+          bucketName: 'bu--cket',
+        })
+    ).not.toThrow();
   });
 
   test('fails only if bucket name resembles IP address', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: '1.2.3.4',
-    })).toThrow(/must not resemble an IP address/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket1', {
+          bucketName: '1.2.3.4',
+        })
+    ).toThrow(/must not resemble an IP address/);
 
-    expect(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: '1.2.3',
-    })).not.toThrow();
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket2', {
+          bucketName: '1.2.3',
+        })
+    ).not.toThrow();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: '1.2.3.a',
-    })).not.toThrow();
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket3', {
+          bucketName: '1.2.3.a',
+        })
+    ).not.toThrow();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: '1000.2.3.4',
-    })).not.toThrow();
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket4', {
+          bucketName: '1000.2.3.4',
+        })
+    ).not.toThrow();
   });
 
   test('fails if encryption key is used with managed encryption', () => {
     const stack = new cdk.Stack();
     const myKey = new kms.Key(stack, 'MyKey');
 
-    expect(() => new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.KMS_MANAGED,
-      encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket', {
+          encryption: s3.BucketEncryption.KMS_MANAGED,
+          encryptionKey: myKey,
+        })
+    ).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   test('fails if encryption key is used with dsse managed encryption', () => {
     const stack = new cdk.Stack();
     const myKey = new kms.Key(stack, 'MyKey');
 
-    expect(() => new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.DSSE_MANAGED,
-      encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket', {
+          encryption: s3.BucketEncryption.DSSE_MANAGED,
+          encryptionKey: myKey,
+        })
+    ).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   testDeprecated('fails if encryption key is used with encryption set to UNENCRYPTED', () => {
     const stack = new cdk.Stack();
     const myKey = new kms.Key(stack, 'MyKey');
 
-    expect(() => new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.UNENCRYPTED,
-      encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket', {
+          encryption: s3.BucketEncryption.UNENCRYPTED,
+          encryptionKey: myKey,
+        })
+    ).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   test('fails if encryption key is used with encryption set to S3_MANAGED', () => {
     const stack = new cdk.Stack();
     const myKey = new kms.Key(stack, 'MyKey');
 
-    expect(() => new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket', {
+          encryption: s3.BucketEncryption.S3_MANAGED,
+          encryptionKey: myKey,
+        })
+    ).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   test('encryptionKey can specify kms key', () => {
@@ -369,17 +438,14 @@ describe('bucket', () => {
     Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'BucketEncryption': {
-        'ServerSideEncryptionConfiguration': [
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
           {
-            'ServerSideEncryptionByDefault': {
-              'KMSMasterKeyID': {
-                'Fn::GetAtt': [
-                  'MyKey6AB29FA6',
-                  'Arn',
-                ],
+            ServerSideEncryptionByDefault: {
+              KMSMasterKeyID: {
+                'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
               },
-              'SSEAlgorithm': 'aws:kms',
+              SSEAlgorithm: 'aws:kms',
             },
           },
         ],
@@ -397,17 +463,14 @@ describe('bucket', () => {
     Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'BucketEncryption': {
-        'ServerSideEncryptionConfiguration': [
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
           {
-            'ServerSideEncryptionByDefault': {
-              'KMSMasterKeyID': {
-                'Fn::GetAtt': [
-                  'MyKey6AB29FA6',
-                  'Arn',
-                ],
+            ServerSideEncryptionByDefault: {
+              KMSMasterKeyID: {
+                'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
               },
-              'SSEAlgorithm': 'aws:kms:dsse',
+              SSEAlgorithm: 'aws:kms:dsse',
             },
           },
         ],
@@ -421,22 +484,19 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-      'Description': 'Created by Default/MyBucket',
-      'EnableKeyRotation': true,
+      Description: 'Created by Default/MyBucket',
+      EnableKeyRotation: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'BucketEncryption': {
-        'ServerSideEncryptionConfiguration': [
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
           {
-            'ServerSideEncryptionByDefault': {
-              'KMSMasterKeyID': {
-                'Fn::GetAtt': [
-                  'MyBucketKeyC17130CF',
-                  'Arn',
-                ],
+            ServerSideEncryptionByDefault: {
+              KMSMasterKeyID: {
+                'Fn::GetAtt': ['MyBucketKeyC17130CF', 'Arn'],
               },
-              'SSEAlgorithm': 'aws:kms',
+              SSEAlgorithm: 'aws:kms',
             },
           },
         ],
@@ -449,45 +509,39 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket', { enforceSSL: true });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'UpdateReplacePolicy': 'Retain',
-          'DeletionPolicy': 'Retain',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          UpdateReplacePolicy: 'Retain',
+          DeletionPolicy: 'Retain',
         },
-        'MyBucketPolicyE7FBAC7B': {
-          'Type': 'AWS::S3::BucketPolicy',
-          'Properties': {
-            'Bucket': {
-              'Ref': 'MyBucketF68F3FF0',
+        MyBucketPolicyE7FBAC7B: {
+          Type: 'AWS::S3::BucketPolicy',
+          Properties: {
+            Bucket: {
+              Ref: 'MyBucketF68F3FF0',
             },
-            'PolicyDocument': {
-              'Statement': [
+            PolicyDocument: {
+              Statement: [
                 {
-                  'Action': 's3:*',
-                  'Condition': {
-                    'Bool': {
+                  Action: 's3:*',
+                  Condition: {
+                    Bool: {
                       'aws:SecureTransport': 'false',
                     },
                   },
-                  'Effect': 'Deny',
-                  'Principal': { AWS: '*' },
-                  'Resource': [
+                  Effect: 'Deny',
+                  Principal: { AWS: '*' },
+                  Resource: [
                     {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                     },
                     {
                       'Fn::Join': [
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'MyBucketF68F3FF0',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                           },
                           '/*',
                         ],
@@ -496,7 +550,7 @@ describe('bucket', () => {
                   ],
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
           },
         },
@@ -512,33 +566,27 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 's3:*',
-            'Condition': {
-              'Bool': {
+            Action: 's3:*',
+            Condition: {
+              Bool: {
                 'aws:SecureTransport': 'false',
               },
             },
-            'Effect': 'Deny',
-            'Principal': { AWS: '*' },
-            'Resource': [
+            Effect: 'Deny',
+            Principal: { AWS: '*' },
+            Resource: [
               {
-                'Fn::GetAtt': [
-                  'MyBucketF68F3FF0',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                     },
                     '/*',
                   ],
@@ -547,30 +595,24 @@ describe('bucket', () => {
             ],
           },
           {
-            'Action': 's3:*',
-            'Condition': {
-              'NumericLessThan': {
+            Action: 's3:*',
+            Condition: {
+              NumericLessThan: {
                 's3:TlsVersion': 1.2,
               },
             },
-            'Effect': 'Deny',
-            'Principal': { AWS: '*' },
-            'Resource': [
+            Effect: 'Deny',
+            Principal: { AWS: '*' },
+            Resource: [
               {
-                'Fn::GetAtt': [
-                  'MyBucketF68F3FF0',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                     },
                     '/*',
                   ],
@@ -579,7 +621,7 @@ describe('bucket', () => {
             ],
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
     });
   });
@@ -601,43 +643,49 @@ describe('bucket', () => {
     }).toThrow(/'enforceSSL' must be enabled for 'minimumTLSVersion' to be applied/);
   });
 
-  test.each([s3.BucketEncryption.KMS, s3.BucketEncryption.KMS_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
-    const stack = new cdk.Stack();
+  test.each([s3.BucketEncryption.KMS, s3.BucketEncryption.KMS_MANAGED])(
+    'bucketKeyEnabled can be enabled with %p encryption',
+    (encryption) => {
+      const stack = new cdk.Stack();
 
-    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption });
+      new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'BucketEncryption': {
-        'ServerSideEncryptionConfiguration': [
-          {
-            'BucketKeyEnabled': true,
-            'ServerSideEncryptionByDefault': Match.objectLike({
-              'SSEAlgorithm': 'aws:kms',
-            }),
-          },
-        ],
-      },
-    });
-  });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [
+            {
+              BucketKeyEnabled: true,
+              ServerSideEncryptionByDefault: Match.objectLike({
+                SSEAlgorithm: 'aws:kms',
+              }),
+            },
+          ],
+        },
+      });
+    }
+  );
 
-  test.each([s3.BucketEncryption.DSSE, s3.BucketEncryption.DSSE_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
-    const stack = new cdk.Stack();
+  test.each([s3.BucketEncryption.DSSE, s3.BucketEncryption.DSSE_MANAGED])(
+    'bucketKeyEnabled can be enabled with %p encryption',
+    (encryption) => {
+      const stack = new cdk.Stack();
 
-    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption });
+      new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'BucketEncryption': {
-        'ServerSideEncryptionConfiguration': [
-          {
-            'BucketKeyEnabled': true,
-            'ServerSideEncryptionByDefault': Match.objectLike({
-              'SSEAlgorithm': 'aws:kms:dsse',
-            }),
-          },
-        ],
-      },
-    });
-  });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [
+            {
+              BucketKeyEnabled: true,
+              ServerSideEncryptionByDefault: Match.objectLike({
+                SSEAlgorithm: 'aws:kms:dsse',
+              }),
+            },
+          ],
+        },
+      });
+    }
+  );
 
   test('bucketKeyEnabled can be enabled with SSE-S3', () => {
     const stack = new cdk.Stack();
@@ -654,7 +702,6 @@ describe('bucket', () => {
         ],
       },
     });
-
   });
   test('bucketKeyEnabled can not be enabled with UNENCRYPTED', () => {
     const stack = new cdk.Stack();
@@ -674,7 +721,6 @@ describe('bucket', () => {
     expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
     }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: UNENCRYPTED)");
-
   });
 
   testDeprecated('logs to self, UNENCRYPTED does not throw error', () => {
@@ -695,7 +741,9 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets/);
+    }).toThrow(
+      /Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets/
+    );
   });
 
   test('logs to self, KMS encryption without key does not throw error', () => {
@@ -709,7 +757,11 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
     expect(() => {
-      new s3.Bucket(stack, 'MyBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS, serverAccessLogsPrefix: 'test' });
+      new s3.Bucket(stack, 'MyBucket', {
+        encryptionKey: key,
+        encryption: s3.BucketEncryption.KMS,
+        serverAccessLogsPrefix: 'test',
+      });
     }).not.toThrow();
   });
 
@@ -745,7 +797,9 @@ describe('bucket', () => {
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
-    }).toThrow(/Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets/);
+    }).toThrow(
+      /Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets/
+    );
   });
 
   test('logs to separate bucket, KMS encryption without key does not throw error', () => {
@@ -759,7 +813,10 @@ describe('bucket', () => {
   test('logs to separate bucket, KMS encryption with key does not throw error', () => {
     const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'TestKey');
-    const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryptionKey: key, encryption: s3.BucketEncryption.KMS });
+    const logBucket = new s3.Bucket(stack, 'testLogBucket', {
+      encryptionKey: key,
+      encryption: s3.BucketEncryption.KMS,
+    });
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { serverAccessLogsBucket: logBucket });
     }).not.toThrow();
@@ -781,16 +838,16 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'VersioningConfiguration': {
-              'Status': 'Enabled',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            VersioningConfiguration: {
+              Status: 'Enabled',
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -877,27 +934,36 @@ describe('bucket', () => {
 
   test('bucket with object lock disabled throws error with retention set', () => {
     const stack = new cdk.Stack();
-    expect(() => new s3.Bucket(stack, 'Bucket', {
-      objectLockEnabled: false,
-      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
-    })).toThrow('Object Lock must be enabled to configure default retention settings');
+    expect(
+      () =>
+        new s3.Bucket(stack, 'Bucket', {
+          objectLockEnabled: false,
+          objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(1)),
+        })
+    ).toThrow('Object Lock must be enabled to configure default retention settings');
   });
 
   test('bucket with object lock requires duration than one day', () => {
     const stack = new cdk.Stack();
-    expect(() => new s3.Bucket(stack, 'Bucket', {
-      objectLockEnabled: true,
-      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(0)),
-    })).toThrow('Object Lock retention duration must be at least 1 day');
+    expect(
+      () =>
+        new s3.Bucket(stack, 'Bucket', {
+          objectLockEnabled: true,
+          objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(0)),
+        })
+    ).toThrow('Object Lock retention duration must be at least 1 day');
   });
 
   // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
   test('bucket with object lock requires duration less than 100 years', () => {
     const stack = new cdk.Stack();
-    expect(() => new s3.Bucket(stack, 'Bucket', {
-      objectLockEnabled: true,
-      objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(365 * 101)),
-    })).toThrow('Object Lock retention duration must be less than 100 years');
+    expect(
+      () =>
+        new s3.Bucket(stack, 'Bucket', {
+          objectLockEnabled: true,
+          objectLockDefaultRetention: s3.ObjectLockRetention.governance(cdk.Duration.days(365 * 101)),
+        })
+    ).toThrow('Object Lock retention duration must be less than 100 years');
   });
 
   test('bucket with block public access set to BlockAll', () => {
@@ -907,19 +973,19 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'BlockPublicAcls': true,
-              'BlockPublicPolicy': true,
-              'IgnorePublicAcls': true,
-              'RestrictPublicBuckets': true,
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            PublicAccessBlockConfiguration: {
+              BlockPublicAcls: true,
+              BlockPublicPolicy: true,
+              IgnorePublicAcls: true,
+              RestrictPublicBuckets: true,
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -932,17 +998,17 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'BlockPublicAcls': true,
-              'IgnorePublicAcls': true,
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            PublicAccessBlockConfiguration: {
+              BlockPublicAcls: true,
+              IgnorePublicAcls: true,
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -955,16 +1021,16 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'RestrictPublicBuckets': true,
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            PublicAccessBlockConfiguration: {
+              RestrictPublicBuckets: true,
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -973,23 +1039,31 @@ describe('bucket', () => {
   test('bucket with default block public access setting to throw error msg', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'Bucket', {
-      publicReadAccess: true,
-    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.');
+    expect(
+      () =>
+        new s3.Bucket(stack, 'Bucket', {
+          publicReadAccess: true,
+        })
+    ).toThrow(
+      "Cannot use 'publicReadAccess' property on a bucket without allowing bucket-level public access through 'blockPublicAccess' property."
+    );
   });
 
   test('bucket with enabled block public access setting to throw error msg', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'Bucket', {
-      publicReadAccess: true,
-      blockPublicAccess: {
-        blockPublicPolicy: true,
-        blockPublicAcls: false,
-        ignorePublicAcls: false,
-        restrictPublicBuckets: false,
-      },
-    })).toThrow('Cannot grant public access when \'blockPublicPolicy\' is enabled');
+    expect(
+      () =>
+        new s3.Bucket(stack, 'Bucket', {
+          publicReadAccess: true,
+          blockPublicAccess: {
+            blockPublicPolicy: true,
+            blockPublicAcls: false,
+            ignorePublicAcls: false,
+            restrictPublicBuckets: false,
+          },
+        })
+    ).toThrow("Cannot grant public access when 'blockPublicPolicy' is enabled");
   });
 
   test('bucket with custom canned access control', () => {
@@ -999,14 +1073,14 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'AccessControl': 'LogDeliveryWrite',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            AccessControl: 'LogDeliveryWrite',
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -1017,35 +1091,37 @@ describe('bucket', () => {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['foo'],
-        actions: ['bar:baz'],
-        principals: [new iam.AnyPrincipal()],
-      }));
+      bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: ['foo'],
+          actions: ['bar:baz'],
+          principals: [new iam.AnyPrincipal()],
+        })
+      );
 
       Template.fromStack(stack).templateMatches({
-        'Resources': {
-          'MyBucketF68F3FF0': {
-            'Type': 'AWS::S3::Bucket',
-            'DeletionPolicy': 'Retain',
-            'UpdateReplacePolicy': 'Retain',
+        Resources: {
+          MyBucketF68F3FF0: {
+            Type: 'AWS::S3::Bucket',
+            DeletionPolicy: 'Retain',
+            UpdateReplacePolicy: 'Retain',
           },
-          'MyBucketPolicyE7FBAC7B': {
-            'Type': 'AWS::S3::BucketPolicy',
-            'Properties': {
-              'Bucket': {
-                'Ref': 'MyBucketF68F3FF0',
+          MyBucketPolicyE7FBAC7B: {
+            Type: 'AWS::S3::BucketPolicy',
+            Properties: {
+              Bucket: {
+                Ref: 'MyBucketF68F3FF0',
               },
-              'PolicyDocument': {
-                'Statement': [
+              PolicyDocument: {
+                Statement: [
                   {
-                    'Action': 'bar:baz',
-                    'Effect': 'Allow',
-                    'Principal': { AWS: '*' },
-                    'Resource': 'foo',
+                    Action: 'bar:baz',
+                    Effect: 'Allow',
+                    Principal: { AWS: '*' },
+                    Resource: 'foo',
                   },
                 ],
-                'Version': '2012-10-17',
+                Version: '2012-10-17',
               },
             },
           },
@@ -1057,46 +1133,48 @@ describe('bucket', () => {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
 
-      bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['foo'],
-        actions: ['bar:baz'],
-        principals: [new iam.AnyPrincipal()],
-      }));
+      bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: ['foo'],
+          actions: ['bar:baz'],
+          principals: [new iam.AnyPrincipal()],
+        })
+      );
 
       Template.fromStack(stack).templateMatches({
-        'Resources': {
-          'MyBucketF68F3FF0': {
-            'Type': 'AWS::S3::Bucket',
-            'DeletionPolicy': 'Retain',
-            'UpdateReplacePolicy': 'Retain',
-            'Properties': {
-              'BucketEncryption': {
-                'ServerSideEncryptionConfiguration': [
+        Resources: {
+          MyBucketF68F3FF0: {
+            Type: 'AWS::S3::Bucket',
+            DeletionPolicy: 'Retain',
+            UpdateReplacePolicy: 'Retain',
+            Properties: {
+              BucketEncryption: {
+                ServerSideEncryptionConfiguration: [
                   {
-                    'ServerSideEncryptionByDefault': {
-                      'SSEAlgorithm': 'AES256',
+                    ServerSideEncryptionByDefault: {
+                      SSEAlgorithm: 'AES256',
                     },
                   },
                 ],
               },
             },
           },
-          'MyBucketPolicyE7FBAC7B': {
-            'Type': 'AWS::S3::BucketPolicy',
-            'Properties': {
-              'Bucket': {
-                'Ref': 'MyBucketF68F3FF0',
+          MyBucketPolicyE7FBAC7B: {
+            Type: 'AWS::S3::BucketPolicy',
+            Properties: {
+              Bucket: {
+                Ref: 'MyBucketF68F3FF0',
               },
-              'PolicyDocument': {
-                'Statement': [
+              PolicyDocument: {
+                Statement: [
                   {
-                    'Action': 'bar:baz',
-                    'Effect': 'Allow',
-                    'Principal': { AWS: '*' },
-                    'Resource': 'foo',
+                    Action: 'bar:baz',
+                    Effect: 'Allow',
+                    Principal: { AWS: '*' },
+                    Resource: 'foo',
                   },
                 ],
-                'Version': '2012-10-17',
+                Version: '2012-10-17',
               },
             },
           },
@@ -1104,7 +1182,7 @@ describe('bucket', () => {
       });
     });
 
-    testDeprecated('forBucket returns a permission statement associated with an UNENCRYPTED bucket\'s ARN', () => {
+    testDeprecated("forBucket returns a permission statement associated with an UNENCRYPTED bucket's ARN", () => {
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
@@ -1123,7 +1201,7 @@ describe('bucket', () => {
       });
     });
 
-    test('forBucket returns a permission statement associated with an S3_MANAGED bucket\'s ARN', () => {
+    test("forBucket returns a permission statement associated with an S3_MANAGED bucket's ARN", () => {
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
@@ -1142,29 +1220,29 @@ describe('bucket', () => {
       });
     });
 
-    testDeprecated('arnForObjects returns a permission statement associated with objects in an UNENCRYPTED bucket', () => {
-      const stack = new cdk.Stack();
+    testDeprecated(
+      'arnForObjects returns a permission statement associated with objects in an UNENCRYPTED bucket',
+      () => {
+        const stack = new cdk.Stack();
 
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+        const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      const p = new iam.PolicyStatement({
-        resources: [bucket.arnForObjects('hello/world')],
-        actions: ['s3:GetObject'],
-        principals: [new iam.AnyPrincipal()],
-      });
+        const p = new iam.PolicyStatement({
+          resources: [bucket.arnForObjects('hello/world')],
+          actions: ['s3:GetObject'],
+          principals: [new iam.AnyPrincipal()],
+        });
 
-      expect(stack.resolve(p.toStatementJson())).toEqual({
-        Action: 's3:GetObject',
-        Effect: 'Allow',
-        Principal: { AWS: '*' },
-        Resource: {
-          'Fn::Join': [
-            '',
-            [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/hello/world'],
-          ],
-        },
-      });
-    });
+        expect(stack.resolve(p.toStatementJson())).toEqual({
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Principal: { AWS: '*' },
+          Resource: {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/hello/world']],
+          },
+        });
+      }
+    );
 
     test('arnForObjects returns a permission statement associated with objects in an S3_MANAGED bucket', () => {
       const stack = new cdk.Stack();
@@ -1182,16 +1260,12 @@ describe('bucket', () => {
         Effect: 'Allow',
         Principal: { AWS: '*' },
         Resource: {
-          'Fn::Join': [
-            '',
-            [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/hello/world'],
-          ],
+          'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/hello/world']],
         },
       });
     });
 
     testDeprecated('arnForObjects accepts multiple arguments and FnConcats them for an UNENCRYPTED bucket', () => {
-
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
@@ -1227,7 +1301,6 @@ describe('bucket', () => {
     });
 
     test('arnForObjects accepts multiple arguments and FnConcats them an S3_MANAGED bucket', () => {
-
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
@@ -1307,11 +1380,13 @@ describe('bucket', () => {
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn });
 
       // this is a no-op since the bucket is external
-      bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['foo'],
-        actions: ['bar:baz'],
-        principals: [new iam.AnyPrincipal()],
-      }));
+      bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: ['foo'],
+          actions: ['bar:baz'],
+          principals: [new iam.AnyPrincipal()],
+        })
+      );
 
       const p = new iam.PolicyStatement({
         resources: [bucket.bucketArn],
@@ -1336,11 +1411,13 @@ describe('bucket', () => {
     test('import does not create any resources', () => {
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
-      bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['*'],
-        principals: [new iam.AnyPrincipal()],
-      }));
+      bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['*'],
+          principals: [new iam.AnyPrincipal()],
+        })
+      );
 
       // at this point we technically didn't create any resources in the consuming stack.
       Template.fromStack(stack).templateMatches({});
@@ -1354,33 +1431,35 @@ describe('bucket', () => {
       // but now we can reference the bucket
       // you can even use the bucket name, which will be extracted from the arn provided.
       const user = new iam.User(stack, 'MyUser');
-      user.addToPolicy(new iam.PolicyStatement({
-        resources: [bucket.arnForObjects(`my/folder/${bucket.bucketName}`)],
-        actions: ['s3:*'],
-      }));
+      user.addToPolicy(
+        new iam.PolicyStatement({
+          resources: [bucket.arnForObjects(`my/folder/${bucket.bucketName}`)],
+          actions: ['s3:*'],
+        })
+      );
 
       Template.fromStack(stack).templateMatches({
-        'Resources': {
-          'MyUserDC45028B': {
-            'Type': 'AWS::IAM::User',
+        Resources: {
+          MyUserDC45028B: {
+            Type: 'AWS::IAM::User',
           },
-          'MyUserDefaultPolicy7B897426': {
-            'Type': 'AWS::IAM::Policy',
-            'Properties': {
-              'PolicyDocument': {
-                'Statement': [
+          MyUserDefaultPolicy7B897426: {
+            Type: 'AWS::IAM::Policy',
+            Properties: {
+              PolicyDocument: {
+                Statement: [
                   {
-                    'Action': 's3:*',
-                    'Effect': 'Allow',
-                    'Resource': 'arn:aws:s3:::my-bucket/my/folder/my-bucket',
+                    Action: 's3:*',
+                    Effect: 'Allow',
+                    Resource: 'arn:aws:s3:::my-bucket/my/folder/my-bucket',
                   },
                 ],
-                'Version': '2012-10-17',
+                Version: '2012-10-17',
               },
-              'PolicyName': 'MyUserDefaultPolicy7B897426',
-              'Users': [
+              PolicyName: 'MyUserDefaultPolicy7B897426',
+              Users: [
                 {
-                  'Ref': 'MyUserDC45028B',
+                  Ref: 'MyUserDC45028B',
                 },
               ],
             },
@@ -1458,9 +1537,11 @@ describe('bucket', () => {
         env: { region: 'us-east-1' },
       });
 
-      expect(() => s3.Bucket.fromBucketAttributes(stack, 'MyBucket3', {
-        bucketName: 'arn:aws:s3:::example-com',
-      })).toThrow();
+      expect(() =>
+        s3.Bucket.fromBucketAttributes(stack, 'MyBucket3', {
+          bucketName: 'arn:aws:s3:::example-com',
+        })
+      ).toThrow();
     });
   });
 
@@ -1507,22 +1588,18 @@ describe('bucket', () => {
       bucket.grantRead(role);
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              Resource: [
+                {
+                  'Fn::GetAtt': ['CfnBucket', 'Arn'],
+                },
+                {
+                  'Fn::Join': ['', [{ 'Fn::GetAtt': ['CfnBucket', 'Arn'] }, '/*']],
+                },
               ],
-              'Resource': [{
-                'Fn::GetAtt': ['CfnBucket', 'Arn'],
-              }, {
-                'Fn::Join': ['', [
-                  { 'Fn::GetAtt': ['CfnBucket', 'Arn'] },
-                  '/*',
-                ]],
-              }],
             },
           ],
         },
@@ -1566,27 +1643,19 @@ describe('bucket', () => {
     test('correctly fills the encryption key if the L1 references one', () => {
       const cfnKey = new kms.CfnKey(stack, 'CfnKey', {
         keyPolicy: {
-          'Statement': [
+          Statement: [
             {
-              'Action': [
-                'kms:*',
-              ],
-              'Effect': 'Allow',
-              'Principal': {
-                'AWS': {
-                  'Fn::Join': ['', [
-                    'arn:',
-                    { 'Ref': 'AWS::Partition' },
-                    ':iam::',
-                    { 'Ref': 'AWS::AccountId' },
-                    ':root',
-                  ]],
+              Action: ['kms:*'],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
                 },
               },
-              'Resource': '*',
+              Resource: '*',
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
       });
       cfnBucket = new s3.CfnBucket(stack, 'KmsEncryptedCfnBucket', {
@@ -1609,25 +1678,27 @@ describe('bucket', () => {
     test('allows importing a BucketPolicy that references a Bucket', () => {
       new s3.CfnBucketPolicy(stack, 'CfnBucketPolicy', {
         policyDocument: {
-          'Statement': [
+          Statement: [
             {
-              'Action': 's3:*',
-              'Effect': 'Allow',
-              'Principal': {
-                'AWS': '*',
+              Action: 's3:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: '*',
               },
-              'Resource': ['*'],
+              Resource: ['*'],
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
         bucket: cfnBucket.ref,
       });
-      bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['s3:*'],
-        principals: [new iam.AccountRootPrincipal()],
-      }));
+      bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['s3:*'],
+          principals: [new iam.AccountRootPrincipal()],
+        })
+      );
 
       Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 2);
     });
@@ -1639,38 +1710,28 @@ describe('bucket', () => {
     const bucket = new s3.Bucket(stack, 'MyBucket');
     bucket.grantRead(reader);
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'ReaderF7BF189D': {
-          'Type': 'AWS::IAM::User',
+      Resources: {
+        ReaderF7BF189D: {
+          Type: 'AWS::IAM::User',
         },
-        'ReaderDefaultPolicy151F3818': {
-          'Type': 'AWS::IAM::Policy',
-          'Properties': {
-            'PolicyDocument': {
-              'Statement': [
+        ReaderDefaultPolicy151F3818: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [
                 {
-                  'Action': [
-                    's3:GetObject*',
-                    's3:GetBucket*',
-                    's3:List*',
-                  ],
-                  'Effect': 'Allow',
-                  'Resource': [
+                  Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+                  Effect: 'Allow',
+                  Resource: [
                     {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                     },
                     {
                       'Fn::Join': [
                         '',
                         [
                           {
-                            'Fn::GetAtt': [
-                              'MyBucketF68F3FF0',
-                              'Arn',
-                            ],
+                            'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                           },
                           '/*',
                         ],
@@ -1679,20 +1740,20 @@ describe('bucket', () => {
                   ],
                 },
               ],
-              'Version': '2012-10-17',
+              Version: '2012-10-17',
             },
-            'PolicyName': 'ReaderDefaultPolicy151F3818',
-            'Users': [
+            PolicyName: 'ReaderDefaultPolicy151F3818',
+            Users: [
               {
-                'Ref': 'ReaderF7BF189D',
+                Ref: 'ReaderF7BF189D',
               },
             ],
           },
         },
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -1706,22 +1767,22 @@ describe('bucket', () => {
       bucket.grantReadWrite(user);
 
       Template.fromStack(stack).templateMatches({
-        'Resources': {
-          'MyBucketF68F3FF0': {
-            'Type': 'AWS::S3::Bucket',
-            'DeletionPolicy': 'Retain',
-            'UpdateReplacePolicy': 'Retain',
+        Resources: {
+          MyBucketF68F3FF0: {
+            Type: 'AWS::S3::Bucket',
+            DeletionPolicy: 'Retain',
+            UpdateReplacePolicy: 'Retain',
           },
-          'MyUserDC45028B': {
-            'Type': 'AWS::IAM::User',
+          MyUserDC45028B: {
+            Type: 'AWS::IAM::User',
           },
-          'MyUserDefaultPolicy7B897426': {
-            'Type': 'AWS::IAM::Policy',
-            'Properties': {
-              'PolicyDocument': {
-                'Statement': [
+          MyUserDefaultPolicy7B897426: {
+            Type: 'AWS::IAM::Policy',
+            Properties: {
+              PolicyDocument: {
+                Statement: [
                   {
-                    'Action': [
+                    Action: [
                       's3:GetObject*',
                       's3:GetBucket*',
                       's3:List*',
@@ -1733,23 +1794,17 @@ describe('bucket', () => {
                       's3:PutObjectVersionTagging',
                       's3:Abort*',
                     ],
-                    'Effect': 'Allow',
-                    'Resource': [
+                    Effect: 'Allow',
+                    Resource: [
                       {
-                        'Fn::GetAtt': [
-                          'MyBucketF68F3FF0',
-                          'Arn',
-                        ],
+                        'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                       },
                       {
                         'Fn::Join': [
                           '',
                           [
                             {
-                              'Fn::GetAtt': [
-                                'MyBucketF68F3FF0',
-                                'Arn',
-                              ],
+                              'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                             },
                             '/*',
                           ],
@@ -1758,12 +1813,12 @@ describe('bucket', () => {
                     ],
                   },
                 ],
-                'Version': '2012-10-17',
+                Version: '2012-10-17',
               },
-              'PolicyName': 'MyUserDefaultPolicy7B897426',
-              'Users': [
+              PolicyName: 'MyUserDefaultPolicy7B897426',
+              Users: [
                 {
-                  'Ref': 'MyUserDC45028B',
+                  Ref: 'MyUserDC45028B',
                 },
               ],
             },
@@ -1783,14 +1838,14 @@ describe('bucket', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         PolicyDocument: {
-          'Version': '2012-10-17',
-          'Statement': [
+          Version: '2012-10-17',
+          Statement: [
             {
-              'Action': ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-              'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
-              'Effect': 'Allow',
-              'Principal': { AWS: '*' },
-              'Resource': [
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              Condition: { StringEquals: { 'aws:PrincipalOrgID': 'o-1234' } },
+              Effect: 'Allow',
+              Principal: { AWS: '*' },
+              Resource: [
                 { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
                 { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']] },
               ],
@@ -1800,20 +1855,19 @@ describe('bucket', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-        'EnableKeyRotation': true,
-        'KeyPolicy': {
-          'Statement': Match.arrayWith([
+        EnableKeyRotation: true,
+        KeyPolicy: {
+          Statement: Match.arrayWith([
             {
-              'Action': ['kms:Decrypt', 'kms:DescribeKey'],
-              'Effect': 'Allow',
-              'Resource': '*',
-              'Principal': { AWS: '*' },
-              'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
+              Action: ['kms:Decrypt', 'kms:DescribeKey'],
+              Effect: 'Allow',
+              Resource: '*',
+              Principal: { AWS: '*' },
+              Condition: { StringEquals: { 'aws:PrincipalOrgID': 'o-1234' } },
             },
           ]),
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
-
       });
     });
 
@@ -1824,36 +1878,36 @@ describe('bucket', () => {
 
       bucket.grantReadWrite(user);
 
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
-        'PolicyDocument': {
-          'Statement': [
-            {
-              'Action': [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-                's3:DeleteObject*',
-                's3:PutObject',
-                's3:PutObjectLegalHold',
-                's3:PutObjectRetention',
-                's3:PutObjectTagging',
-                's3:PutObjectVersionTagging',
-                's3:Abort*',
-              ],
-              'Effect': 'Allow',
-              'Resource': [
-                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
-                {
-                  'Fn::Join': ['', [
-                    { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
-                    '/*',
-                  ]],
-                },
-              ],
-            },
-          ],
-        },
-      }));
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::IAM::Policy',
+        Match.objectLike({
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  's3:GetObject*',
+                  's3:GetBucket*',
+                  's3:List*',
+                  's3:DeleteObject*',
+                  's3:PutObject',
+                  's3:PutObjectLegalHold',
+                  's3:PutObjectRetention',
+                  's3:PutObjectTagging',
+                  's3:PutObjectVersionTagging',
+                  's3:Abort*',
+                ],
+                Effect: 'Allow',
+                Resource: [
+                  { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                  {
+                    'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']],
+                  },
+                ],
+              },
+            ],
+          },
+        })
+      );
     });
   });
 
@@ -1865,10 +1919,10 @@ describe('bucket', () => {
       bucket.grantWrite(user);
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': [
+              Action: [
                 's3:DeleteObject*',
                 's3:PutObject',
                 's3:PutObjectLegalHold',
@@ -1877,23 +1931,17 @@ describe('bucket', () => {
                 's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
-              'Effect': 'Allow',
-              'Resource': [
+              Effect: 'Allow',
+              Resource: [
                 {
-                  'Fn::GetAtt': [
-                    'MyBucketF68F3FF0',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                 },
                 {
                   'Fn::Join': [
                     '',
                     [
                       {
-                        'Fn::GetAtt': [
-                          'MyBucketF68F3FF0',
-                          'Arn',
-                        ],
+                        'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                       },
                       '/*',
                     ],
@@ -1902,27 +1950,19 @@ describe('bucket', () => {
               ],
             },
             {
-              'Action': [
-                'kms:Encrypt',
-                'kms:ReEncrypt*',
-                'kms:GenerateDataKey*',
-                'kms:Decrypt',
-              ],
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::GetAtt': [
-                  'MyBucketKeyC17130CF',
-                  'Arn',
-                ],
+              Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Decrypt'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyBucketKeyC17130CF', 'Arn'],
               },
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
-        'PolicyName': 'MyUserDefaultPolicy7B897426',
-        'Users': [
+        PolicyName: 'MyUserDefaultPolicy7B897426',
+        Users: [
           {
-            'Ref': 'MyUserDC45028B',
+            Ref: 'MyUserDC45028B',
           },
         ],
       });
@@ -1936,10 +1976,10 @@ describe('bucket', () => {
       bucket.grantWrite(user);
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': [
+              Action: [
                 's3:DeleteObject*',
                 's3:PutObject',
                 's3:PutObjectLegalHold',
@@ -1948,14 +1988,11 @@ describe('bucket', () => {
                 's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
-              'Effect': 'Allow',
-              'Resource': [
+              Effect: 'Allow',
+              Resource: [
                 { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
                 {
-                  'Fn::Join': ['', [
-                    { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
-                    '/*',
-                  ]],
+                  'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']],
                 },
               ],
             },
@@ -1972,21 +2009,15 @@ describe('bucket', () => {
       bucket.grantWrite(user, '*', ['s3:PutObject', 's3:DeleteObject*']);
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': [
-                's3:PutObject',
-                's3:DeleteObject*',
-              ],
-              'Effect': 'Allow',
-              'Resource': [
+              Action: ['s3:PutObject', 's3:DeleteObject*'],
+              Effect: 'Allow',
+              Resource: [
                 { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
                 {
-                  'Fn::Join': ['', [
-                    { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
-                    '/*',
-                  ]],
+                  'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']],
                 },
               ],
             },
@@ -2005,10 +2036,10 @@ describe('bucket', () => {
       bucket.grantPut(user);
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': [
+              Action: [
                 's3:PutObject',
                 's3:PutObjectLegalHold',
                 's3:PutObjectRetention',
@@ -2016,12 +2047,9 @@ describe('bucket', () => {
                 's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::Join': ['', [
-                  { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
-                  '/*',
-                ]],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']],
               },
             },
           ],
@@ -2062,7 +2090,6 @@ describe('bucket', () => {
       's3:Abort*',
     ]);
     expect(actions('DeleterDefaultPolicyCD33B8A0')).toEqual('s3:DeleteObject*');
-
   });
 
   test('grantDelete, with a KMS Key', () => {
@@ -2081,20 +2108,17 @@ describe('bucket', () => {
 
     // then
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 's3:DeleteObject*',
-            'Effect': 'Allow',
-            'Resource': {
+            Action: 's3:DeleteObject*',
+            Effect: 'Allow',
+            Resource: {
               'Fn::Join': [
                 '',
                 [
                   {
-                    'Fn::GetAtt': [
-                      'MyBucketF68F3FF0',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                   },
                   '/*',
                 ],
@@ -2102,7 +2126,7 @@ describe('bucket', () => {
             },
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
     });
   });
@@ -2118,46 +2142,39 @@ describe('bucket', () => {
       bucketFromStackA.grantRead(user);
 
       Template.fromStack(stackA).templateMatches({
-        'Resources': {
-          'MyBucketF68F3FF0': {
-            'Type': 'AWS::S3::Bucket',
-            'DeletionPolicy': 'Retain',
-            'UpdateReplacePolicy': 'Retain',
+        Resources: {
+          MyBucketF68F3FF0: {
+            Type: 'AWS::S3::Bucket',
+            DeletionPolicy: 'Retain',
+            UpdateReplacePolicy: 'Retain',
           },
         },
-        'Outputs': {
-          'ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58': {
-            'Value': {
-              'Fn::GetAtt': [
-                'MyBucketF68F3FF0',
-                'Arn',
-              ],
+        Outputs: {
+          ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58: {
+            Value: {
+              'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
             },
-            'Export': {
-              'Name': 'stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58',
+            Export: {
+              Name: 'stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58',
             },
           },
         },
       });
 
       Template.fromStack(stackB).templateMatches({
-        'Resources': {
-          'UserWhoNeedsAccessF8959C3D': {
-            'Type': 'AWS::IAM::User',
+        Resources: {
+          UserWhoNeedsAccessF8959C3D: {
+            Type: 'AWS::IAM::User',
           },
-          'UserWhoNeedsAccessDefaultPolicy6A9EB530': {
-            'Type': 'AWS::IAM::Policy',
-            'Properties': {
-              'PolicyDocument': {
-                'Statement': [
+          UserWhoNeedsAccessDefaultPolicy6A9EB530: {
+            Type: 'AWS::IAM::Policy',
+            Properties: {
+              PolicyDocument: {
+                Statement: [
                   {
-                    'Action': [
-                      's3:GetObject*',
-                      's3:GetBucket*',
-                      's3:List*',
-                    ],
-                    'Effect': 'Allow',
-                    'Resource': [
+                    Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+                    Effect: 'Allow',
+                    Resource: [
                       {
                         'Fn::ImportValue': 'stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58',
                       },
@@ -2175,12 +2192,12 @@ describe('bucket', () => {
                     ],
                   },
                 ],
-                'Version': '2012-10-17',
+                Version: '2012-10-17',
               },
-              'PolicyName': 'UserWhoNeedsAccessDefaultPolicy6A9EB530',
-              'Users': [
+              PolicyName: 'UserWhoNeedsAccessDefaultPolicy6A9EB530',
+              Users: [
                 {
-                  'Ref': 'UserWhoNeedsAccessF8959C3D',
+                  Ref: 'UserWhoNeedsAccessF8959C3D',
                 },
               ],
             },
@@ -2207,23 +2224,19 @@ describe('bucket', () => {
 
       // THEN
       Template.fromStack(stackA).hasResourceProperties('AWS::S3::BucketPolicy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             Match.objectLike({
-              'Action': [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-              ],
-              'Effect': 'Allow',
-              'Principal': {
-                'AWS': {
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
                   'Fn::Join': [
                     '',
                     [
                       'arn:',
                       {
-                        'Ref': 'AWS::Partition',
+                        Ref: 'AWS::Partition',
                       },
                       ':iam::234567890123:role/MyRolePhysicalName',
                     ],
@@ -2236,23 +2249,19 @@ describe('bucket', () => {
       });
 
       Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': [
-                's3:GetObject*',
-                's3:GetBucket*',
-                's3:List*',
-              ],
-              'Effect': 'Allow',
-              'Resource': [
+              Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+              Effect: 'Allow',
+              Resource: [
                 {
                   'Fn::Join': [
                     '',
                     [
                       'arn:',
                       {
-                        'Ref': 'AWS::Partition',
+                        Ref: 'AWS::Partition',
                       },
                       ':s3:::my-bucket-physical-name',
                     ],
@@ -2264,7 +2273,7 @@ describe('bucket', () => {
                     [
                       'arn:',
                       {
-                        'Ref': 'AWS::Partition',
+                        Ref: 'AWS::Partition',
                       },
                       ':s3:::my-bucket-physical-name/*',
                     ],
@@ -2298,22 +2307,19 @@ describe('bucket', () => {
 
       // THEN
       Template.fromStack(stackA).hasResourceProperties('AWS::KMS::Key', {
-        'KeyPolicy': {
-          'Statement': Match.arrayWith([
+        KeyPolicy: {
+          Statement: Match.arrayWith([
             Match.objectLike({
-              'Action': [
-                'kms:Decrypt',
-                'kms:DescribeKey',
-              ],
-              'Effect': 'Allow',
-              'Principal': {
-                'AWS': {
+              Action: ['kms:Decrypt', 'kms:DescribeKey'],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
                   'Fn::Join': [
                     '',
                     [
                       'arn:',
                       {
-                        'Ref': 'AWS::Partition',
+                        Ref: 'AWS::Partition',
                       },
                       ':iam::234567890123:role/MyRolePhysicalName',
                     ],
@@ -2326,15 +2332,12 @@ describe('bucket', () => {
       });
 
       Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([
+        PolicyDocument: {
+          Statement: Match.arrayWith([
             Match.objectLike({
-              'Action': [
-                'kms:Decrypt',
-                'kms:DescribeKey',
-              ],
-              'Effect': 'Allow',
-              'Resource': '*',
+              Action: ['kms:Decrypt', 'kms:DescribeKey'],
+              Effect: 'Allow',
+              Resource: '*',
             }),
           ]),
         },
@@ -2356,87 +2359,87 @@ describe('bucket', () => {
     new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.urlForObject() });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
-      'Outputs': {
-        'BucketURL': {
-          'Value': {
+      Outputs: {
+        BucketURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://s3.',
                 {
-                  'Ref': 'AWS::Region',
+                  Ref: 'AWS::Region',
                 },
                 '.',
                 {
-                  'Ref': 'AWS::URLSuffix',
+                  Ref: 'AWS::URLSuffix',
                 },
                 '/',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
               ],
             ],
           },
         },
-        'MyFileURL': {
-          'Value': {
+        MyFileURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://s3.',
                 {
-                  'Ref': 'AWS::Region',
+                  Ref: 'AWS::Region',
                 },
                 '.',
                 {
-                  'Ref': 'AWS::URLSuffix',
+                  Ref: 'AWS::URLSuffix',
                 },
                 '/',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '/my/file.txt',
               ],
             ],
           },
         },
-        'YourFileURL': {
-          'Value': {
+        YourFileURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://s3.',
                 {
-                  'Ref': 'AWS::Region',
+                  Ref: 'AWS::Region',
                 },
                 '.',
                 {
-                  'Ref': 'AWS::URLSuffix',
+                  Ref: 'AWS::URLSuffix',
                 },
                 '/',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '/your/file.txt',
               ],
             ],
           },
         },
-        'RegionBucketURL': {
-          'Value': {
+        RegionBucketURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://s3.us-west-2.',
                 {
-                  'Ref': 'AWS::URLSuffix',
+                  Ref: 'AWS::URLSuffix',
                 },
                 '/explicit-region-bucket',
               ],
@@ -2456,49 +2459,49 @@ describe('bucket', () => {
     new cdk.CfnOutput(stack, 'YourFileS3URL', { value: bucket.s3UrlForObject('/your/file.txt') }); // "/" is optional
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
-      'Outputs': {
-        'BucketS3URL': {
-          'Value': {
+      Outputs: {
+        BucketS3URL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 's3://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
               ],
             ],
           },
         },
-        'MyFileS3URL': {
-          'Value': {
+        MyFileS3URL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 's3://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '/my/file.txt',
               ],
             ],
           },
         },
-        'YourFileS3URL': {
-          'Value': {
+        YourFileS3URL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 's3://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '/your/file.txt',
               ],
@@ -2520,19 +2523,18 @@ describe('bucket', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': 's3:GetObject',
-              'Effect': 'Allow',
-              'Principal': { AWS: '*' },
-              'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
+              Action: 's3:GetObject',
+              Effect: 'Allow',
+              Principal: { AWS: '*' },
+              Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
       });
-
     });
 
     test('"keyPrefix" can be used to only grant access to certain objects', () => {
@@ -2545,19 +2547,18 @@ describe('bucket', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': 's3:GetObject',
-              'Effect': 'Allow',
-              'Principal': { AWS: '*' },
-              'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/only/access/these/*']] },
+              Action: 's3:GetObject',
+              Effect: 'Allow',
+              Principal: { AWS: '*' },
+              Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/only/access/these/*']] },
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
       });
-
     });
 
     test('"allowedActions" can be used to specify actions explicitly', () => {
@@ -2570,19 +2571,18 @@ describe('bucket', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': ['s3:GetObject', 's3:PutObject'],
-              'Effect': 'Allow',
-              'Principal': { AWS: '*' },
-              'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
+              Action: ['s3:GetObject', 's3:PutObject'],
+              Effect: 'Allow',
+              Principal: { AWS: '*' },
+              Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
       });
-
     });
 
     test('returns the PolicyStatement which can be then customized', () => {
@@ -2596,22 +2596,21 @@ describe('bucket', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-        'PolicyDocument': {
-          'Statement': [
+        PolicyDocument: {
+          Statement: [
             {
-              'Action': 's3:GetObject',
-              'Effect': 'Allow',
-              'Principal': { AWS: '*' },
-              'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
-              'Condition': {
-                'IpAddress': { 'aws:SourceIp': '54.240.143.0/24' },
+              Action: 's3:GetObject',
+              Effect: 'Allow',
+              Principal: { AWS: '*' },
+              Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
+              Condition: {
+                IpAddress: { 'aws:SourceIp': '54.240.143.0/24' },
               },
             },
           ],
-          'Version': '2012-10-17',
+          Version: '2012-10-17',
         },
       });
-
     });
 
     test('throws when blockPublicPolicy is set to true', () => {
@@ -2637,7 +2636,6 @@ describe('bucket', () => {
           IndexDocument: 'index2.html',
         },
       });
-
     });
     test('fails if only error doc is specified', () => {
       const stack = new cdk.Stack();
@@ -2646,7 +2644,6 @@ describe('bucket', () => {
           websiteErrorDocument: 'error.html',
         });
       }).toThrow(/"websiteIndexDocument" is required if "websiteErrorDocument" is set/);
-
     });
     test('error and index docs', () => {
       const stack = new cdk.Stack();
@@ -2660,7 +2657,6 @@ describe('bucket', () => {
           ErrorDocument: 'error.html',
         },
       });
-
     });
     test('exports the WebsiteURL', () => {
       const stack = new cdk.Stack();
@@ -2668,7 +2664,6 @@ describe('bucket', () => {
         websiteIndexDocument: 'index.html',
       });
       expect(stack.resolve(bucket.bucketWebsiteUrl)).toEqual({ 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
-
     });
     test('exports the WebsiteDomain', () => {
       const stack = new cdk.Stack();
@@ -2683,7 +2678,6 @@ describe('bucket', () => {
           },
         ],
       });
-
     });
     test('exports the WebsiteURL for imported buckets', () => {
       const stack = new cdk.Stack();
@@ -2694,11 +2688,7 @@ describe('bucket', () => {
           [
             'http://my-test-bucket.',
             {
-              'Fn::FindInMap': [
-                'S3staticwebsiteMap',
-                { Ref: 'AWS::Region' },
-                'endpoint',
-              ],
+              'Fn::FindInMap': ['S3staticwebsiteMap', { Ref: 'AWS::Region' }, 'endpoint'],
             },
           ],
         ],
@@ -2709,11 +2699,7 @@ describe('bucket', () => {
           [
             'my-test-bucket.',
             {
-              'Fn::FindInMap': [
-                'S3staticwebsiteMap',
-                { Ref: 'AWS::Region' },
-                'endpoint',
-              ],
+              'Fn::FindInMap': ['S3staticwebsiteMap', { Ref: 'AWS::Region' }, 'endpoint'],
             },
           ],
         ],
@@ -2727,7 +2713,6 @@ describe('bucket', () => {
       });
       expect(stack.resolve(bucket.bucketWebsiteUrl)).toEqual('http://my-test-bucket.my-test.suffix');
       expect(stack.resolve(bucket.bucketWebsiteDomainName)).toEqual('my-test-bucket.my-test.suffix');
-
     });
     test('adds RedirectAllRequestsTo property', () => {
       const stack = new cdk.Stack();
@@ -2745,7 +2730,6 @@ describe('bucket', () => {
           },
         },
       });
-
     });
     test('fails if websiteRedirect and websiteIndex and websiteError are specified', () => {
       const stack = new cdk.Stack();
@@ -2757,8 +2741,9 @@ describe('bucket', () => {
             hostName: 'www.example.com',
           },
         });
-      }).toThrow(/"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
-
+      }).toThrow(
+        /"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/
+      );
     });
     test('fails if websiteRedirect and websiteRoutingRules are specified', () => {
       const stack = new cdk.Stack();
@@ -2769,84 +2754,92 @@ describe('bucket', () => {
             hostName: 'www.example.com',
           },
         });
-      }).toThrow(/"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
-
+      }).toThrow(
+        /"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/
+      );
     });
     test('adds RedirectRules property', () => {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'Website', {
-        websiteRoutingRules: [{
-          hostName: 'www.example.com',
-          httpRedirectCode: '302',
-          protocol: s3.RedirectProtocol.HTTPS,
-          replaceKey: s3.ReplaceKey.prefixWith('test/'),
-          condition: {
-            httpErrorCodeReturnedEquals: '200',
-            keyPrefixEquals: 'prefix',
+        websiteRoutingRules: [
+          {
+            hostName: 'www.example.com',
+            httpRedirectCode: '302',
+            protocol: s3.RedirectProtocol.HTTPS,
+            replaceKey: s3.ReplaceKey.prefixWith('test/'),
+            condition: {
+              httpErrorCodeReturnedEquals: '200',
+              keyPrefixEquals: 'prefix',
+            },
           },
-        }],
+        ],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         WebsiteConfiguration: {
-          RoutingRules: [{
-            RedirectRule: {
-              HostName: 'www.example.com',
-              HttpRedirectCode: '302',
-              Protocol: 'https',
-              ReplaceKeyPrefixWith: 'test/',
+          RoutingRules: [
+            {
+              RedirectRule: {
+                HostName: 'www.example.com',
+                HttpRedirectCode: '302',
+                Protocol: 'https',
+                ReplaceKeyPrefixWith: 'test/',
+              },
+              RoutingRuleCondition: {
+                HttpErrorCodeReturnedEquals: '200',
+                KeyPrefixEquals: 'prefix',
+              },
             },
-            RoutingRuleCondition: {
-              HttpErrorCodeReturnedEquals: '200',
-              KeyPrefixEquals: 'prefix',
-            },
-          }],
+          ],
         },
       });
-
     });
     test('adds RedirectRules property with empty keyPrefixEquals condition', () => {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'Website', {
-        websiteRoutingRules: [{
-          hostName: 'www.example.com',
-          httpRedirectCode: '302',
-          protocol: s3.RedirectProtocol.HTTPS,
-          replaceKey: s3.ReplaceKey.prefixWith('test/'),
-          condition: {
-            httpErrorCodeReturnedEquals: '200',
-            keyPrefixEquals: '',
+        websiteRoutingRules: [
+          {
+            hostName: 'www.example.com',
+            httpRedirectCode: '302',
+            protocol: s3.RedirectProtocol.HTTPS,
+            replaceKey: s3.ReplaceKey.prefixWith('test/'),
+            condition: {
+              httpErrorCodeReturnedEquals: '200',
+              keyPrefixEquals: '',
+            },
           },
-        }],
+        ],
       });
       Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         WebsiteConfiguration: {
-          RoutingRules: [{
-            RedirectRule: {
-              HostName: 'www.example.com',
-              HttpRedirectCode: '302',
-              Protocol: 'https',
-              ReplaceKeyPrefixWith: 'test/',
+          RoutingRules: [
+            {
+              RedirectRule: {
+                HostName: 'www.example.com',
+                HttpRedirectCode: '302',
+                Protocol: 'https',
+                ReplaceKeyPrefixWith: 'test/',
+              },
+              RoutingRuleCondition: {
+                HttpErrorCodeReturnedEquals: '200',
+                KeyPrefixEquals: '',
+              },
             },
-            RoutingRuleCondition: {
-              HttpErrorCodeReturnedEquals: '200',
-              KeyPrefixEquals: '',
-            },
-          }],
+          ],
         },
       });
-
     });
     test('fails if routingRule condition object is empty', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new s3.Bucket(stack, 'Website', {
-          websiteRoutingRules: [{
-            httpRedirectCode: '303',
-            condition: {},
-          }],
+          websiteRoutingRules: [
+            {
+              httpRedirectCode: '303',
+              condition: {},
+            },
+          ],
         });
       }).toThrow(/The condition property cannot be an empty object/);
-
     });
     describe('isWebsite set properly with', () => {
       test('only index doc', () => {
@@ -2855,7 +2848,6 @@ describe('bucket', () => {
           websiteIndexDocument: 'index2.html',
         });
         expect(bucket.isWebsite).toEqual(true);
-
       });
       test('error and index docs', () => {
         const stack = new cdk.Stack();
@@ -2864,7 +2856,6 @@ describe('bucket', () => {
           websiteErrorDocument: 'error.html',
         });
         expect(bucket.isWebsite).toEqual(true);
-
       });
       test('redirects', () => {
         const stack = new cdk.Stack();
@@ -2875,13 +2866,11 @@ describe('bucket', () => {
           },
         });
         expect(bucket.isWebsite).toEqual(true);
-
       });
       test('no website properties set', () => {
         const stack = new cdk.Stack();
         const bucket = new s3.Bucket(stack, 'Website');
         expect(bucket.isWebsite).toEqual(false);
-
       });
       test('imported website buckets', () => {
         const stack = new cdk.Stack();
@@ -2890,7 +2879,6 @@ describe('bucket', () => {
           isWebsite: true,
         });
         expect(bucket.isWebsite).toEqual(true);
-
       });
       test('imported buckets', () => {
         const stack = new cdk.Stack();
@@ -2898,7 +2886,6 @@ describe('bucket', () => {
           bucketArn: 'arn:aws:s3:::my-bucket',
         });
         expect(bucket.isWebsite).toEqual(false);
-
       });
     });
   });
@@ -2913,7 +2900,6 @@ describe('bucket', () => {
     // THEN
     expect(bucket.bucketName).toEqual('my-corporate-bucket');
     expect(bucket.bucketArn).toEqual('arn:aws:s3:::my-corporate-bucket');
-
   });
 
   test('Bucket.fromBucketName', () => {
@@ -2938,17 +2924,14 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket', { encryptionKey: key });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      'BucketEncryption': {
-        'ServerSideEncryptionConfiguration': [
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
           {
-            'ServerSideEncryptionByDefault': {
-              'KMSMasterKeyID': {
-                'Fn::GetAtt': [
-                  'MyKey6AB29FA6',
-                  'Arn',
-                ],
+            ServerSideEncryptionByDefault: {
+              KMSMasterKeyID: {
+                'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
               },
-              'SSEAlgorithm': 'aws:kms',
+              SSEAlgorithm: 'aws:kms',
             },
           },
         ],
@@ -3094,12 +3077,13 @@ describe('bucket', () => {
     const accessLogBucket = new s3.Bucket(stack, 'AccessLogs', {
       accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
     });
-    expect(() =>
-      new s3.Bucket(stack, 'MyBucket', {
-        serverAccessLogsBucket: accessLogBucket,
-        serverAccessLogsPrefix: 'hello',
-        accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
-      }),
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket', {
+          serverAccessLogsBucket: accessLogBucket,
+          serverAccessLogsPrefix: 'hello',
+          accessControl: s3.BucketAccessControl.AUTHENTICATED_READ,
+        })
     ).toThrow(/Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed/);
   });
 
@@ -3125,7 +3109,10 @@ describe('bucket', () => {
     template.allResourcesProperties('AWS::S3::Bucket', {
       AccessControl: Match.absent(),
     });
-    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('Unable to add necessary logging permissions to imported target bucket'));
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp('Unable to add necessary logging permissions to imported target bucket')
+    );
   });
 
   test('Bucket Allow Log delivery should use the recommended policy when flag enabled', () => {
@@ -3144,20 +3131,22 @@ describe('bucket', () => {
     template.hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: stack.resolve(bucket.bucketName),
       PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([Match.objectLike({
-          Effect: 'Allow',
-          Principal: { Service: 'logging.s3.amazonaws.com' },
-          Action: 's3:PutObject',
-          Resource: stack.resolve(`${bucket.bucketArn}/test*`),
-          Condition: {
-            ArnLike: {
-              'aws:SourceArn': stack.resolve(bucket.bucketArn),
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: { Service: 'logging.s3.amazonaws.com' },
+            Action: 's3:PutObject',
+            Resource: stack.resolve(`${bucket.bucketArn}/test*`),
+            Condition: {
+              ArnLike: {
+                'aws:SourceArn': stack.resolve(bucket.bucketArn),
+              },
+              StringEquals: {
+                'aws:SourceAccount': { Ref: 'AWS::AccountId' },
+              },
             },
-            StringEquals: {
-              'aws:SourceAccount': { 'Ref': 'AWS::AccountId' },
-            },
-          },
-        })]),
+          }),
+        ]),
       }),
     });
   });
@@ -3175,20 +3164,22 @@ describe('bucket', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: stack.resolve(targetBucket.bucketName),
       PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([Match.objectLike({
-          Effect: 'Allow',
-          Principal: { Service: 'logging.s3.amazonaws.com' },
-          Action: 's3:PutObject',
-          Resource: stack.resolve(`${targetBucket.bucketArn}/*`),
-          Condition: {
-            ArnLike: {
-              'aws:SourceArn': stack.resolve(sourceBucket.bucketArn),
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: { Service: 'logging.s3.amazonaws.com' },
+            Action: 's3:PutObject',
+            Resource: stack.resolve(`${targetBucket.bucketArn}/*`),
+            Condition: {
+              ArnLike: {
+                'aws:SourceArn': stack.resolve(sourceBucket.bucketArn),
+              },
+              StringEquals: {
+                'aws:SourceAccount': stack.resolve(sourceBucket.env.account),
+              },
             },
-            StringEquals: {
-              'aws:SourceAccount': stack.resolve(sourceBucket.env.account),
-            },
-          },
-        })]),
+          }),
+        ]),
       }),
     });
   });
@@ -3304,18 +3295,20 @@ describe('bucket', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: { Ref: 'InventoryBucketA869B8CB' },
       PolicyDocument: {
-        Statement: Match.arrayWith([Match.objectLike({
-          Action: 's3:PutObject',
-          Principal: { Service: 's3.amazonaws.com' },
-          Resource: [
-            {
-              'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
-            },
-            {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] }, '/*']],
-            },
-          ],
-        })]),
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 's3:PutObject',
+            Principal: { Service: 's3.amazonaws.com' },
+            Resource: [
+              {
+                'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
+              },
+              {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] }, '/*']],
+              },
+            ],
+          }),
+        ]),
       },
     });
   });
@@ -3360,7 +3353,9 @@ describe('bucket', () => {
       ],
     });
 
-    expect(() => Template.fromStack(stack)).toThrow(/inventoryId should not exceed 64 characters and should not contain special characters except . and -, got InvalidId&123/);
+    expect(() => Template.fromStack(stack)).toThrow(
+      /inventoryId should not exceed 64 characters and should not contain special characters except . and -, got InvalidId&123/
+    );
   });
 
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
@@ -3369,20 +3364,20 @@ describe('bucket', () => {
       objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
     });
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'OwnershipControls': {
-              'Rules': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            OwnershipControls: {
+              Rules: [
                 {
-                  'ObjectOwnership': 'BucketOwnerEnforced',
+                  ObjectOwnership: 'BucketOwnerEnforced',
                 },
               ],
             },
           },
-          'UpdateReplacePolicy': 'Retain',
-          'DeletionPolicy': 'Retain',
+          UpdateReplacePolicy: 'Retain',
+          DeletionPolicy: 'Retain',
         },
       },
     });
@@ -3394,20 +3389,20 @@ describe('bucket', () => {
       objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'OwnershipControls': {
-              'Rules': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            OwnershipControls: {
+              Rules: [
                 {
-                  'ObjectOwnership': 'BucketOwnerPreferred',
+                  ObjectOwnership: 'BucketOwnerPreferred',
                 },
               ],
             },
           },
-          'UpdateReplacePolicy': 'Retain',
-          'DeletionPolicy': 'Retain',
+          UpdateReplacePolicy: 'Retain',
+          DeletionPolicy: 'Retain',
         },
       },
     });
@@ -3419,20 +3414,20 @@ describe('bucket', () => {
       objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
     });
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'OwnershipControls': {
-              'Rules': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            OwnershipControls: {
+              Rules: [
                 {
-                  'ObjectOwnership': 'ObjectWriter',
+                  ObjectOwnership: 'ObjectWriter',
                 },
               ],
             },
           },
-          'UpdateReplacePolicy': 'Retain',
-          'DeletionPolicy': 'Retain',
+          UpdateReplacePolicy: 'Retain',
+          DeletionPolicy: 'Retain',
         },
       },
     });
@@ -3444,11 +3439,11 @@ describe('bucket', () => {
       objectOwnership: undefined,
     });
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'UpdateReplacePolicy': 'Retain',
-          'DeletionPolicy': 'Retain',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          UpdateReplacePolicy: 'Retain',
+          DeletionPolicy: 'Retain',
         },
       },
     });
@@ -3471,40 +3466,26 @@ describe('bucket', () => {
       Bucket: {
         Ref: 'MyBucketF68F3FF0',
       },
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': [
-              's3:PutBucketPolicy',
-              's3:GetBucket*',
-              's3:List*',
-              's3:DeleteObject*',
-            ],
-            'Effect': 'Allow',
-            'Principal': {
-              'AWS': {
-                'Fn::GetAtt': [
-                  'CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092',
-                  'Arn',
-                ],
+            Action: ['s3:PutBucketPolicy', 's3:GetBucket*', 's3:List*', 's3:DeleteObject*'],
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::GetAtt': ['CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092', 'Arn'],
               },
             },
-            'Resource': [
+            Resource: [
               {
-                'Fn::GetAtt': [
-                  'MyBucketF68F3FF0',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
                     },
                     '/*',
                   ],
@@ -3513,25 +3494,20 @@ describe('bucket', () => {
             ],
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
     });
 
     Template.fromStack(stack).hasResource('Custom::S3AutoDeleteObjects', {
-      'Properties': {
-        'ServiceToken': {
-          'Fn::GetAtt': [
-            'CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F',
-            'Arn',
-          ],
+      Properties: {
+        ServiceToken: {
+          'Fn::GetAtt': ['CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F', 'Arn'],
         },
-        'BucketName': {
-          'Ref': 'MyBucketF68F3FF0',
+        BucketName: {
+          Ref: 'MyBucketF68F3FF0',
         },
       },
-      'DependsOn': [
-        'MyBucketPolicyE7FBAC7B',
-      ],
+      DependsOn: ['MyBucketPolicyE7FBAC7B'],
     });
   });
 
@@ -3554,9 +3530,12 @@ describe('bucket', () => {
   test('autoDeleteObjects throws if RemovalPolicy is not DESTROY', () => {
     const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'MyBucket', {
-      autoDeleteObjects: true,
-    })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
+    expect(
+      () =>
+        new s3.Bucket(stack, 'MyBucket', {
+          autoDeleteObjects: true,
+        })
+    ).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
   });
 
   test('bucket with transfer acceleration turned on', () => {
@@ -3566,16 +3545,16 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'AccelerateConfiguration': {
-              'AccelerationStatus': 'Enabled',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            AccelerateConfiguration: {
+              AccelerationStatus: 'Enabled',
             },
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -3595,58 +3574,58 @@ describe('bucket', () => {
     new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.transferAccelerationUrlForObject() });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
-      'Outputs': {
-        'BucketURL': {
-          'Value': {
+      Outputs: {
+        BucketURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '.s3-accelerate.amazonaws.com/',
               ],
             ],
           },
         },
-        'MyFileURL': {
-          'Value': {
+        MyFileURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '.s3-accelerate.amazonaws.com/my/file.txt',
               ],
             ],
           },
         },
-        'YourFileURL': {
-          'Value': {
+        YourFileURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '.s3-accelerate.amazonaws.com/your/file.txt',
               ],
             ],
           },
         },
-        'RegionBucketURL': {
-          'Value': 'https://explicit-region-bucket.s3-accelerate.amazonaws.com/',
+        RegionBucketURL: {
+          Value: 'https://explicit-region-bucket.s3-accelerate.amazonaws.com/',
         },
       },
     });
@@ -3660,64 +3639,72 @@ describe('bucket', () => {
       region: 'us-west-2',
     });
 
-    new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.transferAccelerationUrlForObject(undefined, { dualStack: true }) });
-    new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.transferAccelerationUrlForObject('my/file.txt', { dualStack: true }) });
-    new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.transferAccelerationUrlForObject('/your/file.txt', { dualStack: true }) }); // "/" is optional
-    new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.transferAccelerationUrlForObject(undefined, { dualStack: true }) });
+    new cdk.CfnOutput(stack, 'BucketURL', {
+      value: bucket.transferAccelerationUrlForObject(undefined, { dualStack: true }),
+    });
+    new cdk.CfnOutput(stack, 'MyFileURL', {
+      value: bucket.transferAccelerationUrlForObject('my/file.txt', { dualStack: true }),
+    });
+    new cdk.CfnOutput(stack, 'YourFileURL', {
+      value: bucket.transferAccelerationUrlForObject('/your/file.txt', { dualStack: true }),
+    }); // "/" is optional
+    new cdk.CfnOutput(stack, 'RegionBucketURL', {
+      value: bucketWithRegion.transferAccelerationUrlForObject(undefined, { dualStack: true }),
+    });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
-      'Outputs': {
-        'BucketURL': {
-          'Value': {
+      Outputs: {
+        BucketURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '.s3-accelerate.dualstack.amazonaws.com/',
               ],
             ],
           },
         },
-        'MyFileURL': {
-          'Value': {
+        MyFileURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '.s3-accelerate.dualstack.amazonaws.com/my/file.txt',
               ],
             ],
           },
         },
-        'YourFileURL': {
-          'Value': {
+        YourFileURL: {
+          Value: {
             'Fn::Join': [
               '',
               [
                 'https://',
                 {
-                  'Ref': 'MyBucketF68F3FF0',
+                  Ref: 'MyBucketF68F3FF0',
                 },
                 '.s3-accelerate.dualstack.amazonaws.com/your/file.txt',
               ],
             ],
           },
         },
-        'RegionBucketURL': {
-          'Value': 'https://explicit-region-bucket.s3-accelerate.dualstack.amazonaws.com/',
+        RegionBucketURL: {
+          Value: 'https://explicit-region-bucket.s3-accelerate.dualstack.amazonaws.com/',
         },
       },
     });
@@ -3726,26 +3713,28 @@ describe('bucket', () => {
   test('bucket with intelligent tiering turned on', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      intelligentTieringConfigurations: [{
-        name: 'foo',
-      }],
+      intelligentTieringConfigurations: [
+        {
+          name: 'foo',
+        },
+      ],
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'IntelligentTieringConfigurations': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            IntelligentTieringConfigurations: [
               {
-                'Id': 'foo',
-                'Status': 'Enabled',
-                'Tierings': [],
+                Id: 'foo',
+                Status: 'Enabled',
+                Tierings: [],
               },
             ],
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -3754,30 +3743,34 @@ describe('bucket', () => {
   test('bucket with intelligent tiering turned on with archive access', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      intelligentTieringConfigurations: [{
-        name: 'foo',
-        archiveAccessTierTime: cdk.Duration.days(90),
-      }],
+      intelligentTieringConfigurations: [
+        {
+          name: 'foo',
+          archiveAccessTierTime: cdk.Duration.days(90),
+        },
+      ],
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'IntelligentTieringConfigurations': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            IntelligentTieringConfigurations: [
               {
-                'Id': 'foo',
-                'Status': 'Enabled',
-                'Tierings': [{
-                  'AccessTier': 'ARCHIVE_ACCESS',
-                  'Days': 90,
-                }],
+                Id: 'foo',
+                Status: 'Enabled',
+                Tierings: [
+                  {
+                    AccessTier: 'ARCHIVE_ACCESS',
+                    Days: 90,
+                  },
+                ],
               },
             ],
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -3786,30 +3779,34 @@ describe('bucket', () => {
   test('bucket with intelligent tiering turned on with deep archive access', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      intelligentTieringConfigurations: [{
-        name: 'foo',
-        deepArchiveAccessTierTime: cdk.Duration.days(180),
-      }],
+      intelligentTieringConfigurations: [
+        {
+          name: 'foo',
+          deepArchiveAccessTierTime: cdk.Duration.days(180),
+        },
+      ],
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'IntelligentTieringConfigurations': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            IntelligentTieringConfigurations: [
               {
-                'Id': 'foo',
-                'Status': 'Enabled',
-                'Tierings': [{
-                  'AccessTier': 'DEEP_ARCHIVE_ACCESS',
-                  'Days': 180,
-                }],
+                Id: 'foo',
+                Status: 'Enabled',
+                Tierings: [
+                  {
+                    AccessTier: 'DEEP_ARCHIVE_ACCESS',
+                    Days: 180,
+                  },
+                ],
               },
             ],
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -3818,44 +3815,48 @@ describe('bucket', () => {
   test('bucket with intelligent tiering turned on with all properties', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      intelligentTieringConfigurations: [{
-        name: 'foo',
-        prefix: 'bar',
-        archiveAccessTierTime: cdk.Duration.days(90),
-        deepArchiveAccessTierTime: cdk.Duration.days(180),
-        tags: [{ key: 'test', value: 'bazz' }],
-      }],
+      intelligentTieringConfigurations: [
+        {
+          name: 'foo',
+          prefix: 'bar',
+          archiveAccessTierTime: cdk.Duration.days(90),
+          deepArchiveAccessTierTime: cdk.Duration.days(180),
+          tags: [{ key: 'test', value: 'bazz' }],
+        },
+      ],
     });
 
     Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'IntelligentTieringConfigurations': [
+      Resources: {
+        MyBucketF68F3FF0: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            IntelligentTieringConfigurations: [
               {
-                'Id': 'foo',
-                'Prefix': 'bar',
-                'Status': 'Enabled',
-                'TagFilters': [
+                Id: 'foo',
+                Prefix: 'bar',
+                Status: 'Enabled',
+                TagFilters: [
                   {
-                    'Key': 'test',
-                    'Value': 'bazz',
+                    Key: 'test',
+                    Value: 'bazz',
                   },
                 ],
-                'Tierings': [{
-                  'AccessTier': 'ARCHIVE_ACCESS',
-                  'Days': 90,
-                },
-                {
-                  'AccessTier': 'DEEP_ARCHIVE_ACCESS',
-                  'Days': 180,
-                }],
+                Tierings: [
+                  {
+                    AccessTier: 'ARCHIVE_ACCESS',
+                    Days: 90,
+                  },
+                  {
+                    AccessTier: 'DEEP_ARCHIVE_ACCESS',
+                    Days: 180,
+                  },
+                ],
               },
             ],
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
         },
       },
     });
@@ -3890,9 +3891,11 @@ describe('bucket', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         TransitionDefaultMinimumObjectSize: value,
-        Rules: [{
-          ExpirationInDays: 365,
-        }],
+        Rules: [
+          {
+            ExpirationInDays: 365,
+          },
+        ],
       },
     });
   });

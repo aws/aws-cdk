@@ -101,8 +101,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
     if (!this.authorizer) {
       const responseTypes = this.props.responseTypes ?? [HttpLambdaResponseType.IAM];
-      const enableSimpleResponses =
-        responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
+      const enableSimpleResponses = responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
 
       this.httpApi = options.route.httpApi;
       this.authorizer = new HttpAuthorizer(options.scope, this.id, {

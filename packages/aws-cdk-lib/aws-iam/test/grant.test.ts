@@ -44,9 +44,11 @@ describe('Grant dependencies', () => {
     });
 
     // WHEN
-    applyGrantWithDependencyTo(new iam.PrincipalWithConditions(role, {
-      StringEquals: { 'aws:something': 'happy' },
-    }));
+    applyGrantWithDependencyTo(
+      new iam.PrincipalWithConditions(role, {
+        StringEquals: { 'aws:something': 'happy' },
+      })
+    );
 
     // THEN
     expectDependencyOn('RoleDefaultPolicy5FFB7DAB');
@@ -119,7 +121,7 @@ describe('Grant dependencies', () => {
       resourceArns: ['*'],
     });
 
-    (g1.combine(g2)).applyBefore(resource);
+    g1.combine(g2).applyBefore(resource);
 
     // THEN
     expectDependencyOn('Role1DefaultPolicyD3EF4D0A');

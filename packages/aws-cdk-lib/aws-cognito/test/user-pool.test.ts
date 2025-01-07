@@ -5,7 +5,20 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan } from '../lib';
+import {
+  AccountRecovery,
+  Mfa,
+  NumberAttribute,
+  StringAttribute,
+  UserPool,
+  UserPoolIdentityProvider,
+  UserPoolOperation,
+  VerificationEmailStyle,
+  UserPoolEmail,
+  AdvancedSecurityMode,
+  LambdaVersion,
+  FeaturePlan,
+} from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -81,134 +94,180 @@ describe('User Pool', () => {
       },
     });
   }),
+    test('mfa authentication message is configured correctly', () => {
+      // GIVEN
+      const stack = new Stack();
+      const message = 'The authentication code to your account is {####}';
 
-  test('mfa authentication message is configured correctly', () => {
-    // GIVEN
-    const stack = new Stack();
-    const message = 'The authentication code to your account is {####}';
+      // WHEN
+      new UserPool(stack, 'Pool', {
+        mfaMessage: message,
+      });
 
-    // WHEN
-    new UserPool(stack, 'Pool', {
-      mfaMessage: message,
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+        SmsAuthenticationMessage: message,
+      });
+    }),
+    test('mfa authentication message is validated', () => {
+      const stack = new Stack();
+
+      expect(
+        () =>
+          new UserPool(stack, 'Pool1', {
+            mfaMessage: '{####',
+          })
+      ).toThrow(/MFA message must contain the template string/);
+
+      expect(
+        () =>
+          new UserPool(stack, 'Pool2', {
+            mfaMessage: '{####}',
+          })
+      ).not.toThrow();
+
+      expect(
+        () =>
+          new UserPool(stack, 'Pool3', {
+            mfaMessage: `{####}${'x'.repeat(135)}`,
+          })
+      ).toThrow(/MFA message must be between 6 and 140 characters/);
+
+      expect(
+        () =>
+          new UserPool(stack, 'Pool4', {
+            mfaMessage: `{####}${'x'.repeat(134)}`,
+          })
+      ).not.toThrow();
+
+      // Validation is skipped for tokens.
+      const parameter = new CfnParameter(stack, 'Parameter');
+
+      expect(
+        () =>
+          new UserPool(stack, 'Pool5', {
+            mfaMessage: parameter.valueAsString,
+          })
+      ).not.toThrow();
     });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-      SmsAuthenticationMessage: message,
-    });
-  }),
-
-  test('mfa authentication message is validated', () => {
-    const stack = new Stack();
-
-    expect(() => new UserPool(stack, 'Pool1', {
-      mfaMessage: '{####',
-    })).toThrow(/MFA message must contain the template string/);
-
-    expect(() => new UserPool(stack, 'Pool2', {
-      mfaMessage: '{####}',
-    })).not.toThrow();
-
-    expect(() => new UserPool(stack, 'Pool3', {
-      mfaMessage: `{####}${'x'.repeat(135)}`,
-    })).toThrow(/MFA message must be between 6 and 140 characters/);
-
-    expect(() => new UserPool(stack, 'Pool4', {
-      mfaMessage: `{####}${'x'.repeat(134)}`,
-    })).not.toThrow();
-
-    // Validation is skipped for tokens.
-    const parameter = new CfnParameter(stack, 'Parameter');
-
-    expect(() => new UserPool(stack, 'Pool5', {
-      mfaMessage: parameter.valueAsString,
-    })).not.toThrow();
-  });
 
   test('email and sms verification messages are validated', () => {
     const stack = new Stack();
 
-    expect(() => new UserPool(stack, 'Pool1', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.CODE,
-        emailBody: 'invalid email body',
-      },
-    })).toThrow(/Verification email body/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool1', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.CODE,
+            emailBody: 'invalid email body',
+          },
+        })
+    ).toThrow(/Verification email body/);
 
-    expect(() => new UserPool(stack, 'Pool2', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.CODE,
-        emailBody: 'valid email body {####}',
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool2', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.CODE,
+            emailBody: 'valid email body {####}',
+          },
+        })
+    ).not.toThrow();
 
-    expect(() => new UserPool(stack, 'Pool3', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.CODE,
-        smsMessage: 'invalid sms message',
-      },
-    })).toThrow(/SMS message/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool3', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.CODE,
+            smsMessage: 'invalid sms message',
+          },
+        })
+    ).toThrow(/SMS message/);
 
-    expect(() => new UserPool(stack, 'Pool4', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.CODE,
-        smsMessage: 'invalid sms message {####}',
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool4', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.CODE,
+            smsMessage: 'invalid sms message {####}',
+          },
+        })
+    ).not.toThrow();
 
-    expect(() => new UserPool(stack, 'Pool5', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'valid email body {####}',
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool5', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.LINK,
+            emailBody: 'valid email body {####}',
+          },
+        })
+    ).not.toThrow();
 
-    expect(() => new UserPool(stack, 'Pool6', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'valid email body {##Verify Email##}',
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool6', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.LINK,
+            emailBody: 'valid email body {##Verify Email##}',
+          },
+        })
+    ).not.toThrow();
 
-    expect(() => new UserPool(stack, 'Pool7', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'invalid email body ##Verify Email##',
-      },
-    })).toThrow(/Verification email body/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool7', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.LINK,
+            emailBody: 'invalid email body ##Verify Email##',
+          },
+        })
+    ).toThrow(/Verification email body/);
 
-    expect(() => new UserPool(stack, 'Pool8', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'valid email body {##Verify !! Email##}',
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool8', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.LINK,
+            emailBody: 'valid email body {##Verify !! Email##}',
+          },
+        })
+    ).not.toThrow();
 
-    expect(() => new UserPool(stack, 'Pool9', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'valid email body {##Click here to verify##}',
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool9', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.LINK,
+            emailBody: 'valid email body {##Click here to verify##}',
+          },
+        })
+    ).not.toThrow();
   });
 
   test('validation is skipped for email and sms messages when tokens', () => {
     const stack = new Stack();
     const parameter = new CfnParameter(stack, 'Parameter');
 
-    expect(() => new UserPool(stack, 'Pool1', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.CODE,
-        emailBody: parameter.valueAsString,
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool1', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.CODE,
+            emailBody: parameter.valueAsString,
+          },
+        })
+    ).not.toThrow();
 
-    expect(() => new UserPool(stack, 'Pool2', {
-      userVerification: {
-        emailStyle: VerificationEmailStyle.CODE,
-        smsMessage: parameter.valueAsString,
-      },
-    })).not.toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool2', {
+          userVerification: {
+            emailStyle: VerificationEmailStyle.CODE,
+            smsMessage: parameter.valueAsString,
+          },
+        })
+    ).not.toThrow();
   });
 
   test('user invitation messages are configured correctly', () => {
@@ -299,10 +358,12 @@ describe('User Pool', () => {
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
-    expect(stack.resolve(pool.userPoolProviderName)).toEqual(
-      { 'Fn::Join': ['', ['cognito-idp.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/test-user-pool']] },
+    expect(stack.resolve(pool.userPoolArn)).toEqual(
+      'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool'
     );
+    expect(stack.resolve(pool.userPoolProviderName)).toEqual({
+      'Fn::Join': ['', ['cognito-idp.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/test-user-pool']],
+    });
   });
 
   test('import using arn without resourceName fails', () => {
@@ -499,9 +560,20 @@ describe('User Pool', () => {
       },
     });
 
-    [createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
-      postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
-      verifyAuthChallengeResponse, customEmailSender, customSmsSender].forEach((fn) => {
+    [
+      createAuthChallenge,
+      customMessage,
+      defineAuthChallenge,
+      postAuthentication,
+      postConfirmation,
+      preAuthentication,
+      preSignUp,
+      preTokenGeneration,
+      userMigration,
+      verifyAuthChallengeResponse,
+      customEmailSender,
+      customSmsSender,
+    ].forEach((fn) => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
@@ -592,11 +664,7 @@ describe('User Pool', () => {
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
     });
     expect(() => {
-      pool.addTrigger(
-        UserPoolOperation.PRE_TOKEN_GENERATION,
-        preTokenGeneration,
-        LambdaVersion.V2_0,
-      );
+      pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION, preTokenGeneration, LambdaVersion.V2_0);
     }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version./);
   });
 
@@ -644,7 +712,9 @@ describe('User Pool', () => {
 
     // WHEN
     userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn1);
-    expect(() => userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn2)).toThrow(/createAuthChallenge already exists/);
+    expect(() => userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn2)).toThrow(
+      /createAuthChallenge already exists/
+    );
   });
 
   test('no username aliases specified', () => {
@@ -663,9 +733,12 @@ describe('User Pool', () => {
 
   test('fails when preferredUsername is used without username', () => {
     const stack = new Stack();
-    expect(() => new UserPool(stack, 'Pool', {
-      signInAliases: { preferredUsername: true },
-    })).toThrow(/username/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool', {
+          signInAliases: { preferredUsername: true },
+        })
+    ).toThrow(/username/);
   });
 
   test('username and email are specified as the username aliases', () => {
@@ -1111,37 +1184,49 @@ describe('User Pool', () => {
   test('throws when tempPassword validity is not in round days', () => {
     const stack = new Stack();
 
-    expect(() => new UserPool(stack, 'Pool', {
-      passwordPolicy: {
-        tempPasswordValidity: Duration.hours(30),
-      },
-    })).toThrow();
+    expect(
+      () =>
+        new UserPool(stack, 'Pool', {
+          passwordPolicy: {
+            tempPasswordValidity: Duration.hours(30),
+          },
+        })
+    ).toThrow();
   });
 
   test('temp password throws an error when above the max', () => {
     const stack = new Stack();
 
-    expect(() => new UserPool(stack, 'Pool', {
-      passwordPolicy: {
-        tempPasswordValidity: Duration.days(400),
-      },
-    })).toThrow(/tempPasswordValidity cannot be greater than/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool', {
+          passwordPolicy: {
+            tempPasswordValidity: Duration.days(400),
+          },
+        })
+    ).toThrow(/tempPasswordValidity cannot be greater than/);
   });
 
   test('throws when minLength is out of range', () => {
     const stack = new Stack();
 
-    expect(() => new UserPool(stack, 'Pool1', {
-      passwordPolicy: {
-        minLength: 5,
-      },
-    })).toThrow(/minLength for password must be between/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool1', {
+          passwordPolicy: {
+            minLength: 5,
+          },
+        })
+    ).toThrow(/minLength for password must be between/);
 
-    expect(() => new UserPool(stack, 'Pool2', {
-      passwordPolicy: {
-        minLength: 100,
-      },
-    })).toThrow(/minLength for password must be between/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool2', {
+          passwordPolicy: {
+            minLength: 100,
+          },
+        })
+    ).toThrow(/minLength for password must be between/);
   });
 
   testDeprecated('email transmission settings are recognized correctly', () => {
@@ -1311,9 +1396,7 @@ describe('User Pool', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
-          RecoveryMechanisms: [
-            { Name: 'verified_email', Priority: 1 },
-          ],
+          RecoveryMechanisms: [{ Name: 'verified_email', Priority: 1 }],
         },
       });
     });
@@ -1328,9 +1411,7 @@ describe('User Pool', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
-          RecoveryMechanisms: [
-            { Name: 'verified_phone_number', Priority: 1 },
-          ],
+          RecoveryMechanisms: [{ Name: 'verified_phone_number', Priority: 1 }],
         },
       });
     });
@@ -1345,9 +1426,7 @@ describe('User Pool', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
         AccountRecoverySetting: {
-          RecoveryMechanisms: [
-            { Name: 'admin_only', Priority: 1 },
-          ],
+          RecoveryMechanisms: [{ Name: 'admin_only', Priority: 1 }],
         },
       });
     });
@@ -1602,10 +1681,13 @@ describe('User Pool', () => {
         assumedBy: new ServicePrincipal('service.amazonaws.com'),
       });
 
-      expect(() => new UserPool(stack, 'pool', {
-        smsRole,
-        enableSmsRole: false,
-      })).toThrow(/enableSmsRole cannot be disabled/);
+      expect(
+        () =>
+          new UserPool(stack, 'pool', {
+            smsRole,
+            enableSmsRole: false,
+          })
+      ).toThrow(/enableSmsRole cannot be disabled/);
     });
   });
 
@@ -1657,13 +1739,16 @@ describe('User Pool', () => {
     const stack = new Stack();
 
     // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: UserPoolEmail.withSES({
-        sesRegion: 'us-east-1',
-        fromEmail: 'от@домен.рф',
-        replyTo: 'user@домен.рф',
-      }),
-    })).toThrow(/the local part of the email address must use ASCII characters only/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool', {
+          email: UserPoolEmail.withSES({
+            sesRegion: 'us-east-1',
+            fromEmail: 'от@домен.рф',
+            replyTo: 'user@домен.рф',
+          }),
+        })
+    ).toThrow(/the local part of the email address must use ASCII characters only/);
   });
 
   test('email transmission with cyrillic characters in the local part of replyTo throw error', () => {
@@ -1671,13 +1756,16 @@ describe('User Pool', () => {
     const stack = new Stack();
 
     // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: UserPoolEmail.withSES({
-        sesRegion: 'us-east-1',
-        fromEmail: 'user@домен.рф',
-        replyTo: 'от@домен.рф',
-      }),
-    })).toThrow(/the local part of the email address must use ASCII characters only/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool', {
+          email: UserPoolEmail.withSES({
+            sesRegion: 'us-east-1',
+            fromEmail: 'user@домен.рф',
+            replyTo: 'от@домен.рф',
+          }),
+        })
+    ).toThrow(/the local part of the email address must use ASCII characters only/);
   });
 
   test('email withCognito transmission with cyrillic characters in the local part of replyTo throw error', () => {
@@ -1685,9 +1773,12 @@ describe('User Pool', () => {
     const stack = new Stack();
 
     // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: UserPoolEmail.withCognito('от@домен.рф'),
-    })).toThrow(/the local part of the email address must use ASCII characters only/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool', {
+          email: UserPoolEmail.withCognito('от@домен.рф'),
+        })
+    ).toThrow(/the local part of the email address must use ASCII characters only/);
   });
 
   test('email withCognito', () => {
@@ -1730,13 +1821,15 @@ describe('User Pool', () => {
     const stack = new Stack();
 
     // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: UserPoolEmail.withSES({
-        fromEmail: 'mycustomemail@example.com',
-        replyTo: 'reply@example.com',
-      }),
-    })).toThrow(/Your stack region cannot be determined/);
-
+    expect(
+      () =>
+        new UserPool(stack, 'Pool', {
+          email: UserPoolEmail.withSES({
+            fromEmail: 'mycustomemail@example.com',
+            replyTo: 'reply@example.com',
+          }),
+        })
+    ).toThrow(/Your stack region cannot be determined/);
   });
 
   test('email withSES with no name', () => {
@@ -1778,7 +1871,6 @@ describe('User Pool', () => {
         },
       },
     });
-
   });
 
   test('email withSES', () => {
@@ -2016,7 +2108,6 @@ describe('User Pool', () => {
         },
       },
     });
-
   });
 
   test('email withSES with verified domain', () => {
@@ -2072,21 +2163,27 @@ describe('User Pool', () => {
       },
     });
 
-    expect(() => new UserPool(stack, 'Pool1', {
-      mfaMessage: '{####',
-    })).toThrow(/MFA message must contain the template string/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool1', {
+          mfaMessage: '{####',
+        })
+    ).toThrow(/MFA message must contain the template string/);
 
     // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: UserPoolEmail.withSES({
-        fromEmail: 'mycustomemail@some.com',
-        fromName: 'My Custom Email',
-        sesRegion: 'us-east-1',
-        replyTo: 'reply@example.com',
-        configurationSetName: 'default',
-        sesVerifiedDomain: 'example.com',
-      }),
-    })).toThrow(/"fromEmail" contains a different domain than the "sesVerifiedDomain"/);
+    expect(
+      () =>
+        new UserPool(stack, 'Pool', {
+          email: UserPoolEmail.withSES({
+            fromEmail: 'mycustomemail@some.com',
+            fromName: 'My Custom Email',
+            sesRegion: 'us-east-1',
+            replyTo: 'reply@example.com',
+            configurationSetName: 'default',
+            sesVerifiedDomain: 'example.com',
+          }),
+        })
+    ).toThrow(/"fromEmail" contains a different domain than the "sesVerifiedDomain"/);
   });
 });
 
@@ -2149,16 +2246,10 @@ test('grant', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'cognito-idp:AdminCreateUser',
-            'cognito-idp:ListUsers',
-          ],
+          Action: ['cognito-idp:AdminCreateUser', 'cognito-idp:ListUsers'],
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'PoolD3F588B8',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['PoolD3F588B8', 'Arn'],
           },
         },
       ],
@@ -2170,7 +2261,6 @@ test('grant', () => {
       },
     ],
   });
-
 });
 
 test('deletion protection', () => {
@@ -2218,12 +2308,11 @@ test('feature plan is not present if option is not provided', () => {
   });
 });
 
-test.each(
-  [
-    [AdvancedSecurityMode.ENFORCED, 'ENFORCED'],
-    [AdvancedSecurityMode.AUDIT, 'AUDIT'],
-    [AdvancedSecurityMode.OFF, 'OFF'],
-  ])('advanced security is configured correctly when set to (%s)', (advancedSecurityMode, compareString) => {
+test.each([
+  [AdvancedSecurityMode.ENFORCED, 'ENFORCED'],
+  [AdvancedSecurityMode.AUDIT, 'AUDIT'],
+  [AdvancedSecurityMode.OFF, 'OFF'],
+])('advanced security is configured correctly when set to (%s)', (advancedSecurityMode, compareString) => {
   // GIVEN
   const stack = new Stack();
 
@@ -2300,76 +2389,88 @@ describe('email MFA test', () => {
   test('throws when email MFA is enabled with no email settings.', () => {
     const stack = new Stack();
 
-    expect(() => new UserPool(stack, 'Pool1', {
-      mfa: Mfa.REQUIRED,
-      mfaSecondFactor: {
-        sms: true,
-        otp: false,
-        email: true,
-      },
-      featurePlan: FeaturePlan.ESSENTIALS,
-    })).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
+    expect(
+      () =>
+        new UserPool(stack, 'Pool1', {
+          mfa: Mfa.REQUIRED,
+          mfaSecondFactor: {
+            sms: true,
+            otp: false,
+            email: true,
+          },
+          featurePlan: FeaturePlan.ESSENTIALS,
+        })
+    ).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
   });
 
   test('throws when email MFA is enabled with not SES email settings.', () => {
     const stack = new Stack();
 
-    expect(() => new UserPool(stack, 'Pool1', {
-      mfa: Mfa.REQUIRED,
-      email: UserPoolEmail.withCognito(),
-      mfaSecondFactor: {
-        sms: true,
-        otp: false,
-        email: true,
-      },
-      featurePlan: FeaturePlan.ESSENTIALS,
-    })).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
+    expect(
+      () =>
+        new UserPool(stack, 'Pool1', {
+          mfa: Mfa.REQUIRED,
+          email: UserPoolEmail.withCognito(),
+          mfaSecondFactor: {
+            sms: true,
+            otp: false,
+            email: true,
+          },
+          featurePlan: FeaturePlan.ESSENTIALS,
+        })
+    ).toThrow('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.');
   });
 
-  test.each([
-    AdvancedSecurityMode.AUDIT,
-    AdvancedSecurityMode.ENFORCED,
-  ])('email MFA with Lite feature plan and %s Advanced Security Mode', (advancedSecurityMode) => {
-    const stack = new Stack();
+  test.each([AdvancedSecurityMode.AUDIT, AdvancedSecurityMode.ENFORCED])(
+    'email MFA with Lite feature plan and %s Advanced Security Mode',
+    (advancedSecurityMode) => {
+      const stack = new Stack();
 
-    expect(() => new UserPool(stack, 'Pool1', {
-      email: UserPoolEmail.withSES({
-        sesRegion: 'us-east-1',
-        fromEmail: 'noreply@example.com',
-        fromName: 'myname@mycompany.com',
-        replyTo: 'support@example.com',
-        sesVerifiedDomain: 'example.com',
-      }),
-      mfa: Mfa.REQUIRED,
-      mfaSecondFactor: {
-        sms: true,
-        otp: false,
-        email: true,
-      },
-      featurePlan: FeaturePlan.LITE,
-      advancedSecurityMode,
-    })).not.toThrow();
-  });
+      expect(
+        () =>
+          new UserPool(stack, 'Pool1', {
+            email: UserPoolEmail.withSES({
+              sesRegion: 'us-east-1',
+              fromEmail: 'noreply@example.com',
+              fromName: 'myname@mycompany.com',
+              replyTo: 'support@example.com',
+              sesVerifiedDomain: 'example.com',
+            }),
+            mfa: Mfa.REQUIRED,
+            mfaSecondFactor: {
+              sms: true,
+              otp: false,
+              email: true,
+            },
+            featurePlan: FeaturePlan.LITE,
+            advancedSecurityMode,
+          })
+      ).not.toThrow();
+    }
+  );
 
   test('throws when email MFA is enabled with Lite feature plan', () => {
     const stack = new Stack();
 
-    expect(() => new UserPool(stack, 'Pool1', {
-      email: UserPoolEmail.withSES({
-        sesRegion: 'us-east-1',
-        fromEmail: 'noreply@example.com',
-        fromName: 'myname@mycompany.com',
-        replyTo: 'support@example.com',
-        sesVerifiedDomain: 'example.com',
-      }),
-      mfa: Mfa.REQUIRED,
-      mfaSecondFactor: {
-        sms: true,
-        otp: false,
-        email: true,
-      },
-      featurePlan: FeaturePlan.LITE,
-    })).toThrow('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+    expect(
+      () =>
+        new UserPool(stack, 'Pool1', {
+          email: UserPoolEmail.withSES({
+            sesRegion: 'us-east-1',
+            fromEmail: 'noreply@example.com',
+            fromName: 'myname@mycompany.com',
+            replyTo: 'support@example.com',
+            sesVerifiedDomain: 'example.com',
+          }),
+          mfa: Mfa.REQUIRED,
+          mfaSecondFactor: {
+            sms: true,
+            otp: false,
+            email: true,
+          },
+          featurePlan: FeaturePlan.LITE,
+        })
+    ).toThrow('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
   });
 });
 

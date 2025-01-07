@@ -1,14 +1,6 @@
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 import { PipelineQueries } from './pipeline-queries';
-import {
-  AssetType,
-  FileSet,
-  StackAsset,
-  StackDeployment,
-  StageDeployment,
-  Step,
-  Wave,
-} from '../blueprint';
+import { AssetType, FileSet, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 
 export interface PipelineGraphProps {
@@ -93,9 +85,7 @@ export class PipelineGraph {
 
     const cloudAssembly = pipeline.synth.primaryOutput?.primaryOutput;
     if (!cloudAssembly) {
-      throw new Error(
-        `The synth step must produce the cloud assembly artifact, but doesn't: ${pipeline.synth}`
-      );
+      throw new Error(`The synth step must produce the cloud assembly artifact, but doesn't: ${pipeline.synth}`);
     }
 
     this.cloudAssemblyFileSet = cloudAssembly;
@@ -248,12 +238,7 @@ export class PipelineGraph {
     return retGraph;
   }
 
-  private addChangeSetNode(
-    changeSet: Step[],
-    prepareNode: AGraphNode,
-    deployNode: AGraphNode,
-    graph: AGraph
-  ) {
+  private addChangeSetNode(changeSet: Step[], prepareNode: AGraphNode, deployNode: AGraphNode, graph: AGraph) {
     for (const c of changeSet) {
       const changeSetNode = this.addStepNode(c, graph);
       changeSetNode?.dependOn(prepareNode);
@@ -340,9 +325,7 @@ export class PipelineGraph {
     // May need to do this more than once to recursively add all missing producers
     let attempts = 20;
     while (attempts-- > 0) {
-      const unsatisfied = this.nodeDependencies
-        .unsatisfiedBuilders()
-        .filter(([s]) => s !== PipelineGraph.NO_STEP);
+      const unsatisfied = this.nodeDependencies.unsatisfiedBuilders().filter(([s]) => s !== PipelineGraph.NO_STEP);
       if (unsatisfied.length === 0) {
         return;
       }

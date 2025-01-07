@@ -1,15 +1,7 @@
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import {
-  CustomResource,
-  IResource,
-  Lazy,
-  Resource,
-  Duration,
-  NestedStack,
-  Stack,
-} from 'aws-cdk-lib/core';
+import { CustomResource, IResource, Lazy, Resource, Duration, NestedStack, Stack } from 'aws-cdk-lib/core';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
@@ -241,10 +233,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       })
     );
 
-    const isComplete = new AssetDeploymentIsCompleteFunction(
-      this,
-      'amplify-asset-deployment-is-complete'
-    );
+    const isComplete = new AssetDeploymentIsCompleteFunction(this, 'amplify-asset-deployment-is-complete');
     isComplete.addToRolePolicy(
       new iam.PolicyStatement({
         resources: ['*'],

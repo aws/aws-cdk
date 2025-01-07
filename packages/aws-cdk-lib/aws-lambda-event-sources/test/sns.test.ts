@@ -19,32 +19,25 @@ describe('SNSEventSource', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
-      'Action': 'lambda:InvokeFunction',
-      'FunctionName': {
-        'Fn::GetAtt': [
-          'Fn9270CBC0',
-          'Arn',
-        ],
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
       },
-      'Principal': 'sns.amazonaws.com',
-      'SourceArn': {
-        'Ref': 'TD925BC7E',
+      Principal: 'sns.amazonaws.com',
+      SourceArn: {
+        Ref: 'TD925BC7E',
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
-      'Endpoint': {
-        'Fn::GetAtt': [
-          'Fn9270CBC0',
-          'Arn',
-        ],
+      Endpoint: {
+        'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
       },
-      'Protocol': 'lambda',
-      'TopicArn': {
-        'Ref': 'TD925BC7E',
+      Protocol: 'lambda',
+      TopicArn: {
+        Ref: 'TD925BC7E',
       },
     });
-
   });
 
   test('props are passed to subscription', () => {
@@ -67,45 +60,32 @@ describe('SNSEventSource', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
-      'Action': 'lambda:InvokeFunction',
-      'FunctionName': {
-        'Fn::GetAtt': [
-          'Fn9270CBC0',
-          'Arn',
-        ],
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
       },
-      'Principal': 'sns.amazonaws.com',
-      'SourceArn': {
-        'Ref': 'TD925BC7E',
+      Principal: 'sns.amazonaws.com',
+      SourceArn: {
+        Ref: 'TD925BC7E',
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
-      'Endpoint': {
-        'Fn::GetAtt': [
-          'Fn9270CBC0',
-          'Arn',
-        ],
+      Endpoint: {
+        'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
       },
-      'Protocol': 'lambda',
-      'TopicArn': {
-        'Ref': 'TD925BC7E',
+      Protocol: 'lambda',
+      TopicArn: {
+        Ref: 'TD925BC7E',
       },
-      'FilterPolicy': {
-        'Field': [
-          'A',
-          'B',
-        ],
+      FilterPolicy: {
+        Field: ['A', 'B'],
       },
-      'RedrivePolicy': {
-        'deadLetterTargetArn': {
-          'Fn::GetAtt': [
-            'Q63C6E3AB',
-            'Arn',
-          ],
+      RedrivePolicy: {
+        deadLetterTargetArn: {
+          'Fn::GetAtt': ['Q63C6E3AB', 'Arn'],
         },
       },
     });
-
   });
 });

@@ -105,18 +105,20 @@ describe('Key Value Store', () => {
 
     // WHEN
     new KeyValueStore(stack, 'TestStore', {
-      source: ImportSource.fromInline(JSON.stringify({
-        data: [
-          {
-            key: 'key1',
-            value: 'value1',
-          },
-          {
-            key: 'key2',
-            value: 'value2',
-          },
-        ],
-      })),
+      source: ImportSource.fromInline(
+        JSON.stringify({
+          data: [
+            {
+              key: 'key1',
+              value: 'value1',
+            },
+            {
+              key: 'key2',
+              value: 'value2',
+            },
+          ],
+        })
+      ),
     });
 
     // THEN
@@ -133,8 +135,8 @@ describe('Key Value Store', () => {
     const stack = new Stack();
 
     // THEN
-    expect(
-      () => KeyValueStore.fromKeyValueStoreArn(stack, 'TestStore', 'arn:aws:cloudfront::123456789012:key-value-store'),
+    expect(() =>
+      KeyValueStore.fromKeyValueStoreArn(stack, 'TestStore', 'arn:aws:cloudfront::123456789012:key-value-store')
     ).toThrow(/Invalid Key Value Store Arn:/);
   });
 
@@ -143,7 +145,11 @@ describe('Key Value Store', () => {
     const stack = new Stack();
 
     // WHEN
-    const store = KeyValueStore.fromKeyValueStoreArn(stack, 'TestStore', 'arn:aws:cloudfront::123456789012:key-value-store/id1');
+    const store = KeyValueStore.fromKeyValueStoreArn(
+      stack,
+      'TestStore',
+      'arn:aws:cloudfront::123456789012:key-value-store/id1'
+    );
 
     // THEN
     expect(() => store.keyValueStoreStatus).toThrow('Status is not available for imported Key Value Store');

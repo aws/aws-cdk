@@ -39,9 +39,7 @@ export class Activity extends Resource implements IActivity {
         return activityArn;
       }
       public get activityName() {
-        return (
-          Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || ''
-        );
+        return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
       }
     }
 

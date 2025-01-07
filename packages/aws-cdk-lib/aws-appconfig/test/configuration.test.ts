@@ -223,14 +223,7 @@ describe('configuration', () => {
         Ref: 'MyAppConfigB4B63E75',
       },
       LocationUri: {
-        'Fn::Join': [
-          '',
-          [
-            's3://',
-            { Ref: 'MyBucketF68F3FF0' },
-            '/path/to/object',
-          ],
-        ],
+        'Fn::Join': ['', ['s3://', { Ref: 'MyBucketF68F3FF0' }, '/path/to/object']],
       },
       RetrievalRoleArn: { 'Fn::GetAtt': ['MySourcedConfigRole249449B1', 'Arn'] },
     });
@@ -341,31 +334,33 @@ describe('configuration', () => {
 
     // THEN
     // should NOT have a new role provisioned with AllowAppConfigReadFromSourcePolicy
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', Match.not({
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'appconfig.amazonaws.com',
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::IAM::Role',
+      Match.not({
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'appconfig.amazonaws.com',
+              },
             },
+          ],
+          Version: '2012-10-17',
+        },
+        Policies: [
+          {
+            PolicyName: 'AllowAppConfigReadFromSourcePolicy',
           },
         ],
-        Version: '2012-10-17',
-      },
-      Policies: [
-        {
-          PolicyName: 'AllowAppConfigReadFromSourcePolicy',
-        },
-      ],
-    }));
+      })
+    );
     // and should use the passed role for the retrievalRoleArn
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
       Name: 'MySourcedConfig',
       RetrievalRoleArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
     });
-
   });
 
   test('configuration with retrievalRole undefined from CodePipeline source should NOT create a new role', () => {
@@ -409,25 +404,28 @@ describe('configuration', () => {
 
     // THEN
     // should NOT have a new role provisioned with AllowAppConfigReadFromSourcePolicy
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', Match.not({
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Effect: 'Allow',
-            Principal: {
-              Service: 'appconfig.amazonaws.com',
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::IAM::Role',
+      Match.not({
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'appconfig.amazonaws.com',
+              },
             },
+          ],
+          Version: '2012-10-17',
+        },
+        Policies: [
+          {
+            PolicyName: 'AllowAppConfigReadFromSourcePolicy',
           },
         ],
-        Version: '2012-10-17',
-      },
-      Policies: [
-        {
-          PolicyName: 'AllowAppConfigReadFromSourcePolicy',
-        },
-      ],
-    }));
+      })
+    );
   });
 
   test('configuration with two configurations and no deployment strategy specified', () => {
@@ -948,7 +946,8 @@ describe('configuration', () => {
       Validators: [
         {
           Type: 'JSON_SCHEMA',
-          Content: '\n    {\n      \"type\": \"object\",\n      \"properties\": {\n        \"computeResource\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"ComputeAL1ImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"GPUImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"ARMImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"ComputeAL2ImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            }\n          }\n        }\n      }\n    }',
+          Content:
+            '\n    {\n      \"type\": \"object\",\n      \"properties\": {\n        \"computeResource\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"ComputeAL1ImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"GPUImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"ARMImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"ComputeAL2ImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            }\n          }\n        }\n      }\n    }',
         },
         {
           Type: 'JSON_SCHEMA',
@@ -1078,13 +1077,7 @@ describe('configuration', () => {
         Ref: 'MyAppConfigB4B63E75',
       },
       LocationUri: {
-        'Fn::Join': [
-          '',
-          [
-            'ssm-document://',
-            { Ref: 'MyDocument' },
-          ],
-        ],
+        'Fn::Join': ['', ['ssm-document://', { Ref: 'MyDocument' }]],
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -1146,14 +1139,7 @@ describe('configuration', () => {
         Ref: 'MyAppConfigB4B63E75',
       },
       LocationUri: {
-        'Fn::Join': [
-          '',
-          [
-            's3://',
-            { Ref: 'MyBucketF68F3FF0' },
-            '/hello/file.txt',
-          ],
-        ],
+        'Fn::Join': ['', ['s3://', { Ref: 'MyBucketF68F3FF0' }, '/hello/file.txt']],
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -1166,40 +1152,17 @@ describe('configuration', () => {
                 Resource: {
                   'Fn::Join': [
                     '',
-                    [
-                      'arn:',
-                      { Ref: 'AWS::Partition' },
-                      ':s3:::',
-                      { Ref: 'MyBucketF68F3FF0' },
-                      '/hello/file.txt',
-                    ],
+                    ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'MyBucketF68F3FF0' }, '/hello/file.txt'],
                   ],
                 },
-                Action: [
-                  's3:GetObject',
-                  's3:GetObjectMetadata',
-                  's3:GetObjectVersion',
-                ],
+                Action: ['s3:GetObject', 's3:GetObjectMetadata', 's3:GetObjectVersion'],
               },
               {
                 Effect: iam.Effect.ALLOW,
                 Resource: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      { Ref: 'AWS::Partition' },
-                      ':s3:::',
-                      { Ref: 'MyBucketF68F3FF0' },
-                    ],
-                  ],
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'MyBucketF68F3FF0' }]],
                 },
-                Action: [
-                  's3:GetBucketLocation',
-                  's3:GetBucketVersioning',
-                  's3:ListBucket',
-                  's3:ListBucketVersions',
-                ],
+                Action: ['s3:GetBucketLocation', 's3:GetBucketVersioning', 's3:ListBucket', 's3:ListBucketVersions'],
               },
               {
                 Effect: iam.Effect.ALLOW,
@@ -1262,13 +1225,7 @@ describe('configuration', () => {
         Ref: 'MyAppConfigB4B63E75',
       },
       LocationUri: {
-        'Fn::Join': [
-          '',
-          [
-            'codepipeline://',
-            { Ref: 'MyPipelineAED38ECF' },
-          ],
-        ],
+        'Fn::Join': ['', ['codepipeline://', { Ref: 'MyPipelineAED38ECF' }]],
       },
     });
 

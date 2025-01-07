@@ -198,15 +198,11 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
     });
 
     if (!props.s3Encryption && !props.cloudWatchEncryption && !props.jobBookmarksEncryption) {
-      throw new Error(
-        'One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined'
-      );
+      throw new Error('One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined');
     }
 
     const kmsKeyCreationRequired =
-      (props.s3Encryption &&
-        props.s3Encryption.mode === S3EncryptionMode.KMS &&
-        !props.s3Encryption.kmsKey) ||
+      (props.s3Encryption && props.s3Encryption.mode === S3EncryptionMode.KMS && !props.s3Encryption.kmsKey) ||
       (props.cloudWatchEncryption && !props.cloudWatchEncryption.kmsKey) ||
       (props.jobBookmarksEncryption && !props.jobBookmarksEncryption.kmsKey);
     const autoCreatedKmsKey = kmsKeyCreationRequired ? new kms.Key(this, 'Key') : undefined;

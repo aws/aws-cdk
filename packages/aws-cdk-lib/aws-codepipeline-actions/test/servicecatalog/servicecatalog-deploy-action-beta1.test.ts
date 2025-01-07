@@ -11,89 +11,91 @@ describe('ServiceCatalog Deploy Action', () => {
     // GIVEN
     const stack = new TestFixture();
     // WHEN
-    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployActionBeta1({
-      actionName: 'ServiceCatalogTest',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      productVersionDescription: 'This is a description of the version.',
-      productVersionName: 'VersionName',
-      productId: 'prod-xxxxxxxxx',
-    }));
+    stack.deployStage.addAction(
+      new cpactions.ServiceCatalogDeployActionBeta1({
+        actionName: 'ServiceCatalogTest',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        productVersionDescription: 'This is a description of the version.',
+        productVersionName: 'VersionName',
+        productId: 'prod-xxxxxxxxx',
+      })
+    );
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': Match.arrayWith([
-        Match.objectLike({ 'Name': 'Source' /* don't care about the rest */ }),
+      Stages: Match.arrayWith([
+        Match.objectLike({ Name: 'Source' /* don't care about the rest */ }),
         Match.objectLike({
-          'Name': 'Deploy',
-          'Actions': Match.arrayWith([
+          Name: 'Deploy',
+          Actions: Match.arrayWith([
             Match.objectLike({
-              'ActionTypeId': {
-                'Category': 'Deploy',
-                'Owner': 'AWS',
-                'Provider': 'ServiceCatalog',
-                'Version': '1',
+              ActionTypeId: {
+                Category: 'Deploy',
+                Owner: 'AWS',
+                Provider: 'ServiceCatalog',
+                Version: '1',
               },
-              'Configuration': {
-                'TemplateFilePath': 'template.yaml',
-                'ProductVersionDescription': 'This is a description of the version.',
-                'ProductVersionName': 'VersionName',
-                'ProductType': 'CLOUD_FORMATION_TEMPLATE',
-                'ProductId': 'prod-xxxxxxxxx',
+              Configuration: {
+                TemplateFilePath: 'template.yaml',
+                ProductVersionDescription: 'This is a description of the version.',
+                ProductVersionName: 'VersionName',
+                ProductType: 'CLOUD_FORMATION_TEMPLATE',
+                ProductId: 'prod-xxxxxxxxx',
               },
-              'InputArtifacts': [
+              InputArtifacts: [
                 {
-                  'Name': 'SourceArtifact',
+                  Name: 'SourceArtifact',
                 },
               ],
-              'Name': 'ServiceCatalogTest',
+              Name: 'ServiceCatalogTest',
             }),
           ]),
         }),
       ]),
     });
-
   });
   test('deployment without a description works successfully', () => {
     // GIVEN
     const stack = new TestFixture();
     // WHEN
-    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployActionBeta1({
-      actionName: 'ServiceCatalogTest',
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
-      productVersionName: 'VersionName',
-      productId: 'prod-xxxxxxxxx',
-    }));
+    stack.deployStage.addAction(
+      new cpactions.ServiceCatalogDeployActionBeta1({
+        actionName: 'ServiceCatalogTest',
+        templatePath: stack.sourceOutput.atPath('template.yaml'),
+        productVersionName: 'VersionName',
+        productId: 'prod-xxxxxxxxx',
+      })
+    );
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': Match.arrayWith([
-        Match.objectLike({ 'Name': 'Source' /* don't care about the rest */ }),
+      Stages: Match.arrayWith([
+        Match.objectLike({ Name: 'Source' /* don't care about the rest */ }),
         Match.objectLike({
-          'Name': 'Deploy',
-          'Actions': Match.arrayWith([
+          Name: 'Deploy',
+          Actions: Match.arrayWith([
             Match.objectLike({
-              'ActionTypeId': {
-                'Category': 'Deploy',
-                'Owner': 'AWS',
-                'Provider': 'ServiceCatalog',
-                'Version': '1',
+              ActionTypeId: {
+                Category: 'Deploy',
+                Owner: 'AWS',
+                Provider: 'ServiceCatalog',
+                Version: '1',
               },
-              'Configuration': {
-                'TemplateFilePath': 'template.yaml',
-                'ProductVersionName': 'VersionName',
-                'ProductType': 'CLOUD_FORMATION_TEMPLATE',
-                'ProductId': 'prod-xxxxxxxxx',
+              Configuration: {
+                TemplateFilePath: 'template.yaml',
+                ProductVersionName: 'VersionName',
+                ProductType: 'CLOUD_FORMATION_TEMPLATE',
+                ProductId: 'prod-xxxxxxxxx',
               },
-              'InputArtifacts': [
+              InputArtifacts: [
                 {
-                  'Name': 'SourceArtifact',
+                  Name: 'SourceArtifact',
                 },
               ],
-              'Name': 'ServiceCatalogTest',
+              Name: 'ServiceCatalogTest',
             }),
           ]),
         }),
       ]),
     });
-
   });
 });
 

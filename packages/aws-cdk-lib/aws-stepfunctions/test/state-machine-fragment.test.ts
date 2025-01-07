@@ -22,18 +22,22 @@ describe('State Machine Fragment', () => {
         StartAt: 'Fragment 1: Parallel State',
         States: {
           'Fragment 1: Parallel State': Match.objectLike({
-            Branches: [Match.objectLike({
-              States: {
-                'Fragment 1: Step 1': Match.anyValue(),
-              },
-            })],
+            Branches: [
+              Match.objectLike({
+                States: {
+                  'Fragment 1: Step 1': Match.anyValue(),
+                },
+              }),
+            ],
           }),
           'Fragment 2: Parallel State': Match.objectLike({
-            Branches: [Match.objectLike({
-              States: {
-                'Fragment 2: Step 1': Match.anyValue(),
-              },
-            })],
+            Branches: [
+              Match.objectLike({
+                States: {
+                  'Fragment 2: Step 1': Match.anyValue(),
+                },
+              }),
+            ],
           }),
         },
       }),

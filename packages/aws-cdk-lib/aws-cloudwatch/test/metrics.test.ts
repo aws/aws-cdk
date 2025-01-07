@@ -29,14 +29,12 @@ describe('Metrics', () => {
         ],
       },
     });
-
   });
 
   test('can not use invalid period in Metric', () => {
     expect(() => {
       new Metric({ namespace: 'Test', metricName: 'ACount', period: cdk.Duration.seconds(20) });
     }).toThrow(/'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received 20/);
-
   });
 
   test('Metric optimization: "with" with the same period returns the same object', () => {
@@ -47,7 +45,6 @@ describe('Metrics', () => {
     expect(m.with({ period: cdk.Duration.minutes(10) })).toEqual(m);
 
     expect(m.with({ period: cdk.Duration.minutes(5) })).not.toEqual(m);
-
   });
 
   testDeprecated('cannot use null dimension value', () => {
@@ -61,7 +58,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(/Dimension value of 'null' is invalid/);
-
   });
 
   testDeprecated('cannot use undefined dimension value', () => {
@@ -75,7 +71,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(/Dimension value of 'undefined' is invalid/);
-
   });
 
   testDeprecated('cannot use long dimension values', () => {
@@ -92,7 +87,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(`Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
-
   });
 
   test('cannot use long dimension values in dimensionsMap', () => {
@@ -109,7 +103,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(`Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
-
   });
 
   testDeprecated('throws error when there are more than 30 dimensions', () => {
@@ -151,9 +144,8 @@ describe('Metrics', () => {
           dimensionAD: 'value30',
           dimensionAE: 'value31',
         },
-      } );
+      });
     }).toThrow(/The maximum number of dimensions is 30, received 31/);
-
   });
 
   test('throws error when there are more than 30 dimensions in dimensionsMap', () => {
@@ -195,9 +187,8 @@ describe('Metrics', () => {
           dimensionAD: 'value30',
           dimensionAE: 'value31',
         },
-      } );
+      });
     }).toThrow(/The maximum number of dimensions is 30, received 31/);
-
   });
 
   test('can create metric with dimensionsMap property', () => {
@@ -237,7 +228,6 @@ describe('Metrics', () => {
       Threshold: 10,
       EvaluationPeriods: 1,
     });
-
   });
 
   test('"with" with a different dimensions property', () => {
@@ -256,10 +246,11 @@ describe('Metrics', () => {
       dimensionB: 'value2',
     };
 
-    expect(metric.with({
-      dimensionsMap: newDims,
-    }).dimensions).toEqual(newDims);
-
+    expect(
+      metric.with({
+        dimensionsMap: newDims,
+      }).dimensions
+    ).toEqual(newDims);
   });
 
   test('metric accepts a variety of statistics', () => {
@@ -290,7 +281,7 @@ describe('Metrics', () => {
       canBeSingleStat: boolean,
       asSingleStatStr?: string,
       lower?: number,
-      upper?: number,
+      upper?: number
     ) => {
       const parsed = parseStatistic(statistic);
       expect(parsed.type).toEqual('pair');
@@ -313,43 +304,43 @@ describe('Metrics', () => {
     /* eslint-disable no-multi-spaces */
 
     // Check single statistics
-    checkParsingSingle('p9',     'p',  'percentile',     9);
-    checkParsingSingle('p99',    'p',  'percentile',     99);
-    checkParsingSingle('P99',    'p',  'percentile',     99);
-    checkParsingSingle('p99.99', 'p',  'percentile',     99.99);
-    checkParsingSingle('p100',   'p',  'percentile',     100);
-    checkParsingSingle('tm99',   'tm', 'trimmedMean',    99);
-    checkParsingSingle('wm99',   'wm', 'winsorizedMean', 99);
-    checkParsingSingle('tc99',   'tc', 'trimmedCount',   99);
-    checkParsingSingle('ts99',   'ts', 'trimmedSum',     99);
+    checkParsingSingle('p9', 'p', 'percentile', 9);
+    checkParsingSingle('p99', 'p', 'percentile', 99);
+    checkParsingSingle('P99', 'p', 'percentile', 99);
+    checkParsingSingle('p99.99', 'p', 'percentile', 99.99);
+    checkParsingSingle('p100', 'p', 'percentile', 100);
+    checkParsingSingle('tm99', 'tm', 'trimmedMean', 99);
+    checkParsingSingle('wm99', 'wm', 'winsorizedMean', 99);
+    checkParsingSingle('tc99', 'tc', 'trimmedCount', 99);
+    checkParsingSingle('ts99', 'ts', 'trimmedSum', 99);
 
     // Check all pair statistics
-    checkParsingPair('TM(10%:90%)',       'TM', 'trimmedMean',    true, false, undefined, 10,        90);
-    checkParsingPair('TM(10.99%:90.99%)', 'TM', 'trimmedMean',    true, false, undefined, 10.99,     90.99);
-    checkParsingPair('WM(10%:90%)',       'WM', 'winsorizedMean', true, false, undefined, 10,        90);
-    checkParsingPair('TC(10%:90%)',       'TC', 'trimmedCount',   true, false, undefined, 10,        90);
-    checkParsingPair('TS(10%:90%)',       'TS', 'trimmedSum',     true, false, undefined, 10,        90);
+    checkParsingPair('TM(10%:90%)', 'TM', 'trimmedMean', true, false, undefined, 10, 90);
+    checkParsingPair('TM(10.99%:90.99%)', 'TM', 'trimmedMean', true, false, undefined, 10.99, 90.99);
+    checkParsingPair('WM(10%:90%)', 'WM', 'winsorizedMean', true, false, undefined, 10, 90);
+    checkParsingPair('TC(10%:90%)', 'TC', 'trimmedCount', true, false, undefined, 10, 90);
+    checkParsingPair('TS(10%:90%)', 'TS', 'trimmedSum', true, false, undefined, 10, 90);
 
     // Check can be represented as a single statistic
-    checkParsingPair('TM(:90%)',          'TM', 'trimmedMean',    true, true,  'tm90',    undefined, 90);
+    checkParsingPair('TM(:90%)', 'TM', 'trimmedMean', true, true, 'tm90', undefined, 90);
 
     // Check every case
-    checkParsingPair('tm(10%:90%)',         'TM', 'trimmedMean', true,  false, undefined,       10,          90);
-    checkParsingPair('TM(10%:90%)',         'TM', 'trimmedMean', true,  false, undefined,       10,          90);
-    checkParsingPair('TM(:90%)',            'TM', 'trimmedMean', true,  true,  'tm90',          undefined,   90);
-    checkParsingPair('TM(10%:)',            'TM', 'trimmedMean', true,  false, undefined,       10,          undefined);
-    checkParsingPair('TM(10:1500)',         'TM', 'trimmedMean', false, false, undefined,       10,          1500);
-    checkParsingPair('TM(10:)',             'TM', 'trimmedMean', false, false, undefined,       10,          undefined);
-    checkParsingPair('TM(:5000)',           'TM', 'trimmedMean', false, false, undefined,       undefined,   5000);
-    checkParsingPair('TM(0.123456789:)',    'TM', 'trimmedMean', false, false, undefined,       0.123456789, undefined);
-    checkParsingPair('TM(0.123456789:)',    'TM', 'trimmedMean', false, false, undefined,       0.123456789, undefined);
-    checkParsingPair('TM(:0.123456789)',    'TM', 'trimmedMean', false, false, undefined,       undefined,   0.123456789);
-    checkParsingPair('TM(0.123456789%:)',   'TM', 'trimmedMean', true,  false, undefined,       0.123456789, undefined);
-    checkParsingPair('TM(:0.123456789%)',   'TM', 'trimmedMean', true,  true,  'tm0.123456789', undefined,   0.123456789);
-    checkParsingPair('TM(0.123:0.4543)',    'TM', 'trimmedMean', false, false, undefined,       0.123,       0.4543);
-    checkParsingPair('TM(0.123%:0.4543%)',  'TM', 'trimmedMean', true,  false, undefined,       0.123,       0.4543);
-    checkParsingPair('TM(0.1000%:0.1000%)', 'TM', 'trimmedMean', true,  false, undefined,       0.1,         0.1);
-    checkParsingPair('TM(0.9999:100.9999)', 'TM', 'trimmedMean', false, false, undefined,       0.9999,      100.9999);
+    checkParsingPair('tm(10%:90%)', 'TM', 'trimmedMean', true, false, undefined, 10, 90);
+    checkParsingPair('TM(10%:90%)', 'TM', 'trimmedMean', true, false, undefined, 10, 90);
+    checkParsingPair('TM(:90%)', 'TM', 'trimmedMean', true, true, 'tm90', undefined, 90);
+    checkParsingPair('TM(10%:)', 'TM', 'trimmedMean', true, false, undefined, 10, undefined);
+    checkParsingPair('TM(10:1500)', 'TM', 'trimmedMean', false, false, undefined, 10, 1500);
+    checkParsingPair('TM(10:)', 'TM', 'trimmedMean', false, false, undefined, 10, undefined);
+    checkParsingPair('TM(:5000)', 'TM', 'trimmedMean', false, false, undefined, undefined, 5000);
+    checkParsingPair('TM(0.123456789:)', 'TM', 'trimmedMean', false, false, undefined, 0.123456789, undefined);
+    checkParsingPair('TM(0.123456789:)', 'TM', 'trimmedMean', false, false, undefined, 0.123456789, undefined);
+    checkParsingPair('TM(:0.123456789)', 'TM', 'trimmedMean', false, false, undefined, undefined, 0.123456789);
+    checkParsingPair('TM(0.123456789%:)', 'TM', 'trimmedMean', true, false, undefined, 0.123456789, undefined);
+    checkParsingPair('TM(:0.123456789%)', 'TM', 'trimmedMean', true, true, 'tm0.123456789', undefined, 0.123456789);
+    checkParsingPair('TM(0.123:0.4543)', 'TM', 'trimmedMean', false, false, undefined, 0.123, 0.4543);
+    checkParsingPair('TM(0.123%:0.4543%)', 'TM', 'trimmedMean', true, false, undefined, 0.123, 0.4543);
+    checkParsingPair('TM(0.1000%:0.1000%)', 'TM', 'trimmedMean', true, false, undefined, 0.1, 0.1);
+    checkParsingPair('TM(0.9999:100.9999)', 'TM', 'trimmedMean', false, false, undefined, 0.9999, 100.9999);
 
     /* eslint-enable no-multi-spaces */
 

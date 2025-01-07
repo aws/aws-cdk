@@ -33,10 +33,7 @@ test('Can create a scheduled Fargate Task - with only required props', () => {
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
                 {
-                  'Fn::GetAtt': [
-                    'ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19',
-                    'GroupId',
-                  ],
+                  'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19', 'GroupId'],
                 },
               ],
               Subnets: [
@@ -114,10 +111,7 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
                 {
-                  'Fn::GetAtt': [
-                    'ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19',
-                    'GroupId',
-                  ],
+                  'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19', 'GroupId'],
                 },
               ],
               Subnets: [
@@ -226,11 +220,7 @@ test('Scheduled Fargate Task - with Command defined', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
-        Command: [
-          '-c',
-          '4',
-          'amazon.com',
-        ],
+        Command: ['-c', '4', 'amazon.com'],
         Essential: true,
         Image: 'henk',
         LogConfiguration: {
@@ -256,9 +246,7 @@ test('Scheduled Fargate Task - with subnetSelection defined', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', {
     maxAzs: 1,
-    subnetConfiguration: [
-      { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC },
-    ],
+    subnetConfiguration: [{ name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC }],
   });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -309,10 +297,12 @@ test('Scheduled Fargate Task - can take 8 vCpu and 60GB memory sizes', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', Match.objectLike({
-    Cpu: '8192',
-    Memory: '61440',
-  }),
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::ECS::TaskDefinition',
+    Match.objectLike({
+      Cpu: '8192',
+      Memory: '61440',
+    })
   );
 });
 
@@ -344,10 +334,7 @@ test('Scheduled Fargate Task - with platformVersion defined', () => {
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
                 {
-                  'Fn::GetAtt': [
-                    'ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19',
-                    'GroupId',
-                  ],
+                  'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19', 'GroupId'],
                 },
               ],
               Subnets: [
@@ -396,12 +383,11 @@ test('Scheduled Fargate Task - with securityGroups defined', () => {
           NetworkConfiguration: {
             AwsVpcConfiguration: {
               AssignPublicIp: 'DISABLED',
-              SecurityGroups: [{
-                'Fn::GetAtt': [
-                  'SGADB53937',
-                  'GroupId',
-                ],
-              }],
+              SecurityGroups: [
+                {
+                  'Fn::GetAtt': ['SGADB53937', 'GroupId'],
+                },
+              ],
               Subnets: [
                 {
                   Ref: 'VpcPrivateSubnet1Subnet536B997A',
@@ -455,7 +441,10 @@ test('Scheduled Fargate Task shows warning when minute is not defined in cron', 
   });
 
   // THEN
-  Annotations.fromStack(stack).hasWarning('/Default', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]");
+  Annotations.fromStack(stack).hasWarning(
+    '/Default',
+    "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]"
+  );
 });
 
 test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {
@@ -482,9 +471,7 @@ test('Scheduled Fargate Task - with tag propagation', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', {
     maxAzs: 1,
-    subnetConfiguration: [
-      { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC },
-    ],
+    subnetConfiguration: [{ name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC }],
   });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -515,9 +502,7 @@ test('Scheduled Fargate Task - with list of tags', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', {
     maxAzs: 1,
-    subnetConfiguration: [
-      { name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC },
-    ],
+    subnetConfiguration: [{ name: 'Public', cidrMask: 28, subnetType: ec2.SubnetType.PUBLIC }],
   });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -577,11 +562,24 @@ test('Scheduled Fargate Task - with unused properties', () => {
   // THEN
   Annotations.fromStack(stack).hasWarning(
     '/Default/ScheduledFargateTask',
-    Match.stringLikeRegexp('Property \'taskDefinition\' is ignored, use \'scheduledFargateTaskDefinitionOptions\' or \'scheduledFargateTaskImageOptions\' instead.'),
+    Match.stringLikeRegexp(
+      "Property 'taskDefinition' is ignored, use 'scheduledFargateTaskDefinitionOptions' or 'scheduledFargateTaskImageOptions' instead."
+    )
   );
-  Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'cpu\' is ignored, use \'scheduledFargateTaskImageOptions.cpu\' instead.'));
-  Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'memoryLimitMiB\' is ignored, use \'scheduledFargateTaskImageOptions.memoryLimitMiB\' instead.'));
-  Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'runtimePlatform\' is ignored.'));
+  Annotations.fromStack(stack).hasWarning(
+    '/Default/ScheduledFargateTask',
+    Match.stringLikeRegexp("Property 'cpu' is ignored, use 'scheduledFargateTaskImageOptions.cpu' instead.")
+  );
+  Annotations.fromStack(stack).hasWarning(
+    '/Default/ScheduledFargateTask',
+    Match.stringLikeRegexp(
+      "Property 'memoryLimitMiB' is ignored, use 'scheduledFargateTaskImageOptions.memoryLimitMiB' instead."
+    )
+  );
+  Annotations.fromStack(stack).hasWarning(
+    '/Default/ScheduledFargateTask',
+    Match.stringLikeRegexp("Property 'runtimePlatform' is ignored.")
+  );
 });
 
 test('Can create a scheduled Fargate Task - with customized container name', () => {

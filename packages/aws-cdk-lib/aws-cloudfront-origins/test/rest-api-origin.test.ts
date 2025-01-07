@@ -18,45 +18,68 @@ test('Correctly renders the origin', () => {
   expect(stack.resolve(originBindConfig.originProperty)).toEqual({
     id: 'StackOrigin029E19582',
     domainName: {
-      'Fn::Select': [2, {
-        'Fn::Split': ['/', {
-          'Fn::Join': ['', [
-            'https://', { Ref: 'RestApi0C43BF4B' },
-            '.execute-api.',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+      'Fn::Select': [
+        2,
+        {
+          'Fn::Split': [
             '/',
-            { Ref: 'RestApiDeploymentStageprod3855DE66' },
-            '/',
-          ]],
-        }],
-      }],
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'https://',
+                  { Ref: 'RestApi0C43BF4B' },
+                  '.execute-api.',
+                  { Ref: 'AWS::Region' },
+                  '.',
+                  { Ref: 'AWS::URLSuffix' },
+                  '/',
+                  { Ref: 'RestApiDeploymentStageprod3855DE66' },
+                  '/',
+                ],
+              ],
+            },
+          ],
+        },
+      ],
     },
     originPath: {
-      'Fn::Join': ['', ['/', {
-        'Fn::Select': [3, {
-          'Fn::Split': ['/', {
-            'Fn::Join': ['', [
-              'https://',
-              { Ref: 'RestApi0C43BF4B' },
-              '.execute-api.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/',
-              { Ref: 'RestApiDeploymentStageprod3855DE66' },
-              '/',
-            ]],
-          }],
-        }],
-      }]],
+      'Fn::Join': [
+        '',
+        [
+          '/',
+          {
+            'Fn::Select': [
+              3,
+              {
+                'Fn::Split': [
+                  '/',
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'https://',
+                        { Ref: 'RestApi0C43BF4B' },
+                        '.execute-api.',
+                        { Ref: 'AWS::Region' },
+                        '.',
+                        { Ref: 'AWS::URLSuffix' },
+                        '/',
+                        { Ref: 'RestApiDeploymentStageprod3855DE66' },
+                        '/',
+                      ],
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      ],
     },
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
-      originSslProtocols: [
-        'TLSv1.2',
-      ],
+      originSslProtocols: ['TLSv1.2'],
     },
   });
 });
@@ -71,45 +94,68 @@ test('Correctly renders the origin, with custom originId', () => {
   expect(stack.resolve(originBindConfig.originProperty)).toEqual({
     id: 'MyCustomOrigin',
     domainName: {
-      'Fn::Select': [2, {
-        'Fn::Split': ['/', {
-          'Fn::Join': ['', [
-            'https://', { Ref: 'RestApi0C43BF4B' },
-            '.execute-api.',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+      'Fn::Select': [
+        2,
+        {
+          'Fn::Split': [
             '/',
-            { Ref: 'RestApiDeploymentStageprod3855DE66' },
-            '/',
-          ]],
-        }],
-      }],
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'https://',
+                  { Ref: 'RestApi0C43BF4B' },
+                  '.execute-api.',
+                  { Ref: 'AWS::Region' },
+                  '.',
+                  { Ref: 'AWS::URLSuffix' },
+                  '/',
+                  { Ref: 'RestApiDeploymentStageprod3855DE66' },
+                  '/',
+                ],
+              ],
+            },
+          ],
+        },
+      ],
     },
     originPath: {
-      'Fn::Join': ['', ['/', {
-        'Fn::Select': [3, {
-          'Fn::Split': ['/', {
-            'Fn::Join': ['', [
-              'https://',
-              { Ref: 'RestApi0C43BF4B' },
-              '.execute-api.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/',
-              { Ref: 'RestApiDeploymentStageprod3855DE66' },
-              '/',
-            ]],
-          }],
-        }],
-      }]],
+      'Fn::Join': [
+        '',
+        [
+          '/',
+          {
+            'Fn::Select': [
+              3,
+              {
+                'Fn::Split': [
+                  '/',
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'https://',
+                        { Ref: 'RestApi0C43BF4B' },
+                        '.execute-api.',
+                        { Ref: 'AWS::Region' },
+                        '.',
+                        { Ref: 'AWS::URLSuffix' },
+                        '/',
+                        { Ref: 'RestApiDeploymentStageprod3855DE66' },
+                        '/',
+                      ],
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      ],
     },
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
-      originSslProtocols: [
-        'TLSv1.2',
-      ],
+      originSslProtocols: ['TLSv1.2'],
     },
   });
 });
@@ -124,27 +170,35 @@ test('Correctly renders the origin, with custom originPath', () => {
   expect(stack.resolve(originBindConfig.originProperty)).toEqual({
     id: 'StackOrigin029E19582',
     domainName: {
-      'Fn::Select': [2, {
-        'Fn::Split': ['/', {
-          'Fn::Join': ['', [
-            'https://', { Ref: 'RestApi0C43BF4B' },
-            '.execute-api.',
-            { Ref: 'AWS::Region' },
-            '.',
-            { Ref: 'AWS::URLSuffix' },
+      'Fn::Select': [
+        2,
+        {
+          'Fn::Split': [
             '/',
-            { Ref: 'RestApiDeploymentStageprod3855DE66' },
-            '/',
-          ]],
-        }],
-      }],
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'https://',
+                  { Ref: 'RestApi0C43BF4B' },
+                  '.execute-api.',
+                  { Ref: 'AWS::Region' },
+                  '.',
+                  { Ref: 'AWS::URLSuffix' },
+                  '/',
+                  { Ref: 'RestApiDeploymentStageprod3855DE66' },
+                  '/',
+                ],
+              ],
+            },
+          ],
+        },
+      ],
     },
     originPath: '/my/custom/path',
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
-      originSslProtocols: [
-        'TLSv1.2',
-      ],
+      originSslProtocols: ['TLSv1.2'],
     },
   });
 });

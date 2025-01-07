@@ -415,9 +415,7 @@ export class Runtime {
 
   public runtimeEquals(other: Runtime): boolean {
     return (
-      other.name === this.name &&
-      other.family === this.family &&
-      other.supportsInlineCode === this.supportsInlineCode
+      other.name === this.name && other.family === this.family && other.supportsInlineCode === this.supportsInlineCode
     );
   }
 }
@@ -428,10 +426,7 @@ export class Runtime {
 export function determineLatestNodeRuntime(scope: Construct): Runtime {
   // Runtime regional fact should always return a known runtime string that Runtime can index off, but for type
   // safety we also default it here.
-  const runtimeName = Stack.of(scope).regionalFact(
-    FactName.LATEST_NODE_RUNTIME,
-    Runtime.NODEJS_18_X.name
-  );
+  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_18_X.name);
   return new Runtime(runtimeName, RuntimeFamily.NODEJS, {
     supportsInlineCode: true,
     isVariable: true,

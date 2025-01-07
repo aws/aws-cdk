@@ -166,7 +166,10 @@ describe('alias', () => {
       new lambda.Alias(stack, 'Alias2', {
         aliasName: 'prod',
         version,
-        additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }],
+        additionalVersions: [
+          { version, weight: 0.5 },
+          { version, weight: 0.6 },
+        ],
       });
     }).toThrow();
   });
@@ -194,23 +197,20 @@ describe('alias', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-      Dimensions: [{
-        Name: 'FunctionName',
-        Value: {
-          Ref: 'MyLambdaCCE802FB',
+      Dimensions: [
+        {
+          Name: 'FunctionName',
+          Value: {
+            Ref: 'MyLambdaCCE802FB',
+          },
         },
-      }, {
-        Name: 'Resource',
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              { Ref: 'MyLambdaCCE802FB' },
-              ':prod',
-            ],
-          ],
+        {
+          Name: 'Resource',
+          Value: {
+            'Fn::Join': ['', [{ Ref: 'MyLambdaCCE802FB' }, ':prod']],
+          },
         },
-      }],
+      ],
     });
   });
 
@@ -368,13 +368,19 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(() => alias.configureAsyncInvoke({ retryAttempts: 0 })).toThrow(/An EventInvokeConfig has already been configured/);
+    expect(() => alias.configureAsyncInvoke({ retryAttempts: 0 })).toThrow(
+      /An EventInvokeConfig has already been configured/
+    );
   });
 
   test('event invoke config on imported alias', () => {
     // GIVEN
     const stack = new Stack();
-    const fn = lambda.Version.fromVersionArn(stack, 'Fn', 'arn:aws:lambda:region:account-id:function:function-name:version');
+    const fn = lambda.Version.fromVersionArn(
+      stack,
+      'Fn',
+      'arn:aws:lambda:region:account-id:function:function-name:version'
+    );
     const alias = lambda.Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'alias-name', aliasVersion: fn });
 
     // WHEN
@@ -412,19 +418,19 @@ describe('alias', () => {
       MinCapacity: 1,
       MaxCapacity: 5,
       ResourceId: Match.objectLike({
-        'Fn::Join': Match.arrayWith([Match.arrayWith([
-          'function:',
-          Match.objectLike({
-            'Fn::Select': Match.arrayWith([
-              {
-                'Fn::Split': Match.arrayWith([
-                  { Ref: 'Alias325C5727' },
-                ]),
-              },
-            ]),
-          }),
-          ':prod',
-        ])]),
+        'Fn::Join': Match.arrayWith([
+          Match.arrayWith([
+            'function:',
+            Match.objectLike({
+              'Fn::Select': Match.arrayWith([
+                {
+                  'Fn::Split': Match.arrayWith([{ Ref: 'Alias325C5727' }]),
+                },
+              ]),
+            }),
+            ':prod',
+          ]),
+        ]),
       }),
     });
   });
@@ -452,19 +458,19 @@ describe('alias', () => {
       MinCapacity: 1,
       MaxCapacity: 5,
       ResourceId: Match.objectLike({
-        'Fn::Join': Match.arrayWith([Match.arrayWith([
-          'function:',
-          Match.objectLike({
-            'Fn::Select': Match.arrayWith([
-              {
-                'Fn::Split': Match.arrayWith([
-                  { Ref: 'Alias325C5727' },
-                ]),
-              },
-            ]),
-          }),
-          ':prod',
-        ])]),
+        'Fn::Join': Match.arrayWith([
+          Match.arrayWith([
+            'function:',
+            Match.objectLike({
+              'Fn::Select': Match.arrayWith([
+                {
+                  'Fn::Split': Match.arrayWith([{ Ref: 'Alias325C5727' }]),
+                },
+              ]),
+            }),
+            ':prod',
+          ]),
+        ]),
       }),
     });
 
@@ -544,7 +550,9 @@ describe('alias', () => {
     const target = alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    expect(() => target.scaleOnUtilization({ utilizationTarget: 0.95 })).toThrow(/Utilization Target should be between 0.1 and 0.9. Found 0.95/);
+    expect(() => target.scaleOnUtilization({ utilizationTarget: 0.95 })).toThrow(
+      /Utilization Target should be between 0.1 and 0.9. Found 0.95/
+    );
   });
 
   test('can autoscale on a schedule', () => {
@@ -602,7 +610,10 @@ describe('alias', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/Alias/AliasScaling/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-applicationautoscaling:defaultRunEveryMinute]");
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Alias/AliasScaling/Target',
+      "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-applicationautoscaling:defaultRunEveryMinute]"
+    );
   });
 
   test('scheduled scaling shows no warning when minute is * in cron', () => {

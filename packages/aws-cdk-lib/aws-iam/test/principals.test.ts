@@ -48,8 +48,7 @@ test('use of cross-stack role reference does not lead to URLSuffix being exporte
         },
       },
     },
-  },
-  );
+  });
 });
 
 test('cannot have multiple principals with different conditions in the same statement', () => {
@@ -57,24 +56,26 @@ test('cannot have multiple principals with different conditions in the same stat
   const user = new iam.User(stack, 'User');
 
   expect(() => {
-    user.addToPolicy(new iam.PolicyStatement({
-      principals: [
-        new iam.ServicePrincipal('myService.amazon.com', {
-          conditions: {
-            StringEquals: {
-              hairColor: 'blond',
+    user.addToPolicy(
+      new iam.PolicyStatement({
+        principals: [
+          new iam.ServicePrincipal('myService.amazon.com', {
+            conditions: {
+              StringEquals: {
+                hairColor: 'blond',
+              },
             },
-          },
-        }),
-        new iam.ServicePrincipal('yourservice.amazon.com', {
-          conditions: {
-            StringEquals: {
-              hairColor: 'black',
+          }),
+          new iam.ServicePrincipal('yourservice.amazon.com', {
+            conditions: {
+              StringEquals: {
+                hairColor: 'black',
+              },
             },
-          },
-        }),
-      ],
-    }));
+          }),
+        ],
+      })
+    );
   }).toThrow(/All principals in a PolicyStatement must have the same Conditions/);
 });
 
@@ -82,27 +83,31 @@ test('can have multiple principals the same conditions in the same statement', (
   const stack = new Stack(undefined, 'First');
   const user = new iam.User(stack, 'User');
 
-  user.addToPolicy(new iam.PolicyStatement({
-    principals: [
-      new iam.ServicePrincipal('myService.amazon.com'),
-      new iam.ServicePrincipal('yourservice.amazon.com'),
-    ],
-  }));
+  user.addToPolicy(
+    new iam.PolicyStatement({
+      principals: [
+        new iam.ServicePrincipal('myService.amazon.com'),
+        new iam.ServicePrincipal('yourservice.amazon.com'),
+      ],
+    })
+  );
 
-  user.addToPolicy(new iam.PolicyStatement({
-    principals: [
-      new iam.ServicePrincipal('myService.amazon.com', {
-        conditions: {
-          StringEquals: { hairColor: 'blond' },
-        },
-      }),
-      new iam.ServicePrincipal('yourservice.amazon.com', {
-        conditions: {
-          StringEquals: { hairColor: 'blond' },
-        },
-      }),
-    ],
-  }));
+  user.addToPolicy(
+    new iam.PolicyStatement({
+      principals: [
+        new iam.ServicePrincipal('myService.amazon.com', {
+          conditions: {
+            StringEquals: { hairColor: 'blond' },
+          },
+        }),
+        new iam.ServicePrincipal('yourservice.amazon.com', {
+          conditions: {
+            StringEquals: { hairColor: 'blond' },
+          },
+        }),
+      ],
+    })
+  );
 });
 
 test('use federated principal', () => {
@@ -261,7 +266,7 @@ test('PrincipalWithConditions.addCondition with a new condition operator should 
   // GIVEN
   const stack = new Stack();
   const basePrincipal = new iam.ServicePrincipal('service.amazonaws.com');
-  const principalWithConditions = new iam.PrincipalWithConditions(basePrincipal, { });
+  const principalWithConditions = new iam.PrincipalWithConditions(basePrincipal, {});
 
   // WHEN
   principalWithConditions.addCondition('StringEquals', { 'aws:PrincipalTag/critical': 'true' });
@@ -316,9 +321,7 @@ test('AccountPrincipal can specify an organization', () => {
       new iam.PolicyStatement({
         actions: ['service:action'],
         resources: ['*'],
-        principals: [
-          new iam.AccountPrincipal('123456789012').inOrganization('o-xxxxxxxxxx'),
-        ],
+        principals: [new iam.AccountPrincipal('123456789012').inOrganization('o-xxxxxxxxxx')],
       }),
     ],
   });
@@ -385,19 +388,24 @@ describe('standardized Service Principal behavior', () => {
 
   test('no more regional service principals by default', () => {
     const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' } });
-    expect(stack.resolve(agnosticStatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.amazonaws.com'] });
+    expect(stack.resolve(agnosticStatesPrincipal.policyFragment).principalJson).toEqual({
+      Service: ['states.amazonaws.com'],
+    });
   });
 
   test('regional service principal is added for cross-region reference to opt-in region', () => {
     const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' } });
-    expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.af-south-1.amazonaws.com'] });
+    expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({
+      Service: ['states.af-south-1.amazonaws.com'],
+    });
   });
 
   test('regional service principal is not added for same-region reference in opt-in region', () => {
     const stack = new Stack(app, 'Stack', { env: { region: 'af-south-1' } });
-    expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.amazonaws.com'] });
+    expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({
+      Service: ['states.amazonaws.com'],
+    });
   });
-
 });
 
 test('Can enable session tags', () => {
@@ -406,12 +414,10 @@ test('Can enable session tags', () => {
 
   // WHEN
   new iam.Role(stack, 'Role', {
-    assumedBy: new iam.WebIdentityPrincipal(
-      'cognito-identity.amazonaws.com',
-      {
-        'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'asdf' },
-        'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
-      }).withSessionTags(),
+    assumedBy: new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+      StringEquals: { 'cognito-identity.amazonaws.com:aud': 'asdf' },
+      'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
+    }).withSessionTags(),
   });
 
   // THEN
@@ -421,7 +427,7 @@ test('Can enable session tags', () => {
         {
           Action: ['sts:AssumeRoleWithWebIdentity', 'sts:TagSession'],
           Condition: {
-            'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'asdf' },
+            StringEquals: { 'cognito-identity.amazonaws.com:aud': 'asdf' },
             'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
           },
           Effect: 'Allow',
@@ -438,8 +444,7 @@ test('Can enable session tags with conditions (order of calls is irrelevant)', (
 
   // WHEN
   new iam.Role(stack, 'Role', {
-    assumedBy: new iam.ServicePrincipal(
-      's3.amazonaws.com')
+    assumedBy: new iam.ServicePrincipal('s3.amazonaws.com')
       .withConditions({
         StringEquals: { hairColor: 'blond' },
       })
@@ -447,29 +452,30 @@ test('Can enable session tags with conditions (order of calls is irrelevant)', (
   });
 
   new iam.Role(stack, 'Role2', {
-    assumedBy: new iam.ServicePrincipal(
-      's3.amazonaws.com')
-      .withSessionTags()
-      .withConditions({
-        StringEquals: { hairColor: 'blond' },
-      }),
+    assumedBy: new iam.ServicePrincipal('s3.amazonaws.com').withSessionTags().withConditions({
+      StringEquals: { hairColor: 'blond' },
+    }),
   });
 
   // THEN
-  Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-    AssumeRolePolicyDocument: {
-      Statement: [
-        {
-          Action: ['sts:AssumeRole', 'sts:TagSession'],
-          Condition: {
-            StringEquals: { hairColor: 'blond' },
+  Template.fromStack(stack).resourcePropertiesCountIs(
+    'AWS::IAM::Role',
+    {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: ['sts:AssumeRole', 'sts:TagSession'],
+            Condition: {
+              StringEquals: { hairColor: 'blond' },
+            },
+            Effect: 'Allow',
+            Principal: { Service: 's3.amazonaws.com' },
           },
-          Effect: 'Allow',
-          Principal: { Service: 's3.amazonaws.com' },
-        },
-      ],
+        ],
+      },
     },
-  }, 2);
+    2
+  );
 });
 
 test('Can use custom service principle name to create servicePrinciple', () => {

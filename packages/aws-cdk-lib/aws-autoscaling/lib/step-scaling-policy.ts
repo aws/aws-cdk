@@ -157,8 +157,7 @@ export class StepScalingPolicy extends Construct {
         adjustmentType,
         cooldown: props.cooldown,
         estimatedInstanceWarmup: props.estimatedInstanceWarmup,
-        metricAggregationType:
-          props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
+        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
       });
@@ -190,8 +189,7 @@ export class StepScalingPolicy extends Construct {
         adjustmentType,
         cooldown: props.cooldown,
         estimatedInstanceWarmup: props.estimatedInstanceWarmup,
-        metricAggregationType:
-          props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
+        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
       });

@@ -300,16 +300,13 @@ export class Queue extends QueueBase {
     const parsedArn = stack.splitArn(attrs.queueArn, ArnFormat.NO_RESOURCE_NAME);
     const queueName = attrs.queueName || parsedArn.resource;
     const queueUrl =
-      attrs.queueUrl ||
-      `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
+      attrs.queueUrl || `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
 
     class Import extends QueueBase {
       public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
       public readonly queueUrl = queueUrl;
       public readonly queueName = queueName;
-      public readonly encryptionMasterKey = attrs.keyArn
-        ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
-        : undefined;
+      public readonly encryptionMasterKey = attrs.keyArn ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn) : undefined;
       public readonly fifo: boolean = this.determineFifo();
       public readonly encryptionType = attrs.keyArn ? QueueEncryption.KMS : undefined;
 
@@ -388,9 +385,7 @@ export class Queue extends QueueBase {
       const { redrivePermission, sourceQueues } = props.redriveAllowPolicy;
       if (redrivePermission === RedrivePermission.BY_QUEUE) {
         if (!sourceQueues || sourceQueues.length === 0) {
-          throw new Error(
-            "At least one source queue must be specified when RedrivePermission is set to 'byQueue'"
-          );
+          throw new Error("At least one source queue must be specified when RedrivePermission is set to 'byQueue'");
         }
         if (sourceQueues && sourceQueues.length > 10) {
           throw new Error(
@@ -398,9 +393,7 @@ export class Queue extends QueueBase {
           );
         }
       } else if (redrivePermission && sourceQueues) {
-        throw new Error(
-          "sourceQueues cannot be configured when RedrivePermission is set to 'allowAll' or 'denyAll'"
-        );
+        throw new Error("sourceQueues cannot be configured when RedrivePermission is set to 'allowAll' or 'denyAll'");
       }
     }
 
@@ -418,15 +411,12 @@ export class Queue extends QueueBase {
             props.redriveAllowPolicy.redrivePermission ??
             // When `sourceQueues` is provided in `redriveAllowPolicy`, `redrivePermission` defaults to allow specified queues (`BY_QUEUE`);
             // otherwise, it defaults to allow all queues (`ALLOW_ALL`).
-            (props.redriveAllowPolicy.sourceQueues
-              ? RedrivePermission.BY_QUEUE
-              : RedrivePermission.ALLOW_ALL),
+            (props.redriveAllowPolicy.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL),
           sourceQueueArns: props.redriveAllowPolicy.sourceQueues?.map((q) => q.queueArn),
         }
       : undefined;
 
-    const { encryptionMasterKey, encryptionProps, encryptionType } =
-      _determineEncryptionProps.call(this);
+    const { encryptionMasterKey, encryptionProps, encryptionType } = _determineEncryptionProps.call(this);
 
     const fifoProps = this.determineFifoProps(props);
     this.fifo = fifoProps.fifoQueue || false;
@@ -440,8 +430,7 @@ export class Queue extends QueueBase {
       delaySeconds: props.deliveryDelay && props.deliveryDelay.toSeconds(),
       maximumMessageSize: props.maxMessageSizeBytes,
       messageRetentionPeriod: props.retentionPeriod && props.retentionPeriod.toSeconds(),
-      receiveMessageWaitTimeSeconds:
-        props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
+      receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
     queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
@@ -464,9 +453,7 @@ export class Queue extends QueueBase {
       let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
-        throw new Error(
-          "'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used"
-        );
+        throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
       }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {

@@ -35,9 +35,7 @@ export function evaluateCFN(object: any, context: { [key: string]: string } = {}
     'Fn::GetAtt'(logicalId: string, attributeName: string) {
       const key = `${logicalId}.${attributeName}`;
       if (!(key in context)) {
-        throw new Error(
-          `Trying to evaluate Fn::GetAtt of '${logicalId}.${attributeName}' but not in context!`
-        );
+        throw new Error(`Trying to evaluate Fn::GetAtt of '${logicalId}.${attributeName}' but not in context!`);
       }
       return context[key];
     },

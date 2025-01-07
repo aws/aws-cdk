@@ -244,10 +244,7 @@ class EasyDkim extends DkimIdentity {
     super();
   }
 
-  public bind(
-    emailIdentity: EmailIdentity,
-    hostedZone?: route53.IPublicHostedZone
-  ): DkimIdentityConfig | undefined {
+  public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined {
     if (hostedZone) {
       // Use CfnRecordSet instead of CnameRecord to avoid current bad handling of
       // tokens in route53.determineFullyQualifiedDomainName() at https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-route53/lib/util.ts
@@ -308,10 +305,7 @@ class ByoDkim extends DkimIdentity {
     super();
   }
 
-  public bind(
-    emailIdentity: EmailIdentity,
-    hostedZone?: route53.IPublicHostedZone
-  ): DkimIdentityConfig | undefined {
+  public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined {
     if (hostedZone && this.options.publicKey) {
       new route53.TxtRecord(emailIdentity, 'DkimTxt', {
         zone: hostedZone,
@@ -392,11 +386,7 @@ export class EmailIdentity extends EmailIdentityBase {
   /**
    * Use an existing email identity
    */
-  public static fromEmailIdentityName(
-    scope: Construct,
-    id: string,
-    emailIdentityName: string
-  ): IEmailIdentity {
+  public static fromEmailIdentityName(scope: Construct, id: string, emailIdentityName: string): IEmailIdentity {
     class Import extends EmailIdentityBase {
       public readonly emailIdentityName = emailIdentityName;
 

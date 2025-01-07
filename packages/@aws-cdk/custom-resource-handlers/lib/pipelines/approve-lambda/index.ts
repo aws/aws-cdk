@@ -15,8 +15,7 @@ export async function handler(event: any, _context: any) {
     const stages = response.stageStates;
     const validStages = stages?.filter((s: any) => s.stageName === stageName);
     const manualApproval =
-      validStages.length &&
-      validStages[0].actionStates.filter((state: any) => state.actionName === actionName);
+      validStages.length && validStages[0].actionStates.filter((state: any) => state.actionName === actionName);
     const latest = manualApproval && manualApproval.length && manualApproval[0].latestExecution;
 
     return latest ? latest.token : undefined;

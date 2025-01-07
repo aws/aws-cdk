@@ -79,9 +79,7 @@ export class ClusterInstanceType {
    */
   public static provisioned(instanceType?: ec2.InstanceType): ClusterInstanceType {
     return new ClusterInstanceType(
-      (
-        instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM)
-      ).toString(),
+      (instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM)).toString(),
       InstanceType.PROVISIONED
     );
   }
@@ -107,11 +105,7 @@ export interface IClusterInstance {
   /**
    * Create the database instance within the provided cluster
    */
-  bind(
-    scope: Construct,
-    cluster: IDatabaseCluster,
-    options: ClusterInstanceBindOptions
-  ): IAuroraClusterInstance;
+  bind(scope: Construct, cluster: IDatabaseCluster, options: ClusterInstanceBindOptions): IAuroraClusterInstance;
 }
 
 /**
@@ -361,10 +355,7 @@ export class ClusterInstance implements IClusterInstance {
    *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
    * });
    */
-  public static provisioned(
-    id: string,
-    props: ProvisionedClusterInstanceProps = {}
-  ): IClusterInstance {
+  public static provisioned(id: string, props: ProvisionedClusterInstanceProps = {}): IClusterInstance {
     return new ClusterInstance(id, {
       ...props,
       instanceType: ClusterInstanceType.provisioned(props.instanceType),
@@ -379,10 +370,7 @@ export class ClusterInstance implements IClusterInstance {
    *   scaleWithWriter: true,
    * });
    */
-  public static serverlessV2(
-    id: string,
-    props: ServerlessV2ClusterInstanceProps = {}
-  ): IClusterInstance {
+  public static serverlessV2(id: string, props: ServerlessV2ClusterInstanceProps = {}): IClusterInstance {
     return new ClusterInstance(id, {
       ...props,
       promotionTier: props.scaleWithWriter ? 1 : 2,
@@ -398,11 +386,7 @@ export class ClusterInstance implements IClusterInstance {
   /**
    * Add the ClusterInstance to the cluster
    */
-  public bind(
-    scope: Construct,
-    cluster: IDatabaseCluster,
-    props: ClusterInstanceBindOptions
-  ): IAuroraClusterInstance {
+  public bind(scope: Construct, cluster: IDatabaseCluster, props: ClusterInstanceBindOptions): IAuroraClusterInstance {
     return new AuroraClusterInstance(scope, this.id, {
       cluster,
       ...this.props,
@@ -500,19 +484,15 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     let publiclyAccessible = props.publiclyAccessible;
     if (isOwnedResource) {
       const ownedCluster = props.cluster as DatabaseCluster;
-      internetConnected = ownedCluster.vpc.selectSubnets(
-        ownedCluster.vpcSubnets
-      ).internetConnectivityEstablished;
-      const isInPublicSubnet =
-        ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+      internetConnected = ownedCluster.vpc.selectSubnets(ownedCluster.vpcSubnets).internetConnectivityEstablished;
+      const isInPublicSubnet = ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
       publiclyAccessible = props.publiclyAccessible ?? isInPublicSubnet;
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
     const instanceType = props.instanceType ?? ClusterInstanceType.serverlessV2();
     this.type = instanceType.type;
-    this.instanceSize =
-      this.type === InstanceType.PROVISIONED ? props.instanceType?.toString() : undefined;
+    this.instanceSize = this.type === InstanceType.PROVISIONED ? props.instanceType?.toString() : undefined;
 
     // engine is never undefined on a managed resource, i.e. DatabaseCluster
     const engine = props.cluster.engine!;
@@ -535,9 +515,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     const instanceParameterGroup =
       props.parameterGroup ??
       (props.parameters
-        ? FeatureFlags.of(this).isEnabled(
-            AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS
-          )
+        ? FeatureFlags.of(this).isEnabled(AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS)
           ? new ParameterGroup(this, 'InstanceParameterGroup', {
               engine: engine,
               parameters: props.parameters,
@@ -561,16 +539,13 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
         preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-        enablePerformanceInsights:
-          this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
+        enablePerformanceInsights: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
         performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
         performanceInsightsRetentionPeriod: this.performanceInsightRetention,
         // only need to supply this when migrating from legacy method.
         // this is not applicable for aurora instances, but if you do provide it and then
         // change it it will cause an instance replacement
-        dbSubnetGroupName: props.isFromLegacyInstanceProps
-          ? props.subnetGroup?.subnetGroupName
-          : undefined,
+        dbSubnetGroupName: props.isFromLegacyInstanceProps ? props.subnetGroup?.subnetGroupName : undefined,
         dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
         monitoringRoleArn: props.monitoringRole && props.monitoringRole.roleArn,

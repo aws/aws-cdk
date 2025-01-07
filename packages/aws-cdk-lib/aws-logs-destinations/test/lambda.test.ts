@@ -84,14 +84,16 @@ test('lambda permissions are not added when addPermissions is false', () => {
   });
 
   // THEN: Lambda does not have permissions to be invoked by CWL
-  expect(Template.fromStack(stack).findResources('AWS::Lambda::Permission', {
-    Action: 'lambda:InvokeFunction',
-    FunctionName: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
-    Principal: 'logs.amazonaws.com',
-  })).toEqual({});
+  expect(
+    Template.fromStack(stack).findResources('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+      Principal: 'logs.amazonaws.com',
+    })
+  ).toEqual({});
 });
 
-test('subscription depends on lambda\'s permission', () => {
+test("subscription depends on lambda's permission", () => {
   // WHEN
   new logs.SubscriptionFilter(stack, 'Subscription', {
     logGroup,

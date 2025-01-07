@@ -199,10 +199,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     });
 
-    if (
-      this.authBindResult &&
-      !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)
-    ) {
+    if (this.authBindResult && !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
       throw new Error(
         `authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`
       );
@@ -210,10 +207,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     let authorizationScopes = this.authBindResult?.authorizationScopes;
 
-    if (
-      this.authBindResult &&
-      (props.authorizationScopes || this.httpApi.defaultAuthorizationScopes)
-    ) {
+    if (this.authBindResult && (props.authorizationScopes || this.httpApi.defaultAuthorizationScopes)) {
       authorizationScopes = Array.from(
         new Set([
           ...(authorizationScopes ?? []),
@@ -254,10 +248,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
   }
 
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
-    if (
-      !this.authBindResult ||
-      this.authBindResult.authorizationType !== HttpRouteAuthorizationType.AWS_IAM
-    ) {
+    if (!this.authBindResult || this.authBindResult.authorizationType !== HttpRouteAuthorizationType.AWS_IAM) {
       throw new Error('To use grantInvoke, you must use IAM authorization');
     }
 

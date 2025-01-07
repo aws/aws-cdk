@@ -51,10 +51,7 @@ export class ClusterResourceProvider extends NestedStack {
   public static getOrCreate(scope: Construct, props: ClusterResourceProviderProps) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-eks.ClusterResourceProvider';
-    return (
-      (stack.node.tryFindChild(uid) as ClusterResourceProvider) ??
-      new ClusterResourceProvider(stack, uid, props)
-    );
+    return (stack.node.tryFindChild(uid) as ClusterResourceProvider) ?? new ClusterResourceProvider(stack, uid, props);
   }
 
   /**

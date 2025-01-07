@@ -45,12 +45,7 @@ describe('vpc link', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::VpcLink', {
       Name: 'VpcLink',
-      TargetArns: [
-        { Ref: 'NLB03D178991' },
-        { Ref: 'NLB13224D47C' },
-        { Ref: 'NLB2BEBACE62' },
-        { Ref: 'NLB372DB3895' },
-      ],
+      TargetArns: [{ Ref: 'NLB03D178991' }, { Ref: 'NLB13224D47C' }, { Ref: 'NLB2BEBACE62' }, { Ref: 'NLB372DB3895' }],
     });
   });
 

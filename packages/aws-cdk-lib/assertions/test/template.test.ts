@@ -178,12 +178,20 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.resourcePropertiesCountIs('Foo::Bar', {
-        bar: Match.absent(),
-      }, 1);
-      inspect.resourcePropertiesCountIs('Foo::Bar', {
-        baz: Match.absent(),
-      }, 0);
+      inspect.resourcePropertiesCountIs(
+        'Foo::Bar',
+        {
+          bar: Match.absent(),
+        },
+        1
+      );
+      inspect.resourcePropertiesCountIs(
+        'Foo::Bar',
+        {
+          baz: Match.absent(),
+        },
+        0
+      );
     });
     test('absent - no properties', () => {
       const stack = new Stack();
@@ -192,10 +200,14 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.resourcePropertiesCountIs('Foo::Bar', {
-        bar: Match.absent(),
-        baz: 'qux',
-      }, 0);
+      inspect.resourcePropertiesCountIs(
+        'Foo::Bar',
+        {
+          bar: Match.absent(),
+          baz: 'qux',
+        },
+        0
+      );
       inspect.resourcePropertiesCountIs('Foo::Bar', Match.absent(), 1);
     });
     test('not - with properties', () => {
@@ -206,9 +218,13 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.resourcePropertiesCountIs('Foo::Bar', Match.not({
-        baz: 'boo',
-      }), 1);
+      inspect.resourcePropertiesCountIs(
+        'Foo::Bar',
+        Match.not({
+          baz: 'boo',
+        }),
+        1
+      );
     });
     test('not - no properties', () => {
       const stack = new Stack();
@@ -217,9 +233,13 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.resourcePropertiesCountIs('Foo::Bar', Match.not({
-        baz: 'qux',
-      }), 1);
+      inspect.resourcePropertiesCountIs(
+        'Foo::Bar',
+        Match.not({
+          baz: 'qux',
+        }),
+        1
+      );
     });
   });
 
@@ -253,14 +273,16 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(() => inspect.templateMatches({
-        Resources: {
-          Foo: {
-            Type: 'Foo::Bar',
-            Properties: { baz: 'waldo' },
+      expect(() =>
+        inspect.templateMatches({
+          Resources: {
+            Foo: {
+              Type: 'Foo::Bar',
+              Properties: { baz: 'waldo' },
+            },
           },
-        },
-      })).toThrow(/Expected waldo but received qux/);
+        })
+      ).toThrow(/Expected waldo but received qux/);
     });
   });
 
@@ -277,13 +299,17 @@ describe('Template', () => {
         Properties: { baz: 'qux' },
       });
 
-      expect(() => inspect.hasResource('Foo::Bar', {
-        Properties: { baz: 'waldo' },
-      })).toThrow(/Expected waldo but received qux/);
+      expect(() =>
+        inspect.hasResource('Foo::Bar', {
+          Properties: { baz: 'waldo' },
+        })
+      ).toThrow(/Expected waldo but received qux/);
 
-      expect(() => inspect.hasResource('Foo::Bar', {
-        Properties: { baz: 'qux', fred: 'waldo' },
-      })).toThrow(/Missing key/);
+      expect(() =>
+        inspect.hasResource('Foo::Bar', {
+          Properties: { baz: 'qux', fred: 'waldo' },
+        })
+      ).toThrow(/Missing key/);
     });
 
     test('arrayWith', () => {
@@ -298,9 +324,11 @@ describe('Template', () => {
         Properties: { baz: Match.arrayWith(['qux']) },
       });
 
-      expect(() => inspect.hasResource('Foo::Bar', {
-        Properties: { baz: Match.arrayWith(['waldo']) },
-      })).toThrow(/Could not match arrayWith pattern 0/);
+      expect(() =>
+        inspect.hasResource('Foo::Bar', {
+          Properties: { baz: Match.arrayWith(['waldo']) },
+        })
+      ).toThrow(/Could not match arrayWith pattern 0/);
     });
 
     test('arrayWith - multiple resources', async () => {
@@ -338,9 +366,11 @@ describe('Template', () => {
         Properties: Match.objectLike({ fred: 'waldo' }),
       });
 
-      expect(() => inspect.hasResource('Foo::Bar', {
-        Properties: Match.objectLike({ baz: 'waldo' }),
-      })).toThrow(/Expected waldo but received qux/);
+      expect(() =>
+        inspect.hasResource('Foo::Bar', {
+          Properties: Match.objectLike({ baz: 'waldo' }),
+        })
+      ).toThrow(/Expected waldo but received qux/);
     });
 
     test('objectLike - multiple resources', () => {
@@ -374,9 +404,11 @@ describe('Template', () => {
       inspect.hasResource('Foo::Bar', {
         Properties: Match.objectLike({ foo: Match.absent() }),
       });
-      expect(() => inspect.hasResource('Foo::Bar', {
-        Properties: Match.objectLike({ baz: Match.absent() }),
-      })).toThrow(/key should be absent/);
+      expect(() =>
+        inspect.hasResource('Foo::Bar', {
+          Properties: Match.objectLike({ baz: Match.absent() }),
+        })
+      ).toThrow(/key should be absent/);
     });
 
     test('incorrect types', () => {
@@ -387,9 +419,11 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(() => inspect.hasResource('Foo::Baz', {
-        Properties: Match.objectLike({ baz: 'qux' }),
-      })).toThrow(/0 resources with type Foo::Baz/);
+      expect(() =>
+        inspect.hasResource('Foo::Baz', {
+          Properties: Match.objectLike({ baz: 'qux' }),
+        })
+      ).toThrow(/0 resources with type Foo::Baz/);
     });
 
     test('capture', () => {
@@ -431,11 +465,11 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
       inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
 
-      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
-        .toThrow(/Expected waldo but received qux/);
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' })).toThrow(
+        /Expected waldo but received qux/
+      );
 
-      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
-        .toThrow(/Missing key/);
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' })).toThrow(/Missing key/);
     });
 
     test('absent - with properties', () => {
@@ -451,9 +485,11 @@ describe('Template', () => {
         bar: Match.absent(),
       });
 
-      expect(() => inspect.hasResourceProperties('Foo::Bar', {
-        baz: Match.absent(),
-      })).toThrow(/key should be absent/);
+      expect(() =>
+        inspect.hasResourceProperties('Foo::Bar', {
+          baz: Match.absent(),
+        })
+      ).toThrow(/key should be absent/);
     });
 
     test('absent - no properties', () => {
@@ -464,8 +500,9 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
 
-      expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' }))
-        .toThrow(/Missing key/);
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' })).toThrow(
+        /Missing key/
+      );
 
       inspect.hasResourceProperties('Foo::Bar', Match.absent());
     });
@@ -478,9 +515,12 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResourceProperties('Foo::Bar', Match.not({
-        baz: 'boo',
-      }));
+      inspect.hasResourceProperties(
+        'Foo::Bar',
+        Match.not({
+          baz: 'boo',
+        })
+      );
     });
 
     test('not - no properties', () => {
@@ -530,9 +570,13 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(Object.keys(inspect.findResources('Foo::Bar', {
-        Properties: { baz: 'qux' },
-      })).length).toEqual(1);
+      expect(
+        Object.keys(
+          inspect.findResources('Foo::Bar', {
+            Properties: { baz: 'qux' },
+          })
+        ).length
+      ).toEqual(1);
     });
 
     test('no matching resource props', () => {
@@ -543,9 +587,11 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      expect(inspect.findResources('Foo::Bar', {
-        Properties: { baz: 'waldo' },
-      })).toEqual({});
+      expect(
+        inspect.findResources('Foo::Bar', {
+          Properties: { baz: 'waldo' },
+        })
+      ).toEqual({});
     });
 
     test('multiple matching resources', () => {
@@ -597,7 +643,7 @@ describe('Template', () => {
           'The following resources do not match the given definition:',
           /Foo/,
           /Foo2/,
-        ],
+        ]
       );
     });
 
@@ -619,7 +665,7 @@ describe('Template', () => {
           'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
           'The following resources do not match the given definition:',
           /Foo2/,
-        ],
+        ]
       );
     });
 
@@ -679,7 +725,7 @@ describe('Template', () => {
           'The following resources do not match the given definition:',
           /Foo/,
           /Foo2/,
-        ],
+        ]
       );
     });
 
@@ -701,7 +747,7 @@ describe('Template', () => {
           'Template has 2 resource(s) with type Foo::Bar, but only 1 match as expected.',
           'The following resources do not match the given definition:',
           /Foo2/,
-        ],
+        ]
       );
     });
 
@@ -747,14 +793,12 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasOutput('Foo', {
-          Value: 'Bar',
-          Export: { Name: 'ExportBaz' },
-        }),
-        [
-          /1 outputs named Foo/,
-          /Expected ExportBaz but received ExportBar/,
-        ],
+        () =>
+          inspect.hasOutput('Foo', {
+            Value: 'Bar',
+            Export: { Name: 'ExportBaz' },
+          }),
+        [/1 outputs named Foo/, /Expected ExportBaz but received ExportBar/]
       );
     });
 
@@ -769,13 +813,11 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasOutput('Fred', {
-          Value: 'Bar',
-        }),
-        [
-          /1 outputs named Fred/,
-          /Expected Bar but received Baz/,
-        ],
+        () =>
+          inspect.hasOutput('Fred', {
+            Value: 'Bar',
+          }),
+        [/1 outputs named Fred/, /Expected Bar but received Baz/]
       );
     });
   });
@@ -789,13 +831,12 @@ describe('Template', () => {
 
     const inspect = Template.fromStack(stack);
     expectToThrow(
-      () => inspect.hasOutput('Fred', {
-        Value: 'Bar',
-        Export: { Name: 'ExportBar' },
-      }),
-      [
-        /Template has 0 outputs named Fred./,
-      ],
+      () =>
+        inspect.hasOutput('Fred', {
+          Value: 'Bar',
+          Export: { Name: 'ExportBar' },
+        }),
+      [/Template has 0 outputs named Fred./]
     );
   });
 
@@ -901,13 +942,11 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasMapping('*', {
-          Foo: { Bar: 'Qux' },
-        }),
-        [
-          /2 mappings/,
-          /Expected Qux but received Fred/,
-        ],
+        () =>
+          inspect.hasMapping('*', {
+            Foo: { Bar: 'Qux' },
+          }),
+        [/2 mappings/, /Expected Qux but received Fred/]
       );
     });
 
@@ -945,13 +984,11 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasMapping('Fred', {
-          Foo: { Baz: 'Fred' },
-        }),
-        [
-          /1 mappings/,
-          /Expected Fred but received Baz/,
-        ],
+        () =>
+          inspect.hasMapping('Fred', {
+            Foo: { Baz: 'Fred' },
+          }),
+        [/1 mappings/, /Expected Fred but received Baz/]
       );
     });
   });
@@ -1062,7 +1099,7 @@ describe('Template', () => {
           // Third parameter is automatically included as part of DefaultSynthesizer
           /3 parameters/,
           /Expected CommaDelimitedList but received String/,
-        ],
+        ]
       );
     });
 
@@ -1095,10 +1132,7 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
       expectToThrow(
         () => inspect.hasParameter('p2', { Type: 'CommaDelimitedList' }),
-        [
-          /1 parameter/,
-          /Expected CommaDelimitedList but received Number/,
-        ],
+        [/1 parameter/, /Expected CommaDelimitedList but received Number/]
       );
     });
   });
@@ -1209,13 +1243,11 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasCondition('*', {
-          'Fn::Equals': ['Baz', 'Bar'],
-        }),
-        [
-          /2 conditions/,
-          /Missing key/,
-        ],
+        () =>
+          inspect.hasCondition('*', {
+            'Fn::Equals': ['Baz', 'Bar'],
+          }),
+        [/2 conditions/, /Missing key/]
       );
     });
 
@@ -1237,13 +1269,11 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       expectToThrow(
-        () => inspect.hasCondition('Foo', {
-          'Fn::Equals': ['Bar', 'Baz'],
-        }),
-        [
-          /1 conditions/,
-          /Expected Baz but received Bar/,
-        ],
+        () =>
+          inspect.hasCondition('Foo', {
+            'Fn::Equals': ['Bar', 'Baz'],
+          }),
+        [/1 conditions/, /Expected Baz but received Bar/]
       );
     });
   });
@@ -1263,10 +1293,7 @@ describe('Template', () => {
       const firstCondition = inspect.findConditions('Foo');
       expect(firstCondition).toEqual({
         Foo: {
-          'Fn::Equals': [
-            'Bar',
-            'Baz',
-          ],
+          'Fn::Equals': ['Bar', 'Baz'],
         },
       });
 
@@ -1275,10 +1302,7 @@ describe('Template', () => {
         Qux: {
           'Fn::Not': [
             {
-              'Fn::Equals': [
-                'Quux',
-                'Quuz',
-              ],
+              'Fn::Equals': ['Quux', 'Quuz'],
             },
           ],
         },
@@ -1306,10 +1330,7 @@ describe('Template', () => {
       const result = inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Baz'] });
       expect(result).toEqual({
         Foo: {
-          'Fn::Equals': [
-            'Bar',
-            'Baz',
-          ],
+          'Fn::Equals': ['Bar', 'Baz'],
         },
       });
     });
@@ -1370,43 +1391,49 @@ describe('Template', () => {
 
   test('throws when given a template with cyclic dependencies if skipCyclicalDependenciesCheck is false', () => {
     expect(() => {
-      Template.fromJSON({
-        Resources: {
-          Res1: {
-            Type: 'Foo',
-            Properties: {
-              Thing: { Ref: 'Res2' },
+      Template.fromJSON(
+        {
+          Resources: {
+            Res1: {
+              Type: 'Foo',
+              Properties: {
+                Thing: { Ref: 'Res2' },
+              },
+            },
+            Res2: {
+              Type: 'Foo',
+              DependsOn: ['Res1'],
             },
           },
-          Res2: {
-            Type: 'Foo',
-            DependsOn: ['Res1'],
-          },
         },
-      }, {
-        skipCyclicalDependenciesCheck: false,
-      });
+        {
+          skipCyclicalDependenciesCheck: false,
+        }
+      );
     }).toThrow(/dependency cycle/);
   });
 
   test('does not throw when given a template with cyclic dependencies if skipCyclicalDependenciesCheck is true', () => {
     expect(() => {
-      Template.fromJSON({
-        Resources: {
-          Res1: {
-            Type: 'Foo',
-            Properties: {
-              Thing: { Ref: 'Res2' },
+      Template.fromJSON(
+        {
+          Resources: {
+            Res1: {
+              Type: 'Foo',
+              Properties: {
+                Thing: { Ref: 'Res2' },
+              },
+            },
+            Res2: {
+              Type: 'Foo',
+              DependsOn: ['Res1'],
             },
           },
-          Res2: {
-            Type: 'Foo',
-            DependsOn: ['Res1'],
-          },
         },
-      }, {
-        skipCyclicalDependenciesCheck: true,
-      });
+        {
+          skipCyclicalDependenciesCheck: true,
+        }
+      );
     }).not.toThrow(/dependency cycle/);
   });
 
@@ -1440,7 +1467,7 @@ function expectToThrow(fn: () => void, msgs: (RegExp | string)[]): void {
     throw new Error('Function expected to throw, did not throw');
   } catch (error) {
     const message = (error as Error).message;
-    const unmatching = msgs.filter(msg => {
+    const unmatching = msgs.filter((msg) => {
       if (msg instanceof RegExp) {
         return !msg.test(message);
       } else {
@@ -1449,10 +1476,9 @@ function expectToThrow(fn: () => void, msgs: (RegExp | string)[]): void {
     });
 
     if (unmatching.length > 0) {
-      throw new Error([
-        `Error thrown did not contain expected messages: ${unmatching}`,
-        `Received error: ${message}`,
-      ].join('\n'));
+      throw new Error(
+        [`Error thrown did not contain expected messages: ${unmatching}`, `Received error: ${message}`].join('\n')
+      );
     }
   }
 }

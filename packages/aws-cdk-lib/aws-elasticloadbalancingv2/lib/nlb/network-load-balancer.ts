@@ -545,10 +545,7 @@ export interface INetworkLoadBalancerMetrics {
 /**
  * A network load balancer
  */
-export interface INetworkLoadBalancer
-  extends ILoadBalancerV2,
-    ec2.IVpcEndpointServiceLoadBalancer,
-    ec2.IConnectable {
+export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointServiceLoadBalancer, ec2.IConnectable {
   /**
    * The VPC this load balancer has been created in (if available)
    */
@@ -602,10 +599,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
     this.loadBalancerDnsName = props.loadBalancerDnsName;
-    this.metrics = new NetworkLoadBalancerMetrics(
-      this,
-      parseLoadBalancerFullName(props.loadBalancerArn)
-    );
+    this.metrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
     this.securityGroups = props.securityGroupIds;
     this.connections = new ec2.Connections({
       securityGroups: props.securityGroupIds.map((securityGroupId, index) =>

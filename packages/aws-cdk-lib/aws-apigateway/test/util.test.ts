@@ -29,11 +29,15 @@ describe('util', () => {
 
   describe('parseAwsApiCall', () => {
     test('fails if "actionParams" is set but "action" is undefined', () => {
-      expect(() => parseAwsApiCall(undefined, undefined, { foo: '123' })).toThrow(/"actionParams" requires that "action" will be set/);
+      expect(() => parseAwsApiCall(undefined, undefined, { foo: '123' })).toThrow(
+        /"actionParams" requires that "action" will be set/
+      );
     });
 
     test('fails since "action" and "path" are mutually exclusive', () => {
-      expect(() => parseAwsApiCall('foo', 'bar')).toThrow(/"path" and "action" are mutually exclusive \(path="foo", action="bar"\)/);
+      expect(() => parseAwsApiCall('foo', 'bar')).toThrow(
+        /"path" and "action" are mutually exclusive \(path="foo", action="bar"\)/
+      );
     });
 
     test('fails if "path" and "action" are both undefined', () => {

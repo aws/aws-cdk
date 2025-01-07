@@ -5,10 +5,7 @@ import { executeStatement } from './redshift-data';
 import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns, makePhysicalId } from './util';
 
-export async function handler(
-  props: TableAndClusterProps,
-  event: AWSLambda.CloudFormationCustomResourceEvent
-) {
+export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
   const getTableNameSuffix = (generateSuffix: string) =>
     generateSuffix === 'true' ? `${event.StackId.substring(event.StackId.length - 12)}` : '';
@@ -40,9 +37,7 @@ export async function handler(
     );
     return;
   } else if (event.RequestType === 'Update') {
-    const isTableV2 = event.PhysicalResourceId.includes(
-      event.StackId.substring(event.StackId.length - 12)
-    );
+    const isTableV2 = event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12));
     const oldTableName =
       event.OldResourceProperties.tableName.prefix +
       getTableNameSuffix(event.OldResourceProperties.tableName.generateSuffix);
@@ -162,9 +157,7 @@ async function updateTable(
     })
     .map((column) => `ADD ${column.name} ${column.dataType}`);
   if (columnAdditions.length > 0) {
-    alterationStatements.push(
-      ...columnAdditions.map((addition) => `ALTER TABLE ${tableName} ${addition}`)
-    );
+    alterationStatements.push(...columnAdditions.map((addition) => `ALTER TABLE ${tableName} ${addition}`));
   }
 
   const columnEncoding = tableColumns
@@ -185,8 +178,7 @@ async function updateTable(
       );
     })
     .map(
-      (column) =>
-        `COMMENT ON COLUMN ${tableName}.${column.name} IS ${column.comment ? `'${column.comment}'` : 'NULL'}`
+      (column) => `COMMENT ON COLUMN ${tableName}.${column.name} IS ${column.comment ? `'${column.comment}'` : 'NULL'}`
     );
   if (columnComments.length > 0) {
     alterationStatements.push(...columnComments);
@@ -213,15 +205,10 @@ async function updateTable(
   }
 
   const oldDistStyle = oldResourceProperties.distStyle;
-  if (
-    (!oldDistStyle && tableAndClusterProps.distStyle) ||
-    (oldDistStyle && !tableAndClusterProps.distStyle)
-  ) {
+  if ((!oldDistStyle && tableAndClusterProps.distStyle) || (oldDistStyle && !tableAndClusterProps.distStyle)) {
     return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
   } else if (oldDistStyle !== tableAndClusterProps.distStyle) {
-    alterationStatements.push(
-      `ALTER TABLE ${tableName} ALTER DISTSTYLE ${tableAndClusterProps.distStyle}`
-    );
+    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE ${tableAndClusterProps.distStyle}`);
   }
 
   const oldDistKey = getDistKeyColumn(oldTableColumns)?.name;
@@ -253,9 +240,7 @@ async function updateTable(
 
       case TableSortStyle.COMPOUND: {
         const sortKeyColumnsString = getSortKeyColumnsString(newSortKeyColumns);
-        alterationStatements.push(
-          `ALTER TABLE ${tableName} ALTER ${newSortStyle} SORTKEY(${sortKeyColumnsString})`
-        );
+        alterationStatements.push(`ALTER TABLE ${tableName} ALTER ${newSortStyle} SORTKEY(${sortKeyColumnsString})`);
         break;
       }
 
@@ -269,24 +254,17 @@ async function updateTable(
   const oldComment = oldResourceProperties.tableComment;
   const newComment = tableAndClusterProps.tableComment;
   if (oldComment !== newComment) {
-    alterationStatements.push(
-      `COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`
-    );
+    alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`);
   }
 
   // Limited by human input
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-  await Promise.all(
-    alterationStatements.map((statement) => executeStatement(statement, tableAndClusterProps))
-  );
+  await Promise.all(alterationStatements.map((statement) => executeStatement(statement, tableAndClusterProps)));
 
   if (isTableV2) {
     const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
     if (tableNamePrefix !== oldTableNamePrefix) {
-      await executeStatement(
-        `ALTER TABLE ${tableName} RENAME TO ${newTableName}`,
-        tableAndClusterProps
-      );
+      await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${newTableName}`, tableAndClusterProps);
       return tableNamePrefix + tableNameSuffix;
     }
   }

@@ -155,8 +155,7 @@ export class Alias extends AliasBase {
       throw new Error('Either aliasId or aliasArn must be provided in AliasAttributes');
     }
     const aliasId =
-      attrs.aliasId ??
-      cdk.Stack.of(scope).splitArn(attrs.aliasArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+      attrs.aliasId ?? cdk.Stack.of(scope).splitArn(attrs.aliasArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!aliasId) {
       throw new Error(`No alias identifier found in ARN: '${attrs.aliasArn}'`);
@@ -224,9 +223,7 @@ export class Alias extends AliasBase {
     }
 
     if (props.terminalMessage && props.fleet) {
-      throw new Error(
-        'Either a terminal message or a fleet must be binded to this Alias, not both.'
-      );
+      throw new Error('Either a terminal message or a fleet must be binded to this Alias, not both.');
     }
 
     const resource = new CfnAlias(this, 'Resource', {

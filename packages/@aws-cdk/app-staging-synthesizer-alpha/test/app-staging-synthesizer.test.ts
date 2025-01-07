@@ -16,7 +16,10 @@ describe(AppStagingSynthesizer, () => {
 
   beforeEach(() => {
     app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID, stagingBucketEncryption: BucketEncryption.S3_MANAGED }),
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+      }),
     });
     stack = new Stack(app, 'Stack', {
       env: {
@@ -39,7 +42,9 @@ describe(AppStagingSynthesizer, () => {
     const stackArtifact = asm.getStackArtifact('Stack');
 
     const templateObjectKey = `${DEPLOY_TIME_PREFIX}${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-000000000000-us-east-1/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(
+      `s3://cdk-${APP_ID}-staging-000000000000-us-east-1/${templateObjectKey}`
+    );
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -63,7 +68,10 @@ describe(AppStagingSynthesizer, () => {
 
   test('stack template is in the asset manifest - environment tokens', () => {
     const app2 = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID, stagingBucketEncryption: BucketEncryption.S3_MANAGED }),
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+      }),
     });
     const accountToken = Token.asString('111111111111');
     const regionToken = Token.asString('us-east-2');
@@ -86,7 +94,9 @@ describe(AppStagingSynthesizer, () => {
     const stackArtifact = asm.getStackArtifact('Stack2');
 
     const templateObjectKey = `${DEPLOY_TIME_PREFIX}${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-${accountToken}-${regionToken}/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(
+      `s3://cdk-${APP_ID}-staging-${accountToken}-${regionToken}/${templateObjectKey}`
+    );
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -138,7 +148,9 @@ describe(AppStagingSynthesizer, () => {
 
     // THEN - we have a fixed asset location
     expect(evalCFN(location.bucketName)).toEqual(`cdk-${APP_ID}-staging-000000000000-us-east-1`);
-    expect(evalCFN(location.httpUrl)).toEqual(`https://s3.us-east-1.domain.aws/cdk-${APP_ID}-staging-000000000000-us-east-1/abcdef.ts`);
+    expect(evalCFN(location.httpUrl)).toEqual(
+      `https://s3.us-east-1.domain.aws/cdk-${APP_ID}-staging-000000000000-us-east-1/abcdef.ts`
+    );
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -178,7 +190,7 @@ describe(AppStagingSynthesizer, () => {
   });
 
   describe('deploy time assets', () => {
-    test('have the \'deploy-time/\' prefix', () => {
+    test("have the 'deploy-time/' prefix", () => {
       // WHEN
       const location = stack.synthesizer.addFileAsset({
         fileName: __filename,
@@ -204,7 +216,9 @@ describe(AppStagingSynthesizer, () => {
 
       const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
       expect(manifestArtifact).toBeDefined();
-      const manifest: cxschema.AssetManifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+      const manifest: cxschema.AssetManifest = JSON.parse(
+        fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' })
+      );
 
       expect(manifest.files).toBeDefined();
       expect(Object.keys(manifest.files!).length).toEqual(2);
@@ -238,11 +252,13 @@ describe(AppStagingSynthesizer, () => {
       // THEN
       Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::S3::Bucket', {
         LifecycleConfiguration: {
-          Rules: Match.arrayWith([{
-            ExpirationInDays: 30,
-            Prefix: DEPLOY_TIME_PREFIX,
-            Status: 'Enabled',
-          }]),
+          Rules: Match.arrayWith([
+            {
+              ExpirationInDays: 30,
+              Prefix: DEPLOY_TIME_PREFIX,
+              Status: 'Enabled',
+            },
+          ]),
         },
       });
     });
@@ -272,11 +288,13 @@ describe(AppStagingSynthesizer, () => {
       // THEN
       Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::S3::Bucket', {
         LifecycleConfiguration: {
-          Rules: Match.arrayWith([{
-            ExpirationInDays: 1,
-            Prefix: DEPLOY_TIME_PREFIX,
-            Status: 'Enabled',
-          }]),
+          Rules: Match.arrayWith([
+            {
+              ExpirationInDays: 1,
+              Prefix: DEPLOY_TIME_PREFIX,
+              Status: 'Enabled',
+            },
+          ]),
         },
         BucketEncryption: {
           ServerSideEncryptionConfiguration: [
@@ -346,11 +364,7 @@ describe(AppStagingSynthesizer, () => {
             Principal: {
               AWS: Match.anyValue(),
             },
-            Action: [
-              's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
-            ],
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           }),
         ]),
       },
@@ -373,10 +387,14 @@ describe(AppStagingSynthesizer, () => {
   });
 
   test('throws with docker image asset without assetName', () => {
-    expect(() => stack.synthesizer.addDockerImageAsset({
-      directoryName: '.',
-      sourceHash: 'abcdef',
-    })).toThrow('Assets synthesized with AppScopedStagingSynthesizer must include an \'assetName\' in the asset source definition.');
+    expect(() =>
+      stack.synthesizer.addDockerImageAsset({
+        directoryName: '.',
+        sourceHash: 'abcdef',
+      })
+    ).toThrow(
+      "Assets synthesized with AppScopedStagingSynthesizer must include an 'assetName' in the asset source definition."
+    );
   });
 
   test('docker image asset depends on staging stack', () => {
@@ -573,12 +591,15 @@ describe(AppStagingSynthesizer, () => {
   });
 
   test('throws if synthesizer props have tokens', () => {
-    expect(() => new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
-        appId: Lazy.string({ produce: () => 'appId' }),
-        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-      }),
-    })).toThrow(/AppStagingSynthesizer property 'appId' may not contain tokens;/);
+    expect(
+      () =>
+        new App({
+          defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+            appId: Lazy.string({ produce: () => 'appId' }),
+            stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+          }),
+        })
+    ).toThrow(/AppStagingSynthesizer property 'appId' may not contain tokens;/);
   });
 
   test('throws when staging resource stack is too large', () => {
@@ -597,10 +618,10 @@ describe(AppStagingSynthesizer, () => {
   });
 
   /**
-  * Evaluate a possibly string-containing value the same way CFN would do
-  *
-  * (Be invariant to the specific Fn::Sub or Fn::Join we would output)
-  */
+   * Evaluate a possibly string-containing value the same way CFN would do
+   *
+   * (Be invariant to the specific Fn::Sub or Fn::Join we would output)
+   */
   function evalCFN(value: any) {
     return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
   }

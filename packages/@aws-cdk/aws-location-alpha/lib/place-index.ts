@@ -83,11 +83,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Use an existing place index by name
    */
-  public static fromPlaceIndexName(
-    scope: Construct,
-    id: string,
-    placeIndexName: string
-  ): IPlaceIndex {
+  public static fromPlaceIndexName(scope: Construct, id: string, placeIndexName: string): IPlaceIndex {
     const placeIndexArn = Stack.of(scope).formatArn({
       service: 'geo',
       resource: 'place-index',
@@ -100,11 +96,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Use an existing place index by ARN
    */
-  public static fromPlaceIndexArn(
-    scope: Construct,
-    id: string,
-    placeIndexArn: string
-  ): IPlaceIndex {
+  public static fromPlaceIndexArn(scope: Construct, id: string, placeIndexArn: string): IPlaceIndex {
     const parsedArn = Stack.of(scope).splitArn(placeIndexArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
@@ -141,11 +133,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   public readonly placeIndexUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
-    if (
-      props.description &&
-      !Token.isUnresolved(props.description) &&
-      props.description.length > 1000
-    ) {
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(
         `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`
       );

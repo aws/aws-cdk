@@ -8,8 +8,7 @@ import { AspectPriority, Aspects, IAspect, RemovalPolicy } from '../../../core/l
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
 export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
 export const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-handler-logGroup';
-export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION =
-  'aws:cdk:is-custom-resource-handler-logRetention';
+export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resource-handler-logRetention';
 export const CUSTOM_RESOURCE_RUNTIME_FAMILY = 'aws:cdk:is-custom-resource-handler-runtime-family';
 
 /**

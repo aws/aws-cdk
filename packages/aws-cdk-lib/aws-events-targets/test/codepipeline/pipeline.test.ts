@@ -19,36 +19,43 @@ describe('CodePipeline event target', () => {
     const buildArtifact = new codepipeline.Artifact('Bld');
     pipeline.addStage({
       stageName: 'Source',
-      actions: [new TestAction({
-        actionName: 'Hello',
-        category: codepipeline.ActionCategory.SOURCE,
-        provider: 'x',
-        artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
-        outputs: [srcArtifact],
-      })],
+      actions: [
+        new TestAction({
+          actionName: 'Hello',
+          category: codepipeline.ActionCategory.SOURCE,
+          provider: 'x',
+          artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
+          outputs: [srcArtifact],
+        }),
+      ],
     });
     pipeline.addStage({
       stageName: 'Build',
-      actions: [new TestAction({
-        actionName: 'Hello',
-        category: codepipeline.ActionCategory.BUILD,
-        provider: 'y',
-        inputs: [srcArtifact],
-        outputs: [buildArtifact],
-        artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 1, maxOutputs: 1 },
-      })],
+      actions: [
+        new TestAction({
+          actionName: 'Hello',
+          category: codepipeline.ActionCategory.BUILD,
+          provider: 'y',
+          inputs: [srcArtifact],
+          outputs: [buildArtifact],
+          artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 1, maxOutputs: 1 },
+        }),
+      ],
     });
     pipelineArn = {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':codepipeline:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        { Ref: 'PipelineC660917D' },
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':codepipeline:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'PipelineC660917D' },
+        ],
+      ],
     };
   });
 
@@ -99,11 +106,13 @@ describe('CodePipeline event target', () => {
         // WHEN
         let queue = new sqs.Queue(stack, 'dlq');
 
-        rule.addTarget(new targets.CodePipeline(pipeline, {
-          retryAttempts: 2,
-          maxEventAge: Duration.hours(2),
-          deadLetterQueue: queue,
-        }));
+        rule.addTarget(
+          new targets.CodePipeline(pipeline, {
+            retryAttempts: 2,
+            maxEventAge: Duration.hours(2),
+            deadLetterQueue: queue,
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -136,10 +145,7 @@ describe('CodePipeline event target', () => {
               },
               DeadLetterConfig: {
                 Arn: {
-                  'Fn::GetAtt': [
-                    'dlq09C78ACC',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['dlq09C78ACC', 'Arn'],
                 },
               },
               Id: 'Target0',
@@ -148,10 +154,7 @@ describe('CodePipeline event target', () => {
                 MaximumRetryAttempts: 2,
               },
               RoleArn: {
-                'Fn::GetAtt': [
-                  'PipelineEventsRole46BEEA7C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['PipelineEventsRole46BEEA7C', 'Arn'],
               },
             },
           ],
@@ -160,9 +163,11 @@ describe('CodePipeline event target', () => {
 
       test('adds 0 retry attempts to the target configuration', () => {
         // WHEN
-        rule.addTarget(new targets.CodePipeline(pipeline, {
-          retryAttempts: 0,
-        }));
+        rule.addTarget(
+          new targets.CodePipeline(pipeline, {
+            retryAttempts: 0,
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -198,10 +203,7 @@ describe('CodePipeline event target', () => {
                 MaximumRetryAttempts: 0,
               },
               RoleArn: {
-                'Fn::GetAtt': [
-                  'PipelineEventsRole46BEEA7C',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['PipelineEventsRole46BEEA7C', 'Arn'],
               },
             },
           ],
@@ -217,9 +219,11 @@ describe('CodePipeline event target', () => {
         const roleResource = role.node.defaultChild as CfnElement;
         roleResource.overrideLogicalId('MyRole'); // to make it deterministic in the assertion below
 
-        rule.addTarget(new targets.CodePipeline(pipeline, {
-          eventRole: role,
-        }));
+        rule.addTarget(
+          new targets.CodePipeline(pipeline, {
+            eventRole: role,
+          })
+        );
       });
 
       test("points at the given event role in the rule's targets", () => {
@@ -241,8 +245,11 @@ class TestAction implements codepipeline.IAction {
     // nothing to do
   }
 
-  public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  public bind(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    _options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     return {};
   }
 

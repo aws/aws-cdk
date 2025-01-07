@@ -14,9 +14,8 @@ describe('duration', () => {
     const stack = new Stack();
     const lazyDuration = Duration.seconds(Token.asNumber({ resolve: () => 1337 }));
     expect(stack.resolve(lazyDuration.toSeconds())).toEqual(1337);
-    expect(
-      () => stack.resolve(lazyDuration.toMinutes())).toThrow(
-      /Duration must be specified as 'Duration.minutes\(\)' here/,
+    expect(() => stack.resolve(lazyDuration.toMinutes())).toThrow(
+      /Duration must be specified as 'Duration.minutes\(\)' here/
     );
   });
 
@@ -98,7 +97,7 @@ describe('duration', () => {
 
     expect(Duration.seconds(65).toIsoString()).toEqual('PT1M5S');
     expect(Duration.seconds(1 + 60 * (1 + 60 * (1 + 24))).toIsoString()).toEqual('P1DT1H1M1S');
-    expect(Duration.millis(1 + (1000 * (1 + 60 * (1 + 60 * (1 + 24))))).toIsoString()).toEqual('P1DT1H1M1.001S');
+    expect(Duration.millis(1 + 1000 * (1 + 60 * (1 + 60 * (1 + 24)))).toIsoString()).toEqual('P1DT1H1M1.001S');
   });
 
   test('parse', () => {
@@ -116,7 +115,7 @@ describe('duration', () => {
     expect(Duration.parse('P5D').toSeconds()).toEqual(432_000);
 
     expect(Duration.parse('P1DT1H1M1S').toSeconds()).toEqual(1 + 60 * (1 + 60 * (1 + 24)));
-    expect(Duration.parse('P1DT1H1M1.001S').toMilliseconds()).toEqual(1 + (1000 * (1 + 60 * (1 + 60 * (1 + 24)))));
+    expect(Duration.parse('P1DT1H1M1.001S').toMilliseconds()).toEqual(1 + 1000 * (1 + 60 * (1 + 60 * (1 + 24))));
   });
 
   test('reject illegal parses', () => {
@@ -154,14 +153,16 @@ describe('duration', () => {
 
   test('add two durations', () => {
     expect(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds()).toEqual(Duration.seconds(90).toSeconds());
-    expect(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }))
-      .toEqual(Duration.seconds(90).toMinutes({ integral: false }));
+    expect(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false })).toEqual(
+      Duration.seconds(90).toMinutes({ integral: false })
+    );
   });
 
   test('subtract two durations', () => {
     expect(Duration.minutes(1).minus(Duration.seconds(30)).toSeconds()).toEqual(Duration.seconds(30).toSeconds());
-    expect(Duration.minutes(1).minus(Duration.seconds(30)).toMinutes({ integral: false }))
-      .toEqual(Duration.seconds(30).toMinutes({ integral: false }));
+    expect(Duration.minutes(1).minus(Duration.seconds(30)).toMinutes({ integral: false })).toEqual(
+      Duration.seconds(30).toMinutes({ integral: false })
+    );
   });
 
   test('get unit label from duration', () => {
@@ -205,16 +206,16 @@ describe('integral flag checks', () => {
 
   test('convert fractional minutes to fractional seconds', () => {
     expect(() => {
-      Duration.minutes(9/8).toSeconds();
+      Duration.minutes(9 / 8).toSeconds();
     }).toThrow(/cannot be converted into a whole number of/);
   });
 
   test('convert fractional minutes to fractional seconds - integral: false', () => {
-    expect(Duration.minutes(9/8).toSeconds({ integral: false })).toEqual(67.5);
+    expect(Duration.minutes(9 / 8).toSeconds({ integral: false })).toEqual(67.5);
   });
 
   test('convert fractional minutes to whole seconds', () => {
-    expect(Duration.minutes(5/4).toSeconds({ integral: false })).toEqual(75);
+    expect(Duration.minutes(5 / 4).toSeconds({ integral: false })).toEqual(75);
   });
 
   test('convert whole minutes to whole seconds', () => {
@@ -239,6 +240,6 @@ describe('integral flag checks', () => {
 function floatEqual(actual: number, expected: number) {
   expect(
     // Floats are subject to rounding errors up to Number.ESPILON
-    actual >= expected - Number.EPSILON && actual <= expected + Number.EPSILON,
+    actual >= expected - Number.EPSILON && actual <= expected + Number.EPSILON
   ).toEqual(true);
 }

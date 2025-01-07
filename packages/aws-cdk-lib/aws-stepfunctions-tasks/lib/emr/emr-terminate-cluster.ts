@@ -37,10 +37,7 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
   ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
-    validatePatternSupported(
-      this.integrationPattern,
-      EmrTerminateCluster.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, EmrTerminateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -50,11 +47,7 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn(
-        'elasticmapreduce',
-        'terminateCluster',
-        this.integrationPattern
-      ),
+      Resource: integrationResourceArn('elasticmapreduce', 'terminateCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
       }),

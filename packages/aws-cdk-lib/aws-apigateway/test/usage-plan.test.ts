@@ -28,7 +28,11 @@ describe('usage plan', () => {
   test('usage plan with integer throttling limits', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const api = new apigateway.RestApi(stack, 'my-api', {
+      cloudWatchRole: false,
+      deploy: true,
+      deployOptions: { stageName: 'test' },
+    });
     const method: apigateway.Method = api.root.addMethod('GET'); // Need at least one method on the api
     const usagePlanName = 'Basic';
     const usagePlanDescription = 'Basic Usage Plan with integer throttling limits';
@@ -79,7 +83,11 @@ describe('usage plan', () => {
   test('usage plan with integer and float throttling limits', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const api = new apigateway.RestApi(stack, 'my-api', {
+      cloudWatchRole: false,
+      deploy: true,
+      deployOptions: { stageName: 'test' },
+    });
     const method: apigateway.Method = api.root.addMethod('GET'); // Need at least one method on the api
     const usagePlanName = 'Basic';
     const usagePlanDescription = 'Basic Usage Plan with integer and float throttling limits';
@@ -130,7 +138,11 @@ describe('usage plan', () => {
   test('usage plan with blocked methods', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const api = new apigateway.RestApi(stack, 'my-api', {
+      cloudWatchRole: false,
+      deploy: true,
+      deployOptions: { stageName: 'test' },
+    });
     const method: apigateway.Method = api.root.addMethod('GET'); // Need at least one method on the api
     const usagePlanName = 'Basic';
     const usagePlanDescription = 'Basic Usage Plan with throttling limits';
@@ -200,7 +212,6 @@ describe('usage plan', () => {
   });
 
   describe('UsagePlanKey', () => {
-
     test('default', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -227,7 +238,11 @@ describe('usage plan', () => {
     test('imported', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const usagePlan: apigateway.IUsagePlan = apigateway.UsagePlan.fromUsagePlanId(stack, 'my-usage-plan', 'imported-id');
+      const usagePlan: apigateway.IUsagePlan = apigateway.UsagePlan.fromUsagePlanId(
+        stack,
+        'my-usage-plan',
+        'imported-id'
+      );
       const apiKey: apigateway.ApiKey = new apigateway.ApiKey(stack, 'my-api-key');
 
       // WHEN

@@ -319,11 +319,7 @@ export class Connection extends Resource implements IConnection {
    * @param id Construct ID
    * @param attrs Imported connection properties
    */
-  public static fromConnectionAttributes(
-    scope: Construct,
-    id: string,
-    attrs: ConnectionAttributes
-  ): IConnection {
+  public static fromConnectionAttributes(scope: Construct, id: string, attrs: ConnectionAttributes): IConnection {
     return new ImportedConnection(scope, id, attrs);
   }
 
@@ -426,9 +422,7 @@ enum AuthorizationType {
   OAUTH_CLIENT_CREDENTIALS = 'OAUTH_CLIENT_CREDENTIALS',
 }
 
-function renderHttpParameters(
-  ps?: Record<string, HttpParameter>
-): CfnConnection.ParameterProperty[] | undefined {
+function renderHttpParameters(ps?: Record<string, HttpParameter>): CfnConnection.ParameterProperty[] | undefined {
   if (!ps || Object.keys(ps).length === 0) {
     return undefined;
   }

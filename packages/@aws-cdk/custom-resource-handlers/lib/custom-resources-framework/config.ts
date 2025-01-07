@@ -98,24 +98,12 @@ export const config: HandlerFrameworkConfig = {
     'asset-deployment-provider': [
       {
         type: ComponentType.FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-amplify-alpha',
-          'asset-deployment-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.ts'),
         handler: 'index.onEvent',
       },
       {
         type: ComponentType.FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-amplify-alpha',
-          'asset-deployment-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.ts'),
         handler: 'index.isComplete',
       },
     ],
@@ -161,13 +149,7 @@ export const config: HandlerFrameworkConfig = {
     'restrict-default-sg-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-ec2',
-          'restrict-default-security-group-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-ec2', 'restrict-default-security-group-handler', 'index.ts'),
       },
     ],
   },
@@ -175,13 +157,7 @@ export const config: HandlerFrameworkConfig = {
     'auto-delete-images-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-ecr',
-          'auto-delete-images-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-ecr', 'auto-delete-images-handler', 'index.ts'),
       },
     ],
   },
@@ -200,24 +176,12 @@ export const config: HandlerFrameworkConfig = {
     'cluster-resource-provider': [
       {
         type: ComponentType.FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-eks',
-          'cluster-resource-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'cluster-resource-handler', 'index.ts'),
         handler: 'index.onEvent',
       },
       {
         type: ComponentType.FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-eks',
-          'cluster-resource-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'cluster-resource-handler', 'index.ts'),
         handler: 'index.isComplete',
       },
     ],
@@ -230,53 +194,25 @@ export const config: HandlerFrameworkConfig = {
       },
       {
         type: ComponentType.NO_OP,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-eks',
-          'kubectl-handler',
-          'apply',
-          '__init__.py'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'apply', '__init__.py'),
         runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-eks',
-          'kubectl-handler',
-          'get',
-          '__init__.py'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'get', '__init__.py'),
         runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-eks',
-          'kubectl-handler',
-          'helm',
-          '__init__.py'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'helm', '__init__.py'),
         runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-eks',
-          'kubectl-handler',
-          'patch',
-          '__init__.py'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
         runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
@@ -286,13 +222,7 @@ export const config: HandlerFrameworkConfig = {
     'aws-api-provider': [
       {
         type: ComponentType.SINGLETON_FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-events-targets',
-          'aws-api-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-events-targets', 'aws-api-handler', 'index.ts'),
       },
     ],
   },
@@ -330,25 +260,13 @@ export const config: HandlerFrameworkConfig = {
     'cross-account-zone-delegation-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-route53',
-          'cross-account-zone-delegation-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'cross-account-zone-delegation-handler', 'index.ts'),
       },
     ],
     'delete-existing-record-set-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-route53',
-          'delete-existing-record-set-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'delete-existing-record-set-handler', 'index.ts'),
       },
     ],
   },
@@ -356,25 +274,13 @@ export const config: HandlerFrameworkConfig = {
     'auto-delete-objects-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-s3',
-          'auto-delete-objects-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'auto-delete-objects-handler', 'index.ts'),
       },
     ],
     'notifications-resource-handler': [
       {
         type: ComponentType.NO_OP,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-s3',
-          'notifications-resource-handler',
-          'index.py'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'notifications-resource-handler', 'index.py'),
         runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
@@ -384,13 +290,7 @@ export const config: HandlerFrameworkConfig = {
     'bucket-deployment-provider': [
       {
         type: ComponentType.SINGLETON_FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-s3-deployment',
-          'bucket-deployment-handler',
-          'index.py'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
         runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
@@ -420,25 +320,13 @@ export const config: HandlerFrameworkConfig = {
     'eval-nodejs-provider': [
       {
         type: ComponentType.SINGLETON_FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-stepfunctions-tasks',
-          'eval-nodejs-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'eval-nodejs-handler', 'index.ts'),
       },
     ],
     'role-policy-provider': [
       {
         type: ComponentType.SINGLETON_FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'aws-stepfunctions-tasks',
-          'role-policy-handler',
-          'index.py'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'role-policy-handler', 'index.py'),
         runtime: Runtime.PYTHON_3_11,
         minifyAndBundle: false,
       },
@@ -468,25 +356,13 @@ export const config: HandlerFrameworkConfig = {
     'cross-region-ssm-writer-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'core',
-          'cross-region-ssm-writer-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-writer-handler', 'index.ts'),
       },
     ],
     'cross-region-ssm-reader-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'core',
-          'cross-region-ssm-reader-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-reader-handler', 'index.ts'),
       },
     ],
     'nodejs-entrypoint-provider': [
@@ -501,13 +377,7 @@ export const config: HandlerFrameworkConfig = {
     'aws-custom-resource-provider': [
       {
         type: ComponentType.SINGLETON_FUNCTION,
-        sourceCode: path.resolve(
-          __dirname,
-          '..',
-          'custom-resources',
-          'aws-custom-resource-handler',
-          'index.ts'
-        ),
+        sourceCode: path.resolve(__dirname, '..', 'custom-resources', 'aws-custom-resource-handler', 'index.ts'),
       },
     ],
   },
@@ -533,6 +403,5 @@ export const config: HandlerFrameworkConfig = {
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
 export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
 export const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-handler-logGroup';
-export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION =
-  'aws:cdk:is-custom-resource-handler-logRetention';
+export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resource-handler-logRetention';
 export const CUSTOM_RESOURCE_RUNTIME_FAMILY = 'aws:cdk:is-custom-resource-handler-runtime-family';

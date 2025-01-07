@@ -405,9 +405,7 @@ export class Stage extends StageBase {
 
       accessLogSetting = {
         destinationArn: accessLogDestination?.bind(this).destinationArn,
-        format: accessLogFormat?.toString()
-          ? accessLogFormat?.toString()
-          : AccessLogFormat.clf().toString(),
+        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString(),
       };
     }
 
@@ -479,17 +477,12 @@ export class Stage extends StageBase {
 
     return settings.length === 0 ? undefined : settings;
 
-    function renderEntry(
-      path: string,
-      options: MethodDeploymentOptions
-    ): CfnStage.MethodSettingProperty {
+    function renderEntry(path: string, options: MethodDeploymentOptions): CfnStage.MethodSettingProperty {
       if (options.cachingEnabled) {
         if (self.enableCacheCluster === undefined) {
           self.enableCacheCluster = true;
         } else if (self.enableCacheCluster === false) {
-          throw new Error(
-            `Cannot enable caching for method ${path} since cache cluster is disabled on stage`
-          );
+          throw new Error(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`);
         }
       }
 

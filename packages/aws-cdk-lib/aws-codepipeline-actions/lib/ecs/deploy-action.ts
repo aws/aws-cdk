@@ -70,9 +70,7 @@ export class EcsDeployAction extends Action {
 
     const deploymentTimeout = props.deploymentTimeout?.toMinutes({ integral: true });
     if (deploymentTimeout !== undefined && (deploymentTimeout < 1 || deploymentTimeout > 60)) {
-      throw new Error(
-        `Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`
-      );
+      throw new Error(`Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`);
     }
 
     this.props = props;
@@ -128,9 +126,7 @@ export class EcsDeployAction extends Action {
 
 function determineInputArtifact(props: EcsDeployActionProps): codepipeline.Artifact {
   if (props.imageFile && props.input) {
-    throw new Error(
-      "Exactly one of 'input' or 'imageFile' can be provided in the ECS deploy Action"
-    );
+    throw new Error("Exactly one of 'input' or 'imageFile' can be provided in the ECS deploy Action");
   }
   if (props.imageFile) {
     return props.imageFile.artifact;

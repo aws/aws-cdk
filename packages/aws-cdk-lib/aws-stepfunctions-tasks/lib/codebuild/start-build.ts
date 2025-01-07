@@ -45,10 +45,7 @@ export class CodeBuildStartBuild extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      CodeBuildStartBuild.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, CodeBuildStartBuild.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskMetrics = {
       metricPrefixSingular: 'CodeBuildProject',
@@ -109,9 +106,7 @@ export class CodeBuildStartBuild extends sfn.TaskStateBase {
     };
   }
 
-  private serializeEnvVariables(environmentVariables: {
-    [name: string]: codebuild.BuildEnvironmentVariable;
-  }) {
+  private serializeEnvVariables(environmentVariables: { [name: string]: codebuild.BuildEnvironmentVariable }) {
     return Object.keys(environmentVariables).map((name) => ({
       Name: name,
       Type: environmentVariables[name].type || codebuild.BuildEnvironmentVariableType.PLAINTEXT,

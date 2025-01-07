@@ -28,17 +28,8 @@ export class InputValidator {
   /**
    * Validates a regex.
    */
-  public static validateRegex(
-    resourceName: string,
-    inputName: string,
-    regex: RegExp,
-    inputString?: string
-  ): void {
-    if (
-      !cdk.Token.isUnresolved(inputString) &&
-      inputString !== undefined &&
-      !regex.test(inputString)
-    ) {
+  public static validateRegex(resourceName: string, inputName: string, regex: RegExp, inputString?: string): void {
+    if (!cdk.Token.isUnresolved(inputString) && inputString !== undefined && !regex.test(inputString)) {
       throw new Error(
         `Invalid ${inputName} for resource ${resourceName}, must match regex pattern ${regex}, got: '${this.truncateString(inputString, 100)}'`
       );

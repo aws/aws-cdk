@@ -26,10 +26,7 @@ describe('deploy', () => {
     await cdk.deploy();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['deploy', '--progress', 'events', '--all'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['deploy', '--progress', 'events', '--all'], expect.anything());
   });
 
   test('deploy with all arguments', async () => {
@@ -56,10 +53,7 @@ describe('deploy', () => {
       rollback: false,
       exclusively: true,
       outputsFile: 'outputs.json',
-      reuseAssets: [
-        'asset1234',
-        'asset5678',
-      ],
+      reuseAssets: ['asset1234', 'asset5678'],
       caBundlePath: '/some/path',
       ignoreErrors: false,
       pathMetadata: false,
@@ -88,14 +82,22 @@ describe('deploy', () => {
         '--no-staging',
         '--asset-parallelism',
         '--asset-prebuild',
-        '--concurrency', '5',
-        '--reuse-assets', 'asset1234',
-        '--reuse-assets', 'asset5678',
-        '--outputs-file', 'outputs.json',
-        '--require-approval', 'never',
-        '--change-set-name', 'my-change-set',
-        '--toolkit-stack-name', 'Toolkit',
-        '--progress', 'bar',
+        '--concurrency',
+        '5',
+        '--reuse-assets',
+        'asset1234',
+        '--reuse-assets',
+        'asset5678',
+        '--outputs-file',
+        'outputs.json',
+        '--require-approval',
+        'never',
+        '--change-set-name',
+        'my-change-set',
+        '--toolkit-stack-name',
+        'Toolkit',
+        '--progress',
+        'bar',
         '--no-strict',
         '--no-trace',
         '--no-lookups',
@@ -110,13 +112,17 @@ describe('deploy', () => {
         '--asset-metadata',
         '--notices',
         '--no-color',
-        '--profile', 'my-profile',
-        '--proxy', 'https://proxy',
-        '--ca-bundle-path', '/some/path',
-        '--role-arn', 'arn:aws:iam::1111111111:role/my-role',
+        '--profile',
+        'my-profile',
+        '--proxy',
+        'https://proxy',
+        '--ca-bundle-path',
+        '/some/path',
+        '--role-arn',
+        'arn:aws:iam::1111111111:role/my-role',
         'Stack1',
       ]),
-      expect.anything(),
+      expect.anything()
     );
   });
 
@@ -129,13 +135,8 @@ describe('deploy', () => {
 
     // THEN
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      [
-        'deploy',
-        '--hotswap-fallback',
-        '--progress', 'events',
-        'Stack1',
-      ],
-      expect.anything(),
+      ['deploy', '--hotswap-fallback', '--progress', 'events', 'Stack1'],
+      expect.anything()
     );
   });
 
@@ -147,14 +148,7 @@ describe('deploy', () => {
     });
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      [
-        'deploy',
-        '--progress', 'events',
-        'Stack1',
-      ],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['deploy', '--progress', 'events', 'Stack1'], expect.anything());
   });
 
   test('can parse boolean arguments', async () => {
@@ -167,23 +161,17 @@ describe('deploy', () => {
 
     // THEN
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      [
-        'deploy',
-        '--progress', 'events',
-        '--json',
-        '--no-color',
-        'Stack1',
-      ],
-      expect.anything(),
+      ['deploy', '--progress', 'events', '--json', '--no-color', 'Stack1'],
+      expect.anything()
     );
   });
 
-  test('can parse parameters', async() => {
+  test('can parse parameters', async () => {
     // WHEN
     await cdk.deploy({
       stacks: ['Stack1'],
       parameters: {
-        'myparam': 'test',
+        myparam: 'test',
         'Stack1:myotherparam': 'test',
       },
     });
@@ -192,12 +180,15 @@ describe('deploy', () => {
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
       [
         'deploy',
-        '--parameters', 'myparam=test',
-        '--parameters', 'Stack1:myotherparam=test',
-        '--progress', 'events',
+        '--parameters',
+        'myparam=test',
+        '--parameters',
+        'Stack1:myotherparam=test',
+        '--progress',
+        'events',
         'Stack1',
       ],
-      expect.anything(),
+      expect.anything()
     );
   });
 
@@ -206,7 +197,7 @@ describe('deploy', () => {
     await cdk.deploy({
       stacks: ['Stack1'],
       context: {
-        'myContext': 'value',
+        myContext: 'value',
         'Stack1:OtherContext': 'otherValue',
       },
     });
@@ -215,12 +206,15 @@ describe('deploy', () => {
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
       [
         'deploy',
-        '--progress', 'events',
-        '--context', 'myContext=value',
-        '--context', 'Stack1:OtherContext=otherValue',
+        '--progress',
+        'events',
+        '--context',
+        'myContext=value',
+        '--context',
+        'Stack1:OtherContext=otherValue',
         'Stack1',
       ],
-      expect.anything(),
+      expect.anything()
     );
   });
 
@@ -238,12 +232,15 @@ describe('deploy', () => {
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
       [
         'deploy',
-        '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
-        '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
-        '--progress', 'events',
+        '--notification-arns',
+        'arn:aws:us-east-1:1111111111:some:resource',
+        '--notification-arns',
+        'arn:aws:us-east-1:1111111111:some:other-resource',
+        '--progress',
+        'events',
         'Stack1',
       ],
-      expect.anything(),
+      expect.anything()
     );
   });
 
@@ -256,13 +253,8 @@ describe('deploy', () => {
 
     // THEN
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      [
-        'deploy',
-        '--concurrency', '5',
-        '--progress', 'events',
-        'Stack1',
-      ],
-      expect.anything(),
+      ['deploy', '--concurrency', '5', '--progress', 'events', 'Stack1'],
+      expect.anything()
     );
   });
 });
@@ -273,10 +265,7 @@ describe('synth', () => {
     await cdk.synth();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['synth', '--all'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['synth', '--all'], expect.anything());
   });
 
   test('synth arguments', async () => {
@@ -286,10 +275,7 @@ describe('synth', () => {
     });
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['synth', 'Stack1'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['synth', 'Stack1'], expect.anything());
   });
 });
 
@@ -299,10 +285,7 @@ describe('destroy', () => {
     await cdk.destroy();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['destroy', '--force', '--all'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['destroy', '--force', '--all'], expect.anything());
   });
 
   test('destroy arguments', async () => {
@@ -314,10 +297,7 @@ describe('destroy', () => {
     });
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['destroy', '--no-exclusively', 'Stack1'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['destroy', '--no-exclusively', 'Stack1'], expect.anything());
   });
 });
 
@@ -327,10 +307,7 @@ describe('list', () => {
     await cdk.list();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['ls', '--all'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['ls', '--all'], expect.anything());
   });
 
   test('list arguments', async () => {
@@ -341,10 +318,7 @@ describe('list', () => {
     });
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['ls', '--long', '*'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['ls', '--long', '*'], expect.anything());
   });
 
   test('list without options', async () => {
@@ -352,10 +326,7 @@ describe('list', () => {
     await cdk.list();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['ls', '--all'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['ls', '--all'], expect.anything());
   });
 
   test('bootstrap without options', async () => {
@@ -363,10 +334,7 @@ describe('list', () => {
     await cdk.bootstrap();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['bootstrap', '--all'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['bootstrap', '--all'], expect.anything());
   });
 
   test('bootstrap specific environment', async () => {
@@ -378,7 +346,7 @@ describe('list', () => {
     // THEN
     expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
       ['bootstrap', 'aws://123456789012/us-east-1', '--all'],
-      expect.anything(),
+      expect.anything()
     );
   });
 });

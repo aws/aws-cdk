@@ -209,8 +209,7 @@ export class Channel extends ChannelBase {
       physicalName:
         props.channelName ??
         Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
         }),
     });
 
@@ -226,11 +225,7 @@ export class Channel extends ChannelBase {
 
     let preset;
 
-    if (
-      props.type &&
-      [ChannelType.STANDARD, ChannelType.BASIC].includes(props.type) &&
-      props.preset
-    ) {
+    if (props.type && [ChannelType.STANDARD, ChannelType.BASIC].includes(props.type) && props.preset) {
       preset = '';
     } else {
       preset = props.preset;

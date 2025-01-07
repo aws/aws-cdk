@@ -21,11 +21,7 @@ export class AssetManifestBuilder {
    * Derive the region from the stack, use the asset hash as the key, copy the
    * file extension over, and set the prefix.
    */
-  public defaultAddFileAsset(
-    stack: Stack,
-    asset: FileAssetSource,
-    target: AssetManifestFileDestination
-  ) {
+  public defaultAddFileAsset(stack: Stack, asset: FileAssetSource, target: AssetManifestFileDestination) {
     validateFileAssetSource(asset);
 
     const extension = asset.fileName != undefined ? path.extname(asset.fileName) : '';
@@ -68,9 +64,7 @@ export class AssetManifestBuilder {
     const imageTag = `${target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
 
     // Add to manifest
-    const sourceHash = asset.assetName
-      ? `${asset.assetName}-${asset.sourceHash}`
-      : asset.sourceHash;
+    const sourceHash = asset.assetName ? `${asset.assetName}-${asset.sourceHash}` : asset.sourceHash;
     return this.addDockerImageAsset(
       stack,
       sourceHash,
@@ -105,12 +99,7 @@ export class AssetManifestBuilder {
    *
    * sourceHash should be unique for every source.
    */
-  public addFileAsset(
-    stack: Stack,
-    sourceHash: string,
-    source: cxschema.FileSource,
-    dest: cxschema.FileDestination
-  ) {
+  public addFileAsset(stack: Stack, sourceHash: string, source: cxschema.FileSource, dest: cxschema.FileDestination) {
     if (!this.files[sourceHash]) {
       this.files[sourceHash] = {
         source,
@@ -186,10 +175,7 @@ export class AssetManifestBuilder {
   }
 
   private manifestEnvName(stack: Stack): string {
-    return [
-      resolvedOr(stack.account, 'current_account'),
-      resolvedOr(stack.region, 'current_region'),
-    ].join('-');
+    return [resolvedOr(stack.account, 'current_account'), resolvedOr(stack.region, 'current_region')].join('-');
   }
 }
 
@@ -272,23 +258,17 @@ export interface RoleOptions {
 
 function validateFileAssetSource(asset: FileAssetSource) {
   if (!!asset.executable === !!asset.fileName) {
-    throw new Error(
-      `Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`
-    );
+    throw new Error(`Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
   }
 
   if (!!asset.packaging !== !!asset.fileName) {
-    throw new Error(
-      `'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`
-    );
+    throw new Error(`'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
   }
 }
 
 function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
   if (!!asset.executable === !!asset.directoryName) {
-    throw new Error(
-      `Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`
-    );
+    throw new Error(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
   }
 
   check('dockerBuildArgs');
@@ -298,9 +278,7 @@ function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
 
   function check<K extends keyof DockerImageAssetSource>(key: K) {
     if (asset[key] && !asset.directoryName) {
-      throw new Error(
-        `'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`
-      );
+      throw new Error(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
     }
   }
 }

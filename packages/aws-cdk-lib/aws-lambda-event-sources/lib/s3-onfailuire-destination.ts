@@ -1,9 +1,4 @@
-import {
-  DlqDestinationConfig,
-  IEventSourceDlq,
-  IEventSourceMapping,
-  IFunction,
-} from '../../aws-lambda';
+import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 
 /**

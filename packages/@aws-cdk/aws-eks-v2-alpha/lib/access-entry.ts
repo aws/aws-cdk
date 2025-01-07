@@ -102,17 +102,13 @@ export class AccessPolicyArn {
    * principal administrator access to a cluster. When associated to an access entry, its access scope
    * is typically the cluster, rather than a Kubernetes namespace.
    */
-  public static readonly AMAZON_EKS_CLUSTER_ADMIN_POLICY = AccessPolicyArn.of(
-    'AmazonEKSClusterAdminPolicy'
-  );
+  public static readonly AMAZON_EKS_CLUSTER_ADMIN_POLICY = AccessPolicyArn.of('AmazonEKSClusterAdminPolicy');
 
   /**
    * The Amazon EKS Admin View Policy. This access policy includes permissions that grant an IAM principal
    * access to list/view all resources in a cluster.
    */
-  public static readonly AMAZON_EKS_ADMIN_VIEW_POLICY = AccessPolicyArn.of(
-    'AmazonEKSAdminViewPolicy'
-  );
+  public static readonly AMAZON_EKS_ADMIN_VIEW_POLICY = AccessPolicyArn.of('AmazonEKSAdminViewPolicy');
 
   /**
    * The Amazon EKS Edit Policy. This access policy includes permissions that allow an IAM principal
@@ -203,10 +199,7 @@ export class AccessPolicy implements IAccessPolicy {
   /**
    * Import AccessPolicy by name.
    */
-  public static fromAccessPolicyName(
-    policyName: string,
-    options: AccessPolicyNameOptions
-  ): IAccessPolicy {
+  public static fromAccessPolicyName(policyName: string, options: AccessPolicyNameOptions): IAccessPolicy {
     class Import implements IAccessPolicy {
       public readonly policy = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`;
       public readonly accessScope: AccessScope = {
@@ -311,11 +304,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
    * @param attrs - The attributes of the access entry to import.
    * @returns The imported access entry.
    */
-  public static fromAccessEntryAttributes(
-    scope: Construct,
-    id: string,
-    attrs: AccessEntryAttributes
-  ): IAccessEntry {
+  public static fromAccessEntryAttributes(scope: Construct, id: string, attrs: AccessEntryAttributes): IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;

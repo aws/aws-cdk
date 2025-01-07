@@ -1,10 +1,4 @@
-import {
-  FakeCodeBuild,
-  FakeCodePipeline,
-  FakeCodeCommit,
-  FakeSlackTarget,
-  FakeSnsTopicTarget,
-} from './helpers';
+import { FakeCodeBuild, FakeCodePipeline, FakeCodeCommit, FakeSlackTarget, FakeSnsTopicTarget } from './helpers';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as notifications from '../lib';
@@ -35,18 +29,12 @@ describe('NotificationRule', () => {
 
     new notifications.NotificationRule(stack, 'MyNotificationRule', {
       source: repository,
-      events: [
-        'codecommit-repository-pull-request-created',
-        'codecommit-repository-pull-request-merged',
-      ],
+      events: ['codecommit-repository-pull-request-created', 'codecommit-repository-pull-request-merged'],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Resource: repository.repositoryArn,
-      EventTypeIds: [
-        'codecommit-repository-pull-request-created',
-        'codecommit-repository-pull-request-merged',
-      ],
+      EventTypeIds: ['codecommit-repository-pull-request-created', 'codecommit-repository-pull-request-merged'],
     });
   });
 
@@ -57,10 +45,7 @@ describe('NotificationRule', () => {
     new notifications.NotificationRule(stack, 'MyNotificationRule', {
       notificationRuleName: 'MyNotificationRule',
       detailType: notifications.DetailType.FULL,
-      events: [
-        'codebuild-project-build-state-succeeded',
-        'codebuild-project-build-state-failed',
-      ],
+      events: ['codebuild-project-build-state-succeeded', 'codebuild-project-build-state-failed'],
       source: project,
       targets: [slack],
       createdBy: 'Jone Doe',
@@ -69,10 +54,7 @@ describe('NotificationRule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
       DetailType: 'FULL',
-      EventTypeIds: [
-        'codebuild-project-build-state-succeeded',
-        'codebuild-project-build-state-failed',
-      ],
+      EventTypeIds: ['codebuild-project-build-state-succeeded', 'codebuild-project-build-state-failed'],
       Resource: project.projectArn,
       Targets: [
         {
@@ -227,14 +209,22 @@ describe('NotificationRule from imported', () => {
   });
 
   test('from notification rule ARN', () => {
-    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule',
-      'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
-    expect(imported.notificationRuleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    const imported = notifications.NotificationRule.fromNotificationRuleArn(
+      stack,
+      'MyNotificationRule',
+      'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef'
+    );
+    expect(imported.notificationRuleArn).toEqual(
+      'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef'
+    );
   });
 
   test('will not effect and return false when added targets if notification from imported', () => {
-    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule',
-      'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    const imported = notifications.NotificationRule.fromNotificationRuleArn(
+      stack,
+      'MyNotificationRule',
+      'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef'
+    );
     const slack = new FakeSlackTarget();
     expect(imported.addTarget(slack)).toEqual(false);
   });

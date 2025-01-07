@@ -14,7 +14,6 @@ describe('Topic', () => {
       new sns.Topic(stack, 'MyTopic');
 
       Template.fromStack(stack).resourceCountIs('AWS::SNS::Topic', 1);
-
     });
 
     test('specify topicName', () => {
@@ -25,9 +24,8 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'TopicName': 'topicName',
+        TopicName: 'topicName',
       });
-
     });
 
     test('specify displayName', () => {
@@ -38,9 +36,8 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'DisplayName': 'displayName',
+        DisplayName: 'displayName',
       });
-
     });
 
     test('specify kmsMasterKey', () => {
@@ -52,9 +49,8 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
+        KmsMasterKeyId: { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
       });
-
     });
 
     test('specify displayName and topicName', () => {
@@ -66,10 +62,9 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'DisplayName': 'displayName',
-        'TopicName': 'topicName',
+        DisplayName: 'displayName',
+        TopicName: 'topicName',
       });
-
     });
 
     test('Adds .fifo suffix when no topicName is passed', () => {
@@ -80,10 +75,9 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'FifoTopic': true,
-        'TopicName': 'MyTopic.fifo',
+        FifoTopic: true,
+        TopicName: 'MyTopic.fifo',
       });
-
     });
 
     test('specify fifo without .fifo suffix in topicName', () => {
@@ -95,10 +89,9 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'FifoTopic': true,
-        'TopicName': 'topicName.fifo',
+        FifoTopic: true,
+        TopicName: 'topicName.fifo',
       });
-
     });
 
     test('specify fifo with .fifo suffix in topicName', () => {
@@ -110,10 +103,9 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'FifoTopic': true,
-        'TopicName': 'topicName.fifo',
+        FifoTopic: true,
+        TopicName: 'topicName.fifo',
       });
-
     });
 
     test('specify fifo without contentBasedDeduplication', () => {
@@ -125,10 +117,9 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'FifoTopic': true,
-        'TopicName': 'topicName.fifo',
+        FifoTopic: true,
+        TopicName: 'topicName.fifo',
       });
-
     });
 
     test('specify fifo with contentBasedDeduplication', () => {
@@ -141,20 +132,21 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'ContentBasedDeduplication': true,
-        'FifoTopic': true,
-        'TopicName': 'topicName.fifo',
+        ContentBasedDeduplication: true,
+        FifoTopic: true,
+        TopicName: 'topicName.fifo',
       });
-
     });
 
     test('throw with contentBasedDeduplication on non-fifo topic', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new sns.Topic(stack, 'MyTopic', {
-        contentBasedDeduplication: true,
-      })).toThrow(/Content based deduplication can only be enabled for FIFO SNS topics./);
-
+      expect(
+        () =>
+          new sns.Topic(stack, 'MyTopic', {
+            contentBasedDeduplication: true,
+          })
+      ).toThrow(/Content based deduplication can only be enabled for FIFO SNS topics./);
     });
 
     test('specify signatureVersion', () => {
@@ -165,16 +157,19 @@ describe('Topic', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'SignatureVersion': '2',
+        SignatureVersion: '2',
       });
     });
 
     test('throw with incorrect signatureVersion', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new sns.Topic(stack, 'MyTopic', {
-        signatureVersion: '3',
-      })).toThrow(/signatureVersion must be "1" or "2", received: "3"/);
+      expect(
+        () =>
+          new sns.Topic(stack, 'MyTopic', {
+            signatureVersion: '3',
+          })
+      ).toThrow(/signatureVersion must be "1" or "2", received: "3"/);
     });
 
     test('throw error when displayName is too long', () => {
@@ -194,26 +189,29 @@ describe('Topic', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    topic.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['sns:*'],
-      principals: [new iam.ArnPrincipal('arn')],
-    }));
+    topic.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['sns:*'],
+        principals: [new iam.ArnPrincipal('arn')],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: [{
-          'Sid': '0',
-          'Action': 'sns:*',
-          'Effect': 'Allow',
-          'Principal': { 'AWS': 'arn' },
-          'Resource': '*',
-        }],
+        Statement: [
+          {
+            Sid: '0',
+            Action: 'sns:*',
+            Effect: 'Allow',
+            Principal: { AWS: 'arn' },
+            Resource: '*',
+          },
+        ],
       },
     });
-
   });
 
   test('can enforce ssl when creating the topic', () => {
@@ -224,11 +222,13 @@ describe('Topic', () => {
     });
 
     // WHEN
-    topic.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['sns:*'],
-      principals: [new iam.ArnPrincipal('arn')],
-    }));
+    topic.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['sns:*'],
+        principals: [new iam.ArnPrincipal('arn')],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
@@ -236,25 +236,25 @@ describe('Topic', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            'Sid': '0',
-            'Action': 'sns:*',
-            'Effect': 'Allow',
-            'Principal': { 'AWS': 'arn' },
-            'Resource': '*',
+            Sid: '0',
+            Action: 'sns:*',
+            Effect: 'Allow',
+            Principal: { AWS: 'arn' },
+            Resource: '*',
           },
           {
-            'Sid': 'AllowPublishThroughSSLOnly',
-            'Action': 'sns:Publish',
-            'Effect': 'Deny',
-            'Resource': {
-              'Ref': 'TopicBFC7AF6E',
+            Sid: 'AllowPublishThroughSSLOnly',
+            Action: 'sns:Publish',
+            Effect: 'Deny',
+            Resource: {
+              Ref: 'TopicBFC7AF6E',
             },
-            'Condition': {
-              'Bool': {
+            Condition: {
+              Bool: {
                 'aws:SecureTransport': 'false',
               },
             },
-            'Principal': '*',
+            Principal: '*',
           },
         ],
       },
@@ -272,18 +272,17 @@ describe('Topic', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
+      PolicyDocument: {
         Version: '2012-10-17',
-        'Statement': [
+        Statement: [
           {
-            'Action': 'sns:Publish',
-            'Effect': 'Allow',
-            'Resource': stack.resolve(topic.topicArn),
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: stack.resolve(topic.topicArn),
           },
         ],
       },
     });
-
   });
 
   test('give subscribing permissions', () => {
@@ -297,18 +296,17 @@ describe('Topic', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
+      PolicyDocument: {
         Version: '2012-10-17',
-        'Statement': [
+        Statement: [
           {
-            'Action': 'sns:Subscribe',
-            'Effect': 'Allow',
-            'Resource': stack.resolve(topic.topicArn),
+            Action: 'sns:Subscribe',
+            Effect: 'Allow',
+            Resource: stack.resolve(topic.topicArn),
           },
         ],
       },
     });
-
   });
 
   test('TopicPolicy passed document', () => {
@@ -321,28 +319,30 @@ describe('Topic', () => {
     });
 
     // WHEN
-    new sns.TopicPolicy(stack, 'topicpolicy', { topics: [topic], policyDocument: new iam.PolicyDocument({ assignSids: true, statements: [ps] }) });
+    new sns.TopicPolicy(stack, 'topicpolicy', {
+      topics: [topic],
+      policyDocument: new iam.PolicyDocument({ assignSids: true, statements: [ps] }),
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 'service:statement0',
-            'Effect': 'Allow',
-            'Principal': { 'AWS': 'arn' },
-            'Sid': '0',
+            Action: 'service:statement0',
+            Effect: 'Allow',
+            Principal: { AWS: 'arn' },
+            Sid: '0',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'Topics': [
+      Topics: [
         {
-          'Ref': 'MyTopic86869434',
+          Ref: 'MyTopic86869434',
         },
       ],
     });
-
   });
 
   test('Add statements to policy', () => {
@@ -354,31 +354,32 @@ describe('Topic', () => {
     const topicPolicy = new sns.TopicPolicy(stack, 'TopicPolicy', {
       topics: [topic],
     });
-    topicPolicy.document.addStatements(new iam.PolicyStatement({
-      actions: ['service:statement0'],
-      principals: [new iam.ArnPrincipal('arn')],
-    }));
+    topicPolicy.document.addStatements(
+      new iam.PolicyStatement({
+        actions: ['service:statement0'],
+        principals: [new iam.ArnPrincipal('arn')],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 'service:statement0',
-            'Effect': 'Allow',
-            'Principal': { 'AWS': 'arn' },
-            'Sid': '0',
+            Action: 'service:statement0',
+            Effect: 'Allow',
+            Principal: { AWS: 'arn' },
+            Sid: '0',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'Topics': [
+      Topics: [
         {
-          'Ref': 'MyTopic86869434',
+          Ref: 'MyTopic86869434',
         },
       ],
     });
-
   });
 
   test('Create topic policy and enforce ssl', () => {
@@ -394,32 +395,31 @@ describe('Topic', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Sid': 'AllowPublishThroughSSLOnly',
-            'Action': 'sns:Publish',
-            'Effect': 'Deny',
-            'Resource': {
-              'Ref': 'MyTopic86869434',
+            Sid: 'AllowPublishThroughSSLOnly',
+            Action: 'sns:Publish',
+            Effect: 'Deny',
+            Resource: {
+              Ref: 'MyTopic86869434',
             },
-            'Condition': {
-              'Bool': {
+            Condition: {
+              Bool: {
                 'aws:SecureTransport': 'false',
               },
             },
-            'Principal': '*',
+            Principal: '*',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'Topics': [
+      Topics: [
         {
-          'Ref': 'MyTopic86869434',
+          Ref: 'MyTopic86869434',
         },
       ],
     });
-
   });
 
   test('topic resource policy includes unique SIDs', () => {
@@ -427,40 +427,43 @@ describe('Topic', () => {
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    topic.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['service:statement0'],
-      principals: [new iam.ArnPrincipal('arn')],
-    }));
-    topic.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['service:statement1'],
-      principals: [new iam.ArnPrincipal('arn')],
-    }));
+    topic.addToResourcePolicy(
+      new iam.PolicyStatement({
+        actions: ['service:statement0'],
+        principals: [new iam.ArnPrincipal('arn')],
+      })
+    );
+    topic.addToResourcePolicy(
+      new iam.PolicyStatement({
+        actions: ['service:statement1'],
+        principals: [new iam.ArnPrincipal('arn')],
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Action': 'service:statement0',
-            'Effect': 'Allow',
-            'Principal': { 'AWS': 'arn' },
-            'Sid': '0',
+            Action: 'service:statement0',
+            Effect: 'Allow',
+            Principal: { AWS: 'arn' },
+            Sid: '0',
           },
           {
-            'Action': 'service:statement1',
-            'Effect': 'Allow',
-            'Principal': { 'AWS': 'arn' },
-            'Sid': '1',
+            Action: 'service:statement1',
+            Effect: 'Allow',
+            Principal: { AWS: 'arn' },
+            Sid: '1',
           },
         ],
-        'Version': '2012-10-17',
+        Version: '2012-10-17',
       },
-      'Topics': [
+      Topics: [
         {
-          'Ref': 'MyTopic86869434',
+          Ref: 'MyTopic86869434',
         },
       ],
     });
-
   });
 
   test('fromTopicArn', () => {
@@ -474,7 +477,6 @@ describe('Topic', () => {
     expect(imported.topicName).toEqual('my_corporate_topic');
     expect(imported.topicArn).toEqual('arn:aws:sns:*:123456789012:my_corporate_topic');
     expect(imported.fifo).toEqual(false);
-
   });
 
   test('fromTopicArn fifo', () => {
@@ -526,10 +528,12 @@ describe('Topic', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    expect(() => sns.Topic.fromTopicAttributes(stack, 'Imported', {
-      topicArn: 'arn:aws:sns:*:123456789012:mytopic',
-      contentBasedDeduplication: true,
-    })).toThrow(/Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics./);
+    expect(() =>
+      sns.Topic.fromTopicAttributes(stack, 'Imported', {
+        topicArn: 'arn:aws:sns:*:123456789012:mytopic',
+        contentBasedDeduplication: true,
+      })
+    ).toThrow(/Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics./);
   });
 
   test('sets account for imported topic env', () => {
@@ -575,7 +579,6 @@ describe('Topic', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
   });
 
   test('subscription is created under the topic scope by default', () => {
@@ -594,7 +597,6 @@ describe('Topic', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::SNS::Subscription', 1);
-
   });
 
   test('if "scope" is defined, subscription will be created under that scope', () => {
@@ -617,7 +619,6 @@ describe('Topic', () => {
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::SNS::Subscription', 0);
     Template.fromStack(stack2).resourceCountIs('AWS::SNS::Subscription', 1);
-
   });
 
   test('fails if topic policy has no actions', () => {
@@ -627,14 +628,15 @@ describe('Topic', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    topic.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      principals: [new iam.ArnPrincipal('arn')],
-    }));
+    topic.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        principals: [new iam.ArnPrincipal('arn')],
+      })
+    );
 
     // THEN
     expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
-
   });
 
   test('fails if topic policy has no IAM principals', () => {
@@ -644,14 +646,17 @@ describe('Topic', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    topic.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['sns:*'],
-    }));
+    topic.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['sns:*'],
+      })
+    );
 
     // THEN
-    expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
-
+    expect(() => app.synth()).toThrow(
+      /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/
+    );
   });
 
   test('topic policy should be set if topic as a notifications rule target', () => {
@@ -672,19 +677,22 @@ describe('Topic', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: [{
-          'Sid': '0',
-          'Action': 'sns:Publish',
-          'Effect': 'Allow',
-          'Principal': { 'Service': 'codestar-notifications.amazonaws.com' },
-          'Resource': { 'Ref': 'TopicBFC7AF6E' },
-        }],
+        Statement: [
+          {
+            Sid: '0',
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Principal: { Service: 'codestar-notifications.amazonaws.com' },
+            Resource: { Ref: 'TopicBFC7AF6E' },
+          },
+        ],
       },
-      Topics: [{
-        Ref: 'TopicBFC7AF6E',
-      }],
+      Topics: [
+        {
+          Ref: 'TopicBFC7AF6E',
+        },
+      ],
     });
-
   });
 
   test('specify delivery status logging configuration through construct props', () => {
@@ -708,12 +716,14 @@ describe('Topic', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-      'DeliveryStatusLogging': [{
-        'Protocol': 'sqs',
-        'SuccessFeedbackRoleArn': { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
-        'FailureFeedbackRoleArn': { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
-        'SuccessFeedbackSampleRate': '50',
-      }],
+      DeliveryStatusLogging: [
+        {
+          Protocol: 'sqs',
+          SuccessFeedbackRoleArn: { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
+          FailureFeedbackRoleArn: { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
+          SuccessFeedbackSampleRate: '50',
+        },
+      ],
     });
   });
 
@@ -735,12 +745,14 @@ describe('Topic', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-      'DeliveryStatusLogging': [{
-        'Protocol': 'http/s',
-        'SuccessFeedbackRoleArn': { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
-        'FailureFeedbackRoleArn': { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
-        'SuccessFeedbackSampleRate': '50',
-      }],
+      DeliveryStatusLogging: [
+        {
+          Protocol: 'http/s',
+          SuccessFeedbackRoleArn: { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
+          FailureFeedbackRoleArn: { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
+          SuccessFeedbackSampleRate: '50',
+        },
+      ],
     });
   });
 
@@ -819,10 +831,13 @@ describe('Topic', () => {
       const stack = new cdk.Stack(app);
 
       // THEN
-      expect(() => new sns.Topic(stack, 'MyTopic', {
-        fifo: true,
-        messageRetentionPeriodInDays: days,
-      })).toThrow(/`messageRetentionPeriodInDays` must be an integer between 1 and 365/);
+      expect(
+        () =>
+          new sns.Topic(stack, 'MyTopic', {
+            fifo: true,
+            messageRetentionPeriodInDays: days,
+          })
+      ).toThrow(/`messageRetentionPeriodInDays` must be an integer between 1 and 365/);
     });
 
     test('throw error when specify messageRetentionPeriodInDays to standard topic', () => {
@@ -830,9 +845,10 @@ describe('Topic', () => {
       const stack = new cdk.Stack(app);
 
       expect(
-        () => new sns.Topic(stack, 'MyTopic', {
-          messageRetentionPeriodInDays: 12,
-        }),
+        () =>
+          new sns.Topic(stack, 'MyTopic', {
+            messageRetentionPeriodInDays: 12,
+          })
       ).toThrow('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics');
     });
   });
@@ -850,7 +866,7 @@ describe('Topic', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
-        'TracingConfig': 'Active',
+        TracingConfig: 'Active',
       });
     });
   });

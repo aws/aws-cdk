@@ -13,31 +13,31 @@ describe('S3 Deploy Action', () => {
     minimalPipeline(stack);
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {
-          'Name': 'Source',
-          'Actions': [
+          Name: 'Source',
+          Actions: [
             {
-              'Name': 'Source',
-              'ActionTypeId': {
-                'Category': 'Source',
-                'Owner': 'ThirdParty',
+              Name: 'Source',
+              ActionTypeId: {
+                Category: 'Source',
+                Owner: 'ThirdParty',
               },
             },
           ],
         },
         {
-          'Name': 'Deploy',
-          'Actions': [
+          Name: 'Deploy',
+          Actions: [
             {
-              'ActionTypeId': {
-                'Category': 'Deploy',
-                'Provider': 'S3',
+              ActionTypeId: {
+                Category: 'Deploy',
+                Provider: 'S3',
               },
-              'Configuration': {
-                'Extract': 'true',
+              Configuration: {
+                Extract: 'true',
               },
-              'Name': 'CopyFiles',
+              Name: 'CopyFiles',
             },
           ],
         },
@@ -50,11 +50,11 @@ describe('S3 Deploy Action', () => {
     minimalPipeline(stack);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      'PolicyDocument': {
-        'Statement': [
+      PolicyDocument: {
+        Statement: [
           {
-            'Effect': 'Allow',
-            'Action': [
+            Effect: 'Allow',
+            Action: [
               's3:GetObject*',
               's3:GetBucket*',
               's3:List*',
@@ -69,8 +69,8 @@ describe('S3 Deploy Action', () => {
           },
           {},
           {
-            'Effect': 'Allow',
-            'Action': 'sts:AssumeRole',
+            Effect: 'Allow',
+            Action: 'sts:AssumeRole',
           },
         ],
       },
@@ -84,13 +84,13 @@ describe('S3 Deploy Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {},
         {
-          'Actions': [
+          Actions: [
             {
-              'Configuration': {
-                'CannedACL': 'public-read-write',
+              Configuration: {
+                CannedACL: 'public-read-write',
               },
             },
           ],
@@ -110,13 +110,13 @@ describe('S3 Deploy Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {},
         {
-          'Actions': [
+          Actions: [
             {
-              'Configuration': {
-                'CacheControl': 'public, max-age=43200, s-maxage=43200',
+              Configuration: {
+                CacheControl: 'public, max-age=43200, s-maxage=43200',
               },
             },
           ],
@@ -149,13 +149,13 @@ describe('S3 Deploy Action', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      'Stages': [
+      Stages: [
         {},
         {
-          'Actions': [
+          Actions: [
             {
-              'Configuration': {
-                'ObjectKey': '/a/b/c',
+              Configuration: {
+                ObjectKey: '/a/b/c',
               },
             },
           ],
@@ -200,13 +200,13 @@ test('KMSEncryptionKeyARN value', () => {
   minimalPipeline(stack);
 
   Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    'Stages': [
+    Stages: [
       {},
       {
-        'Actions': [
+        Actions: [
           {
-            'Configuration': {
-              'KMSEncryptionKeyARN': { 'Fn::GetAtt': ['EnvVarEncryptKey1A7CABDB', 'Arn'] },
+            Configuration: {
+              KMSEncryptionKeyARN: { 'Fn::GetAtt': ['EnvVarEncryptKey1A7CABDB', 'Arn'] },
             },
           },
         ],

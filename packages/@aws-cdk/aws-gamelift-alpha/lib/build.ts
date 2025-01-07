@@ -185,13 +185,7 @@ export class Build extends BuildBase {
   /**
    * Create a new Build from s3 content
    */
-  static fromBucket(
-    scope: Construct,
-    id: string,
-    bucket: s3.IBucket,
-    key: string,
-    objectVersion?: string
-  ) {
+  static fromBucket(scope: Construct, id: string, bucket: s3.IBucket, key: string, objectVersion?: string) {
     return new Build(scope, id, {
       content: Content.fromBucket(bucket, key, objectVersion),
     });
@@ -228,8 +222,7 @@ export class Build extends BuildBase {
       throw new Error('Either buildId or buildArn must be provided in BuildAttributes');
     }
     const buildId =
-      attrs.buildId ??
-      cdk.Stack.of(scope).splitArn(attrs.buildArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+      attrs.buildId ?? cdk.Stack.of(scope).splitArn(attrs.buildArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!buildId) {
       throw new Error(`No build identifier found in ARN: '${attrs.buildArn}'`);
@@ -331,9 +324,7 @@ export class Build extends BuildBase {
       throw new Error(`serverSdkVersion must be in the 0.0.0 format, got \'${serverSdkVersion}\'.`);
     }
     if (serverSdkVersion.length > 128) {
-      throw new Error(
-        `serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion.length}.`
-      );
+      throw new Error(`serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion.length}.`);
     }
   }
 }

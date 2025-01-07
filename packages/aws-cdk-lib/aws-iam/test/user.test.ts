@@ -20,10 +20,8 @@ describe('IAM user', () => {
     });
 
     Template.fromStack(stack).templateMatches({
-      Resources:
-      {
-        MyUserDC45028B:
-        {
+      Resources: {
+        MyUserDC45028B: {
           Type: 'AWS::IAM::User',
           Properties: { LoginProfile: { Password: '1234' } },
         },
@@ -49,9 +47,7 @@ describe('IAM user', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
-      ManagedPolicyArns: [
-        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] },
-      ],
+      ManagedPolicyArns: [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] }],
     });
   });
 
@@ -151,9 +147,9 @@ describe('IAM user', () => {
     const user = User.fromUserArn(stack, 'import', new User(stack, 'LocalUser').userArn);
 
     // THEN
-    expect(stack.resolve(user.principalAccount)).toStrictEqual(
-      { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['LocalUser87F70DDF', 'Arn'] }] }] },
-    );
+    expect(stack.resolve(user.principalAccount)).toStrictEqual({
+      'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['LocalUser87F70DDF', 'Arn'] }] }],
+    });
   });
 
   test('user imported by user ARN with path', () => {
@@ -243,10 +239,12 @@ describe('IAM user', () => {
     const user = User.fromUserName(stack, 'ImportedUser', 'john');
 
     // WHEN
-    user.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['aws:Use'],
-      resources: ['*'],
-    }));
+    user.addToPrincipalPolicy(
+      new PolicyStatement({
+        actions: ['aws:Use'],
+        resources: ['*'],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -270,14 +268,16 @@ describe('IAM user', () => {
     const user = User.fromUserName(stack, 'ImportedUser', 'john');
 
     // WHEN
-    user.attachInlinePolicy(new Policy(stack, 'Policy', {
-      statements: [
-        new PolicyStatement({
-          actions: ['aws:Use'],
-          resources: ['*'],
-        }),
-      ],
-    }));
+    user.attachInlinePolicy(
+      new Policy(stack, 'Policy', {
+        statements: [
+          new PolicyStatement({
+            actions: ['aws:Use'],
+            resources: ['*'],
+          }),
+        ],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -311,18 +311,14 @@ describe('IAM user', () => {
       GroupName: {
         Ref: 'GroupC77FDACD',
       },
-      Users: [
-        'john',
-      ],
+      Users: ['john'],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::UserToGroupAddition', {
       GroupName: {
         Ref: 'OtherGroup85E5C653',
       },
-      Users: [
-        'john',
-      ],
+      Users: ['john'],
     });
   });
 });

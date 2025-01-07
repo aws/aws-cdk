@@ -40,10 +40,12 @@ test('unpartitioned JSON table', () => {
   new glue.ExternalTable(tableStack, 'Table', {
     database,
     connection,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     externalDataLocation,
   });
@@ -100,14 +102,18 @@ test('partitioned JSON table', () => {
   });
   new glue.ExternalTable(tableStack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-      name: 'year',
-      type: glue.Schema.SMALL_INT,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
+    partitionKeys: [
+      {
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     connection,
     externalDataLocation,
@@ -169,10 +175,12 @@ test('compressed table', () => {
   });
   new glue.ExternalTable(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
     connection,
@@ -231,10 +239,12 @@ test('table.node.defaultChild', () => {
   // WHEN
   const table = new glue.ExternalTable(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
     connection,
@@ -261,19 +271,23 @@ describe('add partition index', () => {
 
     const table = new glue.ExternalTable(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       dataFormat: glue.DataFormat.JSON,
       connection,
       externalDataLocation,
     });
 
-    expect(() => table.addPartitionIndex({
-      indexName: 'my-part',
-      keyNames: ['part'],
-    })).toThrow(/The table must have partition keys to create a partition index/);
+    expect(() =>
+      table.addPartitionIndex({
+        indexName: 'my-part',
+        keyNames: ['part'],
+      })
+    ).toThrow(/The table must have partition keys to create a partition index/);
   });
 
   test('fails if partition index does not match partition keys', () => {
@@ -291,23 +305,29 @@ describe('add partition index', () => {
 
     const table = new glue.ExternalTable(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      partitionKeys: [{
-        name: 'part',
-        type: glue.Schema.SMALL_INT,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
+      partitionKeys: [
+        {
+          name: 'part',
+          type: glue.Schema.SMALL_INT,
+        },
+      ],
       dataFormat: glue.DataFormat.JSON,
       connection,
       externalDataLocation,
     });
 
-    expect(() => table.addPartitionIndex({
-      indexName: 'my-part',
-      keyNames: ['not-part'],
-    })).toThrow(/All index keys must also be partition keys/);
+    expect(() =>
+      table.addPartitionIndex({
+        indexName: 'my-part',
+        keyNames: ['not-part'],
+      })
+    ).toThrow(/All index keys must also be partition keys/);
   });
 
   test('fails with index name < 1 character', () => {
@@ -325,23 +345,29 @@ describe('add partition index', () => {
 
     const table = new glue.ExternalTable(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      partitionKeys: [{
-        name: 'part',
-        type: glue.Schema.SMALL_INT,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
+      partitionKeys: [
+        {
+          name: 'part',
+          type: glue.Schema.SMALL_INT,
+        },
+      ],
       dataFormat: glue.DataFormat.JSON,
       connection,
       externalDataLocation,
     });
 
-    expect(() => table.addPartitionIndex({
-      indexName: '',
-      keyNames: ['part'],
-    })).toThrow(/Index name must be between 1 and 255 characters, but got 0/);
+    expect(() =>
+      table.addPartitionIndex({
+        indexName: '',
+        keyNames: ['part'],
+      })
+    ).toThrow(/Index name must be between 1 and 255 characters, but got 0/);
   });
 
   test('fails with > 3 indexes', () => {
@@ -357,35 +383,47 @@ describe('add partition index', () => {
       },
     });
 
-    const indexes: glue.PartitionIndex[] = [{
-      indexName: 'ind1',
-      keyNames: ['part'],
-    }, {
-      indexName: 'ind2',
-      keyNames: ['part'],
-    }, {
-      indexName: 'ind3',
-      keyNames: ['part'],
-    }, {
-      indexName: 'ind4',
-      keyNames: ['part'],
-    }];
+    const indexes: glue.PartitionIndex[] = [
+      {
+        indexName: 'ind1',
+        keyNames: ['part'],
+      },
+      {
+        indexName: 'ind2',
+        keyNames: ['part'],
+      },
+      {
+        indexName: 'ind3',
+        keyNames: ['part'],
+      },
+      {
+        indexName: 'ind4',
+        keyNames: ['part'],
+      },
+    ];
 
-    expect(() => new glue.ExternalTable(stack, 'Table', {
-      database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      partitionKeys: [{
-        name: 'part',
-        type: glue.Schema.SMALL_INT,
-      }],
-      partitionIndexes: indexes,
-      dataFormat: glue.DataFormat.JSON,
-      connection,
-      externalDataLocation,
-    })).toThrow('Maximum number of partition indexes allowed is 3');
+    expect(
+      () =>
+        new glue.ExternalTable(stack, 'Table', {
+          database,
+          columns: [
+            {
+              name: 'col',
+              type: glue.Schema.STRING,
+            },
+          ],
+          partitionKeys: [
+            {
+              name: 'part',
+              type: glue.Schema.SMALL_INT,
+            },
+          ],
+          partitionIndexes: indexes,
+          dataFormat: glue.DataFormat.JSON,
+          connection,
+          externalDataLocation,
+        })
+    ).toThrow('Maximum number of partition indexes allowed is 3');
   });
 });
 
@@ -406,10 +444,12 @@ describe('grants', () => {
 
     const table = new glue.ExternalTable(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
       connection,
@@ -479,10 +519,12 @@ describe('grants', () => {
     });
     const table = new glue.ExternalTable(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
       connection,
@@ -552,10 +594,12 @@ describe('grants', () => {
     });
     const table = new glue.ExternalTable(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
       connection,
@@ -625,10 +669,12 @@ describe('grants', () => {
     });
     const table = new glue.ExternalTable(stack, 'Table', {
       database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
+      columns: [
+        {
+          name: 'col',
+          type: glue.Schema.STRING,
+        },
+      ],
       compressed: true,
       dataFormat: glue.DataFormat.JSON,
       connection,
@@ -709,13 +755,16 @@ describe('validate', () => {
   test('unique column names', () => {
     expect(() => {
       createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }, {
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
       });
     }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
   });
@@ -723,17 +772,22 @@ describe('validate', () => {
   test('unique partition keys', () => {
     expect(() => {
       createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
-        partitionKeys: [{
-          name: 'p1',
-          type: glue.Schema.STRING,
-        }, {
-          name: 'p1',
-          type: glue.Schema.STRING,
-        }],
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        partitionKeys: [
+          {
+            name: 'p1',
+            type: glue.Schema.STRING,
+          },
+          {
+            name: 'p1',
+            type: glue.Schema.STRING,
+          },
+        ],
       });
     }).toThrow("column names and partition keys must be unique, but 'p1' is duplicated");
   });
@@ -741,14 +795,18 @@ describe('validate', () => {
   test('column names and partition keys are all unique', () => {
     expect(() => {
       createTable({
-        columns: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
-        partitionKeys: [{
-          name: 'col1',
-          type: glue.Schema.STRING,
-        }],
+        columns: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
+        partitionKeys: [
+          {
+            name: 'col1',
+            type: glue.Schema.STRING,
+          },
+        ],
       });
     }).toThrow("column names and partition keys must be unique, but 'col1' is duplicated");
   });
@@ -767,22 +825,27 @@ describe('validate', () => {
       },
     });
 
-    expect(() => new glue.ExternalTable(stack, 'Table', {
-      database,
-      columns: [{
-        name: 'col',
-        type: glue.Schema.STRING,
-      }],
-      dataFormat: glue.DataFormat.JSON,
-      storageParameters: [
-        glue.StorageParameter.skipHeaderLineCount(2),
-        glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
-        glue.StorageParameter.custom('foo', 'bar'),
-        glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'),
-      ],
-      connection,
-      externalDataLocation,
-    })).toThrow('Duplicate storage parameter key: compression_type');
+    expect(
+      () =>
+        new glue.ExternalTable(stack, 'Table', {
+          database,
+          columns: [
+            {
+              name: 'col',
+              type: glue.Schema.STRING,
+            },
+          ],
+          dataFormat: glue.DataFormat.JSON,
+          storageParameters: [
+            glue.StorageParameter.skipHeaderLineCount(2),
+            glue.StorageParameter.compressionType(glue.CompressionType.GZIP),
+            glue.StorageParameter.custom('foo', 'bar'),
+            glue.StorageParameter.custom(glue.StorageParameters.COMPRESSION_TYPE, 'true'),
+          ],
+          connection,
+          externalDataLocation,
+        })
+    ).toThrow('Duplicate storage parameter key: compression_type');
   });
 });
 
@@ -804,7 +867,9 @@ describe('Table.fromTableArn', () => {
     const stack = new cdk.Stack();
 
     // THEN
-    expect(() => glue.ExternalTable.fromTableArn(stack, 'boom', '')).toThrow(/ARNs must start with \"arn:\" and have at least 6 components: /);
+    expect(() => glue.ExternalTable.fromTableArn(stack, 'boom', '')).toThrow(
+      /ARNs must start with \"arn:\" and have at least 6 components: /
+    );
   });
 });
 
@@ -828,14 +893,18 @@ test.each([
   const tableStack = new cdk.Stack(app, 'table');
   new glue.ExternalTable(tableStack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-      name: 'year',
-      type: glue.Schema.SMALL_INT,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
+    partitionKeys: [
+      {
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     enablePartitionFiltering: enabled,
     connection,
@@ -853,8 +922,8 @@ test.each([
       Name: 'tabletable8fff2c2b',
       Description: 'tabletable8fff2c2b generated by CDK',
       Parameters: {
-        'classification': 'json',
-        'has_encrypted_data': true,
+        classification: 'json',
+        has_encrypted_data: true,
         'partition_filtering.enabled': enabled,
       },
       PartitionKeys: Match.anyValue(),
@@ -881,14 +950,18 @@ test('Partition filtering on table is not defined (default behavior)', () => {
   const tableStack = new cdk.Stack(app, 'table');
   new glue.ExternalTable(tableStack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-      name: 'year',
-      type: glue.Schema.SMALL_INT,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
+    partitionKeys: [
+      {
+        name: 'year',
+        type: glue.Schema.SMALL_INT,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     enablePartitionFiltering: undefined,
     connection,
@@ -932,10 +1005,12 @@ test('can specify a physical name', () => {
   new glue.ExternalTable(stack, 'Table', {
     database,
     tableName: 'my_table',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     connection,
     externalDataLocation,
@@ -965,10 +1040,12 @@ test('can specify a description', () => {
   new glue.ExternalTable(stack, 'Table', {
     database,
     tableName: 'my_table',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     description: 'This is a test table.',
     dataFormat: glue.DataFormat.JSON,
     connection,
@@ -998,10 +1075,12 @@ test('storage descriptor parameters', () => {
   });
   new glue.ExternalTable(stack, 'Table', {
     database,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     storageParameters: [
       glue.StorageParameter.skipHeaderLineCount(2),
@@ -1018,9 +1097,9 @@ test('storage descriptor parameters', () => {
       StorageDescriptor: {
         Parameters: {
           'skip.header.line.count': '2',
-          'separatorChar': ',',
-          'foo': 'bar',
-          'compression_type': 'gzip',
+          separatorChar: ',',
+          foo: 'bar',
+          compression_type: 'gzip',
         },
       },
     },
@@ -1044,10 +1123,12 @@ test('can associate an external location with the glue table', () => {
     database,
     tableName: 'my_table',
     connection,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     externalDataLocation,
   });
@@ -1083,10 +1164,12 @@ test('can specify table parameter', () => {
     database,
     tableName: 'my_table',
     connection,
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
+    columns: [
+      {
+        name: 'col',
+        type: glue.Schema.STRING,
+      },
+    ],
     dataFormat: glue.DataFormat.JSON,
     externalDataLocation,
     parameters: {
@@ -1107,7 +1190,9 @@ test('can specify table parameter', () => {
   });
 });
 
-function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {
+function createTable(
+  props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>
+): void {
   const stack = new cdk.Stack();
   const connection = new glue.Connection(stack, 'Connection', {
     connectionName: 'my_connection',

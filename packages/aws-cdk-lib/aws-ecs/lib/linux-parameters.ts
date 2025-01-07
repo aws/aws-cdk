@@ -111,9 +111,7 @@ export class LinuxParameters extends Construct {
       props.sharedMemorySize !== undefined &&
       (!Number.isInteger(props.sharedMemorySize) || props.sharedMemorySize < 0)
     ) {
-      throw new Error(
-        `sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`
-      );
+      throw new Error(`sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`);
     }
 
     if (
@@ -121,9 +119,7 @@ export class LinuxParameters extends Construct {
       props.swappiness !== undefined &&
       (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
     ) {
-      throw new Error(
-        `swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`
-      );
+      throw new Error(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`);
     }
   }
 
@@ -172,10 +168,7 @@ export class LinuxParameters extends Construct {
         add: cdk.Lazy.list({ produce: () => this.capAdd }, { omitEmpty: true }),
         drop: cdk.Lazy.list({ produce: () => this.capDrop }, { omitEmpty: true }),
       },
-      devices: cdk.Lazy.any(
-        { produce: () => this.devices.map(renderDevice) },
-        { omitEmptyArray: true }
-      ),
+      devices: cdk.Lazy.any({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
       tmpfs: cdk.Lazy.any({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),
     };
   }

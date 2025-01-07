@@ -20,10 +20,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
-      Subnets: [
-        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
-        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
-      ],
+      Subnets: [{ Ref: 'StackPublicSubnet1Subnet0AD81D22' }, { Ref: 'StackPublicSubnet2Subnet3C7D2288' }],
       Type: 'network',
     });
   });
@@ -39,10 +36,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
-      Subnets: [
-        { Ref: 'StackPrivateSubnet1Subnet47AC2BC7' },
-        { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' },
-      ],
+      Subnets: [{ Ref: 'StackPrivateSubnet1Subnet47AC2BC7' }, { Ref: 'StackPrivateSubnet2SubnetA2F8EDD8' }],
       Type: 'network',
     });
   });
@@ -52,7 +46,9 @@ describe('tests', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const nlb = new elbv2.NetworkLoadBalancer(stack, 'Nlb', { vpc });
-    const endpointService = new ec2.VpcEndpointService(stack, 'EndpointService', { vpcEndpointServiceLoadBalancers: [nlb] });
+    const endpointService = new ec2.VpcEndpointService(stack, 'EndpointService', {
+      vpcEndpointServiceLoadBalancers: [nlb],
+    });
 
     // WHEN
     const importedPHZ = route53.PublicHostedZone.fromPublicHostedZoneAttributes(stack, 'MyPHZ', {
@@ -144,8 +140,15 @@ describe('tests', () => {
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] },
+                  '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' },
+                  '/*',
+                ],
+              ],
             },
           },
           {
@@ -154,8 +157,15 @@ describe('tests', () => {
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] },
+                  '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' },
+                  '/*',
+                ],
+              ],
             },
           },
           {
@@ -216,8 +226,15 @@ describe('tests', () => {
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] },
+                  '/prefix-of-access-logs/AWSLogs/',
+                  { Ref: 'AWS::AccountId' },
+                  '/*',
+                ],
+              ],
             },
           },
           {
@@ -226,8 +243,15 @@ describe('tests', () => {
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] },
+                  '/prefix-of-access-logs/AWSLogs/',
+                  { Ref: 'AWS::AccountId' },
+                  '/*',
+                ],
+              ],
             },
           },
           {
@@ -290,13 +314,7 @@ describe('tests', () => {
             Resource: {
               'Fn::Join': [
                 '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':s3:::imported-bucket/AWSLogs/',
-                  { Ref: 'AWS::AccountId' },
-                  '/*',
-                ],
+                ['arn:', { Ref: 'AWS::Partition' }, ':s3:::imported-bucket/AWSLogs/', { Ref: 'AWS::AccountId' }, '/*'],
               ],
             },
           },
@@ -308,13 +326,7 @@ describe('tests', () => {
             Resource: {
               'Fn::Join': [
                 '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':s3:::imported-bucket/AWSLogs/',
-                  { Ref: 'AWS::AccountId' },
-                  '/*',
-                ],
+                ['arn:', { Ref: 'AWS::Partition' }, ':s3:::imported-bucket/AWSLogs/', { Ref: 'AWS::AccountId' }, '/*'],
               ],
             },
           },
@@ -323,14 +335,7 @@ describe('tests', () => {
             Effect: 'Allow',
             Principal: { Service: 'delivery.logs.amazonaws.com' },
             Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':s3:::imported-bucket',
-                ],
-              ],
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::imported-bucket']],
             },
           },
         ],
@@ -493,25 +498,31 @@ describe('tests', () => {
     [true, undefined],
     [false, elbv2.IpAddressType.IPV4],
     [true, elbv2.IpAddressType.IPV4],
-  ])('throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.', (denyAllIgwTraffic, ipAddressType) => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Stack');
+  ])(
+    'throw error for denyAllIgwTraffic set to %s for Ipv4 (default) addressing.',
+    (denyAllIgwTraffic, ipAddressType) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
 
-    // THEN
-    expect(() => {
-      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
-        vpc,
-        denyAllIgwTraffic: denyAllIgwTraffic,
-        ipAddressType: ipAddressType,
-      });
-    }).toThrow(`'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`);
-  });
+      // THEN
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+          vpc,
+          denyAllIgwTraffic: denyAllIgwTraffic,
+          ipAddressType: ipAddressType,
+        });
+      }).toThrow(
+        `'denyAllIgwTraffic' may only be set on load balancers with ${elbv2.IpAddressType.DUAL_STACK} addressing.`
+      );
+    }
+  );
 
   test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const nlbArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: nlbArn,
     });
@@ -524,7 +535,8 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
-    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const nlbArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: nlbArn,
       vpc,
@@ -538,7 +550,8 @@ describe('tests', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
+    const albArn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const alb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: albArn,
     });
@@ -551,7 +564,8 @@ describe('tests', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const arn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188';
+    const arn =
+      'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188';
     const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: arn,
     });
@@ -569,11 +583,13 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
-      subnetConfiguration: [{
-        cidrMask: 20,
-        name: 'Isolated',
-        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-      }],
+      subnetConfiguration: [
+        {
+          cidrMask: 20,
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
     });
 
     // WHEN
@@ -585,10 +601,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
-      Subnets: [
-        { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
-        { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' },
-      ],
+      Subnets: [{ Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' }, { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' }],
       Type: 'network',
     });
   });
@@ -596,19 +609,23 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
-      subnetConfiguration: [{
-        cidrMask: 24,
-        name: 'Public',
-        subnetType: ec2.SubnetType.PUBLIC,
-      }, {
-        cidrMask: 24,
-        name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-      }, {
-        cidrMask: 28,
-        name: 'Isolated',
-        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-      }],
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'Private',
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+        {
+          cidrMask: 28,
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
     });
 
     // WHEN
@@ -620,10 +637,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
-      Subnets: [
-        { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-        { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-      ],
+      Subnets: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
       Type: 'network',
     });
   });
@@ -631,19 +645,23 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
-      subnetConfiguration: [{
-        cidrMask: 24,
-        name: 'Public',
-        subnetType: ec2.SubnetType.PUBLIC,
-      }, {
-        cidrMask: 24,
-        name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-      }, {
-        cidrMask: 28,
-        name: 'Isolated',
-        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-      }],
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'Private',
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+        {
+          cidrMask: 28,
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
     });
 
     // WHEN
@@ -655,10 +673,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
-      Subnets: [
-        { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-        { Ref: 'VPCPublicSubnet2Subnet74179F39' },
-      ],
+      Subnets: [{ Ref: 'VPCPublicSubnet1SubnetB4246D30' }, { Ref: 'VPCPublicSubnet2Subnet74179F39' }],
       Type: 'network',
     });
   });
@@ -677,10 +692,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
-      Subnets: [
-        { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-        { Ref: 'VPCPublicSubnet2Subnet74179F39' },
-      ],
+      Subnets: [{ Ref: 'VPCPublicSubnet1SubnetB4246D30' }, { Ref: 'VPCPublicSubnet2Subnet74179F39' }],
       Type: 'network',
     });
   });
@@ -688,19 +700,23 @@ describe('tests', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
-      subnetConfiguration: [{
-        cidrMask: 24,
-        name: 'Public',
-        subnetType: ec2.SubnetType.PUBLIC,
-      }, {
-        cidrMask: 24,
-        name: 'Private',
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-      }, {
-        cidrMask: 28,
-        name: 'Isolated',
-        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
-      }],
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'Private',
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+        {
+          cidrMask: 28,
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
     });
 
     // WHEN
@@ -713,10 +729,7 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
-      Subnets: [
-        { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
-        { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' },
-      ],
+      Subnets: [{ Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' }, { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' }],
       Type: 'network',
     });
   });
@@ -741,37 +754,32 @@ describe('tests', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
-      Subnets: [
-        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
-        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
-      ],
+      Subnets: [{ Ref: 'StackPublicSubnet1Subnet0AD81D22' }, { Ref: 'StackPublicSubnet2Subnet3C7D2288' }],
       SecurityGroups: [
         {
-          'Fn::GetAtt': [
-            stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement),
-            'GroupId',
-          ],
+          'Fn::GetAtt': [stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement), 'GroupId'],
         },
         {
-          'Fn::GetAtt': [
-            stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement),
-            'GroupId',
-          ],
+          'Fn::GetAtt': [stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement), 'GroupId'],
         },
       ],
       Type: 'network',
     });
-    template.resourcePropertiesCountIs('AWS::EC2::SecurityGroup', {
-      SecurityGroupIngress: [
-        {
-          CidrIp: '0.0.0.0/0',
-          Description: 'from 0.0.0.0/0:80',
-          FromPort: 80,
-          IpProtocol: 'tcp',
-          ToPort: 80,
-        },
-      ],
-    }, 2);
+    template.resourcePropertiesCountIs(
+      'AWS::EC2::SecurityGroup',
+      {
+        SecurityGroupIngress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'from 0.0.0.0/0:80',
+            FromPort: 80,
+            IpProtocol: 'tcp',
+            ToPort: 80,
+          },
+        ],
+      },
+      2
+    );
   });
 
   test('Trivial construction: no security groups', () => {
@@ -790,10 +798,7 @@ describe('tests', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
-      Subnets: [
-        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
-        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
-      ],
+      Subnets: [{ Ref: 'StackPublicSubnet1Subnet0AD81D22' }, { Ref: 'StackPublicSubnet2Subnet3C7D2288' }],
       SecurityGroups: Match.absent(),
     });
     template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
@@ -817,17 +822,14 @@ describe('tests', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
-      Subnets: [
-        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
-        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
-      ],
+      Subnets: [{ Ref: 'StackPublicSubnet1Subnet0AD81D22' }, { Ref: 'StackPublicSubnet2Subnet3C7D2288' }],
       SecurityGroups: [],
     });
     template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
     expect(nlb.securityGroups).toStrictEqual([]);
   });
 
-  test('Can add a security groups from no security groups', () =>{
+  test('Can add a security groups from no security groups', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -847,37 +849,32 @@ describe('tests', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
-      Subnets: [
-        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
-        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
-      ],
+      Subnets: [{ Ref: 'StackPublicSubnet1Subnet0AD81D22' }, { Ref: 'StackPublicSubnet2Subnet3C7D2288' }],
       SecurityGroups: [
         {
-          'Fn::GetAtt': [
-            stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement),
-            'GroupId',
-          ],
+          'Fn::GetAtt': [stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement), 'GroupId'],
         },
         {
-          'Fn::GetAtt': [
-            stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement),
-            'GroupId',
-          ],
+          'Fn::GetAtt': [stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement), 'GroupId'],
         },
       ],
       Type: 'network',
     });
-    template.resourcePropertiesCountIs('AWS::EC2::SecurityGroup', {
-      SecurityGroupIngress: [
-        {
-          CidrIp: '0.0.0.0/0',
-          Description: 'from 0.0.0.0/0:80',
-          FromPort: 80,
-          IpProtocol: 'tcp',
-          ToPort: 80,
-        },
-      ],
-    }, 2);
+    template.resourcePropertiesCountIs(
+      'AWS::EC2::SecurityGroup',
+      {
+        SecurityGroupIngress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'from 0.0.0.0/0:80',
+            FromPort: 80,
+            IpProtocol: 'tcp',
+            ToPort: 80,
+          },
+        ],
+      },
+      2
+    );
   });
 
   describe('lookup', () => {
@@ -900,7 +897,9 @@ describe('tests', () => {
 
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer', 0);
-      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188');
+      expect(loadBalancer.loadBalancerArn).toEqual(
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188'
+      );
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
       expect(loadBalancer.env.region).toEqual('us-west-2');
@@ -1115,26 +1114,29 @@ describe('tests', () => {
       });
     });
 
-    test.each([undefined, false])('Can create internal dualstack NetworkLoadBalancer with denyAllIgwTraffic set to true', (internetFacing) => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
+    test.each([undefined, false])(
+      'Can create internal dualstack NetworkLoadBalancer with denyAllIgwTraffic set to true',
+      (internetFacing) => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'Stack');
 
-      // WHEN
-      new elbv2.NetworkLoadBalancer(stack, 'LB', {
-        vpc,
-        denyAllIgwTraffic: true,
-        internetFacing: internetFacing,
-        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-      });
+        // WHEN
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          denyAllIgwTraffic: true,
+          internetFacing: internetFacing,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+        });
 
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        Scheme: 'internal',
-        Type: 'network',
-        IpAddressType: 'dualstack',
-      });
-    });
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+          Scheme: 'internal',
+          Type: 'network',
+          IpAddressType: 'dualstack',
+        });
+      }
+    );
   });
 
   describe('enable prefix for ipv6 source nat', () => {
@@ -1162,25 +1164,30 @@ describe('tests', () => {
       });
     });
 
-    test.each([false, undefined])('throw error for disabling `enablePrefixForIpv6SourceNat` and add UDP listener', (enablePrefixForIpv6SourceNat) => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
-      const lb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
-        vpc,
-        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
-        enablePrefixForIpv6SourceNat,
-      });
-
-      // THEN
-      expect(() => {
-        lb.addListener('Listener', {
-          port: 80,
-          protocol: elbv2.Protocol.UDP,
-          defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    test.each([false, undefined])(
+      'throw error for disabling `enablePrefixForIpv6SourceNat` and add UDP listener',
+      (enablePrefixForIpv6SourceNat) => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'Stack');
+        const lb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
+          vpc,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+          enablePrefixForIpv6SourceNat,
         });
-      }).toThrow('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.');
-    });
+
+        // THEN
+        expect(() => {
+          lb.addListener('Listener', {
+            port: 80,
+            protocol: elbv2.Protocol.UDP,
+            defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+          });
+        }).toThrow(
+          "To add a listener with UDP protocol to a dual stack NLB, 'enablePrefixForIpv6SourceNat' must be set to true."
+        );
+      }
+    );
   });
 
   describe('dualstack without public ipv4', () => {
@@ -1194,7 +1201,9 @@ describe('tests', () => {
           internetFacing: true,
           ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
         });
-      }).toThrow('\'ipAddressType\' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got network');
+      }).toThrow(
+        "'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got network"
+      );
     });
   });
 });

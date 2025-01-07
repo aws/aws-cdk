@@ -2,11 +2,7 @@ import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../../cx-api';
-import {
-  AutoScalingGroup,
-  AutoScalingGroupRequireImdsv2Aspect,
-  CfnLaunchConfiguration,
-} from '../../lib';
+import { AutoScalingGroup, AutoScalingGroupRequireImdsv2Aspect, CfnLaunchConfiguration } from '../../lib';
 
 describe('AutoScalingGroupRequireImdsv2Aspect', () => {
   let app: cdk.App;
@@ -36,13 +32,19 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
     cdk.Aspects.of(stack).add(aspect);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', Match.not({
-      MetadataOptions: {
-        HttpTokens: 'required',
-      },
-    }));
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::AutoScaling::LaunchConfiguration',
+      Match.not({
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      })
+    );
 
-    Annotations.fromStack(stack).hasWarning('/Stack/AutoScalingGroup', Match.stringLikeRegexp('.*CfnLaunchConfiguration.MetadataOptions field is a CDK token.'));
+    Annotations.fromStack(stack).hasWarning(
+      '/Stack/AutoScalingGroup',
+      Match.stringLikeRegexp('.*CfnLaunchConfiguration.MetadataOptions field is a CDK token.')
+    );
   });
 
   test('requires IMDSv2', () => {
@@ -96,16 +98,22 @@ describe('AutoScalingGroupRequireImdsv2Aspect with AUTOSCALING_GENERATE_LAUNCH_T
     cdk.Aspects.of(stack).add(aspect);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', Match.not({
-      LaunchTemplateData: {
-        KernelId: 'asfd',
-        MetadataOptions: {
-          HttpTokens: 'required',
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::EC2::LaunchTemplate',
+      Match.not({
+        LaunchTemplateData: {
+          KernelId: 'asfd',
+          MetadataOptions: {
+            HttpTokens: 'required',
+          },
         },
-      },
-    }));
+      })
+    );
 
-    Annotations.fromStack(stack).hasWarning('/Stack/AutoScalingGroup', Match.stringLikeRegexp('.*CfnLaunchTemplate.LaunchTemplateData field is a CDK token.'));
+    Annotations.fromStack(stack).hasWarning(
+      '/Stack/AutoScalingGroup',
+      Match.stringLikeRegexp('.*CfnLaunchTemplate.LaunchTemplateData field is a CDK token.')
+    );
   });
 
   test('warns when metadataOptions for LaunchTemplate is a token', () => {
@@ -129,15 +137,21 @@ describe('AutoScalingGroupRequireImdsv2Aspect with AUTOSCALING_GENERATE_LAUNCH_T
     cdk.Aspects.of(stack).add(aspect);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', Match.not({
-      LaunchTemplateData: {
-        MetadataOptions: {
-          HttpTokens: 'required',
+    Template.fromStack(stack).hasResourceProperties(
+      'AWS::EC2::LaunchTemplate',
+      Match.not({
+        LaunchTemplateData: {
+          MetadataOptions: {
+            HttpTokens: 'required',
+          },
         },
-      },
-    }));
+      })
+    );
 
-    Annotations.fromStack(stack).hasWarning('/Stack/AutoScalingGroup', Match.stringLikeRegexp('.*CfnLaunchTemplate.LaunchTemplateData.MetadataOptions field is a CDK token.'));
+    Annotations.fromStack(stack).hasWarning(
+      '/Stack/AutoScalingGroup',
+      Match.stringLikeRegexp('.*CfnLaunchTemplate.LaunchTemplateData.MetadataOptions field is a CDK token.')
+    );
   });
 
   test('requires IMDSv2 for LaunchTemplate', () => {

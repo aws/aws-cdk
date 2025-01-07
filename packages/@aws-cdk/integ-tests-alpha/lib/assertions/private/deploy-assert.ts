@@ -58,12 +58,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
     Object.defineProperty(this, DEPLOY_ASSERT_SYMBOL, { value: true });
   }
 
-  public awsApiCall(
-    service: string,
-    api: string,
-    parameters?: any,
-    outputPaths?: string[]
-  ): IApiCall {
+  public awsApiCall(service: string, api: string, parameters?: any, outputPaths?: string[]): IApiCall {
     let hash = '';
     try {
       hash = md5hash(this.scope.resolve(parameters));
@@ -101,11 +96,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
 
   public invokeFunction(props: LambdaInvokeFunctionProps): IApiCall {
     const hash = md5hash(this.scope.resolve(props));
-    return new LambdaInvokeFunction(
-      this.scope,
-      this.uniqueAssertionId(`LambdaInvoke${hash}`),
-      props
-    );
+    return new LambdaInvokeFunction(this.scope, this.uniqueAssertionId(`LambdaInvoke${hash}`), props);
   }
 
   public expect(id: string, expected: ExpectedResult, actual: ActualResult): void {

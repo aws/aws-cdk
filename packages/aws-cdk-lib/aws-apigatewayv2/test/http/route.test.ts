@@ -2,8 +2,19 @@ import { Template } from '../../../assertions';
 import { AccountPrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { Stack, App, Duration } from '../../../core';
 import {
-  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
-  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, HttpRouteIntegration,
+  HttpApi,
+  HttpAuthorizer,
+  HttpAuthorizerType,
+  HttpConnectionType,
+  HttpIntegrationType,
+  HttpMethod,
+  HttpRoute,
+  HttpRouteAuthorizerBindOptions,
+  HttpRouteAuthorizerConfig,
+  HttpRouteIntegrationConfig,
+  HttpRouteKey,
+  IHttpRouteAuthorizer,
+  HttpRouteIntegration,
   MappingValue,
   ParameterMapping,
   PayloadFormatVersion,
@@ -99,11 +110,14 @@ describe('HttpRoute', () => {
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
-    expect(() => new HttpRoute(stack, 'HttpRoute2', {
-      httpApi: httpApi2,
-      integration,
-      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
-    })).toThrow(/cannot be associated with multiple APIs/);
+    expect(
+      () =>
+        new HttpRoute(stack, 'HttpRoute2', {
+          httpApi: httpApi2,
+          integration,
+          routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+        })
+    ).toThrow(/cannot be associated with multiple APIs/);
   });
 
   test('associating integrations in different APIs creates separate AWS::ApiGatewayV2::Integration', () => {
@@ -147,22 +161,28 @@ describe('HttpRoute', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    expect(() => new HttpRoute(stack, 'HttpRoute', {
-      httpApi,
-      integration: new DummyIntegration(),
-      routeKey: HttpRouteKey.with('books', HttpMethod.GET),
-    })).toThrow(/A route path must always start with a "\/" and not end with a "\/"/);
+    expect(
+      () =>
+        new HttpRoute(stack, 'HttpRoute', {
+          httpApi,
+          integration: new DummyIntegration(),
+          routeKey: HttpRouteKey.with('books', HttpMethod.GET),
+        })
+    ).toThrow(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('throws when path ends with /', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    expect(() => new HttpRoute(stack, 'HttpRoute', {
-      httpApi,
-      integration: new DummyIntegration(),
-      routeKey: HttpRouteKey.with('/books/', HttpMethod.GET),
-    })).toThrow(/A route path must always start with a "\/" and not end with a "\/"/);
+    expect(
+      () =>
+        new HttpRoute(stack, 'HttpRoute', {
+          httpApi,
+          integration: new DummyIntegration(),
+          routeKey: HttpRouteKey.with('/books/', HttpMethod.GET),
+        })
+    ).toThrow(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('configures private integration correctly when all props are passed', () => {
@@ -238,17 +258,23 @@ describe('HttpRoute', () => {
       }
     }
 
-    expect(() => new HttpRoute(stack, 'MinimumHttpRoute', {
-      httpApi,
-      integration: new InvalidMinimumBoundIntegration('InvalidMinimumBoundIntegration'),
-      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
-    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
+    expect(
+      () =>
+        new HttpRoute(stack, 'MinimumHttpRoute', {
+          httpApi,
+          integration: new InvalidMinimumBoundIntegration('InvalidMinimumBoundIntegration'),
+          routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+        })
+    ).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
 
-    expect(() => new HttpRoute(stack, 'MaximumHttpRoute', {
-      httpApi,
-      integration: new InvalidMaximumBoundIntegration('InvalidMaximumBoundIntegration'),
-      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
-    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
+    expect(
+      () =>
+        new HttpRoute(stack, 'MaximumHttpRoute', {
+          httpApi,
+          integration: new InvalidMaximumBoundIntegration('InvalidMaximumBoundIntegration'),
+          routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+        })
+    ).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
   });
 
   test('configures private integration correctly when parameter mappings are passed', () => {
@@ -330,10 +356,7 @@ describe('HttpRoute', () => {
       IntegrationMethod: 'ANY',
       PayloadFormatVersion: '1.0',
       CredentialsArn: {
-        'Fn::GetAtt': [
-          'Role1ABCC5F0',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
       },
       RequestParameters: {
         QueueUrl: '$request.header.queueUrl',
@@ -485,12 +508,15 @@ describe('HttpRoute', () => {
 
     const authorizer = new InvalidTypeAuthorizer();
 
-    expect(() => new HttpRoute(stack, 'HttpRoute', {
-      httpApi,
-      integration: new DummyIntegration(),
-      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
-      authorizer,
-    })).toThrow('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
+    expect(
+      () =>
+        new HttpRoute(stack, 'HttpRoute', {
+          httpApi,
+          integration: new DummyIntegration(),
+          routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+          authorizer,
+        })
+    ).toThrow('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
   });
 
   test('granting invoke', () => {
@@ -680,7 +706,7 @@ describe('HttpRoute', () => {
     expect(() =>
       route.grantInvoke(role, {
         httpMethods: [HttpMethod.DELETE],
-      }),
+      })
     ).toThrow(/This route does not support granting invoke for all requested http methods/i);
   });
 
@@ -701,7 +727,7 @@ describe('HttpRoute', () => {
     expect(() =>
       route.grantInvoke(role, {
         httpMethods: [HttpMethod.DELETE],
-      }),
+      })
     ).toThrow(/To use grantInvoke, you must use IAM authorization/i);
   });
 
@@ -718,17 +744,20 @@ describe('HttpRoute', () => {
 
     // THEN
     expect(stack.resolve(route.routeArn)).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        { Ref: 'HttpApiF5A9A8A7' },
-        '/*/*/books/*',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'HttpApiF5A9A8A7' },
+          '/*/*/books/*',
+        ],
+      ],
     });
   });
 
@@ -745,17 +774,20 @@ describe('HttpRoute', () => {
 
     // THEN
     expect(stack.resolve(route.routeArn)).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':execute-api:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':',
-        { Ref: 'HttpApiF5A9A8A7' },
-        '/*/GET/books/*',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'HttpApiF5A9A8A7' },
+          '/*/GET/books/*',
+        ],
+      ],
     });
   });
 });
@@ -780,7 +812,6 @@ class DummyAuthorizer implements IHttpRouteAuthorizer {
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
-
       this.authorizer = new HttpAuthorizer(options.scope, 'auth-1234', {
         httpApi: options.route.httpApi,
         identitySource: ['identitysource.1', 'identitysource.2'],
@@ -802,7 +833,6 @@ class InvalidTypeAuthorizer implements IHttpRouteAuthorizer {
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
-
       this.authorizer = new HttpAuthorizer(options.scope, 'auth-1234', {
         httpApi: options.route.httpApi,
         identitySource: ['identitysource.1', 'identitysource.2'],

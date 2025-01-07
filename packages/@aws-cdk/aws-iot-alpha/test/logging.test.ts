@@ -68,23 +68,20 @@ test('Default property', () => {
   });
 });
 
-test.each([
-  iot.LogLevel.ERROR,
-  iot.LogLevel.WARN,
-  iot.LogLevel.INFO,
-  iot.LogLevel.DEBUG,
-  iot.LogLevel.DISABLED,
-])('Log level %s', (logLevel) => {
-  const stack = new cdk.Stack();
+test.each([iot.LogLevel.ERROR, iot.LogLevel.WARN, iot.LogLevel.INFO, iot.LogLevel.DEBUG, iot.LogLevel.DISABLED])(
+  'Log level %s',
+  (logLevel) => {
+    const stack = new cdk.Stack();
 
-  new iot.Logging(stack, 'Logging', {
-    logLevel,
-  });
+    new iot.Logging(stack, 'Logging', {
+      logLevel,
+    });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IoT::Logging', {
-    DefaultLogLevel: logLevel,
-  });
-});
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::Logging', {
+      DefaultLogLevel: logLevel,
+    });
+  }
+);
 
 test('import by Log ID', () => {
   const stack = new cdk.Stack();

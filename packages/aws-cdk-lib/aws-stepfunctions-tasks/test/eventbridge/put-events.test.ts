@@ -15,11 +15,13 @@ describe('Put Events', () => {
   test('provided all parameters', () => {
     // WHEN
     const task = new EventBridgePutEvents(stack, 'PutEvents', {
-      entries: [{
-        detail: sfn.TaskInput.fromText('MyDetail'),
-        detailType: 'MyDetailType',
-        source: 'my.source',
-      }],
+      entries: [
+        {
+          detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'my.source',
+        },
+      ],
     });
 
     // THEN
@@ -39,11 +41,13 @@ describe('Put Events', () => {
       },
       End: true,
       Parameters: {
-        Entries: [{
-          Detail: 'MyDetail',
-          DetailType: 'MyDetailType',
-          Source: 'my.source',
-        }],
+        Entries: [
+          {
+            Detail: 'MyDetail',
+            DetailType: 'MyDetailType',
+            Source: 'my.source',
+          },
+        ],
       },
     });
   });
@@ -51,13 +55,15 @@ describe('Put Events', () => {
   test('provided detail as object', () => {
     // WHEN
     const task = new EventBridgePutEvents(stack, 'PutEvents', {
-      entries: [{
-        detail: sfn.TaskInput.fromObject({
-          Message: 'MyDetailMessage',
-        }),
-        detailType: 'MyDetailType',
-        source: 'my.source',
-      }],
+      entries: [
+        {
+          detail: sfn.TaskInput.fromObject({
+            Message: 'MyDetailMessage',
+          }),
+          detailType: 'MyDetailType',
+          source: 'my.source',
+        },
+      ],
     });
 
     // THEN
@@ -77,13 +83,15 @@ describe('Put Events', () => {
       },
       End: true,
       Parameters: {
-        Entries: [{
-          Detail: {
-            Message: 'MyDetailMessage',
+        Entries: [
+          {
+            Detail: {
+              Message: 'MyDetailMessage',
+            },
+            DetailType: 'MyDetailType',
+            Source: 'my.source',
           },
-          DetailType: 'MyDetailType',
-          Source: 'my.source',
-        }],
+        ],
       },
     });
   });
@@ -92,14 +100,16 @@ describe('Put Events', () => {
     // WHEN
     const task = new EventBridgePutEvents(stack, 'PutEvents', {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      entries: [{
-        detail: sfn.TaskInput.fromObject({
-          Message: 'MyDetailMessage',
-          Token: sfn.JsonPath.taskToken,
-        }),
-        detailType: 'MyDetailType',
-        source: 'my.source',
-      }],
+      entries: [
+        {
+          detail: sfn.TaskInput.fromObject({
+            Message: 'MyDetailMessage',
+            Token: sfn.JsonPath.taskToken,
+          }),
+          detailType: 'MyDetailType',
+          source: 'my.source',
+        },
+      ],
     });
 
     // THEN
@@ -119,14 +129,16 @@ describe('Put Events', () => {
       },
       End: true,
       Parameters: {
-        Entries: [{
-          Detail: {
-            'Message': 'MyDetailMessage',
-            'Token.$': '$$.Task.Token',
+        Entries: [
+          {
+            Detail: {
+              Message: 'MyDetailMessage',
+              'Token.$': '$$.Task.Token',
+            },
+            DetailType: 'MyDetailType',
+            Source: 'my.source',
           },
-          DetailType: 'MyDetailType',
-          Source: 'my.source',
-        }],
+        ],
       },
     });
   });
@@ -136,11 +148,13 @@ describe('Put Events', () => {
       // WHEN
       new EventBridgePutEvents(stack, 'PutEvents', {
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-        entries: [{
-          detail: sfn.TaskInput.fromText('MyDetail'),
-          detailType: 'MyDetailType',
-          source: 'my.source',
-        }],
+        entries: [
+          {
+            detail: sfn.TaskInput.fromText('MyDetail'),
+            detailType: 'MyDetailType',
+            source: 'my.source',
+          },
+        ],
       });
       // THEN
     }).toThrow('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
@@ -151,11 +165,13 @@ describe('Put Events', () => {
       // WHEN
       new EventBridgePutEvents(stack, 'PutEvents', {
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-        entries: [{
-          detail: sfn.TaskInput.fromText('MyDetail'),
-          detailType: 'MyDetailType',
-          source: 'my.source',
-        }],
+        entries: [
+          {
+            detail: sfn.TaskInput.fromText('MyDetail'),
+            detailType: 'MyDetailType',
+            source: 'my.source',
+          },
+        ],
       });
       // THEN
     }).toThrow('Unsupported service integration pattern');
@@ -164,11 +180,13 @@ describe('Put Events', () => {
   test('event source cannot start with "aws."', () => {
     expect(() => {
       new EventBridgePutEvents(stack, 'PutEvents', {
-        entries: [{
-          detail: sfn.TaskInput.fromText('MyDetail'),
-          detailType: 'MyDetailType',
-          source: 'aws.source',
-        }],
+        entries: [
+          {
+            detail: sfn.TaskInput.fromText('MyDetail'),
+            detailType: 'MyDetailType',
+            source: 'aws.source',
+          },
+        ],
       });
     }).toThrow(/Event source cannot start with "aws."/);
   });
@@ -176,11 +194,13 @@ describe('Put Events', () => {
   test('event source can start with "aws" without trailing dot', () => {
     expect(() => {
       new EventBridgePutEvents(stack, 'PutEvents', {
-        entries: [{
-          detail: sfn.TaskInput.fromText('MyDetail'),
-          detailType: 'MyDetailType',
-          source: 'awssource',
-        }],
+        entries: [
+          {
+            detail: sfn.TaskInput.fromText('MyDetail'),
+            detailType: 'MyDetailType',
+            source: 'awssource',
+          },
+        ],
       });
     }).not.toThrow(/Event source cannot start with "aws."/);
   });
@@ -191,12 +211,14 @@ describe('Put Events', () => {
 
     // WHEN
     const task = new EventBridgePutEvents(stack, 'PutEvents', {
-      entries: [{
-        eventBus,
-        detail: sfn.TaskInput.fromText('MyDetail'),
-        detailType: 'MyDetailType',
-        source: 'my.source',
-      }],
+      entries: [
+        {
+          eventBus,
+          detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'my.source',
+        },
+      ],
     });
 
     // THEN
@@ -216,17 +238,16 @@ describe('Put Events', () => {
       },
       End: true,
       Parameters: {
-        Entries: [{
-          EventBusName: {
-            'Fn::GetAtt': [
-              'EventBus7B8748AA',
-              'Arn',
-            ],
+        Entries: [
+          {
+            EventBusName: {
+              'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
+            },
+            Detail: 'MyDetail',
+            DetailType: 'MyDetailType',
+            Source: 'my.source',
           },
-          Detail: 'MyDetail',
-          DetailType: 'MyDetailType',
-          Source: 'my.source',
-        }],
+        ],
       },
     });
   });
@@ -248,16 +269,19 @@ describe('Put Events', () => {
 
     // WHEN
     const task = new EventBridgePutEvents(stack, 'PutEvents', {
-      entries: [{
-        detail: sfn.TaskInput.fromText('MyDetail'),
-        detailType: 'MyDetailType',
-        source: 'my.source',
-        eventBus: bus,
-      }, {
-        detail: sfn.TaskInput.fromText('MyDetail2'),
-        detailType: 'MyDetailType',
-        source: 'my.source',
-      }],
+      entries: [
+        {
+          detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'my.source',
+          eventBus: bus,
+        },
+        {
+          detail: sfn.TaskInput.fromText('MyDetail2'),
+          detailType: 'MyDetailType',
+          source: 'my.source',
+        },
+      ],
     });
     new sfn.StateMachine(stack, 'State Machine', { definitionBody: sfn.DefinitionBody.fromChainable(task) });
 
@@ -270,10 +294,7 @@ describe('Put Events', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::GetAtt': [
-                  'EventBus7B8748AA',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
               },
               {
                 'Fn::Join': [

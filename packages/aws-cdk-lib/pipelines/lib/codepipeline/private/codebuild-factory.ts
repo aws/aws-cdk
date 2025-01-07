@@ -207,23 +207,15 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     return this._project;
   }
 
-  public produceAction(
-    stage: codepipeline.IStage,
-    options: ProduceActionOptions
-  ): CodePipelineActionFactoryResult {
-    const projectOptions = mergeCodeBuildOptions(
-      options.codeBuildDefaults,
-      this.props.projectOptions
-    );
+  public produceAction(stage: codepipeline.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
+    const projectOptions = mergeCodeBuildOptions(options.codeBuildDefaults, this.props.projectOptions);
 
     if (
       (!projectOptions.buildEnvironment?.privileged || projectOptions.vpc === undefined) &&
       projectOptions.fileSystemLocations !== undefined &&
       projectOptions.fileSystemLocations.length != 0
     ) {
-      throw new Error(
-        'Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.'
-      );
+      throw new Error('Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.');
     }
 
     const inputs = this.props.inputs ?? [];
@@ -232,9 +224,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const mainInput = inputs.find((x) => x.directory === '.');
     const extraInputs = inputs.filter((x) => x.directory !== '.');
 
-    const inputArtifact = mainInput
-      ? options.artifacts.toCodePipeline(mainInput.fileSet)
-      : options.fallbackArtifact;
+    const inputArtifact = mainInput ? options.artifacts.toCodePipeline(mainInput.fileSet) : options.fallbackArtifact;
     const extraInputArtifacts = extraInputs.map((x) => options.artifacts.toCodePipeline(x.fileSet));
     const outputArtifacts = outputs.map((x) => options.artifacts.toCodePipeline(x.fileSet));
 
@@ -257,18 +247,14 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         install: (installCommands.length ?? 0) > 0 ? { commands: installCommands } : undefined,
         build: this.props.commands.length > 0 ? { commands: this.props.commands } : undefined,
       },
-      artifacts: noEmptyObject<any>(
-        renderArtifactsBuildSpec(options.artifacts, this.props.outputs ?? [])
-      ),
+      artifacts: noEmptyObject<any>(renderArtifactsBuildSpec(options.artifacts, this.props.outputs ?? [])),
     });
 
     // Partition environment variables into environment variables that can go on the project
     // and environment variables that MUST go in the pipeline (those that reference CodePipeline variables)
     const env = noUndefined(this.props.env ?? {});
 
-    const [actionEnvs, projectEnvs] = partition(Object.entries(env ?? {}), ([, v]) =>
-      containsPipelineVariable(v)
-    );
+    const [actionEnvs, projectEnvs] = partition(Object.entries(env ?? {}), ([, v]) => containsPipelineVariable(v));
 
     const environment = mergeBuildEnvironments(projectOptions?.buildEnvironment ?? {}, {
       environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), (value) => ({ value }))),
@@ -332,10 +318,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
     const project = new codebuild.PipelineProject(projectScope, this.constructId, {
       projectName: this.props.projectName,
-      description: `Pipeline step ${safePipelineName}/${stage.stageName}/${actionName}`.substring(
-        0,
-        255
-      ),
+      description: `Pipeline step ${safePipelineName}/${stage.stageName}/${actionName}`.substring(0, 255),
       environment,
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
@@ -362,9 +345,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       options.stackOutputsMap.toCodePipeline(outputRef)
     );
 
-    const configHashEnv = options.beforeSelfMutation
-      ? { _PROJECT_CONFIG_HASH: projectConfigHash }
-      : {};
+    const configHashEnv = options.beforeSelfMutation ? { _PROJECT_CONFIG_HASH: projectConfigHash } : {};
 
     // Start all CodeBuild projects from a single (shared) Action Role, so that we don't have to generate an Action Role for each
     // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
@@ -410,10 +391,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 /**
  * Generate commands to move additional input artifacts into the right place
  */
-function generateInputArtifactLinkCommands(
-  artifacts: ArtifactMap,
-  inputs: FileSetLocation[]
-): string[] {
+function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileSetLocation[]): string[] {
   return inputs.map((input) => {
     const fragments = [];
 
@@ -483,10 +461,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
       cache: b.cache ?? a.cache,
-      fileSystemLocations: definedArray([
-        ...(a.fileSystemLocations ?? []),
-        ...(b.fileSystemLocations ?? []),
-      ]),
+      fileSystemLocations: definedArray([...(a.fileSystemLocations ?? []), ...(b.fileSystemLocations ?? [])]),
       logging: b.logging ?? a.logging,
     };
   }
@@ -549,9 +524,7 @@ function containsPipelineVariable(s: string) {
 /**
  * Turn a collection into a collection of CodePipeline environment variables
  */
-function cbEnv(
-  xs: Record<string, string | undefined>
-): Record<string, codebuild.BuildEnvironmentVariable> {
+function cbEnv(xs: Record<string, string | undefined>): Record<string, codebuild.BuildEnvironmentVariable> {
   return mkdict(
     Object.entries(xs)
       .filter(([, v]) => v !== undefined)

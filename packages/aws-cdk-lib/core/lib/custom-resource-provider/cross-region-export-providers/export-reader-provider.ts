@@ -19,11 +19,7 @@ export interface ExportReaderProps {}
  * @internal - this is intentionally not exported from core
  */
 export class ExportReader extends Construct {
-  public static getOrCreate(
-    scope: Construct,
-    uniqueId: string,
-    _props: ExportReaderProps = {}
-  ): ExportReader {
+  public static getOrCreate(scope: Construct, uniqueId: string, _props: ExportReaderProps = {}): ExportReader {
     const stack = Stack.of(scope);
     const existing = stack.node.tryFindChild(uniqueId);
     return existing ? (existing as ExportReader) : new ExportReader(stack, uniqueId);

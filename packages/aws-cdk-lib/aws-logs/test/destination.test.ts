@@ -40,9 +40,11 @@ describe('destination', () => {
     });
 
     // WHEN
-    dest.addToPolicy(new iam.PolicyStatement({
-      actions: ['logs:TalkToMe'],
-    }));
+    dest.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:TalkToMe'],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Destination', {
@@ -57,10 +59,7 @@ describe('destination', () => {
         Version: '2012-10-17',
       }),
       RoleArn: {
-        'Fn::GetAtt': [
-          'Role1ABCC5F0',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
       },
       TargetArn: 'arn:bogus',
     });

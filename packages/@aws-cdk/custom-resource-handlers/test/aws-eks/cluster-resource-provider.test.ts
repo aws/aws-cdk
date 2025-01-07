@@ -59,24 +59,32 @@ describe('cluster resource provider', () => {
 
       // THEN
       expect(mocks.actualRequest.createClusterRequest?.name?.length).toEqual(100);
-      expect(mocks.actualRequest.createClusterRequest?.name).toEqual('hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa');
+      expect(mocks.actualRequest.createClusterRequest?.name).toEqual(
+        'hellohellohellohellohellohellohellohellohellohellohellohellohellohe-602c078a6181435296764f00352445aa'
+      );
     });
 
     test('onCreate: explicit cluster name', async () => {
-      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
-        ...mocks.MOCK_PROPS,
-        name: 'ExplicitCustomName',
-      }));
+      const handler = new ClusterResourceHandler(
+        mocks.client,
+        mocks.newRequest('Create', {
+          ...mocks.MOCK_PROPS,
+          name: 'ExplicitCustomName',
+        })
+      );
       await handler.onEvent();
 
       expect(mocks.actualRequest.createClusterRequest!.name).toEqual('ExplicitCustomName');
     });
 
     test('with no specific version', async () => {
-      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
-        ...mocks.MOCK_PROPS,
-        version: '12.34.56',
-      }));
+      const handler = new ClusterResourceHandler(
+        mocks.client,
+        mocks.newRequest('Create', {
+          ...mocks.MOCK_PROPS,
+          version: '12.34.56',
+        })
+      );
       await handler.onEvent();
 
       expect(mocks.actualRequest.createClusterRequest!.version).toEqual('12.34.56');
@@ -122,10 +130,13 @@ describe('cluster resource provider', () => {
     });
 
     test('encryption config', async () => {
-      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
-        ...mocks.MOCK_PROPS,
-        encryptionConfig: [{ provider: { keyArn: 'aws:kms:key' }, resources: ['secrets'] }],
-      }));
+      const handler = new ClusterResourceHandler(
+        mocks.client,
+        mocks.newRequest('Create', {
+          ...mocks.MOCK_PROPS,
+          encryptionConfig: [{ provider: { keyArn: 'aws:kms:key' }, resources: ['secrets'] }],
+        })
+      );
 
       await handler.onEvent();
 
@@ -194,7 +205,10 @@ describe('cluster resource provider', () => {
 
   describe('update', () => {
     test('no change', async () => {
-      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', mocks.MOCK_PROPS, mocks.MOCK_PROPS));
+      const handler = new ClusterResourceHandler(
+        mocks.client,
+        mocks.newRequest('Update', mocks.MOCK_PROPS, mocks.MOCK_PROPS)
+      );
       const resp = await handler.onEvent();
       expect(resp).toEqual(undefined);
       expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
@@ -220,12 +234,16 @@ describe('cluster resource provider', () => {
       describe('name change', () => {
         test('explicit name change', async () => {
           // GIVEN
-          const req = mocks.newRequest('Update', {
-            ...mocks.MOCK_PROPS,
-            name: 'new-cluster-name-1234',
-          }, {
-            name: 'old-cluster-name',
-          });
+          const req = mocks.newRequest(
+            'Update',
+            {
+              ...mocks.MOCK_PROPS,
+              name: 'new-cluster-name-1234',
+            },
+            {
+              name: 'old-cluster-name',
+            }
+          );
           const handler = new ClusterResourceHandler(mocks.client, req);
 
           // WHEN
@@ -235,8 +253,7 @@ describe('cluster resource provider', () => {
           expect(mocks.actualRequest.createClusterRequest!).toEqual({
             name: 'new-cluster-name-1234',
             roleArn: 'arn:of:role',
-            resourcesVpcConfig:
-            {
+            resourcesVpcConfig: {
               subnetIds: ['subnet1', 'subnet2'],
               securityGroupIds: ['sg1', 'sg2', 'sg3'],
             },
@@ -246,12 +263,16 @@ describe('cluster resource provider', () => {
 
         test('from auto-gen name to explicit name', async () => {
           // GIVEN
-          const req = mocks.newRequest('Update', {
-            ...mocks.MOCK_PROPS,
-            name: undefined, // auto-gen
-          }, {
-            name: 'explicit', // auto-gen
-          });
+          const req = mocks.newRequest(
+            'Update',
+            {
+              ...mocks.MOCK_PROPS,
+              name: undefined, // auto-gen
+            },
+            {
+              name: 'explicit', // auto-gen
+            }
+          );
 
           const handler = new ClusterResourceHandler(mocks.client, req);
 
@@ -262,8 +283,7 @@ describe('cluster resource provider', () => {
           expect(mocks.actualRequest.createClusterRequest!).toEqual({
             name: 'MyResourceId-fakerequestid',
             roleArn: 'arn:of:role',
-            resourcesVpcConfig:
-            {
+            resourcesVpcConfig: {
               subnetIds: ['subnet1', 'subnet2'],
               securityGroupIds: ['sg1', 'sg2', 'sg3'],
             },
@@ -273,30 +293,44 @@ describe('cluster resource provider', () => {
       });
 
       test('change subnets or security groups order should not trigger an update', async () => {
-        const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-          ...mocks.MOCK_PROPS,
-          resourcesVpcConfig: {
-            subnetIds: ['subnet1', 'subnet2'],
-            securityGroupIds: ['sg1', 'sg2'],
-          },
-        }, {
-          ...mocks.MOCK_PROPS,
-          resourcesVpcConfig: {
-            subnetIds: ['subnet2', 'subnet1'],
-            securityGroupIds: ['sg2', 'sg1'],
-          },
-        }));
+        const handler = new ClusterResourceHandler(
+          mocks.client,
+          mocks.newRequest(
+            'Update',
+            {
+              ...mocks.MOCK_PROPS,
+              resourcesVpcConfig: {
+                subnetIds: ['subnet1', 'subnet2'],
+                securityGroupIds: ['sg1', 'sg2'],
+              },
+            },
+            {
+              ...mocks.MOCK_PROPS,
+              resourcesVpcConfig: {
+                subnetIds: ['subnet2', 'subnet1'],
+                securityGroupIds: ['sg2', 'sg1'],
+              },
+            }
+          )
+        );
         const resp = await handler.onEvent();
 
         expect(resp).toEqual(undefined);
       });
 
       test('"roleArn" requires a replacement', async () => {
-        const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-          roleArn: 'new-arn',
-        }, {
-          roleArn: 'old-arn',
-        }));
+        const handler = new ClusterResourceHandler(
+          mocks.client,
+          mocks.newRequest(
+            'Update',
+            {
+              roleArn: 'new-arn',
+            },
+            {
+              roleArn: 'old-arn',
+            }
+          )
+        );
         const resp = await handler.onEvent();
 
         expect(resp).toEqual({ PhysicalResourceId: 'MyResourceId-fakerequestid' });
@@ -308,13 +342,20 @@ describe('cluster resource provider', () => {
 
       test('fails if cluster has an explicit "name" that is the same as the old "name"', async () => {
         // GIVEN
-        const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-          roleArn: 'new-arn',
-          name: 'explicit-cluster-name',
-        }, {
-          roleArn: 'old-arn',
-          name: 'explicit-cluster-name',
-        }));
+        const handler = new ClusterResourceHandler(
+          mocks.client,
+          mocks.newRequest(
+            'Update',
+            {
+              roleArn: 'new-arn',
+              name: 'explicit-cluster-name',
+            },
+            {
+              roleArn: 'old-arn',
+              name: 'explicit-cluster-name',
+            }
+          )
+        );
 
         // THEN
         let err: any;
@@ -324,18 +365,27 @@ describe('cluster resource provider', () => {
           err = e;
         }
 
-        expect(err?.message).toEqual('Cannot replace cluster "explicit-cluster-name" since it has an explicit physical name. Either rename the cluster or remove the "name" configuration');
+        expect(err?.message).toEqual(
+          'Cannot replace cluster "explicit-cluster-name" since it has an explicit physical name. Either rename the cluster or remove the "name" configuration'
+        );
       });
 
       test('succeeds if cluster had an explicit "name" and now it does not', async () => {
         // GIVEN
-        const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-          roleArn: 'new-arn',
-          name: undefined, // auto-gen
-        }, {
-          roleArn: 'old-arn',
-          name: 'explicit-cluster-name',
-        }));
+        const handler = new ClusterResourceHandler(
+          mocks.client,
+          mocks.newRequest(
+            'Update',
+            {
+              roleArn: 'new-arn',
+              name: undefined, // auto-gen
+            },
+            {
+              roleArn: 'old-arn',
+              name: 'explicit-cluster-name',
+            }
+          )
+        );
 
         // WHEN
         const resp = await handler.onEvent();
@@ -350,13 +400,20 @@ describe('cluster resource provider', () => {
 
       test('succeeds if cluster had an explicit "name" and now it has a different name', async () => {
         // GIVEN
-        const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-          roleArn: 'new-arn',
-          name: 'new-explicit-cluster-name',
-        }, {
-          roleArn: 'old-arn',
-          name: 'old-explicit-cluster-name',
-        }));
+        const handler = new ClusterResourceHandler(
+          mocks.client,
+          mocks.newRequest(
+            'Update',
+            {
+              roleArn: 'new-arn',
+              name: 'new-explicit-cluster-name',
+            },
+            {
+              roleArn: 'old-arn',
+              name: 'old-explicit-cluster-name',
+            }
+          )
+        );
 
         // WHEN
         const resp = await handler.onEvent();
@@ -372,11 +429,18 @@ describe('cluster resource provider', () => {
 
     test('encryption config cannot be updated', async () => {
       // GIVEN
-      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-        encryptionConfig: [{ resources: ['secrets'], provider: { keyArn: 'key:arn:1' } }],
-      }, {
-        encryptionConfig: [{ resources: ['secrets'], provider: { keyArn: 'key:arn:2' } }],
-      }));
+      const handler = new ClusterResourceHandler(
+        mocks.client,
+        mocks.newRequest(
+          'Update',
+          {
+            encryptionConfig: [{ resources: ['secrets'], provider: { keyArn: 'key:arn:1' } }],
+          },
+          {
+            encryptionConfig: [{ resources: ['secrets'], provider: { keyArn: 'key:arn:2' } }],
+          }
+        )
+      );
 
       // WHEN
       let error: any;
@@ -404,9 +468,7 @@ describe('cluster resource provider', () => {
           {
             errorMessage: 'errorMessageMock',
             errorCode: 'errorCodeMock',
-            resourceIds: [
-              'foo', 'bar',
-            ],
+            resourceIds: ['foo', 'bar'],
           },
         ];
 
@@ -418,7 +480,9 @@ describe('cluster resource provider', () => {
         }
         expect(error).toBeDefined();
         expect(mocks.actualRequest.describeUpdateRequest).toEqual({ name: 'physical-resource-id', updateId: 'foobar' });
-        expect(error.message).toEqual('cluster update id "foobar" failed with errors: [{"errorMessage":"errorMessageMock","errorCode":"errorCodeMock","resourceIds":["foo","bar"]}]');
+        expect(error.message).toEqual(
+          'cluster update id "foobar" failed with errors: [{"errorMessage":"errorMessageMock","errorCode":"errorCodeMock","resourceIds":["foo","bar"]}]'
+        );
       });
 
       test('with "InProgress" status, returns IsComplete=false', async () => {
@@ -467,11 +531,18 @@ describe('cluster resource provider', () => {
     describe('in-place', () => {
       describe('version change', () => {
         test('from undefined to a specific value', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            version: '12.34',
-          }, {
-            version: undefined,
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                version: '12.34',
+              },
+              {
+                version: undefined,
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
           expect(mocks.actualRequest.updateClusterVersionRequest!).toEqual({
@@ -482,11 +553,18 @@ describe('cluster resource provider', () => {
         });
 
         test('from a specific value to another value', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            version: '2.0',
-          }, {
-            version: '1.1',
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                version: '2.0',
+              },
+              {
+                version: '1.1',
+              }
+            )
+          );
 
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
@@ -498,9 +576,12 @@ describe('cluster resource provider', () => {
         });
 
         test('to a new value that is already the current version', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            version: '1.0',
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest('Update', {
+              version: '1.0',
+            })
+          );
           const resp = await handler.onEvent();
           expect(resp).toEqual(undefined);
           expect(mocks.actualRequest.describeClusterRequest).toEqual({ name: 'physical-resource-id' });
@@ -509,11 +590,18 @@ describe('cluster resource provider', () => {
         });
 
         test('fails from specific value to undefined', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            version: undefined,
-          }, {
-            version: '1.2',
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                version: undefined,
+              },
+              {
+                version: '1.2',
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
@@ -525,32 +613,45 @@ describe('cluster resource provider', () => {
         });
 
         test('subnets or security groups does not require a replacement', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            ...mocks.MOCK_PROPS,
-            resourcesVpcConfig: {
-              subnetIds: ['subnet1', 'subnet2'],
-              securityGroupIds: ['sg1'],
-            },
-          }, {
-            ...mocks.MOCK_PROPS,
-            resourcesVpcConfig: {
-              subnetIds: ['subnet1'],
-              securityGroupIds: ['sg2'],
-            },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                ...mocks.MOCK_PROPS,
+                resourcesVpcConfig: {
+                  subnetIds: ['subnet1', 'subnet2'],
+                  securityGroupIds: ['sg1'],
+                },
+              },
+              {
+                ...mocks.MOCK_PROPS,
+                resourcesVpcConfig: {
+                  subnetIds: ['subnet1'],
+                  securityGroupIds: ['sg2'],
+                },
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
         });
-
       });
       describe('assessConfig change', () => {
         test('from undefined to a specific value', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
-          }, {
-            accessConfig: { authenticationMode: undefined },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+              },
+              {
+                accessConfig: { authenticationMode: undefined },
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
           expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
@@ -561,11 +662,18 @@ describe('cluster resource provider', () => {
         });
 
         test('from a specific value to another value', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: { authenticationMode: 'API' },
-          }, {
-            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: { authenticationMode: 'API' },
+              },
+              {
+                accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+              }
+            )
+          );
 
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
@@ -577,11 +685,18 @@ describe('cluster resource provider', () => {
         });
 
         test('fails from any defined value to undefined', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: undefined,
-          }, {
-            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: undefined,
+              },
+              {
+                accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
@@ -592,11 +707,18 @@ describe('cluster resource provider', () => {
           expect(error.message).toEqual('Cannot fallback authenticationMode from defined to undefined');
         });
         test('fails from API_AND_CONFIG_MAP to CONFIG_MAP', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: { authenticationMode: 'CONFIG_MAP' },
-          }, {
-            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: { authenticationMode: 'CONFIG_MAP' },
+              },
+              {
+                accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
@@ -607,11 +729,18 @@ describe('cluster resource provider', () => {
           expect(error.message).toEqual('Cannot fallback authenticationMode from API_AND_CONFIG_MAP to CONFIG_MAP');
         });
         test('fails from API to undefined', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: { authenticationMode: undefined },
-          }, {
-            accessConfig: { authenticationMode: 'API' },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: { authenticationMode: undefined },
+              },
+              {
+                accessConfig: { authenticationMode: 'API' },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
@@ -622,11 +751,18 @@ describe('cluster resource provider', () => {
           expect(error.message).toEqual('Cannot fallback authenticationMode from API to undefined');
         });
         test('fails from API to API_AND_CONFIG_MAP', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
-          }, {
-            accessConfig: { authenticationMode: 'API' },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+              },
+              {
+                accessConfig: { authenticationMode: 'API' },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
@@ -637,11 +773,18 @@ describe('cluster resource provider', () => {
           expect(error.message).toEqual('Cannot fallback authenticationMode from API to API_AND_CONFIG_MAP');
         });
         test('fails from API to CONFIG_MAP', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: { authenticationMode: 'CONFIG_MAP' },
-          }, {
-            accessConfig: { authenticationMode: 'API' },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: { authenticationMode: 'CONFIG_MAP' },
+              },
+              {
+                accessConfig: { authenticationMode: 'API' },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
@@ -652,11 +795,18 @@ describe('cluster resource provider', () => {
           expect(error.message).toEqual('Cannot fallback authenticationMode from API to CONFIG_MAP');
         });
         test('fails from undefined to API', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: { authenticationMode: 'API' },
-          }, {
-            accessConfig: { authenticationMode: undefined },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: { authenticationMode: 'API' },
+              },
+              {
+                accessConfig: { authenticationMode: undefined },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
@@ -668,11 +818,18 @@ describe('cluster resource provider', () => {
         });
 
         test('fails from CONFIG_MAP to API', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            accessConfig: { authenticationMode: 'API' },
-          }, {
-            accessConfig: { authenticationMode: 'CONFIG_MAP' },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                accessConfig: { authenticationMode: 'API' },
+              },
+              {
+                accessConfig: { authenticationMode: 'CONFIG_MAP' },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
@@ -683,113 +840,155 @@ describe('cluster resource provider', () => {
           expect(error.message).toEqual('Cannot update from CONFIG_MAP to API');
         });
         test('from undefined to both logging and authenticationMode enabled', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: true,
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                      enabled: true,
+                    },
+                  ],
                 },
-              ],
-            },
-            accessConfig: { authenticationMode: 'API' },
-          }, {
-            logging: undefined,
-            accessConfig: undefined,
-          }));
+                accessConfig: { authenticationMode: 'API' },
+              },
+              {
+                logging: undefined,
+                accessConfig: undefined,
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual(
+            'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed'
+          );
         });
         test('from undefined to both access and authenticationMode enabled', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-            accessConfig: { authenticationMode: 'API' },
-          }, {
-            resourcesVpcConfig: undefined,
-            accessConfig: undefined,
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['0.0.0.0/0'],
+                },
+                accessConfig: { authenticationMode: 'API' },
+              },
+              {
+                resourcesVpcConfig: undefined,
+                accessConfig: undefined,
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual(
+            'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed'
+          );
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig undefined', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            resourcesVpcConfig: {
-              endpointPrivateAccess: false,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-            accessConfig: { authenticationMode: 'API' },
-          }, {
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-            accessConfig: undefined,
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: false,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['0.0.0.0/0'],
+                },
+                accessConfig: { authenticationMode: 'API' },
+              },
+              {
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['0.0.0.0/0'],
+                },
+                accessConfig: undefined,
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual(
+            'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed'
+          );
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig defined', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            resourcesVpcConfig: {
-              endpointPrivateAccess: false,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-            accessConfig: { authenticationMode: 'API' },
-          }, {
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: false,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['0.0.0.0/0'],
+                },
+                accessConfig: { authenticationMode: 'API' },
+              },
+              {
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['0.0.0.0/0'],
+                },
+                accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual(
+            'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed'
+          );
         });
-
       });
 
       describe('logging or access change', () => {
         test('from undefined to partial logging enabled', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api'],
-                  enabled: true,
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api'],
+                      enabled: true,
+                    },
+                  ],
                 },
-              ],
-            },
-          }, {
-            logging: undefined,
-          }));
+              },
+              {
+                logging: undefined,
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
           expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
@@ -807,16 +1006,23 @@ describe('cluster resource provider', () => {
         });
 
         test('from partial vpc configuration to only private access enabled', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            resourcesVpcConfig: {
-              securityGroupIds: ['sg1', 'sg2', 'sg3'],
-              endpointPrivateAccess: true,
-            },
-          }, {
-            resourcesVpcConfig: {
-              securityGroupIds: ['sg1', 'sg2', 'sg3'],
-            },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                resourcesVpcConfig: {
+                  securityGroupIds: ['sg1', 'sg2', 'sg3'],
+                  endpointPrivateAccess: true,
+                },
+              },
+              {
+                resourcesVpcConfig: {
+                  securityGroupIds: ['sg1', 'sg2', 'sg3'],
+                },
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
           expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
@@ -832,153 +1038,192 @@ describe('cluster resource provider', () => {
         });
 
         test('from undefined to both logging and access fully enabled', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: true,
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                      enabled: true,
+                    },
+                  ],
                 },
-              ],
-            },
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-          }, {
-            logging: undefined,
-            resourcesVpcConfig: undefined,
-          }));
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['0.0.0.0/0'],
+                },
+              },
+              {
+                logging: undefined,
+                resourcesVpcConfig: undefined,
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual(
+            'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed'
+          );
         });
         test('both logging and access defined and modify both of them', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: true,
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                      enabled: true,
+                    },
+                  ],
                 },
-              ],
-            },
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: false,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-          }, {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager'],
-                  enabled: true,
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: false,
+                  publicAccessCidrs: ['0.0.0.0/0'],
                 },
-              ],
-            },
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-          }));
+              },
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api', 'audit', 'authenticator', 'controllerManager'],
+                      enabled: true,
+                    },
+                  ],
+                },
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['0.0.0.0/0'],
+                },
+              }
+            )
+          );
           let error: any;
           try {
             await handler.onEvent();
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+          expect(error.message).toEqual(
+            'Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed'
+          );
         });
         test('Given logging enabled and unchanged, updating the only publicAccessCidrs is allowed ', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: true,
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                      enabled: true,
+                    },
+                  ],
                 },
-              ],
-            },
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['1.2.3.4/32'],
-            },
-          }, {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: true,
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['1.2.3.4/32'],
                 },
-              ],
-            },
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['0.0.0.0/0'],
-            },
-          }));
+              },
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                      enabled: true,
+                    },
+                  ],
+                },
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['0.0.0.0/0'],
+                },
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
         });
         test('Given logging enabled and unchanged, updating publicAccessCidrs from one to multiple entries is allowed ', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: true,
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                      enabled: true,
+                    },
+                  ],
                 },
-              ],
-            },
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['2.4.6.0/24', '1.2.3.4/32', '3.3.3.3/32'],
-            },
-          }, {
-            logging: {
-              clusterLogging: [
-                {
-                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
-                  enabled: true,
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['2.4.6.0/24', '1.2.3.4/32', '3.3.3.3/32'],
                 },
-              ],
-            },
-            resourcesVpcConfig: {
-              endpointPrivateAccess: true,
-              endpointPublicAccess: true,
-              publicAccessCidrs: ['2.4.6.0/24'],
-            },
-          }));
+              },
+              {
+                logging: {
+                  clusterLogging: [
+                    {
+                      types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                      enabled: true,
+                    },
+                  ],
+                },
+                resourcesVpcConfig: {
+                  endpointPrivateAccess: true,
+                  endpointPublicAccess: true,
+                  publicAccessCidrs: ['2.4.6.0/24'],
+                },
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
         });
       });
       describe('tag updates', () => {
         test('updates are in-place', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            // this is the new props
-            ...mocks.MOCK_PROPS,
-            tags: {
-              foo: 'bar',
-              hello: 'world',
-            },
-          }, {
-            // this is the old props
-            ...mocks.MOCK_PROPS,
-            tags: {
-              foo: 'bar',
-            },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                // this is the new props
+                ...mocks.MOCK_PROPS,
+                tags: {
+                  foo: 'bar',
+                  hello: 'world',
+                },
+              },
+              {
+                // this is the old props
+                ...mocks.MOCK_PROPS,
+                tags: {
+                  foo: 'bar',
+                },
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
           expect(mocks.actualRequest.tagResourceRequest).toEqual({
@@ -990,20 +1235,27 @@ describe('cluster resource provider', () => {
           expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
         });
         test('update a tag along with a removal', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            // this is the new props
-            ...mocks.MOCK_PROPS,
-            tags: {
-              foo: 'world',
-            },
-          }, {
-            // this is the old props
-            ...mocks.MOCK_PROPS,
-            tags: {
-              foo: 'bar',
-              hello: 'world',
-            },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                // this is the new props
+                ...mocks.MOCK_PROPS,
+                tags: {
+                  foo: 'world',
+                },
+              },
+              {
+                // this is the old props
+                ...mocks.MOCK_PROPS,
+                tags: {
+                  foo: 'bar',
+                  hello: 'world',
+                },
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(mocks.actualRequest.tagResourceRequest).toEqual({
             resourceArn: 'arn:cluster-arn',
@@ -1017,17 +1269,24 @@ describe('cluster resource provider', () => {
           });
         });
         test('remove all tags', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            // this is the new props
-            ...mocks.MOCK_PROPS,
-          }, {
-            // this is the old props
-            ...mocks.MOCK_PROPS,
-            tags: {
-              foo: 'bar',
-              hello: 'world',
-            },
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                // this is the new props
+                ...mocks.MOCK_PROPS,
+              },
+              {
+                // this is the old props
+                ...mocks.MOCK_PROPS,
+                tags: {
+                  foo: 'bar',
+                  hello: 'world',
+                },
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(mocks.actualRequest.tagResourceRequest).toEqual(undefined);
           expect(mocks.actualRequest.untagResourceRequest).toEqual({
@@ -1036,17 +1295,24 @@ describe('cluster resource provider', () => {
           });
         });
         test('add tags after creation of cluster', async () => {
-          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-            // this is the new props
-            ...mocks.MOCK_PROPS,
-            tags: {
-              foo: 'bar',
-              hello: 'world',
-            },
-          }, {
-            // this is the old props
-            ...mocks.MOCK_PROPS,
-          }));
+          const handler = new ClusterResourceHandler(
+            mocks.client,
+            mocks.newRequest(
+              'Update',
+              {
+                // this is the new props
+                ...mocks.MOCK_PROPS,
+                tags: {
+                  foo: 'bar',
+                  hello: 'world',
+                },
+              },
+              {
+                // this is the old props
+                ...mocks.MOCK_PROPS,
+              }
+            )
+          );
           const resp = await handler.onEvent();
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
           expect(mocks.actualRequest.tagResourceRequest).toEqual({

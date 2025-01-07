@@ -42,8 +42,7 @@ export class AwsAuth extends Construct {
      * We should throw when ConfigMap is not supported and that is only when authenticationMode is
      * AuthenticationMode.API.
      */
-    const supportConfigMap =
-      props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+    const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
 
     if (!supportConfigMap) {
       throw new Error('ConfigMap not supported in the AuthenticationMode');

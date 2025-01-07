@@ -175,9 +175,7 @@ export function parseCliArgs(args: string[] = []) {
 export async function main(args: string[]) {
   const options = parseCliArgs(args);
 
-  const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliOptions(
-    options
-  );
+  const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliOptions(options);
 
   // List only prints the discovered tests
   if (options.list) {
@@ -185,12 +183,9 @@ export async function main(args: string[]) {
     return;
   }
 
-  const pool = workerpool.pool(
-    path.join(__dirname, '..', 'lib', 'workers', 'extract', 'index.js'),
-    {
-      maxWorkers: options.watch ? 1 : options.maxWorkers,
-    }
-  );
+  const pool = workerpool.pool(path.join(__dirname, '..', 'lib', 'workers', 'extract', 'index.js'), {
+    maxWorkers: options.watch ? 1 : options.maxWorkers,
+  });
 
   const testsToRun: IntegTestWorkerConfig[] = [];
   let destructiveChanges: boolean = false;
@@ -322,16 +317,9 @@ function printDestructiveChanges(changes: DestructiveChange[]): void {
   if (changes.length > 0) {
     logger.warning('!!! This test contains %s !!!', chalk.bold('destructive changes'));
     changes.forEach((change) => {
-      logger.warning(
-        '    Stack: %s - Resource: %s - Impact: %s',
-        change.stackName,
-        change.logicalId,
-        change.impact
-      );
+      logger.warning('    Stack: %s - Resource: %s - Impact: %s', change.stackName, change.logicalId, change.impact);
     });
-    logger.warning(
-      '!!! If these destructive changes are necessary, please indicate this on the PR !!!'
-    );
+    logger.warning('!!! If these destructive changes are necessary, please indicate this on the PR !!!');
   }
 }
 
@@ -339,12 +327,7 @@ function printMetrics(metrics: IntegRunnerMetrics[]): void {
   logger.highlight('   --- Integration test metrics ---');
   const sortedMetrics = metrics.sort((a, b) => a.duration - b.duration);
   sortedMetrics.forEach((metric) => {
-    logger.print(
-      'Profile %s + Region %s total time: %s',
-      metric.profile,
-      metric.region,
-      metric.duration
-    );
+    logger.print('Profile %s + Region %s total time: %s', metric.profile, metric.region, metric.duration);
     const sortedTests = Object.entries(metric.tests).sort((a, b) => a[1] - b[1]);
     sortedTests.forEach((test) => logger.print('  %s: %s', test[0], test[1]));
   });

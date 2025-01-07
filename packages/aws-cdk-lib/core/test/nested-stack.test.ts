@@ -2,15 +2,13 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { readFileSync } from 'fs-extra';
 import { toCloudFormation } from './util';
-import {
-  Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
-} from '../lib';
+import { Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput } from '../lib';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {
     const stack = new Stack();
     var nestedStack = new NestedStack(stack, 'MyNestedStack');
-    var cfn_nestedStack = (nestedStack.node.defaultChild) as CfnStack;
+    var cfn_nestedStack = nestedStack.node.defaultChild as CfnStack;
     cfn_nestedStack.addPropertyOverride('TemplateURL', 'http://my-url.com');
     expect(toCloudFormation(stack)).toEqual({
       Resources: {
@@ -67,7 +65,9 @@ describe('nested-stack', () => {
 
     // THEN
     const assembly = app.synth();
-    const nestedTemplate2 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack2.artifactId}.nested.template.json`), 'utf8'));
+    const nestedTemplate2 = JSON.parse(
+      readFileSync(path.join(assembly.directory, `${nestedStack2.artifactId}.nested.template.json`), 'utf8')
+    );
     expect(nestedTemplate2).toMatchObject({
       Resources: {
         Resource2: {
@@ -87,16 +87,14 @@ describe('nested-stack', () => {
         Properties: {
           ReaderProps: {
             imports: {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': '{{resolve:ssm:/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E}}',
+              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E':
+                '{{resolve:ssm:/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E}}',
             },
             region: 'bermuda-triangle-42',
             prefix: 'Stack2',
           },
           ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68', 'Arn'],
           },
         },
         Type: 'Custom::CrossRegionExportReader',
@@ -104,7 +102,9 @@ describe('nested-stack', () => {
       },
     });
     const template1 = assembly.getStackByName(stack1.stackName).template;
-    const nestedTemplate1 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8'));
+    const nestedTemplate1 = JSON.parse(
+      readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8')
+    );
     expect(nestedTemplate1?.Outputs).toEqual({
       Stack1Nested1Resource178AEB067Ref: {
         Value: {
@@ -119,20 +119,18 @@ describe('nested-stack', () => {
         Properties: {
           WriterProps: {
             exports: {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': {
-                'Fn::GetAtt': [
-                  'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
-                  'Outputs.Stack1Nested1Resource178AEB067Ref',
-                ],
-              },
+              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E':
+                {
+                  'Fn::GetAtt': [
+                    'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
+                    'Outputs.Stack1Nested1Resource178AEB067Ref',
+                  ],
+                },
             },
             region: 'bermuda-triangle-42',
           },
           ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A', 'Arn'],
           },
         },
         Type: 'Custom::CrossRegionExportWriter',
@@ -166,7 +164,8 @@ describe('nested-stack', () => {
 
     // THEN
     expect(() => toCloudFormation(stack2)).toThrow(
-      /Cannot use resource 'Stack1\/MyNestedStack\/MyResource' in a cross-environment fashion/);
+      /Cannot use resource 'Stack1\/MyNestedStack\/MyResource' in a cross-environment fashion/
+    );
   });
 });
 

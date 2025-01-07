@@ -82,11 +82,7 @@ export interface DataQualityRulesetProps {
  * A Glue Data Quality ruleset.
  */
 export class DataQualityRuleset extends Resource implements IDataQualityRuleset {
-  public static fromRulesetArn(
-    scope: constructs.Construct,
-    id: string,
-    rulesetArn: string
-  ): IDataQualityRuleset {
+  public static fromRulesetArn(scope: constructs.Construct, id: string, rulesetArn: string): IDataQualityRuleset {
     class Import extends Resource implements IDataQualityRuleset {
       public rulesetArn = rulesetArn;
       public rulesetName = cdk.Arn.extractResourceName(rulesetArn, 'dataqualityruleset');
@@ -95,11 +91,7 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     return new Import(scope, id);
   }
 
-  public static fromRulesetName(
-    scope: constructs.Construct,
-    id: string,
-    rulesetName: string
-  ): IDataQualityRuleset {
+  public static fromRulesetName(scope: constructs.Construct, id: string, rulesetName: string): IDataQualityRuleset {
     class Import extends Resource implements IDataQualityRuleset {
       public rulesetArn = DataQualityRuleset.buildRulesetArn(scope, rulesetName);
       public rulesetName = rulesetName;

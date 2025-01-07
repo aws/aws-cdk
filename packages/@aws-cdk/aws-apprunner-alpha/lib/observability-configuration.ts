@@ -74,10 +74,7 @@ export interface IObservabilityConfiguration extends cdk.IResource {
  *
  * @resource AWS::AppRunner::ObservabilityConfiguration
  */
-export class ObservabilityConfiguration
-  extends cdk.Resource
-  implements IObservabilityConfiguration
-{
+export class ObservabilityConfiguration extends cdk.Resource implements IObservabilityConfiguration {
   /**
    * Imports an App Runner Observability Configuration from attributes.
    */
@@ -155,10 +152,7 @@ export class ObservabilityConfiguration
       props.observabilityConfigurationName !== undefined &&
       !cdk.Token.isUnresolved(props.observabilityConfigurationName)
     ) {
-      if (
-        props.observabilityConfigurationName.length < 4 ||
-        props.observabilityConfigurationName.length > 32
-      ) {
+      if (props.observabilityConfigurationName.length < 4 || props.observabilityConfigurationName.length > 32) {
         throw new Error(
           `\`observabilityConfigurationName\` must be between 4 and 32 characters, got: ${props.observabilityConfigurationName.length} characters.`
         );

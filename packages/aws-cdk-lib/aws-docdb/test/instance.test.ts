@@ -102,11 +102,7 @@ describe('DatabaseInstance', () => {
       Value: {
         'Fn::Join': [
           '',
-          [
-            { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint'] },
-            ':',
-            { 'Fn::GetAtt': ['InstanceC1063A87', 'Port'] },
-          ],
+          [{ 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint'] }, ':', { 'Fn::GetAtt': ['InstanceC1063A87', 'Port'] }],
         ],
       },
     });
@@ -133,15 +129,7 @@ describe('DatabaseInstance', () => {
         Name: exportName,
       },
       Value: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':rds:us-test-1:12345:db:',
-            { Ref: 'InstanceC1063A87' },
-          ],
-        ],
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':rds:us-test-1:12345:db:', { Ref: 'InstanceC1063A87' }]],
       },
     });
   });
@@ -176,14 +164,7 @@ describe('DatabaseInstance', () => {
         Name: arnExportName,
       },
       Value: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            `:rds:us-test-1:12345:db:${instanceIdentifier}`,
-          ],
-        ],
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, `:rds:us-test-1:12345:db:${instanceIdentifier}`]],
       },
     });
     Template.fromStack(stack).hasOutput('EndpointOutput', {

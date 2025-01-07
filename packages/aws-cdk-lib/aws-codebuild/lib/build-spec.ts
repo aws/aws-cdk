@@ -162,9 +162,7 @@ export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
   }
 
   if (lhs.spec.version === '0.1') {
-    throw new Error(
-      'Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.'
-    );
+    throw new Error('Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
   }
   if (lhs.spec.artifacts && rhs.spec.artifacts) {
     // We decided to disallow merging of artifact specs, which is

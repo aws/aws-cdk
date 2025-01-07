@@ -23,7 +23,9 @@ class DummyEndpointLoadBalancer implements IVpcEndpointServiceLoadBalancer {
 
 beforeEach(() => {
   stack = new Stack();
-  nlb = new DummyEndpointLoadBalancer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+  nlb = new DummyEndpointLoadBalancer(
+    'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'
+  );
   vpces = new VpcEndpointService(stack, 'VPCES', {
     vpcEndpointServiceLoadBalancers: [nlb],
   });
@@ -82,10 +84,7 @@ test('create domain name resource', () => {
         ],
       },
     },
-    DependsOn: [
-      'EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB',
-      'VPCES3AE7D565',
-    ],
+    DependsOn: ['EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB', 'VPCES3AE7D565'],
   });
 
   // Have to use `haveResourceLike` because there is a property that, by design, changes on every build
@@ -163,9 +162,7 @@ test('create domain name resource', () => {
       ],
       TTL: '1800',
     },
-    DependsOn: [
-      'VPCES3AE7D565',
-    ],
+    DependsOn: ['VPCES3AE7D565'],
   });
 
   Template.fromStack(stack).hasResource('Custom::AWS', {

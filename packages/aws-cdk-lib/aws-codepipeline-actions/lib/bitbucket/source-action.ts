@@ -37,11 +37,7 @@ export class BitBucketSourceAction implements codepipeline.IAction {
     return this.codeStarConnectionsSourceAction.bind(scope, stage, options);
   }
 
-  public onStateChange(
-    name: string,
-    target?: events.IRuleTarget,
-    options?: events.RuleProps
-  ): events.Rule {
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
     return this.codeStarConnectionsSourceAction.onStateChange(name, target, options);
   }
 }

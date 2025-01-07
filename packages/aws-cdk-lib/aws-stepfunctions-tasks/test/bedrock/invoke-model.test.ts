@@ -7,19 +7,20 @@ import { Guardrail } from '../../lib/bedrock/guardrail';
 import { BedrockInvokeModel } from '../../lib/bedrock/invoke-model';
 
 describe('Invoke Model', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-1' } });
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
-      model: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
-      body: sfn.TaskInput.fromObject(
-        {
-          prompt: 'Hello world',
-        },
+      model: bedrock.FoundationModel.fromFoundationModelId(
+        stack,
+        'Model',
+        bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1
       ),
+      body: sfn.TaskInput.fromObject({
+        prompt: 'Hello world',
+      }),
     });
 
     // THEN
@@ -64,12 +65,14 @@ describe('Invoke Model', () => {
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
-      model: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
-      body: sfn.TaskInput.fromObject(
-        {
-          prompt: 'Hello world',
-        },
+      model: bedrock.FoundationModel.fromFoundationModelId(
+        stack,
+        'Model',
+        bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1
       ),
+      body: sfn.TaskInput.fromObject({
+        prompt: 'Hello world',
+      }),
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
@@ -107,12 +110,14 @@ describe('Invoke Model', () => {
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
-      model: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
-      body: sfn.TaskInput.fromObject(
-        {
-          prompt: 'Hello world',
-        },
+      model: bedrock.FoundationModel.fromFoundationModelId(
+        stack,
+        'Model',
+        bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1
       ),
+      body: sfn.TaskInput.fromObject({
+        prompt: 'Hello world',
+      }),
       accept: 'image/png',
       contentType: 'text/plain',
     });
@@ -158,7 +163,11 @@ describe('Invoke Model', () => {
   test('input and output configurations', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-1' } });
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
@@ -208,7 +217,11 @@ describe('Invoke Model', () => {
   test('invoke model allows input and output as s3 Uri with feature flag set to true', () => {
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
     const stack = new cdk.Stack(app);
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
@@ -253,7 +266,11 @@ describe('Invoke Model', () => {
   test('invoke model renderes input and output path correctly with feature flag set to true', () => {
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
     const stack = new cdk.Stack(app);
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
@@ -303,15 +320,17 @@ describe('Invoke Model', () => {
   test('validation for input and body correctly with feature flag set to true', () => {
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
     const stack = new cdk.Stack(app);
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      body: sfn.TaskInput.fromObject(
-        {
-          prompt: 'Hello world',
-        },
-      ),
+      body: sfn.TaskInput.fromObject({
+        prompt: 'Hello world',
+      }),
       inputPath: sfn.JsonPath.stringAt('$.names'),
       outputPath: sfn.JsonPath.stringAt('$.names'),
     });
@@ -350,7 +369,11 @@ describe('Invoke Model', () => {
   test('invoke model renders input and output JSON Path as s3 URI with feature flag set to false', () => {
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: false } });
     const stack = new cdk.Stack(app);
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
@@ -397,7 +420,11 @@ describe('Invoke Model', () => {
   test('throws error S3 input Uri is specified as an empty string', () => {
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
     const stack = new cdk.Stack(app);
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       new BedrockInvokeModel(stack, 'Invoke', {
@@ -415,7 +442,11 @@ describe('Invoke Model', () => {
   test('cannot specify both s3 uri and s3 bucket', () => {
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
     const stack = new cdk.Stack(app);
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       new BedrockInvokeModel(stack, 'Invoke', {
@@ -441,7 +472,11 @@ describe('Invoke Model', () => {
   test('S3 permissions are created in generated policy when input and output locations are specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
@@ -514,7 +549,11 @@ describe('Invoke Model', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
     const stack = new cdk.Stack(app);
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
@@ -576,7 +615,11 @@ describe('Invoke Model', () => {
   test('fails on neither input nor body set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       // WHEN
@@ -590,17 +633,19 @@ describe('Invoke Model', () => {
   test('fails on both input and body set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       // WHEN
       new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        body: sfn.TaskInput.fromObject(
-          {
-            prompt: 'Hello world',
-          },
-        ),
+        body: sfn.TaskInput.fromObject({
+          prompt: 'Hello world',
+        }),
         input: {
           s3Location: {
             bucketName: 'hello',
@@ -615,7 +660,11 @@ describe('Invoke Model', () => {
   test('fails on S3 object version in input', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       // WHEN
@@ -636,17 +685,19 @@ describe('Invoke Model', () => {
   test('fails on S3 object version in output', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       // WHEN
       new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        body: sfn.TaskInput.fromObject(
-          {
-            prompt: 'Hello world',
-          },
-        ),
+        body: sfn.TaskInput.fromObject({
+          prompt: 'Hello world',
+        }),
         output: {
           s3Location: {
             bucketName: 'hello',
@@ -662,16 +713,18 @@ describe('Invoke Model', () => {
   test('guardrail when gurdarilIdentifier is set to arn', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      body: sfn.TaskInput.fromObject(
-        {
-          prompt: 'Hello world',
-        },
-      ),
+      body: sfn.TaskInput.fromObject({
+        prompt: 'Hello world',
+      }),
       guardrail: Guardrail.enableDraft('arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid'),
     });
 
@@ -726,16 +779,18 @@ describe('Invoke Model', () => {
   test('guardrail when gurdarilIdentifier is set to id', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      body: sfn.TaskInput.fromObject(
-        {
-          prompt: 'Hello world',
-        },
-      ),
+      body: sfn.TaskInput.fromObject({
+        prompt: 'Hello world',
+      }),
       guardrail: Guardrail.enable('testid', 3),
     });
 
@@ -809,17 +864,19 @@ describe('Invoke Model', () => {
   test('guardrail fails when guardrailIdentifier is set to invalid id', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       // WHEN
       new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        body: sfn.TaskInput.fromObject(
-          {
-            prompt: 'Hello world',
-          },
-        ),
+        body: sfn.TaskInput.fromObject({
+          prompt: 'Hello world',
+        }),
         guardrail: Guardrail.enableDraft('invalid-id'),
       });
       // THEN
@@ -829,38 +886,44 @@ describe('Invoke Model', () => {
   test('guardrail fails when guardrailIdentifier is set to invalid ARN', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       // WHEN
       new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        body: sfn.TaskInput.fromObject(
-          {
-            prompt: 'Hello world',
-          },
-        ),
+        body: sfn.TaskInput.fromObject({
+          prompt: 'Hello world',
+        }),
         guardrail: Guardrail.enableDraft('arn:aws:bedrock:us-turbo-2:123456789012:guardrail'),
       });
       // THEN
-    }).toThrow('Invalid ARN format. The ARN of Guradrail should have the format: `arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>`, got arn:aws:bedrock:us-turbo-2:123456789012:guardrail.');
+    }).toThrow(
+      'Invalid ARN format. The ARN of Guradrail should have the format: `arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>`, got arn:aws:bedrock:us-turbo-2:123456789012:guardrail.'
+    );
   });
 
   test('guardrail fails when guardrailIdentifier length is invalid', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
     const guardrailIdentifier = 'a'.repeat(2049);
 
     expect(() => {
       // WHEN
       new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        body: sfn.TaskInput.fromObject(
-          {
-            prompt: 'Hello world',
-          },
-        ),
+        body: sfn.TaskInput.fromObject({
+          prompt: 'Hello world',
+        }),
         guardrail: Guardrail.enableDraft(guardrailIdentifier),
       });
       // THEN
@@ -870,17 +933,19 @@ describe('Invoke Model', () => {
   test('guardrail fails when invalid guardrailVersion is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     expect(() => {
       // WHEN
       const task = new BedrockInvokeModel(stack, 'Invoke', {
         model,
-        body: sfn.TaskInput.fromObject(
-          {
-            prompt: 'Hello world',
-          },
-        ),
+        body: sfn.TaskInput.fromObject({
+          prompt: 'Hello world',
+        }),
         guardrail: Guardrail.enable('abcde', 0),
       });
       // THEN
@@ -890,16 +955,18 @@ describe('Invoke Model', () => {
   test('trace configuration', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(
+      stack,
+      'Imported',
+      'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123'
+    );
 
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
-      body: sfn.TaskInput.fromObject(
-        {
-          prompt: 'Hello world',
-        },
-      ),
+      body: sfn.TaskInput.fromObject({
+        prompt: 'Hello world',
+      }),
       traceEnabled: true,
     });
 

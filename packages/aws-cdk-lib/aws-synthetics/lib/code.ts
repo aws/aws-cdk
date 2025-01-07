@@ -136,9 +136,7 @@ export class AssetCode extends Code {
     // Get the staged (or copied) asset path.
     // `this.asset.assetPath` is relative to the `outdir`, not the `assetOutDir`.
     const asmManifestDir = Stage.of(scope)?.outdir;
-    const assetPath = asmManifestDir
-      ? path.join(asmManifestDir, this.asset.assetPath)
-      : this.assetPath;
+    const assetPath = asmManifestDir ? path.join(asmManifestDir, this.asset.assetPath) : this.assetPath;
 
     if (path.extname(assetPath) !== '.zip') {
       if (!fs.lstatSync(assetPath).isDirectory()) {
@@ -155,10 +153,7 @@ export class AssetCode extends Code {
           `The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`
         );
       }
-      if (
-        family === RuntimeFamily.PYTHON &&
-        !fs.existsSync(path.join(assetPath, 'python', pythonFilename))
-      ) {
+      if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
         throw new Error(
           `The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`
         );

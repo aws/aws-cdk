@@ -78,9 +78,7 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
     const pipelineRole = new Role(this, 'SageMakerPipelineRole', {
       assumedBy: new ServicePrincipal('sagemaker.amazonaws.com'),
     });
-    pipelineRole.addManagedPolicy(
-      ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
-    );
+    pipelineRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
 
     const pipeline = new sagemaker.CfnPipeline(this, 'Resource', {
       pipelineName: this.pipelineName,
@@ -134,10 +132,7 @@ integrationTest.assertions
   .awsApiCall('Sagemaker', 'listPipelineExecutions', {
     PipelineName: 'my-pipeline',
   })
-  .assertAtPath(
-    'PipelineExecutionSummaries.0.PipelineExecutionArn',
-    ExpectedResult.stringLikeRegexp('my-pipeline')
-  )
+  .assertAtPath('PipelineExecutionSummaries.0.PipelineExecutionArn', ExpectedResult.stringLikeRegexp('my-pipeline'))
   .waitForAssertions({
     interval: cdk.Duration.seconds(30),
     totalTimeout: cdk.Duration.minutes(10),

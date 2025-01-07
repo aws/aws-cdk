@@ -6,16 +6,16 @@ test('actionName trims subcomponents the same way', () => {
   const long1 = 'ExtremelyLong'.repeat(10);
   const long2 = 'AlsoLong'.repeat(10);
 
-  const g = mkGraph('MyGraph', G => {
-    G.graph(long1, [], G1 => {
-      G1.graph(long2, [], G2 => {
+  const g = mkGraph('MyGraph', (G) => {
+    G.graph(long1, [], (G1) => {
+      G1.graph(long2, [], (G2) => {
         G2.node('Prepare');
         G2.node('Deploy');
       });
     });
   });
 
-  const G2 = ((g.tryGetChild(long1) as Graph<any>)?.tryGetChild(long2) as Graph<any>);
+  const G2 = (g.tryGetChild(long1) as Graph<any>)?.tryGetChild(long2) as Graph<any>;
   expect(G2).toBeDefined();
 
   const prep = G2.tryGetChild('Prepare');

@@ -142,11 +142,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   /**
    * Imports a parameter group
    */
-  public static fromParameterGroupName(
-    scope: Construct,
-    id: string,
-    parameterGroupName: string
-  ): IParameterGroup {
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Resource implements IParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
     }

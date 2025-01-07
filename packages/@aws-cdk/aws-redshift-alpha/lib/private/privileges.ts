@@ -62,14 +62,12 @@ export class UserTablePrivileges extends Construct {
         username: props.user.username,
         tablePrivileges: cdk.Lazy.any({
           produce: () =>
-            Object.entries(groupPrivilegesByTable(this.privileges)).map(
-              ([tableId, tablePrivileges]) => ({
-                tableId,
-                // The first element always exists since the groupBy element is at least a singleton.
-                tableName: tablePrivileges[0]!.table.tableName,
-                actions: unifyTableActions(tablePrivileges).map((action) => TableAction[action]),
-              })
-            ),
+            Object.entries(groupPrivilegesByTable(this.privileges)).map(([tableId, tablePrivileges]) => ({
+              tableId,
+              // The first element always exists since the groupBy element is at least a singleton.
+              tableName: tablePrivileges[0]!.table.tableName,
+              actions: unifyTableActions(tablePrivileges).map((action) => TableAction[action]),
+            })),
         }) as any,
       },
     });

@@ -78,9 +78,7 @@ export class CloudWatchLogsTarget implements ITarget {
 function validateLogStreamName({ logStreamName }: CloudWatchLogsTargetParameters) {
   if (logStreamName !== undefined && !Token.isUnresolved(logStreamName)) {
     if (logStreamName.length < 1 || logStreamName.length > 256) {
-      throw new Error(
-        `Log stream name must be between 1 and 256 characters, received ${logStreamName.length}`
-      );
+      throw new Error(`Log stream name must be between 1 and 256 characters, received ${logStreamName.length}`);
     }
   }
 }
@@ -88,9 +86,7 @@ function validateLogStreamName({ logStreamName }: CloudWatchLogsTargetParameters
 function validateTimestamp({ timestamp }: CloudWatchLogsTargetParameters) {
   if (timestamp !== undefined && !Token.isUnresolved(timestamp)) {
     if (timestamp.length < 1 || timestamp.length > 256) {
-      throw new Error(
-        `Timestamp must be between 1 and 256 characters, received ${timestamp.length}`
-      );
+      throw new Error(`Timestamp must be between 1 and 256 characters, received ${timestamp.length}`);
     }
   }
 }

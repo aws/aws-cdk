@@ -35,7 +35,6 @@ describe('vpn', () => {
       },
       StaticRoutesOnly: false,
     });
-
   });
 
   test('with static routing', () => {
@@ -47,10 +46,7 @@ describe('vpn', () => {
       vpnConnections: {
         static: {
           ip: '192.0.2.1',
-          staticRoutes: [
-            '192.168.10.0/24',
-            '192.168.20.0/24',
-          ],
+          staticRoutes: ['192.168.10.0/24', '192.168.20.0/24'],
         },
       },
     });
@@ -80,7 +76,6 @@ describe('vpn', () => {
         Ref: 'VpcNetworkstaticE33EA98C',
       },
     });
-
   });
 
   test('with tunnel options, using secret value', () => {
@@ -91,10 +86,12 @@ describe('vpn', () => {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
-          tunnelOptions: [{
-            preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
-            tunnelInsideCidr: '169.254.10.0/30',
-          }],
+          tunnelOptions: [
+            {
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+              tunnelInsideCidr: '169.254.10.0/30',
+            },
+          ],
         },
       },
     });
@@ -125,10 +122,12 @@ describe('vpn', () => {
       vpnConnections: {
         VpnConnection: {
           ip: '192.0.2.1',
-          tunnelOptions: [{
-            preSharedKey: 'secretkey1234',
-            tunnelInsideCidr: '169.254.10.0/30',
-          }],
+          tunnelOptions: [
+            {
+              preSharedKey: 'secretkey1234',
+              tunnelInsideCidr: '169.254.10.0/30',
+            },
+          ],
         },
       },
     });
@@ -155,61 +154,67 @@ describe('vpn', () => {
     // GIVEN
     const stack = new Stack();
 
-    expect(() => new Vpc(stack, 'VpcNetwork', {
-      vpnConnections: {
-        VpnConnection: {
-          ip: '192.0.2.256',
-        },
-      },
-    })).toThrow(/`ip`.+IPv4/);
-
+    expect(
+      () =>
+        new Vpc(stack, 'VpcNetwork', {
+          vpnConnections: {
+            VpnConnection: {
+              ip: '192.0.2.256',
+            },
+          },
+        })
+    ).toThrow(/`ip`.+IPv4/);
   });
 
   test('fails when specifying more than two tunnel options', () => {
     // GIVEN
     const stack = new Stack();
 
-    expect(() => new Vpc(stack, 'VpcNetwork', {
-      vpnConnections: {
-        VpnConnection: {
-          ip: '192.0.2.1',
-          tunnelOptions: [
-            {
-              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+    expect(
+      () =>
+        new Vpc(stack, 'VpcNetwork', {
+          vpnConnections: {
+            VpnConnection: {
+              ip: '192.0.2.1',
+              tunnelOptions: [
+                {
+                  preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+                },
+                {
+                  preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+                },
+                {
+                  preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+                },
+              ],
             },
-            {
-              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
-            },
-            {
-              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
-            },
-          ],
-        },
-      },
-    })).toThrow(/two.+`tunnelOptions`/);
-
+          },
+        })
+    ).toThrow(/two.+`tunnelOptions`/);
   });
 
   test('fails with duplicate tunnel inside cidr', () => {
     // GIVEN
     const stack = new Stack();
 
-    expect(() => new Vpc(stack, 'VpcNetwork', {
-      vpnConnections: {
-        VpnConnection: {
-          ip: '192.0.2.1',
-          tunnelOptions: [
-            {
-              tunnelInsideCidr: '169.254.10.0/30',
+    expect(
+      () =>
+        new Vpc(stack, 'VpcNetwork', {
+          vpnConnections: {
+            VpnConnection: {
+              ip: '192.0.2.1',
+              tunnelOptions: [
+                {
+                  tunnelInsideCidr: '169.254.10.0/30',
+                },
+                {
+                  tunnelInsideCidr: '169.254.10.0/30',
+                },
+              ],
             },
-            {
-              tunnelInsideCidr: '169.254.10.0/30',
-            },
-          ],
-        },
-      },
-    })).toThrow(/`tunnelInsideCidr`.+both tunnels/);
-
+          },
+        })
+    ).toThrow(/`tunnelInsideCidr`.+both tunnels/);
   });
 
   test('with two tunnel options and no tunnelInsideCidr', () => {
@@ -258,57 +263,63 @@ describe('vpn', () => {
     // GIVEN
     const stack = new Stack();
 
-    expect(() => new Vpc(stack, 'VpcNetwork', {
-      vpnConnections: {
-        VpnConnection: {
-          ip: '192.0.2.1',
-          tunnelOptions: [
-            {
-              preSharedKey: '0invalid',
+    expect(
+      () =>
+        new Vpc(stack, 'VpcNetwork', {
+          vpnConnections: {
+            VpnConnection: {
+              ip: '192.0.2.1',
+              tunnelOptions: [
+                {
+                  preSharedKey: '0invalid',
+                },
+              ],
             },
-          ],
-        },
-      },
-    })).toThrow(/`preSharedKey`/);
-
+          },
+        })
+    ).toThrow(/`preSharedKey`/);
   });
 
   test('fails when specifying a reserved tunnel inside cidr', () => {
     // GIVEN
     const stack = new Stack();
 
-    expect(() => new Vpc(stack, 'VpcNetwork', {
-      vpnConnections: {
-        VpnConnection: {
-          ip: '192.0.2.1',
-          tunnelOptions: [
-            {
-              tunnelInsideCidr: '169.254.1.0/30',
+    expect(
+      () =>
+        new Vpc(stack, 'VpcNetwork', {
+          vpnConnections: {
+            VpnConnection: {
+              ip: '192.0.2.1',
+              tunnelOptions: [
+                {
+                  tunnelInsideCidr: '169.254.1.0/30',
+                },
+              ],
             },
-          ],
-        },
-      },
-    })).toThrow(/`tunnelInsideCidr`.+reserved/);
-
+          },
+        })
+    ).toThrow(/`tunnelInsideCidr`.+reserved/);
   });
 
   test('fails when specifying an invalid tunnel inside cidr', () => {
     // GIVEN
     const stack = new Stack();
 
-    expect(() => new Vpc(stack, 'VpcNetwork', {
-      vpnConnections: {
-        VpnConnection: {
-          ip: '192.0.2.1',
-          tunnelOptions: [
-            {
-              tunnelInsideCidr: '169.200.10.0/30',
+    expect(
+      () =>
+        new Vpc(stack, 'VpcNetwork', {
+          vpnConnections: {
+            VpnConnection: {
+              ip: '192.0.2.1',
+              tunnelOptions: [
+                {
+                  tunnelInsideCidr: '169.200.10.0/30',
+                },
+              ],
             },
-          ],
-        },
-      },
-    })).toThrow(/`tunnelInsideCidr`.+size/);
-
+          },
+        })
+    ).toThrow(/`tunnelInsideCidr`.+size/);
   });
 
   test('can use metricTunnelState on a vpn connection', () => {
@@ -331,11 +342,9 @@ describe('vpn', () => {
       period: Duration.minutes(5),
       statistic: 'Average',
     });
-
   });
 
   test('can import a vpn connection from attributes', () => {
-
     const stack = new Stack();
 
     const vpn = VpnConnection.fromVpnConnectionAttributes(stack, 'Connection', {
@@ -373,7 +382,6 @@ describe('vpn', () => {
       period: Duration.minutes(5),
       statistic: 'Sum',
     });
-
   });
 
   test('can use metricAllTunnelDataOut', () => {
@@ -387,18 +395,19 @@ describe('vpn', () => {
       period: Duration.minutes(5),
       statistic: 'Sum',
     });
-
   });
 
   test('fails when enabling vpnGateway without having subnets', () => {
     // GIVEN
     const stack = new Stack();
 
-    expect(() => new Vpc(stack, 'VpcNetwork', {
-      vpnGateway: true,
-      subnetConfiguration: [],
-    })).toThrow(/VPN gateway/);
-
+    expect(
+      () =>
+        new Vpc(stack, 'VpcNetwork', {
+          vpnGateway: true,
+          subnetConfiguration: [],
+        })
+    ).toThrow(/VPN gateway/);
   });
 
   test('can add a vpn connection later to a vpc that initially had no subnets', () => {
@@ -423,7 +432,6 @@ describe('vpn', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       Type: 'ipsec.1',
     });
-
   });
   test('can add a vpn connection with a Token as customer gateway ip', () => {
     // GIVEN
@@ -443,6 +451,5 @@ describe('vpn', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::CustomerGateway', {
       IpAddress: '192.0.2.1',
     });
-
   });
 });

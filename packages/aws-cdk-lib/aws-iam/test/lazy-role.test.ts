@@ -32,11 +32,13 @@ describe('IAM lazy role', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: { Service: 'test.service' },
-        }],
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'test.service' },
+          },
+        ],
       },
     });
   });
@@ -73,7 +75,6 @@ describe('IAM lazy role', () => {
     });
 
     // THEN
-    expect(stack.resolve(role.roleName))
-      .toEqual({ Ref: 'Lazy399F7F48' });
+    expect(stack.resolve(role.roleName)).toEqual({ Ref: 'Lazy399F7F48' });
   });
 });

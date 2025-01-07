@@ -11,13 +11,13 @@ describe('DynamoProjectionExpression', () => {
         .withAttribute('Tags')
         .withAttribute('Items')
         .atIndex(0)
-        .toString(),
+        .toString()
     ).toEqual('Messages[1][10].Tags.Items[0]');
   });
 
   test('should throw if expression starts with atIndex', () => {
     expect(() => new tasks.DynamoProjectionExpression().atIndex(1).withAttribute('Messages').toString()).toThrow(
-      /Expression must start with an attribute/,
+      /Expression must start with an attribute/
     );
   });
 });
@@ -226,9 +226,7 @@ describe('DynamoAttributeValue', () => {
     // GIVEN
     const m = '$.path';
     // WHEN
-    const attribute = tasks.DynamoAttributeValue.listFromJsonPath(
-      sfn.JsonPath.stringAt(m),
-    );
+    const attribute = tasks.DynamoAttributeValue.listFromJsonPath(sfn.JsonPath.stringAt(m));
 
     // THEN
     expect(sfn.FieldUtils.renderObject(attribute)).toEqual({
@@ -258,7 +256,6 @@ describe('DynamoAttributeValue', () => {
     expect(() => {
       tasks.DynamoAttributeValue.booleanFromJsonPath(m);
     }).toThrow("Data JSON path values must either be exactly equal to '$' or start with '$.'");
-
   });
 
   test('from boolean with json path', () => {

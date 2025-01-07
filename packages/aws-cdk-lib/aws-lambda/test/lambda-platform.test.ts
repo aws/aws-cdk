@@ -17,9 +17,7 @@ describe('lambda platform', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Architectures: [
-        'arm64',
-      ],
+      Architectures: ['arm64'],
     });
   });
 
@@ -36,9 +34,7 @@ describe('lambda platform', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Architectures: [
-        'x86_64',
-      ],
+      Architectures: ['x86_64'],
     });
   });
 });

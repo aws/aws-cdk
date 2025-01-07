@@ -46,10 +46,7 @@ const fn = new lambda.Function(stack, 'ConnectHandler', {
 });
 
 const restApi = new apigw.RestApi(stack, 'RestApi', {});
-restApi.root
-  .addResource('books')
-  .addResource('fiction')
-  .addMethod('GET', new apigw.LambdaIntegration(fn));
+restApi.root.addResource('books').addResource('fiction').addMethod('GET', new apigw.LambdaIntegration(fn));
 
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
@@ -85,11 +82,9 @@ const message = putMessageOnQueue.next(logEvents);
 // Checking for the actual payload from SQS results in the following:
 // "Response object is too long." The assertion below checks that
 // API GW invoked the function.
-message
-  .assertAtPath('events.1.message', ExpectedResult.stringLikeRegexp('START RequestId'))
-  .waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(1),
-    interval: cdk.Duration.seconds(15),
-  });
+message.assertAtPath('events.1.message', ExpectedResult.stringLikeRegexp('START RequestId')).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(1),
+  interval: cdk.Duration.seconds(15),
+});
 
 app.synth();

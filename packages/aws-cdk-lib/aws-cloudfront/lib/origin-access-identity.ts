@@ -75,10 +75,7 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
  *
  * @resource AWS::CloudFront::CloudFrontOriginAccessIdentity
  */
-export class OriginAccessIdentity
-  extends OriginAccessIdentityBase
-  implements IOriginAccessIdentity
-{
+export class OriginAccessIdentity extends OriginAccessIdentityBase implements IOriginAccessIdentity {
   /**
    * Creates a OriginAccessIdentity by providing the OriginAccessIdentityId.
    * It is misnamed and superseded by the correctly named fromOriginAccessIdentityId.
@@ -169,8 +166,6 @@ export class OriginAccessIdentity
     // import/export the OAI is anyway required so the principal is constructed
     // with it. But for the normal case the S3 Canonical User as a nicer
     // interface and does not require constructing the ARN.
-    this.grantPrincipal = new iam.CanonicalUserPrincipal(
-      this.cloudFrontOriginAccessIdentityS3CanonicalUserId
-    );
+    this.grantPrincipal = new iam.CanonicalUserPrincipal(this.cloudFrontOriginAccessIdentityS3CanonicalUserId);
   }
 }

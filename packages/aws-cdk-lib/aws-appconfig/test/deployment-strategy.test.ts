@@ -141,8 +141,11 @@ describe('deployment strategy', () => {
 
   test('from deployment strategy arn', () => {
     const stack = new cdk.Stack();
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyArn(stack, 'MyDeploymentStrategy',
-      'arn:aws:appconfig:us-west-2:123456789012:deploymentstrategy/abc123');
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyArn(
+      stack,
+      'MyDeploymentStrategy',
+      'arn:aws:appconfig:us-west-2:123456789012:deploymentstrategy/abc123'
+    );
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('abc123');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
@@ -152,8 +155,11 @@ describe('deployment strategy', () => {
   test('from deployment strategy arn with no resource name', () => {
     const stack = new cdk.Stack();
     expect(() => {
-      DeploymentStrategy.fromDeploymentStrategyArn(stack, 'MyDeploymentStrategy',
-        'arn:aws:appconfig:us-west-2:123456789012:deploymentstrategy/');
+      DeploymentStrategy.fromDeploymentStrategyArn(
+        stack,
+        'MyDeploymentStrategy',
+        'arn:aws:appconfig:us-west-2:123456789012:deploymentstrategy/'
+      );
     }).toThrow('Missing required deployment strategy id from deployment strategy ARN');
   });
 
@@ -165,7 +171,11 @@ describe('deployment strategy', () => {
         account: '123456789012',
       },
     });
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', DeploymentStrategyId.fromString('abc123'));
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(
+      stack,
+      'MyDeploymentStrategy',
+      DeploymentStrategyId.fromString('abc123')
+    );
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('abc123');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
@@ -180,7 +190,11 @@ describe('deployment strategy', () => {
         account: '123456789012',
       },
     });
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', DeploymentStrategyId.ALL_AT_ONCE);
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(
+      stack,
+      'MyDeploymentStrategy',
+      DeploymentStrategyId.ALL_AT_ONCE
+    );
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('AppConfig.AllAtOnce');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
@@ -195,7 +209,11 @@ describe('deployment strategy', () => {
         account: '123456789012',
       },
     });
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES);
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(
+      stack,
+      'MyDeploymentStrategy',
+      DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES
+    );
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('AppConfig.Canary10Percent20Minutes');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
@@ -210,7 +228,11 @@ describe('deployment strategy', () => {
         account: '123456789012',
       },
     });
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', DeploymentStrategyId.LINEAR_50_PERCENT_EVERY_30_SECONDS);
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(
+      stack,
+      'MyDeploymentStrategy',
+      DeploymentStrategyId.LINEAR_50_PERCENT_EVERY_30_SECONDS
+    );
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('AppConfig.Linear50PercentEvery30Seconds');
     expect(deploymentStrategy.env.account).toEqual('123456789012');

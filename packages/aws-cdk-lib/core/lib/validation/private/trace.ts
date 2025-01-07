@@ -39,13 +39,8 @@ export class ReportTrace {
     return this.renderPrettyPrintedTraceInfo(trace);
   }
 
-  private renderPrettyPrintedTraceInfo(
-    info?: ConstructTrace,
-    indent?: string,
-    start: string = STARTER_LINE
-  ): string {
-    const notAvailableMessage =
-      '\tConstruct trace not available. Rerun with `--debug` to see trace information';
+  private renderPrettyPrintedTraceInfo(info?: ConstructTrace, indent?: string, start: string = STARTER_LINE): string {
+    const notAvailableMessage = '\tConstruct trace not available. Rerun with `--debug` to see trace information';
     if (info) {
       const indentation = indent ?? ' '.repeat(STARTER_LINE.length + 1);
       const result: string[] = [

@@ -5,8 +5,7 @@
 export class InvalidCidrRangeError extends Error {
   constructor(cidr: string) {
     super(
-      cidr +
-        ' is not a valid VPC CIDR range. VPCs must be between /16 and /28 and the minimum subnet size is /28.'
+      cidr + ' is not a valid VPC CIDR range. VPCs must be between /16 and /28 and the minimum subnet size is /28.'
     );
     // The following line is required for type checking of custom errors, and must be called right after super()
     // https://stackoverflow.com/questions/31626231/custom-error-class-in-typescript
@@ -30,9 +29,8 @@ export class NetworkUtils {
       return false;
     }
     return (
-      octets
-        .map((octet: string) => parseInt(octet, 10))
-        .filter((octet: number) => octet >= 0 && octet <= 255).length === 4
+      octets.map((octet: string) => parseInt(octet, 10)).filter((octet: number) => octet >= 0 && octet <= 255)
+        .length === 4
     );
   }
 
@@ -54,9 +52,7 @@ export class NetworkUtils {
       throw new Error(`${ipAddress} is not valid`);
     }
 
-    return ipAddress
-      .split('.')
-      .reduce((p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i), 0);
+    return ipAddress.split('.').reduce((p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i), 0);
   }
 
   /**
@@ -228,9 +224,7 @@ export class CidrBlock {
     if (typeof ipAddressOrCidr === 'string') {
       this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
       this.networkAddress =
-        NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
-        CidrBlock.calculateNetsize(this.mask) -
-        1;
+        NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) + CidrBlock.calculateNetsize(this.mask) - 1;
     } else {
       if (typeof mask === 'number') {
         this.mask = mask;

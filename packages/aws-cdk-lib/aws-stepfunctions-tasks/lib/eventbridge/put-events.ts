@@ -82,16 +82,11 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      EventBridgePutEvents.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, EventBridgePutEvents.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.entries.map((entry) => entry.detail))) {
-        throw new Error(
-          'Task Token is required in `entries`. Use JsonPath.taskToken to set the token.'
-        );
+        throw new Error('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
       }
     }
 

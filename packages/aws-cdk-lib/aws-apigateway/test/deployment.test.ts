@@ -22,10 +22,7 @@ describe('deployment', () => {
           Properties: {
             HttpMethod: 'GET',
             ResourceId: {
-              'Fn::GetAtt': [
-                'apiC8550315',
-                'RootResourceId',
-              ],
+              'Fn::GetAtt': ['apiC8550315', 'RootResourceId'],
             },
             RestApiId: {
               Ref: 'apiC8550315',
@@ -49,9 +46,7 @@ describe('deployment', () => {
               Ref: 'apiC8550315',
             },
           },
-          DependsOn: [
-            'apiGETECF0BD67',
-          ],
+          DependsOn: ['apiGETECF0BD67'],
         },
       },
     });
@@ -74,10 +69,7 @@ describe('deployment', () => {
           Properties: {
             HttpMethod: 'GET',
             ResourceId: {
-              'Fn::GetAtt': [
-                'apiC8550315',
-                'RootResourceId',
-              ],
+              'Fn::GetAtt': ['apiC8550315', 'RootResourceId'],
             },
             RestApiId: {
               Ref: 'apiC8550315',
@@ -103,9 +95,7 @@ describe('deployment', () => {
           },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
-          DependsOn: [
-            'apiGETECF0BD67',
-          ],
+          DependsOn: ['apiGETECF0BD67'],
         },
       },
     });
@@ -199,12 +189,8 @@ describe('deployment', () => {
     deployment.node.addDependency(dep);
 
     Template.fromStack(stack).hasResource('AWS::ApiGateway::Deployment', {
-      DependsOn: [
-        'apiGETECF0BD67',
-        'MyResource',
-      ],
+      DependsOn: ['apiGETECF0BD67', 'MyResource'],
     });
-
   });
 
   test('integration change invalidates deployment', () => {
@@ -239,7 +225,6 @@ describe('deployment', () => {
     Template.fromStack(stack2).hasResourceProperties('AWS::ApiGateway::Stage', {
       DeploymentId: { Ref: 'myapiDeploymentB7EF8EB7b50d305057ba109c118e4aafd4509355' },
     });
-
   });
 
   test('deployment resource depends on all restapi methods defined', () => {
@@ -262,11 +247,7 @@ describe('deployment', () => {
     resource.addMethod('GET');
 
     Template.fromStack(stack).hasResource('AWS::ApiGateway::Deployment', {
-      DependsOn: [
-        'myapiGET9B7CD29E',
-        'myapimyresourceGET732851A5',
-        'myapiPOST23417BD2',
-      ],
+      DependsOn: ['myapiGET9B7CD29E', 'myapimyresourceGET732851A5', 'myapiPOST23417BD2'],
     });
   });
 });

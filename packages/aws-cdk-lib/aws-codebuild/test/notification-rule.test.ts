@@ -10,9 +10,7 @@ test('notifications rule', () => {
       version: '0.2',
       phases: {
         build: {
-          commands: [
-            'echo "Hello, CodeBuild!"',
-          ],
+          commands: ['echo "Hello, CodeBuild!"'],
         },
       },
     }),
@@ -27,14 +25,9 @@ test('notifications rule', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
     Name: 'MyCodebuildProjectNotifyOnBuildSucceeded77719592',
     DetailType: 'FULL',
-    EventTypeIds: [
-      'codebuild-project-build-state-succeeded',
-    ],
+    EventTypeIds: ['codebuild-project-build-state-succeeded'],
     Resource: {
-      'Fn::GetAtt': [
-        'MyCodebuildProjectB0479580',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyCodebuildProjectB0479580', 'Arn'],
     },
     Targets: [
       {
@@ -49,14 +42,9 @@ test('notifications rule', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
     Name: 'MyCodebuildProjectNotifyOnBuildFailedF680E310',
     DetailType: 'FULL',
-    EventTypeIds: [
-      'codebuild-project-build-state-failed',
-    ],
+    EventTypeIds: ['codebuild-project-build-state-failed'],
     Resource: {
-      'Fn::GetAtt': [
-        'MyCodebuildProjectB0479580',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyCodebuildProjectB0479580', 'Arn'],
     },
     Targets: [
       {

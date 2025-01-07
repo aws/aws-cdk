@@ -99,17 +99,12 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * Import an existing VirtualRouter given an ARN
    */
-  public static fromVirtualRouterArn(
-    scope: Construct,
-    id: string,
-    virtualRouterArn: string
-  ): IVirtualRouter {
+  public static fromVirtualRouterArn(scope: Construct, id: string, virtualRouterArn: string): IVirtualRouter {
     return new (class extends VirtualRouterBase {
       readonly virtualRouterArn = virtualRouterArn;
       private readonly parsedArn = cdk.Fn.split(
         '/',
-        cdk.Stack.of(scope).splitArn(virtualRouterArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
-          .resourceName!
+        cdk.Stack.of(scope).splitArn(virtualRouterArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!
       );
       readonly virtualRouterName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
@@ -154,8 +149,7 @@ export class VirtualRouter extends VirtualRouterBase {
 
   constructor(scope: Construct, id: string, props: VirtualRouterProps) {
     super(scope, id, {
-      physicalName:
-        props.virtualRouterName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.virtualRouterName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;

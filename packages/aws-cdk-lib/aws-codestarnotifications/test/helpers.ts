@@ -45,8 +45,7 @@ export class FakeSnsTopicTarget implements notifications.INotificationRuleTarget
 }
 
 export class FakeSlackTarget implements notifications.INotificationRuleTarget {
-  readonly slackChannelConfigurationArn =
-    'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel';
+  readonly slackChannelConfigurationArn = 'arn:aws:chatbot::1234567890:chat-configuration/slack-channel/MySlackChannel';
 
   bindAsNotificationRuleTarget(): notifications.NotificationRuleTargetConfig {
     return {

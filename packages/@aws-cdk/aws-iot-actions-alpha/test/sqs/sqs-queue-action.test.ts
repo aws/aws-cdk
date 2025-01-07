@@ -23,17 +23,10 @@ test('Default SQS queue action', () => {
         {
           Sqs: {
             QueueUrl: {
-              'Fn::Join': ['', [
-                'https://sqs..',
-                { Ref: 'AWS::URLSuffix' },
-                '/123456789012/test-queue',
-              ]],
+              'Fn::Join': ['', ['https://sqs..', { Ref: 'AWS::URLSuffix' }, '/123456789012/test-queue']],
             },
             RoleArn: {
-              'Fn::GetAtt': [
-                'MyTopicRuleTopicRuleActionRoleCE2D05DA',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
             },
           },
         },
@@ -68,9 +61,7 @@ test('Default SQS queue action', () => {
       Version: '2012-10-17',
     },
     PolicyName: 'MyTopicRuleTopicRuleActionRoleDefaultPolicy54A701F7',
-    Roles: [
-      { Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' },
-    ],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
@@ -83,16 +74,16 @@ test('Can set useBase64', () => {
   const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:sqs::123456789012:test-queue');
 
   // WHEN
-  topicRule.addAction(new actions.SqsQueueAction(queue, {
-    useBase64: true,
-  }));
+  topicRule.addAction(
+    new actions.SqsQueueAction(queue, {
+      useBase64: true,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ Sqs: { UseBase64: true } }),
-      ],
+      Actions: [Match.objectLike({ Sqs: { UseBase64: true } })],
     },
   });
 });

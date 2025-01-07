@@ -23,28 +23,18 @@ test('sqs queue as an event rule target', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'sqs:SendMessage',
-            'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl',
-          ],
+          Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
           Condition: {
             ArnEquals: {
               'aws:SourceArn': {
-                'Fn::GetAtt': [
-                  'MyRuleA44AB831',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['MyRuleA44AB831', 'Arn'],
               },
             },
           },
           Effect: 'Allow',
           Principal: { Service: 'events.amazonaws.com' },
           Resource: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
           },
         },
       ],
@@ -59,10 +49,7 @@ test('sqs queue as an event rule target', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyQueueE6CA6235',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
         },
         Id: 'Target0',
       },
@@ -88,53 +75,33 @@ test('multiple uses of a queue as a target results in multi policy statement bec
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'sqs:SendMessage',
-            'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl',
-          ],
+          Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
           Condition: {
             ArnEquals: {
               'aws:SourceArn': {
-                'Fn::GetAtt': [
-                  'Rule071281D88',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Rule071281D88', 'Arn'],
               },
             },
           },
           Effect: 'Allow',
           Principal: { Service: 'events.amazonaws.com' },
           Resource: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
           },
         },
         {
-          Action: [
-            'sqs:SendMessage',
-            'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl',
-          ],
+          Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
           Condition: {
             ArnEquals: {
               'aws:SourceArn': {
-                'Fn::GetAtt': [
-                  'Rule136483A30',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Rule136483A30', 'Arn'],
               },
             },
           },
           Effect: 'Allow',
           Principal: { Service: 'events.amazonaws.com' },
           Resource: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
           },
         },
       ],
@@ -166,7 +133,11 @@ test('Encrypted queues result in a policy statement with aws:sourceAccount condi
     },
   });
   const queue = new sqs.Queue(queueStack, 'MyQueue', {
-    encryptionMasterKey: kms.Key.fromKeyArn(queueStack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
+    encryptionMasterKey: kms.Key.fromKeyArn(
+      queueStack,
+      'key',
+      'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'
+    ),
   });
 
   // WHEN
@@ -177,11 +148,7 @@ test('Encrypted queues result in a policy statement with aws:sourceAccount condi
     PolicyDocument: {
       Statement: Match.arrayWith([
         {
-          Action: [
-            'sqs:SendMessage',
-            'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl',
-          ],
+          Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
           Condition: {
             StringEquals: {
               'aws:SourceAccount': '111111111111',
@@ -190,10 +157,7 @@ test('Encrypted queues result in a policy statement with aws:sourceAccount condi
           Effect: 'Allow',
           Principal: { Service: 'events.amazonaws.com' },
           Resource: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
           },
         },
       ]),
@@ -207,7 +171,11 @@ test('Encrypted queues result in a permissive policy statement when the feature 
   // GIVEN
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue', {
-    encryptionMasterKey: kms.Key.fromKeyArn(stack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'),
+    encryptionMasterKey: kms.Key.fromKeyArn(
+      stack,
+      'key',
+      'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab'
+    ),
   });
 
   const rule = new events.Rule(stack, 'MyRule', {
@@ -222,18 +190,11 @@ test('Encrypted queues result in a permissive policy statement when the feature 
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'sqs:SendMessage',
-            'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl',
-          ],
+          Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
           Effect: 'Allow',
           Principal: { Service: 'events.amazonaws.com' },
           Resource: {
-            'Fn::GetAtt': [
-              'MyQueueE6CA6235',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
           },
         },
       ],
@@ -248,10 +209,7 @@ test('Encrypted queues result in a permissive policy statement when the feature 
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyQueueE6CA6235',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
         },
         Id: 'Target0',
       },
@@ -263,8 +221,9 @@ test('fail if messageGroupId is specified on non-fifo queues', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
 
-  expect(() => new targets.SqsQueue(queue, { messageGroupId: 'MyMessageGroupId' }))
-    .toThrow(/messageGroupId cannot be specified/);
+  expect(() => new targets.SqsQueue(queue, { messageGroupId: 'MyMessageGroupId' })).toThrow(
+    /messageGroupId cannot be specified/
+  );
 });
 
 test('fifo queues are synthesized correctly', () => {
@@ -275,9 +234,11 @@ test('fifo queues are synthesized correctly', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.SqsQueue(queue, {
-    messageGroupId: 'MyMessageGroupId',
-  }));
+  rule.addTarget(
+    new targets.SqsQueue(queue, {
+      messageGroupId: 'MyMessageGroupId',
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
@@ -285,10 +246,7 @@ test('fifo queues are synthesized correctly', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyQueueE6CA6235',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
         },
         Id: 'Target0',
         SqsParameters: {
@@ -308,9 +266,11 @@ test('dead letter queue is configured correctly', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.SqsQueue(queue, {
-    deadLetterQueue,
-  }));
+  rule.addTarget(
+    new targets.SqsQueue(queue, {
+      deadLetterQueue,
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
@@ -318,18 +278,12 @@ test('dead letter queue is configured correctly', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyQueueE6CA6235',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
         },
         Id: 'Target0',
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyDeadLetterQueueD997968A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyDeadLetterQueueD997968A', 'Arn'],
           },
         },
       },
@@ -345,10 +299,12 @@ test('specifying retry policy', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.SqsQueue(queue, {
-    retryAttempts: 2,
-    maxEventAge: Duration.hours(2),
-  }));
+  rule.addTarget(
+    new targets.SqsQueue(queue, {
+      retryAttempts: 2,
+      maxEventAge: Duration.hours(2),
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
@@ -356,10 +312,7 @@ test('specifying retry policy', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyQueueE6CA6235',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
         },
         Id: 'Target0',
         RetryPolicy: {
@@ -379,9 +332,11 @@ test('specifying retry policy with 0 retryAttempts', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.SqsQueue(queue, {
-    retryAttempts: 0,
-  }));
+  rule.addTarget(
+    new targets.SqsQueue(queue, {
+      retryAttempts: 0,
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
@@ -389,10 +344,7 @@ test('specifying retry policy with 0 retryAttempts', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyQueueE6CA6235',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
         },
         Id: 'Target0',
         RetryPolicy: {
@@ -414,9 +366,11 @@ test('dead letter queue is imported', () => {
   const deadLetterQueue = sqs.Queue.fromQueueArn(stack, 'MyDeadLetterQueue', dlqArn);
 
   // WHEN
-  rule.addTarget(new targets.SqsQueue(queue, {
-    deadLetterQueue,
-  }));
+  rule.addTarget(
+    new targets.SqsQueue(queue, {
+      deadLetterQueue,
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
@@ -424,10 +378,7 @@ test('dead letter queue is imported', () => {
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'MyQueueE6CA6235',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
         },
         Id: 'Target0',
         DeadLetterConfig: {

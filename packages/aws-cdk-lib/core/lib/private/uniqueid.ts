@@ -39,9 +39,7 @@ export function makeUniqueId(components: string[]) {
   // Lazy require in order to break a module dependency cycle
   const unresolvedTokens = components.filter((c) => unresolved(c));
   if (unresolvedTokens.length > 0) {
-    throw new Error(
-      `ID components may not include unresolved tokens: ${unresolvedTokens.join(',')}`
-    );
+    throw new Error(`ID components may not include unresolved tokens: ${unresolvedTokens.join(',')}`);
   }
 
   // top-level resources will simply use the `name` as-is in order to support

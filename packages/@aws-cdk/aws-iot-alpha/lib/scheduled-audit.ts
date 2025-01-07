@@ -279,15 +279,8 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
    * @param id The construct's name
    * @param scheduledAuditArn The ARN of the scheduled audit
    */
-  public static fromScheduledAuditArn(
-    scope: Construct,
-    id: string,
-    scheduledAuditArn: string
-  ): IScheduledAudit {
-    const name = Stack.of(scope).splitArn(
-      scheduledAuditArn,
-      ArnFormat.SLASH_RESOURCE_NAME
-    ).resourceName;
+  public static fromScheduledAuditArn(scope: Construct, id: string, scheduledAuditArn: string): IScheduledAudit {
+    const name = Stack.of(scope).splitArn(scheduledAuditArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!name) {
       throw new Error(`No scheduled audit name found in ARN: '${scheduledAuditArn}'`);
     }

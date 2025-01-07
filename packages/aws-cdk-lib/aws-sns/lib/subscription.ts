@@ -114,9 +114,7 @@ export class Subscription extends Resource {
         SubscriptionProtocol.FIREHOSE,
       ].indexOf(props.protocol) < 0
     ) {
-      throw new Error(
-        'Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.'
-      );
+      throw new Error('Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.');
     }
 
     if (props.filterPolicy) {
@@ -144,9 +142,7 @@ export class Subscription extends Resource {
     }
 
     if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
-      throw new Error(
-        'Subscription role arn is required field for subscriptions with a firehose protocol.'
-      );
+      throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
     }
 
     // Format filter policy
@@ -171,14 +167,9 @@ export class Subscription extends Resource {
     });
   }
 
-  private renderDeliveryPolicy(
-    deliveryPolicy: DeliveryPolicy,
-    protocol: SubscriptionProtocol
-  ): any {
+  private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy, protocol: SubscriptionProtocol): any {
     if (![SubscriptionProtocol.HTTP, SubscriptionProtocol.HTTPS].includes(protocol)) {
-      throw new Error(
-        `Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`
-      );
+      throw new Error(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`);
     }
     const { healthyRetryPolicy, throttlePolicy } = deliveryPolicy;
     if (healthyRetryPolicy) {
@@ -187,9 +178,7 @@ export class Subscription extends Resource {
       const maxDelayTarget = healthyRetryPolicy.maxDelayTarget;
       if (minDelayTarget !== undefined) {
         if (minDelayTarget.toMilliseconds() % 1000 !== 0) {
-          throw new Error(
-            `minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`
-          );
+          throw new Error(`minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`);
         }
         const minDelayTargetSecs = minDelayTarget.toSeconds();
         if (minDelayTargetSecs < 1 || minDelayTargetSecs > delayTargetLimitSecs) {
@@ -200,9 +189,7 @@ export class Subscription extends Resource {
       }
       if (maxDelayTarget !== undefined) {
         if (maxDelayTarget.toMilliseconds() % 1000 !== 0) {
-          throw new Error(
-            `maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`
-          );
+          throw new Error(`maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`);
         }
         const maxDelayTargetSecs = maxDelayTarget.toSeconds();
         if (maxDelayTargetSecs < 1 || maxDelayTargetSecs > delayTargetLimitSecs) {
@@ -226,30 +213,19 @@ export class Subscription extends Resource {
       }
       const { numNoDelayRetries, numMinDelayRetries, numMaxDelayRetries } = healthyRetryPolicy;
       if (numNoDelayRetries && (numNoDelayRetries < 0 || !Number.isInteger(numNoDelayRetries))) {
-        throw new Error(
-          `numNoDelayRetries must be an integer zero or greater, got: ${numNoDelayRetries}`
-        );
+        throw new Error(`numNoDelayRetries must be an integer zero or greater, got: ${numNoDelayRetries}`);
       }
       if (numMinDelayRetries && (numMinDelayRetries < 0 || !Number.isInteger(numMinDelayRetries))) {
-        throw new Error(
-          `numMinDelayRetries must be an integer zero or greater, got: ${numMinDelayRetries}`
-        );
+        throw new Error(`numMinDelayRetries must be an integer zero or greater, got: ${numMinDelayRetries}`);
       }
       if (numMaxDelayRetries && (numMaxDelayRetries < 0 || !Number.isInteger(numMaxDelayRetries))) {
-        throw new Error(
-          `numMaxDelayRetries must be an integer zero or greater, got: ${numMaxDelayRetries}`
-        );
+        throw new Error(`numMaxDelayRetries must be an integer zero or greater, got: ${numMaxDelayRetries}`);
       }
     }
     if (throttlePolicy) {
       const maxReceivesPerSecond = throttlePolicy.maxReceivesPerSecond;
-      if (
-        maxReceivesPerSecond !== undefined &&
-        (maxReceivesPerSecond < 1 || !Number.isInteger(maxReceivesPerSecond))
-      ) {
-        throw new Error(
-          `maxReceivesPerSecond must be an integer greater than zero, got: ${maxReceivesPerSecond}`
-        );
+      if (maxReceivesPerSecond !== undefined && (maxReceivesPerSecond < 1 || !Number.isInteger(maxReceivesPerSecond))) {
+        throw new Error(`maxReceivesPerSecond must be an integer greater than zero, got: ${maxReceivesPerSecond}`);
       }
     }
     return {
@@ -259,15 +235,10 @@ export class Subscription extends Resource {
             // but for user-friendliness we allow them to be undefined and set them here instead.
             // The defaults we use here are the same used in the event healthyRetryPolicy is not specified, see https://docs.aws.amazon.com/sns/latest/dg/creating-delivery-policy.html.
             minDelayTarget:
-              healthyRetryPolicy.minDelayTarget === undefined
-                ? 20
-                : healthyRetryPolicy.minDelayTarget.toSeconds(),
+              healthyRetryPolicy.minDelayTarget === undefined ? 20 : healthyRetryPolicy.minDelayTarget.toSeconds(),
             maxDelayTarget:
-              healthyRetryPolicy.maxDelayTarget === undefined
-                ? 20
-                : healthyRetryPolicy.maxDelayTarget.toSeconds(),
-            numRetries:
-              healthyRetryPolicy.numRetries === undefined ? 3 : healthyRetryPolicy.numRetries,
+              healthyRetryPolicy.maxDelayTarget === undefined ? 20 : healthyRetryPolicy.maxDelayTarget.toSeconds(),
+            numRetries: healthyRetryPolicy.numRetries === undefined ? 3 : healthyRetryPolicy.numRetries,
             numNoDelayRetries: healthyRetryPolicy.numNoDelayRetries,
             numMinDelayRetries: healthyRetryPolicy.numMinDelayRetries,
             numMaxDelayRetries: healthyRetryPolicy.numMaxDelayRetries,
@@ -378,11 +349,7 @@ function buildFilterPolicyWithMessageBody(
 
   for (const [key, filterOrPolicy] of Object.entries(inputObject)) {
     if (filterOrPolicy.isPolicy()) {
-      result[key] = buildFilterPolicyWithMessageBody(
-        filterOrPolicy.policyDoc,
-        depth + 1,
-        totalCombinationValues
-      );
+      result[key] = buildFilterPolicyWithMessageBody(filterOrPolicy.policyDoc, depth + 1, totalCombinationValues);
     } else if (filterOrPolicy.isFilter()) {
       const filter = filterOrPolicy.filterDoc.conditions;
       result[key] = filter;
@@ -392,9 +359,7 @@ function buildFilterPolicyWithMessageBody(
 
   // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
   if (totalCombinationValues[0] > 150) {
-    throw new Error(
-      `The total combination of values (${totalCombinationValues}) must not exceed 150.`
-    );
+    throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
   }
 
   return result;

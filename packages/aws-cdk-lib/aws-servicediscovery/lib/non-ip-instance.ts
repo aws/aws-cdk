@@ -36,8 +36,7 @@ export class NonIpInstance extends InstanceBase {
   constructor(scope: Construct, id: string, props: NonIpInstanceProps) {
     super(scope, id);
 
-    const discoveryType =
-      props.service.discoveryType || defaultDiscoveryType(props.service.namespace);
+    const discoveryType = props.service.discoveryType || defaultDiscoveryType(props.service.namespace);
     if (discoveryType !== DiscoveryType.API) {
       throw new Error('This type of instance can only be registered for HTTP namespaces.');
     }

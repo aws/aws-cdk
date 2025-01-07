@@ -42,7 +42,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       End: true,
       Parameters: {
         'Name.$': "States.Format('{}/{}', $$.Execution.Name, $$.State.Name)",
-        'ContainerProvider': {
+        ContainerProvider: {
           Id: clusterId,
           Info: {
             EksInfo: {
@@ -160,36 +160,38 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
-        Action: 'emr-containers:CreateVirtualCluster',
-        Effect: 'Allow',
-        Resource: '*',
-      },
-      {
-        Action: 'iam:CreateServiceLinkedRole',
-        Condition: {
-          StringLike: {
-            'iam:AWSServiceName': 'emr-containers.amazonaws.com',
+      Statement: [
+        {
+          Action: 'emr-containers:CreateVirtualCluster',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'iam:CreateServiceLinkedRole',
+          Condition: {
+            StringLike: {
+              'iam:AWSServiceName': 'emr-containers.amazonaws.com',
+            },
+          },
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':role/aws-service-role/emr-containers.amazonaws.com/AWSServiceRoleForAmazonEMRContainers',
+              ],
+            ],
           },
         },
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':iam::',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              ':role/aws-service-role/emr-containers.amazonaws.com/AWSServiceRoleForAmazonEMRContainers',
-            ],
-          ],
-        },
-      }],
+      ],
     },
   });
 });
@@ -201,7 +203,9 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/
+  );
 });
 
 test('Task throws if RUN_JOB is supplied as service integration pattern', () => {

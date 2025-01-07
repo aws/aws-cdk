@@ -4,11 +4,21 @@ import * as fs from 'fs-extra';
 import { snapshotTestWorker } from '../../lib/workers/extract';
 
 beforeEach(() => {
-  jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
-  jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+  jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(process.stdout, 'write').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(fs, 'moveSync').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(fs, 'removeSync').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => {
+    return true;
+  });
 });
 afterEach(() => {
   jest.clearAllMocks();
@@ -59,4 +69,3 @@ describe('Snapshot tests', () => {
     expect(result[0]).toEqual(test);
   });
 });
-

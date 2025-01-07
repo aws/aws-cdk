@@ -4,27 +4,33 @@ import * as events from '../lib';
 describe('schedule', () => {
   test('cron expressions day and dow are mutex: given weekday', () => {
     // Run every 10 minutes Monday through Friday
-    expect('cron(0/10 * ? * MON-FRI *)').toEqual(events.Schedule.cron({
-      minute: '0/10',
-      weekDay: 'MON-FRI',
-    }).expressionString);
+    expect('cron(0/10 * ? * MON-FRI *)').toEqual(
+      events.Schedule.cron({
+        minute: '0/10',
+        weekDay: 'MON-FRI',
+      }).expressionString
+    );
   });
 
   test('cron expressions day and dow are mutex: given month day', () => {
     // Run at 8:00 am (UTC) every 1st day of the month
-    expect('cron(0 8 1 * ? *)').toEqual(events.Schedule.cron({
-      minute: '0',
-      hour: '8',
-      day: '1',
-    }).expressionString);
+    expect('cron(0 8 1 * ? *)').toEqual(
+      events.Schedule.cron({
+        minute: '0',
+        hour: '8',
+        day: '1',
+      }).expressionString
+    );
   });
 
   test('cron expressions day and dow are mutex: given neither', () => {
     // Run at 10:00 am (UTC) every day
-    expect('cron(0 10 * * ? *)').toEqual(events.Schedule.cron({
-      minute: '0',
-      hour: '10',
-    }).expressionString);
+    expect('cron(0 10 * * ? *)').toEqual(
+      events.Schedule.cron({
+        minute: '0',
+        hour: '10',
+      }).expressionString
+    );
   });
 
   test('rate cannot be 0', () => {
@@ -47,27 +53,19 @@ describe('schedule', () => {
   });
 
   test('rate can be in minutes', () => {
-    expect('rate(10 minutes)').toEqual(
-      events.Schedule.rate(Duration.minutes(10))
-        .expressionString);
+    expect('rate(10 minutes)').toEqual(events.Schedule.rate(Duration.minutes(10)).expressionString);
   });
 
   test('rate can be in days', () => {
-    expect('rate(10 days)').toEqual(
-      events.Schedule.rate(Duration.days(10))
-        .expressionString);
+    expect('rate(10 days)').toEqual(events.Schedule.rate(Duration.days(10)).expressionString);
   });
 
   test('rate can be in hours', () => {
-    expect('rate(10 hours)').toEqual(
-      events.Schedule.rate(Duration.hours(10))
-        .expressionString);
+    expect('rate(10 hours)').toEqual(events.Schedule.rate(Duration.hours(10)).expressionString);
   });
 
   test('rate can be in seconds', () => {
-    expect('rate(2 minutes)').toEqual(
-      events.Schedule.rate(Duration.seconds(120))
-        .expressionString);
+    expect('rate(2 minutes)').toEqual(events.Schedule.rate(Duration.seconds(120)).expressionString);
   });
 
   test('rate must not be in seconds when specified as a token', () => {
@@ -85,13 +83,13 @@ describe('fractional minutes checks', () => {
   });
 
   test('rate cannot be a fractional amount of minutes (defined with minutes)', () => {
-    expect(()=> {
-      events.Schedule.rate(Duration.minutes(5/3));
+    expect(() => {
+      events.Schedule.rate(Duration.minutes(5 / 3));
     }).toThrow(/must be a whole number of/);
   });
 
   test('rate cannot be a fractional amount of minutes (defined with hours)', () => {
-    expect(()=> {
+    expect(() => {
       events.Schedule.rate(Duration.hours(1.03));
     }).toThrow(/cannot be converted into a whole number of/);
   });
@@ -104,7 +102,7 @@ describe('fractional minutes checks', () => {
 
   test('rate cannot be less than 1 minute (defined with minutes as fractions)', () => {
     expect(() => {
-      events.Schedule.rate(Duration.minutes(1/2));
+      events.Schedule.rate(Duration.minutes(1 / 2));
     }).toThrow(/must be a whole number of/);
   });
 

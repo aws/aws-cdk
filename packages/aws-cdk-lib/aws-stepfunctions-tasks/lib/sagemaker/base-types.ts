@@ -350,10 +350,7 @@ export abstract class DockerImage {
    * @param repository the ECR repository where the image is hosted.
    * @param tagOrDigest an optional tag or digest (digests must start with `sha256:`)
    */
-  public static fromEcrRepository(
-    repository: ecr.IRepository,
-    tagOrDigest: string = 'latest'
-  ): DockerImage {
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): DockerImage {
     return new StandardDockerImage({
       repository,
       imageUri: repository.repositoryUriForTagOrDigest(tagOrDigest),
@@ -897,11 +894,7 @@ class StandardDockerImage extends DockerImage {
   private readonly imageUri: string;
   private readonly repository?: ecr.IRepository;
 
-  constructor(opts: {
-    allowAnyEcrImagePull?: boolean;
-    imageUri: string;
-    repository?: ecr.IRepository;
-  }) {
+  constructor(opts: { allowAnyEcrImagePull?: boolean; imageUri: string; repository?: ecr.IRepository }) {
     super();
 
     this.allowAnyEcrImagePull = !!opts.allowAnyEcrImagePull;
@@ -916,11 +909,7 @@ class StandardDockerImage extends DockerImage {
     if (this.allowAnyEcrImagePull) {
       task.grantPrincipal.addToPrincipalPolicy(
         new iam.PolicyStatement({
-          actions: [
-            'ecr:BatchCheckLayerAvailability',
-            'ecr:GetDownloadUrlForLayer',
-            'ecr:BatchGetImage',
-          ],
+          actions: ['ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage'],
           resources: ['*'],
         })
       );
@@ -959,9 +948,7 @@ class StandardS3Location extends S3Location {
       if (opts.forWriting) {
         actions.push('s3:PutObject');
       }
-      task.grantPrincipal.addToPrincipalPolicy(
-        new iam.PolicyStatement({ actions, resources: ['*'] })
-      );
+      task.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({ actions, resources: ['*'] }));
     }
     return { uri: this.uri };
   }

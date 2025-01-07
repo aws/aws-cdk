@@ -54,13 +54,16 @@ test('cloud assembly builder', () => {
     },
   });
 
-  fs.writeFileSync(path.join(session.outdir, templateFile), JSON.stringify({
-    Resources: {
-      MyTopic: {
-        Type: 'AWS::S3::Topic',
+  fs.writeFileSync(
+    path.join(session.outdir, templateFile),
+    JSON.stringify({
+      Resources: {
+        MyTopic: {
+          Type: 'AWS::S3::Topic',
+        },
       },
-    },
-  }));
+    })
+  );
 
   const assembly = session.buildAssembly();
   const manifest = assembly.manifest;
@@ -246,7 +249,7 @@ test('artifcats are written in topological order', () => {
   });
 
   const asm = session.buildAssembly();
-  const artifactsIds = asm.artifacts.map(a => a.id);
+  const artifactsIds = asm.artifacts.map((a) => a.id);
 
   // THEN
   expect(artifactsIds.indexOf('artifact-A')).toBeLessThan(artifactsIds.indexOf('artifact-C'));

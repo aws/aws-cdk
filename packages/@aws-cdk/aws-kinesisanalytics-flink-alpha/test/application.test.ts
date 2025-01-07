@@ -48,10 +48,7 @@ describe('Application', () => {
       ApplicationName: 'MyFlinkApplication',
       RuntimeEnvironment: runtime.value,
       ServiceExecutionRole: {
-        'Fn::GetAtt': [
-          'FlinkApplicationRole2F7BCBF6',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['FlinkApplicationRole2F7BCBF6', 'Arn'],
       },
       ApplicationConfiguration: {
         ApplicationCodeConfiguration: {
@@ -75,13 +72,15 @@ describe('Application', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'kinesisanalytics.amazonaws.com',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'kinesisanalytics.amazonaws.com',
+            },
           },
-        }],
+        ],
         Version: '2012-10-17',
       },
     });
@@ -101,15 +100,18 @@ describe('Application', () => {
             Effect: 'Allow',
             Resource: {
               // looks like arn:aws:logs:us-east-1:123456789012:log-group:*,
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':logs:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':log-group:*',
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:*',
+                ],
+              ],
             },
           },
           {
@@ -124,18 +126,21 @@ describe('Application', () => {
             Action: 'logs:PutLogEvents',
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':logs:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':log-group:',
-                { Ref: 'FlinkApplicationLogGroup7739479C' },
-                ':log-stream:',
-                { Ref: 'FlinkApplicationLogStreamB633AF32' },
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:',
+                  { Ref: 'FlinkApplicationLogGroup7739479C' },
+                  ':log-stream:',
+                  { Ref: 'FlinkApplicationLogStreamB633AF32' },
+                ],
+              ],
             },
           },
         ]),
@@ -172,16 +177,16 @@ describe('Application', () => {
       ...requiredProps,
     });
 
-    app.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['custom:action'],
-      resources: ['*'],
-    }));
+    app.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['custom:action'],
+        resources: ['*'],
+      })
+    );
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({ Action: 'custom:action', Effect: 'Allow', Resource: '*' }),
-        ]),
+        Statement: Match.arrayWith([Match.objectLike({ Action: 'custom:action', Effect: 'Allow', Resource: '*' })]),
       },
     });
   });
@@ -219,9 +224,7 @@ describe('Application', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: Match.arrayWith([
-          Match.objectLike({ Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'] }),
-        ]),
+        Statement: Match.arrayWith([Match.objectLike({ Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'] })]),
       },
     });
   });
@@ -240,7 +243,8 @@ describe('Application', () => {
       code,
     });
     const assetRef = 'AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67';
-    const versionKeyRef = 'AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E';
+    const versionKeyRef =
+      'AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E';
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
@@ -248,18 +252,16 @@ describe('Application', () => {
           CodeContent: {
             S3ContentLocation: {
               BucketARN: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':s3:::',
-                  { Ref: assetRef },
-                ]],
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: assetRef }]],
               },
               FileKey: {
-                'Fn::Join': ['', [
-                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: versionKeyRef }] }] },
-                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: versionKeyRef }] }] },
-                ]],
+                'Fn::Join': [
+                  '',
+                  [
+                    { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: versionKeyRef }] }] },
+                    { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: versionKeyRef }] }] },
+                  ],
+                ],
               },
             },
           },
@@ -529,30 +531,27 @@ describe('Application', () => {
     });
 
     const template = Template.fromStack(stack);
-    template.hasResourceProperties(
-      'AWS::KinesisAnalyticsV2::Application',
-      {
-        ApplicationConfiguration: {
-          VpcConfigurations: [
-            {
-              SecurityGroupIds: [
-                {
-                  'Fn::GetAtt': ['FlinkApplicationSecurityGroup1FD816EE', 'GroupId'],
-                },
-              ],
-              SubnetIds: [
-                {
-                  Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-                },
-                {
-                  Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-                },
-              ],
-            },
-          ],
-        },
+    template.hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        VpcConfigurations: [
+          {
+            SecurityGroupIds: [
+              {
+                'Fn::GetAtt': ['FlinkApplicationSecurityGroup1FD816EE', 'GroupId'],
+              },
+            ],
+            SubnetIds: [
+              {
+                Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+              },
+              {
+                Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+              },
+            ],
+          },
+        ],
       },
-    );
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -581,27 +580,22 @@ describe('Application', () => {
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       vpc,
-      securityGroups: [
-        new ec2.SecurityGroup(stack, 'ProvidedSecurityGroup', { vpc }),
-      ],
+      securityGroups: [new ec2.SecurityGroup(stack, 'ProvidedSecurityGroup', { vpc })],
     });
 
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::KinesisAnalyticsV2::Application',
-      {
-        ApplicationConfiguration: {
-          VpcConfigurations: [
-            {
-              SecurityGroupIds: [
-                {
-                  'Fn::GetAtt': ['ProvidedSecurityGroup3C7655DD', 'GroupId'],
-                },
-              ],
-            },
-          ],
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        VpcConfigurations: [
+          {
+            SecurityGroupIds: [
+              {
+                'Fn::GetAtt': ['ProvidedSecurityGroup3C7655DD', 'GroupId'],
+              },
+            ],
+          },
+        ],
       },
-    );
+    });
   });
 
   test('providing a subnetSelection', () => {
@@ -611,25 +605,22 @@ describe('Application', () => {
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
 
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::KinesisAnalyticsV2::Application',
-      {
-        ApplicationConfiguration: {
-          VpcConfigurations: [
-            {
-              SubnetIds: [
-                {
-                  Ref: 'VPCPublicSubnet1SubnetB4246D30',
-                },
-                {
-                  Ref: 'VPCPublicSubnet2Subnet74179F39',
-                },
-              ],
-            },
-          ],
-        },
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        VpcConfigurations: [
+          {
+            SubnetIds: [
+              {
+                Ref: 'VPCPublicSubnet1SubnetB4246D30',
+              },
+              {
+                Ref: 'VPCPublicSubnet2Subnet74179F39',
+              },
+            ],
+          },
+        ],
       },
-    );
+    });
   });
 
   test('using connections on a created Application', () => {
@@ -640,21 +631,22 @@ describe('Application', () => {
 
     app.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
 
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::EC2::SecurityGroup',
-      {
-        SecurityGroupEgress: [{
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
           Description: 'Allow all outbound traffic by default',
           IpProtocol: '-1',
-        }],
-        SecurityGroupIngress: [{
+        },
+      ],
+      SecurityGroupIngress: [
+        {
           Description: 'from 0.0.0.0/0:443',
           FromPort: 443,
           IpProtocol: 'tcp',
           ToPort: 443,
-        }],
-      },
-    );
+        },
+      ],
+    });
   });
 
   test('using connections on an imported Application', () => {
@@ -665,15 +657,12 @@ describe('Application', () => {
 
     app.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
 
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::EC2::SecurityGroupIngress',
-      {
-        FromPort: 443,
-        GroupId: 'sg-123456789',
-        IpProtocol: 'tcp',
-        ToPort: 443,
-      },
-    );
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+      FromPort: 443,
+      GroupId: 'sg-123456789',
+      IpProtocol: 'tcp',
+      ToPort: 443,
+    });
   });
 
   test('validating vpnSubnets prop requires vpc prop', () => {
@@ -808,15 +797,18 @@ describe('Application', () => {
 
     expect(flinkApp.applicationName).toEqual('my-app');
     expect(stack.resolve(flinkApp.applicationArn)).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':kinesisanalytics:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':application/my-app',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':kinesisanalytics:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':application/my-app',
+        ],
+      ],
     });
     expect(flinkApp.addToRolePolicy(new iam.PolicyStatement())).toBe(false);
   });
@@ -843,13 +835,12 @@ describe('Application', () => {
 
   test('get metric', () => {
     const flinkApp = new flink.Application(stack, 'Application', { ...requiredProps });
-    expect(flinkApp.metric('KPUs', { statistic: 'Sum' }))
-      .toMatchObject({
-        namespace: 'AWS/KinesisAnalytics',
-        metricName: 'KPUs',
-        dimensions: { Application: flinkApp.applicationName },
-        statistic: 'Sum',
-      });
+    expect(flinkApp.metric('KPUs', { statistic: 'Sum' })).toMatchObject({
+      namespace: 'AWS/KinesisAnalytics',
+      metricName: 'KPUs',
+      dimensions: { Application: flinkApp.applicationName },
+      statistic: 'Sum',
+    });
   });
 
   test('canned metrics', () => {

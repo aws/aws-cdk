@@ -116,10 +116,7 @@ export const ssmParamFromChangeset: Change = {
   },
 };
 
-export function queueFromChangeset(args: {
-  beforeContextWaitTime?: string;
-  afterContextWaitTime?: string;
-}): Change {
+export function queueFromChangeset(args: { beforeContextWaitTime?: string; afterContextWaitTime?: string }): Change {
   return {
     Type: 'Resource',
     ResourceChange: {
@@ -169,8 +166,7 @@ export const changeSet: DescribeChangeSetOutput = {
   ChangeSetName: 'newesteverr2223',
   ChangeSetId:
     'arn:aws:cloudformation:us-east-1:012345678901:changeSet/newesteverr2223/3cb73e2d-d1c4-4331-9255-c978e496b6d1',
-  StackId:
-    'arn:aws:cloudformation:us-east-1:012345678901:stack/cdkbugreport/af695110-1570-11ef-a065-0eb1173d997f',
+  StackId: 'arn:aws:cloudformation:us-east-1:012345678901:stack/cdkbugreport/af695110-1570-11ef-a065-0eb1173d997f',
   StackName: 'cdkbugreport',
   Parameters: [
     {
@@ -391,8 +387,7 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
   ChangeSetName: 'newIamStuff',
   ChangeSetId:
     'arn:aws:cloudformation:us-east-1:012345678901:changeSet/newIamStuff/b19829fe-20d6-43ba-83b2-d22c42c00d08',
-  StackId:
-    'arn:aws:cloudformation:us-east-1:012345678901:stack/cdkbugreport2/c4cd77c0-15f7-11ef-a7a6-0affeddeb3e1',
+  StackId: 'arn:aws:cloudformation:us-east-1:012345678901:stack/cdkbugreport2/c4cd77c0-15f7-11ef-a7a6-0affeddeb3e1',
   StackName: 'cdkbugreport2',
   Parameters: [
     {

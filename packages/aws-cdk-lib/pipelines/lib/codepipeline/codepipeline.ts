@@ -3,10 +3,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
-import {
-  CodePipelineActionFactoryResult,
-  ICodePipelineActionFactory,
-} from './codepipeline-action-factory';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
 import { namespaceStepOutputs } from './private/outputs';
 import { StackOutputsMap } from './stack-outputs-map';
@@ -16,15 +13,7 @@ import * as cpa from '../../../aws-codepipeline-actions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
-import {
-  Aws,
-  CfnCapabilities,
-  Duration,
-  PhysicalName,
-  Stack,
-  Names,
-  FeatureFlags,
-} from '../../../core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names, FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import {
   AssetType,
@@ -36,22 +25,13 @@ import {
   StackDeployment,
   Step,
 } from '../blueprint';
-import {
-  DockerCredential,
-  dockerCredentialsInstallCommands,
-  DockerCredentialUsage,
-} from '../docker-credentials';
+import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { CachedFnSub } from '../private/cached-fnsub';
 import { preferredCliVersion } from '../private/cli-version';
-import {
-  appOf,
-  assemblyBuilderOf,
-  embeddedAsmPath,
-  obtainScope,
-} from '../private/construct-internals';
+import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../private/default-codebuild-image';
 import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
@@ -475,19 +455,13 @@ export class CodePipeline extends PipelineBase {
 
     if (this.props.codePipeline) {
       if (this.props.pipelineName) {
-        throw new Error(
-          "Cannot set 'pipelineName' if an existing CodePipeline is given using 'codePipeline'"
-        );
+        throw new Error("Cannot set 'pipelineName' if an existing CodePipeline is given using 'codePipeline'");
       }
       if (this.props.crossAccountKeys !== undefined) {
-        throw new Error(
-          "Cannot set 'crossAccountKeys' if an existing CodePipeline is given using 'codePipeline'"
-        );
+        throw new Error("Cannot set 'crossAccountKeys' if an existing CodePipeline is given using 'codePipeline'");
       }
       if (this.props.enableKeyRotation !== undefined) {
-        throw new Error(
-          "Cannot set 'enableKeyRotation' if an existing CodePipeline is given using 'codePipeline'"
-        );
+        throw new Error("Cannot set 'enableKeyRotation' if an existing CodePipeline is given using 'codePipeline'");
       }
       if (this.props.crossRegionReplicationBuckets !== undefined) {
         throw new Error(
@@ -500,14 +474,10 @@ export class CodePipeline extends PipelineBase {
         );
       }
       if (this.props.role !== undefined) {
-        throw new Error(
-          "Cannot set 'role' if an existing CodePipeline is given using 'codePipeline'"
-        );
+        throw new Error("Cannot set 'role' if an existing CodePipeline is given using 'codePipeline'");
       }
       if (this.props.artifactBucket !== undefined) {
-        throw new Error(
-          "Cannot set 'artifactBucket' if an existing CodePipeline is given using 'codePipeline'"
-        );
+        throw new Error("Cannot set 'artifactBucket' if an existing CodePipeline is given using 'codePipeline'");
       }
 
       this._pipeline = this.props.codePipeline;
@@ -590,9 +560,7 @@ export class CodePipeline extends PipelineBase {
             const name = actionName(node, sharedParent);
 
             const variablesNamespace =
-              node.data?.type === 'step'
-                ? namespaceStepOutputs(node.data.step, pipelineStage, name)
-                : undefined;
+              node.data?.type === 'step' ? namespaceStepOutputs(node.data.step, pipelineStage, name) : undefined;
 
             const result = factory.produceAction(pipelineStage, {
               actionName: name,
@@ -648,14 +616,8 @@ export class CodePipeline extends PipelineBase {
       }
     }
 
-    if (
-      node.data?.type === 'step' &&
-      node.data.step.primaryOutput?.primaryOutput &&
-      !this._fallbackArtifact
-    ) {
-      this._fallbackArtifact = this.artifacts.toCodePipeline(
-        node.data.step.primaryOutput?.primaryOutput
-      );
+    if (node.data?.type === 'step' && node.data.step.primaryOutput?.primaryOutput && !this._fallbackArtifact) {
+      this._fallbackArtifact = this.artifacts.toCodePipeline(node.data.step.primaryOutput?.primaryOutput);
     }
   }
 
@@ -764,12 +726,7 @@ export class CodePipeline extends PipelineBase {
             templatePath: templateArtifact.atPath(toPosixPath(relativeTemplatePath)),
             adminPermissions: true,
             role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
-            deploymentRole: this.roleFromPlaceholderArn(
-              this.pipeline,
-              region,
-              account,
-              stack.executionRoleArn
-            ),
+            deploymentRole: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.executionRoleArn),
             region: region,
             templateConfiguration: templateConfigurationPath
               ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
@@ -782,10 +739,7 @@ export class CodePipeline extends PipelineBase {
     };
   }
 
-  private executeChangeSetAction(
-    stack: StackDeployment,
-    captureOutputs: boolean
-  ): ICodePipelineActionFactory {
+  private executeChangeSetAction(stack: StackDeployment, captureOutputs: boolean): ICodePipelineActionFactory {
     const changeSetName = 'PipelineChange';
 
     const region = stack.region !== Stack.of(this).region ? stack.region : undefined;
@@ -810,10 +764,7 @@ export class CodePipeline extends PipelineBase {
     };
   }
 
-  private executeDeploymentAction(
-    stack: StackDeployment,
-    captureOutputs: boolean
-  ): ICodePipelineActionFactory {
+  private executeDeploymentAction(stack: StackDeployment, captureOutputs: boolean): ICodePipelineActionFactory {
     const templateArtifact = this.artifacts.toCodePipeline(this._cloudAssemblyFileSet!);
     const templateConfigurationPath = this.writeTemplateConfiguration(stack);
 
@@ -832,12 +783,7 @@ export class CodePipeline extends PipelineBase {
             templatePath: templateArtifact.atPath(toPosixPath(relativeTemplatePath)),
             adminPermissions: true,
             role: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.assumeRoleArn),
-            deploymentRole: this.roleFromPlaceholderArn(
-              this.pipeline,
-              region,
-              account,
-              stack.executionRoleArn
-            ),
+            deploymentRole: this.roleFromPlaceholderArn(this.pipeline, region, account, stack.executionRoleArn),
             region: region,
             templateConfiguration: templateConfigurationPath
               ? templateArtifact.atPath(toPosixPath(templateConfigurationPath))
@@ -873,11 +819,7 @@ export class CodePipeline extends PipelineBase {
           resources: [`arn:*:iam::${Stack.of(this.pipeline).account}:role/*`],
           conditions: {
             'ForAnyValue:StringEquals': {
-              'iam:ResourceTag/aws-cdk:bootstrap-role': [
-                'image-publishing',
-                'file-publishing',
-                'deploy',
-              ],
+              'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],
             },
           },
         }),
@@ -913,9 +855,7 @@ export class CodePipeline extends PipelineBase {
 
     const role = this.obtainAssetCodeBuildRole(assets[0].assetType);
 
-    for (const roleArn of assets.flatMap((a) =>
-      a.assetPublishingRoleArn ? [a.assetPublishingRoleArn] : []
-    )) {
+    for (const roleArn of assets.flatMap((a) => (a.assetPublishingRoleArn ? [a.assetPublishingRoleArn] : []))) {
       // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
       role.addAssumeRole(this.cachedFnSub.fnSub(roleArn));
     }
@@ -985,9 +925,7 @@ export class CodePipeline extends PipelineBase {
 
     const dockerUsage = dockerUsageFromCodeBuild(nodeType);
     const dockerCommands =
-      dockerUsage !== undefined
-        ? dockerCredentialsInstallCommands(dockerUsage, this.dockerCredentials, 'both')
-        : [];
+      dockerUsage !== undefined ? dockerCredentialsInstallCommands(dockerUsage, this.dockerCredentials, 'both') : [];
     const typeBasedDockerCommands =
       dockerCommands.length > 0
         ? {
@@ -1095,9 +1033,7 @@ export class CodePipeline extends PipelineBase {
 
     const stack = Stack.of(this);
 
-    const removeRootPrincipal = FeatureFlags.of(this).isEnabled(
-      cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE
-    );
+    const removeRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE);
 
     const assumePrincipal = removeRootPrincipal
       ? new iam.CompositePrincipal(new iam.ServicePrincipal('codebuild.amazonaws.com'))
@@ -1114,9 +1050,7 @@ export class CodePipeline extends PipelineBase {
 
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {
-      this.dockerCredentials.forEach((reg) =>
-        reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING)
-      );
+      this.dockerCredentials.forEach((reg) => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
     this.assetCodeBuildRoles.set(assetType, assetRole);

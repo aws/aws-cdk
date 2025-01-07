@@ -108,72 +108,56 @@ test('array<test(char(1)>', () => {
 });
 
 test('test(array<array>', () => {
-  const type = Schema.array(
-    Schema.array(Schema.STRING));
+  const type = Schema.array(Schema.array(Schema.STRING));
   expect(type.inputString).toEqual('array<array<string>>');
   expect(type.isPrimitive).toEqual(false);
 });
 
 test('test(array<map>', () => {
-  const type = Schema.array(
-    Schema.map(Schema.STRING, Schema.STRING));
+  const type = Schema.array(Schema.map(Schema.STRING, Schema.STRING));
   expect(type.inputString).toEqual('array<map<string,string>>');
   expect(type.isPrimitive).toEqual(false);
 });
 
 test('test(array<struct>', () => {
   const type = Schema.array(
-    Schema.struct([{
-      name: 'key',
-      type: Schema.STRING,
-    }]));
+    Schema.struct([
+      {
+        name: 'key',
+        type: Schema.STRING,
+      },
+    ])
+  );
   expect(type.inputString).toEqual('array<struct<key:string>>');
   expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(string,string>', () => {
-  const type = Schema.map(
-    Schema.STRING,
-    Schema.STRING,
-  );
+  const type = Schema.map(Schema.STRING, Schema.STRING);
   expect(type.inputString).toEqual('map<string,string>');
   expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(int,string>', () => {
-  const type = Schema.map(
-    Schema.INTEGER,
-    Schema.STRING,
-  );
+  const type = Schema.map(Schema.INTEGER, Schema.STRING);
   expect(type.inputString).toEqual('map<int,string>');
   expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<char(1),test(char(1)>', () => {
-  const type = Schema.map(
-    Schema.char(1),
-    Schema.char(1),
-  );
+  const type = Schema.map(Schema.char(1), Schema.char(1));
   expect(type.inputString).toEqual('map<char(1),char(1)>');
   expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(string,array>', () => {
-  const type = Schema.map(
-    Schema.char(1),
-    Schema.array(Schema.STRING),
-  );
+  const type = Schema.map(Schema.char(1), Schema.array(Schema.STRING));
   expect(type.inputString).toEqual('map<char(1),array<string>>');
   expect(type.isPrimitive).toEqual(false);
 });
 
 test('map<test(string,map>', () => {
-  const type = Schema.map(
-    Schema.char(1),
-    Schema.map(
-      Schema.STRING,
-      Schema.STRING),
-  );
+  const type = Schema.map(Schema.char(1), Schema.map(Schema.STRING, Schema.STRING));
   expect(type.inputString).toEqual('map<char(1),map<string,string>>');
   expect(type.isPrimitive).toEqual(false);
 });
@@ -181,59 +165,67 @@ test('map<test(string,map>', () => {
 test('map<test(string,struct>', () => {
   const type = Schema.map(
     Schema.char(1),
-    Schema.struct([{
-      name: 'key',
-      type: Schema.STRING,
-    }]),
+    Schema.struct([
+      {
+        name: 'key',
+        type: Schema.STRING,
+      },
+    ])
   );
   expect(type.inputString).toEqual('map<char(1),struct<key:string>>');
   expect(type.isPrimitive).toEqual(false);
 });
 
 test('map throws if keyType is test(non-primitive', () => {
-  expect(() => Schema.map(
-    Schema.array(Schema.STRING),
-    Schema.STRING,
-  )).toThrow();
-  expect(() => Schema.map(
-    Schema.map(Schema.STRING, Schema.STRING),
-    Schema.STRING,
-  )).toThrow();
-  expect(() => Schema.map(
-    Schema.struct([{
-      name: 'key',
-      type: Schema.STRING,
-    }]),
-    Schema.STRING,
-  )).toThrow();
+  expect(() => Schema.map(Schema.array(Schema.STRING), Schema.STRING)).toThrow();
+  expect(() => Schema.map(Schema.map(Schema.STRING, Schema.STRING), Schema.STRING)).toThrow();
+  expect(() =>
+    Schema.map(
+      Schema.struct([
+        {
+          name: 'key',
+          type: Schema.STRING,
+        },
+      ]),
+      Schema.STRING
+    )
+  ).toThrow();
 });
 
 test('struct type', () => {
-  const type = Schema.struct([{
-    name: 'primitive',
-    type: Schema.STRING,
-  }, {
-    name: 'with_comment',
-    type: Schema.STRING,
-    comment: 'this has a comment',
-  }, {
-    name: 'array',
-    type: Schema.array(Schema.STRING),
-  }, {
-    name: 'map',
-    type: Schema.map(Schema.STRING, Schema.STRING),
-  }, {
-    name: 'nested_struct',
-    type: Schema.struct([{
-      name: 'nested',
+  const type = Schema.struct([
+    {
+      name: 'primitive',
       type: Schema.STRING,
-      comment: 'nested comment',
-    }]),
-  }]);
+    },
+    {
+      name: 'with_comment',
+      type: Schema.STRING,
+      comment: 'this has a comment',
+    },
+    {
+      name: 'array',
+      type: Schema.array(Schema.STRING),
+    },
+    {
+      name: 'map',
+      type: Schema.map(Schema.STRING, Schema.STRING),
+    },
+    {
+      name: 'nested_struct',
+      type: Schema.struct([
+        {
+          name: 'nested',
+          type: Schema.STRING,
+          comment: 'nested comment',
+        },
+      ]),
+    },
+  ]);
 
   expect(type.isPrimitive).toEqual(false);
   expect(type.inputString).toEqual(
     // eslint-disable-next-line max-len
-    'struct<primitive:string,with_comment:string COMMENT \'this has a comment\',array:array<string>,map:map<string,string>,nested_struct:struct<nested:string COMMENT \'nested comment\'>>',
+    "struct<primitive:string,with_comment:string COMMENT 'this has a comment',array:array<string>,map:map<string,string>,nested_struct:struct<nested:string COMMENT 'nested comment'>>"
   );
 });

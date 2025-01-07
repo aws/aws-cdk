@@ -16,7 +16,9 @@ jest.mock('../lib/bundling', () => {
             },
           };
         },
-        bindToResource: () => { return; },
+        bindToResource: () => {
+          return;
+        },
       }),
     },
     stageDependencies: jest.fn().mockReturnValue(true),
@@ -35,10 +37,12 @@ test('Bundling a layer from files', () => {
     entry,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry,
-    outputPathSuffix: 'python',
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      entry,
+      outputPathSuffix: 'python',
+    })
+  );
 });
 
 test('Fails when bundling a layer for a runtime not supported', () => {
@@ -59,9 +63,11 @@ test('Allows use of custom bundling image', () => {
     bundling: { image },
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    image,
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      image,
+    })
+  );
 });
 
 test('Skip bundling when stack does not require it', () => {
@@ -72,9 +78,11 @@ test('Skip bundling when stack does not require it', () => {
     entry,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    skip: true,
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      skip: true,
+    })
+  );
 
   spy.mockRestore();
 });
@@ -87,9 +95,11 @@ test('Do not skip bundling when stack requires it', () => {
     entry,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    skip: false,
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      skip: false,
+    })
+  );
 
   spy.mockRestore();
 });

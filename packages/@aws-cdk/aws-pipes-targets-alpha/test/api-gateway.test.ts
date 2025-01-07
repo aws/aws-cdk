@@ -165,31 +165,35 @@ describe('API Gateway REST API', () => {
     // ASSERT
     template.hasResource('AWS::IAM::Policy', {
       Properties: {
-        Roles: [{
-          Ref: 'MyPipeRoleCBC8E9AB',
-        }],
+        Roles: [
+          {
+            Ref: 'MyPipeRoleCBC8E9AB',
+          },
+        ],
         PolicyDocument: {
-          Statement: [{
-            Action: 'execute-api:Invoke',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':execute-api:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':',
-                  { Ref: 'MyLambdaRestApiDeployTrueD6F0338A' },
-                  '/',
-                  { Ref: 'MyLambdaRestApiDeployTrueDeploymentStageprodAA1DAA0D' },
-                  '/*/',
+          Statement: [
+            {
+              Action: 'execute-api:Invoke',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'MyLambdaRestApiDeployTrueD6F0338A' },
+                    '/',
+                    { Ref: 'MyLambdaRestApiDeployTrueDeploymentStageprodAA1DAA0D' },
+                    '/*/',
+                  ],
                 ],
-              ],
+              },
             },
-          }],
+          ],
         },
       },
     });

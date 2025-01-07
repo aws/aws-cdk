@@ -24,7 +24,7 @@ test('Default opensearch action', () => {
       id: 'id',
       index: 'index',
       type: 'type',
-    }),
+    })
   );
 
   // THEN
@@ -37,9 +37,15 @@ test('Default opensearch action', () => {
             Type: 'type',
             Index: 'index',
             Endpoint: {
-              'Fn::Join': ['', ['https://', {
-                'Fn::GetAtt': ['Domain66AC69E0', 'DomainEndpoint'],
-              }]],
+              'Fn::Join': [
+                '',
+                [
+                  'https://',
+                  {
+                    'Fn::GetAtt': ['Domain66AC69E0', 'DomainEndpoint'],
+                  },
+                ],
+              ],
             },
             RoleArn: {
               'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
@@ -76,9 +82,15 @@ test('Default opensearch action', () => {
               'Fn::GetAtt': ['Domain66AC69E0', 'Arn'],
             },
             {
-              'Fn::Join': ['', [{
-                'Fn::GetAtt': ['Domain66AC69E0', 'Arn'],
-              }, '/*']],
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': ['Domain66AC69E0', 'Arn'],
+                  },
+                  '/*',
+                ],
+              ],
             },
           ],
         },
@@ -86,9 +98,7 @@ test('Default opensearch action', () => {
       Version: '2012-10-17',
     },
     PolicyName: 'MyTopicRuleTopicRuleActionRoleDefaultPolicy54A701F7',
-    Roles: [
-      { Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' },
-    ],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
@@ -114,15 +124,13 @@ test('can set role', () => {
       id: 'id',
       index: 'index',
       type: 'type',
-    }),
+    })
   );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ OpenSearch: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
-      ],
+      Actions: [Match.objectLike({ OpenSearch: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } })],
     },
   });
 

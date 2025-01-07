@@ -49,4 +49,3 @@ test('returns undefined on error', () => {
   spawnSyncMock.mockRestore();
   getModuleVersionMock.mockRestore();
 });
-

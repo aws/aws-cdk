@@ -49,10 +49,7 @@ export class CloudAssembly {
   constructor(directory: string, loadOptions?: cxschema.LoadManifestOptions) {
     this.directory = directory;
 
-    this.manifest = cxschema.Manifest.loadAssemblyManifest(
-      path.join(directory, MANIFEST_FILE),
-      loadOptions
-    );
+    this.manifest = cxschema.Manifest.loadAssemblyManifest(path.join(directory, MANIFEST_FILE), loadOptions);
     this.version = this.manifest.version;
     this.artifacts = this.renderArtifacts(loadOptions?.topoSort ?? true);
     this.runtime = this.manifest.runtime || { libraries: {} };
@@ -189,9 +186,7 @@ export class CloudAssembly {
     if (trees.length === 0) {
       return undefined;
     } else if (trees.length > 1) {
-      throw new Error(
-        `Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`
-      );
+      throw new Error(`Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`);
     }
     const tree = trees[0];
 
@@ -347,10 +342,7 @@ export class CloudAssemblyBuilder {
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
     // this will result in an error "CDK Toolkit >= CLOUD_ASSEMBLY_VERSION is required in order to interact with this program."
-    fs.writeFileSync(
-      path.join(this.outdir, 'cdk.out'),
-      JSON.stringify({ version: manifest.version })
-    );
+    fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: manifest.version }));
 
     return new CloudAssembly(this.outdir);
   }

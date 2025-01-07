@@ -59,9 +59,11 @@ describe('KinesisFirehoseStream event target', () => {
 
     describe('with an explicit message', () => {
       beforeEach(() => {
-        rule.addTarget(new targets.KinesisFirehoseStream(stream, {
-          message: events.RuleTargetInput.fromText('fooBar'),
-        }));
+        rule.addTarget(
+          new targets.KinesisFirehoseStream(stream, {
+            message: events.RuleTargetInput.fromText('fooBar'),
+          })
+        );
       });
 
       test('sets the input', () => {

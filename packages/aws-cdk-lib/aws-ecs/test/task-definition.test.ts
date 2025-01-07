@@ -66,10 +66,7 @@ describe('task definition', () => {
               Action: 'iam:PassRole',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'TDTaskRoleC497AFFC',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'],
               },
             },
             {
@@ -113,16 +110,10 @@ describe('task definition', () => {
               Effect: 'Allow',
               Resource: [
                 {
-                  'Fn::GetAtt': [
-                    'TDTaskRoleC497AFFC',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'],
                 },
                 {
-                  'Fn::GetAtt': [
-                    'ExecutionRole605A040B',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'],
                 },
               ],
             },
@@ -147,12 +138,10 @@ describe('task definition', () => {
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.AccountRootPrincipal(),
       });
-      const repo = ecr.Repository.fromRepositoryAttributes(
-        stack, 'Repo', {
-          repositoryArn: 'arn:aws:ecr:us-east-1:012345678901:repository/repo',
-          repositoryName: 'repo',
-        },
-      );
+      const repo = ecr.Repository.fromRepositoryAttributes(stack, 'Repo', {
+        repositoryArn: 'arn:aws:ecr:us-east-1:012345678901:repository/repo',
+        repositoryName: 'repo',
+      });
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -176,16 +165,10 @@ describe('task definition', () => {
               Effect: 'Allow',
               Resource: [
                 {
-                  'Fn::GetAtt': [
-                    'TDTaskRoleC497AFFC',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'],
                 },
                 {
-                  'Fn::GetAtt': [
-                    'TDExecutionRole88C96BCD',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['TDExecutionRole88C96BCD', 'Arn'],
                 },
               ],
             },
@@ -202,7 +185,7 @@ describe('task definition', () => {
       });
     });
 
-    test('A task definition where multiple containers have a port mapping with the same name throws an error', () =>{
+    test('A task definition where multiple containers have a port mapping with the same name throws an error', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -211,19 +194,23 @@ describe('task definition', () => {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         taskDefinition,
         memoryLimitMiB: 2048,
-        portMappings: [{
-          containerPort: 80,
-          name: 'api',
-        }],
+        portMappings: [
+          {
+            containerPort: 80,
+            name: 'api',
+          },
+        ],
       });
       new ecs.ContainerDefinition(stack, 'Container2', {
         taskDefinition,
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         memoryLimitMiB: 2048,
-        portMappings: [{
-          containerPort: 8080,
-          name: 'api',
-        }],
+        portMappings: [
+          {
+            containerPort: 8080,
+            name: 'api',
+          },
+        ],
       });
 
       // THEN
@@ -235,7 +222,7 @@ describe('task definition', () => {
     test('throws when multiple runtime volumes are set', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
@@ -270,7 +257,7 @@ describe('task definition', () => {
     test('throws when none of the container mounts the volume', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       taskDefinition.addVolume({
         name: 'nginx-vol',
         configuredAtLaunch: true,
@@ -283,7 +270,7 @@ describe('task definition', () => {
     });
 
     test('throws when none of the container mount the volume using ServiceManagedVolume', () => {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const ebsRole = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
@@ -299,12 +286,14 @@ describe('task definition', () => {
           size: cdk.Size.gibibytes(3),
           volumeType: EbsDeviceVolumeType.GP3,
           fileSystemType: ecs.FileSystemType.XFS,
-          tagSpecifications: [{
-            tags: {
-              purpose: 'production',
+          tagSpecifications: [
+            {
+              tags: {
+                purpose: 'production',
+              },
+              propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
             },
-            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
-          }],
+          ],
         },
       });
       taskDefinition.addVolume(serviceManagedVolume);
@@ -332,12 +321,14 @@ describe('task definition', () => {
           size: cdk.Size.gibibytes(3),
           volumeType: EbsDeviceVolumeType.GP3,
           fileSystemType: ecs.FileSystemType.XFS,
-          tagSpecifications: [{
-            tags: {
-              purpose: 'production',
+          tagSpecifications: [
+            {
+              tags: {
+                purpose: 'production',
+              },
+              propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
             },
-            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
-          }],
+          ],
         },
       });
       volume1.mountIn(containerDef, {
@@ -352,12 +343,14 @@ describe('task definition', () => {
           size: cdk.Size.gibibytes(3),
           volumeType: EbsDeviceVolumeType.GP3,
           fileSystemType: ecs.FileSystemType.XFS,
-          tagSpecifications: [{
-            tags: {
-              purpose: 'production',
+          tagSpecifications: [
+            {
+              tags: {
+                purpose: 'production',
+              },
+              propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
             },
-            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
-          }],
+          ],
         },
       });
       volume2.mountIn(containerDef, {
@@ -380,12 +373,10 @@ describe('task definition', () => {
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.AccountRootPrincipal(),
       });
-      const repo = ecr.Repository.fromRepositoryAttributes(
-        stack, 'Repo', {
-          repositoryArn: 'arn:aws:ecr:us-east-1:012345678901:repository/repo',
-          repositoryName: 'repo',
-        },
-      );
+      const repo = ecr.Repository.fromRepositoryAttributes(stack, 'Repo', {
+        repositoryArn: 'arn:aws:ecr:us-east-1:012345678901:repository/repo',
+        repositoryName: 'repo',
+      });
       const taskDef = new ecs.TaskDefinition(stack, 'TD', {
         cpu: '512',
         memoryMiB: '512',
@@ -397,24 +388,28 @@ describe('task definition', () => {
       taskDef.addContainer('ECRContainer', {
         image: ecs.ContainerImage.fromEcrRepository(repo),
         memoryLimitMiB: 2048,
-        ulimits: [{
-          hardLimit: 128,
-          name: ecs.UlimitName.RSS,
-          softLimit: 128,
-        }],
+        ulimits: [
+          {
+            hardLimit: 128,
+            name: ecs.UlimitName.RSS,
+            softLimit: 128,
+          },
+        ],
       });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [{
-          Ulimits: [
-            {
-              HardLimit: 128,
-              Name: 'rss',
-              SoftLimit: 128,
-            },
-          ],
-        }],
+        ContainerDefinitions: [
+          {
+            Ulimits: [
+              {
+                HardLimit: 128,
+                Name: 'rss',
+                SoftLimit: 128,
+              },
+            ],
+          },
+        ],
       });
     });
 
@@ -436,7 +431,6 @@ describe('task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Memory: '512',
       });
-
     });
 
     test('A task definition where task-level memory, container-level memory and memoryReservation are not defined throws an error', () => {
@@ -455,7 +449,9 @@ describe('task definition', () => {
       // THEN
       expect(() => {
         Template.fromStack(stack);
-      }).toThrow("ECS Container Container must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified");
+      }).toThrow(
+        "ECS Container Container must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified"
+      );
     });
   });
 
@@ -472,7 +468,6 @@ describe('task definition', () => {
       expect(taskDefinition.taskDefinitionArn).toEqual(taskDefinitionArn);
       expect(taskDefinition.compatibility).toEqual(ecs.Compatibility.EC2_AND_FARGATE);
       expect(taskDefinition.executionRole).toEqual(undefined);
-
     });
 
     test('can import a Task Definition using attributes', () => {
@@ -503,7 +498,6 @@ describe('task definition', () => {
       expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
-
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
@@ -525,9 +519,10 @@ describe('task definition', () => {
       // THEN
       expect(() => {
         taskDefinition.networkMode;
-      }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
-        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
+      }).toThrow(
+        'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+          "Add the 'networkMode' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+      );
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
@@ -547,9 +542,10 @@ describe('task definition', () => {
       // THEN
       expect(() => {
         taskDefinition.taskRole;
-      }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
+      }).toThrow(
+        'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+          "Add the 'taskRole' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+      );
     });
   });
 

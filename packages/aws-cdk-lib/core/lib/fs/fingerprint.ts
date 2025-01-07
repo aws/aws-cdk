@@ -62,11 +62,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
 
   return hash.digest('hex');
 
-  function _processFileOrDirectory(
-    symbolicPath: string,
-    isRootDir: boolean = false,
-    realPath = symbolicPath
-  ) {
+  function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
     if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
       return;
     }

@@ -41,10 +41,7 @@ test('use InterfaceVpcEndpoint as record target', () => {
                 'Fn::Select': [
                   0,
                   {
-                    'Fn::GetAtt': [
-                      'InterfaceEndpoint12DE6E71',
-                      'DnsEntries',
-                    ],
+                    'Fn::GetAtt': ['InterfaceEndpoint12DE6E71', 'DnsEntries'],
                   },
                 ],
               },
@@ -62,10 +59,7 @@ test('use InterfaceVpcEndpoint as record target', () => {
                 'Fn::Select': [
                   0,
                   {
-                    'Fn::GetAtt': [
-                      'InterfaceEndpoint12DE6E71',
-                      'DnsEntries',
-                    ],
+                    'Fn::GetAtt': ['InterfaceEndpoint12DE6E71', 'DnsEntries'],
                   },
                 ],
               },

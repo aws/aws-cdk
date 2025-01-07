@@ -27,10 +27,7 @@ export abstract class ContainerImage {
   /**
    * Reference an image in an ECR repository
    */
-  public static fromEcrRepository(
-    repository: ecr.IRepository,
-    tag: string = 'latest'
-  ): ContainerImage {
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): ContainerImage {
     return new EcrImage(repository, tag);
   }
 
@@ -39,10 +36,7 @@ export abstract class ContainerImage {
    * @param directory The directory where the Dockerfile is stored
    * @param options The options to further configure the selected image
    */
-  public static fromAsset(
-    directory: string,
-    options: assets.DockerImageAssetOptions = {}
-  ): ContainerImage {
+  public static fromAsset(directory: string, options: assets.DockerImageAssetOptions = {}): ContainerImage {
     return new AssetImage(directory, options);
   }
 
@@ -113,8 +107,7 @@ class DlcEcrImage extends ContainerImage {
   }
 
   public bind(scope: Construct, model: Model): ContainerImageConfig {
-    const accountId =
-      this.accountId ?? Stack.of(scope).regionalFact(FactName.DLC_REPOSITORY_ACCOUNT);
+    const accountId = this.accountId ?? Stack.of(scope).regionalFact(FactName.DLC_REPOSITORY_ACCOUNT);
 
     const repository = ecr.Repository.fromRepositoryAttributes(scope, 'DlcRepository', {
       repositoryName: this.repositoryName,

@@ -1,10 +1,5 @@
 import { Construct } from 'constructs';
-import {
-  Ec2Service,
-  Ec2TaskDefinition,
-  PlacementConstraint,
-  PlacementStrategy,
-} from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
@@ -16,8 +11,7 @@ import {
 /**
  * The properties for the NetworkMultipleTargetGroupsEc2Service service.
  */
-export interface NetworkMultipleTargetGroupsEc2ServiceProps
-  extends NetworkMultipleTargetGroupsServiceBaseProps {
+export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMultipleTargetGroupsServiceBaseProps {
   /**
    * The task definition to use for tasks in the service. Only one of TaskDefinition or TaskImageOptions must be specified.
    *
@@ -103,11 +97,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsEc2Service class.
    */
-  constructor(
-    scope: Construct,
-    id: string,
-    props: NetworkMultipleTargetGroupsEc2ServiceProps = {}
-  ) {
+  constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsEc2ServiceProps = {}) {
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
@@ -164,9 +154,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
       const containerPort = this.taskDefinition.defaultContainer.portMappings[0].containerPort;
 
       if (!containerPort) {
-        throw new Error(
-          'The first port mapping added to the default container must expose a single port'
-        );
+        throw new Error('The first port mapping added to the default container must expose a single port');
       }
 
       this.targetGroup = this.listener.addTargets('ECS', {

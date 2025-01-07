@@ -31,13 +31,8 @@ describe('lambda + vpc', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: {
-          SecurityGroupIds: [
-            { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
-          ],
-          SubnetIds: [
-            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-          ],
+          SecurityGroupIds: [{ 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] }],
+          SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
         },
       });
     });
@@ -54,13 +49,8 @@ describe('lambda + vpc', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: {
-          SecurityGroupIds: [
-            { 'Fn::GetAtt': ['CustomSecurityGroupX6C7F3A78', 'GroupId'] },
-          ],
-          SubnetIds: [
-            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-          ],
+          SecurityGroupIds: [{ 'Fn::GetAtt': ['CustomSecurityGroupX6C7F3A78', 'GroupId'] }],
+          SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
         },
       });
     });
@@ -84,10 +74,7 @@ describe('lambda + vpc', () => {
             { 'Fn::GetAtt': ['CustomSecurityGroupA267F62DE', 'GroupId'] },
             { 'Fn::GetAtt': ['CustomSecurityGroupB1118D0D5', 'GroupId'] },
           ],
-          SubnetIds: [
-            { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-            { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-          ],
+          SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
         },
       });
     });
@@ -155,10 +142,7 @@ describe('lambda + vpc', () => {
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
         DestinationSecurityGroupId: {
-          'Fn::GetAtt': [
-            'SomeSecurityGroupEF219AD6',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'],
         },
         FromPort: 0,
         ToPort: 65535,
@@ -170,10 +154,7 @@ describe('lambda + vpc', () => {
         Description: 'Lambda can call connectable',
         FromPort: 0,
         GroupId: {
-          'Fn::GetAtt': [
-            'SomeSecurityGroupEF219AD6',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'],
         },
         SourceSecurityGroupId: {
           'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1',
@@ -216,13 +197,8 @@ describe('lambda + vpc', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
-        SecurityGroupIds: [
-          { 'Fn::GetAtt': ['PublicLambdaSecurityGroup61D896FD', 'GroupId'] },
-        ],
-        SubnetIds: [
-          { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-          { Ref: 'VPCPublicSubnet2Subnet74179F39' },
-        ],
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['PublicLambdaSecurityGroup61D896FD', 'GroupId'] }],
+        SubnetIds: [{ Ref: 'VPCPublicSubnet1SubnetB4246D30' }, { Ref: 'VPCPublicSubnet2Subnet74179F39' }],
       },
     });
   });
@@ -245,13 +221,8 @@ describe('lambda + vpc', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
-        SecurityGroupIds: [
-          { 'Fn::GetAtt': ['PrivateLambdaSecurityGroupF53C8342', 'GroupId'] },
-        ],
-        SubnetIds: [
-          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-        ],
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['PrivateLambdaSecurityGroupF53C8342', 'GroupId'] }],
+        SubnetIds: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
       },
     });
   });
@@ -281,13 +252,8 @@ describe('lambda + vpc', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
-        SecurityGroupIds: [
-          { 'Fn::GetAtt': ['IsolatedLambdaSecurityGroupCE25B6A9', 'GroupId'] },
-        ],
-        SubnetIds: [
-          { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
-          { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' },
-        ],
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['IsolatedLambdaSecurityGroupCE25B6A9', 'GroupId'] }],
+        SubnetIds: [{ Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' }, { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' }],
       },
     });
   });
@@ -336,11 +302,10 @@ describe('lambda + vpc', () => {
         runtime: lambda.Runtime.NODEJS_LATEST,
         vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
       });
-    }).toThrow('Cannot configure \'vpcSubnets\' without configuring a VPC');
+    }).toThrow("Cannot configure 'vpcSubnets' without configuring a VPC");
   });
 });
 
 class SomethingConnectable implements ec2.IConnectable {
-  constructor(public readonly connections: ec2.Connections) {
-  }
+  constructor(public readonly connections: ec2.Connections) {}
 }

@@ -255,11 +255,7 @@ export class Certificate extends CertificateBase implements ICertificate {
   /**
    * Import a certificate
    */
-  public static fromCertificateArn(
-    scope: Construct,
-    id: string,
-    certificateArn: string
-  ): ICertificate {
+  public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
     class Import extends CertificateBase {
       public readonly certificateArn = certificateArn;
     }
@@ -296,9 +292,7 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
-      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled
-        ? 'ENABLED'
-        : 'DISABLED';
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
     }
 
     const cert = new CfnCertificate(this, 'Resource', {
@@ -345,8 +339,7 @@ function renderDomainValidation(
   switch (validation.method) {
     case ValidationMethod.DNS:
       for (const domainName of getUniqueDnsDomainNames(domainNames)) {
-        const hostedZone =
-          validation.props.hostedZones?.[domainName] ?? validation.props.hostedZone;
+        const hostedZone = validation.props.hostedZones?.[domainName] ?? validation.props.hostedZone;
         if (hostedZone) {
           domainValidation.push({ domainName, hostedZoneId: hostedZone.hostedZoneId });
         }
@@ -356,9 +349,7 @@ function renderDomainValidation(
       for (const domainName of domainNames) {
         const validationDomain = validation.props.validationDomains?.[domainName];
         if (!validationDomain && Token.isUnresolved(domainName)) {
-          throw new Error(
-            "When using Tokens for domain names, 'validationDomains' needs to be supplied"
-          );
+          throw new Error("When using Tokens for domain names, 'validationDomains' needs to be supplied");
         }
         domainValidation.push({
           domainName,
@@ -380,10 +371,6 @@ function renderDomainValidation(
  */
 function getUniqueDnsDomainNames(domainNames: string[]) {
   return domainNames.filter((domain) => {
-    return (
-      Token.isUnresolved(domain) ||
-      !domain.startsWith('*.') ||
-      !domainNames.includes(domain.replace('*.', ''))
-    );
+    return Token.isUnresolved(domain) || !domain.startsWith('*.') || !domainNames.includes(domain.replace('*.', ''));
   });
 }

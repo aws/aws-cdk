@@ -64,11 +64,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   /**
    * Constructs a new instance of the ApplicationLoadBalancedFargateService class.
    */
-  constructor(
-    scope: Construct,
-    id: string,
-    props: ApplicationLoadBalancedFargateServiceProps = {}
-  ) {
+  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedFargateServiceProps = {}) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp ?? false;

@@ -5,7 +5,9 @@ import { ConstructTree } from '../../lib/validation/private/construct-tree';
 import { ReportTrace } from '../../lib/validation/private/trace';
 
 beforeEach(() => {
-  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  jest.spyOn(console, 'log').mockImplementation(() => {
+    return true;
+  });
 });
 
 afterEach(() => {

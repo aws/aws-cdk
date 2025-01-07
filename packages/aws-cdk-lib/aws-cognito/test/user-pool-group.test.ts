@@ -47,24 +47,35 @@ describe('User Pool Group', () => {
   });
 
   test('throws when description length is invalid', () => {
-    expect(() => new UserPoolGroup(stack, 'UserPoolGroup', {
-      userPool,
-      description: 'a'.repeat(2049),
-    })).toThrow('`description` must be between 0 and 2048 characters. Received: 2049 characters');
+    expect(
+      () =>
+        new UserPoolGroup(stack, 'UserPoolGroup', {
+          userPool,
+          description: 'a'.repeat(2049),
+        })
+    ).toThrow('`description` must be between 0 and 2048 characters. Received: 2049 characters');
   });
 
   test.each([-1, 2 ** 31])('throws when precedence is invalid, precedence: %s', (precedence) => {
-    expect(() => new UserPoolGroup(stack, 'UserPoolGroup', {
-      userPool,
-      precedence,
-    })).toThrow(`\`precedence\` must be between 0 and 2^31-1. Received: ${precedence}`);
+    expect(
+      () =>
+        new UserPoolGroup(stack, 'UserPoolGroup', {
+          userPool,
+          precedence,
+        })
+    ).toThrow(`\`precedence\` must be between 0 and 2^31-1. Received: ${precedence}`);
   });
 
-  test.each(['', 'a'.repeat(149), 'include space name'])('throws when groupName is invalid, groupName: %s', (groupName) => {
-    expect(() => new UserPoolGroup(stack, 'UserPoolGroup', {
-      userPool,
-      groupName,
-    })).toThrow('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.');
-  });
-
+  test.each(['', 'a'.repeat(149), 'include space name'])(
+    'throws when groupName is invalid, groupName: %s',
+    (groupName) => {
+      expect(
+        () =>
+          new UserPoolGroup(stack, 'UserPoolGroup', {
+            userPool,
+            groupName,
+          })
+      ).toThrow('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.');
+    }
+  );
 });

@@ -5,19 +5,13 @@ const redshift = new Redshift({});
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent): Promise<void> {
   if (event.RequestType !== 'Delete') {
-    return rebootClusterIfRequired(
-      event.ResourceProperties?.ClusterId,
-      event.ResourceProperties?.ParameterGroupName
-    );
+    return rebootClusterIfRequired(event.ResourceProperties?.ClusterId, event.ResourceProperties?.ParameterGroupName);
   } else {
     return;
   }
 }
 
-async function rebootClusterIfRequired(
-  clusterId: string,
-  parameterGroupName: string
-): Promise<void> {
+async function rebootClusterIfRequired(clusterId: string, parameterGroupName: string): Promise<void> {
   return executeActionForStatus(await getApplyStatus());
 
   // https://docs.aws.amazon.com/redshift/latest/APIReference/API_ClusterParameterStatus.html
@@ -43,9 +37,7 @@ async function rebootClusterIfRequired(
   async function getApplyStatus(): Promise<string> {
     const clusterDetails = await redshift.describeClusters({ ClusterIdentifier: clusterId });
     if (clusterDetails.Clusters?.[0].ClusterParameterGroups === undefined) {
-      throw new Error(
-        `Unable to find any Parameter Groups associated with ClusterId "${clusterId}".`
-      );
+      throw new Error(`Unable to find any Parameter Groups associated with ClusterId "${clusterId}".`);
     }
     for (const group of clusterDetails.Clusters?.[0].ClusterParameterGroups) {
       if (group.ParameterGroupName === parameterGroupName) {

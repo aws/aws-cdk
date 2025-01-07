@@ -1,7 +1,14 @@
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { DefaultTokenResolver, Duration, Stack, StringConcat, Tokenization } from '../../core';
-import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment, JobStateTimeLimitActionsAction, JobStateTimeLimitActionsReason, JobStateTimeLimitActionsState } from '../lib';
+import {
+  FairshareSchedulingPolicy,
+  JobQueue,
+  ManagedEc2EcsComputeEnvironment,
+  JobStateTimeLimitActionsAction,
+  JobStateTimeLimitActionsReason,
+  JobStateTimeLimitActionsState,
+} from '../lib';
 
 test('JobQueue respects computeEnvironments', () => {
   // GIVEN
@@ -10,21 +17,25 @@ test('JobQueue respects computeEnvironments', () => {
 
   // WHEN
   new JobQueue(stack, 'joBBQ', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     priority: 10,
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
-    ComputeEnvironmentOrder: [{
-      ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
-      Order: 1,
-    }],
+    ComputeEnvironmentOrder: [
+      {
+        ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
+        Order: 1,
+      },
+    ],
     Priority: 10,
     State: 'ENABLED',
   });
@@ -37,22 +48,26 @@ test('JobQueue respects enabled', () => {
 
   // WHEN
   new JobQueue(stack, 'joBBQ', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     priority: 10,
     enabled: false,
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
-    ComputeEnvironmentOrder: [{
-      ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
-      Order: 1,
-    }],
+    ComputeEnvironmentOrder: [
+      {
+        ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
+        Order: 1,
+      },
+    ],
     Priority: 10,
     State: 'DISABLED',
   });
@@ -65,22 +80,26 @@ test('JobQueue respects name', () => {
 
   // WHEN
   new JobQueue(stack, 'joBBQ', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     priority: 10,
     jobQueueName: 'JoBBQ',
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
-    ComputeEnvironmentOrder: [{
-      ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
-      Order: 1,
-    }],
+    ComputeEnvironmentOrder: [
+      {
+        ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
+        Order: 1,
+      },
+    ],
     Priority: 10,
     JobQueueName: 'JoBBQ',
   });
@@ -93,21 +112,25 @@ test('JobQueue name is parsed from arn', () => {
 
   // WHEN
   const queue = new JobQueue(stack, 'joBBQ', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     priority: 10,
     jobQueueName: 'JoBBQ',
   });
 
   // THEN
-  expect(Tokenization.resolve(queue.jobQueueName, {
-    scope: stack,
-    resolver: new DefaultTokenResolver(new StringConcat()),
-  })).toEqual({
+  expect(
+    Tokenization.resolve(queue.jobQueueName, {
+      scope: stack,
+      resolver: new DefaultTokenResolver(new StringConcat()),
+    })
+  ).toEqual({
     'Fn::Select': [
       1,
       {
@@ -120,10 +143,7 @@ test('JobQueue name is parsed from arn', () => {
                 'Fn::Split': [
                   ':',
                   {
-                    'Fn::GetAtt': [
-                      'joBBQ9FD52DAF',
-                      'JobQueueArn',
-                    ],
+                    'Fn::GetAtt': ['joBBQ9FD52DAF', 'JobQueueArn'],
                   },
                 ],
               },
@@ -142,22 +162,26 @@ test('JobQueue respects schedulingPolicy', () => {
 
   // WHEN
   new JobQueue(stack, 'JobQueue', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     priority: 10,
     schedulingPolicy: new FairshareSchedulingPolicy(stack, 'FairsharePolicy'),
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
-    ComputeEnvironmentOrder: [{
-      ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
-      Order: 1,
-    }],
+    ComputeEnvironmentOrder: [
+      {
+        ComputeEnvironment: { 'Fn::GetAtt': ['CE1BFE03A1', 'ComputeEnvironmentArn'] },
+        Order: 1,
+      },
+    ],
     Priority: 10,
     SchedulingPolicyArn: {
       'Fn::GetAtt': ['FairsharePolicyA0C549BE', 'Arn'],
@@ -172,12 +196,14 @@ test('JobQueue respects addComputeEnvironment', () => {
 
   // WHEN
   const queue = new JobQueue(stack, 'JobQueue', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'FirstCE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'FirstCE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     priority: 10,
     schedulingPolicy: new FairshareSchedulingPolicy(stack, 'FairsharePolicy'),
   });
@@ -186,7 +212,7 @@ test('JobQueue respects addComputeEnvironment', () => {
     new ManagedEc2EcsComputeEnvironment(stack, 'SecondCE', {
       vpc,
     }),
-    2,
+    2
   );
 
   // THEN
@@ -213,8 +239,11 @@ test('can be imported from ARN', () => {
   const stack = new Stack();
 
   // WHEN
-  const queue = JobQueue.fromJobQueueArn(stack, 'importedJobQueue',
-    'arn:aws:batch:us-east-1:123456789012:job-queue/importedJobQueue');
+  const queue = JobQueue.fromJobQueueArn(
+    stack,
+    'importedJobQueue',
+    'arn:aws:batch:us-east-1:123456789012:job-queue/importedJobQueue'
+  );
 
   // THEN
   expect(queue.jobQueueArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-queue/importedJobQueue');
@@ -227,12 +256,14 @@ test('JobQueue throws when the same order is assigned to multiple ComputeEnviron
 
   // WHEN
   const joBBQ = new JobQueue(stack, 'joBBQ', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'FirstCE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'FirstCE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     priority: 10,
   });
 
@@ -240,7 +271,7 @@ test('JobQueue throws when the same order is assigned to multiple ComputeEnviron
     new ManagedEc2EcsComputeEnvironment(stack, 'SecondCE', {
       vpc,
     }),
-    1,
+    1
   );
 
   expect(() => {
@@ -267,12 +298,14 @@ test('JobQueue with JobStateTimeLimitActions', () => {
 
   // WHEN
   new JobQueue(stack, 'joBBQ', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     jobStateTimeLimitActions: [
       {
         action: JobStateTimeLimitActionsAction.CANCEL,
@@ -321,16 +354,19 @@ test('JobQueue with JobStateTimeLimitActions', () => {
 test('JobQueue with JobStateTimeLimitActions throws when maxTime has an illegal value', () => {
   const stack = new Stack();
 
-  expect(() => new JobQueue(stack, 'joBBQ', {
-    jobStateTimeLimitActions: [
-      {
-        action: JobStateTimeLimitActionsAction.CANCEL,
-        maxTime: Duration.seconds(90000),
-        reason: JobStateTimeLimitActionsReason.COMPUTE_ENVIRONMENT_MAX_RESOURCE,
-        state: JobStateTimeLimitActionsState.RUNNABLE,
-      },
-    ],
-  })).toThrow('maxTime must be between 600 and 86400 seconds, got 90000 seconds at jobStateTimeLimitActions[0]');
+  expect(
+    () =>
+      new JobQueue(stack, 'joBBQ', {
+        jobStateTimeLimitActions: [
+          {
+            action: JobStateTimeLimitActionsAction.CANCEL,
+            maxTime: Duration.seconds(90000),
+            reason: JobStateTimeLimitActionsReason.COMPUTE_ENVIRONMENT_MAX_RESOURCE,
+            state: JobStateTimeLimitActionsState.RUNNABLE,
+          },
+        ],
+      })
+  ).toThrow('maxTime must be between 600 and 86400 seconds, got 90000 seconds at jobStateTimeLimitActions[0]');
 });
 
 test('JobQueue with an empty array of JobStateTimeLimitActions', () => {
@@ -340,12 +376,14 @@ test('JobQueue with an empty array of JobStateTimeLimitActions', () => {
 
   // WHEN
   new JobQueue(stack, 'joBBQ', {
-    computeEnvironments: [{
-      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
-        vpc,
-      }),
-      order: 1,
-    }],
+    computeEnvironments: [
+      {
+        computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+          vpc,
+        }),
+        order: 1,
+      },
+    ],
     jobStateTimeLimitActions: [],
   });
 

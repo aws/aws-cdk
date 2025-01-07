@@ -9,26 +9,13 @@ import {
 } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
-import {
-  MergeType,
-  addSourceApiAutoMergePermission,
-  addSourceGraphQLPermission,
-} from './source-api-association';
+import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import {
-  CfnResource,
-  Duration,
-  Expiration,
-  FeatureFlags,
-  IResolvable,
-  Lazy,
-  Stack,
-  Token,
-} from '../../core';
+import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -536,11 +523,7 @@ export class GraphqlApi extends GraphqlApiBase {
    * @param id id
    * @param attrs GraphQL API Attributes of an API
    */
-  public static fromGraphqlApiAttributes(
-    scope: Construct,
-    id: string,
-    attrs: GraphqlApiAttributes
-  ): IGraphqlApi {
+  public static fromGraphqlApiAttributes(scope: Construct, id: string, attrs: GraphqlApiAttributes): IGraphqlApi {
     const arn =
       attrs.graphqlApiArn ??
       Stack.of(scope).formatArn({
@@ -651,16 +634,10 @@ export class GraphqlApi extends GraphqlApiBase {
     if ((props.schema !== undefined) === (props.definition !== undefined)) {
       throw new Error('You cannot specify both properties schema and definition.');
     }
-    if (
-      props.queryDepthLimit !== undefined &&
-      (props.queryDepthLimit < 0 || props.queryDepthLimit > 75)
-    ) {
+    if (props.queryDepthLimit !== undefined && (props.queryDepthLimit < 0 || props.queryDepthLimit > 75)) {
       throw new Error('You must specify a query depth limit between 0 and 75.');
     }
-    if (
-      props.resolverCountLimit !== undefined &&
-      (props.resolverCountLimit < 0 || props.resolverCountLimit > 10000)
-    ) {
+    if (props.resolverCountLimit !== undefined && (props.resolverCountLimit < 0 || props.resolverCountLimit > 10000)) {
       throw new Error('You must specify a resolver count limit between 0 and 10000.');
     }
     if (
@@ -747,9 +724,7 @@ export class GraphqlApi extends GraphqlApiBase {
         return mode.authorizationType === AuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
       })?.lambdaAuthorizerConfig;
 
-      if (
-        FeatureFlags.of(this).isEnabled(cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION)
-      ) {
+      if (FeatureFlags.of(this).isEnabled(cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION)) {
         config?.handler.addPermission(`${id}-appsync`, {
           principal: new ServicePrincipal('appsync.amazonaws.com'),
           action: 'lambda:InvokeFunction',
@@ -785,27 +760,19 @@ export class GraphqlApi extends GraphqlApiBase {
       // This is protected by a feature flag because if there is an existing source api association that used the api id,
       // updating it to use ARN as identifier leads to a resource replacement. ARN is recommended going forward because it allows support
       // for both same account and cross account use cases.
-      if (
-        FeatureFlags.of(this).isEnabled(
-          cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION
-        )
-      ) {
+      if (FeatureFlags.of(this).isEnabled(cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION)) {
         sourceApiIdentifier = sourceApiConfig.sourceApi.arn;
         mergedApiIdentifier = this.arn;
       }
 
-      const association = new CfnSourceApiAssociation(
-        this,
-        `${sourceApiConfig.sourceApi.node.id}Association`,
-        {
-          sourceApiIdentifier: sourceApiIdentifier,
-          mergedApiIdentifier: mergedApiIdentifier,
-          sourceApiAssociationConfig: {
-            mergeType: mergeType,
-          },
-          description: sourceApiConfig.description,
-        }
-      );
+      const association = new CfnSourceApiAssociation(this, `${sourceApiConfig.sourceApi.node.id}Association`, {
+        sourceApiIdentifier: sourceApiIdentifier,
+        mergedApiIdentifier: mergedApiIdentifier,
+        sourceApiAssociationConfig: {
+          mergeType: mergeType,
+        },
+        description: sourceApiConfig.description,
+      });
 
       // Add dependency because the schema must be created first to create the source api association.
       sourceApiConfig.sourceApi.addSchemaDependency(association);
@@ -832,9 +799,7 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
-      throw new Error(
-        'You can only have a single AWS Lambda function configured to authorize your API.'
-      );
+      throw new Error('You can only have a single AWS Lambda function configured to authorize your API.');
     }
     modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
@@ -879,17 +844,13 @@ export class GraphqlApi extends GraphqlApiBase {
       throw new Error('Environment variables are not supported for merged APIs');
     }
     if (!Token.isUnresolved(key) && !/^[A-Za-z]+\w*$/.test(key)) {
-      throw new Error(
-        `Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`
-      );
+      throw new Error(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`);
     }
     if (!Token.isUnresolved(key) && (key.length < 2 || key.length > 64)) {
       throw new Error(`Key '${key}' must be between 2 and 64 characters long, got ${key.length}`);
     }
     if (!Token.isUnresolved(value) && value.length > 512) {
-      throw new Error(
-        `Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`
-      );
+      throw new Error(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
     }
 
     this.environmentVariables[key] = value;
@@ -905,9 +866,7 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private renderEnvironmentVariables() {
-    return Object.entries(this.environmentVariables).length > 0
-      ? this.environmentVariables
-      : undefined;
+    return Object.entries(this.environmentVariables).length > 0 ? this.environmentVariables : undefined;
   }
 
   private setupLogConfig(config?: LogConfig) {
@@ -916,9 +875,7 @@ export class GraphqlApi extends GraphqlApiBase {
       config.role?.roleArn ??
       new Role(this, 'ApiLogsRole', {
         assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-        managedPolicies: [
-          ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
-        ],
+        managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
       }).roleArn;
     const fieldLogLevel: FieldLogLevel = config.fieldLogLevel ?? FieldLogLevel.NONE;
     return {
@@ -974,10 +931,7 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private createAPIKey(config?: ApiKeyConfig) {
-    if (
-      config?.expires?.isBefore(Duration.days(1)) ||
-      config?.expires?.isAfter(Duration.days(365))
-    ) {
+    if (config?.expires?.isBefore(Duration.days(1)) || config?.expires?.isAfter(Duration.days(365))) {
       throw Error('API key expiration must be between 1 and 365 days.');
     }
     const expires = config?.expires ? config?.expires.toEpoch() : undefined;

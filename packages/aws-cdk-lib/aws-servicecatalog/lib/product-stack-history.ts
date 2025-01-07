@@ -73,14 +73,11 @@ export class ProductStackHistory extends Construct {
    * Retrieves a CloudFormationProductVersion from a previously deployed productVersionName.
    */
   public versionFromSnapshot(productVersionName: string): CloudFormationProductVersion {
-    const productStackSnapshotDirectory =
-      this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
+    const productStackSnapshotDirectory = this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
     const templateFileKey = `${Names.uniqueId(this)}.${this.props.productStack.artifactId}.${productVersionName}.product.template.json`;
     const templateFilePath = path.join(productStackSnapshotDirectory, templateFileKey);
     if (!fs.existsSync(templateFilePath)) {
-      throw new Error(
-        `Template ${templateFileKey} cannot be found in ${productStackSnapshotDirectory}`
-      );
+      throw new Error(`Template ${templateFileKey} cannot be found in ${productStackSnapshotDirectory}`);
     }
     return {
       cloudFormationTemplate: CloudFormationTemplate.fromAsset(templateFilePath),
@@ -95,8 +92,7 @@ export class ProductStackHistory extends Construct {
    * @internal
    */
   public _writeTemplateToSnapshot(cfn: string) {
-    const productStackSnapshotDirectory =
-      this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
+    const productStackSnapshotDirectory = this.props.directory || DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY;
     if (!fs.existsSync(productStackSnapshotDirectory)) {
       fs.mkdirSync(productStackSnapshotDirectory, { recursive: true });
     }

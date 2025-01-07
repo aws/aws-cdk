@@ -179,7 +179,9 @@ describe('IAM instance profiles', () => {
   test('cross-env instance profile ARNs include path', () => {
     // GIVEN
     const app = new App();
-    const instanceProfileStack = new Stack(app, 'instance-profile-stack', { env: { account: '123456789012', region: 'us-east-1' } });
+    const instanceProfileStack = new Stack(app, 'instance-profile-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
     const referencerStack = new Stack(app, 'referencer-stack', { env: { region: 'us-east-2' } });
     const role = new Role(instanceProfileStack, 'Role', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
@@ -222,7 +224,16 @@ describe('IAM instance profiles', () => {
 
     // THEN
     expect(stack.resolve(instanceProfile.instanceProfileArn)).toStrictEqual({
-      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':instance-profile/path/MyInstanceProfile']],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iam::',
+          { Ref: 'AWS::AccountId' },
+          ':instance-profile/path/MyInstanceProfile',
+        ],
+      ],
     });
   });
 
@@ -232,7 +243,11 @@ describe('IAM instance profiles', () => {
     const instanceProfileName = 'MyInstanceProfile';
 
     // WHEN
-    const instanceProfile = InstanceProfile.fromInstanceProfileArn(stack, 'InstanceProfile', `arn:aws:iam::account-id:instance-profile/${instanceProfileName}`);
+    const instanceProfile = InstanceProfile.fromInstanceProfileArn(
+      stack,
+      'InstanceProfile',
+      `arn:aws:iam::account-id:instance-profile/${instanceProfileName}`
+    );
 
     // THEN
     expect(stack.resolve(instanceProfile.instanceProfileName)).toStrictEqual(instanceProfileName);
@@ -243,7 +258,11 @@ describe('IAM instance profiles', () => {
     const stack = new Stack();
 
     // WHEN
-    const instanceProfile = InstanceProfile.fromInstanceProfileArn(stack, 'InstanceProfile', Token.asString({ Ref: 'ARN' }));
+    const instanceProfile = InstanceProfile.fromInstanceProfileArn(
+      stack,
+      'InstanceProfile',
+      Token.asString({ Ref: 'ARN' })
+    );
 
     // THEN
     expect(stack.resolve(instanceProfile.instanceProfileName)).toStrictEqual({
@@ -257,7 +276,11 @@ describe('IAM instance profiles', () => {
     const instanceProfileName = 'MyInstanceProfile';
 
     // WHEN
-    const instanceProfile = InstanceProfile.fromInstanceProfileArn(stack, 'InstanceProfile', `arn:aws:iam::account-id:instance-profile/path/${instanceProfileName}`);
+    const instanceProfile = InstanceProfile.fromInstanceProfileArn(
+      stack,
+      'InstanceProfile',
+      `arn:aws:iam::account-id:instance-profile/path/${instanceProfileName}`
+    );
 
     // THEN
     expect(stack.resolve(instanceProfile.instanceProfileName)).toStrictEqual(instanceProfileName);
@@ -269,7 +292,11 @@ describe('IAM instance profiles', () => {
     const instanceProfileName = 'MyInstanceProfile';
 
     // WHEN
-    const instanceProfile = InstanceProfile.fromInstanceProfileArn(stack, 'InstanceProfile', `arn:aws:iam::account-id:instance-profile/p/a/t/h/${instanceProfileName}`);
+    const instanceProfile = InstanceProfile.fromInstanceProfileArn(
+      stack,
+      'InstanceProfile',
+      `arn:aws:iam::account-id:instance-profile/p/a/t/h/${instanceProfileName}`
+    );
 
     // THEN
     expect(stack.resolve(instanceProfile.instanceProfileName)).toStrictEqual(instanceProfileName);
@@ -315,7 +342,11 @@ describe('IAM instance profiles', () => {
     const instanceProfileName = 'MyInstanceProfile';
 
     // WHEN
-    const instanceProfile = InstanceProfile.fromInstanceProfileArn(stack, 'InstanceProfile', `arn:aws:iam::account-id:instance-profile/path/${instanceProfileName}`);
+    const instanceProfile = InstanceProfile.fromInstanceProfileArn(
+      stack,
+      'InstanceProfile',
+      `arn:aws:iam::account-id:instance-profile/path/${instanceProfileName}`
+    );
 
     // THEN
     expect(stack.resolve(instanceProfile.instanceProfileName)).toStrictEqual(instanceProfileName);
@@ -327,7 +358,11 @@ describe('IAM instance profiles', () => {
     const instanceProfileName = 'MyInstanceProfile';
 
     // WHEN
-    const instanceProfile = InstanceProfile.fromInstanceProfileArn(stack, 'InstanceProfile', `arn:aws:iam::account-id:instance-profile/p/a/t/h/${instanceProfileName}`);
+    const instanceProfile = InstanceProfile.fromInstanceProfileArn(
+      stack,
+      'InstanceProfile',
+      `arn:aws:iam::account-id:instance-profile/p/a/t/h/${instanceProfileName}`
+    );
 
     // THEN
     expect(stack.resolve(instanceProfile.instanceProfileName)).toStrictEqual(instanceProfileName);

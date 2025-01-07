@@ -4,28 +4,18 @@ test('can map service name to SDK v3 client name', () => {
   expect(new ApiCall('S3', 'Bla').v3PackageName).toBe('@aws-sdk/client-s3');
 });
 
-test.each([
-  'api-gateway',
-  '@aws-sdk/client-api-gateway',
-  'APIGateway',
-  'apigateway',
-])('service %p is recognized', (service) => {
-  expect(new ApiCall(service, 'Bla').v3PackageName).toEqual('@aws-sdk/client-api-gateway');
-});
+test.each(['api-gateway', '@aws-sdk/client-api-gateway', 'APIGateway', 'apigateway'])(
+  'service %p is recognized',
+  (service) => {
+    expect(new ApiCall(service, 'Bla').v3PackageName).toEqual('@aws-sdk/client-api-gateway');
+  }
+);
 
-test.each([
-  'GetRestApi',
-  'getRestApi',
-  'GetRestApiCommand',
-])('action %p is recognized', (action) => {
+test.each(['GetRestApi', 'getRestApi', 'GetRestApiCommand'])('action %p is recognized', (action) => {
   expect(new ApiCall('api-gateway', action).action).toEqual('GetRestApi');
 });
 
-test.each([
-  'ExecuteCommand',
-  'executeCommand',
-  'ExecuteCommandCommand',
-])('ECS action %p is recognized', (action) => {
+test.each(['ExecuteCommand', 'executeCommand', 'ExecuteCommandCommand'])('ECS action %p is recognized', (action) => {
   expect(new ApiCall('ecs', action).action).toEqual('ExecuteCommand');
 });
 
@@ -80,18 +70,17 @@ describe('helpers for SDKv3', () => {
 });
 
 test('flatten', () => {
-  expect(flatten({
-    foo: 'foo',
-    bar: {
+  expect(
+    flatten({
       foo: 'foo',
-      bar: 'bar',
-    },
-    baz: [
-      { foo: 'foo' },
-      { bar: 'bar' },
-    ],
-  })).toEqual({
-    'foo': 'foo',
+      bar: {
+        foo: 'foo',
+        bar: 'bar',
+      },
+      baz: [{ foo: 'foo' }, { bar: 'bar' }],
+    })
+  ).toEqual({
+    foo: 'foo',
     'bar.foo': 'foo',
     'bar.bar': 'bar',
     'baz.0.foo': 'foo',
@@ -99,15 +88,16 @@ test('flatten', () => {
   });
 });
 
-test.each([
-  { transformToString: () => 'foo' },
-  Buffer.from('foo'),
-  new TextEncoder().encode('foo'),
-])('coerce %p', async (fooValue) => {
-  expect(await coerceSdkv3Response({
-    foo: fooValue,
-  })).toEqual({ foo: 'foo' });
-});
+test.each([{ transformToString: () => 'foo' }, Buffer.from('foo'), new TextEncoder().encode('foo')])(
+  'coerce %p',
+  async (fooValue) => {
+    expect(
+      await coerceSdkv3Response({
+        foo: fooValue,
+      })
+    ).toEqual({ foo: 'foo' });
+  }
+);
 
 function loadV3ClientPackage(service: string) {
   const apiCall = new ApiCall(service, 'Bla');

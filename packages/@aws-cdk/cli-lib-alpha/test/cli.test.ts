@@ -13,7 +13,9 @@ jest.mock('aws-cdk/lib', () => {
     exec: jest.fn(original.exec),
   };
 });
-const stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
+const stdoutMock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {
+  return true;
+});
 
 beforeEach(() => {
   stdoutMock.mockClear();
@@ -45,10 +47,7 @@ describe('fromCloudAssemblyDirectoryProducer', () => {
     await cdk.list();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['ls', '--all'],
-      expect.anything(),
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['ls', '--all'], expect.anything());
     expect(stdoutMock.mock.calls[0][0]).toContain('Stack1');
     expect(stdoutMock.mock.calls[1][0]).toContain('Stack2');
   });
@@ -78,9 +77,7 @@ describe('fromDirectory', () => {
     await cdk.list();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      ['ls', '--all'],
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(['ls', '--all']);
     expect(stdoutMock.mock.calls[0][0]).toContain('AppStack1');
     expect(stdoutMock.mock.calls[1][0]).toContain('AppStack2');
   });
@@ -97,13 +94,14 @@ describe('fromDirectory with config', () => {
     await cdk.list();
 
     // THEN
-    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
-      [
-        'ls', '--all',
-        '--app', 'node -r ts-node/register app.ts',
-        '--output', 'cdk.out',
-      ],
-    );
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith([
+      'ls',
+      '--all',
+      '--app',
+      'node -r ts-node/register app.ts',
+      '--output',
+      'cdk.out',
+    ]);
     expect(stdoutMock.mock.calls[0][0]).toContain('AppStack1');
     expect(stdoutMock.mock.calls[1][0]).toContain('AppStack2');
   });

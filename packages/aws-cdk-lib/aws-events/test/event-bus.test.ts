@@ -120,8 +120,12 @@ describe('event bus', () => {
     const importEB = EventBus.fromEventBusArn(stack, 'ImportBus', eventBus.eventBusArn);
 
     // WHEN
-    expect(stack.resolve(importEB.env.account)).toEqual({ 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
-    expect(stack.resolve(importEB.env.region)).toEqual({ 'Fn::Select': [3, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
+    expect(stack.resolve(importEB.env.account)).toEqual({
+      'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }],
+    });
+    expect(stack.resolve(importEB.env.region)).toEqual({
+      'Fn::Select': [3, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }],
+    });
   });
 
   test('cross account imported event bus has right resource env', () => {
@@ -190,9 +194,10 @@ describe('event bus', () => {
     const stack = new Stack();
 
     // WHEN
-    const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventBusName: 'default',
-    });
+    const createInvalidBus = () =>
+      new EventBus(stack, 'Bus', {
+        eventBusName: 'default',
+      });
 
     // THEN
     expect(() => {
@@ -205,9 +210,10 @@ describe('event bus', () => {
     const stack = new Stack();
 
     // WHEN
-    const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventBusName: 'my/bus',
-    });
+    const createInvalidBus = () =>
+      new EventBus(stack, 'Bus', {
+        eventBusName: 'my/bus',
+      });
 
     // THEN
     expect(() => {
@@ -220,10 +226,11 @@ describe('event bus', () => {
     const stack = new Stack();
 
     // WHEN
-    const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventBusName: 'myBus',
-      eventSourceName: 'myBus',
-    });
+    const createInvalidBus = () =>
+      new EventBus(stack, 'Bus', {
+        eventBusName: 'myBus',
+        eventSourceName: 'myBus',
+      });
 
     // THEN
     expect(() => {
@@ -236,9 +243,10 @@ describe('event bus', () => {
     const stack = new Stack();
 
     // WHEN
-    const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventBusName: '',
-    });
+    const createInvalidBus = () =>
+      new EventBus(stack, 'Bus', {
+        eventBusName: '',
+      });
 
     // THEN
     expect(() => {
@@ -251,9 +259,12 @@ describe('event bus', () => {
     const stack = new Stack();
 
     // WHEN / THEN
-    expect(() => new EventBus(stack, 'EventBus', {
-      eventBusName: Aws.STACK_NAME,
-    })).not.toThrow();
+    expect(
+      () =>
+        new EventBus(stack, 'EventBus', {
+          eventBusName: Aws.STACK_NAME,
+        })
+    ).not.toThrow();
   });
 
   test('event bus source name must follow pattern', () => {
@@ -261,9 +272,10 @@ describe('event bus', () => {
     const stack = new Stack();
 
     // WHEN
-    const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventSourceName: 'invalid-partner',
-    });
+    const createInvalidBus = () =>
+      new EventBus(stack, 'Bus', {
+        eventSourceName: 'invalid-partner',
+      });
 
     // THEN
     expect(() => {
@@ -276,9 +288,12 @@ describe('event bus', () => {
     const stack = new Stack();
 
     // WHEN / THEN
-    expect(() => new EventBus(stack, 'EventBus', {
-      eventSourceName: Aws.STACK_NAME,
-    })).not.toThrow();
+    expect(
+      () =>
+        new EventBus(stack, 'EventBus', {
+          eventSourceName: Aws.STACK_NAME,
+        })
+    ).not.toThrow();
   });
 
   test('event bus source name cannot be empty string', () => {
@@ -286,9 +301,10 @@ describe('event bus', () => {
     const stack = new Stack();
 
     // WHEN
-    const createInvalidBus = () => new EventBus(stack, 'Bus', {
-      eventSourceName: '',
-    });
+    const createInvalidBus = () =>
+      new EventBus(stack, 'Bus', {
+        eventSourceName: '',
+      });
 
     // THEN
     expect(() => {
@@ -389,10 +405,7 @@ describe('event bus', () => {
             Action: 'events:PutEvents',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'EventBus7B8748AA',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
             },
           },
         ],
@@ -427,10 +440,7 @@ describe('event bus', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
       SourceArn: {
-        'Fn::GetAtt': [
-          'BusEA82B648',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['BusEA82B648', 'Arn'],
       },
       Description: {
         'Fn::Join': [
@@ -479,10 +489,7 @@ describe('event bus', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
       SourceArn: {
-        'Fn::GetAtt': [
-          'BusEA82B648',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['BusEA82B648', 'Arn'],
       },
       Description: {
         'Fn::Join': [
@@ -502,10 +509,7 @@ describe('event bus', () => {
                           'Fn::Split': [
                             ':',
                             {
-                              'Fn::GetAtt': [
-                                'BusEA82B648',
-                                'Arn',
-                              ],
+                              'Fn::GetAtt': ['BusEA82B648', 'Arn'],
                             },
                           ],
                         },
@@ -567,13 +571,15 @@ describe('event bus', () => {
     const bus = new EventBus(stack, 'Bus');
 
     // WHEN
-    bus.addToResourcePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      principals: [new iam.AccountPrincipal('111111111111111')],
-      actions: ['events:PutEvents'],
-      sid: '123',
-      resources: [bus.eventBusArn],
-    }));
+    bus.addToResourcePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.AccountPrincipal('111111111111111')],
+        actions: ['events:PutEvents'],
+        sid: '123',
+        resources: [bus.eventBusArn],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
@@ -600,10 +606,7 @@ describe('event bus', () => {
         },
         Sid: 'cdk-123',
         Resource: {
-          'Fn::GetAtt': [
-            'BusEA82B648',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['BusEA82B648', 'Arn'],
         },
       },
     });
@@ -648,11 +651,15 @@ describe('event bus', () => {
     const bus = new EventBus(stack, 'Bus');
 
     // THEN
-    expect(() => bus.addToResourcePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      principals: [new iam.ArnPrincipal('arn')],
-      actions: ['events:PutEvents'],
-    }))).toThrow('Event Bus policy statements must have a sid');
+    expect(() =>
+      bus.addToResourcePolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          principals: [new iam.ArnPrincipal('arn')],
+          actions: ['events:PutEvents'],
+        })
+      )
+    ).toThrow('Event Bus policy statements must have a sid');
   });
 
   test('set dead letter queue', () => {
@@ -714,11 +721,7 @@ describe('event bus', () => {
             Resource: '*',
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:GenerateDataKey',
-              'kms:DescribeKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey'],
             Condition: {
               StringEquals: {
                 'aws:SourceAccount': {
@@ -777,5 +780,4 @@ describe('event bus', () => {
       },
     });
   });
-
 });

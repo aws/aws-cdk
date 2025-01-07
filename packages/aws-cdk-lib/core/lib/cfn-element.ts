@@ -127,9 +127,7 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    const trace = Node.of(this).metadata.find(
-      (md) => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID
-    )!.trace;
+    const trace = Node.of(this).metadata.find((md) => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
     if (!trace) {
       return [];
     }

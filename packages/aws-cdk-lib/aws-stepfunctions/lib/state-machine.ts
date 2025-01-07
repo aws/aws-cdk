@@ -10,16 +10,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
-import {
-  Arn,
-  ArnFormat,
-  Duration,
-  IResource,
-  RemovalPolicy,
-  Resource,
-  Stack,
-  Token,
-} from '../../core';
+import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -181,11 +172,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Import a state machine
    */
-  public static fromStateMachineArn(
-    scope: Construct,
-    id: string,
-    stateMachineArn: string
-  ): IStateMachine {
+  public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
@@ -198,11 +185,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Import a state machine via resource name
    */
-  public static fromStateMachineName(
-    scope: Construct,
-    id: string,
-    stateMachineName: string
-  ): IStateMachine {
+  public static fromStateMachineName(scope: Construct, id: string, stateMachineName: string): IStateMachine {
     const stateMachineArn = Stack.of(scope).formatArn({
       service: 'states',
       resource: 'stateMachine',
@@ -255,11 +238,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     });
     iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [
-        'states:DescribeExecution',
-        'states:DescribeStateMachineForExecution',
-        'states:GetExecutionHistory',
-      ],
+      actions: ['states:DescribeExecution', 'states:DescribeStateMachineForExecution', 'states:GetExecutionHistory'],
       resourceArns: [`${this.executionArn()}:*`],
     });
     return iam.Grant.addToPrincipal({
@@ -562,22 +541,16 @@ export class StateMachine extends StateMachineBase {
   private validateStateMachineName(stateMachineName: string) {
     if (!Token.isUnresolved(stateMachineName)) {
       if (stateMachineName.length < 1 || stateMachineName.length > 80) {
-        throw new Error(
-          `State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`
-        );
+        throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
       }
 
       if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
-        throw new Error(
-          `State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`
-        );
+        throw new Error(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`);
       }
     }
   }
 
-  private buildLoggingConfiguration(
-    logOptions: LogOptions
-  ): CfnStateMachine.LoggingConfigurationProperty {
+  private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
     // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
     this.addToRolePolicy(
       new iam.PolicyStatement({
@@ -607,9 +580,7 @@ export class StateMachine extends StateMachineBase {
     };
   }
 
-  private buildTracingConfiguration(
-    isTracing?: boolean
-  ): CfnStateMachine.TracingConfigurationProperty | undefined {
+  private buildTracingConfiguration(isTracing?: boolean): CfnStateMachine.TracingConfigurationProperty | undefined {
     if (isTracing === undefined) {
       return undefined;
     }

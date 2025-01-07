@@ -54,10 +54,7 @@ export interface ImportedTaskDefinitionProps {
 /**
  * Task definition reference of an imported task
  */
-export class ImportedTaskDefinition
-  extends Resource
-  implements IEc2TaskDefinition, IFargateTaskDefinition
-{
+export class ImportedTaskDefinition extends Resource implements IEc2TaskDefinition, IFargateTaskDefinition {
   /**
    * What launch types this task definition should be compatible with.
    */

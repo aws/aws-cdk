@@ -6,7 +6,7 @@ import * as tasks from '../../lib';
 
 describeDeprecated('PublishToTopic', () => {
   test('Publish literal message to SNS topic', () => {
-  // GIVEN
+    // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
 
@@ -41,7 +41,7 @@ describeDeprecated('PublishToTopic', () => {
   });
 
   test('Publish JSON to SNS topic with task token', () => {
-  // GIVEN
+    // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
 
@@ -75,7 +75,7 @@ describeDeprecated('PublishToTopic', () => {
       Parameters: {
         TopicArn: { Ref: 'TopicBFC7AF6E' },
         Message: {
-          'Input': 'Publish this message',
+          Input: 'Publish this message',
           'Token.$': '$$.Task.Token',
         },
       },
@@ -84,7 +84,7 @@ describeDeprecated('PublishToTopic', () => {
 
   test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not included in message', () => {
     expect(() => {
-    // GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const topic = new sns.Topic(stack, 'Topic');
       // WHEN
@@ -94,12 +94,12 @@ describeDeprecated('PublishToTopic', () => {
           message: sfn.TaskInput.fromText('Publish this message'),
         }),
       });
-    // THEN
+      // THEN
     }).toThrow(/Task Token is missing in message/i);
   });
 
   test('Publish to topic with ARN from payload', () => {
-  // GIVEN
+    // GIVEN
     const stack = new cdk.Stack();
     const topic = sns.Topic.fromTopicArn(stack, 'Topic', sfn.JsonPath.stringAt('$.topicArn'));
 
@@ -128,7 +128,7 @@ describeDeprecated('PublishToTopic', () => {
       End: true,
       Parameters: {
         'TopicArn.$': '$.topicArn',
-        'Message': 'Publish this message',
+        Message: 'Publish this message',
       },
     });
   });

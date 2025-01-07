@@ -1,6 +1,13 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1 } from '../lib';
+import {
+  App,
+  Stack,
+  IPolicyValidationPluginBeta1,
+  IPolicyValidationContextBeta1,
+  Stage,
+  PolicyValidationPluginReportBeta1,
+} from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
@@ -9,8 +16,12 @@ describe('MetadataResource', () => {
   let stack: Stack;
 
   beforeEach(() => {
-    jest.spyOn(console, 'log').mockImplementation(() => { return true; });
-    jest.spyOn(console, 'error').mockImplementation(() => { return true; });
+    jest.spyOn(console, 'log').mockImplementation(() => {
+      return true;
+    });
+    jest.spyOn(console, 'error').mockImplementation(() => {
+      return true;
+    });
     app = new App({
       analyticsReporting: true,
     });
@@ -78,23 +89,17 @@ describe('MetadataResource', () => {
   test('validation plugins included', () => {
     const newApp = new App({
       analyticsReporting: true,
-      policyValidationBeta1: [
-        new ValidationPlugin('plugin1'),
-      ],
+      policyValidationBeta1: [new ValidationPlugin('plugin1')],
     });
 
     const stage1 = new Stage(newApp, 'Stage1', {
-      policyValidationBeta1: [
-        new ValidationPlugin('plugin11'),
-      ],
+      policyValidationBeta1: [new ValidationPlugin('plugin11')],
     });
 
     const stack1 = new Stack(stage1, 'Stack1', { stackName: 'stack1' });
 
     const stage2 = new Stage(newApp, 'Stage2', {
-      policyValidationBeta1: [
-        new ValidationPlugin('plugin12'),
-      ],
+      policyValidationBeta1: [new ValidationPlugin('plugin12')],
     });
     const stack2 = new Stack(stage2, 'Stack2', { stackName: 'stack1' });
 
@@ -110,7 +115,7 @@ describe('MetadataResource', () => {
       const a = App.of(stage)!;
       stackArtifact = a.synth().getNestedAssembly(stage.artifactId).getStackByName(stackName);
     }
-    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;;
+    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;
     return plaintextConstructsFromAnalytics(encodedAnalytics);
   }
 });
@@ -147,7 +152,10 @@ describe('formatAnalytics', () => {
       { fqn: 'aws-cdk-lib.aws_servicefoo.OtherResource', version: '1.2.3' },
     ];
 
-    expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack,aws_servicefoo.{CoolResource,OtherResource}}');
+    expectAnalytics(
+      constructInfo,
+      '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack,aws_servicefoo.{CoolResource,OtherResource}}'
+    );
   });
 
   test('constructs are grouped by version', () => {
@@ -159,7 +167,10 @@ describe('formatAnalytics', () => {
       { fqn: 'aws-cdk-lib.OtherResource', version: '0.1.2' },
     ];
 
-    expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack},0.1.2!aws-cdk-lib.{CoolResource,OtherResource}');
+    expectAnalytics(
+      constructInfo,
+      '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack},0.1.2!aws-cdk-lib.{CoolResource,OtherResource}'
+    );
   });
 
   test('ensure gzip is encoded with "unknown" operating system to maintain consistent output across systems', () => {
@@ -174,7 +185,6 @@ describe('formatAnalytics', () => {
   function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
     expect(plaintextConstructsFromAnalytics(formatAnalytics(constructs))).toEqual(expectedPlaintext);
   }
-
 });
 
 function plaintextConstructsFromAnalytics(analytics: string) {

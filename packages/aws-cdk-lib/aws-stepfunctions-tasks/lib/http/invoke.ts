@@ -180,10 +180,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
       QueryParameters: this.props.queryStringParameters?.value,
     };
 
-    if (
-      this.props.urlEncodingFormat != null &&
-      this.props.urlEncodingFormat !== URLEncodingFormat.NONE
-    ) {
+    if (this.props.urlEncodingFormat != null && this.props.urlEncodingFormat !== URLEncodingFormat.NONE) {
       parameters.Headers = {
         ...parameters.Headers,
         'Content-Type': 'application/x-www-form-urlencoded',

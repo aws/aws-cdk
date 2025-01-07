@@ -59,11 +59,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   /**
    * Use an existing route calculator by name
    */
-  public static fromRouteCalculatorName(
-    scope: Construct,
-    id: string,
-    routeCalculatorName: string
-  ): IRouteCalculator {
+  public static fromRouteCalculatorName(scope: Construct, id: string, routeCalculatorName: string): IRouteCalculator {
     const routeCalculatorArn = Stack.of(scope).formatArn({
       service: 'geo',
       resource: 'route-calculator',
@@ -76,11 +72,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   /**
    * Use an existing route calculator by ARN
    */
-  public static fromRouteCalculatorArn(
-    scope: Construct,
-    id: string,
-    routeCalculatorArn: string
-  ): IRouteCalculator {
+  public static fromRouteCalculatorArn(scope: Construct, id: string, routeCalculatorArn: string): IRouteCalculator {
     const parsedArn = Stack.of(scope).splitArn(routeCalculatorArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
@@ -117,11 +109,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   public readonly routeCalculatorUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: RouteCalculatorProps) {
-    if (
-      props.description &&
-      !Token.isUnresolved(props.description) &&
-      props.description.length > 1000
-    ) {
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(
         `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`
       );
@@ -142,8 +130,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
     }
 
     super(scope, id, {
-      physicalName:
-        props.routeCalculatorName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
+      physicalName: props.routeCalculatorName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
 
     const routeCalculator = new CfnRouteCalculator(this, 'Resource', {

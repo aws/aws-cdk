@@ -1,12 +1,7 @@
 /* istanbul ignore file */
 import * as https from 'https';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  Lambda,
-  waitUntilFunctionActiveV2,
-  InvocationResponse,
-  InvokeCommandInput,
-} from '@aws-sdk/client-lambda';
+import { Lambda, waitUntilFunctionActiveV2, InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SFN, StartExecutionInput, StartExecutionOutput } from '@aws-sdk/client-sfn';
 // eslint-disable-next-line import/no-extraneous-dependencies

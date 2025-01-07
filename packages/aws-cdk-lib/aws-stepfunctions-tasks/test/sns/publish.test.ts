@@ -4,7 +4,6 @@ import * as cdk from '../../../core';
 import { SnsPublish, MessageAttributeDataType, MessageAttribute } from '../../lib/sns/publish';
 
 describe('Publish', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -119,11 +118,11 @@ describe('Publish', () => {
             StringValue: 'cakes can be resolved',
           },
           executionId: {
-            'DataType': 'String',
+            DataType: 'String',
             'StringValue.$': '$$.Execution.Id',
           },
           taskInput: {
-            'DataType': 'String',
+            DataType: 'String',
             'StringValue.$': '$$.StateMachine.Name',
           },
           vendors: {
@@ -221,7 +220,7 @@ describe('Publish', () => {
       Parameters: {
         TopicArn: { Ref: 'TopicBFC7AF6E' },
         Message: {
-          'Input': 'Publish this message',
+          Input: 'Publish this message',
           'Token.$': '$$.Task.Token',
         },
       },
@@ -302,7 +301,7 @@ describe('Publish', () => {
       End: true,
       Parameters: {
         'TopicArn.$': '$.topicArn',
-        'Message': 'Publish this message',
+        Message: 'Publish this message',
       },
     });
   });
@@ -334,7 +333,9 @@ describe('Publish', () => {
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
         message: sfn.TaskInput.fromText('Publish this message'),
       });
-    }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/);
+    }).toThrow(
+      /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/
+    );
   });
 
   test('MessageGroupId and messageDeduplicationId supplied to FIFO topic without contentBasedDeduplication', () => {

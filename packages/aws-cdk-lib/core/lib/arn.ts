@@ -146,8 +146,7 @@ export class Arn {
       );
     }
 
-    const sep =
-      components.sep ?? (components.arnFormat === ArnFormat.COLON_RESOURCE_NAME ? ':' : '/');
+    const sep = components.sep ?? (components.arnFormat === ArnFormat.COLON_RESOURCE_NAME ? ':' : '/');
 
     const values = [
       'arn',
@@ -216,17 +215,12 @@ export class Arn {
    *
    * @deprecated use split instead
    */
-  public static parse(
-    arn: string,
-    sepIfToken: string = '/',
-    hasName: boolean = true
-  ): ArnComponents {
+  public static parse(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
     let arnFormat: ArnFormat;
     if (!hasName) {
       arnFormat = ArnFormat.NO_RESOURCE_NAME;
     } else {
-      arnFormat =
-        sepIfToken === '/' ? ArnFormat.SLASH_RESOURCE_NAME : ArnFormat.COLON_RESOURCE_NAME;
+      arnFormat = sepIfToken === '/' ? ArnFormat.SLASH_RESOURCE_NAME : ArnFormat.COLON_RESOURCE_NAME;
     }
     return this.split(arn, arnFormat);
   }
@@ -342,9 +336,7 @@ export class Arn {
     // resource type (to notify authors of incorrect assumptions right away).
     const parsed = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!Token.isUnresolved(parsed.resource) && parsed.resource !== resourceType) {
-      throw new Error(
-        `Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`
-      );
+      throw new Error(`Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
     }
     if (!parsed.resourceName) {
       throw new Error(`Expected resource name in ARN, didn't find one: '${arn}'`);

@@ -482,17 +482,11 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error(
-        'You can only specify either vpc or cluster. Alternatively, you can leave both blank'
-      );
+      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (
-      props.desiredCount !== undefined &&
-      !cdk.Token.isUnresolved(props.desiredCount) &&
-      props.desiredCount < 1
-    ) {
+    if (props.desiredCount !== undefined && !cdk.Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
 
@@ -503,10 +497,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     if (props.idleTimeout) {
       const idleTimeout = props.idleTimeout.toSeconds();
-      if (
-        idleTimeout > Duration.seconds(4000).toSeconds() ||
-        idleTimeout < Duration.seconds(1).toSeconds()
-      ) {
+      if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
         throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
       }
     }
@@ -528,8 +519,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     ) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
-    const protocol =
-      props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+    const protocol = props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
       throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
@@ -563,9 +553,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       }
     }
     if (this.certificate !== undefined) {
-      this.listener.addCertificates('Arns', [
-        ListenerCertificate.fromCertificateManager(this.certificate),
-      ]);
+      this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
     }
     if (props.redirectHTTP) {
       this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
@@ -583,9 +571,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new Error(
-          'A Route53 hosted domain zone name is required to configure the specified domain name'
-        );
+        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
       switch (props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS) {
@@ -626,10 +612,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);
-    return (
-      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
-      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
-    );
+    return (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

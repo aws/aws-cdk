@@ -4,7 +4,6 @@ import { App, Stack } from '../../core';
 import { Function, FunctionCode, FunctionRuntime, KeyValueStore } from '../lib';
 
 describe('CloudFront Function', () => {
-
   test('minimal example', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack', {
@@ -240,9 +239,11 @@ describe('CloudFront Function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
         FunctionConfig: {
           Runtime: 'cloudfront-js-2.0',
-          KeyValueStoreAssociations: [{
-            KeyValueStoreARN: stack.resolve(keyValueStore.keyValueStoreArn),
-          }],
+          KeyValueStoreAssociations: [
+            {
+              KeyValueStoreARN: stack.resolve(keyValueStore.keyValueStoreArn),
+            },
+          ],
         },
       });
     });
@@ -251,11 +252,14 @@ describe('CloudFront Function', () => {
       const stack = new Stack();
       const keyValueStore = new KeyValueStore(stack, 'TestStore');
 
-      expect(() => new Function(stack, 'TestFn', {
-        code: FunctionCode.fromInline('code'),
-        runtime: FunctionRuntime.JS_1_0,
-        keyValueStore,
-      })).toThrow(/Key Value Stores cannot be associated to functions using the .* runtime/);
+      expect(
+        () =>
+          new Function(stack, 'TestFn', {
+            code: FunctionCode.fromInline('code'),
+            runtime: FunctionRuntime.JS_1_0,
+            keyValueStore,
+          })
+      ).toThrow(/Key Value Stores cannot be associated to functions using the .* runtime/);
     });
 
     test('works with js-2.0 runtime specified', () => {
@@ -271,9 +275,11 @@ describe('CloudFront Function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
         FunctionConfig: {
           Runtime: 'cloudfront-js-2.0',
-          KeyValueStoreAssociations: [{
-            KeyValueStoreARN: stack.resolve(keyValueStore.keyValueStoreArn),
-          }],
+          KeyValueStoreAssociations: [
+            {
+              KeyValueStoreARN: stack.resolve(keyValueStore.keyValueStoreArn),
+            },
+          ],
         },
       });
     });

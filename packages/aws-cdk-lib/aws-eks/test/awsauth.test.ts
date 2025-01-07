@@ -22,7 +22,7 @@ describe('aws auth', () => {
     expect(() => {
       awsAuth.addRoleMapping(role, { groups: ['group'] });
     }).toThrow(
-      'RoleStack/Role should be defined in the scope of the ClusterStack stack to prevent circular dependencies',
+      'RoleStack/Role should be defined in the scope of the ClusterStack stack to prevent circular dependencies'
     );
   });
 
@@ -38,7 +38,7 @@ describe('aws auth', () => {
     expect(() => {
       awsAuth.addUserMapping(user, { groups: ['group'] });
     }).toThrow(
-      'UserStack/User should be defined in the scope of the ClusterStack stack to prevent circular dependencies',
+      'UserStack/User should be defined in the scope of the ClusterStack stack to prevent circular dependencies'
     );
   });
 
@@ -52,12 +52,14 @@ describe('aws auth', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
-      Manifest: JSON.stringify([{
-        apiVersion: 'v1',
-        kind: 'ConfigMap',
-        metadata: { name: 'aws-auth', namespace: 'kube-system' },
-        data: { mapRoles: '[]', mapUsers: '[]', mapAccounts: '[]' },
-      }]),
+      Manifest: JSON.stringify([
+        {
+          apiVersion: 'v1',
+          kind: 'ConfigMap',
+          metadata: { name: 'aws-auth', namespace: 'kube-system' },
+          data: { mapRoles: '[]', mapUsers: '[]', mapAccounts: '[]' },
+        },
+      ]),
     });
   });
 
@@ -85,52 +87,31 @@ describe('aws auth', () => {
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['ClusterNodegroupDefaultCapacityNodeGroupRole55953B04', 'Arn'],
             },
             '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'roleC7B7E775',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['roleC7B7E775', 'Arn'],
             },
             '\\",\\"username\\":\\"roleuser\\",\\"groups\\":[\\"role-group1\\"]},{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'roleC7B7E775',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['roleC7B7E775', 'Arn'],
             },
             '\\",\\"username\\":\\"',
             {
-              'Fn::GetAtt': [
-                'roleC7B7E775',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['roleC7B7E775', 'Arn'],
             },
             '\\",\\"groups\\":[\\"role-group2\\",\\"role-group3\\"]}]","mapUsers":"[{\\"userarn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'user2C2B57AE',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['user2C2B57AE', 'Arn'],
             },
             '\\",\\"username\\":\\"',
             {
-              'Fn::GetAtt': [
-                'user2C2B57AE',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['user2C2B57AE', 'Arn'],
             },
             '\\",\\"groups\\":[\\"user-group1\\",\\"user-group2\\"]},{\\"userarn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'user2C2B57AE',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['user2C2B57AE', 'Arn'],
             },
             '\\",\\"username\\":\\"foo\\",\\"groups\\":[\\"user-group1\\",\\"user-group2\\"]}]","mapAccounts":"[\\"112233\\",\\"5566776655\\"]"}}]',
           ],
@@ -158,10 +139,7 @@ describe('aws auth', () => {
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['ClusterNodegroupDefaultCapacityNodeGroupRole55953B04', 'Arn'],
             },
             '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]","mapUsers":"[{\\"userarn\\":\\"arn:',
             {
@@ -204,17 +182,11 @@ describe('aws auth', () => {
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['ClusterNodegroupDefaultCapacityNodeGroupRole55953B04', 'Arn'],
             },
             '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"',
             {
-              'Fn::GetAtt': [
-                'ClusterNodegroupNGNodeGroupRole7C078920',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['ClusterNodegroupNGNodeGroupRole7C078920', 'Arn'],
             },
             '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
           ],
@@ -224,10 +196,7 @@ describe('aws auth', () => {
         Ref: 'Cluster9EE0221C',
       },
       RoleArn: {
-        'Fn::GetAtt': [
-          'ClusterCreationRole360249B6',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ClusterCreationRole360249B6', 'Arn'],
       },
     });
   });

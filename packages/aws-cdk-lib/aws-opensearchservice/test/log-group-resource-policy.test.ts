@@ -16,27 +16,27 @@ beforeEach(() => {
 test('minimal example renders correctly', () => {
   new LogGroupResourcePolicy(stack, 'LogGroupResourcePolicy', {
     policyName: 'TestPolicy',
-    policyStatements: [new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-      resources: ['*'],
-      principals: [new iam.ServicePrincipal('es.amazonaws.com')],
-    })],
+    policyStatements: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+        resources: ['*'],
+        principals: [new iam.ServicePrincipal('es.amazonaws.com')],
+      }),
+    ],
   });
 
   Template.fromStack(stack).hasResourceProperties('Custom::CloudwatchLogResourcePolicy', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AWS679f53fac002430cb0da5b7982bd22872D164C4C', 'Arn'],
     },
     Create: JSON.stringify({
       service: 'CloudWatchLogs',
       action: 'putResourcePolicy',
       parameters: {
         policyName: 'TestPolicy',
-        policyDocument: '{"Statement":[{"Action":["logs:PutLogEvents","logs:CreateLogStream"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"*"}],"Version":"2012-10-17"}',
+        policyDocument:
+          '{"Statement":[{"Action":["logs:PutLogEvents","logs:CreateLogStream"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"*"}],"Version":"2012-10-17"}',
       },
       physicalResourceId: {
         id: 'LogGroupResourcePolicy',
@@ -47,7 +47,8 @@ test('minimal example renders correctly', () => {
       action: 'putResourcePolicy',
       parameters: {
         policyName: 'TestPolicy',
-        policyDocument: '{"Statement":[{"Action":["logs:PutLogEvents","logs:CreateLogStream"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"*"}],"Version":"2012-10-17"}',
+        policyDocument:
+          '{"Statement":[{"Action":["logs:PutLogEvents","logs:CreateLogStream"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"*"}],"Version":"2012-10-17"}',
       },
       physicalResourceId: {
         id: 'LogGroupResourcePolicy',

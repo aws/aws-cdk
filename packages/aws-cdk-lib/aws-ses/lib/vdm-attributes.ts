@@ -40,11 +40,7 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
   /**
    * Use an existing Virtual Deliverability Manager attributes resource
    */
-  public static fromVdmAttributesName(
-    scope: Construct,
-    id: string,
-    vdmAttributesName: string
-  ): IVdmAttributes {
+  public static fromVdmAttributesName(scope: Construct, id: string, vdmAttributesName: string): IVdmAttributes {
     class Import extends Resource implements IVdmAttributes {
       public readonly vdmAttributesName = vdmAttributesName;
     }

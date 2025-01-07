@@ -525,9 +525,7 @@ export class Instance extends Resource implements IInstance {
     this.grantPrincipal = this.role;
 
     if (props.ssmSessionPermissions) {
-      this.role.addManagedPolicy(
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')
-      );
+      this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
     }
 
     // use delayed evaluation
@@ -586,9 +584,7 @@ export class Instance extends Resource implements IInstance {
     }
 
     if (props.enclaveEnabled && props.hibernationEnabled) {
-      throw new Error(
-        "You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance"
-      );
+      throw new Error("You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance");
     }
 
     if (
@@ -596,9 +592,7 @@ export class Instance extends Resource implements IInstance {
       !Token.isUnresolved(props.ipv6AddressCount) &&
       (props.ipv6AddressCount < 0 || !Number.isInteger(props.ipv6AddressCount))
     ) {
-      throw new Error(
-        `\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`
-      );
+      throw new Error(`\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`);
     }
 
     if (props.ipv6AddressCount !== undefined && props.associatePublicIpAddress !== undefined) {
@@ -620,34 +614,24 @@ export class Instance extends Resource implements IInstance {
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings:
-        props.blockDevices !== undefined
-          ? instanceBlockDeviceMappings(this, props.blockDevices)
-          : undefined,
+        props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: networkInterfaces ? undefined : props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
-      creditSpecification: props.creditSpecification
-        ? { cpuCredits: props.creditSpecification }
-        : undefined,
+      creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
       disableApiTermination: props.disableApiTermination,
       instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
       placementGroupName: props.placementGroup?.placementGroupName,
-      enclaveOptions:
-        props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
-      hibernationOptions:
-        props.hibernationEnabled !== undefined
-          ? { configured: props.hibernationEnabled }
-          : undefined,
+      enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
+      hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
       ipv6AddressCount: props.ipv6AddressCount,
     });
     this.instance.node.addDependency(this.role);
 
     // if associatePublicIpAddress is true, then there must be a dependency on internet connectivity
     if (props.associatePublicIpAddress !== undefined && props.associatePublicIpAddress) {
-      const internetConnected = props.vpc.selectSubnets(
-        props.vpcSubnets
-      ).internetConnectivityEstablished;
+      const internetConnected = props.vpc.selectSubnets(props.vpcSubnets).internetConnectivityEstablished;
       this.instance.node.addDependency(internetConnected);
     }
 
@@ -755,10 +739,7 @@ export class Instance extends Resource implements IInstance {
    * - Add commands to the instance UserData to run `cfn-init` and `cfn-signal`.
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
-  public applyCloudFormationInit(
-    init: CloudFormationInit,
-    options: ApplyCloudFormationInitOptions = {}
-  ) {
+  public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     init.attach(this.instance, {
       platform: this.osType,
       instanceRole: this.role,

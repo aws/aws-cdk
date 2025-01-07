@@ -32,10 +32,7 @@ test('Correctly renders the origin for a Lambda Function URL', () => {
       'Fn::Select': [
         2,
         {
-          'Fn::Split': [
-            '/',
-            { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] },
-          ],
+          'Fn::Split': ['/', { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] }],
         },
       ],
     },
@@ -110,10 +107,7 @@ describe('FunctionUrlOriginAccessControl', () => {
               ],
             },
             OriginAccessControlId: Match.objectLike({
-              'Fn::GetAtt': [
-                'MyDistributionOrigin1FunctionUrlOriginAccessControl0591AF75',
-                'Id',
-              ],
+              'Fn::GetAtt': ['MyDistributionOrigin1FunctionUrlOriginAccessControl0591AF75', 'Id'],
             }),
           }),
         ]),
@@ -181,10 +175,7 @@ describe('FunctionUrlOriginAccessControl', () => {
               ],
             },
             OriginAccessControlId: Match.objectLike({
-              'Fn::GetAtt': [
-                'MyDistributionOrigin1FunctionUrlOriginAccessControl0591AF75',
-                'Id',
-              ],
+              'Fn::GetAtt': ['MyDistributionOrigin1FunctionUrlOriginAccessControl0591AF75', 'Id'],
             }),
           }),
         ]),
@@ -297,7 +288,11 @@ describe('FunctionUrlOriginAccessControl', () => {
   });
 
   test('Correctly adds permission for an imported Lambda Function', () => {
-    const importedFn = lambda.Function.fromFunctionArn(stack, 'ImportedFunction', 'arn:aws:lambda:us-east-1:123456789012:function:my-imported-fn');
+    const importedFn = lambda.Function.fromFunctionArn(
+      stack,
+      'ImportedFunction',
+      'arn:aws:lambda:us-east-1:123456789012:function:my-imported-fn'
+    );
 
     const fnUrl = importedFn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.AWS_IAM,
@@ -353,10 +348,7 @@ describe('FunctionUrlOriginAccessControl', () => {
         'Fn::Select': [
           2,
           {
-            'Fn::Split': [
-              '/',
-              { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] },
-            ],
+            'Fn::Split': ['/', { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] }],
           },
         ],
       },
@@ -365,10 +357,7 @@ describe('FunctionUrlOriginAccessControl', () => {
         originSslProtocols: ['TLSv1.2'],
       },
       originAccessControlId: {
-        'Fn::GetAtt': [
-          'FunctionUrlOriginAccessControlC9E60518',
-          'Id',
-        ],
+        'Fn::GetAtt': ['FunctionUrlOriginAccessControlC9E60518', 'Id'],
       },
     });
   });
@@ -396,10 +385,7 @@ describe('FunctionUrlOriginAccessControl', () => {
         'Fn::Select': [
           2,
           {
-            'Fn::Split': [
-              '/',
-              { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] },
-            ],
+            'Fn::Split': ['/', { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] }],
           },
         ],
       },
@@ -410,10 +396,7 @@ describe('FunctionUrlOriginAccessControl', () => {
         originKeepaliveTimeout: 60,
       },
       originAccessControlId: {
-        'Fn::GetAtt': [
-          'FunctionUrlOriginAccessControlC9E60518',
-          'Id',
-        ],
+        'Fn::GetAtt': ['FunctionUrlOriginAccessControlC9E60518', 'Id'],
       },
     });
   });
@@ -439,6 +422,8 @@ describe('FunctionUrlOriginAccessControl', () => {
           }),
         },
       });
-    }).toThrow('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
+    }).toThrow(
+      'The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.'
+    );
   });
 });

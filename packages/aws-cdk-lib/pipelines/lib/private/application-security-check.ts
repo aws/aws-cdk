@@ -126,10 +126,7 @@ export class ApplicationSecurityCheck extends Construct {
               // 0 -> true, 1 -> false
               ifElse({
                 condition: 'cdk diff -a . --security-only --fail $STAGE_PATH/\\*',
-                thenStatements: [
-                  invokeLambda,
-                  'export MESSAGE="No security-impacting changes detected."',
-                ],
+                thenStatements: [invokeLambda, 'export MESSAGE="No security-impacting changes detected."'],
                 elseStatements: [
                   `[ -z "\${NOTIFICATION_ARN}" ] || ${publishNotification}`,
                   'export MESSAGE="Deployment would make security-impacting changes. Click the link below to inspect them, then click Approve if all changes are expected."',

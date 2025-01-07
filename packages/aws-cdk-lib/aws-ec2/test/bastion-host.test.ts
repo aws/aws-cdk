@@ -1,7 +1,17 @@
 import { Match, Template } from '../../assertions';
 import { App, Duration, Stack } from '../../core';
 import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
-import { BastionHostLinux, BlockDeviceVolume, CloudFormationInit, InitCommand, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
+import {
+  BastionHostLinux,
+  BlockDeviceVolume,
+  CloudFormationInit,
+  InitCommand,
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  SubnetType,
+  Vpc,
+} from '../lib';
 
 describe('bastion host', () => {
   test('default instance is created in basic', () => {
@@ -19,7 +29,6 @@ describe('bastion host', () => {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
     });
-
   });
   test('default instance is created in isolated vpc', () => {
     // GIVEN
@@ -43,7 +52,6 @@ describe('bastion host', () => {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
     });
-
   });
   test('ebs volume is encrypted', () => {
     // GIVEN
@@ -60,12 +68,14 @@ describe('bastion host', () => {
     // WHEN
     new BastionHostLinux(stack, 'Bastion', {
       vpc,
-      blockDevices: [{
-        deviceName: 'EBSBastionHost',
-        volume: BlockDeviceVolume.ebs(10, {
-          encrypted: true,
-        }),
-      }],
+      blockDevices: [
+        {
+          deviceName: 'EBSBastionHost',
+          volume: BlockDeviceVolume.ebs(10, {
+            encrypted: true,
+          }),
+        },
+      ],
     });
 
     // THEN
@@ -80,7 +90,6 @@ describe('bastion host', () => {
         },
       ],
     });
-
   });
   test('x86-64 instances use x86-64 image by default', () => {
     // GIVEN
@@ -98,7 +107,6 @@ describe('bastion host', () => {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     });
-
   });
   test('arm instances use arm image by default', () => {
     // GIVEN
@@ -117,7 +125,6 @@ describe('bastion host', () => {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     });
-
   });
 
   test('add CloudFormation Init to instance', () => {
@@ -131,9 +138,7 @@ describe('bastion host', () => {
       initOptions: {
         timeout: Duration.minutes(30),
       },
-      init: CloudFormationInit.fromElements(
-        InitCommand.shellCommand('echo hello'),
-      ),
+      init: CloudFormationInit.fromElements(InitCommand.shellCommand('echo hello')),
     });
 
     // THEN
@@ -194,39 +199,37 @@ describe('bastion host', () => {
       vpc: vpcOld,
       userDataCausesReplacement: true,
     });
-    bastionHostOld.instance.addUserData(
-      ...oldSshKeys.map(key => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`),
-    );
+    bastionHostOld.instance.addUserData(...oldSshKeys.map((key) => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`));
 
     const bastionHostNew = new BastionHostLinux(stackNew, 'BastionHostUserDataCausesReplacement', {
       vpc: vpcNew,
       userDataCausesReplacement: true,
     });
-    bastionHostNew.instance.addUserData(
-      ...oldSshKeys.map(key => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`),
-    );
-    bastionHostNew.instance.addUserData(
-      ...newSshKeys.map(key => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`),
-    );
+    bastionHostNew.instance.addUserData(...oldSshKeys.map((key) => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`));
+    bastionHostNew.instance.addUserData(...newSshKeys.map((key) => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`));
 
     // THEN
-    Template.fromStack(stackOld).templateMatches(Match.objectLike({
-      Resources: Match.objectLike({
-        [`BastionHostUserDataCausesReplacement985DBC41${oldHash}`]: Match.objectLike({
-          Type: 'AWS::EC2::Instance',
-          Properties: Match.anyValue(),
+    Template.fromStack(stackOld).templateMatches(
+      Match.objectLike({
+        Resources: Match.objectLike({
+          [`BastionHostUserDataCausesReplacement985DBC41${oldHash}`]: Match.objectLike({
+            Type: 'AWS::EC2::Instance',
+            Properties: Match.anyValue(),
+          }),
         }),
-      }),
-    }));
+      })
+    );
 
-    Template.fromStack(stackNew).templateMatches(Match.objectLike({
-      Resources: Match.objectLike({
-        [`BastionHostUserDataCausesReplacement985DBC41${newHash}`]: Match.objectLike({
-          Type: 'AWS::EC2::Instance',
-          Properties: Match.anyValue(),
+    Template.fromStack(stackNew).templateMatches(
+      Match.objectLike({
+        Resources: Match.objectLike({
+          [`BastionHostUserDataCausesReplacement985DBC41${newHash}`]: Match.objectLike({
+            Type: 'AWS::EC2::Instance',
+            Properties: Match.anyValue(),
+          }),
         }),
-      }),
-    }));
+      })
+    );
   });
 
   test('does not append new hash digest to instance logical Id if userDataCausesReplacement is false', () => {
@@ -241,19 +244,19 @@ describe('bastion host', () => {
       vpc,
       userDataCausesReplacement: false,
     });
-    bastionHostOld.instance.addUserData(
-      ...sshKeys.map(key => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`),
-    );
+    bastionHostOld.instance.addUserData(...sshKeys.map((key) => `echo ${key} >> ~ec2-user/.ssh/authorized_keys`));
 
     // THEN
-    Template.fromStack(stack).templateMatches(Match.objectLike({
-      Resources: Match.objectLike({
-        ['BastionHostUserDataCausesReplacement985DBC41']: Match.objectLike({
-          Type: 'AWS::EC2::Instance',
-          Properties: Match.anyValue(),
+    Template.fromStack(stack).templateMatches(
+      Match.objectLike({
+        Resources: Match.objectLike({
+          ['BastionHostUserDataCausesReplacement985DBC41']: Match.objectLike({
+            Type: 'AWS::EC2::Instance',
+            Properties: Match.anyValue(),
+          }),
         }),
-      }),
-    }));
+      })
+    );
   });
 
   test('uses Amazon Linux 2 by default if feature flag is disabled', () => {

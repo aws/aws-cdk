@@ -34,10 +34,7 @@ def handler(event, context):
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       {
-        'Fn::GetAtt': [
-          'alarmLambda131DB691',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
       },
     ],
   });

@@ -68,9 +68,7 @@ export abstract class TargetApplication {
    * Factory method to build the input using the provided
    * application ARN.
    */
-  public static existingApplicationFromArn(
-    options: ExistingTargetApplicationOptions
-  ): TargetApplication {
+  public static existingApplicationFromArn(options: ExistingTargetApplicationOptions): TargetApplication {
     return new ExistingTargetApplication(options);
   }
 
@@ -112,8 +110,7 @@ class CreateTargetApplication extends TargetApplication {
   }
   public bind(scope: Construct): BindTargetApplicationResult {
     (this.applicationOptions.stackName as string) =
-      this.applicationOptions.stackName ||
-      `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
+      this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
     const stackId = this.applicationOptions.stackName;
     (this.applicationOptions.description as string) =
       this.applicationOptions.description || 'Stack to create AppRegistry application';
@@ -127,9 +124,7 @@ class CreateTargetApplication extends TargetApplication {
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = new Application(applicationStack, 'DefaultCdkApplication', {
       applicationName: this.applicationOptions.applicationName,
-      description:
-        this.applicationOptions.applicationDescription ||
-        'Application containing stacks deployed via CDK.',
+      description: this.applicationOptions.applicationDescription || 'Application containing stacks deployed via CDK.',
     });
     cdk.Tags.of(appRegApplication).add('managedBy', 'CDK_Application_Associator');
 
@@ -156,8 +151,7 @@ class ExistingTargetApplication extends TargetApplication {
   }
   public bind(scope: Construct): BindTargetApplicationResult {
     (this.applicationOptions.stackName as string) =
-      this.applicationOptions.stackName ||
-      `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
+      this.applicationOptions.stackName || `ApplicationAssociator-${hashValues(scope.node.addr)}-Stack`;
     const stackId = this.applicationOptions.stackName;
     const applicationStack = new cdk.Stack(scope, stackId, this.applicationOptions);
     const appRegApplication = Application.fromApplicationArn(

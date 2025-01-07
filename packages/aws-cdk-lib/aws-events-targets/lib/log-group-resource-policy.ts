@@ -32,8 +32,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
       statements: props.policyStatements,
     });
 
-    let policyName =
-      props.policyName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) });
+    let policyName = props.policyName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) });
 
     super(scope, id, {
       resourceType: 'Custom::CloudwatchLogResourcePolicy',

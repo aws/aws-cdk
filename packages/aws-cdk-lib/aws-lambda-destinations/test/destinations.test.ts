@@ -33,10 +33,7 @@ test('event bus as destination', () => {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
-          'Fn::GetAtt': [
-            'EventBus7B8748AA',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
         },
       },
     },
@@ -49,10 +46,7 @@ test('event bus as destination', () => {
           Action: 'events:PutEvents',
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'EventBus7B8748AA',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
           },
         },
       ],
@@ -76,10 +70,7 @@ test('lambda as destination', () => {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
-          'Fn::GetAtt': [
-            'SuccessFunction93C61D39',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['SuccessFunction93C61D39', 'Arn'],
         },
       },
     },
@@ -198,36 +189,26 @@ test('lambda payload as destination', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     EventPattern: {
-      'detail-type': [
-        'Lambda Function Invocation Result - Success',
-      ],
-      'resources': [
+      'detail-type': ['Lambda Function Invocation Result - Success'],
+      resources: [
         {
           'Fn::Join': [
             '',
             [
               {
-                'Fn::GetAtt': [
-                  'Function76856677',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Function76856677', 'Arn'],
               },
               ':$LATEST',
             ],
           ],
         },
       ],
-      'source': [
-        'lambda',
-      ],
+      source: ['lambda'],
     },
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'SuccessFunction93C61D39',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['SuccessFunction93C61D39', 'Arn'],
         },
         Id: 'Target0',
         InputPath: '$.detail.responsePayload',
@@ -237,36 +218,26 @@ test('lambda payload as destination', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     EventPattern: {
-      'detail-type': [
-        'Lambda Function Invocation Result - Failure',
-      ],
-      'resources': [
+      'detail-type': ['Lambda Function Invocation Result - Failure'],
+      resources: [
         {
           'Fn::Join': [
             '',
             [
               {
-                'Fn::GetAtt': [
-                  'Function76856677',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Function76856677', 'Arn'],
               },
               ':$LATEST',
             ],
           ],
         },
       ],
-      'source': [
-        'lambda',
-      ],
+      source: ['lambda'],
     },
     Targets: [
       {
         Arn: {
-          'Fn::GetAtt': [
-            'FailureFunctionE917A574',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['FailureFunctionE917A574', 'Arn'],
         },
         Id: 'Target0',
         InputPath: '$.detail.responsePayload',
@@ -327,10 +298,7 @@ test('sqs as destination', () => {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
-          'Fn::GetAtt': [
-            'Queue4A7E3555',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
         },
       },
     },
@@ -340,17 +308,10 @@ test('sqs as destination', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'sqs:SendMessage',
-            'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl',
-          ],
+          Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'Queue4A7E3555',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Queue4A7E3555', 'Arn'],
           },
         },
       ],
@@ -374,10 +335,7 @@ test('s3 as destination', () => {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
-          'Fn::GetAtt': [
-            'Bucket83908E77',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Bucket83908E77', 'Arn'],
         },
       },
     },
@@ -387,28 +345,18 @@ test('s3 as destination', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            's3:GetObject*',
-            's3:GetBucket*',
-            's3:List*',
-          ],
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
             {
-              'Fn::GetAtt': [
-                'Bucket83908E77',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Bucket83908E77', 'Arn'],
             },
             {
               'Fn::Join': [
                 '',
                 [
                   {
-                    'Fn::GetAtt': [
-                      'Bucket83908E77',
-                      'Arn',
-                    ],
+                    'Fn::GetAtt': ['Bucket83908E77', 'Arn'],
                   },
                   '/*',
                 ],
@@ -426,16 +374,12 @@ test('s3 as destination', () => {
             's3:Abort*',
           ],
           Effect: 'Allow',
-          Resource:
-          {
+          Resource: {
             'Fn::Join': [
               '',
               [
                 {
-                  'Fn::GetAtt': [
-                    'Bucket83908E77',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['Bucket83908E77', 'Arn'],
                 },
                 '/*',
               ],

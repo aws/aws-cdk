@@ -100,9 +100,7 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
 
   public bind(_scope: Construct): TlsValidationTrustConfig {
     if (this.certificateAuthorities.length === 0) {
-      throw new Error(
-        'you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy'
-      );
+      throw new Error('you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy');
     } else {
       return {
         tlsValidationTrust: {
@@ -191,9 +189,7 @@ export abstract class SubjectAlternativeNames {
 }
 
 class SubjectAlternativeNamesImpl extends SubjectAlternativeNames {
-  constructor(
-    private readonly matchProperty: CfnVirtualNode.SubjectAlternativeNameMatchersProperty
-  ) {
+  constructor(private readonly matchProperty: CfnVirtualNode.SubjectAlternativeNameMatchersProperty) {
     super();
   }
 

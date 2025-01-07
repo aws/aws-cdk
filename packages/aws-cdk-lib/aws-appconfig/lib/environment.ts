@@ -2,14 +2,7 @@ import { Construct } from 'constructs';
 import { CfnDeployment, CfnEnvironment } from './appconfig.generated';
 import { IApplication } from './application';
 import { IConfiguration } from './configuration';
-import {
-  ActionPoint,
-  IEventDestination,
-  ExtensionOptions,
-  IExtension,
-  IExtensible,
-  ExtensibleBase,
-} from './extension';
+import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -88,18 +81,11 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     configurations.forEach((config) => this.addDeployment(config));
   }
 
-  public on(
-    actionPoint: ActionPoint,
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ) {
+  public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.on(actionPoint, eventDestination, options);
   }
 
-  public preCreateHostedConfigurationVersion(
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ) {
+  public preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.preCreateHostedConfigurationVersion(eventDestination, options);
   }
 
@@ -202,11 +188,7 @@ export class Environment extends EnvironmentBase {
    * @param id The name of the environment construct
    * @param environmentArn The Amazon Resource Name (ARN) of the environment
    */
-  public static fromEnvironmentArn(
-    scope: Construct,
-    id: string,
-    environmentArn: string
-  ): IEnvironment {
+  public static fromEnvironmentArn(scope: Construct, id: string, environmentArn: string): IEnvironment {
     const parsedArn = Stack.of(scope).splitArn(environmentArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
       throw new Error(
@@ -243,11 +225,7 @@ export class Environment extends EnvironmentBase {
    * @param id The name of the environment construct
    * @param attrs The attributes of the environment
    */
-  public static fromEnvironmentAttributes(
-    scope: Construct,
-    id: string,
-    attrs: EnvironmentAttributes
-  ): IEnvironment {
+  public static fromEnvironmentAttributes(scope: Construct, id: string, attrs: EnvironmentAttributes): IEnvironment {
     const applicationId = attrs.application.applicationId;
     const environmentId = attrs.environmentId;
 
@@ -424,9 +402,7 @@ export abstract class Monitor {
    *
    * @param monitorsProperty The monitors property.
    */
-  public static fromCfnMonitorsProperty(
-    monitorsProperty: CfnEnvironment.MonitorsProperty
-  ): Monitor {
+  public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
     if (monitorsProperty.alarmArn === undefined) {
       throw new Error('You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
     }
@@ -522,11 +498,7 @@ export interface IEnvironment extends IResource {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  on(
-    actionPoint: ActionPoint,
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ): void;
+  on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds a PRE_CREATE_HOSTED_CONFIGURATION_VERSION extension with the provided event destination
@@ -535,10 +507,7 @@ export interface IEnvironment extends IResource {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  preCreateHostedConfigurationVersion(
-    eventDestination: IEventDestination,
-    options?: ExtensionOptions
-  ): void;
+  preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds a PRE_START_DEPLOYMENT extension with the provided event destination and also creates

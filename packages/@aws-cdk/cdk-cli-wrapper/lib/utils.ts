@@ -25,9 +25,7 @@ export function exec(
       // will be 'null' in verbose mode
       process.stderr.write(proc.stderr);
     }
-    throw new Error(
-      `Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`
-    );
+    throw new Error(`Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`);
   }
 
   const output = proc.stdout.toString('utf-8').trim();
@@ -51,10 +49,7 @@ export function exec(
 /**
  * For use with `cdk deploy --watch`
  */
-export function watch(
-  commandLine: string[],
-  options: { cwd?: string; verbose?: boolean; env?: any } = {}
-) {
+export function watch(commandLine: string[], options: { cwd?: string; verbose?: boolean; env?: any } = {}) {
   const proc = spawn(commandLine[0], commandLine.slice(1), {
     stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {

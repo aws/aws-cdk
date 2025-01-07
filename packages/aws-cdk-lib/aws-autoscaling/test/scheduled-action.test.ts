@@ -89,10 +89,7 @@ describeDeprecated('scheduled action', () => {
                 Value: 'Default/ASG',
               },
             ],
-            VPCZoneIdentifier: [
-              { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-              { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-            ],
+            VPCZoneIdentifier: [{ Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' }, { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' }],
           },
           UpdatePolicy: {
             AutoScalingRollingUpdate: {
@@ -134,7 +131,10 @@ describeDeprecated('scheduled action', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/ASG/ScheduledActionScaleOutInTheMorning', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-autoscaling:scheduleDefaultRunsEveryMinute]");
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/ASG/ScheduledActionScaleOutInTheMorning',
+      "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-autoscaling:scheduleDefaultRunsEveryMinute]"
+    );
   });
 
   test('scheduled scaling shows no warning when minute is * in cron', () => {
@@ -215,14 +215,16 @@ describeDeprecated('scheduled action', () => {
 
     // WHEN
     // THEN
-    expect(() => asg.scaleOnSchedule('ScaleOutInTheMorning', {
-      schedule: autoscaling.Schedule.cron({
-        minute: '0/10',
-        day: '1',
-        weekDay: 'MON-SUN',
-      }),
-      minCapacity: 10,
-    })).toThrow(/Cannot supply both \'day\' and \'weekDay\', use at most one/);
+    expect(() =>
+      asg.scaleOnSchedule('ScaleOutInTheMorning', {
+        schedule: autoscaling.Schedule.cron({
+          minute: '0/10',
+          day: '1',
+          weekDay: 'MON-SUN',
+        }),
+        minCapacity: 10,
+      })
+    ).toThrow(/Cannot supply both \'day\' and \'weekDay\', use at most one/);
   });
 });
 

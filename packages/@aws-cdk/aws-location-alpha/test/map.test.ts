@@ -40,24 +40,33 @@ test('creates a map with empty description', () => {
 });
 
 test('throws with invalid description', () => {
-  expect(() => new Map(stack, 'Map', {
-    description: 'a'.repeat(1001),
-    style: Style.VECTOR_ESRI_NAVIGATION,
-  })).toThrow('`description` must be between 0 and 1000 characters, got: 1001 characters.');
+  expect(
+    () =>
+      new Map(stack, 'Map', {
+        description: 'a'.repeat(1001),
+        style: Style.VECTOR_ESRI_NAVIGATION,
+      })
+  ).toThrow('`description` must be between 0 and 1000 characters, got: 1001 characters.');
 });
 
 test('throws with invalid name', () => {
-  expect(() => new Map(stack, 'Map', {
-    mapName: 'inv@lid',
-    style: Style.VECTOR_ESRI_NAVIGATION,
-  })).toThrow('`mapName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
+  expect(
+    () =>
+      new Map(stack, 'Map', {
+        mapName: 'inv@lid',
+        style: Style.VECTOR_ESRI_NAVIGATION,
+      })
+  ).toThrow('`mapName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
 });
 
 test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (mapName) => {
-  expect(() => new Map(stack, 'Map', {
-    mapName,
-    style: Style.VECTOR_ESRI_NAVIGATION,
-  })).toThrow(`\`mapName\` must be between 1 and 100 characters, got: ${mapName.length} characters.`);
+  expect(
+    () =>
+      new Map(stack, 'Map', {
+        mapName,
+        style: Style.VECTOR_ESRI_NAVIGATION,
+      })
+  ).toThrow(`\`mapName\` must be between 1 and 100 characters, got: ${mapName.length} characters.`);
 });
 
 test('grant rendering ', () => {
@@ -71,27 +80,22 @@ test('grant rendering ', () => {
 
   map.grantRendering(role);
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.objectLike({
-    PolicyDocument: Match.objectLike({
-      Statement: [
-        {
-          Action: [
-            'geo:GetMapTile',
-            'geo:GetMapSprites',
-            'geo:GetMapGlyphs',
-            'geo:GetMapStyleDescriptor',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'Map207736EC',
-              'Arn',
-            ],
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::IAM::Policy',
+    Match.objectLike({
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          {
+            Action: ['geo:GetMapTile', 'geo:GetMapSprites', 'geo:GetMapGlyphs', 'geo:GetMapStyleDescriptor'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['Map207736EC', 'Arn'],
+            },
           },
-        },
-      ],
-    }),
-  }));
+        ],
+      }),
+    })
+  );
 });
 
 test('import from arn', () => {
@@ -114,9 +118,11 @@ test('import from name', () => {
 
   // THEN
   expect(map.mapName).toEqual(mapName);
-  expect(map.mapArn).toEqual(stack.formatArn({
-    service: 'geo',
-    resource: 'map',
-    resourceName: 'MyMap',
-  }));
+  expect(map.mapArn).toEqual(
+    stack.formatArn({
+      service: 'geo',
+      resource: 'map',
+      resourceName: 'MyMap',
+    })
+  );
 });

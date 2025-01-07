@@ -182,9 +182,7 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static array(...values: string[]): string {
-    return new JsonPathToken(
-      `States.Array(${values.map(renderInExpression).join(', ')})`
-    ).toString();
+    return new JsonPathToken(`States.Array(${values.map(renderInExpression).join(', ')})`).toString();
   }
 
   /**
@@ -208,9 +206,7 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static arrayContains(array: any, value: any): string {
-    return new JsonPathToken(
-      `States.ArrayContains(${[array, value].map(renderInExpression).join(', ')})`
-    ).toString();
+    return new JsonPathToken(`States.ArrayContains(${[array, value].map(renderInExpression).join(', ')})`).toString();
   }
 
   /**
@@ -221,9 +217,7 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static arrayRange(start: number, end: number, step: number): string {
-    return new JsonPathToken(
-      `States.ArrayRange(${[start, end, step].map(renderInExpression).join(', ')})`
-    ).toString();
+    return new JsonPathToken(`States.ArrayRange(${[start, end, step].map(renderInExpression).join(', ')})`).toString();
   }
 
   /**
@@ -234,9 +228,7 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static arrayGetItem(array: any, index: number): string {
-    return new JsonPathToken(
-      `States.ArrayGetItem(${[array, index].map(renderInExpression).join(', ')})`
-    ).toString();
+    return new JsonPathToken(`States.ArrayGetItem(${[array, index].map(renderInExpression).join(', ')})`).toString();
   }
 
   /**
@@ -292,9 +284,7 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static hash(data: any, algorithm: string): string {
-    return new JsonPathToken(
-      `States.Hash(${[data, algorithm].map(renderInExpression).join(', ')})`
-    ).toString();
+    return new JsonPathToken(`States.Hash(${[data, algorithm].map(renderInExpression).join(', ')})`).toString();
   }
 
   /**
@@ -318,9 +308,7 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static mathRandom(start: number, end: number): string {
-    return new JsonPathToken(
-      `States.MathRandom(${[start, end].map(renderInExpression).join(', ')})`
-    ).toString();
+    return new JsonPathToken(`States.MathRandom(${[start, end].map(renderInExpression).join(', ')})`).toString();
   }
 
   /**
@@ -331,9 +319,7 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static mathAdd(num1: number, num2: number): string {
-    return new JsonPathToken(
-      `States.MathAdd(${[num1, num2].map(renderInExpression).join(', ')})`
-    ).toString();
+    return new JsonPathToken(`States.MathAdd(${[num1, num2].map(renderInExpression).join(', ')})`).toString();
   }
 
   /**
@@ -375,9 +361,7 @@ export class JsonPath {
    */
   public static format(formatString: string, ...values: string[]): string {
     const allArgs = [formatString, ...values];
-    return new JsonPathToken(
-      `States.Format(${allArgs.map(renderInExpression).join(', ')})`
-    ).toString();
+    return new JsonPathToken(`States.Format(${allArgs.map(renderInExpression).join(', ')})`).toString();
   }
 
   /**
@@ -604,16 +588,12 @@ function validateJsonPath(path: string) {
 
 function validateDataPath(path: string) {
   if (path !== '$' && !path.startsWith('$[') && !path.startsWith('$.')) {
-    throw new Error(
-      "Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$.'"
-    );
+    throw new Error("Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$.'");
   }
 }
 
 function validateContextPath(path: string) {
   if (path !== '$$' && !path.startsWith('$$.')) {
-    throw new Error(
-      "Context JSON path values must either be exactly equal to '$$' or start with '$$.'"
-    );
+    throw new Error("Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
   }
 }

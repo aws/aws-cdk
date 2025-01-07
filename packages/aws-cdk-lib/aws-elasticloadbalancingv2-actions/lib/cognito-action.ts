@@ -85,9 +85,7 @@ export interface AuthenticateCognitoActionProps {
  * A Listener Action to authenticate with Cognito
  */
 export class AuthenticateCognitoAction extends elbv2.ListenerAction {
-  private static config(
-    options: AuthenticateCognitoActionProps
-  ): elbv2.CfnListener.AuthenticateCognitoConfigProperty {
+  private static config(options: AuthenticateCognitoActionProps): elbv2.CfnListener.AuthenticateCognitoConfigProperty {
     return {
       userPoolArn: options.userPool.userPoolArn,
       userPoolClientId: options.userPoolClient.userPoolClientId,

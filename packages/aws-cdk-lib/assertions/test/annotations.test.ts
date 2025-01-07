@@ -45,8 +45,9 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasError('/Default/Fred', Match.anyValue()))
-        .toThrow(/Stack has 1 messages.*but none match as expected./);
+      expect(() => annotations.hasError('/Default/Fred', Match.anyValue())).toThrow(
+        /Stack has 1 messages.*but none match as expected./
+      );
     });
   });
 
@@ -56,8 +57,9 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasNoError('/Default/Foo', 'this is an error'))
-        .toThrow(/Expected no matches, but stack has 1 messages as follows:/);
+      expect(() => annotations.hasNoError('/Default/Foo', 'this is an error')).toThrow(
+        /Expected no matches, but stack has 1 messages as follows:/
+      );
     });
   });
 
@@ -79,7 +81,9 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasWarning('/Default/Foo', Match.anyValue())).toThrow(/Stack has 1 messages.*but none match as expected./);
+      expect(() => annotations.hasWarning('/Default/Foo', Match.anyValue())).toThrow(
+        /Stack has 1 messages.*but none match as expected./
+      );
     });
   });
 
@@ -89,8 +93,9 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasNoWarning('/Default/Fred', 'this is a warning [ack: Fred]'))
-        .toThrow(/Expected no matches, but stack has 1 messages as follows:/);
+      expect(() => annotations.hasNoWarning('/Default/Fred', 'this is a warning [ack: Fred]')).toThrow(
+        /Expected no matches, but stack has 1 messages as follows:/
+      );
     });
   });
 
@@ -112,7 +117,9 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrow(/Stack has 1 messages.*but none match as expected./);
+      expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrow(
+        /Stack has 1 messages.*but none match as expected./
+      );
     });
   });
 
@@ -122,8 +129,9 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasNoInfo('/Default/Qux', 'this is an info'))
-        .toThrow(/Expected no matches, but stack has 1 messages as follows:/);
+      expect(() => annotations.hasNoInfo('/Default/Qux', 'this is an info')).toThrow(
+        /Expected no matches, but stack has 1 messages as follows:/
+      );
     });
   });
 
@@ -146,8 +154,9 @@ describe('Messages', () => {
     });
 
     test('not', () => {
-      expect(() => annotations.hasError('/Default/Foo', Match.not('this is an error')))
-        .toThrow(/Found unexpected match: "this is an error"/);
+      expect(() => annotations.hasError('/Default/Foo', Match.not('this is an error'))).toThrow(
+        /Found unexpected match: "this is an error"/
+      );
     });
 
     test('stringLikeRegEx', () => {
@@ -206,7 +215,7 @@ class MyAspect implements IAspect {
         this.info(node, 'this is an info');
       }
     }
-  };
+  }
 
   protected warn(node: IConstruct, message: string): void {
     // Use construct ID as suppression string, just to make it unique easily

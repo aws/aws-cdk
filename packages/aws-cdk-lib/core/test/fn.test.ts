@@ -12,14 +12,16 @@ function asyncTest(cb: () => Promise<void>): () => void {
       error = e;
     } finally {
       expect(() => {
-        if (error) { throw error; }
+        if (error) {
+          throw error;
+        }
       }).not.toThrow();
     }
   };
 }
 
 const nonEmptyString = fc.string({ minLength: 1, maxLength: 16 }).filter((x) => x !== '__proto__');
-const tokenish = fc.array(nonEmptyString, { minLength: 2, maxLength: 2 }).map(arr => ({ [arr[0]]: arr[1] }));
+const tokenish = fc.array(nonEmptyString, { minLength: 2, maxLength: 2 }).map((arr) => ({ [arr[0]]: arr[1] }));
 const anyValue = fc.oneof<any>(nonEmptyString, tokenish);
 
 describe('fn', () => {
@@ -31,16 +33,10 @@ describe('fn', () => {
     test('Fn.select does not short-circuit if there are tokens in the array', () => {
       const stack = new Stack();
 
-      expect(stack.resolve(Fn.select(2, [
-        Fn.conditionIf('xyz', 'yep', Aws.NO_VALUE).toString(),
-        'you',
-        'dude',
-      ]))).toEqual({
-        'Fn::Select': [2, [
-          { 'Fn::If': ['xyz', 'yep', { Ref: 'AWS::NoValue' }] },
-          'you',
-          'dude',
-        ]],
+      expect(
+        stack.resolve(Fn.select(2, [Fn.conditionIf('xyz', 'yep', Aws.NO_VALUE).toString(), 'you', 'dude']))
+      ).toEqual({
+        'Fn::Select': [2, [{ 'Fn::If': ['xyz', 'yep', { Ref: 'AWS::NoValue' }] }, 'you', 'dude']],
       });
     });
 
@@ -56,13 +52,7 @@ describe('fn', () => {
 
     test('parse domain name on token', () => {
       const stack = new Stack();
-      const url = Fn.join('//', [
-        'https:',
-        Fn.join('/', [
-          'test.com',
-          'graphql',
-        ]),
-      ]);
+      const url = Fn.join('//', ['https:', Fn.join('/', ['test.com', 'graphql'])]);
       expect(Fn.parseDomainName(stack.resolve(url))).toEqual('test.com');
     });
   });
@@ -75,133 +65,164 @@ describe('fn', () => {
     test('collapse nested FnJoins even if they contain tokens', () => {
       const stack = new Stack();
 
-      const obj = Fn.join('', [
-        'a',
-        Fn.join('', [Fn.getAtt('a', 'bc').toString(), 'c']),
-        'd',
-      ]);
+      const obj = Fn.join('', ['a', Fn.join('', [Fn.getAtt('a', 'bc').toString(), 'c']), 'd']);
 
       expect(stack.resolve(obj)).toEqual({
-        'Fn::Join': ['',
-          [
-            'a',
-            { 'Fn::GetAtt': ['a', 'bc'] },
-            'cd',
-          ]],
+        'Fn::Join': ['', ['a', { 'Fn::GetAtt': ['a', 'bc'] }, 'cd']],
       });
     });
 
-    test('resolves to the value if only one value is joined', asyncTest(async () => {
-      const stack = new Stack();
-      fc.assert(
-        fc.property(
-          fc.string(), anyValue,
-          (delimiter, value) => _.isEqual(stack.resolve(Fn.join(delimiter, [value as string])), value),
-        ),
-        { verbose: true },
-      );
-    }));
+    test(
+      'resolves to the value if only one value is joined',
+      asyncTest(async () => {
+        const stack = new Stack();
+        fc.assert(
+          fc.property(fc.string(), anyValue, (delimiter, value) =>
+            _.isEqual(stack.resolve(Fn.join(delimiter, [value as string])), value)
+          ),
+          { verbose: true }
+        );
+      })
+    );
 
-    test('pre-concatenates string literals', asyncTest(async () => {
-      const stack = new Stack();
-      fc.assert(
-        fc.property(
-          fc.string(), fc.array(nonEmptyString, { minLength: 1, maxLength: 15 }),
-          (delimiter, values) => stack.resolve(Fn.join(delimiter, values)) === values.join(delimiter),
-        ),
-        { verbose: true },
-      );
-    }));
+    test(
+      'pre-concatenates string literals',
+      asyncTest(async () => {
+        const stack = new Stack();
+        fc.assert(
+          fc.property(
+            fc.string(),
+            fc.array(nonEmptyString, { minLength: 1, maxLength: 15 }),
+            (delimiter, values) => stack.resolve(Fn.join(delimiter, values)) === values.join(delimiter)
+          ),
+          { verbose: true }
+        );
+      })
+    );
 
-    test('pre-concatenates around tokens', asyncTest(async () => {
-      const stack = new Stack();
-      fc.assert(
-        fc.property(
-          fc.string(), fc.array(nonEmptyString, { minLength: 1, maxLength: 3 }), tokenish, fc.array(nonEmptyString, { minLength: 1, maxLength: 3 }),
-          (delimiter, prefix, obj, suffix) =>
-            _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
-              { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] }),
-        ),
-        { verbose: true },
-      );
-    }));
+    test(
+      'pre-concatenates around tokens',
+      asyncTest(async () => {
+        const stack = new Stack();
+        fc.assert(
+          fc.property(
+            fc.string(),
+            fc.array(nonEmptyString, { minLength: 1, maxLength: 3 }),
+            tokenish,
+            fc.array(nonEmptyString, { minLength: 1, maxLength: 3 }),
+            (delimiter, prefix, obj, suffix) =>
+              _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])), {
+                'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]],
+              })
+          ),
+          { verbose: true }
+        );
+      })
+    );
 
-    test('flattens joins nested under joins with same delimiter', asyncTest(async () => {
-      const stack = new Stack();
-      fc.assert(
-        fc.property(
-          fc.string(), fc.array(anyValue),
-          fc.array(anyValue, { minLength: 1, maxLength: 3 }),
-          fc.array(anyValue),
-          (delimiter, prefix, nested, suffix) =>
-            // Gonna test
-            _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix as string[], Fn.join(delimiter, nested as string[]), ...suffix as string[]])),
-              stack.resolve(Fn.join(delimiter, [...prefix as string[], ...nested as string[], ...suffix as string[]]))),
-        ),
-        { verbose: true },
-      );
-    }));
+    test(
+      'flattens joins nested under joins with same delimiter',
+      asyncTest(async () => {
+        const stack = new Stack();
+        fc.assert(
+          fc.property(
+            fc.string(),
+            fc.array(anyValue),
+            fc.array(anyValue, { minLength: 1, maxLength: 3 }),
+            fc.array(anyValue),
+            (delimiter, prefix, nested, suffix) =>
+              // Gonna test
+              _.isEqual(
+                stack.resolve(
+                  Fn.join(delimiter, [
+                    ...(prefix as string[]),
+                    Fn.join(delimiter, nested as string[]),
+                    ...(suffix as string[]),
+                  ])
+                ),
+                stack.resolve(
+                  Fn.join(delimiter, [...(prefix as string[]), ...(nested as string[]), ...(suffix as string[])])
+                )
+              )
+          ),
+          { verbose: true }
+        );
+      })
+    );
 
-    test('does not flatten joins nested under joins with different delimiter', asyncTest(async () => {
-      const stack = new Stack();
-      fc.assert(
-        fc.property(
-          fc.string(), fc.string(),
-          fc.array(anyValue, { minLength: 1, maxLength: 3 }),
-          fc.array(tokenish, { minLength: 2, maxLength: 3 }),
-          fc.array(anyValue, { minLength: 3 }),
-          (delimiter1, delimiter2, prefix, nested, suffix) => {
-            fc.pre(delimiter1 !== delimiter2);
-            const join = Fn.join(delimiter1, [...prefix as string[], Fn.join(delimiter2, stringListToken(nested)), ...suffix as string[]]);
-            const resolved = stack.resolve(join);
-            return resolved['Fn::Join'][1].find((e: any) => typeof e === 'object'
-                                                        && ('Fn::Join' in e)
-                                                        && e['Fn::Join'][0] === delimiter2) != null;
+    test(
+      'does not flatten joins nested under joins with different delimiter',
+      asyncTest(async () => {
+        const stack = new Stack();
+        fc.assert(
+          fc.property(
+            fc.string(),
+            fc.string(),
+            fc.array(anyValue, { minLength: 1, maxLength: 3 }),
+            fc.array(tokenish, { minLength: 2, maxLength: 3 }),
+            fc.array(anyValue, { minLength: 3 }),
+            (delimiter1, delimiter2, prefix, nested, suffix) => {
+              fc.pre(delimiter1 !== delimiter2);
+              const join = Fn.join(delimiter1, [
+                ...(prefix as string[]),
+                Fn.join(delimiter2, stringListToken(nested)),
+                ...(suffix as string[]),
+              ]);
+              const resolved = stack.resolve(join);
+              return (
+                resolved['Fn::Join'][1].find(
+                  (e: any) => typeof e === 'object' && 'Fn::Join' in e && e['Fn::Join'][0] === delimiter2
+                ) != null
+              );
+            }
+          ),
+          { verbose: true }
+        );
+      })
+    );
+
+    test(
+      'Fn::EachMemberIn',
+      asyncTest(async () => {
+        const stack = new Stack();
+        const eachMemberIn = Fn.conditionEachMemberIn(
+          Fn.valueOfAll('AWS::EC2::Subnet::Id', 'VpcId'),
+          Fn.refAll('AWS::EC2::VPC::Id')
+        );
+        expect(stack.resolve(eachMemberIn)).toEqual({
+          'Fn::EachMemberIn': [
+            { 'Fn::ValueOfAll': ['AWS::EC2::Subnet::Id', 'VpcId'] },
+            { 'Fn::RefAll': 'AWS::EC2::VPC::Id' },
+          ],
+        });
+      })
+    );
+
+    test(
+      'cross-stack FnJoin elements are properly resolved',
+      asyncTest(async () => {
+        // GIVEN
+        const app = new App();
+        const stack1 = new Stack(app, 'Stack1');
+        const stack2 = new Stack(app, 'Stack2');
+
+        // WHEN
+        new CfnOutput(stack2, 'Stack1Id', {
+          value: Fn.join(' = ', ['Stack1Id', stack1.stackId]),
+        });
+
+        // THEN
+        const template = app.synth().getStackByName('Stack2').template;
+
+        expect(template?.Outputs).toEqual({
+          Stack1Id: {
+            Value: {
+              'Fn::Join': [' = ', ['Stack1Id', { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' }]],
+            },
           },
-        ),
-        { verbose: true },
-      );
-    }));
-
-    test('Fn::EachMemberIn', asyncTest(async () => {
-      const stack = new Stack();
-      const eachMemberIn = Fn.conditionEachMemberIn(
-        Fn.valueOfAll('AWS::EC2::Subnet::Id', 'VpcId'),
-        Fn.refAll('AWS::EC2::VPC::Id'),
-      );
-      expect(stack.resolve(eachMemberIn)).toEqual({
-        'Fn::EachMemberIn': [
-          { 'Fn::ValueOfAll': ['AWS::EC2::Subnet::Id', 'VpcId'] },
-          { 'Fn::RefAll': 'AWS::EC2::VPC::Id' },
-        ],
-      });
-    }));
-
-    test('cross-stack FnJoin elements are properly resolved', asyncTest(async () => {
-      // GIVEN
-      const app = new App();
-      const stack1 = new Stack(app, 'Stack1');
-      const stack2 = new Stack(app, 'Stack2');
-
-      // WHEN
-      new CfnOutput(stack2, 'Stack1Id', {
-        value: Fn.join(' = ', ['Stack1Id', stack1.stackId]),
-      });
-
-      // THEN
-      const template = app.synth().getStackByName('Stack2').template;
-
-      expect(template?.Outputs).toEqual({
-        Stack1Id: {
-          Value: {
-            'Fn::Join': [' = ', [
-              'Stack1Id',
-              { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
-            ]],
-          },
-        },
-      });
-    }));
+        });
+      })
+    );
   });
 
   describe('Ref', () => {
@@ -210,7 +231,6 @@ describe('fn', () => {
       expect(stack.resolve(Fn.ref('hello'))).toEqual({
         Ref: 'hello',
       });
-
     });
   });
 
@@ -219,13 +239,7 @@ describe('fn', () => {
     const inner = Fn.join(',', Token.asList({ NotReallyList: true }));
     const outer = Fn.join(',', [inner, 'Foo']);
     expect(stack.resolve(outer)).toEqual({
-      'Fn::Join': [
-        ',',
-        [
-          { 'Fn::Join': [',', { NotReallyList: true }] },
-          'Foo',
-        ],
-      ],
+      'Fn::Join': [',', [{ 'Fn::Join': [',', { NotReallyList: true }] }, 'Foo']],
     });
   });
 });
@@ -271,9 +285,7 @@ test('Fn.toJsonString', () => {
   const token = Token.asAny({ key: 'value' });
 
   expect(stack.resolve(Fn.toJsonString(token))).toEqual({ 'Fn::ToJsonString': { key: 'value' } });
-  expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
-    'AWS::LanguageExtensions',
-  ]));
+  expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining(['AWS::LanguageExtensions']));
 });
 
 test('Fn.toJsonString with resolved value', () => {
@@ -294,9 +306,7 @@ test('Fn.len', () => {
       ],
     },
   });
-  expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining([
-    'AWS::LanguageExtensions',
-  ]));
+  expect(stack.templateOptions.transforms).toEqual(expect.arrayContaining(['AWS::LanguageExtensions']));
 });
 
 test('Fn.len with resolved value', () => {

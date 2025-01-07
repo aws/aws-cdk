@@ -10,7 +10,6 @@ beforeEach(() => {
 });
 
 describe('MediaConvert Create Job', () => {
-
   test('REQUEST_RESPONSE Integration Pattern', () => {
     // WHEN
     const task = new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
@@ -101,7 +100,9 @@ describe('MediaConvert Create Job', () => {
         },
       });
       // THEN
-    }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+    }).toThrow(
+      /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
+    );
   });
 
   test('Fails on role not specified', () => {

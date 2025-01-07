@@ -137,8 +137,7 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
       physicalName:
         props.keySigningKeyName ??
         Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
         }),
     });
 

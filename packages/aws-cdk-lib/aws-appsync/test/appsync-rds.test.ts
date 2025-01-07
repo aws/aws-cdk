@@ -1,7 +1,15 @@
 import * as path from 'path';
 import { Template } from '../../assertions';
 import { Vpc, SecurityGroup, SubnetType } from '../../aws-ec2';
-import { DatabaseSecret, DatabaseClusterEngine, AuroraMysqlEngineVersion, ServerlessCluster, DatabaseCluster, ClusterInstance, AuroraPostgresEngineVersion } from '../../aws-rds';
+import {
+  DatabaseSecret,
+  DatabaseClusterEngine,
+  AuroraMysqlEngineVersion,
+  ServerlessCluster,
+  DatabaseCluster,
+  ClusterInstance,
+  AuroraPostgresEngineVersion,
+} from '../../aws-rds';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
 
@@ -51,64 +59,72 @@ describe('Rds Data Source configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: [{
-          Action: [
-            'secretsmanager:GetSecretValue',
-            'secretsmanager:DescribeSecret',
-          ],
-          Effect: 'Allow',
-          Resource: { Ref: 'AuroraSecret41E6E877' },
-        },
-        {
-          Action: [
-            'rds-data:BatchExecuteStatement',
-            'rds-data:BeginTransaction',
-            'rds-data:CommitTransaction',
-            'rds-data:ExecuteStatement',
-            'rds-data:RollbackTransaction',
-          ],
-          Effect: 'Allow',
-          Resource: '*',
-        },
-        {
-          Action: [
-            'secretsmanager:GetSecretValue',
-            'secretsmanager:DescribeSecret',
-          ],
-          Effect: 'Allow',
-          Resource: { Ref: 'AuroraClusterSecretAttachmentDB8032DA' },
-        },
-        {
-          Action: [
-            'rds-data:DeleteItems',
-            'rds-data:ExecuteSql',
-            'rds-data:GetItems',
-            'rds-data:InsertItems',
-            'rds-data:UpdateItems',
-          ],
-          Effect: 'Allow',
-          Resource: [{
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraCluster23D869C0' }]],
+        Statement: [
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'AuroraSecret41E6E877' },
           },
           {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraCluster23D869C0' },
-              ':*']],
-          }],
-        }],
+            Action: [
+              'rds-data:BatchExecuteStatement',
+              'rds-data:BeginTransaction',
+              'rds-data:CommitTransaction',
+              'rds-data:ExecuteStatement',
+              'rds-data:RollbackTransaction',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'AuroraClusterSecretAttachmentDB8032DA' },
+          },
+          {
+            Action: [
+              'rds-data:DeleteItems',
+              'rds-data:ExecuteSql',
+              'rds-data:GetItems',
+              'rds-data:InsertItems',
+              'rds-data:UpdateItems',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':rds:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':cluster:',
+                    { Ref: 'AuroraCluster23D869C0' },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':rds:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':cluster:',
+                    { Ref: 'AuroraCluster23D869C0' },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
       },
     });
   });
@@ -149,14 +165,19 @@ describe('Rds Data Source configuration', () => {
           AwsRegion: { Ref: 'AWS::Region' },
           AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
           DbClusterIdentifier: {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraCluster23D869C0' }]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':rds:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':cluster:',
+                { Ref: 'AuroraCluster23D869C0' },
+              ],
+            ],
           },
         },
       },
@@ -176,14 +197,19 @@ describe('Rds Data Source configuration', () => {
           AwsRegion: { Ref: 'AWS::Region' },
           AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
           DbClusterIdentifier: {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraCluster23D869C0' }]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':rds:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':cluster:',
+                { Ref: 'AuroraCluster23D869C0' },
+              ],
+            ],
           },
           DatabaseName: testDatabaseName,
         },
@@ -238,7 +264,7 @@ describe('Rds Data Source configuration', () => {
     };
 
     // THEN
-    expect(when).toThrow('There is already a Construct with name \'ds\' in GraphqlApi [baseApi]');
+    expect(when).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
 });
 
@@ -279,73 +305,86 @@ describe('Rds Data Source Serverless V2 configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: [{
-          Action: [
-            'secretsmanager:GetSecretValue',
-            'secretsmanager:DescribeSecret',
-          ],
-          Effect: 'Allow',
-          Resource: { Ref: 'AuroraSecret41E6E877' },
-        },
-        {
-          Action: [
-            'rds-data:BatchExecuteStatement',
-            'rds-data:BeginTransaction',
-            'rds-data:CommitTransaction',
-            'rds-data:ExecuteStatement',
-            'rds-data:RollbackTransaction',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraClusterV2A232B19B' }]],
-          },
-        },
-        {
-          Action: [
-            'secretsmanager:GetSecretValue',
-            'secretsmanager:DescribeSecret',
-          ],
-          Effect: 'Allow',
-          Resource: { Ref: 'AuroraClusterV2SecretAttachmentA83795D8' },
-        },
-        {
-          Action: [
-            'rds-data:DeleteItems',
-            'rds-data:ExecuteSql',
-            'rds-data:GetItems',
-            'rds-data:InsertItems',
-            'rds-data:UpdateItems',
-          ],
-          Effect: 'Allow',
-          Resource: [{
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraClusterV2A232B19B' }]],
+        Statement: [
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'AuroraSecret41E6E877' },
           },
           {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraClusterV2A232B19B' },
-              ':*']],
-          }],
-        }],
+            Action: [
+              'rds-data:BatchExecuteStatement',
+              'rds-data:BeginTransaction',
+              'rds-data:CommitTransaction',
+              'rds-data:ExecuteStatement',
+              'rds-data:RollbackTransaction',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':rds:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':cluster:',
+                  { Ref: 'AuroraClusterV2A232B19B' },
+                ],
+              ],
+            },
+          },
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'AuroraClusterV2SecretAttachmentA83795D8' },
+          },
+          {
+            Action: [
+              'rds-data:DeleteItems',
+              'rds-data:ExecuteSql',
+              'rds-data:GetItems',
+              'rds-data:InsertItems',
+              'rds-data:UpdateItems',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':rds:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':cluster:',
+                    { Ref: 'AuroraClusterV2A232B19B' },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':rds:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':cluster:',
+                    { Ref: 'AuroraClusterV2A232B19B' },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
       },
     });
   });
@@ -386,14 +425,19 @@ describe('Rds Data Source Serverless V2 configuration', () => {
           AwsRegion: { Ref: 'AWS::Region' },
           AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
           DbClusterIdentifier: {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraClusterV2A232B19B' }]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':rds:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':cluster:',
+                { Ref: 'AuroraClusterV2A232B19B' },
+              ],
+            ],
           },
         },
       },
@@ -413,14 +457,19 @@ describe('Rds Data Source Serverless V2 configuration', () => {
           AwsRegion: { Ref: 'AWS::Region' },
           AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
           DbClusterIdentifier: {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraClusterV2A232B19B' }]],
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':rds:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':cluster:',
+                { Ref: 'AuroraClusterV2A232B19B' },
+              ],
+            ],
           },
           DatabaseName: testDatabaseName,
         },
@@ -475,7 +524,7 @@ describe('Rds Data Source Serverless V2 configuration', () => {
     };
 
     // THEN
-    expect(when).toThrow('There is already a Construct with name \'dsV2\' in GraphqlApi [baseApi]');
+    expect(when).toThrow("There is already a Construct with name 'dsV2' in GraphqlApi [baseApi]");
   });
 });
 

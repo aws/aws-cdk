@@ -21,9 +21,7 @@ test('Can create target groups with instance id target', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
     Protocol: 'HTTP',
-    Targets: [
-      { Id: 'i-1234' },
-    ],
+    Targets: [{ Id: 'i-1234' }],
     TargetType: 'instance',
   });
 });
@@ -51,9 +49,7 @@ test('Can create target groups with instance target', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
     Protocol: 'HTTP',
-    Targets: [
-      { Id: { Ref: 'InstanceC1063A87' } },
-    ],
+    Targets: [{ Id: { Ref: 'InstanceC1063A87' } }],
     TargetType: 'instance',
   });
 });

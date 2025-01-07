@@ -341,8 +341,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     attrs: DatabaseClusterAttributes
   ): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPort =
-        typeof attrs.port !== 'undefined' ? ec2.Port.tcp(attrs.port) : undefined;
+      public readonly defaultPort = typeof attrs.port !== 'undefined' ? ec2.Port.tcp(attrs.port) : undefined;
       public readonly connections = new ec2.Connections({
         securityGroups: attrs.securityGroup ? [attrs.securityGroup] : undefined,
         defaultPort: this.defaultPort,
@@ -401,9 +400,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       public get securityGroupId(): string {
         if (!this._securityGroupId) {
-          throw new Error(
-            'Cannot access `securityGroupId` of an imported cluster without securityGroupId'
-          );
+          throw new Error('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
         }
         return this._securityGroupId;
       }
@@ -519,12 +516,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // HACK: Use an escape-hatch to apply a consistent removal policy to the
       // security group so we don't get errors when trying to delete the stack.
       const securityGroupRemovalPolicy = this.getSecurityGroupRemovalPolicy(props);
-      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(
-        securityGroupRemovalPolicy,
-        {
-          applyToUpdateReplacePolicy: true,
-        }
-      );
+      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(securityGroupRemovalPolicy, {
+        applyToUpdateReplacePolicy: true,
+      });
     }
     this.securityGroupId = securityGroup.securityGroupId;
 
@@ -557,9 +551,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
     if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
-      throw new Error(
-        `Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`
-      );
+      throw new Error(`Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`);
     }
 
     if (
@@ -583,9 +575,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
       deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret
-        ? secret.secretValueFromJson('username').unsafeUnwrap()
-        : props.masterUser.username,
+      masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').unsafeUnwrap()
         : props.masterUser.password!.unsafeUnwrap(), // Safe usage
@@ -594,8 +584,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       preferredBackupWindow: props.backup?.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       // EnableCloudwatchLogsExports
-      enableCloudwatchLogsExports:
-        enableCloudwatchLogsExports.length > 0 ? enableCloudwatchLogsExports : undefined,
+      enableCloudwatchLogsExports: enableCloudwatchLogsExports.length > 0 ? enableCloudwatchLogsExports : undefined,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
@@ -628,9 +617,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
-    const caCertificateIdentifier = props.caCertificate
-      ? props.caCertificate.toString()
-      : undefined;
+    const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
 
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
@@ -673,11 +660,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Sets up CloudWatch log retention if configured.
    */
-  private setLogRetention(
-    cluster: DatabaseCluster,
-    props: DatabaseClusterProps,
-    cloudwatchLogsExports: string[]
-  ) {
+  private setLogRetention(cluster: DatabaseCluster, props: DatabaseClusterProps, cloudwatchLogsExports: string[]) {
     if (props.cloudWatchLogsRetention) {
       for (const log of cloudwatchLogsExports) {
         new logs.LogRetention(cluster, `LogRetention${log}`, {
@@ -740,10 +723,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Adds the multi user rotation to this cluster.
    */
-  public addRotationMultiUser(
-    id: string,
-    options: RotationMultiUserOptions
-  ): secretsmanager.SecretRotation {
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }

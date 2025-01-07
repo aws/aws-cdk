@@ -28,10 +28,7 @@ describe('kinesis source', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyStream5C050E93',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
       },
       SourceParameters: {
         KinesisStreamParameters: {
@@ -70,10 +67,7 @@ describe('kinesis source', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyStream5C050E93',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
       },
       SourceParameters: {
         KinesisStreamParameters: {
@@ -122,20 +116,14 @@ describe('kinesis source', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyStream5C050E93',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
       },
       SourceParameters: {
         KinesisStreamParameters: {
           BatchSize: 10,
           DeadLetterConfig: {
             Arn: {
-              'Fn::GetAtt': [
-                'MyQueueE6CA6235',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
             },
           },
           MaximumBatchingWindowInSeconds: 10,

@@ -3,7 +3,7 @@ import { InvalidResourceId } from '@aws-sdk/client-ssm';
 import { handler } from '../../lib/core/cross-region-ssm-writer-handler/index';
 import { SSM_EXPORT_PATH_PREFIX } from '../../lib/core/types';
 
-let mockPutParameter: jest.Mock = jest.fn() ;
+let mockPutParameter: jest.Mock = jest.fn();
 let mocklistTagsForResource: jest.Mock = jest.fn();
 let mockDeleteParameters: jest.Mock = jest.fn();
 jest.mock('@aws-sdk/client-ssm', () => {
@@ -88,15 +88,19 @@ describe('cross-region-ssm-writer entrypoint', () => {
       // WHEN
       mocklistTagsForResource.mockImplementation(() => {
         return {
-          TagList: [{
-            Key: 'aws-cdk:strong-ref:MyStack',
-            Value: 'true',
-          }],
+          TagList: [
+            {
+              Key: 'aws-cdk:strong-ref:MyStack',
+              Value: 'true',
+            },
+          ],
         };
       });
 
       // THEN
-      await expect(handler(event)).rejects.toThrow('Exports cannot be updated: \n/cdk/exports/MyStack/MyExport is in use by stack(s) MyStack');
+      await expect(handler(event)).rejects.toThrow(
+        'Exports cannot be updated: \n/cdk/exports/MyStack/MyExport is in use by stack(s) MyStack'
+      );
     });
 
     test('Create event does not throw for new parameters', async () => {
@@ -240,10 +244,12 @@ describe('cross-region-ssm-writer entrypoint', () => {
       // WHEN
       mocklistTagsForResource.mockImplementation(() => {
         return {
-          TagList: [{
-            Key: 'aws-cdk:strong-ref:MyStack',
-            Value: 'true',
-          }],
+          TagList: [
+            {
+              Key: 'aws-cdk:strong-ref:MyStack',
+              Value: 'true',
+            },
+          ],
         };
       });
 
@@ -284,10 +290,12 @@ describe('cross-region-ssm-writer entrypoint', () => {
           ResourceType: 'Parameter',
         });
         return {
-          TagList: [{
-            Key: 'aws-cdk:strong-ref:MyStack',
-            Value: 'true',
-          }],
+          TagList: [
+            {
+              Key: 'aws-cdk:strong-ref:MyStack',
+              Value: 'true',
+            },
+          ],
         };
       });
 
@@ -322,10 +330,12 @@ describe('cross-region-ssm-writer entrypoint', () => {
       // WHEN
       mocklistTagsForResource.mockImplementation(() => {
         return {
-          TagList: [{
-            Key: 'aws-cdk:strong-ref:MyStack',
-            Value: 'true',
-          }],
+          TagList: [
+            {
+              Key: 'aws-cdk:strong-ref:MyStack',
+              Value: 'true',
+            },
+          ],
         };
       });
 
@@ -410,10 +420,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
         ],
       });
       expect(mockDeleteParameters).toHaveBeenCalledWith({
-        Names: [
-          '/cdk/exports/MyStack/RemovedExport11',
-          '/cdk/exports/MyStack/RemovedExport12',
-        ],
+        Names: ['/cdk/exports/MyStack/RemovedExport11', '/cdk/exports/MyStack/RemovedExport12'],
       });
     });
 
@@ -435,10 +442,12 @@ describe('cross-region-ssm-writer entrypoint', () => {
       // WHEN
       mocklistTagsForResource.mockImplementation(() => {
         return {
-          TagList: [{
-            Key: 'aws-cdk:strong-ref:MyStack',
-            Value: 'true',
-          }],
+          TagList: [
+            {
+              Key: 'aws-cdk:strong-ref:MyStack',
+              Value: 'true',
+            },
+          ],
         };
       });
 
@@ -451,7 +460,9 @@ describe('cross-region-ssm-writer entrypoint', () => {
   });
 });
 
-function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): AWSLambda.CloudFormationCustomResourceEvent {
+function makeEvent(
+  req: Partial<AWSLambda.CloudFormationCustomResourceEvent>
+): AWSLambda.CloudFormationCustomResourceEvent {
   return {
     LogicalResourceId: '<LogicalResourceId>',
     RequestId: '<RequestId>',

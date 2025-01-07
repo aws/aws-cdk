@@ -22,9 +22,7 @@ describe('notification', () => {
       NotificationConfiguration: {
         TopicConfigurations: [
           {
-            Events: [
-              's3:ObjectCreated:*',
-            ],
+            Events: ['s3:ObjectCreated:*'],
             TopicArn: 'ARN',
           },
         ],
@@ -73,31 +71,39 @@ describe('notification', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'lambda.amazonaws.com',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
           },
-        }],
+        ],
       },
       ManagedPolicyArns: [
         {
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']],
+          'Fn::Join': [
+            '',
+            ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+          ],
         },
       ],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 's3:PutBucketNotification',
-          Effect: 'Allow',
-          Resource: '*',
-        }, {
-          Action: 's3:GetBucketNotification',
-          Effect: 'Allow',
-          Resource: '*',
-        }],
+        Statement: [
+          {
+            Action: 's3:PutBucketNotification',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 's3:GetBucketNotification',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
       },
     });
   });
@@ -162,7 +168,16 @@ describe('notification', () => {
     });
 
     // THEN - Following is warning throwen as a part of fix in : https://github.com/aws/aws-cdk/pull/31212
-    const warningMessage = { 'Fn::Join': ['', ["Can't combine imported IManagedPolicy: arn:", { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole to imported role IRole: DevsNotAllowedToTouch. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]']] };
+    const warningMessage = {
+      'Fn::Join': [
+        '',
+        [
+          "Can't combine imported IManagedPolicy: arn:",
+          { Ref: 'AWS::Partition' },
+          ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole to imported role IRole: DevsNotAllowedToTouch. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]',
+        ],
+      ],
+    };
     const warningFromStack = Annotations.fromStack(stack).findWarning('*', {});
     expect(warningFromStack[0].entry.data).toEqual(warningMessage);
   });
@@ -189,31 +204,39 @@ describe('notification', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 's3:PutBucketNotification',
-          Effect: 'Allow',
-          Resource: '*',
-        }, {
-          Action: 's3:GetBucketNotification',
-          Effect: 'Allow',
-          Resource: '*',
-        }],
+        Statement: [
+          {
+            Action: 's3:PutBucketNotification',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 's3:GetBucketNotification',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'someservice.amazonaws.com',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'someservice.amazonaws.com',
+            },
           },
-        }],
+        ],
       },
       ManagedPolicyArns: [
         {
-          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']],
+          'Fn::Join': [
+            '',
+            ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
+          ],
         },
       ],
     });
@@ -248,20 +271,22 @@ describe('notification', () => {
 
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
-      bind: () => ({
-        arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.TOPIC,
-      }),
-    }, { prefix: 'images/', suffix: '.png' });
+    bucket.addEventNotification(
+      s3.EventType.OBJECT_CREATED,
+      {
+        bind: () => ({
+          arn: 'ARN',
+          type: s3.BucketNotificationDestinationType.TOPIC,
+        }),
+      },
+      { prefix: 'images/', suffix: '.png' }
+    );
 
     Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
       NotificationConfiguration: {
         TopicConfigurations: [
           {
-            Events: [
-              's3:ObjectCreated:*',
-            ],
+            Events: ['s3:ObjectCreated:*'],
             Filter: {
               Key: {
                 FilterRules: [
@@ -299,14 +324,13 @@ describe('notification', () => {
       Type: 'AWS::Lambda::Function',
       Properties: {
         Role: {
-          'Fn::GetAtt': [
-            'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC', 'Arn'],
         },
       },
-      DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
-        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
+      DependsOn: [
+        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
+        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC',
+      ],
     });
   });
 
@@ -360,11 +384,13 @@ describe('notification', () => {
       }),
     });
 
-    bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [bucket.bucketArn],
-      actions: ['s3:GetBucketAcl'],
-      principals: [new iam.AnyPrincipal()],
-    }));
+    bucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: [bucket.bucketArn],
+        actions: ['s3:GetBucketAcl'],
+        principals: [new iam.AnyPrincipal()],
+      })
+    );
 
     Template.fromStack(stack).hasResource('Custom::S3BucketNotifications', {
       Type: 'Custom::S3BucketNotifications',
@@ -377,12 +403,19 @@ describe('notification', () => {
 
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    expect(() => bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
-      bind: () => ({
-        arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.TOPIC,
-      }),
-    }, { prefix: 'images/' }, { prefix: 'archive/' })).toThrow(/prefix rule/);
+    expect(() =>
+      bucket.addEventNotification(
+        s3.EventType.OBJECT_CREATED,
+        {
+          bind: () => ({
+            arn: 'ARN',
+            type: s3.BucketNotificationDestinationType.TOPIC,
+          }),
+        },
+        { prefix: 'images/' },
+        { prefix: 'archive/' }
+      )
+    ).toThrow(/prefix rule/);
   });
 
   test('throws with multiple suffix rules in a filter', () => {
@@ -390,12 +423,19 @@ describe('notification', () => {
 
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    expect(() => bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
-      bind: () => ({
-        arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.TOPIC,
-      }),
-    }, { suffix: '.png' }, { suffix: '.zip' })).toThrow(/suffix rule/);
+    expect(() =>
+      bucket.addEventNotification(
+        s3.EventType.OBJECT_CREATED,
+        {
+          bind: () => ({
+            arn: 'ARN',
+            type: s3.BucketNotificationDestinationType.TOPIC,
+          }),
+        },
+        { suffix: '.png' },
+        { suffix: '.zip' }
+      )
+    ).toThrow(/suffix rule/);
   });
 
   test('EventBridge notification custom resource', () => {

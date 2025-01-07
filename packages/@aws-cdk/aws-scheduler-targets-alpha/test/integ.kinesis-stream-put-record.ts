@@ -53,9 +53,7 @@ const getRecords = integrationTest.assertions.awsApiCall('kinesis', 'getRecords'
   ShardIterator: getShardIterator.getAttString('ShardIterator'),
 });
 
-getRecords
-  .assertAtPath('Records.0.PartitionKey', ExpectedResult.stringLikeRegexp(partitionKey))
-  .waitForAssertions({
-    interval: cdk.Duration.seconds(30),
-    totalTimeout: cdk.Duration.minutes(10),
-  });
+getRecords.assertAtPath('Records.0.PartitionKey', ExpectedResult.stringLikeRegexp(partitionKey)).waitForAssertions({
+  interval: cdk.Duration.seconds(30),
+  totalTimeout: cdk.Duration.minutes(10),
+});

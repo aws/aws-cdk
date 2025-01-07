@@ -277,17 +277,11 @@ export class GaugeWidget extends ConcreteWidget {
           title: this.props.title,
           region: this.props.region || cdk.Aws.REGION,
           metrics: metrics.length > 0 ? metrics : undefined,
-          annotations:
-            (this.props.annotations ?? []).length > 0
-              ? { horizontal: this.props.annotations }
-              : undefined,
+          annotations: (this.props.annotations ?? []).length > 0 ? { horizontal: this.props.annotations } : undefined,
           yAxis: {
             left: leftYAxis ?? undefined,
           },
-          legend:
-            this.props.legendPosition !== undefined
-              ? { position: this.props.legendPosition }
-              : undefined,
+          legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
           liveData: this.props.liveData,
           setPeriodToTimeRange: this.props.setPeriodToTimeRange,
           period: this.props.period?.toSeconds(),
@@ -519,10 +513,7 @@ export class GraphWidget extends ConcreteWidget {
             left: this.props.leftYAxis ?? undefined,
             right: this.props.rightYAxis ?? undefined,
           },
-          legend:
-            this.props.legendPosition !== undefined
-              ? { position: this.props.legendPosition }
-              : undefined,
+          legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
           liveData: this.props.liveData,
           setPeriodToTimeRange: this.props.setPeriodToTimeRange,
           period: this.props.period?.toSeconds(),
@@ -641,12 +632,7 @@ export class TableThreshold {
   private readonly color?: string;
   private readonly comparator?: Shading;
 
-  private constructor(
-    lowerBound: number,
-    upperBound?: number,
-    color?: string,
-    comparator?: Shading
-  ) {
+  private constructor(lowerBound: number, upperBound?: number, color?: string, comparator?: Shading) {
     this.lowerBound = lowerBound;
     this.upperBound = upperBound;
     this.color = color;
@@ -792,9 +778,7 @@ export class TableWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    const horizontalAnnotations = (this.props.thresholds ?? []).map((threshold) =>
-      threshold.toJson()
-    );
+    const horizontalAnnotations = (this.props.thresholds ?? []).map((threshold) => threshold.toJson());
     const annotations =
       horizontalAnnotations.length > 0
         ? {

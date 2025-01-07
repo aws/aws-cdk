@@ -15,7 +15,6 @@ beforeEach(() => {
 });
 
 describe('None Data Source configuration', () => {
-
   test('default configuration produces name `NoneCDKDataSource`', () => {
     // WHEN
     api.addNoneDataSource('ds');
@@ -42,7 +41,11 @@ describe('None Data Source configuration', () => {
 
   test('appsync configures name correctly for token', () => {
     // WHEN
-    const produceCustom = cdk.Lazy.string({ produce(): string { return 'Produce'; } });
+    const produceCustom = cdk.Lazy.string({
+      produce(): string {
+        return 'Produce';
+      },
+    });
     api.addNoneDataSource('ds', {
       name: `${produceCustom}Custom`,
     });

@@ -82,16 +82,12 @@ export class AwsApi implements events.IRuleTarget {
    * result from an EventBridge event.
    */
   public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
-    const handler = new AwsApiSingletonFunction(
-      rule as events.Rule,
-      `${rule.node.id}${id}Handler`,
-      {
-        timeout: Duration.seconds(60),
-        memorySize: 256,
-        uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
-        lambdaPurpose: 'AWS',
-      }
-    );
+    const handler = new AwsApiSingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
+      timeout: Duration.seconds(60),
+      memorySize: 256,
+      uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
+      lambdaPurpose: 'AWS',
+    });
 
     checkServiceExists(this.props.service, handler);
 

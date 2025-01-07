@@ -326,10 +326,7 @@ export abstract class HttpRouteIntegration {
   public _bindToRoute(options: HttpRouteIntegrationBindOptions): {
     readonly integrationId: string;
   } {
-    if (
-      this.integration &&
-      this.integration.httpApi.node.addr !== options.route.httpApi.node.addr
-    ) {
+    if (this.integration && this.integration.httpApi.node.addr !== options.route.httpApi.node.addr) {
       throw new Error('A single integration cannot be associated with multiple APIs.');
     }
 

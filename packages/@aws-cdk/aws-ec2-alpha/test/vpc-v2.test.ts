@@ -20,8 +20,7 @@ describe('Vpc V2 with full control', () => {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       enableDnsHostnames: true,
       enableDnsSupport: true,
-    },
-    );
+    });
     Template.fromStack(stack).templateMatches({
       Resources: {
         TestVpcE77CE678: {
@@ -39,13 +38,14 @@ describe('Vpc V2 with full control', () => {
   test('VPC with secondary IPv4 address', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
-        cidrBlockName: 'SecondaryAddress',
-      })],
+      secondaryAddressBlocks: [
+        vpc.IpAddresses.ipv4('10.2.0.0/16', {
+          cidrBlockName: 'SecondaryAddress',
+        }),
+      ],
       enableDnsHostnames: true,
       enableDnsSupport: true,
-    },
-    );
+    });
     Template.fromStack(stack).templateMatches({
       Resources: {
         TestVpcE77CE678: {
@@ -60,29 +60,26 @@ describe('Vpc V2 with full control', () => {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
+              'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
             },
           },
         },
       },
     });
-
   });
 
   test('VPC throws error with incorrect cidr range (IPv4)', () => {
     expect(() => {
       new vpc.VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('192.168.0.0/16', {
-          cidrBlockName: 'SecondaryIpv4',
-        })],
+        secondaryAddressBlocks: [
+          vpc.IpAddresses.ipv4('192.168.0.0/16', {
+            cidrBlockName: 'SecondaryIpv4',
+          }),
+        ],
         enableDnsHostnames: true,
         enableDnsSupport: true,
-      },
-      );
+      });
     }).toThrow('CIDR block should be in the same RFC 1918 range in the VPC');
   });
 
@@ -92,8 +89,7 @@ describe('Vpc V2 with full control', () => {
       secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvided' })],
       enableDnsHostnames: true,
       enableDnsSupport: true,
-    },
-    );
+    });
     Template.fromStack(stack).templateMatches({
       Resources: {
         TestVpcE77CE678: {
@@ -109,20 +105,15 @@ describe('Vpc V2 with full control', () => {
           Properties: {
             AmazonProvidedIpv6CidrBlock: true, //Amazon Provided IPv6 address
             VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
+              'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
             },
           },
         },
       },
     });
-
   });
 
   test('VPC Primary IP from Ipv4 Ipam', () => {
-
     const ipam = new Ipam(stack, 'TestIpam', {
       operatingRegion: ['us-west-1'],
     });
@@ -141,8 +132,7 @@ describe('Vpc V2 with full control', () => {
       }),
       enableDnsHostnames: true,
       enableDnsSupport: true,
-    },
-    );
+    });
     Template.fromStack(stack).templateMatches({
       Resources: {
         TestIpamDBF92BA8: { Type: 'AWS::EC2::IPAM' },
@@ -163,10 +153,7 @@ describe('Vpc V2 with full control', () => {
           Type: 'AWS::EC2::VPC',
           Properties: {
             Ipv4IpamPoolId: {
-              'Fn::GetAtt': [
-                'TestIpamPrivatePool0E8589980',
-                'IpamPoolId',
-              ],
+              'Fn::GetAtt': ['TestIpamPrivatePool0E8589980', 'IpamPoolId'],
             },
             EnableDnsHostnames: true,
             EnableDnsSupport: true,
@@ -193,15 +180,16 @@ describe('Vpc V2 with full control', () => {
 
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-      secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
-        ipamPool: pool,
-        netmaskLength: 64,
-        cidrBlockName: 'IPv6Ipam',
-      })],
+      secondaryAddressBlocks: [
+        vpc.IpAddresses.ipv6Ipam({
+          ipamPool: pool,
+          netmaskLength: 64,
+          cidrBlockName: 'IPv6Ipam',
+        }),
+      ],
       enableDnsHostnames: true,
       enableDnsSupport: true,
-    },
-    );
+    });
     Template.fromStack(stack).templateMatches({
       Resources: {
         TestIpamDBF92BA8: { Type: 'AWS::EC2::IPAM' },
@@ -219,10 +207,7 @@ describe('Vpc V2 with full control', () => {
           Type: 'AWS::EC2::IPAMPoolCidr',
           Properties: {
             IpamPoolId: {
-              'Fn::GetAtt': [
-                'TestIpamPublicPool0588A338B',
-                'IpamPoolId',
-              ],
+              'Fn::GetAtt': ['TestIpamPublicPool0588A338B', 'IpamPoolId'],
             },
             NetmaskLength: 60,
           },
@@ -239,16 +224,10 @@ describe('Vpc V2 with full control', () => {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {
-              'Fn::GetAtt': [
-                'TestVpcE77CE678',
-                'VpcId',
-              ],
+              'Fn::GetAtt': ['TestVpcE77CE678', 'VpcId'],
             },
             Ipv6IpamPoolId: {
-              'Fn::GetAtt': [
-                'TestIpamPublicPool0588A338B',
-                'IpamPoolId',
-              ],
+              'Fn::GetAtt': ['TestIpamPublicPool0588A338B', 'IpamPoolId'],
             },
             Ipv6NetmaskLength: 64,
           },
@@ -257,4 +236,3 @@ describe('Vpc V2 with full control', () => {
     });
   });
 });
-

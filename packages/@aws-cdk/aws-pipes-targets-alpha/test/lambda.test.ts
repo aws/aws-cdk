@@ -6,7 +6,6 @@ import { TestSource } from './test-classes';
 import { LambdaFunction } from '../lib/lambda';
 
 describe('lambda-function', () => {
-
   it('should have only target arn and default invocation type REQUEST_RESPONSE', () => {
     // ARRANGE
     const app = new App();
@@ -31,10 +30,7 @@ describe('lambda-function', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyLambdaCCE802FB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
       },
       TargetParameters: {
         LambdaFunctionParameters: {
@@ -142,10 +138,7 @@ describe('lambda-function', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MyLambdaCCE802FB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'],
       },
       TargetParameters: {
         LambdaFunctionParameters: {
@@ -153,6 +146,5 @@ describe('lambda-function', () => {
         },
       },
     });
-
   });
 });

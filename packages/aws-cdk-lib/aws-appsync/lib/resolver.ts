@@ -119,9 +119,7 @@ export class Resolver extends Construct {
     }
 
     if (pipelineConfig && props.dataSource) {
-      throw new Error(
-        `Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`
-      );
+      throw new Error(`Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`);
     }
 
     if (
@@ -158,9 +156,7 @@ export class Resolver extends Construct {
       codeS3Location: code?.s3Location,
       code: code?.inlineCode,
       pipelineConfig: pipelineConfig,
-      requestMappingTemplate: props.requestMappingTemplate
-        ? props.requestMappingTemplate.renderTemplate()
-        : undefined,
+      requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate
         ? props.responseMappingTemplate.renderTemplate()
         : undefined,

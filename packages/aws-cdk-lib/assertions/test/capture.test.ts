@@ -97,12 +97,14 @@ describe('Capture', () => {
     const capture = new Capture(Match.objectLike({ bar: 'baz' }));
     const matcher = Match.objectLike({ foo: capture });
 
-    matcher.test({
-      foo: {
-        bar: 'baz',
-        fred: 'waldo',
-      },
-    }).finished();
+    matcher
+      .test({
+        foo: {
+          bar: 'baz',
+          fred: 'waldo',
+        },
+      })
+      .finished();
 
     expect(capture.asObject()).toEqual({ bar: 'baz', fred: 'waldo' });
     expect(capture.next()).toEqual(false);
@@ -112,11 +114,13 @@ describe('Capture', () => {
     const capture = new Capture(Match.objectLike({ bar: 'baz' }));
     const matcher = Match.objectLike({ foo: capture });
 
-    matcher.test({
-      foo: {
-        fred: 'waldo',
-      },
-    }).finished();
+    matcher
+      .test({
+        foo: {
+          fred: 'waldo',
+        },
+      })
+      .finished();
 
     expect(() => capture.asObject()).toThrow(/No value captured/);
   });
@@ -124,24 +128,24 @@ describe('Capture', () => {
   test('capture in arraywith and objectlike', () => {
     const capture = new Capture();
     const matcher = Match.objectLike({
-      People: Match.arrayWith([{
-        Name: 'Alice',
-        Attributes: [
-          Match.objectLike({
-            Name: 'HairColor',
-            Value: capture,
-          }),
-        ],
-      }]),
+      People: Match.arrayWith([
+        {
+          Name: 'Alice',
+          Attributes: [
+            Match.objectLike({
+              Name: 'HairColor',
+              Value: capture,
+            }),
+          ],
+        },
+      ]),
     });
 
     const result = matcher.test({
       People: [
         {
           Name: 'Alice',
-          Attributes: [
-            { Name: 'HairColor', Value: 'Black' },
-          ],
+          Attributes: [{ Name: 'HairColor', Value: 'Black' }],
         },
       ],
     });

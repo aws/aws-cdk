@@ -69,8 +69,7 @@ export abstract class ScheduleTargetBase {
   protected abstract addTargetActionToRole(role: iam.IRole): void;
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
-    const role: iam.IRole =
-      this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
+    const role: iam.IRole = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
 
     this.addTargetActionToRole(role);
 
@@ -108,9 +107,7 @@ export abstract class ScheduleTargetBase {
    */
   private createOrGetScheduleTargetRole(schedule: ISchedule, targetArn: string): iam.IRole {
     const stack = Stack.of(schedule);
-    const arn = Token.isUnresolved(targetArn)
-      ? JSON.stringify(stack.resolve(targetArn))
-      : targetArn;
+    const arn = Token.isUnresolved(targetArn) ? JSON.stringify(stack.resolve(targetArn)) : targetArn;
     const hash = md5hash(arn).slice(0, 6);
     const id = 'SchedulerRoleForTarget-' + hash;
     const existingRole = stack.node.tryFindChild(id) as iam.Role;

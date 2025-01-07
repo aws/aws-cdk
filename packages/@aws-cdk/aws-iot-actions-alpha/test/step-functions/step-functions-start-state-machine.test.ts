@@ -12,13 +12,13 @@ test('Default state machine action action', () => {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
+    definitionBody: sfn.DefinitionBody.fromChainable(
+      new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    ),
   });
 
   // WHEN
-  topicRule.addAction(
-    new actions.StepFunctionsStateMachineAction(stateMachine),
-  );
+  topicRule.addAction(new actions.StepFunctionsStateMachineAction(stateMachine));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -27,13 +27,12 @@ test('Default state machine action action', () => {
         {
           StepFunctions: {
             StateMachineName: {
-              'Fn::Select': [6,
+              'Fn::Select': [
+                6,
                 {
-                  'Fn::Split': [
-                    ':',
-                    { Ref: 'SM934E715A' },
-                  ],
-                }],
+                  'Fn::Split': [':', { Ref: 'SM934E715A' }],
+                },
+              ],
             },
             RoleArn: {
               'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
@@ -73,9 +72,7 @@ test('Default state machine action action', () => {
       Version: '2012-10-17',
     },
     PolicyName: 'MyTopicRuleTopicRuleActionRoleDefaultPolicy54A701F7',
-    Roles: [
-      { Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' },
-    ],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
@@ -85,19 +82,19 @@ test('can use imported state machine', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const stateMachine = sfn.StateMachine.fromStateMachineArn(stack, 'SM', 'arn:aws:states:us-east-1:111122223333:stateMachine:existing-state-machine');
+  const stateMachine = sfn.StateMachine.fromStateMachineArn(
+    stack,
+    'SM',
+    'arn:aws:states:us-east-1:111122223333:stateMachine:existing-state-machine'
+  );
 
   // WHEN
-  topicRule.addAction(
-    new actions.StepFunctionsStateMachineAction(stateMachine),
-  );
+  topicRule.addAction(new actions.StepFunctionsStateMachineAction(stateMachine));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ StepFunctions: { StateMachineName: 'existing-state-machine' } }),
-      ],
+      Actions: [Match.objectLike({ StepFunctions: { StateMachineName: 'existing-state-machine' } })],
     },
   });
 });
@@ -109,22 +106,22 @@ test('can set executionNamePrefix', () => {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
+    definitionBody: sfn.DefinitionBody.fromChainable(
+      new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    ),
   });
 
   // WHEN
   topicRule.addAction(
     new actions.StepFunctionsStateMachineAction(stateMachine, {
       executionNamePrefix: 'my-prefix',
-    }),
+    })
   );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ StepFunctions: { ExecutionNamePrefix: 'my-prefix' } }),
-      ],
+      Actions: [Match.objectLike({ StepFunctions: { ExecutionNamePrefix: 'my-prefix' } })],
     },
   });
 });
@@ -137,20 +134,18 @@ test('can set role', () => {
   });
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
+    definitionBody: sfn.DefinitionBody.fromChainable(
+      new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    ),
   });
 
   // WHEN
-  topicRule.addAction(
-    new actions.StepFunctionsStateMachineAction(stateMachine, { role }),
-  );
+  topicRule.addAction(new actions.StepFunctionsStateMachineAction(stateMachine, { role }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ StepFunctions: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
-      ],
+      Actions: [Match.objectLike({ StepFunctions: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } })],
     },
   });
 

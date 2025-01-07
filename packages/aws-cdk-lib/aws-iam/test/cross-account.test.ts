@@ -39,11 +39,10 @@ test('cross-account Role grant creates permissions AND trust', () => {
   assertPolicyCreated(stack1);
   assertTrustCreated(stack2, {
     AWS: {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        `:iam::${stack1Account}:role/stack1stack1rolef3c14260253562f428b7`,
-      ]],
+      'Fn::Join': [
+        '',
+        ['arn:', { Ref: 'AWS::Partition' }, `:iam::${stack1Account}:role/stack1stack1rolef3c14260253562f428b7`],
+      ],
     },
   });
 });
@@ -74,7 +73,9 @@ test('Imported Role with definitely different account grant creates trust', () =
 
 test('Imported Role with partition token in ARN (definitely different account) grant creates trust', () => {
   const resource = new FakeResource(stack2, 'Resource');
-  const role = iam.Role.fromRoleArn(stack2, 'Role', `arn:${stack2.partition}:iam::${thirdAccount}:role/S3Access`, { mutable: true });
+  const role = iam.Role.fromRoleArn(stack2, 'Role', `arn:${stack2.partition}:iam::${thirdAccount}:role/S3Access`, {
+    mutable: true,
+  });
 
   // WHEN
   doGrant(resource, role);
@@ -83,11 +84,7 @@ test('Imported Role with partition token in ARN (definitely different account) g
   noPolicyCreated(stack2);
   assertTrustCreated(stack2, {
     AWS: {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        `:iam::${thirdAccount}:role/S3Access`,
-      ]],
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, `:iam::${thirdAccount}:role/S3Access`]],
     },
   });
 });
@@ -106,7 +103,9 @@ test('Imported Role with definitely same account grant does not create trust', (
 
 test('Imported Role with partition token and definitely same account grant does not create trust', () => {
   const resource = new FakeResource(stack2, 'Resource');
-  const role = iam.Role.fromRoleArn(stack2, 'Role', `arn:${stack2.partition}:iam::5678:role/S3Access`, { mutable: true });
+  const role = iam.Role.fromRoleArn(stack2, 'Role', `arn:${stack2.partition}:iam::5678:role/S3Access`, {
+    mutable: true,
+  });
 
   // WHEN
   doGrant(resource, role);
@@ -134,7 +133,9 @@ test('Agnostic stack with agnostic imported role does not add trust', () => {
   // GIVEN
   const stack = new cdk.Stack(app, 'AgStack');
   const resource = new FakeResource(stack, 'Resource');
-  const role = iam.Role.fromRoleArn(stack2, 'Role', `arn:aws:iam::${cdk.Aws.ACCOUNT_ID}:role/S3Access`, { mutable: true });
+  const role = iam.Role.fromRoleArn(stack2, 'Role', `arn:aws:iam::${cdk.Aws.ACCOUNT_ID}:role/S3Access`, {
+    mutable: true,
+  });
 
   // WHEN
   doGrant(resource, role);
@@ -157,7 +158,6 @@ test('Immutable role in same account adds no policy and no trust', () => {
   // THEN
   noTrustCreated(stack2);
   noPolicyCreated(stack2);
-
 });
 
 class FakeResource extends cdk.Resource implements iam.IResourceWithPolicy {
@@ -207,13 +207,13 @@ function assertTrustCreated(stack: cdk.Stack, principal: any) {
 }
 
 function noTrustCreated(stack: cdk.Stack) {
-  expect(Template.fromStack(stack).findResources('Test::Fake::Resource', {
-    ResourcePolicy: {
-      Statement: [
-        {},
-      ],
-    },
-  })).toEqual({});
+  expect(
+    Template.fromStack(stack).findResources('Test::Fake::Resource', {
+      ResourcePolicy: {
+        Statement: [{}],
+      },
+    })
+  ).toEqual({});
 }
 
 function assertPolicyCreated(stack: cdk.Stack) {

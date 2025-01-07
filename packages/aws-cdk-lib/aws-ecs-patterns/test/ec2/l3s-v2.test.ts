@@ -28,13 +28,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
@@ -80,9 +82,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
         }),
       ],
       NetworkMode: 'bridge',
-      RequiresCompatibilities: [
-        'EC2',
-      ],
+      RequiresCompatibilities: ['EC2'],
     });
   });
 
@@ -91,13 +91,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
@@ -121,7 +123,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
           path: '/',
           assumedBy: new CompositePrincipal(
             new ServicePrincipal('ecs.amazonaws.com'),
-            new ServicePrincipal('ecs-tasks.amazonaws.com'),
+            new ServicePrincipal('ecs-tasks.amazonaws.com')
           ),
         }),
         taskRole: new Role(stack, 'TaskRole', {
@@ -166,7 +168,11 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
           protocol: Protocol.TCP,
         },
       ],
-      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementStrategies: [
+        PlacementStrategy.spreadAcrossInstances(),
+        PlacementStrategy.packedByCpu(),
+        PlacementStrategy.randomly(),
+      ],
       placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
     });
 
@@ -196,7 +202,11 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
       PropagateTags: 'SERVICE',
       ServiceName: 'myService',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
-      PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
+      PlacementStrategies: [
+        { Field: 'instanceId', Type: 'spread' },
+        { Field: 'CPU', Type: 'binpack' },
+        { Type: 'random' },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -249,30 +259,24 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
         },
       ],
       ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'ExecutionRole605A040B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'],
       },
       Family: 'ServiceTaskDef79D79521',
       NetworkMode: 'bridge',
-      RequiresCompatibilities: [
-        'EC2',
-      ],
+      RequiresCompatibilities: ['EC2'],
       TaskRoleArn: {
-        'Fn::GetAtt': [
-          'TaskRole30FC0FBB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'],
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 443,
       Protocol: 'HTTPS',
-      Certificates: [{
-        CertificateArn: 'helloworld',
-      }],
+      Certificates: [
+        {
+          CertificateArn: 'helloworld',
+        },
+      ],
       SslPolicy: SslPolicy.TLS12_EXT,
     });
 
@@ -286,13 +290,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
     const container = taskDefinition.addContainer('web', {
@@ -328,9 +334,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
       ],
       Family: 'Ec2TaskDef',
       NetworkMode: 'bridge',
-      RequiresCompatibilities: [
-        'EC2',
-      ],
+      RequiresCompatibilities: ['EC2'],
     });
   });
 
@@ -339,13 +343,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
@@ -403,10 +409,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     expect(outputs).toEqual({
       ServiceLoadBalancerDNSlb175E78BFE: {
         Value: {
-          'Fn::GetAtt': [
-            'Servicelb152C7F4F9',
-            'DNSName',
-          ],
+          'Fn::GetAtt': ['Servicelb152C7F4F9', 'DNSName'],
         },
       },
       ServiceServiceURLlb1https5C0C4079: {
@@ -437,10 +440,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
       },
       ServiceLoadBalancerDNSlb32F273F27: {
         Value: {
-          'Fn::GetAtt': [
-            'Servicelb3A583D5E7',
-            'DNSName',
-          ],
+          'Fn::GetAtt': ['Servicelb3A583D5E7', 'DNSName'],
         },
       },
       ServiceServiceURLlb3http40F9CADC: {
@@ -450,10 +450,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
             [
               'http://',
               {
-                'Fn::GetAtt': [
-                  'Servicelb3A583D5E7',
-                  'DNSName',
-                ],
+                'Fn::GetAtt': ['Servicelb3A583D5E7', 'DNSName'],
               },
             ],
           ],
@@ -467,13 +464,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -547,13 +546,16 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    expect(() => new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
-      cluster,
-      vpc,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('/aws/aws-example-app'),
-      },
-    })).toThrow(/You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
+    expect(
+      () =>
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+          cluster,
+          vpc,
+          taskImageOptions: {
+            image: ContainerImage.fromRegistry('/aws/aws-example-app'),
+          },
+        })
+    ).toThrow(/You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
   });
 
   test('creates AWS Cloud Map service for Private DNS namespace', () => {
@@ -561,13 +563,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'MyVpc', {});
     const cluster = new Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     cluster.addDefaultCloudMapNamespace({
@@ -593,10 +597,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
           ContainerName: 'web',
           ContainerPort: 80,
           RegistryArn: {
-            'Fn::GetAtt': [
-              'ServiceCloudmapServiceDE76B29D',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['ServiceCloudmapServiceDE76B29D', 'Arn'],
           },
         },
       ],
@@ -611,10 +612,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
           },
         ],
         NamespaceId: {
-          'Fn::GetAtt': [
-            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id',
-          ],
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
         },
         RoutingPolicy: 'MULTIVALUE',
       },
@@ -623,10 +621,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
       },
       Name: 'myApp',
       NamespaceId: {
-        'Fn::GetAtt': [
-          'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-          'Id',
-        ],
+        'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
       },
     });
   });
@@ -636,13 +631,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
     taskDefinition.addContainer('test', {
@@ -667,13 +664,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // THEN
     expect(() => {
@@ -688,13 +687,15 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // THEN
     expect(() => {
@@ -872,24 +873,28 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // THEN
-    expect(() =>
-      new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
-        cluster,
-        memoryLimitMiB: 1024,
-        taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
-        },
-        desiredCount: 0,
-      })).toThrow(/You must specify a desiredCount greater than 0/);
+    expect(
+      () =>
+        new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+          cluster,
+          memoryLimitMiB: 1024,
+          taskImageOptions: {
+            image: ContainerImage.fromRegistry('test'),
+          },
+          desiredCount: 0,
+        })
+    ).toThrow(/You must specify a desiredCount greater than 0/);
   });
 });
 
@@ -899,13 +904,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
@@ -951,21 +958,13 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
         },
       ],
       ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'ServiceTaskDefExecutionRole919F7BE3',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ServiceTaskDefExecutionRole919F7BE3', 'Arn'],
       },
       Family: 'ServiceTaskDef79D79521',
       NetworkMode: 'bridge',
-      RequiresCompatibilities: [
-        'EC2',
-      ],
+      RequiresCompatibilities: ['EC2'],
       TaskRoleArn: {
-        'Fn::GetAtt': [
-          'ServiceTaskDefTaskRole0CFE2F57',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ServiceTaskDefTaskRole0CFE2F57', 'Arn'],
       },
     });
   });
@@ -975,13 +974,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
@@ -1005,7 +1006,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           path: '/',
           assumedBy: new CompositePrincipal(
             new ServicePrincipal('ecs.amazonaws.com'),
-            new ServicePrincipal('ecs-tasks.amazonaws.com'),
+            new ServicePrincipal('ecs-tasks.amazonaws.com')
           ),
         }),
         taskRole: new Role(stack, 'TaskRole', {
@@ -1053,7 +1054,11 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           listener: 'listener2',
         },
       ],
-      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementStrategies: [
+        PlacementStrategy.spreadAcrossInstances(),
+        PlacementStrategy.packedByCpu(),
+        PlacementStrategy.randomly(),
+      ],
       placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
     });
 
@@ -1068,13 +1073,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
@@ -1098,7 +1105,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           path: '/',
           assumedBy: new CompositePrincipal(
             new ServicePrincipal('ecs.amazonaws.com'),
-            new ServicePrincipal('ecs-tasks.amazonaws.com'),
+            new ServicePrincipal('ecs-tasks.amazonaws.com')
           ),
         }),
         taskRole: new Role(stack, 'TaskRole', {
@@ -1146,7 +1153,11 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           listener: 'listener2',
         },
       ],
-      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementStrategies: [
+        PlacementStrategy.spreadAcrossInstances(),
+        PlacementStrategy.packedByCpu(),
+        PlacementStrategy.randomly(),
+      ],
       placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
     });
 
@@ -1177,7 +1188,11 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
       SchedulingStrategy: 'REPLICA',
       ServiceName: 'myService',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
-      PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
+      PlacementStrategies: [
+        { Field: 'instanceId', Type: 'spread' },
+        { Field: 'CPU', Type: 'binpack' },
+        { Type: 'random' },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1230,21 +1245,13 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
         },
       ],
       ExecutionRoleArn: {
-        'Fn::GetAtt': [
-          'ExecutionRole605A040B',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'],
       },
       Family: 'ServiceTaskDef79D79521',
       NetworkMode: 'bridge',
-      RequiresCompatibilities: [
-        'EC2',
-      ],
+      RequiresCompatibilities: ['EC2'],
       TaskRoleArn: {
-        'Fn::GetAtt': [
-          'TaskRole30FC0FBB',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'],
       },
     });
   });
@@ -1253,13 +1260,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
@@ -1283,7 +1292,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           path: '/',
           assumedBy: new CompositePrincipal(
             new ServicePrincipal('ecs.amazonaws.com'),
-            new ServicePrincipal('ecs-tasks.amazonaws.com'),
+            new ServicePrincipal('ecs-tasks.amazonaws.com')
           ),
         }),
         taskRole: new Role(stack, 'TaskRole', {
@@ -1331,7 +1340,11 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           listener: 'listener2',
         },
       ],
-      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementStrategies: [
+        PlacementStrategy.spreadAcrossInstances(),
+        PlacementStrategy.packedByCpu(),
+        PlacementStrategy.randomly(),
+      ],
       placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
     });
 
@@ -1355,11 +1368,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
             Resource: '*',
           },
           {
-            Action: [
-              'logs:CreateLogStream',
-              'logs:DescribeLogStreams',
-              'logs:PutLogEvents',
-            ],
+            Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -1380,13 +1389,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
     const container = taskDefinition.addContainer('web', {
@@ -1422,9 +1433,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
       ],
       Family: 'Ec2TaskDef',
       NetworkMode: 'bridge',
-      RequiresCompatibilities: [
-        'EC2',
-      ],
+      RequiresCompatibilities: ['EC2'],
     });
   });
 
@@ -1433,13 +1442,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -1511,13 +1522,16 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    expect(() => new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
-      cluster,
-      vpc,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('/aws/aws-example-app'),
-      },
-    })).toThrow(/You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
+    expect(
+      () =>
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+          cluster,
+          vpc,
+          taskImageOptions: {
+            image: ContainerImage.fromRegistry('/aws/aws-example-app'),
+          },
+        })
+    ).toThrow(/You can only specify either vpc or cluster. Alternatively, you can leave both blank/);
   });
 
   test('creates AWS Cloud Map service for Private DNS namespace', () => {
@@ -1525,13 +1539,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'MyVpc', {});
     const cluster = new Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // WHEN
     cluster.addDefaultCloudMapNamespace({
@@ -1557,10 +1573,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           ContainerName: 'web',
           ContainerPort: 80,
           RegistryArn: {
-            'Fn::GetAtt': [
-              'ServiceCloudmapServiceDE76B29D',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['ServiceCloudmapServiceDE76B29D', 'Arn'],
           },
         },
       ],
@@ -1575,10 +1588,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           },
         ],
         NamespaceId: {
-          'Fn::GetAtt': [
-            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id',
-          ],
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
         },
         RoutingPolicy: 'MULTIVALUE',
       },
@@ -1587,10 +1597,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
       },
       Name: 'myApp',
       NamespaceId: {
-        'Fn::GetAtt': [
-          'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-          'Id',
-        ],
+        'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
       },
     });
   });
@@ -1600,13 +1607,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDef');
     taskDefinition.addContainer('test', {
@@ -1631,13 +1640,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // THEN
     expect(() => {
@@ -1652,13 +1663,15 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // THEN
     expect(() => {
@@ -1671,9 +1684,11 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
           {
             name: 'lb1',
             domainName: 'api.example.com',
-            listeners: [{
-              name: 'listener1',
-            }],
+            listeners: [
+              {
+                name: 'listener1',
+              },
+            ],
           },
         ],
       });
@@ -1777,24 +1792,28 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
+    cluster.addAsgCapacityProvider(
+      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+        autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: MachineImage.latestAmazonLinux(),
+        }),
+      })
+    );
 
     // THEN
-    expect(() =>
-      new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
-        cluster,
-        memoryLimitMiB: 1024,
-        taskImageOptions: {
-          image: ContainerImage.fromRegistry('test'),
-        },
-        desiredCount: 0,
-      })).toThrow(/You must specify a desiredCount greater than 0/);
+    expect(
+      () =>
+        new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+          cluster,
+          memoryLimitMiB: 1024,
+          taskImageOptions: {
+            image: ContainerImage.fromRegistry('test'),
+          },
+          desiredCount: 0,
+        })
+    ).toThrow(/You must specify a desiredCount greater than 0/);
   });
 
   test('errors when container port range is set for essential container', () => {
@@ -1806,10 +1825,12 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
 
     taskDefinition.addContainer('MainContainer', {
       image: ContainerImage.fromRegistry('test'),
-      portMappings: [{
-        containerPort: ContainerDefinition.CONTAINER_PORT_USE_RANGE,
-        containerPortRange: '8080-8081',
-      }],
+      portMappings: [
+        {
+          containerPort: ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+          containerPortRange: '8080-8081',
+        },
+      ],
     });
 
     // THEN

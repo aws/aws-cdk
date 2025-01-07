@@ -147,9 +147,7 @@ export class CdkCliWrapper implements ICdk {
     try {
       this.cdk = options.cdkExecutable ?? 'cdk';
     } catch {
-      throw new Error(
-        `could not resolve path to cdk executable: "${options.cdkExecutable ?? 'cdk'}"`
-      );
+      throw new Error(`could not resolve path to cdk executable: "${options.cdkExecutable ?? 'cdk'}"`);
     }
   }
 
@@ -184,17 +182,13 @@ export class CdkCliWrapper implements ICdk {
       ...renderBooleanArg('rollback', options.rollback),
       ...renderBooleanArg('staging', options.staging),
       ...(options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : []),
-      ...(options.notificationArns
-        ? renderArrayArg('--notification-arns', options.notificationArns)
-        : []),
+      ...(options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : []),
       ...(options.parameters ? renderMapArrayArg('--parameters', options.parameters) : []),
       ...(options.outputsFile ? ['--outputs-file', options.outputsFile] : []),
       ...(options.requireApproval ? ['--require-approval', options.requireApproval] : []),
       ...(options.changeSetName ? ['--change-set-name', options.changeSetName] : []),
       ...(options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : []),
-      ...(options.progress
-        ? ['--progress', options.progress]
-        : ['--progress', StackActivityProgress.EVENTS]),
+      ...(options.progress ? ['--progress', options.progress] : ['--progress', StackActivityProgress.EVENTS]),
       ...(options.deploymentMethod ? ['--method', options.deploymentMethod] : []),
       ...(options.concurrency ? ['--concurrency', options.concurrency.toString()] : []),
       ...this.createDefaultArguments(options),
@@ -232,17 +226,13 @@ export class CdkCliWrapper implements ICdk {
       ...renderBooleanArg('logs', options.traceLogs),
       hotswap,
       ...(options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : []),
-      ...(options.notificationArns
-        ? renderArrayArg('--notification-arns', options.notificationArns)
-        : []),
+      ...(options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : []),
       ...(options.parameters ? renderMapArrayArg('--parameters', options.parameters) : []),
       ...(options.outputsFile ? ['--outputs-file', options.outputsFile] : []),
       ...(options.requireApproval ? ['--require-approval', options.requireApproval] : []),
       ...(options.changeSetName ? ['--change-set-name', options.changeSetName] : []),
       ...(options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : []),
-      ...(options.progress
-        ? ['--progress', options.progress]
-        : ['--progress', StackActivityProgress.EVENTS]),
+      ...(options.progress ? ['--progress', options.progress] : ['--progress', StackActivityProgress.EVENTS]),
       ...(options.deploymentMethod ? ['--method', options.deploymentMethod] : []),
       ...this.createDefaultArguments(options),
     ];
@@ -338,10 +328,7 @@ export class CdkCliWrapper implements ICdk {
   }
 }
 
-function renderMapArrayArg(
-  flag: string,
-  parameters: { [name: string]: string | undefined }
-): string[] {
+function renderMapArrayArg(flag: string, parameters: { [name: string]: string | undefined }): string[] {
   const params: string[] = [];
   for (const [key, value] of Object.entries(parameters)) {
     params.push(`${key}=${value}`);

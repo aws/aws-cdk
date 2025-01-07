@@ -23,7 +23,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       env: { account: 'myAccount', region: 'us-east-1' },
       connections: new Connections(),
       node: stack.node,
-      applyRemovalPolicy: () => { },
+      applyRemovalPolicy: () => {},
     };
     new ClientVpnAuthorizationRule(stack, 'NormalRule', {
       cidr: '10.0.10.0/32',
@@ -39,8 +39,8 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       });
     }).toThrow(
       new Error(
-        'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
-      ),
+        'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified'
+      )
     );
   });
   testDeprecated('specifying both clientVpnEndoint (deprecated, typo) and clientVpnEndpoint is not allowed', () => {
@@ -51,7 +51,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       env: { account: 'myAccount', region: 'us-east-1' },
       connections: new Connections(),
       node: stack.node,
-      applyRemovalPolicy: () => { },
+      applyRemovalPolicy: () => {},
     };
     const clientVpnEndpoint: IClientVpnEndpoint = {
       endpointId: 'myClientVpnEndpoint',
@@ -60,7 +60,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       env: { account: 'myAccount', region: 'us-east-1' },
       connections: new Connections(),
       node: stack.node,
-      applyRemovalPolicy: () => { },
+      applyRemovalPolicy: () => {},
     };
     expect(() => {
       new ClientVpnAuthorizationRule(stack, 'RuleBothEndointAndEndpoint', {
@@ -71,8 +71,8 @@ describe('ClientVpnAuthorizationRule constructor', () => {
     }).toThrow(
       new Error(
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
-          ', but not both',
-      ),
+          ', but not both'
+      )
     );
   });
   test('invalid constructor calls should not add anything to the stack', () => {
@@ -91,7 +91,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       env: { account: 'myAccount', region: 'us-east-1' },
       connections: new Connections(),
       node: stack.node,
-      applyRemovalPolicy: () => { },
+      applyRemovalPolicy: () => {},
     };
     new ClientVpnAuthorizationRule(stack, 'RuleWithEndointTypo', {
       cidr: '10.0.10.0/32',

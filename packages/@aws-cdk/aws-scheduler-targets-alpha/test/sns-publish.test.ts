@@ -37,9 +37,7 @@ describe('sns topic schedule target', () => {
             Ref: 'TopicBFC7AF6E',
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              roleId, 'Arn',
-            ],
+            'Fn::GetAtt': [roleId, 'Arn'],
           },
           RetryPolicy: {},
         },
@@ -58,9 +56,11 @@ describe('sns topic schedule target', () => {
           },
         ],
       },
-      Roles: [{
-        Ref: roleId,
-      }],
+      Roles: [
+        {
+          Ref: roleId,
+        },
+      ],
     });
 
     template.hasResourceProperties('AWS::IAM::Role', {
@@ -119,10 +119,7 @@ describe('sns topic schedule target', () => {
             Ref: 'TopicBFC7AF6E',
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'ProvidedTargetRole8CFDD54A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['ProvidedTargetRole8CFDD54A', 'Arn'],
           },
           RetryPolicy: {},
         },
@@ -141,9 +138,11 @@ describe('sns topic schedule target', () => {
           },
         ],
       },
-      Roles: [{
-        Ref: 'ProvidedTargetRole8CFDD54A',
-      }],
+      Roles: [
+        {
+          Ref: 'ProvidedTargetRole8CFDD54A',
+        },
+      ],
     });
   });
 
@@ -210,9 +209,11 @@ describe('sns topic schedule target', () => {
           },
         ],
       },
-      Roles: [{
-        Ref: roleId,
-      }],
+      Roles: [
+        {
+          Ref: roleId,
+        },
+      ],
     });
   });
 
@@ -273,10 +274,7 @@ describe('sns topic schedule target', () => {
               StringEquals: {
                 'aws:SourceAccount': '123456789012',
                 'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'GroupC77FDACD',
-                    'Arn',
-                  ],
+                  'Fn::GetAtt': ['GroupC77FDACD', 'Arn'],
                 },
               },
             },
@@ -301,9 +299,11 @@ describe('sns topic schedule target', () => {
           },
         ],
       },
-      Roles: [{
-        Ref: roleId,
-      }],
+      Roles: [
+        {
+          Ref: roleId,
+        },
+      ],
     });
   });
 
@@ -324,9 +324,7 @@ describe('sns topic schedule target', () => {
         Target: {
           Arn: 'arn:aws:sns:us-east-1:123456789012:my-topic',
           RoleArn: {
-            'Fn::GetAtt': [
-              'SchedulerRoleForTarget54a476A35D62A2', 'Arn',
-            ],
+            'Fn::GetAtt': ['SchedulerRoleForTarget54a476A35D62A2', 'Arn'],
           },
           RetryPolicy: {},
         },
@@ -343,9 +341,11 @@ describe('sns topic schedule target', () => {
           },
         ],
       },
-      Roles: [{
-        Ref: 'SchedulerRoleForTarget54a476A35D62A2',
-      }],
+      Roles: [
+        {
+          Ref: 'SchedulerRoleForTarget54a476A35D62A2',
+        },
+      ],
     });
   });
 
@@ -537,11 +537,13 @@ describe('sns topic schedule target', () => {
       maxEventAge: Duration.days(3),
     });
 
-    expect(() =>
-      new scheduler.Schedule(stack, 'Schedule', {
-        schedule: scheduleExpression,
-        target,
-      })).toThrow(/Maximum event age is 1 day/);
+    expect(
+      () =>
+        new scheduler.Schedule(stack, 'Schedule', {
+          schedule: scheduleExpression,
+          target,
+        })
+    ).toThrow(/Maximum event age is 1 day/);
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
@@ -549,11 +551,13 @@ describe('sns topic schedule target', () => {
       maxEventAge: Duration.seconds(59),
     });
 
-    expect(() =>
-      new scheduler.Schedule(stack, 'Schedule', {
-        schedule: scheduleExpression,
-        target,
-      })).toThrow(/Minimum event age is 1 minute/);
+    expect(
+      () =>
+        new scheduler.Schedule(stack, 'Schedule', {
+          schedule: scheduleExpression,
+          target,
+        })
+    ).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
@@ -561,10 +565,12 @@ describe('sns topic schedule target', () => {
       retryAttempts: 200,
     });
 
-    expect(() =>
-      new scheduler.Schedule(stack, 'Schedule', {
-        schedule: scheduleExpression,
-        target,
-      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+    expect(
+      () =>
+        new scheduler.Schedule(stack, 'Schedule', {
+          schedule: scheduleExpression,
+          target,
+        })
+    ).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 });

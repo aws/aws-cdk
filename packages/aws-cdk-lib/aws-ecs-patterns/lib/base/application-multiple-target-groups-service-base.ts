@@ -418,11 +418,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsServiceBase class.
    */
-  constructor(
-    scope: Construct,
-    id: string,
-    props: ApplicationMultipleTargetGroupsServiceBaseProps = {}
-  ) {
+  constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsServiceBaseProps = {}) {
     super(scope, id);
 
     this.validateInput(props);
@@ -433,27 +429,17 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     this.internalDesiredCount = props.desiredCount;
 
     if (props.taskImageOptions) {
-      this.logDriver = this.createLogDriver(
-        props.taskImageOptions.enableLogging,
-        props.taskImageOptions.logDriver
-      );
+      this.logDriver = this.createLogDriver(props.taskImageOptions.enableLogging, props.taskImageOptions.logDriver);
     }
 
     if (props.loadBalancers) {
       this.validateLbProps(props.loadBalancers);
       for (const lbProps of props.loadBalancers) {
-        const lb = this.createLoadBalancer(
-          lbProps.name,
-          lbProps.publicLoadBalancer,
-          lbProps.idleTimeout
-        );
+        const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer, lbProps.idleTimeout);
         this.loadBalancers.push(lb);
         const protocolType = new Set<ApplicationProtocol>();
         for (const listenerProps of lbProps.listeners) {
-          const protocol = this.createListenerProtocol(
-            listenerProps.protocol,
-            listenerProps.certificate
-          );
+          const protocol = this.createListenerProtocol(listenerProps.protocol, listenerProps.certificate);
           if (
             listenerProps.certificate !== undefined &&
             protocol !== undefined &&
@@ -505,10 +491,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     // magic string to avoid collision with user-defined constructs.
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return (
-      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
-      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
-    );
+    return (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   protected createAWSLogDriver(prefix: string): AwsLogDriver {
@@ -564,10 +547,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     return this.targetGroups[0];
   }
 
-  protected addPortMappingForTargets(
-    container: ContainerDefinition,
-    targets: ApplicationTargetProps[]
-  ) {
+  protected addPortMappingForTargets(container: ContainerDefinition, targets: ApplicationTargetProps[]) {
     for (const target of targets) {
       if (!container.findPortMapping(target.containerPort, target.protocol || Protocol.TCP)) {
         container.addPortMappings({
@@ -581,20 +561,13 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   /**
    * Create log driver if logging is enabled.
    */
-  private createLogDriver(
-    enableLoggingProp?: boolean,
-    logDriverProp?: LogDriver
-  ): LogDriver | undefined {
+  private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
     const enableLogging = enableLoggingProp ?? true;
-    const logDriver =
-      logDriverProp ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+    const logDriver = logDriverProp ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
     return logDriver;
   }
 
-  private configListener(
-    protocol: ApplicationProtocol,
-    props: ListenerConfig
-  ): ApplicationListener {
+  private configListener(protocol: ApplicationProtocol, props: ListenerConfig): ApplicationListener {
     const listener = this.createListener(props, protocol);
     let certificate;
     if (protocol === ApplicationProtocol.HTTPS) {
@@ -608,9 +581,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       certificate = undefined;
     }
     if (certificate !== undefined) {
-      listener.addCertificates(`Arns${props.listenerName}`, [
-        ListenerCertificate.fromArn(certificate.certificateArn),
-      ]);
+      listener.addCertificates(`Arns${props.listenerName}`, [ListenerCertificate.fromArn(certificate.certificateArn)]);
     }
 
     return listener;
@@ -618,9 +589,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
   private validateInput(props: ApplicationMultipleTargetGroupsServiceBaseProps) {
     if (props.cluster && props.vpc) {
-      throw new Error(
-        'You can only specify either vpc or cluster. Alternatively, you can leave both blank'
-      );
+      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
     }
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
@@ -643,10 +612,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     for (let prop of props) {
       if (prop.idleTimeout) {
         const idleTimeout = prop.idleTimeout.toSeconds();
-        if (
-          idleTimeout > Duration.seconds(4000).toSeconds() ||
-          idleTimeout < Duration.seconds(1).toSeconds()
-        ) {
+        if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
           throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
         }
       }
@@ -708,17 +674,11 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     });
   }
 
-  private createDomainName(
-    loadBalancer: ApplicationLoadBalancer,
-    name?: string,
-    zone?: IHostedZone
-  ): string {
+  private createDomainName(loadBalancer: ApplicationLoadBalancer, name?: string, zone?: IHostedZone): string {
     let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof name !== 'undefined') {
       if (typeof zone === 'undefined') {
-        throw new Error(
-          'A Route53 hosted domain zone name is required to configure the specified domain name'
-        );
+        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
       const record = new ARecord(this, `DNS${loadBalancer.node.id}`, {

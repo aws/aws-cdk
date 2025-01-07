@@ -38,36 +38,33 @@ describe('virtual router', () => {
 
       // WHEN
       mesh.addVirtualRouter('http-router-listener', {
-        listeners: [
-          appmesh.VirtualRouterListener.http(),
-        ],
+        listeners: [appmesh.VirtualRouterListener.http()],
         virtualRouterName: 'http-router-listener',
       });
 
       mesh.addVirtualRouter('http2-router-listener', {
-        listeners: [
-          appmesh.VirtualRouterListener.http2(),
-        ],
+        listeners: [appmesh.VirtualRouterListener.http2()],
         virtualRouterName: 'http2-router-listener',
       });
 
       mesh.addVirtualRouter('grpc-router-listener', {
-        listeners: [
-          appmesh.VirtualRouterListener.grpc(),
-        ],
+        listeners: [appmesh.VirtualRouterListener.grpc()],
         virtualRouterName: 'grpc-router-listener',
       });
 
       mesh.addVirtualRouter('tcp-router-listener', {
-        listeners: [
-          appmesh.VirtualRouterListener.tcp(),
-        ],
+        listeners: [appmesh.VirtualRouterListener.tcp()],
         virtualRouterName: 'tcp-router-listener',
       });
 
       // THEN
-      const expectedPorts = [appmesh.Protocol.HTTP, appmesh.Protocol.HTTP2, appmesh.Protocol.GRPC, appmesh.Protocol.TCP];
-      expectedPorts.forEach(protocol => {
+      const expectedPorts = [
+        appmesh.Protocol.HTTP,
+        appmesh.Protocol.HTTP2,
+        appmesh.Protocol.GRPC,
+        appmesh.Protocol.TCP,
+      ];
+      expectedPorts.forEach((protocol) => {
         Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualRouter', {
           VirtualRouterName: `${protocol}-router-listener`,
           Spec: {
@@ -95,8 +92,11 @@ describe('virtual router', () => {
         // Creating stack in Account B
         const stack = new cdk.Stack(app, 'mySharedStack', { env: virtualRouterEnv });
         // Mesh is in Account A
-        const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
-          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`);
+        const sharedMesh = appmesh.Mesh.fromMeshArn(
+          stack,
+          'shared-mesh',
+          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`
+        );
 
         // WHEN
         new appmesh.VirtualRouter(stack, 'test-node', {
@@ -130,9 +130,11 @@ describe('virtual router', () => {
 
       const node = mesh.addVirtualNode('test-node', {
         serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-        listeners: [appmesh.VirtualNodeListener.http({
-          port: 8080,
-        })],
+        listeners: [
+          appmesh.VirtualNodeListener.http({
+            port: 8080,
+          }),
+        ],
         backends: [appmesh.Backend.virtualService(service1)],
       });
 
@@ -151,30 +153,29 @@ describe('virtual router', () => {
       });
 
       // THEN
-      Template.fromStack(stack).
-        hasResourceProperties('AWS::AppMesh::Route', {
-          RouteName: 'route-1',
-          Spec: {
-            HttpRoute: {
-              Action: {
-                WeightedTargets: [
-                  {
-                    VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
-                    },
-                    Weight: 50,
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        RouteName: 'route-1',
+        Spec: {
+          HttpRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
-                ],
-              },
-              Match: {
-                Prefix: '/',
-              },
+                  Weight: 50,
+                },
+              ],
+            },
+            Match: {
+              Prefix: '/',
             },
           },
-          VirtualRouterName: {
-            'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
-          },
-        });
+        },
+        VirtualRouterName: {
+          'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
+        },
+      });
     });
   });
   describe('When adding routes to a VirtualRouter with existing routes', () => {
@@ -200,23 +201,29 @@ describe('virtual router', () => {
 
       const node = mesh.addVirtualNode('test-node', {
         serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-        listeners: [appmesh.VirtualNodeListener.http({
-          port: 8080,
-        })],
+        listeners: [
+          appmesh.VirtualNodeListener.http({
+            port: 8080,
+          }),
+        ],
         backends: [appmesh.Backend.virtualService(service1)],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
         serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-        listeners: [appmesh.VirtualNodeListener.http({
-          port: 8080,
-        })],
+        listeners: [
+          appmesh.VirtualNodeListener.http({
+            port: 8080,
+          }),
+        ],
         backends: [appmesh.Backend.virtualService(service2)],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
         serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-        listeners: [appmesh.VirtualNodeListener.http({
-          port: 8080,
-        })],
+        listeners: [
+          appmesh.VirtualNodeListener.http({
+            port: 8080,
+          }),
+        ],
         backends: [appmesh.Backend.virtualService(service1)],
       });
 
@@ -263,71 +270,68 @@ describe('virtual router', () => {
       });
 
       // THEN
-      Template.fromStack(stack).
-        hasResourceProperties('AWS::AppMesh::Route', {
-          RouteName: 'route-1',
-          Spec: {
-            HttpRoute: {
-              Action: {
-                WeightedTargets: [
-                  {
-                    VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
-                    },
-                    Weight: 50,
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        RouteName: 'route-1',
+        Spec: {
+          HttpRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
-                ],
-              },
-              Match: {
-                Prefix: '/',
-              },
+                  Weight: 50,
+                },
+              ],
+            },
+            Match: {
+              Prefix: '/',
             },
           },
-        });
+        },
+      });
 
-      Template.fromStack(stack).
-        hasResourceProperties('AWS::AppMesh::Route', {
-          RouteName: 'route-2',
-          Spec: {
-            HttpRoute: {
-              Action: {
-                WeightedTargets: [
-                  {
-                    VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnode20C58B1B2', 'VirtualNodeName'],
-                    },
-                    Weight: 30,
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        RouteName: 'route-2',
+        Spec: {
+          HttpRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': ['meshtestnode20C58B1B2', 'VirtualNodeName'],
                   },
-                ],
-              },
-              Match: {
-                Prefix: '/path2',
-              },
+                  Weight: 30,
+                },
+              ],
+            },
+            Match: {
+              Prefix: '/path2',
             },
           },
-        });
+        },
+      });
 
-      Template.fromStack(stack).
-        hasResourceProperties('AWS::AppMesh::Route', {
-          RouteName: 'route-3',
-          Spec: {
-            HttpRoute: {
-              Action: {
-                WeightedTargets: [
-                  {
-                    VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnode316EEA2D7', 'VirtualNodeName'],
-                    },
-                    Weight: 20,
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        RouteName: 'route-3',
+        Spec: {
+          HttpRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': ['meshtestnode316EEA2D7', 'VirtualNodeName'],
                   },
-                ],
-              },
-              Match: {
-                Prefix: '/path3',
-              },
+                  Weight: 20,
+                },
+              ],
+            },
+            Match: {
+              Prefix: '/path3',
             },
           },
-        });
+        },
+      });
     });
   });
   describe('When adding a TCP route to existing VirtualRouter', () => {
@@ -349,9 +353,11 @@ describe('virtual router', () => {
 
       const node = mesh.addVirtualNode('test-node', {
         serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-        listeners: [appmesh.VirtualNodeListener.http({
-          port: 8080,
-        })],
+        listeners: [
+          appmesh.VirtualNodeListener.http({
+            port: 8080,
+          }),
+        ],
         backends: [appmesh.Backend.virtualService(service1)],
       });
 
@@ -367,27 +373,26 @@ describe('virtual router', () => {
       });
 
       // THEN
-      Template.fromStack(stack).
-        hasResourceProperties('AWS::AppMesh::Route', {
-          RouteName: 'route-tcp-1',
-          Spec: {
-            TcpRoute: {
-              Action: {
-                WeightedTargets: [
-                  {
-                    VirtualNode: {
-                      'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
-                    },
-                    Weight: 50,
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        RouteName: 'route-tcp-1',
+        Spec: {
+          TcpRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
                   },
-                ],
-              },
+                  Weight: 50,
+                },
+              ],
             },
           },
-          VirtualRouterName: {
-            'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
-          },
-        });
+        },
+        VirtualRouterName: {
+          'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
+        },
+      });
     });
   });
 
@@ -400,8 +405,7 @@ describe('virtual router', () => {
     const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualRouter/${virtualRouterName}`;
 
     // WHEN
-    const virtualRouter = appmesh.VirtualRouter.fromVirtualRouterArn(
-      stack, 'importedVirtualRouter', arn);
+    const virtualRouter = appmesh.VirtualRouter.fromVirtualRouterArn(stack, 'importedVirtualRouter', arn);
     // THEN
     expect(virtualRouter.mesh.meshName).toEqual(meshName);
     expect(virtualRouter.virtualRouterName).toEqual(virtualRouterName);

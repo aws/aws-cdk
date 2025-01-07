@@ -1,11 +1,4 @@
-import {
-  DefaultTokenResolver,
-  IResolveContext,
-  Stack,
-  StringConcat,
-  Token,
-  Tokenization,
-} from 'aws-cdk-lib';
+import { DefaultTokenResolver, IResolveContext, Stack, StringConcat, Token, Tokenization } from 'aws-cdk-lib';
 import { ISchedule } from './schedule';
 
 /**

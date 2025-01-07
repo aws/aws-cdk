@@ -264,9 +264,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
 /**
  * @internal
  */
-export function baseJobDefinitionProperties(
-  baseJobDefinition: JobDefinitionBase
-): CfnJobDefinitionProps {
+export function baseJobDefinitionProperties(baseJobDefinition: JobDefinitionBase): CfnJobDefinitionProps {
   return {
     parameters: baseJobDefinition.parameters,
     retryStrategy: {

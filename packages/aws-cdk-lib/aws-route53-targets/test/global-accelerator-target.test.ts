@@ -66,7 +66,7 @@ test('GlobalAcceleratorTarget creates an alias resource with health check', () =
     target: route53.RecordTarget.fromAlias(
       new targets.GlobalAcceleratorTarget(accelerator, {
         evaluateTargetHealth: true,
-      }),
+      })
     ),
     recordName: 'test',
     zone,

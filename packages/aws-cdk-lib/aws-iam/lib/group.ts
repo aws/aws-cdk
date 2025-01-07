@@ -4,12 +4,7 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import {
-  AddToPrincipalPolicyResult,
-  ArnPrincipal,
-  IPrincipal,
-  PrincipalPolicyFragment,
-} from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies } from './private/util';
 import { IUser } from './user';
 import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';

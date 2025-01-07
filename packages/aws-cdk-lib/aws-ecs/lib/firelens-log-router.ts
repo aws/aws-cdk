@@ -1,10 +1,6 @@
 import { Construct } from 'constructs';
 import { TaskDefinition } from './base/task-definition';
-import {
-  ContainerDefinition,
-  ContainerDefinitionOptions,
-  ContainerDefinitionProps,
-} from './container-definition';
+import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
 import { ContainerImage } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LogDriverConfig } from './log-drivers/log-driver';
@@ -116,9 +112,7 @@ export interface FirelensLogRouterDefinitionOptions extends ContainerDefinitionO
 /**
  * Render to CfnTaskDefinition.FirelensConfigurationProperty from FirelensConfig
  */
-function renderFirelensConfig(
-  firelensConfig: FirelensConfig
-): CfnTaskDefinition.FirelensConfigurationProperty {
+function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition.FirelensConfigurationProperty {
   if (!firelensConfig.options) {
     return { type: firelensConfig.type };
   } else if (firelensConfig.options.configFileValue === undefined) {
@@ -181,18 +175,9 @@ export function obtainDefaultFluentBitECRImage(
     logDriverConfig.options &&
     logDriverConfig.options.Name;
   if (logName === 'cloudwatch') {
-    const actions = [
-      'logs:CreateLogGroup',
-      'logs:CreateLogStream',
-      'logs:DescribeLogStreams',
-      'logs:PutLogEvents',
-    ];
+    const actions = ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'];
 
-    if (
-      logDriverConfig &&
-      logDriverConfig.options &&
-      'log_retention_days' in logDriverConfig.options
-    ) {
+    if (logDriverConfig && logDriverConfig.options && 'log_retention_days' in logDriverConfig.options) {
       actions.push('logs:PutRetentionPolicy');
     }
 
@@ -223,9 +208,7 @@ export function obtainDefaultFluentBitECRImage(
 
   // Not use ContainerImage.fromEcrRepository since it's not support parsing ECR repo URI,
   // use repo ARN might result in complex Fn:: functions in cloudformation template.
-  return ContainerImage.fromRegistry(
-    ssm.StringParameter.valueForStringParameter(task, fluentBitImage)
-  );
+  return ContainerImage.fromRegistry(ssm.StringParameter.valueForStringParameter(task, fluentBitImage));
 }
 
 /**
@@ -248,17 +231,13 @@ export class FirelensLogRouter extends ContainerDefinition {
         (options.configFileValue && options.configFileType === undefined) ||
         (options.configFileValue === undefined && options.configFileType)
       ) {
-        throw new Error(
-          'configFileValue and configFileType must be set together to define a custom config source'
-        );
+        throw new Error('configFileValue and configFileType must be set together to define a custom config source');
       }
 
       const hasConfig = options.configFileValue !== undefined;
-      const enableECSLogMetadata =
-        options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
+      const enableECSLogMetadata = options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
       const configFileType =
-        (options.configFileType === undefined ||
-          options.configFileType === FirelensConfigFileType.S3) &&
+        (options.configFileType === undefined || options.configFileType === FirelensConfigFileType.S3) &&
         (cdk.Token.isUnresolved(options.configFileValue) ||
           /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue || ''))
           ? FirelensConfigFileType.S3
@@ -302,9 +281,7 @@ export class FirelensLogRouter extends ContainerDefinition {
   /**
    * Render this container definition to a CloudFormation object
    */
-  public renderContainerDefinition(
-    _taskDefinition?: TaskDefinition
-  ): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       ...super.renderContainerDefinition(),
       firelensConfiguration: this.firelensConfig && renderFirelensConfig(this.firelensConfig),

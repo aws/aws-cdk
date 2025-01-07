@@ -11,7 +11,9 @@ function assertionHandler() {
 
 beforeAll(() => {
   jest.useFakeTimers();
-  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  jest.spyOn(console, 'log').mockImplementation(() => {
+    return true;
+  });
 });
 afterAll(() => {
   jest.useRealTimers();
@@ -146,12 +148,14 @@ describe('AssertionHandler', () => {
           ],
         },
         expected: ExpectedResult.objectLike({
-          Message: [{
-            Payload: Match.stringLikeRegexp('status'),
-            Body: Match.objectLike({
-              Elements: Match.arrayWith([{ Asdf: 3 }]),
-            }),
-          }],
+          Message: [
+            {
+              Payload: Match.stringLikeRegexp('status'),
+              Body: Match.objectLike({
+                Elements: Match.arrayWith([{ Asdf: 3 }]),
+              }),
+            },
+          ],
         }).result,
       };
 

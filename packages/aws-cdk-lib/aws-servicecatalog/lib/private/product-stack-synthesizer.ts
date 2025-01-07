@@ -82,25 +82,15 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     // This assumes all assets added to the parent stack's synthesizer go into the same bucket.
     const location = this.parentStack.synthesizer.addFileAsset(asset);
     if (!this.parentAssetBucket) {
-      this.parentAssetBucket = Bucket.fromBucketName(
-        this.boundStack,
-        'ParentAssetBucket',
-        location.bucketName
-      );
+      this.parentAssetBucket = Bucket.fromBucketName(this.boundStack, 'ParentAssetBucket', location.bucketName);
     }
     const objectKey = location.objectKey;
     const source = Source.bucket(this.parentAssetBucket, location.objectKey);
 
-    if (
-      this.serverSideEncryption === ServerSideEncryption.AWS_KMS &&
-      !this.serverSideEncryptionAwsKmsKeyId
-    ) {
+    if (this.serverSideEncryption === ServerSideEncryption.AWS_KMS && !this.serverSideEncryptionAwsKmsKeyId) {
       throw new Error('A KMS Key must be provided to use SSE_KMS');
     }
-    if (
-      this.serverSideEncryption !== ServerSideEncryption.AWS_KMS &&
-      this.serverSideEncryptionAwsKmsKeyId
-    ) {
+    if (this.serverSideEncryption !== ServerSideEncryption.AWS_KMS && this.serverSideEncryptionAwsKmsKeyId) {
       throw new Error('A SSE_KMS encryption must be enabled if you provide KMS Key');
     }
 
@@ -135,9 +125,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private physicalNameOfBucket(bucket: IBucket) {
     let resolvedName;
     if (cdk.Resource.isOwnedResource(bucket)) {
-      resolvedName = cdk.Stack.of(bucket).resolve(
-        (bucket.node.defaultChild as CfnBucket).bucketName
-      );
+      resolvedName = cdk.Stack.of(bucket).resolve((bucket.node.defaultChild as CfnBucket).bucketName);
     } else {
       resolvedName = bucket.bucketName;
     }

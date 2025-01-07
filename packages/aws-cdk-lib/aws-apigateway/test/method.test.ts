@@ -31,7 +31,6 @@ describe('method', () => {
         Type: 'MOCK',
       },
     });
-
   });
 
   test('method options can be specified', () => {
@@ -54,7 +53,6 @@ describe('method', () => {
       ApiKeyRequired: true,
       OperationName: 'MyOperation',
     });
-
   });
 
   test('integration can be set via a property', () => {
@@ -77,15 +75,11 @@ describe('method', () => {
         Uri: {
           'Fn::Join': [
             '',
-            [
-              'arn:', { Ref: 'AWS::Partition' }, ':apigateway:',
-              { Ref: 'AWS::Region' }, ':s3:path/bucket/key',
-            ],
+            ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':s3:path/bucket/key'],
           ],
         },
       },
     });
-
   });
 
   test('integration can be set for a service in the provided region', () => {
@@ -106,12 +100,7 @@ describe('method', () => {
         IntegrationHttpMethod: 'POST',
         Type: 'AWS',
         Uri: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:', { Ref: 'AWS::Partition' }, ':apigateway:eu-west-1:sqs:path/queueName',
-            ],
-          ],
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:eu-west-1:sqs:path/queueName']],
         },
       },
     });
@@ -135,7 +124,6 @@ describe('method', () => {
         IntegrationHttpMethod: 'GET',
       },
     });
-
   });
 
   test('use default integration from api', () => {
@@ -165,7 +153,6 @@ describe('method', () => {
         Uri: 'https://amazon.com',
       },
     });
-
   });
 
   test('"methodArn" returns the ARN execute-api ARN for this method in the current stage', () => {
@@ -198,7 +185,6 @@ describe('method', () => {
         ],
       ],
     });
-
   });
 
   test('"testMethodArn" returns the ARN of the "test-invoke-stage" stage (console UI)', () => {
@@ -229,7 +215,6 @@ describe('method', () => {
         ],
       ],
     });
-
   });
 
   test('"methodArn" returns an arn with "*" as its stage when deploymentStage is not set', () => {
@@ -257,7 +242,6 @@ describe('method', () => {
         ],
       ],
     });
-
   });
 
   test('"methodArn" and "testMethodArn" replace path parameters with asterisks', () => {
@@ -302,7 +286,6 @@ describe('method', () => {
         ],
       ],
     });
-
   });
 
   test('integration "credentialsRole" can be used to assume a role when calling backend', () => {
@@ -312,13 +295,16 @@ describe('method', () => {
     const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
 
     // WHEN
-    api.root.addMethod('GET', new apigw.Integration({
-      type: apigw.IntegrationType.AWS_PROXY,
-      integrationHttpMethod: 'GET',
-      options: {
-        credentialsRole: role,
-      },
-    }));
+    api.root.addMethod(
+      'GET',
+      new apigw.Integration({
+        type: apigw.IntegrationType.AWS_PROXY,
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsRole: role,
+        },
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
@@ -326,7 +312,6 @@ describe('method', () => {
         Credentials: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
       },
     });
-
   });
 
   test('integration "credentialsPassthrough" can be used to passthrough user credentials to backend', () => {
@@ -335,13 +320,16 @@ describe('method', () => {
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
 
     // WHEN
-    api.root.addMethod('GET', new apigw.Integration({
-      type: apigw.IntegrationType.AWS_PROXY,
-      integrationHttpMethod: 'GET',
-      options: {
-        credentialsPassthrough: true,
-      },
-    }));
+    api.root.addMethod(
+      'GET',
+      new apigw.Integration({
+        type: apigw.IntegrationType.AWS_PROXY,
+        integrationHttpMethod: 'GET',
+        options: {
+          credentialsPassthrough: true,
+        },
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
@@ -349,7 +337,6 @@ describe('method', () => {
         Credentials: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*']] },
       },
     });
-
   });
 
   test('methodResponse set one or more method responses via options', () => {
@@ -362,73 +349,84 @@ describe('method', () => {
       httpMethod: 'GET',
       resource: api.root,
       options: {
-        methodResponses: [{
-          statusCode: '200',
-        }, {
-          statusCode: '400',
-          responseParameters: {
-            'method.response.header.killerbees': false,
+        methodResponses: [
+          {
+            statusCode: '200',
           },
-        }, {
-          statusCode: '500',
-          responseParameters: {
-            'method.response.header.errthing': true,
+          {
+            statusCode: '400',
+            responseParameters: {
+              'method.response.header.killerbees': false,
+            },
           },
-          responseModels: {
-            'application/json': apigw.Model.EMPTY_MODEL,
-            'text/plain': apigw.Model.ERROR_MODEL,
+          {
+            statusCode: '500',
+            responseParameters: {
+              'method.response.header.errthing': true,
+            },
+            responseModels: {
+              'application/json': apigw.Model.EMPTY_MODEL,
+              'text/plain': apigw.Model.ERROR_MODEL,
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      MethodResponses: [{
-        StatusCode: '200',
-      }, {
-        StatusCode: '400',
-        ResponseParameters: {
-          'method.response.header.killerbees': false,
+      MethodResponses: [
+        {
+          StatusCode: '200',
         },
-      }, {
-        StatusCode: '500',
-        ResponseParameters: {
-          'method.response.header.errthing': true,
+        {
+          StatusCode: '400',
+          ResponseParameters: {
+            'method.response.header.killerbees': false,
+          },
         },
-        ResponseModels: {
-          'application/json': 'Empty',
-          'text/plain': 'Error',
+        {
+          StatusCode: '500',
+          ResponseParameters: {
+            'method.response.header.errthing': true,
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
+            'text/plain': 'Error',
+          },
         },
-      }],
+      ],
     });
-
   });
 
-  test('multiple integration responses can be used', () => { // @see https://github.com/aws/aws-cdk/issues/1608
+  test('multiple integration responses can be used', () => {
+    // @see https://github.com/aws/aws-cdk/issues/1608
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
 
     // WHEN
-    api.root.addMethod('GET', new apigw.AwsIntegration({
-      service: 'foo-service',
-      action: 'BarAction',
-      options: {
-        integrationResponses: [
-          {
-            statusCode: '200',
-            responseTemplates: { 'application/json': JSON.stringify({ success: true }) },
-          },
-          {
-            selectionPattern: 'Invalid',
-            statusCode: '503',
-            responseTemplates: { 'application/json': JSON.stringify({ success: false, message: 'Invalid Request' }) },
-          },
-        ],
-      },
-    }));
+    api.root.addMethod(
+      'GET',
+      new apigw.AwsIntegration({
+        service: 'foo-service',
+        action: 'BarAction',
+        options: {
+          integrationResponses: [
+            {
+              statusCode: '200',
+              responseTemplates: { 'application/json': JSON.stringify({ success: true }) },
+            },
+            {
+              selectionPattern: 'Invalid',
+              statusCode: '503',
+              responseTemplates: { 'application/json': JSON.stringify({ success: false, message: 'Invalid Request' }) },
+            },
+          ],
+        },
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
@@ -446,10 +444,20 @@ describe('method', () => {
           },
         ],
         Type: 'AWS',
-        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']] },
+        Uri: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':apigateway:',
+              { Ref: 'AWS::Region' },
+              ':foo-service:action/BarAction',
+            ],
+          ],
+        },
       },
     });
-
   });
 
   test('method is always set as uppercase', () => {
@@ -466,7 +474,6 @@ describe('method', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', { HttpMethod: 'POST' });
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', { HttpMethod: 'GET' });
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', { HttpMethod: 'PUT' });
-
   });
 
   test('requestModel can be set', () => {
@@ -501,7 +508,6 @@ describe('method', () => {
         'application/json': { Ref: stack.getLogicalId(model.node.findChild('Resource') as cdk.CfnElement) },
       },
     });
-
   });
 
   test('methodResponse has a mix of response modes', () => {
@@ -522,50 +528,57 @@ describe('method', () => {
       httpMethod: 'GET',
       resource: api.root,
       options: {
-        methodResponses: [{
-          statusCode: '200',
-        }, {
-          statusCode: '400',
-          responseParameters: {
-            'method.response.header.killerbees': false,
+        methodResponses: [
+          {
+            statusCode: '200',
           },
-        }, {
-          statusCode: '500',
-          responseParameters: {
-            'method.response.header.errthing': true,
+          {
+            statusCode: '400',
+            responseParameters: {
+              'method.response.header.killerbees': false,
+            },
           },
-          responseModels: {
-            'application/json': apigw.Model.EMPTY_MODEL,
-            'text/plain': apigw.Model.ERROR_MODEL,
-            'text/html': htmlModel,
+          {
+            statusCode: '500',
+            responseParameters: {
+              'method.response.header.errthing': true,
+            },
+            responseModels: {
+              'application/json': apigw.Model.EMPTY_MODEL,
+              'text/plain': apigw.Model.ERROR_MODEL,
+              'text/html': htmlModel,
+            },
           },
-        }],
+        ],
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      MethodResponses: [{
-        StatusCode: '200',
-      }, {
-        StatusCode: '400',
-        ResponseParameters: {
-          'method.response.header.killerbees': false,
+      MethodResponses: [
+        {
+          StatusCode: '200',
         },
-      }, {
-        StatusCode: '500',
-        ResponseParameters: {
-          'method.response.header.errthing': true,
+        {
+          StatusCode: '400',
+          ResponseParameters: {
+            'method.response.header.killerbees': false,
+          },
         },
-        ResponseModels: {
-          'application/json': 'Empty',
-          'text/plain': 'Error',
-          'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) },
+        {
+          StatusCode: '500',
+          ResponseParameters: {
+            'method.response.header.errthing': true,
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
+            'text/plain': 'Error',
+            'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) },
+          },
         },
-      }],
+      ],
     });
-
   });
 
   test('method has a request validator', () => {
@@ -595,7 +608,6 @@ describe('method', () => {
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
     });
-
   });
 
   test('use default requestParameters', () => {
@@ -625,7 +637,6 @@ describe('method', () => {
         'method.request.path.proxy': true,
       },
     });
-
   });
 
   test('authorizer is bound correctly', () => {
@@ -641,7 +652,6 @@ describe('method', () => {
       AuthorizationType: 'CUSTOM',
       AuthorizerId: DUMMY_AUTHORIZER.authorizerId,
     });
-
   });
 
   test('authorizer via default method options', () => {
@@ -670,7 +680,6 @@ describe('method', () => {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
     });
-
   });
 
   test('fails when authorization type does not match the authorizer', () => {
@@ -684,7 +693,6 @@ describe('method', () => {
         authorizer: DUMMY_AUTHORIZER,
       });
     }).toThrow(/Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
-
   });
 
   test('fails when authorization type does not match the authorizer in default method options', () => {
@@ -701,7 +709,6 @@ describe('method', () => {
         authorizationType: apigw.AuthorizationType.IAM,
       });
     }).toThrow(/Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
-
   });
 
   test('method has Auth Scopes', () => {
@@ -725,7 +732,6 @@ describe('method', () => {
       ApiKeyRequired: true,
       AuthorizationScopes: ['AuthScope1', 'AuthScope2'],
     });
-
   });
 
   test('use default Auth Scopes', () => {
@@ -754,7 +760,6 @@ describe('method', () => {
       OperationName: 'defaultAuthScopes',
       AuthorizationScopes: ['DefaultAuth'],
     });
-
   });
 
   test('Override Authorization Type config in the default method config to None', () => {
@@ -786,11 +791,12 @@ describe('method', () => {
       AuthorizationType: AuthorizationType.NONE,
     });
 
-    expect(Template.fromStack(stack).findResources('AWS::ApiGateway::Method', {
-      OperationName: 'overrideDefaultAuthScopes',
-      authorizer: DUMMY_AUTHORIZER,
-    })).toEqual({});
-
+    expect(
+      Template.fromStack(stack).findResources('AWS::ApiGateway::Method', {
+        OperationName: 'overrideDefaultAuthScopes',
+        authorizer: DUMMY_AUTHORIZER,
+      })
+    ).toEqual({});
   });
 
   test('Add Method that override the default method config authorization type to None do not fail', () => {
@@ -915,10 +921,12 @@ describe('method', () => {
     });
 
     // THEN
-    expect(() => Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
-      AuthorizationScopes: scopes,
-      AuthorizationType: authType,
-    }));
+    expect(() =>
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        AuthorizationScopes: scopes,
+        AuthorizationType: authType,
+      })
+    );
   });
 
   test('Auth Scopes absent', () => {
@@ -943,7 +951,6 @@ describe('method', () => {
       OperationName: 'authScopesAbsent',
       AuthorizationScopes: Match.absent(),
     });
-
   });
 
   test('method has a request validator with provided properties', () => {
@@ -971,7 +978,6 @@ describe('method', () => {
       ValidateRequestParameters: false,
       Name: 'test-validator',
     });
-
   });
 
   test('method does not have a request validator', () => {
@@ -989,7 +995,6 @@ describe('method', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       RequestValidatorId: Match.absent(),
     });
-
   });
 
   test('method does not support both request validator and request validator options', () => {
@@ -1016,9 +1021,9 @@ describe('method', () => {
     };
 
     // THEN
-    expect(() => new apigw.Method(stack, 'method', methodProps))
-      .toThrow(/Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
-
+    expect(() => new apigw.Method(stack, 'method', methodProps)).toThrow(
+      /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./
+    );
   });
 
   testDeprecated('"restApi" and "api" properties return the RestApi correctly', () => {
@@ -1033,7 +1038,6 @@ describe('method', () => {
     expect(method.restApi).toBeDefined();
     expect(method.api).toBeDefined();
     expect(stack.resolve(method.api.restApiId)).toEqual(stack.resolve(method.restApi.restApiId));
-
   });
 
   testDeprecated('"restApi" throws an error on imported while "api" returns correctly', () => {
@@ -1050,7 +1054,6 @@ describe('method', () => {
     // THEN
     expect(() => method.restApi).toThrow(/not available on Resource not connected to an instance of RestApi/);
     expect(method.api).toBeDefined();
-
   });
 
   test('methodResponse should be passed from defaultMethodOptions', () => {
@@ -1078,11 +1081,12 @@ describe('method', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      MethodResponses: [{
-        StatusCode: '200',
-      }],
+      MethodResponses: [
+        {
+          StatusCode: '200',
+        },
+      ],
     });
-
   });
 
   describe('Metrics', () => {
@@ -1101,7 +1105,12 @@ describe('method', () => {
       expect(metric.namespace).toEqual('AWS/ApiGateway');
       expect(metric.metricName).toEqual(metricName);
       expect(metric.statistic).toEqual(statistic);
-      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+      expect(metric.dimensions).toEqual({
+        ApiName: 'test-api',
+        Method: 'GET',
+        Resource: '/pets',
+        Stage: api.deploymentStage.stageName,
+      });
     });
 
     test('metricClientError', () => {
@@ -1118,7 +1127,12 @@ describe('method', () => {
       expect(metric.metricName).toEqual('4XXError');
       expect(metric.statistic).toEqual('Sum');
       expect(metric.color).toEqual(color);
-      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+      expect(metric.dimensions).toEqual({
+        ApiName: 'test-api',
+        Method: 'GET',
+        Resource: '/pets',
+        Stage: api.deploymentStage.stageName,
+      });
     });
 
     test('metricServerError', () => {
@@ -1135,7 +1149,12 @@ describe('method', () => {
       expect(metric.metricName).toEqual('5XXError');
       expect(metric.statistic).toEqual('Sum');
       expect(metric.color).toEqual(color);
-      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+      expect(metric.dimensions).toEqual({
+        ApiName: 'test-api',
+        Method: 'GET',
+        Resource: '/pets',
+        Stage: api.deploymentStage.stageName,
+      });
     });
 
     test('metricCacheHitCount', () => {
@@ -1152,7 +1171,12 @@ describe('method', () => {
       expect(metric.metricName).toEqual('CacheHitCount');
       expect(metric.statistic).toEqual('Sum');
       expect(metric.color).toEqual(color);
-      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+      expect(metric.dimensions).toEqual({
+        ApiName: 'test-api',
+        Method: 'GET',
+        Resource: '/pets',
+        Stage: api.deploymentStage.stageName,
+      });
     });
 
     test('metricCacheMissCount', () => {
@@ -1169,7 +1193,12 @@ describe('method', () => {
       expect(metric.metricName).toEqual('CacheMissCount');
       expect(metric.statistic).toEqual('Sum');
       expect(metric.color).toEqual(color);
-      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+      expect(metric.dimensions).toEqual({
+        ApiName: 'test-api',
+        Method: 'GET',
+        Resource: '/pets',
+        Stage: api.deploymentStage.stageName,
+      });
     });
 
     test('metricCount', () => {
@@ -1186,7 +1215,12 @@ describe('method', () => {
       expect(metric.metricName).toEqual('Count');
       expect(metric.statistic).toEqual('SampleCount');
       expect(metric.color).toEqual(color);
-      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+      expect(metric.dimensions).toEqual({
+        ApiName: 'test-api',
+        Method: 'GET',
+        Resource: '/pets',
+        Stage: api.deploymentStage.stageName,
+      });
     });
 
     test('metricIntegrationLatency', () => {
@@ -1203,7 +1237,12 @@ describe('method', () => {
       expect(metric.metricName).toEqual('IntegrationLatency');
       expect(metric.statistic).toEqual('Average');
       expect(metric.color).toEqual(color);
-      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+      expect(metric.dimensions).toEqual({
+        ApiName: 'test-api',
+        Method: 'GET',
+        Resource: '/pets',
+        Stage: api.deploymentStage.stageName,
+      });
     });
 
     test('metricLatency', () => {
@@ -1220,7 +1259,12 @@ describe('method', () => {
       expect(metric.metricName).toEqual('Latency');
       expect(metric.statistic).toEqual('Average');
       expect(metric.color).toEqual(color);
-      expect(metric.dimensions).toEqual({ ApiName: 'test-api', Method: 'GET', Resource: '/pets', Stage: api.deploymentStage.stageName });
+      expect(metric.dimensions).toEqual({
+        ApiName: 'test-api',
+        Method: 'GET',
+        Resource: '/pets',
+        Stage: api.deploymentStage.stageName,
+      });
     });
 
     test('grantExecute', () => {
@@ -1265,9 +1309,11 @@ describe('method', () => {
             },
           ],
         },
-        Users: [{
-          Ref: 'user2C2B57AE',
-        }],
+        Users: [
+          {
+            Ref: 'user2C2B57AE',
+          },
+        ],
       });
     });
   });

@@ -9,8 +9,10 @@ import { Group, GroupProps } from '../lib/group';
 import { Schedule } from '../lib/schedule';
 
 class SomeLambdaTarget implements IScheduleTarget {
-  public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
-  }
+  public constructor(
+    private readonly fn: lambda.IFunction,
+    private readonly role: iam.IRole
+  ) {}
 
   public bind(): ScheduleTargetConfig {
     return {
@@ -177,10 +179,7 @@ describe('Schedule Group', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'scheduler:GetSchedule',
-              'scheduler:ListSchedules',
-            ],
+            Action: ['scheduler:GetSchedule', 'scheduler:ListSchedules'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -218,10 +217,7 @@ describe('Schedule Group', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'scheduler:CreateSchedule',
-              'scheduler:UpdateSchedule',
-            ],
+            Action: ['scheduler:CreateSchedule', 'scheduler:UpdateSchedule'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [

@@ -4,10 +4,7 @@ import { HttpHandler } from './http';
 import { AwsApiCallHandler } from './sdk';
 import * as types from './types';
 
-export async function handler(
-  event: AWSLambda.CloudFormationCustomResourceEvent,
-  context: AWSLambda.Context
-) {
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   console.log(`Event: ${JSON.stringify({ ...event, ResponseURL: '...' })}`);
   const provider = createResourceHandler(event, context);
   try {
@@ -102,10 +99,7 @@ export async function onTimeout(timeoutEvent: any) {
  * If the result of the assertion is not successful then it will throw an error
  * which will cause the state machine to try again
  */
-export async function isComplete(
-  event: AWSLambda.CloudFormationCustomResourceEvent,
-  context: AWSLambda.Context
-) {
+export async function isComplete(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   console.log(`Event: ${JSON.stringify({ ...event, ResponseURL: '...' })}`);
   const provider = createResourceHandler(event, context);
   try {
@@ -159,10 +153,7 @@ export async function isComplete(
   }
 }
 
-function createResourceHandler(
-  event: AWSLambda.CloudFormationCustomResourceEvent,
-  context: AWSLambda.Context
-) {
+function createResourceHandler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   if (event.ResourceType.startsWith(types.SDK_RESOURCE_TYPE_PREFIX)) {
     return new AwsApiCallHandler(event, context);
   } else if (event.ResourceType.startsWith(types.ASSERT_RESOURCE_TYPE)) {

@@ -1,10 +1,4 @@
-import {
-  Step,
-  StackOutputReference,
-  StackDeployment,
-  StackAsset,
-  StageDeployment,
-} from '../blueprint';
+import { Step, StackOutputReference, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 
 /**

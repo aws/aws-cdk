@@ -438,8 +438,7 @@ export class Nodegroup extends Resource implements INodegroup {
         '"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead'
       );
     }
-    const instanceTypes =
-      props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
+    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
     let possibleAmiTypes: NodegroupAmiType[] = [];
 
     if (instanceTypes && instanceTypes.length > 0) {
@@ -480,9 +479,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
-      ngRole.addManagedPolicy(
-        ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly')
-      );
+      ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
       // Grant additional IPv6 networking permissions if running in IPv6
       // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
@@ -557,8 +554,7 @@ export class Nodegroup extends Resource implements INodegroup {
     if (this.cluster instanceof Cluster) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       // only when ConfigMap is supported
-      const supportConfigMap =
-        props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+      const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
       if (supportConfigMap) {
         this.cluster.awsAuth.addRoleMapping(this.role, {
           username: 'system:node:{{EC2PrivateDNSName}}',
@@ -588,23 +584,14 @@ export class Nodegroup extends Resource implements INodegroup {
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
     if (!maxUnavailable && !maxUnavailablePercentage) return;
     if (maxUnavailable && maxUnavailablePercentage) {
-      throw new Error(
-        'maxUnavailable and maxUnavailablePercentage are not allowed to be defined together'
-      );
+      throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
     }
-    if (
-      maxUnavailablePercentage &&
-      (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)
-    ) {
-      throw new Error(
-        `maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`
-      );
+    if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
+      throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
     }
     if (maxUnavailable) {
       if (maxUnavailable > this.maxSize) {
-        throw new Error(
-          `maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`
-        );
+        throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
       }
       if (maxUnavailable < 1 || maxUnavailable > 100) {
         throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
@@ -662,8 +649,7 @@ function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
     InstanceClass.R3,
   ];
   return (
-    instanceType.toString() ===
-      InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||
+    instanceType.toString() === InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||
     forbiddenInstanceClasses.every(
       (c) =>
         !instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)) &&

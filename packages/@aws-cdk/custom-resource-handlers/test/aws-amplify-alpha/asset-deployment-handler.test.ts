@@ -28,13 +28,9 @@ jest.mock('@aws-sdk/s3-request-presigner', () => {
   };
 });
 
-import {
-  onEvent,
-  isComplete,
-} from '../../lib/aws-amplify-alpha/asset-deployment-handler/index';
+import { onEvent, isComplete } from '../../lib/aws-amplify-alpha/asset-deployment-handler/index';
 
 describe('handler', () => {
-
   let oldConsoleLog: any;
 
   beforeAll(() => {
@@ -115,22 +111,24 @@ describe('handler', () => {
     });
 
     // WHEN
-    await expect(() => onEvent({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Create',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    await expect(() =>
+      onEvent({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-    })).rejects.toMatch('Amplify job already running. Aborting deployment.');
+        RequestType: 'Create',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+      })
+    ).rejects.toMatch('Amplify job already running. Aborting deployment.');
 
     expect(listJobsRequest).toHaveBeenCalledWith({
       appId: 'appIdValue',
@@ -236,23 +234,25 @@ describe('handler', () => {
     });
 
     // WHEN
-    await expect(() => isComplete({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Create',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    await expect(() =>
+      isComplete({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      AmplifyJobId: 'amplifyJobIdValue',
-    })).rejects.toThrow('Amplify job failed with status: FAILED');
+        RequestType: 'Create',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        AmplifyJobId: 'amplifyJobIdValue',
+      })
+    ).rejects.toThrow('Amplify job failed with status: FAILED');
     // THEN
     expect(getJobRequest).toHaveBeenCalledWith({
       appId: 'appIdValue',
@@ -271,23 +271,25 @@ describe('handler', () => {
     });
 
     // WHEN
-    await expect(() => isComplete({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Create',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    await expect(() =>
+      isComplete({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      AmplifyJobId: 'amplifyJobIdValue',
-    })).rejects.toThrow('Amplify job failed with status: CANCELLED');
+        RequestType: 'Create',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        AmplifyJobId: 'amplifyJobIdValue',
+      })
+    ).rejects.toThrow('Amplify job failed with status: CANCELLED');
 
     // THEN
     expect(getJobRequest).toHaveBeenCalledWith({
@@ -307,22 +309,24 @@ describe('handler', () => {
     });
 
     // WHEN
-    await expect(() => isComplete({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Create',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    await expect(() =>
+      isComplete({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-    })).rejects.toThrow('Unable to determine Amplify job status without job id');
+        RequestType: 'Create',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+      })
+    ).rejects.toThrow('Unable to determine Amplify job status without job id');
 
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();
@@ -397,24 +401,26 @@ describe('handler', () => {
     });
 
     // WHEN
-    await expect(() => onEvent({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Update',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    await expect(() =>
+      onEvent({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      OldResourceProperties: { ServiceToken: 'serviceTokenValue' },
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      PhysicalResourceId: 'physicalResourceIdValue',
-    })).rejects.toMatch('Amplify job already running. Aborting deployment.');
+        RequestType: 'Update',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        OldResourceProperties: { ServiceToken: 'serviceTokenValue' },
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        PhysicalResourceId: 'physicalResourceIdValue',
+      })
+    ).rejects.toMatch('Amplify job already running. Aborting deployment.');
 
     // THEN
     expect(listJobsRequest).toHaveBeenCalledWith({
@@ -525,25 +531,27 @@ describe('handler', () => {
     });
 
     // WHEN
-    await expect(() => isComplete({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Update',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    await expect(() =>
+      isComplete({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      OldResourceProperties: {},
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      AmplifyJobId: 'amplifyJobIdValue',
-      PhysicalResourceId: 'physicalResourceIdValue',
-    })).rejects.toThrow('Amplify job failed with status: FAILED');
+        RequestType: 'Update',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        OldResourceProperties: {},
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        AmplifyJobId: 'amplifyJobIdValue',
+        PhysicalResourceId: 'physicalResourceIdValue',
+      })
+    ).rejects.toThrow('Amplify job failed with status: FAILED');
     // THEN
     expect(getJobRequest).toHaveBeenCalledWith({
       appId: 'appIdValue',
@@ -562,25 +570,27 @@ describe('handler', () => {
     });
 
     // WHEN
-    await expect(() => isComplete({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Update',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    await expect(() =>
+      isComplete({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      OldResourceProperties: {},
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      AmplifyJobId: 'amplifyJobIdValue',
-      PhysicalResourceId: 'physicalResourceIdValue',
-    })).rejects.toThrow('Amplify job failed with status: CANCELLED');
+        RequestType: 'Update',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        OldResourceProperties: {},
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        AmplifyJobId: 'amplifyJobIdValue',
+        PhysicalResourceId: 'physicalResourceIdValue',
+      })
+    ).rejects.toThrow('Amplify job failed with status: CANCELLED');
 
     // THEN
     expect(getJobRequest).toHaveBeenCalledWith({
@@ -600,24 +610,26 @@ describe('handler', () => {
     });
 
     // WHEN
-    await expect(() => isComplete({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Update',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    await expect(() =>
+      isComplete({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      OldResourceProperties: {},
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      PhysicalResourceId: 'physicalResourceIdValue',
-    })).rejects.toThrow('Unable to determine Amplify job status without job id');
+        RequestType: 'Update',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        OldResourceProperties: {},
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        PhysicalResourceId: 'physicalResourceIdValue',
+      })
+    ).rejects.toThrow('Unable to determine Amplify job status without job id');
 
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();
@@ -628,23 +640,25 @@ describe('handler', () => {
     // GIVEN
 
     // WHEN
-    expect(() => onEvent({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Delete',
-      ResourceType: 'Custom::AmplifyAssetDeployment',
-      ResourceProperties: {
+    expect(() =>
+      onEvent({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      PhysicalResourceId: 'physicalResourceIdValue',
-    })).resolves;
+        RequestType: 'Delete',
+        ResourceType: 'Custom::AmplifyAssetDeployment',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        PhysicalResourceId: 'physicalResourceIdValue',
+      })
+    ).resolves;
   });
 
   it('isComplete DELETE success', async () => {
@@ -679,24 +693,26 @@ describe('handler', () => {
     // GIVEN
 
     // WHEN
-    await expect(() => onEvent({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Update',
-      ResourceType: 'Custom::BadResourceType',
-      ResourceProperties: {
+    await expect(() =>
+      onEvent({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      OldResourceProperties: {},
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      PhysicalResourceId: 'physicalResourceIdValue',
-    })).rejects.toThrow('Unsupported resource type "Custom::BadResourceType"');
+        RequestType: 'Update',
+        ResourceType: 'Custom::BadResourceType',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        OldResourceProperties: {},
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        PhysicalResourceId: 'physicalResourceIdValue',
+      })
+    ).rejects.toThrow('Unsupported resource type "Custom::BadResourceType"');
 
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();
@@ -707,24 +723,26 @@ describe('handler', () => {
     // GIVEN
 
     // WHEN
-    await expect(() => isComplete({
-      ServiceToken: 'serviceTokenValue',
-      RequestType: 'Update',
-      ResourceType: 'Custom::BadResourceType',
-      ResourceProperties: {
+    await expect(() =>
+      isComplete({
         ServiceToken: 'serviceTokenValue',
-        AppId: 'appIdValue',
-        BranchName: 'branchNameValue',
-        S3BucketName: 's3BucketNameValue',
-        S3ObjectKey: 's3ObjectKeyValue',
-      },
-      OldResourceProperties: {},
-      ResponseURL: 'responseUrlValue',
-      StackId: 'stackIdValue',
-      RequestId: 'requestIdValue',
-      LogicalResourceId: 'logicalResourceIdValue',
-      PhysicalResourceId: 'physicalResourceIdValue',
-    })).rejects.toThrow('Unsupported resource type "Custom::BadResourceType"');
+        RequestType: 'Update',
+        ResourceType: 'Custom::BadResourceType',
+        ResourceProperties: {
+          ServiceToken: 'serviceTokenValue',
+          AppId: 'appIdValue',
+          BranchName: 'branchNameValue',
+          S3BucketName: 's3BucketNameValue',
+          S3ObjectKey: 's3ObjectKeyValue',
+        },
+        OldResourceProperties: {},
+        ResponseURL: 'responseUrlValue',
+        StackId: 'stackIdValue',
+        RequestId: 'requestIdValue',
+        LogicalResourceId: 'logicalResourceIdValue',
+        PhysicalResourceId: 'physicalResourceIdValue',
+      })
+    ).rejects.toThrow('Unsupported resource type "Custom::BadResourceType"');
 
     // THEN
     expect(getJobRequest).not.toHaveBeenCalled();

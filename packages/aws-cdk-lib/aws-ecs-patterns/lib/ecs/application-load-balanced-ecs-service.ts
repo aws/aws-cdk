@@ -1,10 +1,5 @@
 import { Construct } from 'constructs';
-import {
-  Ec2Service,
-  Ec2TaskDefinition,
-  PlacementConstraint,
-  PlacementStrategy,
-} from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import {
@@ -15,8 +10,7 @@ import {
 /**
  * The properties for the ApplicationLoadBalancedEc2Service service.
  */
-export interface ApplicationLoadBalancedEc2ServiceProps
-  extends ApplicationLoadBalancedServiceBaseProps {
+export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadBalancedServiceBaseProps {
   /**
    * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both..
    *
@@ -124,8 +118,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       // Create log driver if logging is enabled
       const enableLogging = taskImageOptions.enableLogging ?? true;
       const logDriver =
-        taskImageOptions.logDriver ??
-        (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+        taskImageOptions.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {

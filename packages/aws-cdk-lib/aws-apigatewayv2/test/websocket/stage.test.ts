@@ -78,31 +78,36 @@ describe('WebSocketStage', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([{
-            Action: 'execute-api:ManageConnections',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':execute-api:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':',
-                {
-                  Ref: 'ApiF70053CD',
-                },
-                `/${defaultStage.stageName}/*/@connections/*`,
-              ]],
+          Statement: Match.arrayWith([
+            {
+              Action: 'execute-api:ManageConnections',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':execute-api:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':',
+                    {
+                      Ref: 'ApiF70053CD',
+                    },
+                    `/${defaultStage.stageName}/*/@connections/*`,
+                  ],
+                ],
+              },
             },
-          }]),
+          ]),
         },
       });
     });

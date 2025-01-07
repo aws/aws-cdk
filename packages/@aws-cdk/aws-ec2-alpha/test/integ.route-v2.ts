@@ -20,12 +20,7 @@ import {
   RouteTable,
   VPNGatewayV2,
 } from '../lib/route';
-import {
-  GatewayVpcEndpoint,
-  GatewayVpcEndpointAwsService,
-  SubnetType,
-  VpnConnectionType,
-} from 'aws-cdk-lib/aws-ec2';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { Fn } from 'aws-cdk-lib';
 
 const app = new cdk.App();

@@ -1,11 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { exec as runCli } from 'aws-cdk/lib';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  createAssembly,
-  prepareContext,
-  prepareDefaultEnvironment,
-} from 'aws-cdk/lib/api/cxapp/exec';
+import { createAssembly, prepareContext, prepareDefaultEnvironment } from 'aws-cdk/lib/api/cxapp/exec';
 import {
   SharedOptions,
   DeployOptions,
@@ -195,12 +191,8 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...renderBooleanArg('terminationProtection', options.usePreviousParameters),
       ...renderBooleanArg('execute', options.execute),
       ...(options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : []),
-      ...(options.bootstrapBucketName
-        ? ['--bootstrap-bucket-name', options.bootstrapBucketName]
-        : []),
-      ...(options.cfnExecutionPolicy
-        ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy]
-        : []),
+      ...(options.bootstrapBucketName ? ['--bootstrap-bucket-name', options.bootstrapBucketName] : []),
+      ...(options.cfnExecutionPolicy ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy] : []),
       ...(options.template ? ['--template', options.template] : []),
       ...(options.customPermissionsBoundary
         ? ['--custom-permissions-boundary', options.customPermissionsBoundary]
@@ -209,9 +201,7 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...(options.trust ? ['--trust', options.trust] : []),
       ...(options.trustForLookup ? ['--trust-for-lookup', options.trustForLookup] : []),
       ...(options.bootstrapKmsKeyId ? ['--bootstrap-kms-key-id', options.bootstrapKmsKeyId] : []),
-      ...(options.bootstrapCustomerKey
-        ? ['--bootstrap-customer-key', options.bootstrapCustomerKey]
-        : []),
+      ...(options.bootstrapCustomerKey ? ['--bootstrap-customer-key', options.bootstrapCustomerKey] : []),
       ...(options.publicAccessBlockConfiguration
         ? ['--public-access-block-configuration', options.publicAccessBlockConfiguration]
         : []),
@@ -238,17 +228,13 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...renderNumberArg('concurrency', options.concurrency),
       ...renderHotswapArg(options.hotswap),
       ...(options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : []),
-      ...(options.notificationArns
-        ? renderArrayArg('--notification-arns', options.notificationArns)
-        : []),
+      ...(options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : []),
       ...(options.parameters ? renderMapArrayArg('--parameters', options.parameters) : []),
       ...(options.outputsFile ? ['--outputs-file', options.outputsFile] : []),
       ...(options.requireApproval ? ['--require-approval', options.requireApproval] : []),
       ...(options.changeSetName ? ['--change-set-name', options.changeSetName] : []),
       ...(options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : []),
-      ...(options.progress
-        ? ['--progress', options.progress]
-        : ['--progress', StackActivityProgress.EVENTS]),
+      ...(options.progress ? ['--progress', options.progress] : ['--progress', StackActivityProgress.EVENTS]),
       ...this.createDefaultArguments(options),
     ];
 
@@ -308,10 +294,7 @@ function renderHotswapArg(hotswapMode: HotswapMode | undefined): string[] {
   }
 }
 
-function renderMapArrayArg(
-  flag: string,
-  parameters: { [name: string]: string | undefined }
-): string[] {
+function renderMapArrayArg(flag: string, parameters: { [name: string]: string | undefined }): string[] {
   const params: string[] = [];
   for (const [key, value] of Object.entries(parameters)) {
     params.push(`${key}=${value}`);

@@ -16,7 +16,12 @@ import { App } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import * as ecs from '../../lib';
-import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectProps } from '../../lib/base/base-service';
+import {
+  DeploymentControllerType,
+  LaunchType,
+  PropagatedTagSource,
+  ServiceConnectProps,
+} from '../../lib/base/base-service';
 import { ServiceManagedVolume } from '../../lib/base/service-managed-volume';
 import { addDefaultCapacityProvider } from '../util';
 
@@ -57,10 +62,7 @@ describe('fargate service', () => {
             AssignPublicIp: 'DISABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'FargateServiceSecurityGroup0A0E79CB',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['FargateServiceSecurityGroup0A0E79CB', 'GroupId'],
               },
             ],
             Subnets: [
@@ -187,10 +189,7 @@ describe('fargate service', () => {
             AssignPublicIp: 'DISABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'FargateServiceSecurityGroup0A0E79CB',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['FargateServiceSecurityGroup0A0E79CB', 'GroupId'],
               },
             ],
             Subnets: [
@@ -209,13 +208,11 @@ describe('fargate service', () => {
     [false, undefined].forEach((value) => {
       test('set cloudwatch permissions based on falsy feature flag when no cloudwatch log configured', () => {
         // GIVEN
-        const app = new App(
-          {
-            context: {
-              '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': value,
-            },
+        const app = new App({
+          context: {
+            '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': value,
           },
-        );
+        });
         const stack = new cdk.Stack(app);
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -253,11 +250,7 @@ describe('fargate service', () => {
                 Resource: '*',
               },
               {
-                Action: [
-                  'logs:CreateLogStream',
-                  'logs:DescribeLogStreams',
-                  'logs:PutLogEvents',
-                ],
+                Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
                 Effect: 'Allow',
                 Resource: '*',
               },
@@ -276,13 +269,11 @@ describe('fargate service', () => {
 
     test('set cloudwatch permissions based on true feature flag when no cloudwatch log configured', () => {
       // GIVEN
-      const app = new App(
-        {
-          context: {
-            '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
-          },
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
         },
-      );
+      });
       const stack = new cdk.Stack(app);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -328,13 +319,11 @@ describe('fargate service', () => {
 
     test('set cloudwatch permissions based on true feature flag when cloudwatch log is configured', () => {
       // GIVEN
-      const app = new App(
-        {
-          context: {
-            '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
-          },
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
         },
-      );
+      });
       const stack = new cdk.Stack(app);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
@@ -380,11 +369,7 @@ describe('fargate service', () => {
               Resource: '*',
             },
             {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:DescribeLogStreams',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
@@ -493,10 +478,7 @@ describe('fargate service', () => {
             AssignPublicIp: 'DISABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'FargateServiceSecurityGroup0A0E79CB',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['FargateServiceSecurityGroup0A0E79CB', 'GroupId'],
               },
             ],
             Subnets: [
@@ -550,10 +532,7 @@ describe('fargate service', () => {
             },
           ],
           NamespaceId: {
-            'Fn::GetAtt': [
-              'TestCloudMapNamespace1FB9B446',
-              'Id',
-            ],
+            'Fn::GetAtt': ['TestCloudMapNamespace1FB9B446', 'Id'],
           },
           RoutingPolicy: 'MULTIVALUE',
         },
@@ -562,10 +541,7 @@ describe('fargate service', () => {
         },
         Name: 'myApp',
         NamespaceId: {
-          'Fn::GetAtt': [
-            'TestCloudMapNamespace1FB9B446',
-            'Id',
-          ],
+          'Fn::GetAtt': ['TestCloudMapNamespace1FB9B446', 'Id'],
         },
       });
 
@@ -703,12 +679,14 @@ describe('fargate service', () => {
           type: ecs.DeploymentControllerType.ECS,
         },
         circuitBreaker: { rollback: true },
-        securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          allowAllOutbound: true,
-          description: 'Example',
-          securityGroupName: 'Bob',
-          vpc,
-        })],
+        securityGroups: [
+          new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+            allowAllOutbound: true,
+            description: 'Example',
+            securityGroupName: 'Bob',
+            vpc,
+          }),
+        ],
         serviceName: 'bonjour',
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
@@ -742,10 +720,7 @@ describe('fargate service', () => {
             AssignPublicIp: 'ENABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'SecurityGroup1F554B36F',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'],
               },
             ],
             Subnets: [
@@ -762,10 +737,7 @@ describe('fargate service', () => {
         ServiceRegistries: [
           {
             RegistryArn: {
-              'Fn::GetAtt': [
-                'FargateServiceCloudmapService9544B753',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['FargateServiceCloudmapService9544B753', 'Arn'],
             },
           },
         ],
@@ -791,7 +763,6 @@ describe('fargate service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
-
     });
 
     test('throws whith secret json field on unsupported platform version', () => {
@@ -817,7 +788,11 @@ describe('fargate service', () => {
       // THEN
       expect(() => {
         Template.fromStack(stack);
-      }).toThrow(new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
+      }).toThrow(
+        new RegExp(
+          `uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`
+        )
+      );
     });
 
     test('ignore task definition and launch type if deployment controller is set to be EXTERNAL', () => {
@@ -840,7 +815,10 @@ describe('fargate service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/FargateService', 'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/FargateService',
+        'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]'
+      );
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
@@ -879,9 +857,12 @@ describe('fargate service', () => {
       app.synth();
 
       // THEN
-      expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
-      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
-
+      expect(service.node.metadata[1].data).toEqual(
+        'Deployment circuit breaker requires the ECS deployment controller.'
+      );
+      expect(service.node.metadata[0].data).toEqual(
+        'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]'
+      );
     });
 
     test('errors when no container specified on task definition', () => {
@@ -1097,10 +1078,7 @@ describe('fargate service', () => {
             Type: 'CODE_DEPLOY',
           },
         },
-        DependsOn: [
-          'FargateTaskDefC6FB60B4',
-          'FargateTaskDefTaskRole0B257552',
-        ],
+        DependsOn: ['FargateTaskDefC6FB60B4', 'FargateTaskDefTaskRole0B257552'],
       });
     });
 
@@ -1186,16 +1164,10 @@ describe('fargate service', () => {
             AssignPublicIp: 'DISABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'SecurityGroup1F554B36F',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'],
               },
               {
-                'Fn::GetAtt': [
-                  'SecurityGroup23BE86BB7',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['SecurityGroup23BE86BB7', 'GroupId'],
               },
             ],
             Subnets: [
@@ -1255,7 +1227,11 @@ describe('fargate service', () => {
         memoryLimitMiB: 512,
       });
 
-      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(
+        stack,
+        'myAlarm',
+        'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1'
+      );
 
       new ecs.FargateService(stack, 'ExternalService', {
         cluster,
@@ -1325,10 +1301,7 @@ describe('fargate service', () => {
             AssignPublicIp: 'DISABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'ExternalServiceSecurityGroup45E0A4FC',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['ExternalServiceSecurityGroup45E0A4FC', 'GroupId'],
               },
             ],
             Subnets: [
@@ -1361,7 +1334,10 @@ describe('fargate service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/FargateService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/FargateService',
+        'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]'
+      );
     });
 
     test('no warning if minHealthyPercent set', () => {
@@ -1382,13 +1358,15 @@ describe('fargate service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasNoWarning('/Default/FargateService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Default/FargateService',
+        'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]'
+      );
     });
   });
 
   describe('when enabling service connect', () => {
     describe('when validating service connect configurations', () => {
-
       let service: ecs.FargateService;
 
       beforeEach(() => {
@@ -1510,7 +1488,6 @@ describe('fargate service', () => {
     });
 
     describe('when creating a FargateService with service connect', () => {
-
       let service: ecs.FargateService;
       let stack: cdk.Stack;
       let cluster: ecs.Cluster;
@@ -1939,7 +1916,7 @@ describe('fargate service', () => {
     });
   });
 
-  describe('When setting up a service volume configurations', ()=>{
+  describe('When setting up a service volume configurations', () => {
     let service: ecs.FargateService;
     let stack: cdk.Stack;
     let cluster: ecs.Cluster;
@@ -1966,7 +1943,7 @@ describe('fargate service', () => {
         taskDefinition,
       });
     });
-    test('success when adding a service volume', ()=> {
+    test('success when adding a service volume', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -1974,20 +1951,24 @@ describe('fargate service', () => {
         sourceVolume: 'nginx-vol',
       });
 
-      service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-        name: 'nginx-vol',
-        managedEBSVolume: {
-          role: role,
-          size: cdk.Size.gibibytes(20),
-          fileSystemType: ecs.FileSystemType.XFS,
-          tagSpecifications: [{
-            tags: {
-              purpose: 'production',
-            },
-            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
-          }],
-        },
-      }));
+      service.addVolume(
+        new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            role: role,
+            size: cdk.Size.gibibytes(20),
+            fileSystemType: ecs.FileSystemType.XFS,
+            tagSpecifications: [
+              {
+                tags: {
+                  purpose: 'production',
+                },
+                propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+              },
+            ],
+          },
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -2023,12 +2004,14 @@ describe('fargate service', () => {
         managedEBSVolume: {
           role: role,
           size: cdk.Size.gibibytes(20),
-          tagSpecifications: [{
-            tags: {
-              purpose: 'production',
+          tagSpecifications: [
+            {
+              tags: {
+                purpose: 'production',
+              },
+              propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
             },
-            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
-          }],
+          ],
         },
       });
       taskDefinition.addVolume(volume);
@@ -2083,7 +2066,7 @@ describe('fargate service', () => {
       });
     });
 
-    test('throw an error when multiple volume configurations are added to ECS service', ()=> {
+    test('throw an error when multiple volume configurations are added to ECS service', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2111,7 +2094,7 @@ describe('fargate service', () => {
       }).toThrow(/Only one EBS volume can be specified for 'volumeConfigurations', got: 2/);
     });
 
-    test('create a default ebsrole when not provided', ()=> {
+    test('create a default ebsrole when not provided', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2119,19 +2102,23 @@ describe('fargate service', () => {
         sourceVolume: 'nginx-vol',
       });
 
-      service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-        name: 'nginx-vol',
-        managedEBSVolume: {
-          size: cdk.Size.gibibytes(20),
-          fileSystemType: ecs.FileSystemType.XFS,
-          tagSpecifications: [{
-            tags: {
-              purpose: 'production',
-            },
-            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
-          }],
-        },
-      }));
+      service.addVolume(
+        new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            size: cdk.Size.gibibytes(20),
+            fileSystemType: ecs.FileSystemType.XFS,
+            tagSpecifications: [
+              {
+                tags: {
+                  purpose: 'production',
+                },
+                propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+              },
+            ],
+          },
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -2160,7 +2147,7 @@ describe('fargate service', () => {
       });
     });
 
-    test('throw an error when both size and snapshotId are not provided', ()=> {
+    test('throw an error when both size and snapshotId are not provided', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2169,16 +2156,18 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBSVolume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+            },
+          })
+        );
       }).toThrow("'size' or 'snapShotId' must be specified");
     });
 
-    test('throw an error snapshot does not match pattern', ()=> {
+    test('throw an error snapshot does not match pattern', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2187,17 +2176,21 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            snapShotId: 'snap-0d48decab5c493eee_',
-          },
-        }));
-      }).toThrow("'snapshotId' does match expected pattern. Expected 'snap-<hexadecmial value>' (ex: 'snap-05abe246af') or Token, got: snap-0d48decab5c493eee_");
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBS Volume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              snapShotId: 'snap-0d48decab5c493eee_',
+            },
+          })
+        );
+      }).toThrow(
+        "'snapshotId' does match expected pattern. Expected 'snap-<hexadecmial value>' (ex: 'snap-05abe246af') or Token, got: snap-0d48decab5c493eee_"
+      );
     });
 
-    test('success when snapshotId matches the pattern', ()=> {
+    test('success when snapshotId matches the pattern', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2228,7 +2221,7 @@ describe('fargate service', () => {
       });
     });
 
-    test('throw an error when size is greater than 16384 for gp2', ()=> {
+    test('throw an error when size is greater than 16384 for gp2', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2237,17 +2230,19 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            size: cdk.Size.gibibytes(16390),
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBS Volume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              size: cdk.Size.gibibytes(16390),
+            },
+          })
+        );
       }).toThrow(/'gp2' volumes must have a size between 1 and 16384 GiB, got 16390 GiB/);
     });
 
-    test('throw an error when size is less than 4 for volume type io1', ()=> {
+    test('throw an error when size is less than 4 for volume type io1', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2256,17 +2251,19 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.IO1,
-            size: cdk.Size.gibibytes(0),
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBS Volume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              volumeType: ec2.EbsDeviceVolumeType.IO1,
+              size: cdk.Size.gibibytes(0),
+            },
+          })
+        );
       }).toThrow(/'io1' volumes must have a size between 4 and 16384 GiB, got 0 GiB/);
     });
-    test('throw an error when size is greater than 1024 for volume type standard', ()=> {
+    test('throw an error when size is greater than 1024 for volume type standard', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2275,18 +2272,20 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.STANDARD,
-            size: cdk.Size.gibibytes(1500),
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBS Volume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              volumeType: ec2.EbsDeviceVolumeType.STANDARD,
+              size: cdk.Size.gibibytes(1500),
+            },
+          })
+        );
       }).toThrow(/'standard' volumes must have a size between 1 and 1024 GiB, got 1500 GiB/);
     });
 
-    test('throw an error if throughput is configured for volumetype gp2', ()=> {
+    test('throw an error if throughput is configured for volumetype gp2', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2295,18 +2294,20 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            size: cdk.Size.gibibytes(10),
-            throughput: 0,
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBS Volume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              size: cdk.Size.gibibytes(10),
+              throughput: 0,
+            },
+          })
+        );
       }).toThrow(/'throughput' can only be configured with gp3 volume type, got gp2/);
     });
 
-    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
+    test('throw an error if throughput is greater tahn 1000 for volume type gp3', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2315,19 +2316,21 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.GP3,
-            size: cdk.Size.gibibytes(10),
-            throughput: 10001,
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBS Volume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              volumeType: ec2.EbsDeviceVolumeType.GP3,
+              size: cdk.Size.gibibytes(10),
+              throughput: 10001,
+            },
+          })
+        );
       }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
     });
 
-    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
+    test('throw an error if throughput is greater tahn 1000 for volume type gp3', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2336,19 +2339,21 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.GP3,
-            size: cdk.Size.gibibytes(10),
-            throughput: 10001,
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBS Volume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              volumeType: ec2.EbsDeviceVolumeType.GP3,
+              size: cdk.Size.gibibytes(10),
+              throughput: 10001,
+            },
+          })
+        );
       }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
     });
 
-    test('throw an error if iops is not supported for volume type sc1', ()=> {
+    test('throw an error if iops is not supported for volume type sc1', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2357,19 +2362,21 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.SC1,
-            size: cdk.Size.gibibytes(125),
-            iops: 0,
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBSVolume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              volumeType: ec2.EbsDeviceVolumeType.SC1,
+              size: cdk.Size.gibibytes(125),
+              iops: 0,
+            },
+          })
+        );
       }).toThrow(/'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got sc1/);
     });
 
-    test('throw an error if iops is not supported for volume type sc1', ()=> {
+    test('throw an error if iops is not supported for volume type sc1', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2378,18 +2385,20 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            size: cdk.Size.gibibytes(125),
-            iops: 0,
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBSVolume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              size: cdk.Size.gibibytes(125),
+              iops: 0,
+            },
+          })
+        );
       }).toThrow(/'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got gp2/);
     });
 
-    test('throw an error if if iops is required but not provided for volume type io2', ()=> {
+    test('throw an error if if iops is required but not provided for volume type io2', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2398,18 +2407,20 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.IO2,
-            size: cdk.Size.gibibytes(125),
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBSVolume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              volumeType: ec2.EbsDeviceVolumeType.IO2,
+              size: cdk.Size.gibibytes(125),
+            },
+          })
+        );
       }).toThrow(/'iops' must be specified with io1 or io2 volume types, got io2/);
     });
 
-    test('throw an error if if iops is less than 100 for volume type io2', ()=> {
+    test('throw an error if if iops is less than 100 for volume type io2', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2418,19 +2429,21 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.IO2,
-            size: cdk.Size.gibibytes(125),
-            iops: 0,
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBSVolume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              volumeType: ec2.EbsDeviceVolumeType.IO2,
+              size: cdk.Size.gibibytes(125),
+              iops: 0,
+            },
+          })
+        );
       }).toThrow("io2' volumes must have 'iops' between 100 and 256000, got 0");
     });
 
-    test('throw an error if if iops is greater than 256000 for volume type io2', ()=> {
+    test('throw an error if if iops is greater than 256000 for volume type io2', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2439,19 +2452,21 @@ describe('fargate service', () => {
       });
 
       expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.IO2,
-            size: cdk.Size.gibibytes(125),
-            iops: 256001,
-          },
-        }));
+        service.addVolume(
+          new ServiceManagedVolume(stack, 'EBSVolume', {
+            name: 'nginx-vol',
+            managedEBSVolume: {
+              fileSystemType: ecs.FileSystemType.XFS,
+              volumeType: ec2.EbsDeviceVolumeType.IO2,
+              size: cdk.Size.gibibytes(125),
+              iops: 256001,
+            },
+          })
+        );
       }).toThrow("io2' volumes must have 'iops' between 100 and 256000, got 256001");
     });
 
-    test('success adding gp3 volume with throughput 0', ()=> {
+    test('success adding gp3 volume with throughput 0', () => {
       // WHEN
       container.addMountPoints({
         containerPath: '/var/lib',
@@ -2459,15 +2474,17 @@ describe('fargate service', () => {
         sourceVolume: 'nginx-vol',
       });
 
-      service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
-        name: 'nginx-vol',
-        managedEBSVolume: {
-          fileSystemType: ecs.FileSystemType.XFS,
-          volumeType: ec2.EbsDeviceVolumeType.GP3,
-          size: cdk.Size.gibibytes(15),
-          throughput: 0,
-        },
-      }));
+      service.addVolume(
+        new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
+            size: cdk.Size.gibibytes(15),
+            throughput: 0,
+          },
+        })
+      );
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         VolumeConfigurations: [
@@ -2552,10 +2569,7 @@ describe('fargate service', () => {
               },
               '/',
               {
-                'Fn::GetAtt': [
-                  'ServiceD69D759B',
-                  'Name',
-                ],
+                'Fn::GetAtt': ['ServiceD69D759B', 'Name'],
               },
             ],
           ],
@@ -2567,12 +2581,18 @@ describe('fargate service', () => {
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: {
-              'Fn::Join': ['', [
-                { 'Fn::Select': [1, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] }, '/',
-                { 'Fn::Select': [2, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] }, '/',
-                { 'Fn::Select': [3, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] }, '/',
-                { 'Fn::GetAtt': ['lblistenertargetGroupC7489D1E', 'TargetGroupFullName'] },
-              ]],
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::Select': [1, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] },
+                  '/',
+                  { 'Fn::Select': [2, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] },
+                  '/',
+                  { 'Fn::Select': [3, { 'Fn::Split': ['/', { Ref: 'lblistener657ADDEC' }] }] },
+                  '/',
+                  { 'Fn::GetAtt': ['lblistenertargetGroupC7489D1E', 'TargetGroupFullName'] },
+                ],
+              ],
             },
           },
           TargetValue: 1000,
@@ -2630,10 +2650,7 @@ describe('fargate service', () => {
               },
               '/',
               {
-                'Fn::GetAtt': [
-                  'ServiceD69D759B',
-                  'Name',
-                ],
+                'Fn::GetAtt': ['ServiceD69D759B', 'Name'],
               },
             ],
           ],
@@ -2664,9 +2681,11 @@ describe('fargate service', () => {
         const listener = lb.addListener('listener', { port: 80 });
         listener.addTargets('target', {
           port: 80,
-          targets: [service.loadBalancerTarget({
-            containerName: 'MainContainer',
-          })],
+          targets: [
+            service.loadBalancerTarget({
+              containerName: 'MainContainer',
+            }),
+          ],
         });
 
         // THEN
@@ -2718,11 +2737,13 @@ describe('fargate service', () => {
 
         listener.addTargets('target', {
           port: 80,
-          targets: [service.loadBalancerTarget({
-            containerName: 'MainContainer',
-            containerPort: 8001,
-            protocol: ecs.Protocol.TCP,
-          })],
+          targets: [
+            service.loadBalancerTarget({
+              containerName: 'MainContainer',
+              containerPort: 8001,
+              protocol: ecs.Protocol.TCP,
+            }),
+          ],
         });
 
         // THEN
@@ -2745,10 +2766,12 @@ describe('fargate service', () => {
 
         taskDefinition.addContainer('MainContainer', {
           image: ecs.ContainerImage.fromRegistry('hello'),
-          portMappings: [{
-            containerPort: 8000,
-            hostPort: 8000,
-          }],
+          portMappings: [
+            {
+              containerPort: 8000,
+              hostPort: 8000,
+            },
+          ],
         });
 
         // WHEN
@@ -2757,11 +2780,13 @@ describe('fargate service', () => {
 
         listener.addTargets('target', {
           port: 80,
-          targets: [service.loadBalancerTarget({
-            containerName: 'MainContainer',
-            containerPort: 8000,
-            protocol: ecs.Protocol.TCP,
-          })],
+          targets: [
+            service.loadBalancerTarget({
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              protocol: ecs.Protocol.TCP,
+            }),
+          ],
         });
 
         // THEN
@@ -2794,11 +2819,13 @@ describe('fargate service', () => {
 
         listener.addTargets('target', {
           port: 80,
-          targets: [service.loadBalancerTarget({
-            containerName: 'MainContainer',
-            containerPort: 8001,
-            protocol: ecs.Protocol.UDP,
-          })],
+          targets: [
+            service.loadBalancerTarget({
+              containerName: 'MainContainer',
+              containerPort: 8001,
+              protocol: ecs.Protocol.UDP,
+            }),
+          ],
         });
 
         // THEN
@@ -2821,11 +2848,13 @@ describe('fargate service', () => {
 
         taskDefinition.addContainer('MainContainer', {
           image: ecs.ContainerImage.fromRegistry('hello'),
-          portMappings: [{
-            containerPort: 8000,
-            hostPort: 8000,
-            protocol: ecs.Protocol.UDP,
-          }],
+          portMappings: [
+            {
+              containerPort: 8000,
+              hostPort: 8000,
+              protocol: ecs.Protocol.UDP,
+            },
+          ],
         });
 
         // WHEN
@@ -2834,11 +2863,13 @@ describe('fargate service', () => {
 
         listener.addTargets('target', {
           port: 80,
-          targets: [service.loadBalancerTarget({
-            containerName: 'MainContainer',
-            containerPort: 8000,
-            protocol: ecs.Protocol.UDP,
-          })],
+          targets: [
+            service.loadBalancerTarget({
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              protocol: ecs.Protocol.UDP,
+            }),
+          ],
         });
 
         // THEN
@@ -2873,13 +2904,17 @@ describe('fargate service', () => {
         expect(() => {
           listener.addTargets('target', {
             port: 80,
-            targets: [service.loadBalancerTarget({
-              containerName: 'MainContainer',
-              containerPort: 8001,
-              protocol: ecs.Protocol.TCP,
-            })],
+            targets: [
+              service.loadBalancerTarget({
+                containerName: 'MainContainer',
+                containerPort: 8001,
+                protocol: ecs.Protocol.TCP,
+              }),
+            ],
           });
-        }).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+        }).toThrow(
+          /Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/
+        );
       });
 
       test('throws when port does not match', () => {
@@ -2907,12 +2942,16 @@ describe('fargate service', () => {
         expect(() => {
           listener.addTargets('target', {
             port: 80,
-            targets: [service.loadBalancerTarget({
-              containerName: 'MainContainer',
-              containerPort: 8002,
-            })],
+            targets: [
+              service.loadBalancerTarget({
+                containerName: 'MainContainer',
+                containerPort: 8002,
+              }),
+            ],
           });
-        }).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+        }).toThrow(
+          /Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/
+        );
       });
 
       test('throws when container does not exist', () => {
@@ -2940,10 +2979,12 @@ describe('fargate service', () => {
         expect(() => {
           listener.addTargets('target', {
             port: 80,
-            targets: [service.loadBalancerTarget({
-              containerName: 'SideContainer',
-              containerPort: 8001,
-            })],
+            targets: [
+              service.loadBalancerTarget({
+                containerName: 'SideContainer',
+                containerPort: 8001,
+              }),
+            ],
           });
         }).toThrow(/No container named 'SideContainer'. Did you call "addContainer\(\)"?/);
       });
@@ -2971,14 +3012,12 @@ describe('fargate service', () => {
           const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
           const listener = lb.addListener('listener', { port: 80 });
 
-          service.registerLoadBalancerTargets(
-            {
-              containerName: 'MainContainer',
-              containerPort: 8000,
-              listener: ecs.ListenerConfig.applicationListener(listener),
-              newTargetGroupId: 'target1',
-            },
-          );
+          service.registerLoadBalancerTargets({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            listener: ecs.ListenerConfig.applicationListener(listener),
+            newTargetGroupId: 'target1',
+          });
 
           // THEN
           Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -3019,16 +3058,14 @@ describe('fargate service', () => {
           const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
           const listener = lb.addListener('listener', { port: 80 });
 
-          service.registerLoadBalancerTargets(
-            {
-              containerName: 'MainContainer',
-              containerPort: 8000,
-              listener: ecs.ListenerConfig.applicationListener(listener, {
-                protocol: elbv2.ApplicationProtocol.HTTP,
-              }),
-              newTargetGroupId: 'target1',
-            },
-          );
+          service.registerLoadBalancerTargets({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            listener: ecs.ListenerConfig.applicationListener(listener, {
+              protocol: elbv2.ApplicationProtocol.HTTP,
+            }),
+            newTargetGroupId: 'target1',
+          });
 
           // THEN
           Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -3069,16 +3106,14 @@ describe('fargate service', () => {
           const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
           const listener = lb.addListener('listener', { port: 80 });
 
-          service.registerLoadBalancerTargets(
-            {
-              containerName: 'MainContainer',
-              containerPort: 8000,
-              listener: ecs.ListenerConfig.applicationListener(listener, {
-                protocol: elbv2.ApplicationProtocol.HTTPS,
-              }),
-              newTargetGroupId: 'target1',
-            },
-          );
+          service.registerLoadBalancerTargets({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            listener: ecs.ListenerConfig.applicationListener(listener, {
+              protocol: elbv2.ApplicationProtocol.HTTPS,
+            }),
+            newTargetGroupId: 'target1',
+          });
 
           // THEN
           Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -3119,17 +3154,15 @@ describe('fargate service', () => {
           const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
           const listener = lb.addListener('listener', { port: 80 });
 
-          service.registerLoadBalancerTargets(
-            {
-              containerName: 'MainContainer',
-              containerPort: 8000,
-              listener: ecs.ListenerConfig.applicationListener(listener, {
-                port: 83,
-                protocol: elbv2.ApplicationProtocol.HTTP,
-              }),
-              newTargetGroupId: 'target1',
-            },
-          );
+          service.registerLoadBalancerTargets({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            listener: ecs.ListenerConfig.applicationListener(listener, {
+              port: 83,
+              protocol: elbv2.ApplicationProtocol.HTTP,
+            }),
+            newTargetGroupId: 'target1',
+          });
 
           // THEN
           Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -3163,10 +3196,12 @@ describe('fargate service', () => {
 
           taskDefinition.addContainer('MainContainer', {
             image: ecs.ContainerImage.fromRegistry('hello'),
-            portMappings: [{
-              containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
-              containerPortRange: '8000-8001',
-            }],
+            portMappings: [
+              {
+                containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+                containerPortRange: '8000-8001',
+              },
+            ],
           });
 
           // WHEN
@@ -3174,12 +3209,16 @@ describe('fargate service', () => {
           const listener = lb.addListener('listener', { port: 80 });
 
           // THEN
-          expect(() => service.registerLoadBalancerTargets({
-            containerName: 'MainContainer',
-            containerPort: 8000,
-            listener: ecs.ListenerConfig.applicationListener(listener),
-            newTargetGroupId: 'target1',
-          })).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8000 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+          expect(() =>
+            service.registerLoadBalancerTargets({
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              listener: ecs.ListenerConfig.applicationListener(listener),
+              newTargetGroupId: 'target1',
+            })
+          ).toThrow(
+            /Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8000 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/
+          );
         });
       });
 
@@ -3204,14 +3243,12 @@ describe('fargate service', () => {
           const lb = new elbv2.NetworkLoadBalancer(stack, 'lb', { vpc });
           const listener = lb.addListener('listener', { port: 80 });
 
-          service.registerLoadBalancerTargets(
-            {
-              containerName: 'MainContainer',
-              containerPort: 8000,
-              listener: ecs.ListenerConfig.networkListener(listener),
-              newTargetGroupId: 'target1',
-            },
-          );
+          service.registerLoadBalancerTargets({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            listener: ecs.ListenerConfig.networkListener(listener),
+            newTargetGroupId: 'target1',
+          });
 
           // THEN
           Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -3252,16 +3289,14 @@ describe('fargate service', () => {
           const lb = new elbv2.NetworkLoadBalancer(stack, 'lb', { vpc });
           const listener = lb.addListener('listener', { port: 80 });
 
-          service.registerLoadBalancerTargets(
-            {
-              containerName: 'MainContainer',
-              containerPort: 8000,
-              listener: ecs.ListenerConfig.networkListener(listener, {
-                port: 81,
-              }),
-              newTargetGroupId: 'target1',
-            },
-          );
+          service.registerLoadBalancerTargets({
+            containerName: 'MainContainer',
+            containerPort: 8000,
+            listener: ecs.ListenerConfig.networkListener(listener, {
+              port: 81,
+            }),
+            newTargetGroupId: 'target1',
+          });
 
           // THEN
           Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
@@ -3295,10 +3330,12 @@ describe('fargate service', () => {
 
           taskDefinition.addContainer('MainContainer', {
             image: ecs.ContainerImage.fromRegistry('hello'),
-            portMappings: [{
-              containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
-              containerPortRange: '8000-8001',
-            }],
+            portMappings: [
+              {
+                containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+                containerPortRange: '8000-8001',
+              },
+            ],
           });
 
           // WHEN
@@ -3306,12 +3343,16 @@ describe('fargate service', () => {
           const listener = lb.addListener('listener', { port: 80 });
 
           // THEN
-          expect(() => service.registerLoadBalancerTargets({
-            containerName: 'MainContainer',
-            containerPort: 8000,
-            listener: ecs.ListenerConfig.networkListener(listener),
-            newTargetGroupId: 'target1',
-          })).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8000 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+          expect(() =>
+            service.registerLoadBalancerTargets({
+              containerName: 'MainContainer',
+              containerPort: 8000,
+              listener: ecs.ListenerConfig.networkListener(listener),
+              newTargetGroupId: 'target1',
+            })
+          ).toThrow(
+            /Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8000 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/
+          );
         });
       });
     });
@@ -3526,7 +3567,10 @@ describe('fargate service', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Service/TaskCount/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-applicationautoscaling:defaultRunEveryMinute]");
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/Service/TaskCount/Target',
+        "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-applicationautoscaling:defaultRunEveryMinute]"
+      );
     });
 
     test('scheduled scaling shows no warning when minute is * in cron', () => {
@@ -3619,10 +3663,7 @@ describe('fargate service', () => {
             },
           ],
           NamespaceId: {
-            'Fn::GetAtt': [
-              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-              'Id',
-            ],
+            'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
           },
           RoutingPolicy: 'MULTIVALUE',
         },
@@ -3631,10 +3672,7 @@ describe('fargate service', () => {
         },
         Name: 'myApp',
         NamespaceId: {
-          'Fn::GetAtt': [
-            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id',
-          ],
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
         },
       });
     });
@@ -3678,10 +3716,7 @@ describe('fargate service', () => {
             },
           ],
           NamespaceId: {
-            'Fn::GetAtt': [
-              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-              'Id',
-            ],
+            'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
           },
           RoutingPolicy: 'MULTIVALUE',
         },
@@ -3690,10 +3725,7 @@ describe('fargate service', () => {
         },
         Name: 'myApp',
         NamespaceId: {
-          'Fn::GetAtt': [
-            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id',
-          ],
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
         },
       });
     });
@@ -3738,10 +3770,7 @@ describe('fargate service', () => {
             },
           ],
           NamespaceId: {
-            'Fn::GetAtt': [
-              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-              'Id',
-            ],
+            'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
           },
           RoutingPolicy: 'MULTIVALUE',
         },
@@ -3750,10 +3779,7 @@ describe('fargate service', () => {
         },
         Name: 'myApp',
         NamespaceId: {
-          'Fn::GetAtt': [
-            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
-            'Id',
-          ],
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Id'],
         },
       });
     });
@@ -3838,7 +3864,11 @@ describe('fargate service', () => {
       const stack = new cdk.Stack();
 
       // WHEN
-      const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+      const service = ecs.FargateService.fromFargateServiceArn(
+        stack,
+        'EcsService',
+        'arn:aws:ecs:us-west-2:123456789012:service/my-http-service'
+      );
 
       // THEN
       expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
@@ -3850,7 +3880,11 @@ describe('fargate service', () => {
       const stack = new cdk.Stack();
 
       // WHEN
-      const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-cluster-name/my-http-service');
+      const service = ecs.FargateService.fromFargateServiceArn(
+        stack,
+        'EcsService',
+        'arn:aws:ecs:us-west-2:123456789012:service/my-cluster-name/my-http-service'
+      );
 
       // THEN
       expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-cluster-name/my-http-service');
@@ -3863,7 +3897,11 @@ describe('fargate service', () => {
         const stack = new cdk.Stack();
 
         // WHEN
-        const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
+        const service = ecs.FargateService.fromFargateServiceArn(
+          stack,
+          'EcsService',
+          new cdk.CfnParameter(stack, 'ARN').valueAsString
+        );
 
         // THEN
         expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
@@ -3877,10 +3915,7 @@ describe('fargate service', () => {
                   'Fn::Select': [
                     5,
                     {
-                      'Fn::Split': [
-                        ':',
-                        { Ref: 'ARN' },
-                      ],
+                      'Fn::Split': [':', { Ref: 'ARN' }],
                     },
                   ],
                 },
@@ -3900,7 +3935,11 @@ describe('fargate service', () => {
         const stack = new cdk.Stack(app);
 
         // WHEN
-        const service = ecs.FargateService.fromFargateServiceArn(stack, 'EcsService', new cdk.CfnParameter(stack, 'ARN').valueAsString);
+        const service = ecs.FargateService.fromFargateServiceArn(
+          stack,
+          'EcsService',
+          new cdk.CfnParameter(stack, 'ARN').valueAsString
+        );
 
         // THEN
         expect(stack.resolve(service.serviceArn)).toEqual({ Ref: 'ARN' });
@@ -3914,10 +3953,7 @@ describe('fargate service', () => {
                   'Fn::Select': [
                     5,
                     {
-                      'Fn::Split': [
-                        ':',
-                        { Ref: 'ARN' },
-                      ],
+                      'Fn::Split': [':', { Ref: 'ARN' }],
                     },
                   ],
                 },
@@ -3945,7 +3981,6 @@ describe('fargate service', () => {
 
       expect(service.env.account).toEqual('123456789012');
       expect(service.env.region).toEqual('us-west-2');
-
     });
 
     test('with serviceArn new format', () => {
@@ -3991,10 +4026,7 @@ describe('fargate service', () => {
                   'Fn::Select': [
                     5,
                     {
-                      'Fn::Split': [
-                        ':',
-                        { Ref: 'ARN' },
-                      ],
+                      'Fn::Split': [':', { Ref: 'ARN' }],
                     },
                   ],
                 },
@@ -4007,10 +4039,7 @@ describe('fargate service', () => {
           'Fn::Select': [
             4,
             {
-              'Fn::Split': [
-                ':',
-                { Ref: 'ARN' },
-              ],
+              'Fn::Split': [':', { Ref: 'ARN' }],
             },
           ],
         });
@@ -4018,10 +4047,7 @@ describe('fargate service', () => {
           'Fn::Select': [
             3,
             {
-              'Fn::Split': [
-                ':',
-                { Ref: 'ARN' },
-              ],
+              'Fn::Split': [':', { Ref: 'ARN' }],
             },
           ],
         });
@@ -4055,10 +4081,7 @@ describe('fargate service', () => {
                   'Fn::Select': [
                     5,
                     {
-                      'Fn::Split': [
-                        ':',
-                        { Ref: 'ARN' },
-                      ],
+                      'Fn::Split': [':', { Ref: 'ARN' }],
                     },
                   ],
                 },
@@ -4071,10 +4094,7 @@ describe('fargate service', () => {
           'Fn::Select': [
             4,
             {
-              'Fn::Split': [
-                ':',
-                { Ref: 'ARN' },
-              ],
+              'Fn::Split': [':', { Ref: 'ARN' }],
             },
           ],
         });
@@ -4082,10 +4102,7 @@ describe('fargate service', () => {
           'Fn::Select': [
             3,
             {
-              'Fn::Split': [
-                ':',
-                { Ref: 'ARN' },
-              ],
+              'Fn::Split': [':', { Ref: 'ARN' }],
             },
           ],
         });
@@ -4106,7 +4123,9 @@ describe('fargate service', () => {
         });
 
         // THEN
-        expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+        expect(stack.resolve(service.serviceArn)).toEqual(
+          stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`)
+        );
         expect(service.serviceName).toEqual('my-http-service');
       });
 
@@ -4129,7 +4148,11 @@ describe('fargate service', () => {
         });
 
         // THEN
-        expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/${cluster.clusterName}/my-http-service`));
+        expect(stack.resolve(service.serviceArn)).toEqual(
+          stack.resolve(
+            `arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/${cluster.clusterName}/my-http-service`
+          )
+        );
         expect(service.serviceName).toEqual('my-http-service');
       });
     });
@@ -4169,8 +4192,9 @@ describe('fargate service', () => {
 
     test('with circuit breaker and deployment controller feature flag enabled', () => {
       // GIVEN
-      const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-          { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
+      const disableCircuitBreakerEcsDeploymentControllerFeatureFlag = {
+        [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true,
+      };
       const app = new App({ context: disableCircuitBreakerEcsDeploymentControllerFeatureFlag });
       const stack = new cdk.Stack(app);
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
@@ -4263,10 +4287,7 @@ describe('fargate service', () => {
             AssignPublicIp: 'DISABLED',
             SecurityGroups: [
               {
-                'Fn::GetAtt': [
-                  'FargateServiceSecurityGroup0A0E79CB',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['FargateServiceSecurityGroup0A0E79CB', 'GroupId'],
               },
             ],
             Subnets: [
@@ -4300,11 +4321,7 @@ describe('fargate service', () => {
               Resource: '*',
             },
             {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:DescribeLogStreams',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -4433,11 +4450,7 @@ describe('fargate service', () => {
               Resource: '*',
             },
             {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:DescribeLogStreams',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
@@ -4554,16 +4567,10 @@ describe('fargate service', () => {
               Resource: '*',
             },
             {
-              Action: [
-                'kms:Decrypt',
-                'kms:GenerateDataKey',
-              ],
+              Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'KmsKey46693ADD',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['KmsKey46693ADD', 'Arn'],
               },
             },
             {
@@ -4572,11 +4579,7 @@ describe('fargate service', () => {
               Resource: '*',
             },
             {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:DescribeLogStreams',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
@@ -4731,16 +4734,10 @@ describe('fargate service', () => {
               Resource: '*',
             },
             {
-              Action: [
-                'kms:Decrypt',
-                'kms:GenerateDataKey',
-              ],
+              Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'KmsKey46693ADD',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['KmsKey46693ADD', 'Arn'],
               },
             },
             {
@@ -4749,11 +4746,7 @@ describe('fargate service', () => {
               Resource: '*',
             },
             {
-              Action: [
-                'logs:CreateLogStream',
-                'logs:DescribeLogStreams',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
@@ -4862,13 +4855,7 @@ describe('fargate service', () => {
               Resource: '*',
             },
             {
-              Action: [
-                'kms:Encrypt*',
-                'kms:Decrypt*',
-                'kms:ReEncrypt*',
-                'kms:GenerateDataKey*',
-                'kms:Describe*',
-              ],
+              Action: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
               Condition: {
                 ArnLike: {
                   'kms:EncryptionContext:aws:logs:arn': {
@@ -4936,7 +4923,9 @@ describe('fargate service', () => {
           propagateTags: PropagatedTagSource.SERVICE,
           propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
         });
-      }).toThrow(/You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
+      }).toThrow(
+        /You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/
+      );
     });
   });
 });

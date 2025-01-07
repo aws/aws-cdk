@@ -98,30 +98,32 @@ describe('Valid policy statements and resources are passed ', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: 'emr-containers:DeleteVirtualCluster',
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':emr-containers:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                `:/virtualclusters/${virtualClusterId}`,
+        Statement: [
+          {
+            Action: 'emr-containers:DeleteVirtualCluster',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':emr-containers:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  `:/virtualclusters/${virtualClusterId}`,
+                ],
               ],
-            ],
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -140,33 +142,32 @@ describe('Valid policy statements and resources are passed ', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: [
-            'emr-containers:DeleteVirtualCluster',
-            'emr-containers:DescribeVirtualCluster',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':emr-containers:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                `:/virtualclusters/${virtualClusterId}`,
+        Statement: [
+          {
+            Action: ['emr-containers:DeleteVirtualCluster', 'emr-containers:DescribeVirtualCluster'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':emr-containers:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  `:/virtualclusters/${virtualClusterId}`,
+                ],
               ],
-            ],
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -185,33 +186,32 @@ describe('Valid policy statements and resources are passed ', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: [
-            'emr-containers:DeleteVirtualCluster',
-            'emr-containers:DescribeVirtualCluster',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':emr-containers:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':/virtualclusters/*',
+        Statement: [
+          {
+            Action: ['emr-containers:DeleteVirtualCluster', 'emr-containers:DescribeVirtualCluster'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':emr-containers:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':/virtualclusters/*',
+                ],
               ],
-            ],
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -223,5 +223,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       virtualClusterId: sfn.TaskInput.fromText(virtualClusterId),
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/
+  );
 });

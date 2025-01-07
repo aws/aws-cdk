@@ -26,10 +26,7 @@ describe('sqs', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Target: {
-        'Fn::GetAtt': [
-          'MySqs4F2D580E',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MySqs4F2D580E', 'Arn'],
       },
       TargetParameters: {},
     });

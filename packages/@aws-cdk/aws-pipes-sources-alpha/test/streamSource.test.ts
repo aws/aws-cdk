@@ -81,10 +81,7 @@ describe('stream source validations', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyTable794EDED1',
-          'StreamArn',
-        ],
+        'Fn::GetAtt': ['MyTable794EDED1', 'StreamArn'],
       },
       SourceParameters: {
         DynamoDBStreamParameters: {
@@ -133,7 +130,9 @@ describe('stream source validations', () => {
         startingPosition: DynamoDBStartingPosition.LATEST,
         maximumRecordAge: Duration.seconds(59),
       });
-    }).toThrow('Maximum record age in seconds must be between 60 and 604800 (leave undefined for infinite), received 59');
+    }).toThrow(
+      'Maximum record age in seconds must be between 60 and 604800 (leave undefined for infinite), received 59'
+    );
   });
 
   test('maximum record age > 604800 should throw', () => {
@@ -154,7 +153,9 @@ describe('stream source validations', () => {
         startingPosition: DynamoDBStartingPosition.LATEST,
         maximumRecordAge: Duration.seconds(604801),
       });
-    }).toThrow('Maximum record age in seconds must be between 60 and 604800 (leave undefined for infinite), received 604801');
+    }).toThrow(
+      'Maximum record age in seconds must be between 60 and 604800 (leave undefined for infinite), received 604801'
+    );
   });
 
   test('maximum retry attempts < -1 should throw', () => {
@@ -229,10 +230,7 @@ describe('stream source validations', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyTable794EDED1',
-          'StreamArn',
-        ],
+        'Fn::GetAtt': ['MyTable794EDED1', 'StreamArn'],
       },
       SourceParameters: {
         DynamoDBStreamParameters: {
@@ -314,10 +312,7 @@ describe('stream source validations', () => {
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
-        'Fn::GetAtt': [
-          'MyTable794EDED1',
-          'StreamArn',
-        ],
+        'Fn::GetAtt': ['MyTable794EDED1', 'StreamArn'],
       },
       SourceParameters: {
         DynamoDBStreamParameters: {

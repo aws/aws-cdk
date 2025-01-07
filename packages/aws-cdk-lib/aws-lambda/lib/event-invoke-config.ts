@@ -73,13 +73,8 @@ export class EventInvokeConfig extends Resource {
   constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
     super(scope, id);
 
-    if (
-      props.maxEventAge &&
-      (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)
-    ) {
-      throw new Error(
-        '`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.'
-      );
+    if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
+      throw new Error('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.');
     }
 
     if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 2)) {

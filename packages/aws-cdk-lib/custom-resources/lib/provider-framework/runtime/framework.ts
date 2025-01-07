@@ -194,8 +194,7 @@ function createResponseEvent(
 
   // if physical ID is not returned, we have some defaults for you based
   // on the request type.
-  const physicalResourceId =
-    onEventResult.PhysicalResourceId || defaultPhysicalResourceId(cfnRequest);
+  const physicalResourceId = onEventResult.PhysicalResourceId || defaultPhysicalResourceId(cfnRequest);
 
   // if we are in DELETE and physical ID was changed, it's an error.
   if (cfnRequest.RequestType === 'Delete' && physicalResourceId !== cfnRequest.PhysicalResourceId) {

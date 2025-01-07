@@ -44,7 +44,10 @@ test('Default property', () => {
     },
     ManagedPolicyArns: [
       {
-        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSIoTDeviceDefenderAudit']],
+        'Fn::Join': [
+          '',
+          ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSIoTDeviceDefenderAudit'],
+        ],
       },
     ],
   });
@@ -134,7 +137,11 @@ test('import by Account ID', () => {
 
   const accountId = '1234567899012';
 
-  const auditConfiguration = iot.AccountAuditConfiguration.fromAccountId(stack, 'AccountAuditConfigurationFromId', accountId);
+  const auditConfiguration = iot.AccountAuditConfiguration.fromAccountId(
+    stack,
+    'AccountAuditConfigurationFromId',
+    accountId
+  );
 
   expect(auditConfiguration).toMatchObject({
     accountId,

@@ -214,16 +214,11 @@ export class Method extends Resource {
      *
      * Note that "authorizer.authorizerType" should match method or resource's "authorizationType" if exists.
      */
-    const authorizationType = this.getMethodAuthorizationType(
-      options,
-      defaultMethodOptions,
-      authorizer
-    );
+    const authorizationType = this.getMethodAuthorizationType(options, defaultMethodOptions, authorizer);
 
     // AuthorizationScope should only be applied to COGNITO_USER_POOLS AuthorizationType.
     const defaultScopes = options.authorizationScopes ?? defaultMethodOptions.authorizationScopes;
-    const authorizationScopes =
-      authorizationType === AuthorizationType.COGNITO ? defaultScopes : undefined;
+    const authorizationScopes = authorizationType === AuthorizationType.COGNITO ? defaultScopes : undefined;
     if (authorizationType !== AuthorizationType.COGNITO && defaultScopes) {
       Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-apigateway:invalidAuthScope',
@@ -239,8 +234,7 @@ export class Method extends Resource {
       this.addMethodResponse(mr);
     }
 
-    const integration =
-      props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
+    const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
 
     const methodProps: CfnMethodProps = {
@@ -311,11 +305,7 @@ export class Method extends Resource {
    * This stage is used by the AWS Console UI when testing the method.
    */
   public get testMethodArn(): string {
-    return this.api.arnForExecuteApi(
-      this.httpMethod,
-      pathForArn(this.resource.path),
-      'test-invoke-stage'
-    );
+    return this.api.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
   }
 
   /**
@@ -446,20 +436,13 @@ export class Method extends Resource {
 
   private requestValidatorId(options: MethodOptions): string | undefined {
     if (options.requestValidator && options.requestValidatorOptions) {
-      throw new Error(
-        "Only one of 'requestValidator' or 'requestValidatorOptions' must be specified."
-      );
+      throw new Error("Only one of 'requestValidator' or 'requestValidatorOptions' must be specified.");
     }
 
     if (options.requestValidatorOptions) {
       const useUniqueId = FeatureFlags.of(this).isEnabled(APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID);
-      const id = useUniqueId
-        ? `${Names.uniqueResourceName(new Construct(this, 'Validator'), {})}`
-        : 'validator';
-      const validator = (this.api as RestApi).addRequestValidator(
-        id,
-        options.requestValidatorOptions
-      );
+      const id = useUniqueId ? `${Names.uniqueResourceName(new Construct(this, 'Validator'), {})}` : 'validator';
+      const validator = (this.api as RestApi).addRequestValidator(id, options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 
@@ -470,11 +453,7 @@ export class Method extends Resource {
   /**
    * Returns the given named metric for this API method
    */
-  public metric(
-    metricName: string,
-    stage: IStage,
-    props?: cloudwatch.MetricOptions
-  ): cloudwatch.Metric {
+  public metric(metricName: string, stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
@@ -543,10 +522,7 @@ export class Method extends Resource {
    *
    * @default - average over 5 minutes.
    */
-  public metricIntegrationLatency(
-    stage: IStage,
-    props?: cloudwatch.MetricOptions
-  ): cloudwatch.Metric {
+  public metricIntegrationLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, stage, props);
   }
 
@@ -575,12 +551,7 @@ export class Method extends Resource {
   }
 
   private cannedMetric(
-    fn: (dims: {
-      ApiName: string;
-      Method: string;
-      Resource: string;
-      Stage: string;
-    }) => cloudwatch.MetricProps,
+    fn: (dims: { ApiName: string; Method: string; Resource: string; Stage: string }) => cloudwatch.MetricProps,
     stage: IStage,
     props?: cloudwatch.MetricOptions
   ) {

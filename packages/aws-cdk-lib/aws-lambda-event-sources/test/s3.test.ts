@@ -14,66 +14,55 @@ describe('S3EventSource', () => {
     const bucket = new s3.Bucket(stack, 'B');
 
     // WHEN
-    fn.addEventSource(new sources.S3EventSource(bucket, {
-      events: [s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED],
-      filters: [
-        { prefix: 'prefix/' },
-        { suffix: '.png' },
-      ],
-    }));
+    fn.addEventSource(
+      new sources.S3EventSource(bucket, {
+        events: [s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED],
+        filters: [{ prefix: 'prefix/' }, { suffix: '.png' }],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
-      'NotificationConfiguration': {
-        'LambdaFunctionConfigurations': [
+      NotificationConfiguration: {
+        LambdaFunctionConfigurations: [
           {
-            'Events': [
-              's3:ObjectCreated:*',
-            ],
-            'Filter': {
-              'Key': {
-                'FilterRules': [
+            Events: ['s3:ObjectCreated:*'],
+            Filter: {
+              Key: {
+                FilterRules: [
                   {
-                    'Name': 'prefix',
-                    'Value': 'prefix/',
+                    Name: 'prefix',
+                    Value: 'prefix/',
                   },
                   {
-                    'Name': 'suffix',
-                    'Value': '.png',
+                    Name: 'suffix',
+                    Value: '.png',
                   },
                 ],
               },
             },
-            'LambdaFunctionArn': {
-              'Fn::GetAtt': [
-                'Fn9270CBC0',
-                'Arn',
-              ],
+            LambdaFunctionArn: {
+              'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
             },
           },
           {
-            'Events': [
-              's3:ObjectRemoved:*',
-            ],
-            'Filter': {
-              'Key': {
-                'FilterRules': [
+            Events: ['s3:ObjectRemoved:*'],
+            Filter: {
+              Key: {
+                FilterRules: [
                   {
-                    'Name': 'prefix',
-                    'Value': 'prefix/',
+                    Name: 'prefix',
+                    Value: 'prefix/',
                   },
                   {
-                    'Name': 'suffix',
-                    'Value': '.png',
+                    Name: 'suffix',
+                    Value: '.png',
                   },
                 ],
               },
             },
-            'LambdaFunctionArn': {
-              'Fn::GetAtt': [
-                'Fn9270CBC0',
-                'Arn',
-              ],
+            LambdaFunctionArn: {
+              'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
             },
           },
         ],
@@ -88,66 +77,55 @@ describe('S3EventSource', () => {
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucket-name');
 
     // WHEN
-    fn.addEventSource(new sources.S3EventSourceV2(bucket, {
-      events: [s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED],
-      filters: [
-        { prefix: 'prefix/' },
-        { suffix: '.png' },
-      ],
-    }));
+    fn.addEventSource(
+      new sources.S3EventSourceV2(bucket, {
+        events: [s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED],
+        filters: [{ prefix: 'prefix/' }, { suffix: '.png' }],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
-      'NotificationConfiguration': {
-        'LambdaFunctionConfigurations': [
+      NotificationConfiguration: {
+        LambdaFunctionConfigurations: [
           {
-            'Events': [
-              's3:ObjectCreated:*',
-            ],
-            'Filter': {
-              'Key': {
-                'FilterRules': [
+            Events: ['s3:ObjectCreated:*'],
+            Filter: {
+              Key: {
+                FilterRules: [
                   {
-                    'Name': 'prefix',
-                    'Value': 'prefix/',
+                    Name: 'prefix',
+                    Value: 'prefix/',
                   },
                   {
-                    'Name': 'suffix',
-                    'Value': '.png',
+                    Name: 'suffix',
+                    Value: '.png',
                   },
                 ],
               },
             },
-            'LambdaFunctionArn': {
-              'Fn::GetAtt': [
-                'Fn9270CBC0',
-                'Arn',
-              ],
+            LambdaFunctionArn: {
+              'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
             },
           },
           {
-            'Events': [
-              's3:ObjectRemoved:*',
-            ],
-            'Filter': {
-              'Key': {
-                'FilterRules': [
+            Events: ['s3:ObjectRemoved:*'],
+            Filter: {
+              Key: {
+                FilterRules: [
                   {
-                    'Name': 'prefix',
-                    'Value': 'prefix/',
+                    Name: 'prefix',
+                    Value: 'prefix/',
                   },
                   {
-                    'Name': 'suffix',
-                    'Value': '.png',
+                    Name: 'suffix',
+                    Value: '.png',
                   },
                 ],
               },
             },
-            'LambdaFunctionArn': {
-              'Fn::GetAtt': [
-                'Fn9270CBC0',
-                'Arn',
-              ],
+            LambdaFunctionArn: {
+              'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
             },
           },
         ],
@@ -162,66 +140,55 @@ describe('S3EventSource', () => {
     const bucket = new s3.Bucket(stack, 'B');
 
     // WHEN
-    fn.addEventSource(new sources.S3EventSourceV2(bucket, {
-      events: [s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED],
-      filters: [
-        { prefix: 'prefix/' },
-        { suffix: '.png' },
-      ],
-    }));
+    fn.addEventSource(
+      new sources.S3EventSourceV2(bucket, {
+        events: [s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED],
+        filters: [{ prefix: 'prefix/' }, { suffix: '.png' }],
+      })
+    );
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
-      'NotificationConfiguration': {
-        'LambdaFunctionConfigurations': [
+      NotificationConfiguration: {
+        LambdaFunctionConfigurations: [
           {
-            'Events': [
-              's3:ObjectCreated:*',
-            ],
-            'Filter': {
-              'Key': {
-                'FilterRules': [
+            Events: ['s3:ObjectCreated:*'],
+            Filter: {
+              Key: {
+                FilterRules: [
                   {
-                    'Name': 'prefix',
-                    'Value': 'prefix/',
+                    Name: 'prefix',
+                    Value: 'prefix/',
                   },
                   {
-                    'Name': 'suffix',
-                    'Value': '.png',
+                    Name: 'suffix',
+                    Value: '.png',
                   },
                 ],
               },
             },
-            'LambdaFunctionArn': {
-              'Fn::GetAtt': [
-                'Fn9270CBC0',
-                'Arn',
-              ],
+            LambdaFunctionArn: {
+              'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
             },
           },
           {
-            'Events': [
-              's3:ObjectRemoved:*',
-            ],
-            'Filter': {
-              'Key': {
-                'FilterRules': [
+            Events: ['s3:ObjectRemoved:*'],
+            Filter: {
+              Key: {
+                FilterRules: [
                   {
-                    'Name': 'prefix',
-                    'Value': 'prefix/',
+                    Name: 'prefix',
+                    Value: 'prefix/',
                   },
                   {
-                    'Name': 'suffix',
-                    'Value': '.png',
+                    Name: 'suffix',
+                    Value: '.png',
                   },
                 ],
               },
             },
-            'LambdaFunctionArn': {
-              'Fn::GetAtt': [
-                'Fn9270CBC0',
-                'Arn',
-              ],
+            LambdaFunctionArn: {
+              'Fn::GetAtt': ['Fn9270CBC0', 'Arn'],
             },
           },
         ],

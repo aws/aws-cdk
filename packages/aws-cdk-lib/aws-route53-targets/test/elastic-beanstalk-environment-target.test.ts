@@ -13,7 +13,7 @@ test('use EBS environment as record target', () => {
     zone,
     recordName: '_foo',
     target: route53.RecordTarget.fromAlias(
-      new targets.ElasticBeanstalkEnvironmentEndpointTarget('mysampleenvironment.xyz.us-east-1.elasticbeanstalk.com'),
+      new targets.ElasticBeanstalkEnvironmentEndpointTarget('mysampleenvironment.xyz.us-east-1.elasticbeanstalk.com')
     ),
   });
 
@@ -35,7 +35,9 @@ test('support 4-levels subdomain URLs for EBS environments', () => {
   new route53.ARecord(stack, 'Alias', {
     zone,
     recordName: '_foo',
-    target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentEndpointTarget('mycustomcnameprefix.us-east-1.elasticbeanstalk.com')),
+    target: route53.RecordTarget.fromAlias(
+      new targets.ElasticBeanstalkEnvironmentEndpointTarget('mycustomcnameprefix.us-east-1.elasticbeanstalk.com')
+    ),
   });
 
   // THEN
@@ -59,7 +61,7 @@ test('use EBS environment as record target with health check', () => {
     target: route53.RecordTarget.fromAlias(
       new targets.ElasticBeanstalkEnvironmentEndpointTarget('mysampleenvironment.xyz.us-east-1.elasticbeanstalk.com', {
         evaluateTargetHealth: true,
-      }),
+      })
     ),
   });
 

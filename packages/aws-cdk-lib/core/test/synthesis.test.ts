@@ -145,7 +145,7 @@ describe('synthesis', () => {
     expect(session.manifest).toEqual({
       version: cxschema.Manifest.version(),
       artifacts: expect.objectContaining({
-        'Tree': {
+        Tree: {
           type: 'cdk:tree',
           properties: { file: 'tree.json' },
         },
@@ -204,7 +204,7 @@ describe('synthesis', () => {
     expect(session.manifest).toEqual({
       version: cxschema.Manifest.version(),
       artifacts: expect.objectContaining({
-        'Tree': {
+        Tree: {
           type: 'cdk:tree',
           properties: { file: 'tree.json' },
         },
@@ -271,7 +271,11 @@ describe('synthesis', () => {
     expect(stack.template).toEqual({ hello: 123 });
     expect(stack.templateFile).toEqual('hey.json');
     expect(stack.parameters).toEqual({ paramId: 'paramValue', paramId2: 'paramValue2' });
-    expect(stack.environment).toEqual({ region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
+    expect(stack.environment).toEqual({
+      region: 'us-east-1',
+      account: 'unknown-account',
+      name: 'aws://unknown-account/us-east-1',
+    });
   });
 
   test('output folder checksum is not computed by default', () => {
@@ -286,7 +290,6 @@ describe('synthesis', () => {
   });
 
   test('when deploy role session tags are configured, required stack bootstrap version is 22', () => {
-
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack', {
       synthesizer: new cdk.DefaultStackSynthesizer({
@@ -304,13 +307,12 @@ describe('synthesis', () => {
     const versionRule = stack.node.findChild('CheckBootstrapVersion') as cdk.CfnRule;
 
     // ugly - but no more than using the snapshot of the resource...
-    const bootstrapVersions = (versionRule._toCloudFormation() as any).Rules[versionRule.logicalId].Assertions[0].Assert['Fn::Not'][0]['Fn::Contains'][0];
+    const bootstrapVersions = (versionRule._toCloudFormation() as any).Rules[versionRule.logicalId].Assertions[0]
+      .Assert['Fn::Not'][0]['Fn::Contains'][0];
     expect(bootstrapVersions).toContain('21');
-
   });
 
   test('when lookup role session tags are configured, required lookup bootstrap version is 22', () => {
-
     const app = new cdk.App();
     new cdk.Stack(app, 'stack', {
       synthesizer: new cdk.DefaultStackSynthesizer({
@@ -324,11 +326,9 @@ describe('synthesis', () => {
     const stackArtifact = assembly.getStackByName('stack');
 
     expect(stackArtifact.lookupRole?.requiresBootstrapStackVersion).toEqual(22);
-
   });
 
   test('when file asset role session tags are configured, required assets bootstrap version is 22', () => {
-
     const app = new cdk.App();
     new cdk.Stack(app, 'stack', {
       synthesizer: new cdk.DefaultStackSynthesizer({
@@ -342,11 +342,9 @@ describe('synthesis', () => {
     const assetsArtifact = assembly.tryGetArtifact('stack.assets') as cxapi.AssetManifestArtifact;
 
     expect(assetsArtifact.requiresBootstrapStackVersion).toEqual(22);
-
   });
 
   test('when image asset role session tags are configured, required assets bootstrap version is 22', () => {
-
     const app = new cdk.App();
     new cdk.Stack(app, 'stack', {
       synthesizer: new cdk.DefaultStackSynthesizer({
@@ -360,7 +358,6 @@ describe('synthesis', () => {
     const assetsArtifact = assembly.tryGetArtifact('stack.assets') as cxapi.AssetManifestArtifact;
 
     expect(assetsArtifact.requiresBootstrapStackVersion).toEqual(22);
-
   });
 
   test('calling synth multiple times errors if construct tree is mutated', () => {
@@ -385,7 +382,9 @@ describe('synthesis', () => {
     stack = new cdk.Stack(app, `${stages[1].stage}-Stack`, {});
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow('Synthesis has been called multiple times and the construct tree was modified after the first synthesis');
+    }).toThrow(
+      'Synthesis has been called multiple times and the construct tree was modified after the first synthesis'
+    );
   });
 });
 

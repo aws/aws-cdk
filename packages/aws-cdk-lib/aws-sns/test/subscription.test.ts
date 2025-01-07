@@ -25,7 +25,6 @@ describe('Subscription', () => {
         Ref: 'TopicBFC7AF6E',
       },
     });
-
   });
 
   test('create a subscription with DLQ when client provides DLQ', () => {
@@ -54,10 +53,7 @@ describe('Subscription', () => {
       },
       RedrivePolicy: {
         deadLetterTargetArn: {
-          'Fn::GetAtt': [
-            'DeadLetterQueue9F481546',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
         },
       },
     });
@@ -82,10 +78,7 @@ describe('Subscription', () => {
               Service: 'sns.amazonaws.com',
             },
             Resource: {
-              'Fn::GetAtt': [
-                'DeadLetterQueue9F481546',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
             },
           },
         ],
@@ -97,7 +90,6 @@ describe('Subscription', () => {
         },
       ],
     });
-
   });
 
   test('with filter policy', () => {
@@ -153,7 +145,6 @@ describe('Subscription', () => {
         ],
       },
     });
-
   });
 
   test('with filter policy and filter policy scope MessageBody', () => {
@@ -166,18 +157,22 @@ describe('Subscription', () => {
       endpoint: 'endpoint',
       filterPolicyWithMessageBody: {
         background: sns.Policy.policy({
-          color: sns.Filter.filter(sns.SubscriptionFilter.stringFilter({
-            allowlist: ['red', 'green'],
-            denylist: ['white', 'orange'],
-          })),
+          color: sns.Filter.filter(
+            sns.SubscriptionFilter.stringFilter({
+              allowlist: ['red', 'green'],
+              denylist: ['white', 'orange'],
+            })
+          ),
         }),
-        price: sns.Filter.filter(sns.SubscriptionFilter.numericFilter({
-          allowlist: [100, 200],
-          between: { start: 300, stop: 350 },
-          greaterThan: 500,
-          lessThan: 1000,
-          betweenStrict: { start: 2000, stop: 3000 },
-        })),
+        price: sns.Filter.filter(
+          sns.SubscriptionFilter.numericFilter({
+            allowlist: [100, 200],
+            between: { start: 300, stop: 350 },
+            greaterThan: 500,
+            lessThan: 1000,
+            betweenStrict: { start: 2000, stop: 3000 },
+          })
+        ),
       },
       protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
@@ -187,11 +182,7 @@ describe('Subscription', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       FilterPolicy: {
         background: {
-          color: [
-            'red',
-            'green',
-            { 'anything-but': ['white', 'orange'] },
-          ],
+          color: ['red', 'green', { 'anything-but': ['white', 'orange'] }],
         },
         price: [
           { numeric: ['=', 100] },
@@ -229,15 +220,9 @@ describe('Subscription', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       FilterPolicy: {
-        price: [
-          { numeric: ['>', 0] },
-          { numeric: ['>=', 0] },
-          { numeric: ['<', 0] },
-          { numeric: ['<=', 0] },
-        ],
+        price: [{ numeric: ['>', 0] }, { numeric: ['>=', 0] }, { numeric: ['<', 0] }, { numeric: ['<=', 0] }],
       },
     });
-
   });
 
   test('with existsFilter', () => {
@@ -261,7 +246,6 @@ describe('Subscription', () => {
         size: [{ exists: true }],
       },
     });
-
   });
 
   test('with delivery policy', () => {
@@ -339,25 +323,26 @@ describe('Subscription', () => {
     });
   });
 
-  test.each(
-    [
-      SubscriptionProtocol.LAMBDA,
-      SubscriptionProtocol.EMAIL,
-      SubscriptionProtocol.EMAIL_JSON,
-      SubscriptionProtocol.SMS,
-      SubscriptionProtocol.APPLICATION,
-    ])
-  ('throws with raw delivery for %s protocol', (protocol: SubscriptionProtocol) => {
+  test.each([
+    SubscriptionProtocol.LAMBDA,
+    SubscriptionProtocol.EMAIL,
+    SubscriptionProtocol.EMAIL_JSON,
+    SubscriptionProtocol.SMS,
+    SubscriptionProtocol.APPLICATION,
+  ])('throws with raw delivery for %s protocol', (protocol: SubscriptionProtocol) => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
     // THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      protocol: protocol,
-      topic,
-      rawMessageDelivery: true,
-    })).toThrow(/Raw message delivery/);
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          protocol: protocol,
+          topic,
+          rawMessageDelivery: true,
+        })
+    ).toThrow(/Raw message delivery/);
   });
 
   test('throws with more than 5 attributes in a filter policy', () => {
@@ -367,20 +352,22 @@ describe('Subscription', () => {
     const cond = { conditions: [] };
 
     // THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic,
-      filterPolicy: {
-        a: cond,
-        b: cond,
-        c: cond,
-        d: cond,
-        e: cond,
-        f: cond,
-      },
-    })).toThrow(/5 attribute names/);
-
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          protocol: sns.SubscriptionProtocol.LAMBDA,
+          topic,
+          filterPolicy: {
+            a: cond,
+            b: cond,
+            c: cond,
+            d: cond,
+            e: cond,
+            f: cond,
+          },
+        })
+    ).toThrow(/5 attribute names/);
   });
 
   test('throws with more than 150 conditions in a filter policy', () => {
@@ -389,17 +376,19 @@ describe('Subscription', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     // THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic,
-      filterPolicy: {
-        a: { conditions: [...Array.from(Array(2).keys())] },
-        b: { conditions: [...Array.from(Array(10).keys())] },
-        c: { conditions: [...Array.from(Array(8).keys())] },
-      },
-    })).toThrow(/\(160\) must not exceed 150/);
-
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          protocol: sns.SubscriptionProtocol.LAMBDA,
+          topic,
+          filterPolicy: {
+            a: { conditions: [...Array.from(Array(2).keys())] },
+            b: { conditions: [...Array.from(Array(10).keys())] },
+            c: { conditions: [...Array.from(Array(8).keys())] },
+          },
+        })
+    ).toThrow(/\(160\) must not exceed 150/);
   });
 
   test('throws with more than 150 conditions in a filter policy with filter policy scope set to MessageBody', () => {
@@ -408,16 +397,22 @@ describe('Subscription', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     // THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.LAMBDA,
-      topic,
-      filterPolicyWithMessageBody: {
-        a: sns.Policy.policy({ b: sns.Filter.filter(new sns.SubscriptionFilter([...Array.from(Array(10).keys())])) }),
-        c: sns.Policy.policy({ d: sns.Filter.filter(new sns.SubscriptionFilter([...Array.from(Array(5).keys())])) }),
-      },
-    })).toThrow(/\(200\) must not exceed 150/);
-
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          protocol: sns.SubscriptionProtocol.LAMBDA,
+          topic,
+          filterPolicyWithMessageBody: {
+            a: sns.Policy.policy({
+              b: sns.Filter.filter(new sns.SubscriptionFilter([...Array.from(Array(10).keys())])),
+            }),
+            c: sns.Policy.policy({
+              d: sns.Filter.filter(new sns.SubscriptionFilter([...Array.from(Array(5).keys())])),
+            }),
+          },
+        })
+    ).toThrow(/\(200\) must not exceed 150/);
   });
 
   test('throws an error when subscription role arn is not entered with firehose subscription protocol', () => {
@@ -426,11 +421,14 @@ describe('Subscription', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     //THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.FIREHOSE,
-      topic,
-    })).toThrow(/Subscription role arn is required field for subscriptions with a firehose protocol./);
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          protocol: sns.SubscriptionProtocol.FIREHOSE,
+          topic,
+        })
+    ).toThrow(/Subscription role arn is required field for subscriptions with a firehose protocol./);
   });
 
   test.each([
@@ -447,19 +445,22 @@ describe('Subscription', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     //THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      deliveryPolicy: {
-        healthyRetryPolicy: {
-          minDelayTarget: cdk.Duration.seconds(11),
-          maxDelayTarget: cdk.Duration.seconds(10),
-          numRetries: 6,
-        },
-      },
-      protocol: protocol,
-      subscriptionRoleArn: '???',
-      topic,
-    })).toThrow(new RegExp(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`));
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          deliveryPolicy: {
+            healthyRetryPolicy: {
+              minDelayTarget: cdk.Duration.seconds(11),
+              maxDelayTarget: cdk.Duration.seconds(10),
+              numRetries: 6,
+            },
+          },
+          protocol: protocol,
+          subscriptionRoleArn: '???',
+          topic,
+        })
+    ).toThrow(new RegExp(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`));
   });
 
   test('throws an error when deliveryPolicy minDelayTarget exceeds maxDelayTarget', () => {
@@ -468,18 +469,21 @@ describe('Subscription', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     //THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      deliveryPolicy: {
-        healthyRetryPolicy: {
-          minDelayTarget: cdk.Duration.seconds(11),
-          maxDelayTarget: cdk.Duration.seconds(10),
-          numRetries: 6,
-        },
-      },
-      protocol: sns.SubscriptionProtocol.HTTPS,
-      topic,
-    })).toThrow(/minDelayTarget must not exceed maxDelayTarget/);
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          deliveryPolicy: {
+            healthyRetryPolicy: {
+              minDelayTarget: cdk.Duration.seconds(11),
+              maxDelayTarget: cdk.Duration.seconds(10),
+              numRetries: 6,
+            },
+          },
+          protocol: sns.SubscriptionProtocol.HTTPS,
+          topic,
+        })
+    ).toThrow(/minDelayTarget must not exceed maxDelayTarget/);
   });
 
   const delayTestCases = [
@@ -533,12 +537,15 @@ describe('Subscription', () => {
       const topic = new sns.Topic(stack, 'Topic');
 
       //THEN
-      expect(() => new sns.Subscription(stack, 'Subscription', {
-        endpoint: 'endpoint',
-        deliveryPolicy: invalidDeliveryPolicy,
-        protocol: sns.SubscriptionProtocol.HTTPS,
-        topic,
-      })).toThrow(new RegExp(`${prop} must be between 1 and 3600 seconds inclusive`));
+      expect(
+        () =>
+          new sns.Subscription(stack, 'Subscription', {
+            endpoint: 'endpoint',
+            deliveryPolicy: invalidDeliveryPolicy,
+            protocol: sns.SubscriptionProtocol.HTTPS,
+            topic,
+          })
+      ).toThrow(new RegExp(`${prop} must be between 1 and 3600 seconds inclusive`));
     });
   });
 
@@ -548,18 +555,21 @@ describe('Subscription', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     //THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      deliveryPolicy: {
-        healthyRetryPolicy: {
-          minDelayTarget: cdk.Duration.seconds(10),
-          maxDelayTarget: cdk.Duration.seconds(10),
-          numRetries: invalidValue,
-        },
-      },
-      protocol: sns.SubscriptionProtocol.HTTPS,
-      topic,
-    })).toThrow(/numRetries must be between 0 and 100 inclusive/);
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          deliveryPolicy: {
+            healthyRetryPolicy: {
+              minDelayTarget: cdk.Duration.seconds(10),
+              maxDelayTarget: cdk.Duration.seconds(10),
+              numRetries: invalidValue,
+            },
+          },
+          protocol: sns.SubscriptionProtocol.HTTPS,
+          topic,
+        })
+    ).toThrow(/numRetries must be between 0 and 100 inclusive/);
   });
 
   test.each([
@@ -641,12 +651,15 @@ describe('Subscription', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     //THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      deliveryPolicy: invalidDeliveryPolicy,
-      protocol: sns.SubscriptionProtocol.HTTPS,
-      topic,
-    })).toThrow(new RegExp(`${prop} must be an integer zero or greater`));
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          deliveryPolicy: invalidDeliveryPolicy,
+          protocol: sns.SubscriptionProtocol.HTTPS,
+          topic,
+        })
+    ).toThrow(new RegExp(`${prop} must be an integer zero or greater`));
   });
 
   test('throws an error when throttlePolicy < 1', () => {
@@ -655,15 +668,18 @@ describe('Subscription', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     //THEN
-    expect(() => new sns.Subscription(stack, 'Subscription', {
-      endpoint: 'endpoint',
-      deliveryPolicy: {
-        throttlePolicy: {
-          maxReceivesPerSecond: 0,
-        },
-      },
-      protocol: sns.SubscriptionProtocol.HTTPS,
-      topic,
-    })).toThrow(/maxReceivesPerSecond must be an integer greater than zero/);
+    expect(
+      () =>
+        new sns.Subscription(stack, 'Subscription', {
+          endpoint: 'endpoint',
+          deliveryPolicy: {
+            throttlePolicy: {
+              maxReceivesPerSecond: 0,
+            },
+          },
+          protocol: sns.SubscriptionProtocol.HTTPS,
+          topic,
+        })
+    ).toThrow(/maxReceivesPerSecond must be an integer greater than zero/);
   });
 });

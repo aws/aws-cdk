@@ -98,10 +98,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 
-  public addEventSourceMapping(
-    id: string,
-    options: lambda.EventSourceMappingOptions
-  ): lambda.EventSourceMapping {
+  public addEventSourceMapping(id: string, options: lambda.EventSourceMappingOptions): lambda.EventSourceMapping {
     return this.lambda.addEventSourceMapping(id, options);
   }
   public addPermission(id: string, permission: lambda.Permission): void {

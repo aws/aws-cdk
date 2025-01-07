@@ -107,7 +107,7 @@ test('Cancel a Step with static ClusterId and StepId from payload', () => {
     },
     End: true,
     Parameters: {
-      'ClusterId': 'ClusterId',
+      ClusterId: 'ClusterId',
       'StepId.$': '$.StepId',
     },
   });
@@ -138,7 +138,7 @@ test('Cancel a Step with ClusterId from payload and static StepId', () => {
     End: true,
     Parameters: {
       'ClusterId.$': '$.ClusterId',
-      'StepId': 'StepId',
+      StepId: 'StepId',
     },
   });
 });

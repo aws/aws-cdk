@@ -49,13 +49,15 @@ test('minimal example renders correctly', () => {
       Enabled: true,
       HttpVersion: 'http2',
       IPV6Enabled: true,
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
         },
-      }],
+      ],
     },
   });
 
@@ -75,7 +77,11 @@ test('existing distributions can be imported', () => {
 
 test('exhaustive example of props renders correctly and SSL method sni-only', () => {
   const origin = defaultOrigin();
-  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+  const certificate = acm.Certificate.fromCertificateArn(
+    stack,
+    'Cert',
+    'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012'
+  );
 
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
@@ -115,13 +121,15 @@ test('exhaustive example of props renders correctly and SSL method sni-only', ()
         IncludeCookies: true,
         Prefix: 'logs/',
       },
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
         },
-      }],
+      ],
       PriceClass: 'PriceClass_100',
       Restrictions: {
         GeoRestriction: {
@@ -141,7 +149,11 @@ test('exhaustive example of props renders correctly and SSL method sni-only', ()
 
 test('exhaustive example of props renders correctly and SSL method vip', () => {
   const origin = defaultOrigin();
-  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+  const certificate = acm.Certificate.fromCertificateArn(
+    stack,
+    'Cert',
+    'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012'
+  );
 
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
@@ -181,13 +193,15 @@ test('exhaustive example of props renders correctly and SSL method vip', () => {
         IncludeCookies: true,
         Prefix: 'logs/',
       },
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
         },
-      }],
+      ],
       PriceClass: 'PriceClass_100',
       Restrictions: {
         GeoRestriction: {
@@ -207,7 +221,11 @@ test('exhaustive example of props renders correctly and SSL method vip', () => {
 
 test('exhaustive example of props renders correctly and SSL method default', () => {
   const origin = defaultOrigin();
-  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+  const certificate = acm.Certificate.fromCertificateArn(
+    stack,
+    'Cert',
+    'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012'
+  );
 
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
@@ -246,13 +264,15 @@ test('exhaustive example of props renders correctly and SSL method default', () 
         IncludeCookies: true,
         Prefix: 'logs/',
       },
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
         },
-      }],
+      ],
       PriceClass: 'PriceClass_100',
       Restrictions: {
         GeoRestriction: {
@@ -305,7 +325,7 @@ ellipsis so a user would know there was more to ...`,
 });
 
 describe('multiple behaviors', () => {
-  test('a second behavior can\'t be specified with the catch-all path pattern', () => {
+  test("a second behavior can't be specified with the catch-all path pattern", () => {
     const origin = defaultOrigin();
 
     expect(() => {
@@ -335,23 +355,27 @@ describe('multiple behaviors', () => {
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
-        CacheBehaviors: [{
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'api/*',
-          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
-          ViewerProtocolPolicy: 'allow-all',
-        }],
+        CacheBehaviors: [
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'api/*',
+            TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+        ],
         Enabled: true,
         HttpVersion: 'http2',
         IPV6Enabled: true,
-        Origins: [{
-          DomainName: 'www.example.com',
-          Id: 'StackMyDistOrigin1D6D5E535',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+        Origins: [
+          {
+            DomainName: 'www.example.com',
+            Id: 'StackMyDistOrigin1D6D5E535',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -374,30 +398,34 @@ describe('multiple behaviors', () => {
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
-        CacheBehaviors: [{
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'api/*',
-          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
-          ViewerProtocolPolicy: 'allow-all',
-        }],
+        CacheBehaviors: [
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'api/*',
+            TargetOriginId: 'StackMyDistOrigin20B96F3AD',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+        ],
         Enabled: true,
         HttpVersion: 'http2',
         IPV6Enabled: true,
-        Origins: [{
-          DomainName: 'www.example.com',
-          Id: 'StackMyDistOrigin1D6D5E535',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+        Origins: [
+          {
+            DomainName: 'www.example.com',
+            Id: 'StackMyDistOrigin1D6D5E535',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        },
-        {
-          DomainName: 'origin2.example.com',
-          Id: 'StackMyDistOrigin20B96F3AD',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+          {
+            DomainName: 'origin2.example.com',
+            Id: 'StackMyDistOrigin20B96F3AD',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -421,37 +449,41 @@ describe('multiple behaviors', () => {
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
-        CacheBehaviors: [{
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'api/1*',
-          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
-          ViewerProtocolPolicy: 'allow-all',
-        },
-        {
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'api/2*',
-          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
-          ViewerProtocolPolicy: 'allow-all',
-        }],
+        CacheBehaviors: [
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'api/1*',
+            TargetOriginId: 'StackMyDistOrigin20B96F3AD',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'api/2*',
+            TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+        ],
         Enabled: true,
         HttpVersion: 'http2',
         IPV6Enabled: true,
-        Origins: [{
-          DomainName: 'www.example.com',
-          Id: 'StackMyDistOrigin1D6D5E535',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+        Origins: [
+          {
+            DomainName: 'www.example.com',
+            Id: 'StackMyDistOrigin1D6D5E535',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        },
-        {
-          DomainName: 'origin2.example.com',
-          Id: 'StackMyDistOrigin20B96F3AD',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+          {
+            DomainName: 'origin2.example.com',
+            Id: 'StackMyDistOrigin20B96F3AD',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -460,18 +492,28 @@ describe('multiple behaviors', () => {
 describe('certificates', () => {
   test('should fail if using an imported certificate from outside of us-east-1', () => {
     const origin = defaultOrigin();
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012'
+    );
 
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin },
         certificate,
       });
-    }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
+    }).toThrow(
+      /Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./
+    );
   });
 
   test('adding a certificate without a domain name', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012'
+    );
 
     new Distribution(stack, 'Dist1', {
       defaultBehavior: { origin: defaultOrigin() },
@@ -486,11 +528,18 @@ describe('certificates', () => {
         },
       },
     });
-    Annotations.fromStack(stack).hasWarning('/Stack/Dist1', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront:emptyDomainNames]');
+    Annotations.fromStack(stack).hasWarning(
+      '/Stack/Dist1',
+      'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info. [ack: @aws-cdk/aws-cloudfront:emptyDomainNames]'
+    );
   });
 
   test('use the TLSv1.2_2021 security policy by default', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012'
+    );
 
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
@@ -511,7 +560,11 @@ describe('certificates', () => {
   });
 
   test('adding a certificate with non default security policy protocol', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012'
+    );
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       domainNames: ['www.example.com'],
@@ -541,29 +594,33 @@ describe('custom error responses', () => {
         defaultBehavior: { origin },
         errorResponses: [{ httpStatus: 404 }],
       });
-    }).toThrow(/A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid./);
+    }).toThrow(
+      /A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid./
+    );
   });
 
   test('should render the array of error configs if provided', () => {
     const origin = defaultOrigin();
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
-      errorResponses: [{
-        // responseHttpStatus defaults to httpsStatus
-        httpStatus: 404,
-        responsePagePath: '/errors/404.html',
-      },
-      {
-        // without responsePagePath
-        httpStatus: 500,
-        ttl: Duration.seconds(2),
-      },
-      {
-        // with responseHttpStatus different from httpStatus
-        httpStatus: 403,
-        responseHttpStatus: 200,
-        responsePagePath: '/index.html',
-      }],
+      errorResponses: [
+        {
+          // responseHttpStatus defaults to httpsStatus
+          httpStatus: 404,
+          responsePagePath: '/errors/404.html',
+        },
+        {
+          // without responsePagePath
+          httpStatus: 500,
+          ttl: Duration.seconds(2),
+        },
+        {
+          // with responseHttpStatus different from httpStatus
+          httpStatus: 403,
+          responseHttpStatus: 200,
+          responsePagePath: '/index.html',
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
@@ -629,9 +686,7 @@ describe('logging', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       OwnershipControls: {
-        Rules: [
-          { ObjectOwnership: 'ObjectWriter' },
-        ],
+        Rules: [{ ObjectOwnership: 'ObjectWriter' }],
       },
     });
   });
@@ -710,7 +765,9 @@ describe('with Lambda@Edge functions', () => {
               EventType: 'origin-request',
               IncludeBody: true,
               LambdaFunctionARN: {
-                Ref: Match.stringLikeRegexp(stack.getLogicalId(lambdaFunction.currentVersion.node.defaultChild as lambda.CfnVersion)),
+                Ref: Match.stringLikeRegexp(
+                  stack.getLogicalId(lambdaFunction.currentVersion.node.defaultChild as lambda.CfnVersion)
+                ),
               },
             },
           ],
@@ -780,7 +837,9 @@ describe('with Lambda@Edge functions', () => {
               {
                 EventType: 'viewer-request',
                 LambdaFunctionARN: {
-                  Ref: Match.stringLikeRegexp(stack.getLogicalId(lambdaFunction.currentVersion.node.defaultChild as lambda.CfnVersion)),
+                  Ref: Match.stringLikeRegexp(
+                    stack.getLogicalId(lambdaFunction.currentVersion.node.defaultChild as lambda.CfnVersion)
+                  ),
                 },
               },
             ],
@@ -886,7 +945,9 @@ describe('with Lambda@Edge functions', () => {
             {
               EventType: 'origin-request',
               LambdaFunctionARN: {
-                Ref: Match.stringLikeRegexp(stack.getLogicalId(singleton.currentVersion.node.defaultChild as lambda.CfnVersion)),
+                Ref: Match.stringLikeRegexp(
+                  stack.getLogicalId(singleton.currentVersion.node.defaultChild as lambda.CfnVersion)
+                ),
               },
             },
           ],
@@ -919,10 +980,7 @@ describe('with CloudFront functions', () => {
             {
               EventType: 'viewer-request',
               FunctionARN: {
-                'Fn::GetAtt': [
-                  'TestFunction22AD90FC',
-                  'FunctionARN',
-                ],
+                'Fn::GetAtt': ['TestFunction22AD90FC', 'FunctionARN'],
               },
             },
           ],
@@ -966,7 +1024,10 @@ test('escape hatches are supported', () => {
 
 describe('origin IDs', () => {
   test('origin ID is limited to 128 characters', () => {
-    const nestedStack = new Stack(stack, 'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit');
+    const nestedStack = new Stack(
+      stack,
+      'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit'
+    );
 
     new Distribution(nestedStack, 'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget', {
       defaultBehavior: { origin: defaultOrigin() },
@@ -974,15 +1035,20 @@ describe('origin IDs', () => {
 
     Template.fromStack(nestedStack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        Origins: [Match.objectLike({
-          Id: 'ngerThanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOrigin1D38031F9',
-        })],
+        Origins: [
+          Match.objectLike({
+            Id: 'ngerThanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOrigin1D38031F9',
+          }),
+        ],
       },
     });
   });
 
   test('origin group ID is limited to 128 characters', () => {
-    const nestedStack = new Stack(stack, 'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit');
+    const nestedStack = new Stack(
+      stack,
+      'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit'
+    );
 
     new Distribution(nestedStack, 'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget', {
       defaultBehavior: { origin: defaultOriginGroup() },
@@ -991,9 +1057,11 @@ describe('origin IDs', () => {
     Template.fromStack(nestedStack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         OriginGroups: {
-          Items: [Match.objectLike({
-            Id: 'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
-          })],
+          Items: [
+            Match.objectLike({
+              Id: 'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
+            }),
+          ],
         },
       },
     });
@@ -1012,10 +1080,7 @@ describe('custom origin ids', () => {
         },
       },
     });
-    distribution.addBehavior(
-      'thirdUsage',
-      origin,
-    );
+    distribution.addBehavior('thirdUsage', origin);
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
@@ -1025,30 +1090,34 @@ describe('custom origin ids', () => {
           TargetOriginId: 'custom-origin-id',
           ViewerProtocolPolicy: 'allow-all',
         },
-        CacheBehaviors: [{
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'secondUsage',
-          TargetOriginId: 'custom-origin-id',
-          ViewerProtocolPolicy: 'allow-all',
-        },
-        {
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'thirdUsage',
-          TargetOriginId: 'custom-origin-id',
-          ViewerProtocolPolicy: 'allow-all',
-        }],
+        CacheBehaviors: [
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'secondUsage',
+            TargetOriginId: 'custom-origin-id',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'thirdUsage',
+            TargetOriginId: 'custom-origin-id',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+        ],
         Enabled: true,
         HttpVersion: 'http2',
         IPV6Enabled: true,
-        Origins: [{
-          DomainName: 'www.example.com',
-          Id: 'custom-origin-id',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+        Origins: [
+          {
+            DomainName: 'www.example.com',
+            Id: 'custom-origin-id',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -1118,16 +1187,11 @@ test('grants custom actions', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'cloudfront:ListInvalidations',
-            'cloudfront:GetInvalidation',
-          ],
+          Action: ['cloudfront:ListInvalidations', 'cloudfront:GetInvalidation'],
           Resource: {
             'Fn::Join': [
-              '', [
-                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
-                { Ref: 'Distribution830FAC52' },
-              ],
+              '',
+              ['arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/', { Ref: 'Distribution830FAC52' }],
             ],
           },
         },
@@ -1152,10 +1216,8 @@ test('grants createInvalidation', () => {
           Action: 'cloudfront:CreateInvalidation',
           Resource: {
             'Fn::Join': [
-              '', [
-                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
-                { Ref: 'Distribution830FAC52' },
-              ],
+              '',
+              ['arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/', { Ref: 'Distribution830FAC52' }],
             ],
           },
         },
@@ -1175,9 +1237,7 @@ test('render distribution behavior with realtime log config', () => {
   });
 
   const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
-    endPoints: [
-      Endpoint.fromKinesisStream(stream, role),
-    ],
+    endPoints: [Endpoint.fromKinesisStream(stream, role)],
     fields: ['timestamp'],
     realtimeLogConfigName: 'realtime-config',
     samplingRate: 50,
@@ -1190,7 +1250,8 @@ test('render distribution behavior with realtime log config', () => {
     },
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution',
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::CloudFront::Distribution',
     Match.objectLike({
       DistributionConfig: {
         DefaultCacheBehavior: {
@@ -1199,7 +1260,8 @@ test('render distribution behavior with realtime log config', () => {
           },
         },
       },
-    }));
+    })
+  );
 });
 
 test('render distribution behavior with realtime log config - multiple behaviors', () => {
@@ -1213,9 +1275,7 @@ test('render distribution behavior with realtime log config - multiple behaviors
   });
 
   const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
-    endPoints: [
-      Endpoint.fromKinesisStream(stream, role),
-    ],
+    endPoints: [Endpoint.fromKinesisStream(stream, role)],
     fields: ['timestamp'],
     realtimeLogConfigName: 'realtime-config',
     samplingRate: 50,
@@ -1236,7 +1296,8 @@ test('render distribution behavior with realtime log config - multiple behaviors
     },
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution',
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::CloudFront::Distribution',
     Match.objectLike({
       DistributionConfig: {
         DefaultCacheBehavior: {
@@ -1245,15 +1306,18 @@ test('render distribution behavior with realtime log config - multiple behaviors
           },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         },
-        CacheBehaviors: [{
-          PathPattern: '/api/*',
-          RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+        CacheBehaviors: [
+          {
+            PathPattern: '/api/*',
+            RealtimeLogConfigArn: {
+              'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            },
+            TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           },
-          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
-        }],
+        ],
       },
-    }));
+    })
+  );
 });
 
 test('with publish additional metrics', () => {
@@ -1274,13 +1338,15 @@ test('with publish additional metrics', () => {
       Enabled: true,
       HttpVersion: 'http2',
       IPV6Enabled: true,
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
         },
-      }],
+      ],
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::MonitoringSubscription', {
@@ -1313,23 +1379,37 @@ test('with origin access control id', () => {
       Enabled: true,
       HttpVersion: 'http2',
       IPV6Enabled: true,
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
+          OriginAccessControlId: 'test-origin-access-control-id',
         },
-        OriginAccessControlId: 'test-origin-access-control-id',
-      }],
+      ],
     },
   });
 });
 
 describe('Distribution metrics tests', () => {
   const additionalMetrics = [
-    { name: 'OriginLatency', method: 'metricOriginLatency', statistic: 'Average', additionalMetricsRequired: true, errorMetricName: 'Origin latency' },
-    { name: 'CacheHitRate', method: 'metricCacheHitRate', statistic: 'Average', additionalMetricsRequired: true, errorMetricName: 'Cache hit rate' },
-    ...['401', '403', '404', '502', '503', '504'].map(errorCode => ({
+    {
+      name: 'OriginLatency',
+      method: 'metricOriginLatency',
+      statistic: 'Average',
+      additionalMetricsRequired: true,
+      errorMetricName: 'Origin latency',
+    },
+    {
+      name: 'CacheHitRate',
+      method: 'metricCacheHitRate',
+      statistic: 'Average',
+      additionalMetricsRequired: true,
+      errorMetricName: 'Cache hit rate',
+    },
+    ...['401', '403', '404', '502', '503', '504'].map((errorCode) => ({
       name: `${errorCode}ErrorRate`,
       method: `metric${errorCode}ErrorRate`,
       statistic: 'Average',
@@ -1339,12 +1419,48 @@ describe('Distribution metrics tests', () => {
   ];
 
   const defaultMetrics = [
-    { name: 'Requests', method: 'metricRequests', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
-    { name: 'BytesDownloaded', method: 'metricBytesDownloaded', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
-    { name: 'BytesUploaded', method: 'metricBytesUploaded', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
-    { name: 'TotalErrorRate', method: 'metricTotalErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
-    { name: '4xxErrorRate', method: 'metric4xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
-    { name: '5xxErrorRate', method: 'metric5xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
+    {
+      name: 'Requests',
+      method: 'metricRequests',
+      statistic: 'Sum',
+      additionalMetricsRequired: false,
+      errorMetricName: '',
+    },
+    {
+      name: 'BytesDownloaded',
+      method: 'metricBytesDownloaded',
+      statistic: 'Sum',
+      additionalMetricsRequired: false,
+      errorMetricName: '',
+    },
+    {
+      name: 'BytesUploaded',
+      method: 'metricBytesUploaded',
+      statistic: 'Sum',
+      additionalMetricsRequired: false,
+      errorMetricName: '',
+    },
+    {
+      name: 'TotalErrorRate',
+      method: 'metricTotalErrorRate',
+      statistic: 'Average',
+      additionalMetricsRequired: false,
+      errorMetricName: '',
+    },
+    {
+      name: '4xxErrorRate',
+      method: 'metric4xxErrorRate',
+      statistic: 'Average',
+      additionalMetricsRequired: false,
+      errorMetricName: '',
+    },
+    {
+      name: '5xxErrorRate',
+      method: 'metric5xxErrorRate',
+      statistic: 'Average',
+      additionalMetricsRequired: false,
+      errorMetricName: '',
+    },
   ];
 
   test.each(additionalMetrics.concat(defaultMetrics))('get %s metric', (metric) => {
@@ -1356,26 +1472,33 @@ describe('Distribution metrics tests', () => {
 
     const metricObj = dist[metric.method]();
 
-    expect(metricObj).toEqual(new cloudwatch.Metric({
-      namespace: 'AWS/CloudFront',
-      metricName: metric.name,
-      dimensions: { DistributionId: dist.distributionId },
-      statistic: metric.statistic,
-      period: Duration.minutes(5),
-    }));
+    expect(metricObj).toEqual(
+      new cloudwatch.Metric({
+        namespace: 'AWS/CloudFront',
+        metricName: metric.name,
+        dimensions: { DistributionId: dist.distributionId },
+        statistic: metric.statistic,
+        period: Duration.minutes(5),
+      })
+    );
   });
 
-  test.each(additionalMetrics)('throw error when trying to get %s metric without publishing additional metrics', (metric) => {
-    const origin = defaultOrigin();
-    const dist = new Distribution(stack, 'MyDist', {
-      defaultBehavior: { origin },
-      publishAdditionalMetrics: false,
-    });
+  test.each(additionalMetrics)(
+    'throw error when trying to get %s metric without publishing additional metrics',
+    (metric) => {
+      const origin = defaultOrigin();
+      const dist = new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+        publishAdditionalMetrics: false,
+      });
 
-    expect(() => {
-      dist[metric.method]();
-    }).toThrow(new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
-  });
+      expect(() => {
+        dist[metric.method]();
+      }).toThrow(
+        new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`)
+      );
+    }
+  );
 });
 
 describe('attachWebAclId', () => {
@@ -1417,8 +1540,12 @@ describe('attachWebAclId', () => {
       });
 
       expect(() => {
-        distribution.attachWebAclId('arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a');
-      }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+        distribution.attachWebAclId(
+          'arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a'
+        );
+      }).toThrow(
+        /WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/
+      );
     });
 
     test('when try to attach WebACL by specifying value for props', () => {
@@ -1427,10 +1554,12 @@ describe('attachWebAclId', () => {
       expect(() => {
         new Distribution(stack, 'MyDist', {
           defaultBehavior: { origin },
-          webAclId: 'arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a',
+          webAclId:
+            'arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a',
         });
-      }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+      }).toThrow(
+        /WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/
+      );
     });
   });
-
 });

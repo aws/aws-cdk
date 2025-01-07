@@ -1,9 +1,4 @@
-import {
-  IScheduleTarget,
-  ISchedule,
-  ScheduleTargetInput,
-  ScheduleTargetConfig,
-} from '@aws-cdk/aws-scheduler-alpha';
+import { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
 import * as events from 'aws-cdk-lib/aws-events';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';

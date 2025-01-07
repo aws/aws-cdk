@@ -36,12 +36,7 @@ describe('origin group', () => {
             {
               FailoverCriteria: {
                 StatusCodes: {
-                  Items: [
-                    500,
-                    502,
-                    503,
-                    504,
-                  ],
+                  Items: [500, 502, 503, 504],
                   Quantity: 4,
                 },
               },
@@ -69,9 +64,7 @@ describe('origin group', () => {
               OriginKeepaliveTimeout: 5,
               OriginProtocolPolicy: 'https-only',
               OriginReadTimeout: 30,
-              OriginSSLProtocols: [
-                'TLSv1.2',
-              ],
+              OriginSSLProtocols: ['TLSv1.2'],
             },
             DomainName: 'myoriginfallback.com',
             Id: 'originSecondary1',
@@ -89,9 +82,7 @@ describe('origin group', () => {
               OriginKeepaliveTimeout: 5,
               OriginProtocolPolicy: 'https-only',
               OriginReadTimeout: 30,
-              OriginSSLProtocols: [
-                'TLSv1.2',
-              ],
+              OriginSSLProtocols: ['TLSv1.2'],
             },
             DomainName: 'myorigin.com',
             Id: 'origin1',
@@ -144,9 +135,7 @@ describe('origin group', () => {
             {
               FailoverCriteria: {
                 StatusCodes: {
-                  Items: [
-                    500,
-                  ],
+                  Items: [500],
                   Quantity: 1,
                 },
               },
@@ -222,6 +211,5 @@ describe('origin group', () => {
         ],
       },
     });
-
   });
 });

@@ -8,10 +8,7 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   const stack = Stack.of(fn);
 
   const functionResource = fn.node.defaultChild as CfnResource;
-  const { properties, template, logicalId } = resolveSingleResourceProperties(
-    stack,
-    functionResource
-  );
+  const { properties, template, logicalId } = resolveSingleResourceProperties(stack, functionResource);
 
   let stringifiedConfig;
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_VERSION_PROPS)) {
@@ -233,9 +230,7 @@ function resolveSingleResourceProperties(stack: Stack, res: CfnResource): any {
   const resources = template.Resources;
   const resourceKeys = Object.keys(resources);
   if (resourceKeys.length !== 1) {
-    throw new Error(
-      `Expected one rendered CloudFormation resource but found ${resourceKeys.length}`
-    );
+    throw new Error(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`);
   }
   const logicalId = resourceKeys[0];
   return { properties: resources[logicalId].Properties, template, logicalId };

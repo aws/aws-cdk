@@ -96,11 +96,7 @@ export abstract class ServiceDiscovery {
    *  The default is `DnsResponseType.LOAD_BALANCER`.
    * @param ipPreference No IP preference is applied to the Virtual Node.
    */
-  public static dns(
-    hostname: string,
-    responseType?: DnsResponseType,
-    ipPreference?: IpPreference
-  ): ServiceDiscovery {
+  public static dns(hostname: string, responseType?: DnsResponseType, ipPreference?: IpPreference): ServiceDiscovery {
     return new DnsServiceDiscovery(hostname, responseType, ipPreference);
   }
 
@@ -156,11 +152,7 @@ class CloudMapServiceDiscovery extends ServiceDiscovery {
   private readonly instanceAttributes?: { [key: string]: string };
   private readonly ipPreference?: IpPreference;
 
-  constructor(
-    service: cloudmap.IService,
-    instanceAttributes?: { [key: string]: string },
-    ipPreference?: IpPreference
-  ) {
+  constructor(service: cloudmap.IService, instanceAttributes?: { [key: string]: string }, ipPreference?: IpPreference) {
     super();
     this.service = service;
     this.instanceAttributes = instanceAttributes;

@@ -24,13 +24,19 @@ const sfnMock = mockClient(SFNClient);
 describe('CustomResourceHandler', () => {
   beforeEach(() => {
     s3Mock.on(ListBucketsCommand).resolves({
-      Buckets: [{
-        Name: 'somebucket',
-      }],
+      Buckets: [
+        {
+          Name: 'somebucket',
+        },
+      ],
     } as ListBucketsOutput);
     sfnMock.on(StartExecutionCommand).resolves({});
-    jest.spyOn(console, 'log').mockImplementation(() => { return true; });
-    jest.spyOn(console, 'info').mockImplementation(() => { return true; });
+    jest.spyOn(console, 'log').mockImplementation(() => {
+      return true;
+    });
+    jest.spyOn(console, 'info').mockImplementation(() => {
+      return true;
+    });
   });
 
   afterEach(() => {
@@ -44,18 +50,23 @@ describe('CustomResourceHandler', () => {
   describe('lambda handler', () => {
     test('create async request', async () => {
       const nocked = nockUp((body) => {
-        return body.Status === 'SUCCESS'
-        && body.Reason === 'OK'
-        && isDeepStrictEqual(body.Data, {})
-        && body.StackId === 'MyStackId'
-        && body.RequestId === 'MyRequestId'
-        && body.NoEcho === false;
+        return (
+          body.Status === 'SUCCESS' &&
+          body.Reason === 'OK' &&
+          isDeepStrictEqual(body.Data, {}) &&
+          body.StackId === 'MyStackId' &&
+          body.RequestId === 'MyRequestId' &&
+          body.NoEcho === false
+        );
       });
-      const event = createEvent({
-        stateMachineArn: 'arn',
-        service: 'MyService',
-        api: 'myApi',
-      }, 'Custom::DeployAssert@SdkCall');
+      const event = createEvent(
+        {
+          stateMachineArn: 'arn',
+          service: 'MyService',
+          api: 'myApi',
+        },
+        'Custom::DeployAssert@SdkCall'
+      );
       await lambda_handler(event, standardContext);
 
       expect(sfnMock).toHaveReceivedCommandTimes(StartExecutionCommand, 1);
@@ -68,17 +79,22 @@ describe('CustomResourceHandler', () => {
 
     test('create sync request', async () => {
       const nocked = nockUp((body) => {
-        return body.Status === 'SUCCESS'
-        && body.Reason === 'OK'
-        && body.Data.apiCallResponse.Buckets[0].Name === 'somebucket'
-        && body.StackId === 'MyStackId'
-        && body.RequestId === 'MyRequestId'
-        && body.NoEcho === false;
+        return (
+          body.Status === 'SUCCESS' &&
+          body.Reason === 'OK' &&
+          body.Data.apiCallResponse.Buckets[0].Name === 'somebucket' &&
+          body.StackId === 'MyStackId' &&
+          body.RequestId === 'MyRequestId' &&
+          body.NoEcho === false
+        );
       });
-      const event = createEvent({
-        service: 'S3',
-        api: 'listBuckets',
-      }, 'Custom::DeployAssert@SdkCall');
+      const event = createEvent(
+        {
+          service: 'S3',
+          api: 'listBuckets',
+        },
+        'Custom::DeployAssert@SdkCall'
+      );
       await lambda_handler(event, standardContext);
 
       expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
@@ -90,19 +106,24 @@ describe('CustomResourceHandler', () => {
 
     test('create request with assertions', async () => {
       const nocked = nockUp((body) => {
-        return body.Status === 'SUCCESS'
-        && body.Reason === 'OK'
-        && body.Data.assertion === '{"status":"success"}'
-        && body.Data.apiCallResponse.Buckets[0].Name === 'somebucket'
-        && body.StackId === 'MyStackId'
-        && body.RequestId === 'MyRequestId'
-        && body.NoEcho === false;
+        return (
+          body.Status === 'SUCCESS' &&
+          body.Reason === 'OK' &&
+          body.Data.assertion === '{"status":"success"}' &&
+          body.Data.apiCallResponse.Buckets[0].Name === 'somebucket' &&
+          body.StackId === 'MyStackId' &&
+          body.RequestId === 'MyRequestId' &&
+          body.NoEcho === false
+        );
       });
-      const event = createEvent({
-        service: 'S3',
-        api: 'listBuckets',
-        expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'somebucket' }] } }),
-      }, 'Custom::DeployAssert@SdkCall');
+      const event = createEvent(
+        {
+          service: 'S3',
+          api: 'listBuckets',
+          expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'somebucket' }] } }),
+        },
+        'Custom::DeployAssert@SdkCall'
+      );
       await lambda_handler(event, standardContext);
 
       expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
@@ -114,14 +135,16 @@ describe('CustomResourceHandler', () => {
 
     test('create request with assertions fails', async () => {
       const nocked = nockUp((body) => {
-        return body.Status === 'FAILED'
-        && (body.Reason?.match(/Expected someotherbucket/) ?? []).length === 1;
+        return body.Status === 'FAILED' && (body.Reason?.match(/Expected someotherbucket/) ?? []).length === 1;
       });
-      const event = createEvent({
-        service: 'S3',
-        api: 'listBuckets',
-        expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'someotherbucket' }] } }),
-      }, 'Custom::DeployAssert@SdkCall');
+      const event = createEvent(
+        {
+          service: 'S3',
+          api: 'listBuckets',
+          expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'someotherbucket' }] } }),
+        },
+        'Custom::DeployAssert@SdkCall'
+      );
       await lambda_handler(event, standardContext);
 
       expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
@@ -135,18 +158,23 @@ describe('CustomResourceHandler', () => {
   describe('lambda isCompleteHandler', () => {
     test('basic', async () => {
       const nocked = nockUp((body) => {
-        return body.Status === 'SUCCESS'
-        && body.Reason === 'OK'
-        && 'apiCallResponse' in body.Data
-        && body.StackId === 'MyStackId'
-        && body.RequestId === 'MyRequestId'
-        && body.NoEcho === false;
+        return (
+          body.Status === 'SUCCESS' &&
+          body.Reason === 'OK' &&
+          'apiCallResponse' in body.Data &&
+          body.StackId === 'MyStackId' &&
+          body.RequestId === 'MyRequestId' &&
+          body.NoEcho === false
+        );
       });
-      const event = createEvent({
-        stateMachineArn: 'arn',
-        service: 'S3',
-        api: 'listBuckets',
-      }, 'Custom::DeployAssert@SdkCall');
+      const event = createEvent(
+        {
+          stateMachineArn: 'arn',
+          service: 'S3',
+          api: 'listBuckets',
+        },
+        'Custom::DeployAssert@SdkCall'
+      );
       await isComplete(event, standardContext);
 
       expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
@@ -157,18 +185,23 @@ describe('CustomResourceHandler', () => {
 
     test('create request with assertions', async () => {
       const nocked = nockUp((body) => {
-        return body.Status === 'SUCCESS'
-        && body.Reason === 'OK'
-        && body.Data.assertion === '{"status":"success"}'
-        && body.StackId === 'MyStackId'
-        && body.RequestId === 'MyRequestId'
-        && body.NoEcho === false;
+        return (
+          body.Status === 'SUCCESS' &&
+          body.Reason === 'OK' &&
+          body.Data.assertion === '{"status":"success"}' &&
+          body.StackId === 'MyStackId' &&
+          body.RequestId === 'MyRequestId' &&
+          body.NoEcho === false
+        );
       });
-      const event = createEvent({
-        service: 'S3',
-        api: 'listBuckets',
-        expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'somebucket' }] } }),
-      }, 'Custom::DeployAssert@SdkCall');
+      const event = createEvent(
+        {
+          service: 'S3',
+          api: 'listBuckets',
+          expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'somebucket' }] } }),
+        },
+        'Custom::DeployAssert@SdkCall'
+      );
       await isComplete(event, standardContext);
 
       expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
@@ -179,14 +212,16 @@ describe('CustomResourceHandler', () => {
 
     test('create request with assertions fails', async () => {
       const nocked = nockUp((body) => {
-        return body.Status === 'FAILED'
-        && (body.Reason?.match(/Expected someotherbucket/) ?? []).length === 1;
+        return body.Status === 'FAILED' && (body.Reason?.match(/Expected someotherbucket/) ?? []).length === 1;
       });
-      const event = createEvent({
-        service: 'S3',
-        api: 'listBuckets',
-        expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'someotherbucket' }] } }),
-      }, 'Custom::DeployAssert@SdkCall');
+      const event = createEvent(
+        {
+          service: 'S3',
+          api: 'listBuckets',
+          expected: JSON.stringify({ $ObjectLike: { Buckets: [{ Name: 'someotherbucket' }] } }),
+        },
+        'Custom::DeployAssert@SdkCall'
+      );
       await expect(isComplete(event, standardContext)).rejects.toThrow();
 
       expect(s3Mock).toHaveReceivedCommandTimes(ListBucketsCommand, 1);
@@ -200,15 +235,19 @@ describe('CustomResourceHandler', () => {
   describe('onTimeout', () => {
     test('timeout', async () => {
       const nocked = nockUp((body) => {
-        return body.Status === 'FAILED'
-        && (body.Reason?.match(/Operation timed out/) ?? []).length === 1;
+        return body.Status === 'FAILED' && (body.Reason?.match(/Operation timed out/) ?? []).length === 1;
       });
       await onTimeout({
         Cause: JSON.stringify({
-          errorMessage: JSON.stringify(createEvent({
-            service: 'S3',
-            api: 'listBuckets',
-          }, 'Custom::DeployAssert@SdkCall')),
+          errorMessage: JSON.stringify(
+            createEvent(
+              {
+                service: 'S3',
+                api: 'listBuckets',
+              },
+              'Custom::DeployAssert@SdkCall'
+            )
+          ),
         }),
       });
       expect(nocked.isDone()).toEqual(true);
@@ -227,9 +266,7 @@ describe('CustomResourceHandler', () => {
     }
 
     const nocked = nockUp((body) => {
-      return body.Status === 'FAILED'
-      && body.Reason !== undefined
-      && /Timeout/.test(body.Reason);
+      return body.Status === 'FAILED' && body.Reason !== undefined && /Timeout/.test(body.Reason);
     });
 
     const handler = new MyHandler(createEvent(), {
@@ -246,16 +283,18 @@ describe('CustomResourceHandler', () => {
 });
 
 function nockUp(_predicate: (body: CloudFormationResponse) => boolean) {
-  return nock('https://someurl.com')
-    .put('/')
-    .reply(200);
+  return nock('https://someurl.com').put('/').reply(200);
 }
 
-const standardContext: any = { // keeping this as any so as to not have to fill all the mandatory attributes of AWSLambda.Context
+const standardContext: any = {
+  // keeping this as any so as to not have to fill all the mandatory attributes of AWSLambda.Context
   getRemainingTimeInMillis: () => 5000,
 };
 
-function createEvent(data?: any, resourceType: string = 'MyResourceType'): AWSLambda.CloudFormationCustomResourceCreateEvent {
+function createEvent(
+  data?: any,
+  resourceType: string = 'MyResourceType'
+): AWSLambda.CloudFormationCustomResourceCreateEvent {
   return {
     LogicalResourceId: 'MyLogicalResourceId',
     RequestId: 'MyRequestId',

@@ -16,10 +16,7 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
     private readonly props?: IAliasRecordTargetProps
   ) {}
 
-  public bind(
-    _record: route53.IRecordSet,
-    _zone?: route53.IHostedZone
-  ): route53.AliasRecordTargetConfig {
+  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     if (cdk.Token.isUnresolved(this.environmentEndpoint)) {
       throw new Error(
         'Cannot use an EBS alias as `environmentEndpoint`. You must find your EBS environment endpoint via the AWS console. See the Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html'
@@ -33,9 +30,7 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
     const { ebsEnvEndpointHostedZoneId: hostedZoneId } = RegionInfo.get(region);
 
     if (!hostedZoneId || !dnsName) {
-      throw new Error(
-        `Elastic Beanstalk environment target is not supported for the "${region}" region.`
-      );
+      throw new Error(`Elastic Beanstalk environment target is not supported for the "${region}" region.`);
     }
 
     return {

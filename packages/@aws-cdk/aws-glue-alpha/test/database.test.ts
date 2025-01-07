@@ -4,7 +4,7 @@ import * as glue from '../lib';
 
 let stack: Stack;
 
-beforeEach( () => {
+beforeEach(() => {
   const app = new App({
     context: {
       '@aws-cdk/core:newStyleStackSynthesis': false,
@@ -31,7 +31,6 @@ test('default database does not create a bucket', () => {
       },
     },
   });
-
 });
 
 test('explicit locationURI', () => {
@@ -55,7 +54,6 @@ test('explicit locationURI', () => {
       },
     },
   });
-
 });
 
 test('explicit description', () => {
@@ -89,33 +87,38 @@ test('fromDatabase', () => {
   expect(database.databaseArn).toEqual('arn:aws:glue:us-east-1:123456789012:database/db1');
   expect(database.databaseName).toEqual('db1');
   expect(stack.resolve(database.catalogArn)).toEqual({
-    'Fn::Join': ['',
-      ['arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog']],
+    'Fn::Join': [
+      '',
+      ['arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog'],
+    ],
   });
   expect(stack.resolve(database.catalogId)).toEqual({ Ref: 'AWS::AccountId' });
 });
 
 test('locationUri length must be >= 1', () => {
-  expect(() =>
-    new glue.Database(stack, 'Database', {
-      locationUri: '',
-    }),
+  expect(
+    () =>
+      new glue.Database(stack, 'Database', {
+        locationUri: '',
+      })
   ).toThrow();
 });
 
 test('locationUri length must be <= 1024', () => {
-  expect(() =>
-    new glue.Database(stack, 'Database', {
-      locationUri: 'a'.repeat(1025),
-    }),
+  expect(
+    () =>
+      new glue.Database(stack, 'Database', {
+        locationUri: 'a'.repeat(1025),
+      })
   ).toThrow('locationUri length must be (inclusively) between 1 and 1024, got 1025');
 });
 
 test('description length must be <= 2048', () => {
-  expect(() =>
-    new glue.Database(stack, 'Database', {
-      description: 'a'.repeat(2049),
-    }),
+  expect(
+    () =>
+      new glue.Database(stack, 'Database', {
+        description: 'a'.repeat(2049),
+      })
   ).toThrow('description length must be less than or equal to 2048, got 2049');
 });
 

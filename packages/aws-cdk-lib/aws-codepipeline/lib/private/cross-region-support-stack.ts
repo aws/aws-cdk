@@ -61,14 +61,10 @@ export class CrossRegionSupportConstruct extends Construct {
 
     let encryptionAlias;
     if (createKmsKey) {
-      const encryptionKey = new kms.Key(
-        this,
-        'CrossRegionCodePipelineReplicationBucketEncryptionKey',
-        {
-          removalPolicy: cdk.RemovalPolicy.DESTROY,
-          enableKeyRotation: props.enableKeyRotation,
-        }
-      );
+      const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        enableKeyRotation: props.enableKeyRotation,
+      });
       encryptionAlias = new AliasWithShorterGeneratedName(
         this,
         'CrossRegionCodePipelineReplicationBucketEncryptionAlias',

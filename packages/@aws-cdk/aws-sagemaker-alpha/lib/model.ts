@@ -255,10 +255,7 @@ export class Model extends ModelBase {
    */
   public static fromModelAttributes(scope: Construct, id: string, attrs: ModelAttributes): IModel {
     const modelArn = attrs.modelArn;
-    const modelName = cdk.Stack.of(scope).splitArn(
-      modelArn,
-      cdk.ArnFormat.SLASH_RESOURCE_NAME
-    ).resourceName!;
+    const modelName = cdk.Stack.of(scope).splitArn(modelArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
     const role = attrs.role;
 
     class Import extends ModelBase {
@@ -381,20 +378,14 @@ export class Model extends ModelBase {
 
   private configureNetworking(props: ModelProps): ec2.Connections | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error(
-        "Cannot configure 'securityGroups' or 'allowAllOutbound' without configuring a VPC"
-      );
+      throw new Error("Cannot configure 'securityGroups' or 'allowAllOutbound' without configuring a VPC");
     }
 
     if (!props.vpc) {
       return undefined;
     }
 
-    if (
-      props.securityGroups &&
-      props.securityGroups.length > 0 &&
-      props.allowAllOutbound !== undefined
-    ) {
+    if (props.securityGroups && props.securityGroups.length > 0 && props.allowAllOutbound !== undefined) {
       throw new Error("Configure 'allowAllOutbound' directly on the supplied SecurityGroups");
     }
 
@@ -428,9 +419,7 @@ export class Model extends ModelBase {
       assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
     });
     // Grant SageMaker FullAccess
-    sagemakerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
-    );
+    sagemakerRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
 
     return sagemakerRole;
   }

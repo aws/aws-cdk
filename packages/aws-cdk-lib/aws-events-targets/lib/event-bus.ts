@@ -48,9 +48,7 @@ export class EventBus implements events.IRuleTarget {
 
     return {
       arn: this.eventBus.eventBusArn,
-      deadLetterConfig: this.props.deadLetterQueue
-        ? { arn: this.props.deadLetterQueue?.queueArn }
-        : undefined,
+      deadLetterConfig: this.props.deadLetterQueue ? { arn: this.props.deadLetterQueue?.queueArn } : undefined,
       role,
     };
   }

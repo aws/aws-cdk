@@ -13,7 +13,11 @@ describe('When instantiating SageMaker Model', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
-    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+    const testRepo = ecr.Repository.fromRepositoryName(
+      stack,
+      'testRepo',
+      '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel'
+    );
     const containers = [{ image: sagemaker.ContainerImage.fromEcrRepository(testRepo) }];
     for (let i = 0; i < 15; i++) {
       const containerDefinition = {
@@ -59,9 +63,11 @@ describe('When instantiating SageMaker Model', () => {
 
     // WHEN
     new sagemaker.Model(stack, 'Model', {
-      containers: [{
-        image: new ConstructCreatingContainerImage(),
-      }],
+      containers: [
+        {
+          image: new ConstructCreatingContainerImage(),
+        },
+      ],
     });
 
     // THEN
@@ -80,17 +86,16 @@ describe('When instantiating SageMaker Model', () => {
     const modelData = sagemaker.ModelData.fromAsset(path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz'));
     const container: sagemaker.ContainerDefinition = { image, modelData };
     new sagemaker.Model(stack, 'Model', {
-      containers: [
-        container,
-        container,
-      ],
+      containers: [container, container],
     });
 
     // WHEN
     const assembly = app.synth();
 
     // THEN
-    const manifest = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${stack.stackName}.assets.json`), 'utf-8'));
+    const manifest = JSON.parse(
+      fs.readFileSync(path.join(assembly.directory, `${stack.stackName}.assets.json`), 'utf-8')
+    );
     // The assembly asset manifest should include:
     // - Two file assets for the model data asset and the stack template
     // - One Docker image asset
@@ -128,9 +133,12 @@ describe('When instantiating SageMaker Model', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', Match.not({
-        GroupDescription: 'Default/Model/SecurityGroup',
-      }));
+      Template.fromStack(stack).hasResourceProperties(
+        'AWS::EC2::SecurityGroup',
+        Match.not({
+          GroupDescription: 'Default/Model/SecurityGroup',
+        })
+      );
     });
 
     test('but no security groups, a security group is created', () => {
@@ -249,16 +257,10 @@ test('When adding security group after model instantiation, it is reflected in V
     VpcConfig: {
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'ModelSecurityGroup2A7C9E10',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['ModelSecurityGroup2A7C9E10', 'GroupId'],
         },
         {
-          'Fn::GetAtt': [
-            'AdditionalGroup4973CFAA',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['AdditionalGroup4973CFAA', 'GroupId'],
         },
       ],
     },
@@ -270,9 +272,11 @@ test('When allowing traffic from an imported model with a security group, an S3 
   const stack = new cdk.Stack();
   const model = sagemaker.Model.fromModelAttributes(stack, 'Model', {
     modelArn: 'arn:aws:sagemaker:us-west-2:123456789012:model/MyModel',
-    securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
-      allowAllOutbound: false,
-    })],
+    securityGroups: [
+      ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
+        allowAllOutbound: false,
+      }),
+    ],
   });
 
   // WHEN
@@ -298,11 +302,10 @@ test('When importing a model by ARN, the model name is determined correctly', ()
 test('When importing a model by name, the ARN is constructed correctly', () => {
   // GIVEN
   const stack = new cdk.Stack(undefined, undefined, {
-    env:
-      {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
+    env: {
+      region: 'us-west-2',
+      account: '123456789012',
+    },
   });
 
   // WHEN
@@ -318,9 +321,11 @@ test('sagemaker model with deep learning container images with AccountId', () =>
 
   // WHEN
   new sagemaker.Model(stack, 'Model', {
-    containers: [{
-      image: sagemaker.ContainerImage.fromDlc('anyRepositoryName', 'anyTag', 'anyAwsAccount'),
-    }],
+    containers: [
+      {
+        image: sagemaker.ContainerImage.fromDlc('anyRepositoryName', 'anyTag', 'anyAwsAccount'),
+      },
+    ],
   });
 
   // THEN
@@ -354,9 +359,11 @@ test('sagemaker model with deep learning container images without AccountId', ()
 
   // WHEN
   new sagemaker.Model(stack, 'Model', {
-    containers: [{
-      image: sagemaker.ContainerImage.fromDlc('anyRepositoryName', 'anyTag'),
-    }],
+    containers: [
+      {
+        image: sagemaker.ContainerImage.fromDlc('anyRepositoryName', 'anyTag'),
+      },
+    ],
   });
 
   // THEN

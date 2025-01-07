@@ -197,10 +197,7 @@ export abstract class Credentials {
   /**
    * Creates Credentials with a password generated and stored in Secrets Manager.
    */
-  public static fromGeneratedSecret(
-    username: string,
-    options: CredentialsBaseOptions = {}
-  ): Credentials {
+  public static fromGeneratedSecret(username: string, options: CredentialsBaseOptions = {}): Credentials {
     return {
       ...options,
       username,
@@ -225,10 +222,7 @@ export abstract class Credentials {
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in Secrets Manager.
    */
-  public static fromUsername(
-    username: string,
-    options: CredentialsFromUsernameOptions = {}
-  ): Credentials {
+  public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {
       ...options,
       username,

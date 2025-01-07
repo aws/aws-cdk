@@ -308,8 +308,7 @@ export class BucketDeployment extends Construct {
       if (!cdk.Token.isUnresolved(props.distributionPaths)) {
         if (
           !props.distributionPaths.every(
-            (distributionPath) =>
-              cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/')
+            (distributionPath) => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/')
           )
         ) {
           throw new Error('Distribution paths must start with "/"');
@@ -369,9 +368,7 @@ export class BucketDeployment extends Construct {
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
-      filesystem: accessPoint
-        ? lambda.FileSystem.fromEfsAccessPoint(accessPoint, mountPath)
-        : undefined,
+      filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(accessPoint, mountPath) : undefined,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
       // otherwise jsii will print warnings even for users that don't use this directly
       ...(props.logRetention ? { logRetention: props.logRetention } : {}),
@@ -384,9 +381,7 @@ export class BucketDeployment extends Construct {
     }
     this.handlerRole = handlerRole;
 
-    this.sources = props.sources.map((source: ISource) =>
-      source.bind(this, { handlerRole: this.handlerRole })
-    );
+    this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
 
     this.destinationBucket.grantReadWrite(handler);
     if (props.accessControl) {
@@ -462,8 +457,7 @@ export class BucketDeployment extends Construct {
         OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({
-          produce: () =>
-            this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined,
+          produce: () => (this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined),
         }),
       },
     });
@@ -477,9 +471,7 @@ export class BucketDeployment extends Construct {
     // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
     // better to throw an error here than wait for CloudFormation to fail
     if (!cdk.Token.isUnresolved(tagKey) && tagKey.length > 128) {
-      throw new Error(
-        'The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.'
-      );
+      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.');
     }
 
     /*
@@ -624,11 +616,7 @@ export class BucketDeployment extends Construct {
     return uuid;
   }
 
-  private renderSingletonUuid(
-    memoryLimit?: number,
-    ephemeralStorageSize?: cdk.Size,
-    vpc?: ec2.IVpc
-  ) {
+  private renderSingletonUuid(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
     uuid += this.renderUniqueId(memoryLimit, ephemeralStorageSize, vpc);
@@ -642,16 +630,10 @@ export class BucketDeployment extends Construct {
    * @param scope Construct
    * @param fileSystemProps EFS FileSystemProps
    */
-  private getOrCreateEfsFileSystem(
-    scope: Construct,
-    fileSystemProps: efs.FileSystemProps
-  ): efs.FileSystem {
+  private getOrCreateEfsFileSystem(scope: Construct, fileSystemProps: efs.FileSystemProps): efs.FileSystem {
     const stack = cdk.Stack.of(scope);
     const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
-    return (
-      (stack.node.tryFindChild(uuid) as efs.FileSystem) ??
-      new efs.FileSystem(scope, uuid, fileSystemProps)
-    );
+    return (stack.node.tryFindChild(uuid) as efs.FileSystem) ?? new efs.FileSystem(scope, uuid, fileSystemProps);
   }
 }
 
@@ -1019,8 +1001,7 @@ export interface UserDefinedObjectMetadata {
 
 function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
   return (
-    JSON.stringify(stack.resolve(a.bucket.bucketName)) ===
-      JSON.stringify(stack.resolve(b.bucket.bucketName)) &&
+    JSON.stringify(stack.resolve(a.bucket.bucketName)) === JSON.stringify(stack.resolve(b.bucket.bucketName)) &&
     a.zipObjectKey === b.zipObjectKey &&
     a.markers === undefined &&
     b.markers === undefined

@@ -377,9 +377,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error(
-        'You can only specify either vpc or cluster. Alternatively, you can leave both blank'
-      );
+      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
@@ -414,9 +412,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new Error(
-          'A Route53 hosted domain zone name is required to configure the specified domain name'
-        );
+        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
       switch (props.recordType ?? NetworkLoadBalancedServiceRecordType.ALIAS) {
@@ -456,10 +452,7 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);
-    return (
-      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
-      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
-    );
+    return (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

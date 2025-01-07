@@ -71,9 +71,7 @@ export abstract class Capacity {
       }
 
       public _renderWriteCapacity() {
-        throw new Error(
-          `You cannot configure 'writeCapacity' with ${CapacityMode.FIXED} capacity mode`
-        );
+        throw new Error(`You cannot configure 'writeCapacity' with ${CapacityMode.FIXED} capacity mode`);
       }
     })(CapacityMode.FIXED);
   }
@@ -101,9 +99,7 @@ export abstract class Capacity {
         }
 
         if (options.seedCapacity !== undefined && options.seedCapacity < 1) {
-          throw new Error(
-            `'seedCapacity' cannot be less than 1 - received ${options.seedCapacity}`
-          );
+          throw new Error(`'seedCapacity' cannot be less than 1 - received ${options.seedCapacity}`);
         }
       }
 

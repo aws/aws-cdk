@@ -70,12 +70,14 @@ describe('external service', () => {
       healthCheckGracePeriod: cdk.Duration.seconds(60),
       maxHealthyPercent: 150,
       minHealthyPercent: 55,
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-        allowAllOutbound: true,
-        description: 'Example',
-        securityGroupName: 'Bob',
-        vpc,
-      })],
+      securityGroups: [
+        new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          allowAllOutbound: true,
+          description: 'Example',
+          securityGroupName: 'Bob',
+          vpc,
+        }),
+      ],
       serviceName: 'bonjour',
     });
 
@@ -95,7 +97,6 @@ describe('external service', () => {
       LaunchType: LaunchType.EXTERNAL,
       ServiceName: 'bonjour',
     });
-
   });
 
   test('with cloudmap set on cluster, throw error', () => {
@@ -112,22 +113,26 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
-      desiredCount: 2,
-      healthCheckGracePeriod: cdk.Duration.seconds(60),
-      maxHealthyPercent: 150,
-      minHealthyPercent: 55,
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-        allowAllOutbound: true,
-        description: 'Example',
-        securityGroupName: 'Bob',
-        vpc,
-      })],
-      serviceName: 'bonjour',
-    })).toThrow('Cloud map integration is not supported for External service' );
-
+    expect(
+      () =>
+        new ecs.ExternalService(stack, 'ExternalService', {
+          cluster,
+          taskDefinition,
+          desiredCount: 2,
+          healthCheckGracePeriod: cdk.Duration.seconds(60),
+          maxHealthyPercent: 150,
+          minHealthyPercent: 55,
+          securityGroups: [
+            new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+              allowAllOutbound: true,
+              description: 'Example',
+              securityGroupName: 'Bob',
+              vpc,
+            }),
+          ],
+          serviceName: 'bonjour',
+        })
+    ).toThrow('Cloud map integration is not supported for External service');
   });
 
   test('with multiple security groups, it correctly updates the cfn template', () => {
@@ -201,7 +206,6 @@ describe('external service', () => {
         },
       ],
     });
-
   });
 
   test('with deployment alarms', () => {
@@ -216,7 +220,11 @@ describe('external service', () => {
       memoryLimitMiB: 512,
     });
 
-    const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+    const myAlarm = cloudwatch.Alarm.fromAlarmArn(
+      stack,
+      'myAlarm',
+      'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1'
+    );
 
     new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
@@ -284,11 +292,13 @@ describe('external service', () => {
       memoryReservationMiB: 10,
     });
 
-    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
-    })).toThrow('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
-
+    expect(
+      () =>
+        new ecs.ExternalService(stack, 'ExternalService', {
+          cluster,
+          taskDefinition,
+        })
+    ).toThrow('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
   });
 
   test('errors if minimum not less than maximum', () => {
@@ -304,13 +314,15 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
-      minHealthyPercent: 100,
-      maxHealthyPercent: 100,
-    })).toThrow('Minimum healthy percent must be less than maximum healthy percent.');
-
+    expect(
+      () =>
+        new ecs.ExternalService(stack, 'ExternalService', {
+          cluster,
+          taskDefinition,
+          minHealthyPercent: 100,
+          maxHealthyPercent: 100,
+        })
+    ).toThrow('Minimum healthy percent must be less than maximum healthy percent.');
   });
 
   test('error if cloudmap options provided with external service', () => {
@@ -327,16 +339,18 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
-      cloudMapOptions: {
-        name: 'myApp',
-      },
-    })).toThrow('Cloud map options are not supported for External service');
+    expect(
+      () =>
+        new ecs.ExternalService(stack, 'ExternalService', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            name: 'myApp',
+          },
+        })
+    ).toThrow('Cloud map options are not supported for External service');
 
     // THEN
-
   });
 
   test('error if capacityProviderStrategies options provided with external service', () => {
@@ -365,16 +379,20 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
-      capacityProviderStrategies: [{
-        capacityProvider: capacityProvider.capacityProviderName,
-      }],
-    })).toThrow('Capacity Providers are not supported for External service');
+    expect(
+      () =>
+        new ecs.ExternalService(stack, 'ExternalService', {
+          cluster,
+          taskDefinition,
+          capacityProviderStrategies: [
+            {
+              capacityProvider: capacityProvider.capacityProviderName,
+            },
+          ],
+        })
+    ).toThrow('Capacity Providers are not supported for External service');
 
     // THEN
-
   });
 
   test('error when performing attachToApplicationTargetGroup to an external service', () => {
@@ -402,10 +420,11 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => service.attachToApplicationTargetGroup(targetGroup)).toThrow('Application load balancer cannot be attached to an external service');
+    expect(() => service.attachToApplicationTargetGroup(targetGroup)).toThrow(
+      'Application load balancer cannot be attached to an external service'
+    );
 
     // THEN
-
   });
 
   test('error when performing loadBalancerTarget to an external service', () => {
@@ -427,12 +446,13 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => service.loadBalancerTarget({
-      containerName: 'MainContainer',
-    })).toThrow('External service cannot be attached as load balancer targets');
+    expect(() =>
+      service.loadBalancerTarget({
+        containerName: 'MainContainer',
+      })
+    ).toThrow('External service cannot be attached as load balancer targets');
 
     // THEN
-
   });
 
   test('error when performing registerLoadBalancerTargets to an external service', () => {
@@ -456,17 +476,16 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => service.registerLoadBalancerTargets(
-      {
+    expect(() =>
+      service.registerLoadBalancerTargets({
         containerName: 'MainContainer',
         containerPort: 8000,
         listener: ecs.ListenerConfig.applicationListener(listener),
         newTargetGroupId: 'target1',
-      },
-    )).toThrow('External service cannot be registered as load balancer targets');
+      })
+    ).toThrow('External service cannot be registered as load balancer targets');
 
     // THEN
-
   });
 
   test('error when performing autoScaleTaskCount to an external service', () => {
@@ -488,13 +507,14 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => service.autoScaleTaskCount({
-      maxCapacity: 2,
-      minCapacity: 1,
-    })).toThrow('Autoscaling not supported for external service');
+    expect(() =>
+      service.autoScaleTaskCount({
+        maxCapacity: 2,
+        minCapacity: 1,
+      })
+    ).toThrow('Autoscaling not supported for external service');
 
     // THEN
-
   });
 
   test('error when performing enableCloudMap to an external service', () => {
@@ -519,7 +539,6 @@ describe('external service', () => {
     expect(() => service.enableCloudMap({})).toThrow('Cloud map integration not supported for an external service');
 
     // THEN
-
   });
 
   test('error when performing associateCloudMapService to an external service', () => {
@@ -552,12 +571,13 @@ describe('external service', () => {
     });
 
     // THEN
-    expect(() => service.associateCloudMapService({
-      service: cloudMapService,
-      container: container,
-      containerPort: 8000,
-    })).toThrow('Cloud map service association is not supported for an external service');
-
+    expect(() =>
+      service.associateCloudMapService({
+        service: cloudMapService,
+        container: container,
+        containerPort: 8000,
+      })
+    ).toThrow('Cloud map service association is not supported for an external service');
   });
 
   test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
@@ -611,8 +631,14 @@ describe('external service', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
-    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/ExternalService',
+      'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]'
+    );
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/ExternalService',
+      'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]'
+    );
   });
 
   test('no warning if minHealthyPercent set for an external service', () => {
@@ -635,8 +661,13 @@ describe('external service', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
-    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/ExternalService',
+      'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]'
+    );
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/ExternalService',
+      'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]'
+    );
   });
-
 });

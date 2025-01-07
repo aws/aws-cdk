@@ -23,21 +23,22 @@ describe('stages', () => {
 
       // -- dummy actions here are needed to satisfy validation rules
       const sourceArtifact = new codepipeline.Artifact();
-      firstStage.addAction(new FakeSourceAction({
-        actionName: 'dummyAction',
-        output: sourceArtifact,
-      }));
-      secondStage.addAction(new FakeBuildAction({
-        actionName: 'dummyAction',
-        input: sourceArtifact,
-      }));
+      firstStage.addAction(
+        new FakeSourceAction({
+          actionName: 'dummyAction',
+          output: sourceArtifact,
+        })
+      );
+      secondStage.addAction(
+        new FakeBuildAction({
+          actionName: 'dummyAction',
+          input: sourceArtifact,
+        })
+      );
       // --
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
-          { 'Name': 'FirstStage' },
-          { 'Name': 'SecondStage' },
-        ],
+        Stages: [{ Name: 'FirstStage' }, { Name: 'SecondStage' }],
       });
     });
 
@@ -56,26 +57,28 @@ describe('stages', () => {
 
       // -- dummy actions here are needed to satisfy validation rules
       const sourceArtifact = new codepipeline.Artifact();
-      firstStage.addAction(new FakeSourceAction({
-        actionName: 'dummyAction',
-        output: sourceArtifact,
-      }));
-      secondStage.addAction(new FakeBuildAction({
-        actionName: 'dummyAction',
-        input: sourceArtifact,
-      }));
-      thirdStage.addAction(new FakeBuildAction({
-        actionName: 'dummyAction',
-        input: sourceArtifact,
-      }));
+      firstStage.addAction(
+        new FakeSourceAction({
+          actionName: 'dummyAction',
+          output: sourceArtifact,
+        })
+      );
+      secondStage.addAction(
+        new FakeBuildAction({
+          actionName: 'dummyAction',
+          input: sourceArtifact,
+        })
+      );
+      thirdStage.addAction(
+        new FakeBuildAction({
+          actionName: 'dummyAction',
+          input: sourceArtifact,
+        })
+      );
       // --
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
-          { 'Name': 'FirstStage' },
-          { 'Name': 'SecondStage' },
-          { 'Name': 'ThirdStage' },
-        ],
+        Stages: [{ Name: 'FirstStage' }, { Name: 'SecondStage' }, { Name: 'ThirdStage' }],
       });
     });
 
@@ -124,8 +127,8 @@ describe('stages', () => {
             justAfter: stage,
           },
         });
-      // incredibly, an arrow function below causes nodeunit to crap out with:
-      // "TypeError: Function has non-object prototype 'undefined' in instanceof check"
+        // incredibly, an arrow function below causes nodeunit to crap out with:
+        // "TypeError: Function has non-object prototype 'undefined' in instanceof check"
       }).toThrow(/(rightBefore.*justAfter)|(justAfter.*rightBefore)/);
     });
 
@@ -146,9 +149,14 @@ describe('stages', () => {
       expect(pipeline.stages[1].stageName).toEqual('SecondStage');
 
       // adding stages to the returned array should have no effect
-      pipeline.stages.push(new Stage({
-        stageName: 'ThirdStage',
-      }, pipeline));
+      pipeline.stages.push(
+        new Stage(
+          {
+            stageName: 'ThirdStage',
+          },
+          pipeline
+        )
+      );
       expect(pipeline.stageCount).toEqual(2);
     });
 
@@ -161,21 +169,22 @@ describe('stages', () => {
 
       // -- dummy actions here are needed to satisfy validation rules
       const sourceArtifact = new codepipeline.Artifact();
-      firstStage.addAction(new FakeSourceAction({
-        actionName: 'dummyAction',
-        output: sourceArtifact,
-      }));
-      secondStage.addAction(new FakeBuildAction({
-        actionName: 'dummyAction',
-        input: sourceArtifact,
-      }));
+      firstStage.addAction(
+        new FakeSourceAction({
+          actionName: 'dummyAction',
+          output: sourceArtifact,
+        })
+      );
+      secondStage.addAction(
+        new FakeBuildAction({
+          actionName: 'dummyAction',
+          input: sourceArtifact,
+        })
+      );
       // --
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        Stages: [
-          { Name: 'FirstStage' },
-          { Name: 'SecondStage' },
-        ],
+        Stages: [{ Name: 'FirstStage' }, { Name: 'SecondStage' }],
         DisableInboundStageTransitions: [
           {
             Reason: 'Transition disabled',

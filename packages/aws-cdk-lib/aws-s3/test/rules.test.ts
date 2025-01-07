@@ -9,18 +9,22 @@ describe('rules', () => {
 
     // WHEN
     new Bucket(stack, 'Bucket', {
-      lifecycleRules: [{
-        expiration: Duration.days(30),
-      }],
+      lifecycleRules: [
+        {
+          expiration: Duration.days(30),
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          ExpirationInDays: 30,
-          Status: 'Enabled',
-        }],
+        Rules: [
+          {
+            ExpirationInDays: 30,
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -28,10 +32,12 @@ describe('rules', () => {
   test('ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays.', () => {
     const stack = new Stack();
     new Bucket(stack, 'Bucket', {
-      lifecycleRules: [{
-        expiration: Duration.days(30),
-        expiredObjectDeleteMarker: true,
-      }],
+      lifecycleRules: [
+        {
+          expiration: Duration.days(30),
+          expiredObjectDeleteMarker: true,
+        },
+      ],
     });
 
     expect(() => {
@@ -42,10 +48,12 @@ describe('rules', () => {
   test('ExpiredObjectDeleteMarker cannot be specified with ExpirationDate.', () => {
     const stack = new Stack();
     new Bucket(stack, 'Bucket', {
-      lifecycleRules: [{
-        expirationDate: new Date('2018-01-01'),
-        expiredObjectDeleteMarker: true,
-      }],
+      lifecycleRules: [
+        {
+          expirationDate: new Date('2018-01-01'),
+          expiredObjectDeleteMarker: true,
+        },
+      ],
     });
 
     expect(() => {
@@ -56,13 +64,15 @@ describe('rules', () => {
   test('ExpiredObjectDeleteMarker cannot be specified with TagFilters.', () => {
     const stack = new Stack();
     new Bucket(stack, 'Bucket', {
-      lifecycleRules: [{
-        tagFilters: [
-          { Key: 'tagname1', Value: 'tagvalue1' },
-          { Key: 'tagname2', Value: 'tagvalue2' },
-        ],
-        expiredObjectDeleteMarker: true,
-      }],
+      lifecycleRules: [
+        {
+          tagFilters: [
+            { Key: 'tagname1', Value: 'tagvalue1' },
+            { Key: 'tagname2', Value: 'tagvalue2' },
+          ],
+          expiredObjectDeleteMarker: true,
+        },
+      ],
     });
 
     expect(() => {
@@ -83,10 +93,12 @@ describe('rules', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          ExpirationInDays: 30,
-          Status: 'Enabled',
-        }],
+        Rules: [
+          {
+            ExpirationInDays: 30,
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -97,18 +109,22 @@ describe('rules', () => {
 
     // WHEN
     new Bucket(stack, 'Bucket', {
-      lifecycleRules: [{
-        expirationDate: new Date('2018-01-01'),
-      }],
+      lifecycleRules: [
+        {
+          expirationDate: new Date('2018-01-01'),
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          ExpirationDate: '2018-01-01T00:00:00Z',
-          Status: 'Enabled',
-        }],
+        Rules: [
+          {
+            ExpirationDate: '2018-01-01T00:00:00Z',
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -119,24 +135,32 @@ describe('rules', () => {
 
     // WHEN
     new Bucket(stack, 'Bucket', {
-      lifecycleRules: [{
-        transitions: [{
-          storageClass: StorageClass.GLACIER,
-          transitionAfter: Duration.days(30),
-        }],
-      }],
+      lifecycleRules: [
+        {
+          transitions: [
+            {
+              storageClass: StorageClass.GLACIER,
+              transitionAfter: Duration.days(30),
+            },
+          ],
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          Transitions: [{
-            StorageClass: 'GLACIER',
-            TransitionInDays: 30,
-          }],
-          Status: 'Enabled',
-        }],
+        Rules: [
+          {
+            Transitions: [
+              {
+                StorageClass: 'GLACIER',
+                TransitionInDays: 30,
+              },
+            ],
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -147,18 +171,22 @@ describe('rules', () => {
 
     // WHEN
     new Bucket(stack, 'Bucket', {
-      lifecycleRules: [{
-        expiredObjectDeleteMarker: true,
-      }],
+      lifecycleRules: [
+        {
+          expiredObjectDeleteMarker: true,
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          ExpiredObjectDeleteMarker: true,
-          Status: 'Enabled',
-        }],
+        Rules: [
+          {
+            ExpiredObjectDeleteMarker: true,
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -169,34 +197,38 @@ describe('rules', () => {
 
     // WHEN: Noncurrent version to retain available
     new Bucket(stack, 'Bucket1', {
-      lifecycleRules: [{
-        noncurrentVersionExpiration: Duration.days(10),
-        noncurrentVersionTransitions: [
-          {
-            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
-            transitionAfter: Duration.days(10),
-            noncurrentVersionsToRetain: 1,
-          },
-        ],
-      }],
+      lifecycleRules: [
+        {
+          noncurrentVersionExpiration: Duration.days(10),
+          noncurrentVersionTransitions: [
+            {
+              storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+              transitionAfter: Duration.days(10),
+              noncurrentVersionsToRetain: 1,
+            },
+          ],
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          NoncurrentVersionExpiration: {
-            NoncurrentDays: 10,
-          },
-          NoncurrentVersionTransitions: [
-            {
-              NewerNoncurrentVersions: 1,
-              StorageClass: 'GLACIER_IR',
-              TransitionInDays: 10,
+        Rules: [
+          {
+            NoncurrentVersionExpiration: {
+              NoncurrentDays: 10,
             },
-          ],
-          Status: 'Enabled',
-        }],
+            NoncurrentVersionTransitions: [
+              {
+                NewerNoncurrentVersions: 1,
+                StorageClass: 'GLACIER_IR',
+                TransitionInDays: 10,
+              },
+            ],
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -207,32 +239,36 @@ describe('rules', () => {
 
     // WHEN: Noncurrent version to retain not set
     new Bucket(stack, 'Bucket1', {
-      lifecycleRules: [{
-        noncurrentVersionExpiration: Duration.days(10),
-        noncurrentVersionTransitions: [
-          {
-            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
-            transitionAfter: Duration.days(10),
-          },
-        ],
-      }],
+      lifecycleRules: [
+        {
+          noncurrentVersionExpiration: Duration.days(10),
+          noncurrentVersionTransitions: [
+            {
+              storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+              transitionAfter: Duration.days(10),
+            },
+          ],
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          NoncurrentVersionExpiration: {
-            NoncurrentDays: 10,
-          },
-          NoncurrentVersionTransitions: [
-            {
-              StorageClass: 'GLACIER_IR',
-              TransitionInDays: 10,
+        Rules: [
+          {
+            NoncurrentVersionExpiration: {
+              NoncurrentDays: 10,
             },
-          ],
-          Status: 'Enabled',
-        }],
+            NoncurrentVersionTransitions: [
+              {
+                StorageClass: 'GLACIER_IR',
+                TransitionInDays: 10,
+              },
+            ],
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -243,34 +279,38 @@ describe('rules', () => {
 
     // WHEN: Noncurrent version to retain available
     new Bucket(stack, 'Bucket1', {
-      lifecycleRules: [{
-        noncurrentVersionExpiration: Duration.days(10),
-        noncurrentVersionsToRetain: 1,
-        noncurrentVersionTransitions: [
-          {
-            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
-            transitionAfter: Duration.days(10),
-          },
-        ],
-      }],
+      lifecycleRules: [
+        {
+          noncurrentVersionExpiration: Duration.days(10),
+          noncurrentVersionsToRetain: 1,
+          noncurrentVersionTransitions: [
+            {
+              storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+              transitionAfter: Duration.days(10),
+            },
+          ],
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          NoncurrentVersionExpiration: {
-            NoncurrentDays: 10,
-            NewerNoncurrentVersions: 1,
-          },
-          NoncurrentVersionTransitions: [
-            {
-              StorageClass: 'GLACIER_IR',
-              TransitionInDays: 10,
+        Rules: [
+          {
+            NoncurrentVersionExpiration: {
+              NoncurrentDays: 10,
+              NewerNoncurrentVersions: 1,
             },
-          ],
-          Status: 'Enabled',
-        }],
+            NoncurrentVersionTransitions: [
+              {
+                StorageClass: 'GLACIER_IR',
+                TransitionInDays: 10,
+              },
+            ],
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -281,32 +321,36 @@ describe('rules', () => {
 
     // WHEN: Noncurrent version to retain not set
     new Bucket(stack, 'Bucket1', {
-      lifecycleRules: [{
-        noncurrentVersionExpiration: Duration.days(10),
-        noncurrentVersionTransitions: [
-          {
-            storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
-            transitionAfter: Duration.days(10),
-          },
-        ],
-      }],
+      lifecycleRules: [
+        {
+          noncurrentVersionExpiration: Duration.days(10),
+          noncurrentVersionTransitions: [
+            {
+              storageClass: StorageClass.GLACIER_INSTANT_RETRIEVAL,
+              transitionAfter: Duration.days(10),
+            },
+          ],
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          NoncurrentVersionExpiration: {
-            NoncurrentDays: 10,
-          },
-          NoncurrentVersionTransitions: [
-            {
-              StorageClass: 'GLACIER_IR',
-              TransitionInDays: 10,
+        Rules: [
+          {
+            NoncurrentVersionExpiration: {
+              NoncurrentDays: 10,
             },
-          ],
-          Status: 'Enabled',
-        }],
+            NoncurrentVersionTransitions: [
+              {
+                StorageClass: 'GLACIER_IR',
+                TransitionInDays: 10,
+              },
+            ],
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
@@ -317,28 +361,32 @@ describe('rules', () => {
 
     // WHEN
     new Bucket(stack, 'Bucket', {
-      lifecycleRules: [{
-        objectSizeLessThan: 0,
-        objectSizeGreaterThan: 0,
-        expiration: Duration.days(30),
-      }],
+      lifecycleRules: [
+        {
+          objectSizeLessThan: 0,
+          objectSizeGreaterThan: 0,
+          expiration: Duration.days(30),
+        },
+      ],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
-        Rules: [{
-          ObjectSizeLessThan: 0,
-          ObjectSizeGreaterThan: 0,
-          ExpirationInDays: 30,
-          Status: 'Enabled',
-        }],
+        Rules: [
+          {
+            ObjectSizeLessThan: 0,
+            ObjectSizeGreaterThan: 0,
+            ExpirationInDays: 30,
+            Status: 'Enabled',
+          },
+        ],
       },
     });
   });
 
   describe('required properties for rules', () => {
-    test('throw if there is a rule doesn\'t have required properties', () => {
+    test("throw if there is a rule doesn't have required properties", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -350,10 +398,12 @@ describe('rules', () => {
       });
       expect(() => {
         Template.fromStack(stack);
-      }).toThrow(/All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`/);
+      }).toThrow(
+        /All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`/
+      );
     });
 
-    test('throw if there are a valid rule and a rule that doesn\'t have required properties.', () => {
+    test("throw if there are a valid rule and a rule that doesn't have required properties.", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -368,10 +418,12 @@ describe('rules', () => {
       });
       expect(() => {
         Template.fromStack(stack);
-      }).toThrow(/All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`/);
+      }).toThrow(
+        /All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`/
+      );
     });
 
-    test('don\'t throw with abortIncompleteMultipartUploadAfter', () => {
+    test("don't throw with abortIncompleteMultipartUploadAfter", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -385,7 +437,7 @@ describe('rules', () => {
       }).not.toThrow();
     });
 
-    test('don\'t throw with expiration', () => {
+    test("don't throw with expiration", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -399,7 +451,7 @@ describe('rules', () => {
       }).not.toThrow();
     });
 
-    test('don\'t throw with expirationDate', () => {
+    test("don't throw with expirationDate", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -413,7 +465,7 @@ describe('rules', () => {
       }).not.toThrow();
     });
 
-    test('don\'t throw with expiredObjectDeleteMarker', () => {
+    test("don't throw with expiredObjectDeleteMarker", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -427,7 +479,7 @@ describe('rules', () => {
       }).not.toThrow();
     });
 
-    test('don\'t throw with noncurrentVersionExpiration', () => {
+    test("don't throw with noncurrentVersionExpiration", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -441,7 +493,7 @@ describe('rules', () => {
       }).not.toThrow();
     });
 
-    test('don\'t throw with noncurrentVersionsToRetain', () => {
+    test("don't throw with noncurrentVersionsToRetain", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -455,7 +507,7 @@ describe('rules', () => {
       }).not.toThrow();
     });
 
-    test('don\'t throw with noncurrentVersionTransitions', () => {
+    test("don't throw with noncurrentVersionTransitions", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
@@ -475,15 +527,17 @@ describe('rules', () => {
       }).not.toThrow();
     });
 
-    test('don\'t throw with transitions', () => {
+    test("don't throw with transitions", () => {
       const stack = new Stack();
       new Bucket(stack, 'MyBucket', {
         lifecycleRules: [
           {
-            transitions: [{
-              storageClass: StorageClass.GLACIER,
-              transitionAfter: Duration.days(30),
-            }],
+            transitions: [
+              {
+                storageClass: StorageClass.GLACIER,
+                transitionAfter: Duration.days(30),
+              },
+            ],
           },
         ],
       });
@@ -491,6 +545,5 @@ describe('rules', () => {
         Template.fromStack(stack);
       }).not.toThrow();
     });
-
   });
 });

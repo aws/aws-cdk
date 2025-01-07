@@ -1,12 +1,7 @@
 import { IConstruct } from 'constructs';
 import * as cdk from '../../../core';
 import { ArnFormat } from '../../../core';
-import {
-  Integration,
-  IntegrationConfig,
-  IntegrationOptions,
-  IntegrationType,
-} from '../integration';
+import { Integration, IntegrationConfig, IntegrationOptions, IntegrationType } from '../integration';
 import { Method } from '../method';
 import { parseAwsApiCall } from '../util';
 

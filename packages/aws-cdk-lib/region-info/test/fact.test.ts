@@ -67,8 +67,7 @@ describe('register', () => {
     expect(Fact.find(region, name)).not.toBe(value);
 
     // THEN
-    expect(() => Fact.register({ region, name, value }))
-      .toThrow(/already has a fact/);
+    expect(() => Fact.register({ region, name, value })).toThrow(/already has a fact/);
   });
 
   test('allows overriding an arbitrary fact', () => {

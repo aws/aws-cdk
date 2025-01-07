@@ -208,11 +208,7 @@ export class Trail extends Resource {
    *
    * Be sure to filter the event further down using an event pattern.
    */
-  public static onEvent(
-    scope: Construct,
-    id: string,
-    options: events.OnEventOptions = {}
-  ): events.Rule {
+  public static onEvent(scope: Construct, id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(scope, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -331,9 +327,7 @@ export class Trail extends Resource {
     this.node.addValidation({ validate: () => this.validateEventSelectors() });
 
     if (props.kmsKey && props.encryptionKey) {
-      throw new Error(
-        'Both kmsKey and encryptionKey must not be specified. Use only encryptionKey'
-      );
+      throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
     }
 
     if (props.insightTypes) {
@@ -345,11 +339,9 @@ export class Trail extends Resource {
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
     const trail = new CfnTrail(this, 'Resource', {
       isLogging: true,
-      enableLogFileValidation:
-        props.enableFileValidation == null ? true : props.enableFileValidation,
+      enableLogFileValidation: props.enableFileValidation == null ? true : props.enableFileValidation,
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
-      includeGlobalServiceEvents:
-        props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
+      includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
       kmsKeyId: props.encryptionKey?.keyArn ?? props.kmsKey?.keyArn,
       s3BucketName: this.s3bucket.bucketName,
@@ -437,10 +429,7 @@ export class Trail extends Resource {
    * @param handlers the list of lambda function handlers whose data events should be logged (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addLambdaEventSelector(
-    handlers: lambda.IFunction[],
-    options: AddEventSelectorOptions = {}
-  ) {
+  public addLambdaEventSelector(handlers: lambda.IFunction[], options: AddEventSelectorOptions = {}) {
     if (handlers.length === 0) {
       return;
     }
@@ -454,11 +443,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(
-      DataResourceType.LAMBDA_FUNCTION,
-      [`arn:${this.stack.partition}:lambda`],
-      options
-    );
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [`arn:${this.stack.partition}:lambda`], options);
   }
 
   /**
@@ -477,9 +462,7 @@ export class Trail extends Resource {
     if (s3Selector.length === 0) {
       return;
     }
-    const dataResourceValues = s3Selector.map(
-      (sel) => `${sel.bucket.bucketArn}/${sel.objectPrefix ?? ''}`
-    );
+    const dataResourceValues = s3Selector.map((sel) => `${sel.bucket.bucketArn}/${sel.objectPrefix ?? ''}`);
     return this.addEventSelector(DataResourceType.S3_OBJECT, dataResourceValues, options);
   }
 
@@ -489,11 +472,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(
-      DataResourceType.S3_OBJECT,
-      [`arn:${this.stack.partition}:s3:::`],
-      options
-    );
+    return this.addEventSelector(DataResourceType.S3_OBJECT, [`arn:${this.stack.partition}:s3:::`], options);
   }
 
   /**
@@ -514,9 +493,7 @@ export class Trail extends Resource {
     const errors: string[] = [];
     // Ensure that there is at least one event selector when management events are set to None
     if (this.managementEvents === ReadWriteType.NONE && this.eventSelectors.length === 0) {
-      errors.push(
-        'At least one event selector must be added when management event recording is set to None'
-      );
+      errors.push('At least one event selector must be added when management event recording is set to None');
     }
     return errors;
   }

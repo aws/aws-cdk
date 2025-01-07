@@ -142,52 +142,60 @@ describe('schedule target', () => {
       target: queueTarget,
     });
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'sqs:SendMessage',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'sqs:SendMessage',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+              },
             },
-          },
-        ],
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
@@ -207,74 +215,83 @@ describe('schedule target', () => {
       group,
     });
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Role',
+      {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':scheduler:us-east-1:123456789012:schedule-group/default',
+                      ],
                     ],
-                  ],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-          {
-            Effect: 'Allow',
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-                'aws:SourceArn': {
-                  'Fn::GetAtt': [
-                    'GroupC77FDACD',
-                    'Arn',
-                  ],
+            {
+              Effect: 'Allow',
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                  'aws:SourceArn': {
+                    'Fn::GetAtt': ['GroupC77FDACD', 'Arn'],
+                  },
                 },
               },
+              Principal: {
+                Service: 'scheduler.amazonaws.com',
+              },
+              Action: 'sts:AssumeRole',
             },
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
+          ],
+        },
       },
-    }, 1);
+      1
+    );
 
-    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'sqs:SendMessage',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+    Template.fromStack(stack).resourcePropertiesCountIs(
+      'AWS::IAM::Policy',
+      {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'sqs:SendMessage',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+              },
             },
-          },
-        ],
+          ],
+        },
+        Roles: [{ Ref: roleId }],
       },
-      Roles: [{ Ref: roleId }],
-    }, 1);
+      1
+    );
   });
 
   test('creates IAM policy for imported queue in the same account', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:somequeue');
+    const importedQueue = sqs.Queue.fromQueueArn(
+      stack,
+      'ImportedQueue',
+      'arn:aws:sqs:us-east-1:123456789012:somequeue'
+    );
 
     const queueTarget = new SqsSendMessage(importedQueue);
 
@@ -348,7 +365,11 @@ describe('schedule target', () => {
   });
 
   test('creates IAM policy for imported queue with imported IAM role in the same account', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:somequeue');
+    const importedQueue = sqs.Queue.fromQueueArn(
+      stack,
+      'ImportedQueue',
+      'arn:aws:sqs:us-east-1:123456789012:somequeue'
+    );
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const queueTarget = new SqsSendMessage(importedQueue, {
@@ -418,7 +439,11 @@ describe('schedule target', () => {
   });
 
   test('adds permission to execution role when imported DLQ is in same account', () => {
-    const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:somequeue1');
+    const importedQueue = sqs.Queue.fromQueueArn(
+      stack,
+      'ImportedQueue',
+      'arn:aws:sqs:us-east-1:123456789012:somequeue1'
+    );
 
     const queueTarget = new SqsSendMessage(queue, {
       deadLetterQueue: importedQueue,
@@ -435,10 +460,7 @@ describe('schedule target', () => {
           {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
-            Resource: [
-              importedQueue.queueArn,
-              { 'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'] },
-            ],
+            Resource: [importedQueue.queueArn, { 'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'] }],
           },
         ],
       },
@@ -468,10 +490,7 @@ describe('schedule target', () => {
             },
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
@@ -515,11 +534,13 @@ describe('schedule target', () => {
       maxEventAge: Duration.days(3),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Maximum event age is 1 day/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: queueTarget,
+        })
+    ).toThrow(/Maximum event age is 1 day/);
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
@@ -527,11 +548,13 @@ describe('schedule target', () => {
       maxEventAge: Duration.seconds(59),
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Minimum event age is 1 minute/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: queueTarget,
+        })
+    ).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
@@ -539,11 +562,13 @@ describe('schedule target', () => {
       retryAttempts: 200,
     });
 
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: queueTarget,
-      })).toThrow(/Number of retry attempts should be less or equal than 185/);
+    expect(
+      () =>
+        new Schedule(stack, 'MyScheduleDummy', {
+          schedule: expr,
+          target: queueTarget,
+        })
+    ).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
 
   test('add message group id for target config', () => {
@@ -581,10 +606,12 @@ describe('schedule target', () => {
       fifo: true,
       contentBasedDeduplication: true,
     });
-    expect(() =>
-      new SqsSendMessage(fifoQueue, {
-        messageGroupId: '',
-      })).toThrow(/messageGroupId length must be between 1 and 128, got 0/);
+    expect(
+      () =>
+        new SqsSendMessage(fifoQueue, {
+          messageGroupId: '',
+        })
+    ).toThrow(/messageGroupId length must be between 1 and 128, got 0/);
   });
 
   test('throws when messageGroupId length is greater than 128', () => {
@@ -592,20 +619,24 @@ describe('schedule target', () => {
       fifo: true,
       contentBasedDeduplication: true,
     });
-    expect(() =>
-      new SqsSendMessage(fifoQueue, {
-        messageGroupId: 'a'.repeat(129),
-      })).toThrow(/messageGroupId length must be between 1 and 128, got 129/);
+    expect(
+      () =>
+        new SqsSendMessage(fifoQueue, {
+          messageGroupId: 'a'.repeat(129),
+        })
+    ).toThrow(/messageGroupId length must be between 1 and 128, got 129/);
   });
 
   test('throws when queue is not FIFO queue if messageGroupId is specified', () => {
     const wrongQueue = new sqs.Queue(stack, 'WrongQueue', {
       fifo: false,
     });
-    expect(() =>
-      new SqsSendMessage(wrongQueue, {
-        messageGroupId: 'id',
-      })).toThrow(/target must be a FIFO queue if messageGroupId is specified/);
+    expect(
+      () =>
+        new SqsSendMessage(wrongQueue, {
+          messageGroupId: 'id',
+        })
+    ).toThrow(/target must be a FIFO queue if messageGroupId is specified/);
   });
 
   test('throws when contentBasedDeduplication is not true if queue is FIFO queue', () => {
@@ -613,10 +644,12 @@ describe('schedule target', () => {
       fifo: true,
       contentBasedDeduplication: false,
     });
-    expect(() =>
-      new SqsSendMessage(wrongQueue, {
-        messageGroupId: 'id',
-      })).toThrow(/contentBasedDeduplication must be true if the target is a FIFO queue/);
+    expect(
+      () =>
+        new SqsSendMessage(wrongQueue, {
+          messageGroupId: 'id',
+        })
+    ).toThrow(/contentBasedDeduplication must be true if the target is a FIFO queue/);
   });
 
   test('throws when queue is FIFO queue if messageGroupId is not specified', () => {
@@ -624,7 +657,8 @@ describe('schedule target', () => {
       fifo: true,
       contentBasedDeduplication: true,
     });
-    expect(() =>
-      new SqsSendMessage(wrongQueue)).toThrow(/messageGroupId must be specified if the target is a FIFO queue/);
+    expect(() => new SqsSendMessage(wrongQueue)).toThrow(
+      /messageGroupId must be specified if the target is a FIFO queue/
+    );
   });
 });

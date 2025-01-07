@@ -382,8 +382,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
   }
 
   private getCreateBucket() {
-    const stagingBucketName =
-      this.stagingBucketName ?? `cdk-${this.appId}-staging-${this.account}-${this.region}`;
+    const stagingBucketName = this.stagingBucketName ?? `cdk-${this.appId}-staging-${this.account}-${this.region}`;
     const bucketId = 'CdkStagingBucket';
     const createdBucket = this.node.tryFindChild(bucketId) as s3.Bucket;
     if (createdBucket) {
@@ -525,9 +524,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     const outPath = path.join(builder.outdir, this.templateFile);
     const size = fs.statSync(outPath).size;
     if (size > 51200) {
-      throw new Error(
-        `Staging resource template cannot be greater than 51200 bytes, but got ${size} bytes`
-      );
+      throw new Error(`Staging resource template cannot be greater than 51200 bytes, but got ${size} bytes`);
     }
   }
 }

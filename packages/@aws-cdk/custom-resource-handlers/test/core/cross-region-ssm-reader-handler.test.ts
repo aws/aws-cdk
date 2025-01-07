@@ -3,7 +3,7 @@ import { InvalidResourceId } from '@aws-sdk/client-ssm';
 import { handler } from '../../lib/core/cross-region-ssm-reader-handler/index';
 import { SSM_EXPORT_PATH_PREFIX } from '../../lib/core/types';
 
-let mockDeleteParameters: jest.Mock ;
+let mockDeleteParameters: jest.Mock;
 let mockAddTagsToResource: jest.Mock;
 let mockGetParametersByPath: jest.Mock = jest.fn();
 let mockRemoveTagsFromResource: jest.Mock;
@@ -25,7 +25,9 @@ beforeEach(() => {
   jest.spyOn(console, 'error').mockImplementation(() => {});
   mockDeleteParameters = jest.fn();
   mockGetParametersByPath = jest.fn();
-  mockRemoveTagsFromResource = jest.fn().mockImplementation(() => { return {}; });
+  mockRemoveTagsFromResource = jest.fn().mockImplementation(() => {
+    return {};
+  });
   mockAddTagsToResource = jest.fn().mockImplementation(() => {
     return {};
   });
@@ -62,10 +64,12 @@ describe('cross-region-ssm-reader entrypoint', () => {
     expect(mockAddTagsToResource).toHaveBeenCalledWith({
       ResourceId: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
       ResourceType: 'Parameter',
-      Tags: [{
-        Key: 'aws-cdk:strong-ref:MyStack',
-        Value: 'true',
-      }],
+      Tags: [
+        {
+          Key: 'aws-cdk:strong-ref:MyStack',
+          Value: 'true',
+        },
+      ],
     });
     expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
   });
@@ -104,10 +108,12 @@ describe('cross-region-ssm-reader entrypoint', () => {
     expect(mockAddTagsToResource).toHaveBeenCalledWith({
       ResourceId: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
       ResourceType: 'Parameter',
-      Tags: [{
-        Key: 'aws-cdk:strong-ref:MyStack',
-        Value: 'true',
-      }],
+      Tags: [
+        {
+          Key: 'aws-cdk:strong-ref:MyStack',
+          Value: 'true',
+        },
+      ],
     });
     expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
     expect(mockRemoveTagsFromResource).toHaveBeenCalledTimes(0);
@@ -147,10 +153,12 @@ describe('cross-region-ssm-reader entrypoint', () => {
     expect(mockAddTagsToResource).toHaveBeenCalledWith({
       ResourceId: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
       ResourceType: 'Parameter',
-      Tags: [{
-        Key: 'aws-cdk:strong-ref:MyStack',
-        Value: 'true',
-      }],
+      Tags: [
+        {
+          Key: 'aws-cdk:strong-ref:MyStack',
+          Value: 'true',
+        },
+      ],
     });
     expect(mockRemoveTagsFromResource).toHaveBeenCalledWith({
       ResourceId: '/cdk/exports/MyStack/RemovedExport',
@@ -179,9 +187,11 @@ describe('cross-region-ssm-reader entrypoint', () => {
     // WHEN
     mockGetParametersByPath.mockImplementationOnce(() => {
       return Promise.resolve({
-        Parameters: [{
-          Name: '/cdk/exports/MyStack/OtherExport',
-        }],
+        Parameters: [
+          {
+            Name: '/cdk/exports/MyStack/OtherExport',
+          },
+        ],
       });
     });
     await handler(event);
@@ -225,7 +235,9 @@ describe('cross-region-ssm-reader entrypoint', () => {
   });
 });
 
-function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): AWSLambda.CloudFormationCustomResourceEvent {
+function makeEvent(
+  req: Partial<AWSLambda.CloudFormationCustomResourceEvent>
+): AWSLambda.CloudFormationCustomResourceEvent {
   return {
     LogicalResourceId: '<LogicalResourceId>',
     RequestId: '<RequestId>',

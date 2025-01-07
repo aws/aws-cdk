@@ -469,9 +469,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
-  public bindAsNotificationRuleSource(
-    _scope: Construct
-  ): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
     return {
       sourceArn: this.repositoryArn,
     };
@@ -517,11 +515,7 @@ export class Repository extends RepositoryBase {
    * Imports a codecommit repository.
    * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)
    */
-  public static fromRepositoryArn(
-    scope: Construct,
-    id: string,
-    repositoryArn: string
-  ): IRepository {
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const stack = Stack.of(scope);
     const arn = stack.splitArn(repositoryArn, ArnFormat.NO_RESOURCE_NAME);
     const repositoryName = arn.resource;
@@ -541,11 +535,7 @@ export class Repository extends RepositoryBase {
     });
   }
 
-  public static fromRepositoryName(
-    scope: Construct,
-    id: string,
-    repositoryName: string
-  ): IRepository {
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
     const stack = Stack.of(scope);
 
     class Import extends RepositoryBase {
@@ -612,9 +602,7 @@ export class Repository extends RepositoryBase {
     }
 
     if (this.triggers.find((prop) => prop.name === name)) {
-      throw new Error(
-        `Unable to set repository trigger named ${name} because trigger names must be unique`
-      );
+      throw new Error(`Unable to set repository trigger named ${name} because trigger names must be unique`);
     }
 
     this.triggers.push({
@@ -671,12 +659,7 @@ export enum RepositoryEventTrigger {
 /**
  * Returns the clone URL for a protocol.
  */
-function makeCloneUrl(
-  stack: Stack,
-  repositoryName: string,
-  protocol: 'https' | 'ssh' | 'grc',
-  region?: string
-) {
+function makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh' | 'grc', region?: string) {
   switch (protocol) {
     case 'https':
     case 'ssh':

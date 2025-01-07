@@ -5,7 +5,6 @@ import { Duration } from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('standaloneMatchmakingConfiguration', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
     const ruleSetBody = JSON.stringify('{}');
@@ -26,15 +25,14 @@ describe('standaloneMatchmakingConfiguration', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::MatchmakingConfiguration', {
-        Properties:
-            {
-              Name: 'test-config-name',
-              NotificationTarget: { Ref: 'MyStandaloneMatchmakingConfigurationTopicDEF24815' },
-              FlexMatchMode: 'STANDALONE',
-              AcceptanceRequired: false,
-              RequestTimeoutSeconds: 300,
-              RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
-            },
+        Properties: {
+          Name: 'test-config-name',
+          NotificationTarget: { Ref: 'MyStandaloneMatchmakingConfigurationTopicDEF24815' },
+          FlexMatchMode: 'STANDALONE',
+          AcceptanceRequired: false,
+          RequestTimeoutSeconds: 300,
+          RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
+        },
       });
     });
 
@@ -45,15 +43,14 @@ describe('standaloneMatchmakingConfiguration', () => {
       });
 
       Template.fromStack(stack).hasResource('AWS::GameLift::MatchmakingConfiguration', {
-        Properties:
-            {
-              Name: 'test-standaloneMatchmakingConfiguration',
-              NotificationTarget: { Ref: 'MyStandaloneMatchmakingConfigurationTopicDEF24815' },
-              FlexMatchMode: 'STANDALONE',
-              AcceptanceRequired: false,
-              RequestTimeoutSeconds: 300,
-              RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
-            },
+        Properties: {
+          Name: 'test-standaloneMatchmakingConfiguration',
+          NotificationTarget: { Ref: 'MyStandaloneMatchmakingConfigurationTopicDEF24815' },
+          FlexMatchMode: 'STANDALONE',
+          AcceptanceRequired: false,
+          RequestTimeoutSeconds: 300,
+          RuleSetName: { Ref: 'MyMatchmakingRuleSet41F295C4' },
+        },
       });
     });
 
@@ -63,19 +60,27 @@ describe('standaloneMatchmakingConfiguration', () => {
         incorrectName += 'A';
       }
 
-      expect(() => new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
-        matchmakingConfigurationName: incorrectName,
-        ruleSet: ruleSet,
-      })).toThrow(/Matchmaking configuration name can not be longer than 128 characters but has 129 characters./);
+      expect(
+        () =>
+          new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
+            matchmakingConfigurationName: incorrectName,
+            ruleSet: ruleSet,
+          })
+      ).toThrow(/Matchmaking configuration name can not be longer than 128 characters but has 129 characters./);
     });
 
     test('with an incorrect name format', () => {
       let incorrectName = 'test with space';
 
-      expect(() => new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
-        matchmakingConfigurationName: incorrectName,
-        ruleSet: ruleSet,
-      })).toThrow(/Matchmaking configuration name test with space can contain only letters, numbers, hyphens, back slash or dot with no spaces./);
+      expect(
+        () =>
+          new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
+            matchmakingConfigurationName: incorrectName,
+            ruleSet: ruleSet,
+          })
+      ).toThrow(
+        /Matchmaking configuration name test with space can contain only letters, numbers, hyphens, back slash or dot with no spaces./
+      );
     });
 
     test('with an incorrect description', () => {
@@ -84,11 +89,16 @@ describe('standaloneMatchmakingConfiguration', () => {
         incorrectDescription += 'A';
       }
 
-      expect(() => new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
-        matchmakingConfigurationName: 'test-config-name',
-        ruleSet: ruleSet,
-        description: incorrectDescription,
-      })).toThrow(/Matchmaking configuration description can not be longer than 1024 characters but has 1025 characters./);
+      expect(
+        () =>
+          new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
+            matchmakingConfigurationName: 'test-config-name',
+            ruleSet: ruleSet,
+            description: incorrectDescription,
+          })
+      ).toThrow(
+        /Matchmaking configuration description can not be longer than 1024 characters but has 1025 characters./
+      );
     });
 
     test('with an incorrect custom event data length', () => {
@@ -97,27 +107,38 @@ describe('standaloneMatchmakingConfiguration', () => {
         incorrectField += 'A';
       }
 
-      expect(() => new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
-        matchmakingConfigurationName: 'test-config-name',
-        ruleSet: ruleSet,
-        customEventData: incorrectField,
-      })).toThrow(/Matchmaking configuration custom event data can not be longer than 256 characters but has 257 characters./);
+      expect(
+        () =>
+          new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
+            matchmakingConfigurationName: 'test-config-name',
+            ruleSet: ruleSet,
+            customEventData: incorrectField,
+          })
+      ).toThrow(
+        /Matchmaking configuration custom event data can not be longer than 256 characters but has 257 characters./
+      );
     });
 
     test('with an incorrect acceptance timeout', () => {
-      expect(() => new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
-        matchmakingConfigurationName: 'test-config-name',
-        ruleSet: ruleSet,
-        acceptanceTimeout: Duration.seconds(700),
-      })).toThrow(/Matchmaking configuration acceptance timeout can not exceed 600 seconds, actual 700 seconds./);
+      expect(
+        () =>
+          new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
+            matchmakingConfigurationName: 'test-config-name',
+            ruleSet: ruleSet,
+            acceptanceTimeout: Duration.seconds(700),
+          })
+      ).toThrow(/Matchmaking configuration acceptance timeout can not exceed 600 seconds, actual 700 seconds./);
     });
 
     test('with an incorrect request timeout', () => {
-      expect(() => new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
-        matchmakingConfigurationName: 'test-config-name',
-        ruleSet: ruleSet,
-        requestTimeout: Duration.seconds(43300),
-      })).toThrow(/Matchmaking configuration request timeout can not exceed 43200 seconds, actual 43300 seconds./);
+      expect(
+        () =>
+          new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
+            matchmakingConfigurationName: 'test-config-name',
+            ruleSet: ruleSet,
+            requestTimeout: Duration.seconds(43300),
+          })
+      ).toThrow(/Matchmaking configuration request timeout can not exceed 43200 seconds, actual 43300 seconds./);
     });
   });
 
@@ -133,10 +154,14 @@ describe('standaloneMatchmakingConfiguration', () => {
         matchmakingRuleSetName: 'test-ruleSet',
         content: gamelift.RuleSetContent.fromInline(ruleSetBody),
       });
-      standaloneMatchmakingConfiguration = new gamelift.StandaloneMatchmakingConfiguration(stack, 'MyStandaloneMatchmakingConfiguration', {
-        matchmakingConfigurationName: 'test-config-name',
-        ruleSet: ruleSet,
-      });
+      standaloneMatchmakingConfiguration = new gamelift.StandaloneMatchmakingConfiguration(
+        stack,
+        'MyStandaloneMatchmakingConfiguration',
+        {
+          matchmakingConfigurationName: 'test-config-name',
+          ruleSet: ruleSet,
+        }
+      );
     });
 
     test('metric', () => {
@@ -242,7 +267,6 @@ describe('standaloneMatchmakingConfiguration', () => {
         },
       });
     });
-
   });
 
   describe('test import methods', () => {
@@ -251,10 +275,16 @@ describe('standaloneMatchmakingConfiguration', () => {
       const stack2 = new cdk.Stack();
 
       // WHEN
-      const imported = gamelift.StandaloneMatchmakingConfiguration.fromStandaloneMatchmakingConfigurationArn(stack2, 'Imported', 'arn:aws:gamelift:us-east-1:123456789012:matchmakingconfiguration/sample-standaloneMatchmakingConfiguration-name');
+      const imported = gamelift.StandaloneMatchmakingConfiguration.fromStandaloneMatchmakingConfigurationArn(
+        stack2,
+        'Imported',
+        'arn:aws:gamelift:us-east-1:123456789012:matchmakingconfiguration/sample-standaloneMatchmakingConfiguration-name'
+      );
 
       // THEN
-      expect(imported.matchmakingConfigurationArn).toEqual('arn:aws:gamelift:us-east-1:123456789012:matchmakingconfiguration/sample-standaloneMatchmakingConfiguration-name');
+      expect(imported.matchmakingConfigurationArn).toEqual(
+        'arn:aws:gamelift:us-east-1:123456789012:matchmakingconfiguration/sample-standaloneMatchmakingConfiguration-name'
+      );
       expect(imported.matchmakingConfigurationName).toEqual('sample-standaloneMatchmakingConfiguration-name');
     });
 
@@ -263,21 +293,30 @@ describe('standaloneMatchmakingConfiguration', () => {
       const stack = new cdk.Stack();
 
       // WHEN
-      const imported = gamelift.StandaloneMatchmakingConfiguration.fromStandaloneMatchmakingConfigurationName(stack, 'Imported', 'sample-matchmakingConfiguration-name');
+      const imported = gamelift.StandaloneMatchmakingConfiguration.fromStandaloneMatchmakingConfigurationName(
+        stack,
+        'Imported',
+        'sample-matchmakingConfiguration-name'
+      );
 
       // THEN
       expect(stack.resolve(imported.matchmakingConfigurationArn)).toStrictEqual({
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':gamelift:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':matchmakingconfiguration/sample-matchmakingConfiguration-name',
-        ]],
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':gamelift:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':matchmakingconfiguration/sample-matchmakingConfiguration-name',
+          ],
+        ],
       });
-      expect(stack.resolve(imported.matchmakingConfigurationName)).toStrictEqual('sample-matchmakingConfiguration-name');
+      expect(stack.resolve(imported.matchmakingConfigurationName)).toStrictEqual(
+        'sample-matchmakingConfiguration-name'
+      );
     });
   });
 
@@ -295,7 +334,11 @@ describe('standaloneMatchmakingConfiguration', () => {
 
     describe('', () => {
       test('with required attrs only', () => {
-        const importedFleet = gamelift.StandaloneMatchmakingConfiguration.fromMatchmakingConfigurationAttributes(stack, 'ImportedStandaloneMatchmakingConfiguration', { matchmakingConfigurationArn });
+        const importedFleet = gamelift.StandaloneMatchmakingConfiguration.fromMatchmakingConfigurationAttributes(
+          stack,
+          'ImportedStandaloneMatchmakingConfiguration',
+          { matchmakingConfigurationArn }
+        );
 
         expect(importedFleet.matchmakingConfigurationName).toEqual(matchmakingConfigurationName);
         expect(importedFleet.matchmakingConfigurationArn).toEqual(matchmakingConfigurationArn);
@@ -304,13 +347,30 @@ describe('standaloneMatchmakingConfiguration', () => {
       });
 
       test('with missing attrs', () => {
-        expect(() => gamelift.StandaloneMatchmakingConfiguration.fromMatchmakingConfigurationAttributes(stack, 'ImportedStandaloneMatchmakingConfiguration', { }))
-          .toThrow(/Either matchmakingConfigurationName or matchmakingConfigurationArn must be provided in MatchmakingConfigurationAttributes/);
+        expect(() =>
+          gamelift.StandaloneMatchmakingConfiguration.fromMatchmakingConfigurationAttributes(
+            stack,
+            'ImportedStandaloneMatchmakingConfiguration',
+            {}
+          )
+        ).toThrow(
+          /Either matchmakingConfigurationName or matchmakingConfigurationArn must be provided in MatchmakingConfigurationAttributes/
+        );
       });
 
       test('with invalid ARN', () => {
-        expect(() => gamelift.StandaloneMatchmakingConfiguration.fromMatchmakingConfigurationAttributes(stack, 'ImportedStandaloneMatchmakingConfiguration', { matchmakingConfigurationArn: 'arn:aws:gamelift:matchmakingConfiguration-region:123456789012:matchmakingconfiguration' }))
-          .toThrow(/No matchmaking configuration name found in ARN: 'arn:aws:gamelift:matchmakingConfiguration-region:123456789012:matchmakingconfiguration'/);
+        expect(() =>
+          gamelift.StandaloneMatchmakingConfiguration.fromMatchmakingConfigurationAttributes(
+            stack,
+            'ImportedStandaloneMatchmakingConfiguration',
+            {
+              matchmakingConfigurationArn:
+                'arn:aws:gamelift:matchmakingConfiguration-region:123456789012:matchmakingconfiguration',
+            }
+          )
+        ).toThrow(
+          /No matchmaking configuration name found in ARN: 'arn:aws:gamelift:matchmakingConfiguration-region:123456789012:matchmakingconfiguration'/
+        );
       });
     });
 
@@ -318,7 +378,12 @@ describe('standaloneMatchmakingConfiguration', () => {
       let standaloneMatchmakingConfiguration: gamelift.IMatchmakingConfiguration;
 
       beforeEach(() => {
-        standaloneMatchmakingConfiguration = gamelift.StandaloneMatchmakingConfiguration.fromMatchmakingConfigurationAttributes(stack, 'ImportedStandaloneMatchmakingConfiguration', { matchmakingConfigurationArn });
+        standaloneMatchmakingConfiguration =
+          gamelift.StandaloneMatchmakingConfiguration.fromMatchmakingConfigurationAttributes(
+            stack,
+            'ImportedStandaloneMatchmakingConfiguration',
+            { matchmakingConfigurationArn }
+          );
       });
 
       test("the standaloneMatchmakingConfiguration's region is taken from the ARN", () => {

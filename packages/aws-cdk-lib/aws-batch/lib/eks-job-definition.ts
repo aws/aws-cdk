@@ -1,11 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
-import {
-  EksContainerDefinition,
-  EmptyDirVolume,
-  HostPathVolume,
-  SecretPathVolume,
-} from './eks-container-definition';
+import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import {
   baseJobDefinitionProperties,
   IJobDefinition,
@@ -136,16 +131,9 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
   /**
    * Import an EksJobDefinition by its arn
    */
-  public static fromEksJobDefinitionArn(
-    scope: Construct,
-    id: string,
-    eksJobDefinitionArn: string
-  ): IEksJobDefinition {
+  public static fromEksJobDefinitionArn(scope: Construct, id: string, eksJobDefinitionArn: string): IEksJobDefinition {
     const stack = Stack.of(scope);
-    const jobDefinitionName = stack.splitArn(
-      eksJobDefinitionArn,
-      ArnFormat.SLASH_RESOURCE_NAME
-    ).resourceName!;
+    const jobDefinitionName = stack.splitArn(eksJobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends JobDefinitionBase implements IJobDefinition {
       public readonly jobDefinitionArn = eksJobDefinitionArn;
@@ -194,9 +182,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
                     name: volume.name,
                     emptyDir: {
                       medium: volume.medium,
-                      sizeLimit: volume.sizeLimit
-                        ? volume.sizeLimit.toMebibytes().toString() + 'Mi'
-                        : undefined,
+                      sizeLimit: volume.sizeLimit ? volume.sizeLimit.toMebibytes().toString() + 'Mi' : undefined,
                     },
                   };
                 }

@@ -129,10 +129,7 @@ export class KubernetesManifest extends Construct {
     const pruneLabel = prune ? this.injectPruneLabel(props.manifest) : undefined;
 
     if (props.ingressAlb ?? false) {
-      this.injectIngressAlbAnnotations(
-        props.manifest,
-        props.ingressAlbScheme ?? AlbScheme.INTERNAL
-      );
+      this.injectIngressAlbAnnotations(props.manifest, props.ingressAlbScheme ?? AlbScheme.INTERNAL);
     }
 
     const customResource = new CustomResource(this, 'Resource', {

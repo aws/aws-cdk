@@ -63,9 +63,8 @@ describe('assets', () => {
     const expectedS3UrlPrefix = 's3://';
     const expectedHttpUrlPrefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
 
-    expect(
-      assetLocation.s3ObjectUrl.replace(expectedS3UrlPrefix, '')).toEqual(
-      assetLocation.httpUrl.replace(expectedHttpUrlPrefix, ''),
+    expect(assetLocation.s3ObjectUrl.replace(expectedS3UrlPrefix, '')).toEqual(
+      assetLocation.httpUrl.replace(expectedHttpUrlPrefix, '')
     );
   });
 
@@ -89,8 +88,7 @@ describe('assets', () => {
       expect(data.imageTag).toEqual('source-hash');
     }
 
-    expect(toCloudFormation(stack)).toEqual({ });
-
+    expect(toCloudFormation(stack)).toEqual({});
   });
 
   test('addDockerImageAsset uses the default repository name', () => {
@@ -113,8 +111,7 @@ describe('assets', () => {
       expect(data.imageTag).toEqual('source-hash');
     }
 
-    expect(toCloudFormation(stack)).toEqual({ });
-
+    expect(toCloudFormation(stack)).toEqual({});
   });
 
   test('addDockerImageAsset supports overriding repository name through a context key as a workaround until we have API for that', () => {
@@ -140,8 +137,7 @@ describe('assets', () => {
       expect(data.imageTag).toEqual('source-hash');
     }
 
-    expect(toCloudFormation(stack)).toEqual({ });
-
+    expect(toCloudFormation(stack)).toEqual({});
   });
 
   test('cached disabled', () => {
@@ -166,6 +162,6 @@ describe('assets', () => {
       expect(data.cacheDisabled).toEqual(true);
     }
 
-    expect(toCloudFormation(stack)).toEqual({ });
+    expect(toCloudFormation(stack)).toEqual({});
   });
 });

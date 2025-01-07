@@ -148,17 +148,11 @@ export class Dashboard extends Resource {
           const column = new Column(...this.rows);
           column.position(0, 0);
           return Stack.of(this).toJsonString({
-            start:
-              props.defaultInterval !== undefined
-                ? `-${props.defaultInterval?.toIsoString()}`
-                : props.start,
+            start: props.defaultInterval !== undefined ? `-${props.defaultInterval?.toIsoString()}` : props.start,
             end: props.defaultInterval !== undefined ? undefined : props.end,
             periodOverride: props.periodOverride,
             widgets: column.toJson(),
-            variables:
-              this.variables.length > 0
-                ? this.variables.map((variable) => variable.toJson())
-                : undefined,
+            variables: this.variables.length > 0 ? this.variables.map((variable) => variable.toJson()) : undefined,
           });
         },
       }),

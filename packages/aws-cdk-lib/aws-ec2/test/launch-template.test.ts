@@ -1,19 +1,8 @@
 import { stringLike } from './util';
 import { Annotations, Template, Match } from '../../assertions';
-import {
-  CfnInstanceProfile,
-  Role,
-  ServicePrincipal,
-  InstanceProfile,
-} from '../../aws-iam';
+import { CfnInstanceProfile, Role, ServicePrincipal, InstanceProfile } from '../../aws-iam';
 import { Key } from '../../aws-kms';
-import {
-  App,
-  Duration,
-  Expiration,
-  Stack,
-  Tags,
-} from '../../core';
+import { App, Duration, Expiration, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxImage,
@@ -92,8 +81,12 @@ describe('LaunchTemplate', () => {
       ],
     });
     Template.fromStack(stack).resourceCountIs('AWS::IAM::InstanceProfile', 0);
-    expect(() => { template.grantPrincipal; }).toThrow();
-    expect(() => { template.connections; }).toThrow();
+    expect(() => {
+      template.grantPrincipal;
+    }).toThrow();
+    expect(() => {
+      template.connections;
+    }).toThrow();
     expect(template.osType).toBeUndefined();
     expect(template.role).toBeUndefined();
     expect(template.userData).toBeUndefined();
@@ -315,7 +308,8 @@ describe('LaunchTemplate', () => {
           volumeType: EbsDeviceVolumeType.IO1,
           iops: 5000,
         }),
-      }, {
+      },
+      {
         deviceName: 'ebs-cmk',
         mappingEnabled: true,
         volume: BlockDeviceVolume.ebs(15, {
@@ -325,7 +319,8 @@ describe('LaunchTemplate', () => {
           volumeType: EbsDeviceVolumeType.IO1,
           iops: 5000,
         }),
-      }, {
+      },
+      {
         deviceName: 'ebs-snapshot',
         mappingEnabled: false,
         volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
@@ -333,10 +328,12 @@ describe('LaunchTemplate', () => {
           deleteOnTermination: false,
           volumeType: EbsDeviceVolumeType.SC1,
         }),
-      }, {
+      },
+      {
         deviceName: 'ephemeral',
         volume: BlockDeviceVolume.ephemeral(0),
-      }, {
+      },
+      {
         deviceName: 'gp3-with-throughput',
         volume: BlockDeviceVolume.ebs(15, {
           volumeType: EbsDeviceVolumeType.GP3,
@@ -370,10 +367,7 @@ describe('LaunchTemplate', () => {
               DeleteOnTermination: true,
               Encrypted: true,
               KmsKeyId: {
-                'Fn::GetAtt': [
-                  'EbsKeyD3FEE551',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['EbsKeyD3FEE551', 'Arn'],
               },
               Iops: 5000,
               VolumeSize: 15,
@@ -409,55 +403,64 @@ describe('LaunchTemplate', () => {
   test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
     expect(() => {
       new LaunchTemplate(stack, 'LaunchTemplate', {
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: BlockDeviceVolume.ebs(15, {
-            volumeType: EbsDeviceVolumeType.GP3,
-            throughput,
-          }),
-        }],
+        blockDevices: [
+          {
+            deviceName: 'ebs',
+            volume: BlockDeviceVolume.ebs(15, {
+              volumeType: EbsDeviceVolumeType.GP3,
+              throughput,
+            }),
+          },
+        ],
       });
     }).toThrow(/'throughput' must be between 125 and 1000, got/);
   });
   test('throws if throughput is not an integer', () => {
     expect(() => {
       new LaunchTemplate(stack, 'LaunchTemplate', {
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: BlockDeviceVolume.ebs(15, {
-            volumeType: EbsDeviceVolumeType.GP3,
-            throughput: 234.56,
-          }),
-        }],
+        blockDevices: [
+          {
+            deviceName: 'ebs',
+            volume: BlockDeviceVolume.ebs(15, {
+              volumeType: EbsDeviceVolumeType.GP3,
+              throughput: 234.56,
+            }),
+          },
+        ],
       });
     }).toThrow("'throughput' must be an integer, got: 234.56.");
   });
-  test.each([
-    ...Object.values(EbsDeviceVolumeType).filter((v) => v !== 'gp3'),
-  ])('throws if throughput is set on any volume type other than GP3', (volumeType) => {
-    expect(() => {
-      new LaunchTemplate(stack, 'LaunchTemplate', {
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: BlockDeviceVolume.ebs(15, {
-            volumeType: volumeType,
-            throughput: 150,
-          }),
-        }],
-      });
-    }).toThrow(/'throughput' requires 'volumeType': gp3, got/);
-  });
+  test.each([...Object.values(EbsDeviceVolumeType).filter((v) => v !== 'gp3')])(
+    'throws if throughput is set on any volume type other than GP3',
+    (volumeType) => {
+      expect(() => {
+        new LaunchTemplate(stack, 'LaunchTemplate', {
+          blockDevices: [
+            {
+              deviceName: 'ebs',
+              volume: BlockDeviceVolume.ebs(15, {
+                volumeType: volumeType,
+                throughput: 150,
+              }),
+            },
+          ],
+        });
+      }).toThrow(/'throughput' requires 'volumeType': gp3, got/);
+    }
+  );
   test('throws if throughput / iops ratio is greater than 0.25', () => {
     expect(() => {
       new LaunchTemplate(stack, 'LaunchTemplate', {
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: BlockDeviceVolume.ebs(15, {
-            volumeType: EbsDeviceVolumeType.GP3,
-            throughput: 751,
-            iops: 3000,
-          }),
-        }],
+        blockDevices: [
+          {
+            deviceName: 'ebs',
+            volume: BlockDeviceVolume.ebs(15, {
+              volumeType: EbsDeviceVolumeType.GP3,
+              throughput: 751,
+              iops: 3000,
+            }),
+          },
+        ],
       });
     }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
   });
@@ -489,10 +492,7 @@ describe('LaunchTemplate', () => {
       LaunchTemplateData: {
         IamInstanceProfile: {
           Arn: {
-            'Fn::GetAtt': [
-              'InstanceProfile9F2F41CB',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['InstanceProfile9F2F41CB', 'Arn'],
           },
         },
       },
@@ -689,10 +689,13 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expect(() => new LaunchTemplate(stack, 'Instance', {
-      machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE),
-      keyPair,
-    })).toThrow('ed25519 keys are not compatible with the chosen AMI');
+    expect(
+      () =>
+        new LaunchTemplate(stack, 'Instance', {
+          machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE),
+          keyPair,
+        })
+    ).toThrow('ed25519 keys are not compatible with the chosen AMI');
   });
 
   it('throws when keyName and keyPair are provided', () => {
@@ -700,10 +703,13 @@ describe('LaunchTemplate', () => {
     const keyPair = new KeyPair(stack, 'KeyPair');
 
     // THEN
-    expect(() => new LaunchTemplate(stack, 'Instance', {
-      keyName: 'test-key-pair',
-      keyPair,
-    })).toThrow('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    expect(
+      () =>
+        new LaunchTemplate(stack, 'Instance', {
+          keyName: 'test-key-pair',
+          keyPair,
+        })
+    ).toThrow("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
   });
 
   test.each([
@@ -740,10 +746,7 @@ describe('LaunchTemplate', () => {
       LaunchTemplateData: {
         SecurityGroupIds: [
           {
-            'Fn::GetAtt': [
-              'SGADB53937',
-              'GroupId',
-            ],
+            'Fn::GetAtt': ['SGADB53937', 'GroupId'],
           },
         ],
       },
@@ -846,10 +849,7 @@ describe('LaunchTemplate', () => {
             AssociatePublicIpAddress: true,
             Groups: [
               {
-                'Fn::GetAtt': [
-                  'SGADB53937',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['SGADB53937', 'GroupId'],
               },
             ],
           },
@@ -878,10 +878,7 @@ describe('LaunchTemplate', () => {
             AssociatePublicIpAddress: false,
             Groups: [
               {
-                'Fn::GetAtt': [
-                  'SGADB53937',
-                  'GroupId',
-                ],
+                'Fn::GetAtt': ['SGADB53937', 'GroupId'],
               },
             ],
           },

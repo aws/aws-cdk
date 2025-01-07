@@ -37,11 +37,7 @@ export class LambdaDestination implements lambda.IDestination {
   /**
    * Returns a destination configuration
    */
-  public bind(
-    scope: Construct,
-    fn: lambda.IFunction,
-    options?: lambda.DestinationOptions
-  ): lambda.DestinationConfig {
+  public bind(scope: Construct, fn: lambda.IFunction, options?: lambda.DestinationOptions): lambda.DestinationConfig {
     // Normal Lambda destination (full invocation record)
     if (!this.options.responseOnly) {
       // deduplicated automatically

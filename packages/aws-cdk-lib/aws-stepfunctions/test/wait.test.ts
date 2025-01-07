@@ -66,7 +66,7 @@ describe('Wait State', () => {
           End: true,
           Type: 'Pass',
         },
-        'myWaitState': {
+        myWaitState: {
           Next: 'final pass',
           Seconds: 30,
           Type: 'Wait',
@@ -95,5 +95,4 @@ describe('Wait State', () => {
       },
     });
   });
-
 });

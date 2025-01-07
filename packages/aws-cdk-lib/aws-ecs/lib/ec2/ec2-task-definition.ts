@@ -122,16 +122,12 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     // Check if any of the placement constraints are not valid
     const invalidConstraints =
       constraints?.filter((constraint) => {
-        return constraint
-          .toJson()
-          .some((constraintProperty) => !validConstraints.has(constraintProperty.type));
+        return constraint.toJson().some((constraintProperty) => !validConstraints.has(constraintProperty.type));
       }) ?? [];
 
     if (invalidConstraints.length > 0) {
       const invalidConstraintTypes = invalidConstraints
-        .map((constraint) =>
-          constraint.toJson().map((constraintProperty) => constraintProperty.type)
-        )
+        .map((constraint) => constraint.toJson().map((constraintProperty) => constraintProperty.type))
         .flat();
       throw new Error(
         `Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`

@@ -246,8 +246,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         basicAuthConfig: props.autoBranchCreation.basicAuth
           ? props.autoBranchCreation.basicAuth.bind(this, 'BranchBasicAuth')
           : { enableBasicAuth: false },
-        buildSpec:
-          props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
+        buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild ?? true,
         environmentVariables: Lazy.any(
@@ -259,9 +258,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         stage: props.autoBranchCreation.stage,
       },
       enableBranchAutoDeletion: props.autoBranchDeletion,
-      basicAuthConfig: props.basicAuth
-        ? props.basicAuth.bind(this, 'AppBasicAuth')
-        : { enableBasicAuth: false },
+      basicAuthConfig: props.basicAuth ? props.basicAuth.bind(this, 'AppBasicAuth') : { enableBasicAuth: false },
       buildSpec: props.buildSpec && props.buildSpec.toBuildSpec(),
       cacheConfig: props.cacheConfigType ? { type: props.cacheConfigType } : undefined,
       customRules: Lazy.any({ produce: () => this.customRules }, { omitEmptyArray: true }),
@@ -274,9 +271,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
-      customHeaders: props.customResponseHeaders
-        ? renderCustomResponseHeaders(props.customResponseHeaders)
-        : undefined,
+      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
       platform: props.platform || Platform.WEB,
     });
 

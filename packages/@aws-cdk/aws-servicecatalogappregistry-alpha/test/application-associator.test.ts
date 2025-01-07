@@ -16,19 +16,30 @@ describe('Scope based Associations with Application within Same Account', () => 
   });
   test('ApplicationAssociator will associate allStacks created inside cdkApp', () => {
     const appAssociator = new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+        }),
+      ],
     });
 
     const anotherStack = new AppRegistrySampleStack(app, 'SampleStack');
-    Template.fromStack(appAssociator.appRegistryApplication.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
-    Template.fromStack(appAssociator.appRegistryApplication.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
-      Name: 'MyAssociatedApplication',
-      Tags: { managedBy: 'CDK_Application_Associator' },
-    });
-    Template.fromStack(appAssociator.appRegistryApplication.stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
+    Template.fromStack(appAssociator.appRegistryApplication.stack).resourceCountIs(
+      'AWS::ServiceCatalogAppRegistry::Application',
+      1
+    );
+    Template.fromStack(appAssociator.appRegistryApplication.stack).hasResourceProperties(
+      'AWS::ServiceCatalogAppRegistry::Application',
+      {
+        Name: 'MyAssociatedApplication',
+        Tags: { managedBy: 'CDK_Application_Associator' },
+      }
+    );
+    Template.fromStack(appAssociator.appRegistryApplication.stack).hasOutput(
+      'DefaultCdkApplicationApplicationManagerUrl27C138EF',
+      {}
+    );
     Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
       Application: 'MyAssociatedApplication',
@@ -38,24 +49,29 @@ describe('Scope based Associations with Application within Same Account', () => 
 
   test('ApplicationAssociator with url disabled will not create cfn output', () => {
     const appAssociator = new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-        emitApplicationManagerUrlAsOutput: false,
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+          emitApplicationManagerUrlAsOutput: false,
+        }),
+      ],
     });
 
     const anotherStack = new AppRegistrySampleStack(app, 'SampleStack');
-    Template.fromStack(appAssociator.appRegistryApplication.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
-    Template.fromStack(appAssociator.appRegistryApplication.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
-      Name: 'MyAssociatedApplication',
-      Tags: { managedBy: 'CDK_Application_Associator' },
-    });
+    Template.fromStack(appAssociator.appRegistryApplication.stack).resourceCountIs(
+      'AWS::ServiceCatalogAppRegistry::Application',
+      1
+    );
+    Template.fromStack(appAssociator.appRegistryApplication.stack).hasResourceProperties(
+      'AWS::ServiceCatalogAppRegistry::Application',
+      {
+        Name: 'MyAssociatedApplication',
+        Tags: { managedBy: 'CDK_Application_Associator' },
+      }
+    );
 
-    expect(
-      Template.fromStack(appAssociator.appRegistryApplication.stack)
-        .findOutputs('*', {}),
-    ).toEqual({});
+    expect(Template.fromStack(appAssociator.appRegistryApplication.stack).findOutputs('*', {})).toEqual({});
     Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
       Application: 'MyAssociatedApplication',
@@ -75,23 +91,29 @@ describe('Associate attribute group with Application', () => {
   });
 
   test('Associate Attribute Group with application created by ApplicationAssociator', () => {
-
     const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
 
     const appAssociator = new appreg.ApplicationAssociator(app, 'TestApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'TestAssociatedApplication',
-        stackName: 'TestAssociatedApplicationStack',
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'TestAssociatedApplication',
+          stackName: 'TestAssociatedApplicationStack',
+        }),
+      ],
     });
 
     customAttributeGroup.attributeGroup.associateWith(appAssociator.appRegistryApplication);
-    Template.fromStack(customAttributeGroup.attributeGroup.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 1);
-    Template.fromStack(customAttributeGroup.attributeGroup.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
-      Application: 'TestAssociatedApplication',
-      AttributeGroup: { 'Fn::GetAtt': ['MyFirstAttributeGroupDBC21379', 'Id'] },
-    });
-
+    Template.fromStack(customAttributeGroup.attributeGroup.stack).resourceCountIs(
+      'AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation',
+      1
+    );
+    Template.fromStack(customAttributeGroup.attributeGroup.stack).hasResourceProperties(
+      'AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation',
+      {
+        Application: 'TestAssociatedApplication',
+        AttributeGroup: { 'Fn::GetAtt': ['MyFirstAttributeGroupDBC21379', 'Id'] },
+      }
+    );
   });
 });
 
@@ -106,10 +128,12 @@ describe('Scope based Associations with Application with Cross Region/Account', 
   });
   test('ApplicationAssociator in cross-account associates all stacks created inside cdk app', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+        }),
+      ],
     });
     const firstStack = new cdk.Stack(app, 'testStack', {
       env: { account: 'account2', region: 'region' },
@@ -123,11 +147,13 @@ describe('Scope based Associations with Application with Cross Region/Account', 
 
   test('ApplicationAssociator disables cfn output', () => {
     const appAssociator = new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-        emitApplicationManagerUrlAsOutput: false,
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+          emitApplicationManagerUrlAsOutput: false,
+        }),
+      ],
     });
     const firstStack = new cdk.Stack(app, 'testStack', {
       env: { account: 'account2', region: 'region' },
@@ -136,9 +162,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       env: { account: 'account2', region: 'region' },
     });
 
-    expect(
-      Template.fromStack(appAssociator.appRegistryApplication.stack).findOutputs('*', {}),
-    ).toEqual({});
+    expect(Template.fromStack(appAssociator.appRegistryApplication.stack).findOutputs('*', {})).toEqual({});
     Template.fromStack(firstStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(nestedStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
@@ -148,29 +172,38 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       new appreg.ApplicationAssociator(app, 'MyApplication', {
         applications: [],
       });
-    }).toThrow('Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
+    }).toThrow(
+      'Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property'
+    );
   });
 
   test('ApplicationAssociator creation failed when both Application name and ARN is provided', () => {
     expect(() => {
       new appreg.ApplicationAssociator(app, 'MyApplication', {
-        applications: [appreg.TargetApplication.existingApplicationFromArn({
-          applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
-        }),
-        appreg.TargetApplication.createApplicationStack({
-          applicationName: 'MyAssociatedApplication',
-        })],
+        applications: [
+          appreg.TargetApplication.existingApplicationFromArn({
+            applicationArnValue:
+              'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+          }),
+          appreg.TargetApplication.createApplicationStack({
+            applicationName: 'MyAssociatedApplication',
+          }),
+        ],
       });
-    }).toThrow('Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
+    }).toThrow(
+      'Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property'
+    );
   });
 
   test('associate resource on imported application', () => {
     const resource = new cdk.Stack(app, 'MyStack');
 
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.existingApplicationFromArn({
-        applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
-      })],
+      applications: [
+        appreg.TargetApplication.existingApplicationFromArn({
+          applicationArnValue: 'arn:aws:servicecatalog:us-east-1:482211128593:/applications/0a17wtxeg5vilok0sbxfozwpq9',
+        }),
+      ],
     });
 
     Template.fromStack(resource).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
@@ -178,97 +211,125 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       Resource: { Ref: 'AWS::StackId' },
     });
   }),
+    test('ApplicationAssociator with cross account stacks inside cdkApp gives warning if associateCrossAccountStacks is not provided', () => {
+      new appreg.ApplicationAssociator(app, 'MyApplication', {
+        applications: [
+          appreg.TargetApplication.createApplicationStack({
+            applicationName: 'MyAssociatedApplication',
+            stackName: 'MyAssociatedApplicationStack',
+            env: { account: 'account2', region: 'region' },
+          }),
+        ],
+      });
 
-  test('ApplicationAssociator with cross account stacks inside cdkApp gives warning if associateCrossAccountStacks is not provided', () => {
-    new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-        env: { account: 'account2', region: 'region' },
-      })],
+      const crossAccountStack = new cdk.Stack(app, 'crossRegionStack', {
+        env: { account: 'account', region: 'region' },
+      });
+      Annotations.fromStack(crossAccountStack).hasWarning(
+        '*',
+        'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled. [ack: @aws-cdk/servicecatalogappregistry:AssociationSkipped]'
+      );
     });
-
-    const crossAccountStack = new cdk.Stack(app, 'crossRegionStack', {
-      env: { account: 'account', region: 'region' },
-    });
-    Annotations.fromStack(crossAccountStack).hasWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled. [ack: @aws-cdk/servicecatalogappregistry:AssociationSkipped]');
-  });
 
   test('ApplicationAssociator with cross account stacks inside cdkApp does not give warning if associateCrossAccountStacks is set to true', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-        associateCrossAccountStacks: true,
-        env: { account: 'account', region: 'region' },
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+          associateCrossAccountStacks: true,
+          env: { account: 'account', region: 'region' },
+        }),
+      ],
     });
 
     const crossAccountStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account2', region: 'region' },
     });
-    Annotations.fromStack(crossAccountStack).hasNoWarning('*', 'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.');
+    Annotations.fromStack(crossAccountStack).hasNoWarning(
+      '*',
+      'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.'
+    );
   });
 
   test('ApplicationAssociator with cross region stacks inside cdkApp gives warning', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-        env: { account: 'account2', region: 'region2' },
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+          env: { account: 'account2', region: 'region2' },
+        }),
+      ],
     });
 
     const crossRegionStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account', region: 'region' },
     });
-    Annotations.fromStack(crossRegionStack).hasWarning('*', 'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app.'
-        + ' Application region region2, stack region region [ack: @aws-cdk/servicecatalogappregistry:CrossRegionAssociation]');
+    Annotations.fromStack(crossRegionStack).hasWarning(
+      '*',
+      'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app.' +
+        ' Application region region2, stack region region [ack: @aws-cdk/servicecatalogappregistry:CrossRegionAssociation]'
+    );
   });
 
   test('Environment Agnostic ApplicationAssociator with cross region stacks inside cdkApp gives warning', () => {
     new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+        }),
+      ],
     });
 
     const crossRegionStack = new cdk.Stack(app, 'crossRegionStack', {
       env: { account: 'account', region: 'region' },
     });
-    Annotations.fromStack(crossRegionStack).hasWarning('*', 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack. [ack: @aws-cdk/servicecatalogappregistry:EnvironmentAgnosticStack]');
+    Annotations.fromStack(crossRegionStack).hasWarning(
+      '*',
+      'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack. [ack: @aws-cdk/servicecatalogappregistry:EnvironmentAgnosticStack]'
+    );
   });
 
   test('Cdk App Containing Pipeline with stage but stage not associated throws error', () => {
     const application = new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+        }),
+      ],
     });
     const pipelineStack = new AppRegistrySampleCodePipelineStack(app, 'PipelineStackA', {
       application: application,
       associateStage: false,
     });
     app.synth();
-    Annotations.fromStack(pipelineStack).hasWarning('*',
-      'Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use ApplicationAssociator.associateStage to associate any stage. [ack: @aws-cdk/servicecatalogappregistry:StackNotAssociated]');
+    Annotations.fromStack(pipelineStack).hasWarning(
+      '*',
+      'Associate Stage: SampleStage to ensure all stacks in your cdk app are associated with AppRegistry. You can use ApplicationAssociator.associateStage to associate any stage. [ack: @aws-cdk/servicecatalogappregistry:StackNotAssociated]'
+    );
   });
 
   test('Cdk App Containing Pipeline with stage and stage associated successfully gets synthesized', () => {
     const application = new appreg.ApplicationAssociator(app, 'MyApplication', {
-      applications: [appreg.TargetApplication.createApplicationStack({
-        applicationName: 'MyAssociatedApplication',
-        stackName: 'MyAssociatedApplicationStack',
-      })],
+      applications: [
+        appreg.TargetApplication.createApplicationStack({
+          applicationName: 'MyAssociatedApplication',
+          stackName: 'MyAssociatedApplicationStack',
+        }),
+      ],
     });
     const pipelineStack = new AppRegistrySampleCodePipelineStack(app, 'PipelineStackA', {
       application: application,
       associateStage: true,
     });
     app.synth();
-    Template.fromStack(application.appRegistryApplication.stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
+    Template.fromStack(application.appRegistryApplication.stack).hasOutput(
+      'DefaultCdkApplicationApplicationManagerUrl27C138EF',
+      {}
+    );
     Template.fromStack(pipelineStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
 });
@@ -279,7 +340,7 @@ interface AppRegistrySampleCodePipelineStackProps extends cdk.StackProps {
 }
 
 class AppRegistrySampleCodePipelineStack extends cdk.Stack {
-  public constructor(scope: Construct, id: string, props: AppRegistrySampleCodePipelineStackProps ) {
+  public constructor(scope: Construct, id: string, props: AppRegistrySampleCodePipelineStackProps) {
     super(scope, id, props);
     const repo = new codecommit.Repository(this, 'Repo', {
       repositoryName: 'MyRepo',
@@ -289,22 +350,12 @@ class AppRegistrySampleCodePipelineStack extends cdk.Stack {
       pipelineName: 'MyPipeline',
       synth: new codepipeline.CodeBuildStep('SynthStep', {
         input: codepipeline.CodePipelineSource.codeCommit(repo, 'main'),
-        installCommands: [
-          'npm install -g aws-cdk',
-        ],
-        commands: [
-          'npm ci',
-          'npm run build',
-          'npx cdk synth',
-        ],
-      },
-      ),
+        installCommands: ['npm install -g aws-cdk'],
+        commands: ['npm ci', 'npm run build', 'npx cdk synth'],
+      }),
     });
 
-    const stage = new AppRegistrySampleStage(
-      this,
-      'SampleStage',
-    );
+    const stage = new AppRegistrySampleStage(this, 'SampleStage');
 
     if (props.associateStage) {
       props.application.associateStage(stage);

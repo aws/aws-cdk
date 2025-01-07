@@ -15,6 +15,6 @@ describe('log stream', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogStream', { });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogStream', {});
   });
 });

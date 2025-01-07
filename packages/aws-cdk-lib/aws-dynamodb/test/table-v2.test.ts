@@ -4,8 +4,16 @@ import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
 import {
-  AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
-  LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
+  AttributeType,
+  Billing,
+  Capacity,
+  GlobalSecondaryIndexPropsV2,
+  TableV2,
+  LocalSecondaryIndexProps,
+  ProjectionType,
+  StreamViewType,
+  TableClass,
+  TableEncryptionV2,
 } from '../lib';
 
 describe('table', () => {
@@ -20,12 +28,8 @@ describe('table', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'pk', AttributeType: 'S' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
+      AttributeDefinitions: [{ AttributeName: 'pk', AttributeType: 'S' }],
       BillingMode: 'PAY_PER_REQUEST',
       StreamSpecification: Match.absent(),
       Replicas: [
@@ -219,10 +223,7 @@ describe('table', () => {
           },
           KinesisStreamSpecification: {
             StreamArn: {
-              'Fn::GetAtt': [
-                'Stream790BDEE4',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Stream790BDEE4', 'Arn'],
             },
           },
         },
@@ -389,10 +390,7 @@ describe('table', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      Replicas: [
-        { Region: 'us-east-1' },
-        { Region: 'us-west-2' },
-      ],
+      Replicas: [{ Region: 'us-east-1' }, { Region: 'us-west-2' }],
     });
   });
 
@@ -426,9 +424,7 @@ describe('table', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
@@ -842,10 +838,7 @@ describe('table', () => {
           ],
           KinesisStreamSpecification: {
             StreamArn: {
-              'Fn::GetAtt': [
-                'Stream790BDEE4',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Stream790BDEE4', 'Arn'],
             },
           },
           PointInTimeRecoverySpecification: {
@@ -857,10 +850,7 @@ describe('table', () => {
           Region: 'us-west-2',
           SSESpecification: {
             KMSMasterKeyId: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
@@ -921,9 +911,7 @@ describe('table', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
@@ -1045,12 +1033,8 @@ describe('table', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'pk', AttributeType: 'S' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
+      AttributeDefinitions: [{ AttributeName: 'pk', AttributeType: 'S' }],
       WriteOnDemandThroughputSettings: {
         MaxWriteRequestUnits: 10,
       },
@@ -1084,12 +1068,8 @@ describe('table', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'pk', AttributeType: 'S' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
+      AttributeDefinitions: [{ AttributeName: 'pk', AttributeType: 'S' }],
       BillingMode: 'PAY_PER_REQUEST',
       StreamSpecification: Match.absent(),
       Replicas: [
@@ -1130,27 +1110,19 @@ describe('table', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
-      AttributeDefinitions: [
-        { AttributeName: 'pk', AttributeType: 'S' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
+      AttributeDefinitions: [{ AttributeName: 'pk', AttributeType: 'S' }],
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi1',
-          KeySchema: [
-            { AttributeName: 'pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
         },
         {
           IndexName: 'gsi2',
-          KeySchema: [
-            { AttributeName: 'pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
@@ -1166,24 +1138,25 @@ describe('table', () => {
           Region: {
             Ref: 'AWS::Region',
           },
-          GlobalSecondaryIndexes: [{
-            IndexName: 'gsi1',
-            ReadOnDemandThroughputSettings: {
-              MaxReadRequestUnits: 100,
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'gsi1',
+              ReadOnDemandThroughputSettings: {
+                MaxReadRequestUnits: 100,
+              },
             },
-          },
-          {
-            IndexName: 'gsi2',
-            ReadOnDemandThroughputSettings: {
-              MaxReadRequestUnits: 1,
+            {
+              IndexName: 'gsi2',
+              ReadOnDemandThroughputSettings: {
+                MaxReadRequestUnits: 1,
+              },
             },
-          }],
+          ],
         },
       ],
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
   });
-
 });
 
 describe('replica tables', () => {
@@ -1198,9 +1171,7 @@ describe('replica tables', () => {
         readCapacity: Capacity.fixed(5),
         writeCapacity: Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 }),
       }),
-      replicas: [
-        { region: 'us-east-1', readCapacity: Capacity.fixed(10) },
-      ],
+      replicas: [{ region: 'us-east-1', readCapacity: Capacity.fixed(10) }],
     });
 
     // THEN
@@ -1273,10 +1244,12 @@ describe('replica tables', () => {
     // WHEN
     new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [{
-        region: 'us-west-1',
-        tags: [{ key: 'tagKey', value: 'tagValue' }],
-      }],
+      replicas: [
+        {
+          region: 'us-west-1',
+          tags: [{ key: 'tagKey', value: 'tagValue' }],
+        },
+      ],
     });
 
     // THEN
@@ -1300,9 +1273,11 @@ describe('replica tables', () => {
     // WHEN
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [{
-        region: 'us-west-1',
-      }],
+      replicas: [
+        {
+          region: 'us-west-1',
+        },
+      ],
     });
 
     Tags.of(table).add('tagKey', 'tagValue');
@@ -1329,9 +1304,11 @@ describe('replica tables', () => {
     // WHEN
     new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [{
-        region: 'us-west-1',
-      }],
+      replicas: [
+        {
+          region: 'us-west-1',
+        },
+      ],
     });
 
     Tags.of(stack).add('stage', 'Prod');
@@ -1358,12 +1335,15 @@ describe('replica tables', () => {
     // WHEN
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [{
-        region: 'us-west-1',
-        tags: [{ key: 'tableTagProperty', value: 'replicaW1TagPropertyValue' }],
-      }, {
-        region: 'us-west-2',
-      }],
+      replicas: [
+        {
+          region: 'us-west-1',
+          tags: [{ key: 'tableTagProperty', value: 'replicaW1TagPropertyValue' }],
+        },
+        {
+          region: 'us-west-2',
+        },
+      ],
       tags: [{ key: 'tableTagProperty', value: 'defaultReplicaTagPropertyValue' }],
     });
 
@@ -1374,21 +1354,15 @@ describe('replica tables', () => {
       Replicas: [
         {
           Region: 'us-west-1',
-          Tags: [
-            { Key: 'tableTagProperty', Value: 'replicaW1TagPropertyValue' },
-          ],
+          Tags: [{ Key: 'tableTagProperty', Value: 'replicaW1TagPropertyValue' }],
         },
         {
           Region: 'us-west-2',
-          Tags: [
-            { Key: 'tableTagProperty', Value: 'tagAspectValue' },
-          ],
+          Tags: [{ Key: 'tableTagProperty', Value: 'tagAspectValue' }],
         },
         {
           Region: 'us-east-1',
-          Tags: [
-            { Key: 'tableTagProperty', Value: 'defaultReplicaTagPropertyValue' },
-          ],
+          Tags: [{ Key: 'tableTagProperty', Value: 'defaultReplicaTagPropertyValue' }],
         },
       ],
     });
@@ -1398,7 +1372,11 @@ describe('replica tables', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
     const kinesisStream1 = new Stream(stack, 'Stream1');
-    const kinesisStream2 = Stream.fromStreamArn(stack, 'Stream2', 'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream');
+    const kinesisStream2 = Stream.fromStreamArn(
+      stack,
+      'Stream2',
+      'arn:aws:kinesis:us-east-1:123456789012:stream/my-stream'
+    );
 
     // WHEN
     new TableV2(stack, 'GlobalTable', {
@@ -1432,10 +1410,7 @@ describe('replica tables', () => {
           Region: 'us-west-2',
           KinesisStreamSpecification: {
             StreamArn: {
-              'Fn::GetAtt': [
-                'Stream16C8F97AF',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Stream16C8F97AF', 'Arn'],
             },
           },
         },
@@ -1687,7 +1662,9 @@ describe('replica tables', () => {
     // WHEN / THEN
     expect(() => {
       table.addReplica({ region: 'us-west-2' });
-    }).toThrow('You cannot add a replica table in the same region as the primary table - the primary table region is us-west-2');
+    }).toThrow(
+      'You cannot add a replica table in the same region as the primary table - the primary table region is us-west-2'
+    );
   });
 
   test('throws if adding duplicate replica table', () => {
@@ -1748,7 +1725,9 @@ describe('replica tables', () => {
     // WHEN / THEN
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow('Cannot configure replica global secondary index, global, because it is not defined on the primary table');
+    }).toThrow(
+      'Cannot configure replica global secondary index, global, because it is not defined on the primary table'
+    );
   });
 
   test('throws if read capacity is configured as global secondary index options when billing mode is PAY_PER_REQUEST', () => {
@@ -1777,7 +1756,9 @@ describe('replica tables', () => {
     // WHEN / THEN
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow("Cannot configure 'readCapacity' for replica global secondary index, gsi, because billing mode is PAY_PER_REQUEST");
+    }).toThrow(
+      "Cannot configure 'readCapacity' for replica global secondary index, gsi, because billing mode is PAY_PER_REQUEST"
+    );
   });
 });
 
@@ -1803,9 +1784,7 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
         { AttributeName: 'gsi-pk-1', AttributeType: 'N' },
@@ -1814,18 +1793,14 @@ describe('secondary indexes', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi1',
-          KeySchema: [
-            { AttributeName: 'gsi-pk-1', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk-1', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
         },
         {
           IndexName: 'gsi2',
-          KeySchema: [
-            { AttributeName: 'gsi-pk-2', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk-2', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
@@ -1870,9 +1845,7 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
         { AttributeName: 'gsi-pk', AttributeType: 'N' },
@@ -1880,18 +1853,14 @@ describe('secondary indexes', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi1',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
         },
         {
           IndexName: 'gsi2',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
@@ -1938,9 +1907,7 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
         { AttributeName: 'gsi-pk', AttributeType: 'N' },
@@ -2010,9 +1977,7 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
         { AttributeName: 'gsi-pk', AttributeType: 'N' },
@@ -2208,9 +2173,7 @@ describe('secondary indexes', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
@@ -2277,9 +2240,7 @@ describe('secondary indexes', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
@@ -2345,9 +2306,7 @@ describe('secondary indexes', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'ALL',
           },
@@ -2398,9 +2357,7 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
         { AttributeName: 'gsi-pk', AttributeType: 'S' },
@@ -2408,9 +2365,7 @@ describe('secondary indexes', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'KEYS_ONLY',
           },
@@ -2450,9 +2405,7 @@ describe('secondary indexes', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      KeySchema: [
-        { AttributeName: 'pk', KeyType: 'HASH' },
-      ],
+      KeySchema: [{ AttributeName: 'pk', KeyType: 'HASH' }],
       AttributeDefinitions: [
         { AttributeName: 'pk', AttributeType: 'S' },
         { AttributeName: 'gsi-pk', AttributeType: 'S' },
@@ -2460,9 +2413,7 @@ describe('secondary indexes', () => {
       GlobalSecondaryIndexes: [
         {
           IndexName: 'gsi',
-          KeySchema: [
-            { AttributeName: 'gsi-pk', KeyType: 'HASH' },
-          ],
+          KeySchema: [{ AttributeName: 'gsi-pk', KeyType: 'HASH' }],
           Projection: {
             ProjectionType: 'INCLUDE',
             NonKeyAttributes: ['nonKeyAttr1', 'nonKeyAttr2'],
@@ -2765,7 +2716,9 @@ describe('secondary indexes', () => {
           },
         ],
       });
-    }).toThrow("You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is PAY_PER_REQUEST");
+    }).toThrow(
+      "You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is PAY_PER_REQUEST"
+    );
   });
 
   test('throws if global secondary index has write capacity when billing mode is PAY_PER_REQUEST', () => {
@@ -2784,7 +2737,9 @@ describe('secondary indexes', () => {
           },
         ],
       });
-    }).toThrow("You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is PAY_PER_REQUEST");
+    }).toThrow(
+      "You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is PAY_PER_REQUEST"
+    );
   });
 
   test('throws if global secondary index count is greater than 20', () => {
@@ -3121,28 +3076,30 @@ test('Warm Throughput test on-demand', () => {
       readUnitsPerSecond: 13000,
       writeUnitsPerSecond: 5000,
     },
-    replicas: [{
-      region: 'us-west-2',
-    }],
-    globalSecondaryIndexes: [{
-      indexName: 'my-index-1',
-      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
-      warmThroughput: {
-        readUnitsPerSecond: 15000,
-        writeUnitsPerSecond: 6000,
+    replicas: [
+      {
+        region: 'us-west-2',
       },
-    },
-    {
-      indexName: 'my-index-2',
-      partitionKey: { name: 'gsi2pk', type: AttributeType.STRING },
-    }],
+    ],
+    globalSecondaryIndexes: [
+      {
+        indexName: 'my-index-1',
+        partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+        warmThroughput: {
+          readUnitsPerSecond: 15000,
+          writeUnitsPerSecond: 6000,
+        },
+      },
+      {
+        indexName: 'my-index-2',
+        partitionKey: { name: 'gsi2pk', type: AttributeType.STRING },
+      },
+    ],
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-    KeySchema: [
-      { AttributeName: 'id', KeyType: 'HASH' },
-    ],
+    KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
     AttributeDefinitions: [
       { AttributeName: 'id', AttributeType: 'S' },
       { AttributeName: 'gsi1pk', AttributeType: 'S' },
@@ -3155,9 +3112,7 @@ test('Warm Throughput test on-demand', () => {
     GlobalSecondaryIndexes: [
       {
         IndexName: 'my-index-1',
-        KeySchema: [
-          { AttributeName: 'gsi1pk', KeyType: 'HASH' },
-        ],
+        KeySchema: [{ AttributeName: 'gsi1pk', KeyType: 'HASH' }],
         Projection: { ProjectionType: 'ALL' },
         WarmThroughput: {
           ReadUnitsPerSecond: 15000,
@@ -3166,12 +3121,9 @@ test('Warm Throughput test on-demand', () => {
       },
       {
         IndexName: 'my-index-2',
-        KeySchema: [
-          { AttributeName: 'gsi2pk', KeyType: 'HASH' },
-        ],
+        KeySchema: [{ AttributeName: 'gsi2pk', KeyType: 'HASH' }],
         Projection: { ProjectionType: 'ALL' },
       },
     ],
   });
-
 });

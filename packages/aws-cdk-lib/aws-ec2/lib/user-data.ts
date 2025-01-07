@@ -175,14 +175,10 @@ class LinuxUserData extends UserData {
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
     const s3Path = `s3://${params.bucket.bucketName}/${params.bucketKey}`;
-    const localPath =
-      params.localFile && params.localFile.length !== 0
-        ? params.localFile
-        : `/tmp/${params.bucketKey}`;
+    const localPath = params.localFile && params.localFile.length !== 0 ? params.localFile : `/tmp/${params.bucketKey}`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'` +
-        (params.region !== undefined ? ` --region ${params.region}` : '')
+      `aws s3 cp '${s3Path}' '${localPath}'` + (params.region !== undefined ? ` --region ${params.region}` : '')
     );
 
     return localPath;
@@ -206,13 +202,7 @@ class LinuxUserData extends UserData {
 
   private renderOnExitLines(): string[] {
     if (this.onExitLines.length > 0) {
-      return [
-        'function exitTrap(){',
-        'exitCode=$?',
-        ...this.onExitLines,
-        '}',
-        'trap exitTrap EXIT',
-      ];
+      return ['function exitTrap(){', 'exitCode=$?', ...this.onExitLines, '}', 'trap exitTrap EXIT'];
     }
     return [];
   }
@@ -247,9 +237,7 @@ class WindowsUserData extends UserData {
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
     const localPath =
-      params.localFile && params.localFile.length !== 0
-        ? params.localFile
-        : `C:/temp/${params.bucketKey}`;
+      params.localFile && params.localFile.length !== 0 ? params.localFile : `C:/temp/${params.bucketKey}`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
       `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` +
@@ -276,13 +264,7 @@ class WindowsUserData extends UserData {
 
   private renderOnExitLines(): string[] {
     if (this.onExitLines.length > 0) {
-      return [
-        'trap {',
-        '$success=($PSItem.Exception.Message -eq "Success")',
-        ...this.onExitLines,
-        'break',
-        '}',
-      ];
+      return ['trap {', '$success=($PSItem.Exception.Message -eq "Success")', ...this.onExitLines, 'break', '}'];
     }
     return [];
   }

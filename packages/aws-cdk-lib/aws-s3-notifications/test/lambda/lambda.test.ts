@@ -5,7 +5,6 @@ import { Stack, App } from '../../../core';
 import * as s3n from '../../lib';
 
 test('add notifications to multiple functions', () => {
-
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn1 = new lambda.Function(stack, 'MyFunction1', {
@@ -42,37 +41,23 @@ test('add notifications to multiple functions', () => {
   // make sure each permission points to the correct function
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     FunctionName: {
-      'Fn::GetAtt': [
-        'MyFunction12A744C2E',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyFunction12A744C2E', 'Arn'],
     },
     SourceArn: {
-      'Fn::GetAtt': [
-        'MyBucketF68F3FF0',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     FunctionName: {
-      'Fn::GetAtt': [
-        'MyFunction2F2A964CA',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyFunction2F2A964CA', 'Arn'],
     },
     SourceArn: {
-      'Fn::GetAtt': [
-        'MyBucketF68F3FF0',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
     },
   });
-
 });
 
 test('lambda in a different stack as notification target', () => {
-
   const app = new App();
   const lambdaStack = new Stack(app, 'stack1');
   const bucketStack = new Stack(app, 'stack2');
@@ -92,10 +77,7 @@ test('lambda in a different stack as notification target', () => {
       'Fn::ImportValue': 'stack1:ExportsOutputFnGetAttlambdaFunction940E68ADArn6B2878AF',
     },
     SourceArn: {
-      'Fn::GetAtt': [
-        'bucket43879C71',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['bucket43879C71', 'Arn'],
     },
   });
 });
@@ -107,7 +89,11 @@ test('imported lambda in a different account as notification target', () => {
   });
 
   // Lambda account and stack account differ; no permissions should be created.
-  const lambdaFunction = lambda.Function.fromFunctionArn(stack, 'lambdaFunction', 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction');
+  const lambdaFunction = lambda.Function.fromFunctionArn(
+    stack,
+    'lambdaFunction',
+    'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction'
+  );
   const bucket = new s3.Bucket(stack, 'bucket');
 
   bucket.addObjectCreatedNotification(new s3n.LambdaDestination(lambdaFunction));
@@ -159,7 +145,11 @@ test('lambda as notification target specified by function arn', () => {
   // GIVEN
   const stack = new Stack();
   const bucketA = new s3.Bucket(stack, 'MyBucket');
-  const fn = lambda.Function.fromFunctionArn(stack, 'MyFunction', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
+  const fn = lambda.Function.fromFunctionArn(
+    stack,
+    'MyFunction',
+    'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords'
+  );
 
   // WHEN
   bucketA.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { suffix: '.png' });
@@ -183,7 +173,6 @@ test('lambda as notification target specified by function arn', () => {
 });
 
 test('permissions are added as a dependency to the notifications resource when using singleton function', () => {
-
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn = new lambda.SingletonFunction(stack, 'MyFunction', {
@@ -203,7 +192,6 @@ test('permissions are added as a dependency to the notifications resource when u
 });
 
 test('add multiple event notifications using a singleton function', () => {
-
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn = new lambda.SingletonFunction(stack, 'MyFunction', {
@@ -226,5 +214,4 @@ test('add multiple event notifications using a singleton function', () => {
       ],
     }),
   });
-
 });

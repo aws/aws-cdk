@@ -73,11 +73,7 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
 export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
   private readonly role: iam.IRole;
 
-  constructor(
-    scope: Construct,
-    id: string,
-    props: CloudFormationStackDriftDetectionCheckProps = {}
-  ) {
+  constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
     super(scope, id, {
       ...props,
       identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK,
@@ -131,10 +127,7 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
       identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_NOTIFICATION_CHECK,
       inputParameters:
         props.topics &&
-        props.topics.reduce(
-          (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }),
-          {}
-        ),
+        props.topics.reduce((params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }), {}),
       ruleScope: RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]),
     });
   }

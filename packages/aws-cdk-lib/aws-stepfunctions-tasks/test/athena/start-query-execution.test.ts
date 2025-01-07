@@ -4,7 +4,6 @@ import * as cdk from '../../../core';
 import { AthenaStartQueryExecution, EncryptionOption } from '../../lib/athena/start-query-execution';
 
 describe('Start Query Execution', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -318,16 +317,16 @@ describe('Start Query Execution', () => {
       },
       End: true,
       Parameters: {
-        'QueryString': 'CREATE DATABASE ?',
-        'ClientRequestToken': 'unique-client-request-token',
-        'QueryExecutionContext': {
+        QueryString: 'CREATE DATABASE ?',
+        ClientRequestToken: 'unique-client-request-token',
+        QueryExecutionContext: {
           Database: 'mydatabase',
           Catalog: 'AwsDataCatalog',
         },
-        'ResultConfiguration': {
+        ResultConfiguration: {
           OutputLocation: 's3://query-results-bucket/folder/',
         },
-        'WorkGroup': 'primary',
+        WorkGroup: 'primary',
         'ExecutionParameters.$': '$.executionParameters',
       },
     });
@@ -488,7 +487,6 @@ describe('Start Query Execution', () => {
         },
         resultReuseConfigurationMaxAge: cdk.Duration.minutes(10090),
       });
-    }).toThrow('resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got 10090',
-    );
+    }).toThrow('resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got 10090');
   });
 });

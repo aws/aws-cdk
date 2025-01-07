@@ -181,7 +181,9 @@ describe('health check', () => {
       const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
         runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
-        code: lambda.Code.fromInline('exports.handler = async function(event, context) { return { statusCode: 200 }; }'),
+        code: lambda.Code.fromInline(
+          'exports.handler = async function(event, context) { return { statusCode: 200 }; }'
+        ),
       });
 
       const cloudwatchAlarm = new cloudwatch.Alarm(stack, 'Alarm', {

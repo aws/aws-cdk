@@ -15,11 +15,9 @@ describe('mesh', () => {
         new appmesh.Mesh(stack, 'mesh', { meshName: 'test-mesh' });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::Mesh', {
-            Spec: {
-            },
-          });
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Mesh', {
+          Spec: {},
+        });
       });
     });
 
@@ -37,14 +35,13 @@ describe('mesh', () => {
         });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::Mesh', {
-            Spec: {
-              ServiceDiscovery: {
-                IpPreference: 'IPv4_ONLY',
-              },
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Mesh', {
+          Spec: {
+            ServiceDiscovery: {
+              IpPreference: 'IPv4_ONLY',
             },
-          });
+          },
+        });
       });
 
       test('should take egress filter from props', () => {
@@ -58,14 +55,13 @@ describe('mesh', () => {
         });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::Mesh', {
-            Spec: {
-              EgressFilter: {
-                Type: 'ALLOW_ALL',
-              },
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Mesh', {
+          Spec: {
+            EgressFilter: {
+              Type: 'ALLOW_ALL',
             },
-          });
+          },
+        });
       });
     });
   });
@@ -84,19 +80,18 @@ describe('mesh', () => {
         mesh.addVirtualRouter('router');
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::VirtualRouter', {
-            Spec: {
-              Listeners: [
-                {
-                  PortMapping: {
-                    Port: 8080,
-                    Protocol: 'http',
-                  },
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualRouter', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 8080,
+                  Protocol: 'http',
                 },
-              ],
-            },
-          });
+              },
+            ],
+          },
+        });
       });
     });
   });
@@ -146,7 +141,7 @@ describe('mesh', () => {
     });
     const service = namespace.createService('Svc');
 
-    const instanceAttribute : { [key: string]: string} = {};
+    const instanceAttribute: { [key: string]: string } = {};
     instanceAttribute.testKey = 'testValue';
 
     // WHEN
@@ -190,20 +185,19 @@ describe('mesh', () => {
         });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::VirtualNode', {
-            MeshName: {
-              'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
-            },
-            Spec: {
-              // Specifically: no Listeners and Backends
-              ServiceDiscovery: {
-                DNS: {
-                  Hostname: 'test.domain.local',
-                },
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          MeshName: {
+            'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
+          },
+          Spec: {
+            // Specifically: no Listeners and Backends
+            ServiceDiscovery: {
+              DNS: {
+                Hostname: 'test.domain.local',
               },
             },
-          });
+          },
+        });
       });
     });
     describe('with added listeners', () => {
@@ -218,28 +212,29 @@ describe('mesh', () => {
 
         mesh.addVirtualNode('test-node', {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 8080,
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.http({
+              port: 8080,
+            }),
+          ],
         });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::VirtualNode', {
-            MeshName: {
-              'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
-            },
-            Spec: {
-              Listeners: [
-                {
-                  PortMapping: {
-                    Port: 8080,
-                    Protocol: 'http',
-                  },
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          MeshName: {
+            'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
+          },
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 8080,
+                  Protocol: 'http',
                 },
-              ],
-            },
-          });
+              },
+            ],
+          },
+        });
       });
     });
     describe('with added listeners with healthchecks', () => {
@@ -254,40 +249,41 @@ describe('mesh', () => {
 
         mesh.addVirtualNode('test-node', {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 8080,
-            healthCheck: appmesh.HealthCheck.http({
-              healthyThreshold: 3,
-              path: '/',
-              interval: cdk.Duration.seconds(5), // min
-              timeout: cdk.Duration.seconds(2), // min
-              unhealthyThreshold: 2,
+          listeners: [
+            appmesh.VirtualNodeListener.http({
+              port: 8080,
+              healthCheck: appmesh.HealthCheck.http({
+                healthyThreshold: 3,
+                path: '/',
+                interval: cdk.Duration.seconds(5), // min
+                timeout: cdk.Duration.seconds(2), // min
+                unhealthyThreshold: 2,
+              }),
             }),
-          })],
+          ],
         });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::VirtualNode', {
-            MeshName: {
-              'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
-            },
-            Spec: {
-              Listeners: [
-                Match.objectLike({
-                  HealthCheck: {
-                    HealthyThreshold: 3,
-                    IntervalMillis: 5000,
-                    Path: '/',
-                    Port: 8080,
-                    Protocol: 'http',
-                    TimeoutMillis: 2000,
-                    UnhealthyThreshold: 2,
-                  },
-                }),
-              ],
-            },
-          });
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          MeshName: {
+            'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
+          },
+          Spec: {
+            Listeners: [
+              Match.objectLike({
+                HealthCheck: {
+                  HealthyThreshold: 3,
+                  IntervalMillis: 5000,
+                  Path: '/',
+                  Port: 8080,
+                  Protocol: 'http',
+                  TimeoutMillis: 2000,
+                  UnhealthyThreshold: 2,
+                },
+              }),
+            ],
+          },
+        });
       });
     });
     describe('with backends', () => {
@@ -307,25 +303,26 @@ describe('mesh', () => {
 
         mesh.addVirtualNode('test-node', {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 8080,
-          })],
+          listeners: [
+            appmesh.VirtualNodeListener.http({
+              port: 8080,
+            }),
+          ],
           backends: [appmesh.Backend.virtualService(service1)],
         });
 
         // THEN
-        Template.fromStack(stack).
-          hasResourceProperties('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Backends: [
-                {
-                  VirtualService: {
-                    VirtualServiceName: 'service1.domain.local',
-                  },
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: 'service1.domain.local',
                 },
-              ],
-            },
-          });
+              },
+            ],
+          },
+        });
       });
     });
   });
@@ -340,11 +337,10 @@ describe('mesh', () => {
     });
 
     // THEN
-    Template.fromStack(stack2).
-      hasResourceProperties('AWS::AppMesh::VirtualService', {
-        MeshName: 'abc',
-        Spec: {},
-        VirtualServiceName: 'test.domain.local',
-      });
+    Template.fromStack(stack2).hasResourceProperties('AWS::AppMesh::VirtualService', {
+      MeshName: 'abc',
+      Spec: {},
+      VirtualServiceName: 'test.domain.local',
+    });
   });
 });

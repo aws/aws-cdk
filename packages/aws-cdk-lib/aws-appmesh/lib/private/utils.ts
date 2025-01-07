@@ -78,9 +78,7 @@ export function renderListenerTlsOptions(
           ? {
               subjectAlternativeNames: tlsValidation.subjectAlternativeNames
                 ? {
-                    match:
-                      tlsValidation.subjectAlternativeNames.bind(scope)
-                        .subjectAlternativeNamesMatch,
+                    match: tlsValidation.subjectAlternativeNames.bind(scope).subjectAlternativeNamesMatch,
                   }
                 : undefined,
               trust: tlsValidation.trust.bind(scope).tlsValidationTrust,
@@ -103,10 +101,7 @@ export function renderMeshOwner(resourceAccount: string, meshAccount: string): s
 /**
  * This is the helper method to validate the length of HTTP match array when it is specified.
  */
-export function validateHttpMatchArrayLength(
-  headers?: HeaderMatch[],
-  queryParameters?: QueryParameterMatch[]
-) {
+export function validateHttpMatchArrayLength(headers?: HeaderMatch[], queryParameters?: QueryParameterMatch[]) {
   const MIN_LENGTH = 1;
   const MAX_LENGTH = 10;
 
@@ -116,10 +111,7 @@ export function validateHttpMatchArrayLength(
     );
   }
 
-  if (
-    queryParameters &&
-    (queryParameters.length < MIN_LENGTH || queryParameters.length > MAX_LENGTH)
-  ) {
+  if (queryParameters && (queryParameters.length < MIN_LENGTH || queryParameters.length > MAX_LENGTH)) {
     throw new Error(
       `Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`
     );
@@ -164,8 +156,6 @@ export function validateGrpcGatewayRouteMatch(match: GrpcGatewayRouteMatch): voi
     match.hostname === undefined &&
     match.port === undefined
   ) {
-    throw new Error(
-      'At least one gRPC gateway route match property beside rewriteRequestHostname must be provided'
-    );
+    throw new Error('At least one gRPC gateway route match property beside rewriteRequestHostname must be provided');
   }
 }

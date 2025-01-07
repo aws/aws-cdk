@@ -7,9 +7,7 @@ import * as elbv2 from '../../aws-elasticloadbalancingv2';
  * If you register a target of this type, you are responsible for making
  * sure the load balancer's security group can connect to the instance.
  */
-export class InstanceIdTarget
-  implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget
-{
+export class InstanceIdTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
   /**
    * Create a new Instance target
    *
@@ -27,9 +25,7 @@ export class InstanceIdTarget
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(
-    targetGroup: elbv2.IApplicationTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 
@@ -39,9 +35,7 @@ export class InstanceIdTarget
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(
-    targetGroup: elbv2.INetworkTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 

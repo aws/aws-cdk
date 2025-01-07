@@ -8,7 +8,7 @@ describe('Task utils', () => {
       // GIVEN
       const supportedPatterns: IntegrationPattern[] = [IntegrationPattern.REQUEST_RESPONSE];
 
-      expect( () => {
+      expect(() => {
         validatePatternSupported(IntegrationPattern.REQUEST_RESPONSE, supportedPatterns);
       }).not.toThrow();
     });
@@ -17,14 +17,13 @@ describe('Task utils', () => {
       // GIVEN
       const supportedPatterns: IntegrationPattern[] = [IntegrationPattern.RUN_JOB];
 
-      expect( () => {
+      expect(() => {
         validatePatternSupported(IntegrationPattern.WAIT_FOR_TASK_TOKEN, supportedPatterns);
       }).toThrow(/Unsupported service integration pattern. Supported Patterns: RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
     });
   });
 
   describe('integration resource Arn', () => {
-
     let service: string;
     let api: string;
     let stack: cdk.Stack;
@@ -42,14 +41,7 @@ describe('Task utils', () => {
 
       // THEN
       expect(stack.resolve(resourceArn)).toEqual({
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':states:::lambda:invoke',
-          ],
-        ],
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':states:::lambda:invoke']],
       });
     });
 
@@ -59,14 +51,7 @@ describe('Task utils', () => {
 
       // THEN
       expect(stack.resolve(resourceArn)).toEqual({
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':states:::lambda:invoke.sync',
-          ],
-        ],
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':states:::lambda:invoke.sync']],
       });
     });
 
@@ -76,14 +61,7 @@ describe('Task utils', () => {
 
       // THEN
       expect(stack.resolve(resourceArn)).toEqual({
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':states:::lambda:invoke.waitForTaskToken',
-          ],
-        ],
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':states:::lambda:invoke.waitForTaskToken']],
       });
     });
 
@@ -97,5 +75,4 @@ describe('Task utils', () => {
       }).toThrow(/Both 'service' and 'api' must be provided to build the resource ARN./);
     });
   });
-
 });

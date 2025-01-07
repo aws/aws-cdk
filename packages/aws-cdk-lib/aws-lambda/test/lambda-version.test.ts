@@ -13,7 +13,11 @@ describe('lambda version', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:version');
+    const version = lambda.Version.fromVersionArn(
+      stack,
+      'Version',
+      'arn:aws:lambda:region:account-id:function:function-name:version'
+    );
 
     new cdk.CfnOutput(stack, 'ARN', { value: version.functionArn });
     new cdk.CfnOutput(stack, 'Name', { value: version.functionName });
@@ -76,10 +80,7 @@ describe('lambda version', () => {
         Ref: 'Fn9270CBC0',
       },
       Qualifier: {
-        'Fn::GetAtt': [
-          'Version6A868472',
-          'Version',
-        ],
+        'Fn::GetAtt': ['Version6A868472', 'Version'],
       },
       MaximumEventAgeInSeconds: 3600,
       MaximumRetryAttempts: 0,
@@ -101,14 +102,24 @@ describe('lambda version', () => {
     });
 
     // THEN
-    expect(() => version.configureAsyncInvoke({ retryAttempts: 1 })).toThrow(/An EventInvokeConfig has already been configured/);
+    expect(() => version.configureAsyncInvoke({ retryAttempts: 1 })).toThrow(
+      /An EventInvokeConfig has already been configured/
+    );
   });
 
   test('event invoke config on imported versions', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const version1 = lambda.Version.fromVersionArn(stack, 'Version1', 'arn:aws:lambda:region:account-id:function:function-name:version1');
-    const version2 = lambda.Version.fromVersionArn(stack, 'Version2', 'arn:aws:lambda:region:account-id:function:function-name:version2');
+    const version1 = lambda.Version.fromVersionArn(
+      stack,
+      'Version1',
+      'arn:aws:lambda:region:account-id:function:function-name:version1'
+    );
+    const version2 = lambda.Version.fromVersionArn(
+      stack,
+      'Version2',
+      'arn:aws:lambda:region:account-id:function:function-name:version2'
+    );
 
     // WHEN
     version1.configureAsyncInvoke({
@@ -150,10 +161,7 @@ describe('lambda version', () => {
         Ref: 'Fn9270CBC0',
       },
       FunctionVersion: {
-        'Fn::GetAtt': [
-          'FnCurrentVersion17A89ABB30f50e285b0533137b4b353595c6ba57',
-          'Version',
-        ],
+        'Fn::GetAtt': ['FnCurrentVersion17A89ABB30f50e285b0533137b4b353595c6ba57', 'Version'],
       },
       Name: 'foo',
     });
@@ -176,7 +184,11 @@ describe('lambda version', () => {
   test('edgeArn throws with $LATEST', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:$LATEST');
+    const version = lambda.Version.fromVersionArn(
+      stack,
+      'Version',
+      'arn:aws:lambda:region:account-id:function:function-name:$LATEST'
+    );
 
     // THEN
     expect(() => version.edgeArn).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);

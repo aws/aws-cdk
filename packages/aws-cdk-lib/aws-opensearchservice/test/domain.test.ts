@@ -26,10 +26,7 @@ beforeEach(() => {
 
 const readActions = ['ESHttpGet', 'ESHttpHead'];
 const writeActions = ['ESHttpDelete', 'ESHttpPost', 'ESHttpPut', 'ESHttpPatch'];
-const readWriteActions = [
-  ...readActions,
-  ...writeActions,
-];
+const readWriteActions = [...readActions, ...writeActions];
 
 const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_1_0,
@@ -48,16 +45,16 @@ const testedOpenSearchVersions = [
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
-
   expect(() => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
     }).connections;
-  }).toThrow("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+  }).toThrow(
+    "Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC"
+  );
 });
 
 each(testedOpenSearchVersions).test('subnets and security groups can be provided when vpc is used', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const securityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
     vpc,
@@ -74,10 +71,7 @@ each(testedOpenSearchVersions).test('subnets and security groups can be provided
     VPCOptions: {
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'CustomSecurityGroupE5E500E5',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['CustomSecurityGroupE5E500E5', 'GroupId'],
         },
       ],
       SubnetIds: [
@@ -87,26 +81,23 @@ each(testedOpenSearchVersions).test('subnets and security groups can be provided
       ],
     },
   });
-
 });
 
 each(testedOpenSearchVersions).test('default subnets and security group when vpc is used', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
     vpc,
   });
 
-  expect(stack.resolve(domain.connections.securityGroups[0].securityGroupId)).toEqual({ 'Fn::GetAtt': ['DomainSecurityGroup48AA5FD6', 'GroupId'] });
+  expect(stack.resolve(domain.connections.securityGroups[0].securityGroupId)).toEqual({
+    'Fn::GetAtt': ['DomainSecurityGroup48AA5FD6', 'GroupId'],
+  });
   Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
     VPCOptions: {
       SecurityGroupIds: [
         {
-          'Fn::GetAtt': [
-            'DomainSecurityGroup48AA5FD6',
-            'GroupId',
-          ],
+          'Fn::GetAtt': ['DomainSecurityGroup48AA5FD6', 'GroupId'],
         },
       ],
       SubnetIds: [
@@ -122,11 +113,9 @@ each(testedOpenSearchVersions).test('default subnets and security group when vpc
       ],
     },
   });
-
 });
 
 each(testedOpenSearchVersions).test('connections has no default port if enforceHttps is false', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
@@ -135,11 +124,9 @@ each(testedOpenSearchVersions).test('connections has no default port if enforceH
   });
 
   expect(domain.connections.defaultPort).toBeUndefined();
-
 });
 
 each(testedOpenSearchVersions).test('connections has default port 443 if enforceHttps is true', (engineVersion) => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: engineVersion,
@@ -148,7 +135,6 @@ each(testedOpenSearchVersions).test('connections has default port 443 if enforce
   });
 
   expect(domain.connections.defaultPort).toEqual(Port.tcp(443));
-
 });
 
 each(testedOpenSearchVersions).test('default removalpolicy is retain', (engineVersion) => {
@@ -162,7 +148,6 @@ each(testedOpenSearchVersions).test('default removalpolicy is retain', (engineVe
 });
 
 each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engineVersion) => {
-
   const key = new kms.Key(stack, 'Key');
 
   new Domain(stack, 'Domain', {
@@ -177,17 +162,10 @@ each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engin
   const expectedPolicy = {
     Statement: [
       {
-        Action: [
-          'kms:List*',
-          'kms:Describe*',
-          'kms:CreateGrant',
-        ],
+        Action: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
         Effect: 'Allow',
         Resource: {
-          'Fn::GetAtt': [
-            'Key961B73FD',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Key961B73FD', 'Arn'],
         },
       },
     ],
@@ -195,8 +173,9 @@ each([testedOpenSearchVersions]).test('grants kms permissions if needed', (engin
   };
 
   const resources = Template.fromStack(stack).toJSON().Resources;
-  expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
-
+  expect(
+    resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument
+  ).toStrictEqual(expectedPolicy);
 });
 
 each([
@@ -268,7 +247,7 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
       effect: iam.Effect.ALLOW,
       principals: [new iam.AccountPrincipal('5678')],
       resources: [domain.domainArn, `${domain.domainArn}/*`],
-    }),
+    })
   );
 
   const expectedPolicy = {
@@ -285,17 +264,11 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
         },
         ':iam::5678:root\\"},\\"Resource\\":[\\"',
         {
-          'Fn::GetAtt': [
-            'Domain66AC69E0',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Domain66AC69E0', 'Arn'],
         },
         '\\",\\"',
         {
-          'Fn::GetAtt': [
-            'Domain66AC69E0',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Domain66AC69E0', 'Arn'],
         },
         '/*\\"]}],\\"Version\\":\\"2012-10-17\\"}"},"outputPaths":["DomainConfig.AccessPolicies"],"physicalResourceId":{"id":"',
         {
@@ -307,10 +280,7 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
   };
   Template.fromStack(stack).hasResourceProperties('Custom::OpenSearchAccessPolicy', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AWS679f53fac002430cb0da5b7982bd22872D164C4C', 'Arn'],
     },
     Create: expectedPolicy,
     Update: expectedPolicy,
@@ -318,7 +288,6 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
 });
 
 each([testedOpenSearchVersions]).describe('UltraWarm instances', (engineVersion) => {
-
   test('can enable UltraWarm instances', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
@@ -357,7 +326,6 @@ each([testedOpenSearchVersions]).describe('UltraWarm instances', (engineVersion)
       },
     });
   });
-
 });
 
 each([testedOpenSearchVersions]).test('can use tokens in capacity configuration', (engineVersion) => {
@@ -399,60 +367,77 @@ each([testedOpenSearchVersions]).test('can use tokens in capacity configuration'
   });
 });
 
-each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in capacity configuration', (engineVersion) => {
-  new Domain(stack, 'Domain', {
-    version: engineVersion,
-    capacity: {
-      multiAzWithStandbyEnabled: true,
-    },
-  });
+each([testedOpenSearchVersions]).test(
+  'can specify multiAZWithStandbyEnabled in capacity configuration',
+  (engineVersion) => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        multiAzWithStandbyEnabled: true,
+      },
+    });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
-    ClusterConfig: {
-      MultiAZWithStandbyEnabled: true,
-    },
-  });
-});
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      ClusterConfig: {
+        MultiAZWithStandbyEnabled: true,
+      },
+    });
+  }
+);
 
-each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (data node)', (engineVersion) => {
-  expect(() => new Domain(stack, 'Domain', {
-    version: engineVersion,
-    capacity: {
-      dataNodeInstanceType: 't3.medium.search',
-      multiAzWithStandbyEnabled: true,
-    },
-  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
-});
+each([testedOpenSearchVersions]).test(
+  'multiAZWithStandbyEnabled: true throws with t3 instance type (data node)',
+  (engineVersion) => {
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          capacity: {
+            dataNodeInstanceType: 't3.medium.search',
+            multiAzWithStandbyEnabled: true,
+          },
+        })
+    ).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
+  }
+);
 
-each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (master node)', (engineVersion) => {
-  expect(() => new Domain(stack, 'Domain', {
-    version: engineVersion,
-    capacity: {
-      masterNodeInstanceType: 't3.medium.search',
-      masterNodes: 1,
-      multiAzWithStandbyEnabled: true,
-    },
-  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
-});
+each([testedOpenSearchVersions]).test(
+  'multiAZWithStandbyEnabled: true throws with t3 instance type (master node)',
+  (engineVersion) => {
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          capacity: {
+            masterNodeInstanceType: 't3.medium.search',
+            masterNodes: 1,
+            multiAzWithStandbyEnabled: true,
+          },
+        })
+    ).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
+  }
+);
 
-each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
-  const stackWithFlag = new Stack(app, 'StackWithFlag', {
-    env: { account: '1234', region: 'testregion' },
-  });
-  stackWithFlag.node.setContext(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, true);
-  new Domain(stackWithFlag, 'Domain', {
-    version: engineVersion,
-  });
+each([testedOpenSearchVersions]).test(
+  'ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value',
+  (engineVersion) => {
+    const stackWithFlag = new Stack(app, 'StackWithFlag', {
+      env: { account: '1234', region: 'testregion' },
+    });
+    stackWithFlag.node.setContext(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, true);
+    new Domain(stackWithFlag, 'Domain', {
+      version: engineVersion,
+    });
 
-  Template.fromStack(stackWithFlag).hasResourceProperties('AWS::OpenSearchService::Domain', {
-    ClusterConfig: {
-      MultiAZWithStandbyEnabled: true,
-    },
-  });
-});
+    Template.fromStack(stackWithFlag).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      ClusterConfig: {
+        MultiAZWithStandbyEnabled: true,
+      },
+    });
+  }
+);
 
 each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
-
   test('slowSearchLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
@@ -466,10 +451,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'DomainSlowSearchLogs5B35A97A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['DomainSlowSearchLogs5B35A97A', 'Arn'],
           },
           Enabled: true,
         },
@@ -493,10 +475,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'DomainSlowIndexLogsFE2F1061',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['DomainSlowIndexLogsFE2F1061', 'Arn'],
           },
           Enabled: true,
         },
@@ -520,10 +499,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'DomainAppLogs21698C1B',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['DomainAppLogs21698C1B', 'Arn'],
           },
           Enabled: true,
         },
@@ -555,10 +531,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         AUDIT_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'DomainAuditLogs608E0FA6',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['DomainAuditLogs608E0FA6', 'Arn'],
           },
           Enabled: true,
         },
@@ -592,28 +565,19 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'Domain1AppLogs6E8D1D67',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Domain1AppLogs6E8D1D67', 'Arn'],
           },
           Enabled: true,
         },
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'Domain1SlowSearchLogs8F3B0506',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Domain1SlowSearchLogs8F3B0506', 'Arn'],
           },
           Enabled: true,
         },
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'Domain1SlowIndexLogs9354D098',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Domain1SlowIndexLogs9354D098', 'Arn'],
           },
           Enabled: true,
         },
@@ -624,28 +588,19 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'Domain2AppLogs810876E2',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Domain2AppLogs810876E2', 'Arn'],
           },
           Enabled: true,
         },
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'Domain2SlowSearchLogs0C75F64B',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Domain2SlowSearchLogs0C75F64B', 'Arn'],
           },
           Enabled: true,
         },
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'Domain2SlowIndexLogs0CB900D0',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['Domain2SlowIndexLogs0CB900D0', 'Arn'],
           },
           Enabled: true,
         },
@@ -676,10 +631,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
           [
             '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"ESLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"',
             {
-              'Fn::GetAtt': [
-                'Domain1AppLogs6E8D1D67',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Domain1AppLogs6E8D1D67', 'Arn'],
             },
             '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"}}',
           ],
@@ -694,10 +646,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
           [
             '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"ESLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"',
             {
-              'Fn::GetAtt': [
-                'Domain2AppLogs810876E2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Domain2AppLogs810876E2', 'Arn'],
             },
             '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"}}',
           ],
@@ -707,12 +656,15 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
   });
 
   test('enabling audit logs throws without fine grained access control enabled', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      logging: {
-        auditLogEnabled: true,
-      },
-    })).toThrow(/Fine-grained access control is required when audit logs publishing is enabled\./);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          logging: {
+            auditLogEnabled: true,
+          },
+        })
+    ).toThrow(/Fine-grained access control is required when audit logs publishing is enabled\./);
   });
 
   test('slowSearchLogGroup should use a custom log group', () => {
@@ -731,10 +683,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'SlowSearchLogsE00DC2E7',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['SlowSearchLogsE00DC2E7', 'Arn'],
           },
           Enabled: true,
         },
@@ -761,10 +710,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'SlowIndexLogsAD49DED0',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['SlowIndexLogsAD49DED0', 'Arn'],
           },
           Enabled: true,
         },
@@ -791,10 +737,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'AppLogsC5DF83A6',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['AppLogsC5DF83A6', 'Arn'],
           },
           Enabled: true,
         },
@@ -829,10 +772,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         AUDIT_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'AuditLogsB945E340',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['AuditLogsB945E340', 'Arn'],
           },
           Enabled: true,
         },
@@ -860,10 +800,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
-            'Fn::GetAtt': [
-              'AppLogsC5DF83A6',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['AppLogsC5DF83A6', 'Arn'],
           },
           Enabled: true,
         },
@@ -960,7 +897,6 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
 });
 
 each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
-
   test('"grantRead" allows read actions associated with this domain resource', () => {
     testGrant(readActions, (p, d) => d.grantRead(p), engineVersion);
   });
@@ -974,63 +910,42 @@ each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
   });
 
   test('"grantIndexRead" allows read actions associated with an index in this domain resource', () => {
-    testGrant(
-      readActions,
-      (p, d) => d.grantIndexRead('my-index', p),
-      engineVersion,
-      false,
-      ['/my-index', '/my-index/*'],
-    );
+    testGrant(readActions, (p, d) => d.grantIndexRead('my-index', p), engineVersion, false, [
+      '/my-index',
+      '/my-index/*',
+    ]);
   });
 
   test('"grantIndexWrite" allows write actions associated with an index in this domain resource', () => {
-    testGrant(
-      writeActions,
-      (p, d) => d.grantIndexWrite('my-index', p),
-      engineVersion,
-      false,
-      ['/my-index', '/my-index/*'],
-    );
+    testGrant(writeActions, (p, d) => d.grantIndexWrite('my-index', p), engineVersion, false, [
+      '/my-index',
+      '/my-index/*',
+    ]);
   });
 
   test('"grantIndexReadWrite" allows read and write actions associated with an index in this domain resource', () => {
-    testGrant(
-      readWriteActions,
-      (p, d) => d.grantIndexReadWrite('my-index', p),
-      engineVersion,
-      false,
-      ['/my-index', '/my-index/*'],
-    );
+    testGrant(readWriteActions, (p, d) => d.grantIndexReadWrite('my-index', p), engineVersion, false, [
+      '/my-index',
+      '/my-index/*',
+    ]);
   });
 
   test('"grantPathRead" allows read actions associated with a given path in this domain resource', () => {
-    testGrant(
-      readActions,
-      (p, d) => d.grantPathRead('my-index/my-path', p),
-      engineVersion,
-      false,
-      ['/my-index/my-path'],
-    );
+    testGrant(readActions, (p, d) => d.grantPathRead('my-index/my-path', p), engineVersion, false, [
+      '/my-index/my-path',
+    ]);
   });
 
   test('"grantPathWrite" allows write actions associated with a given path in this domain resource', () => {
-    testGrant(
-      writeActions,
-      (p, d) => d.grantPathWrite('my-index/my-path', p),
-      engineVersion,
-      false,
-      ['/my-index/my-path'],
-    );
+    testGrant(writeActions, (p, d) => d.grantPathWrite('my-index/my-path', p), engineVersion, false, [
+      '/my-index/my-path',
+    ]);
   });
 
   test('"grantPathReadWrite" allows read and write actions associated with a given path in this domain resource', () => {
-    testGrant(
-      readWriteActions,
-      (p, d) => d.grantPathReadWrite('my-index/my-path', p),
-      engineVersion,
-      false,
-      ['/my-index/my-path'],
-    );
+    testGrant(readWriteActions, (p, d) => d.grantPathReadWrite('my-index/my-path', p), engineVersion, false, [
+      '/my-index/my-path',
+    ]);
   });
 
   test('"grant" for an imported domain', () => {
@@ -1091,18 +1006,11 @@ each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
       ],
     });
   });
-
 });
 
 each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
-
   test('metricClusterStatusRed', () => {
-    testMetric(
-      (domain) => domain.metricClusterStatusRed(),
-      'ClusterStatus.red',
-      engineVersion,
-      Statistic.MAXIMUM,
-    );
+    testMetric((domain) => domain.metricClusterStatusRed(), 'ClusterStatus.red', engineVersion, Statistic.MAXIMUM);
   });
 
   test('metricClusterStatusYellow', () => {
@@ -1110,17 +1018,12 @@ each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
       (domain) => domain.metricClusterStatusYellow(),
       'ClusterStatus.yellow',
       engineVersion,
-      Statistic.MAXIMUM,
+      Statistic.MAXIMUM
     );
   });
 
   test('metricFreeStorageSpace', () => {
-    testMetric(
-      (domain) => domain.metricFreeStorageSpace(),
-      'FreeStorageSpace',
-      engineVersion,
-      Statistic.MINIMUM,
-    );
+    testMetric((domain) => domain.metricFreeStorageSpace(), 'FreeStorageSpace', engineVersion, Statistic.MINIMUM);
   });
 
   test('metricClusterIndexWriteBlocked', () => {
@@ -1129,18 +1032,12 @@ each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
       'ClusterIndexWritesBlocked',
       engineVersion,
       Statistic.MAXIMUM,
-      Duration.minutes(1),
+      Duration.minutes(1)
     );
   });
 
   test('metricNodes', () => {
-    testMetric(
-      (domain) => domain.metricNodes(),
-      'Nodes',
-      engineVersion,
-      Statistic.MINIMUM,
-      Duration.hours(1),
-    );
+    testMetric((domain) => domain.metricNodes(), 'Nodes', engineVersion, Statistic.MINIMUM, Duration.hours(1));
   });
 
   test('metricAutomatedSnapshotFailure', () => {
@@ -1148,26 +1045,16 @@ each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
       (domain) => domain.metricAutomatedSnapshotFailure(),
       'AutomatedSnapshotFailure',
       engineVersion,
-      Statistic.MAXIMUM,
+      Statistic.MAXIMUM
     );
   });
 
   test('metricCPUUtilization', () => {
-    testMetric(
-      (domain) => domain.metricCPUUtilization(),
-      'CPUUtilization',
-      engineVersion,
-      Statistic.MAXIMUM,
-    );
+    testMetric((domain) => domain.metricCPUUtilization(), 'CPUUtilization', engineVersion, Statistic.MAXIMUM);
   });
 
   test('metricJVMMemoryPressure', () => {
-    testMetric(
-      (domain) => domain.metricJVMMemoryPressure(),
-      'JVMMemoryPressure',
-      engineVersion,
-      Statistic.MAXIMUM,
-    );
+    testMetric((domain) => domain.metricJVMMemoryPressure(), 'JVMMemoryPressure', engineVersion, Statistic.MAXIMUM);
   });
 
   test('metricMasterCPUUtilization', () => {
@@ -1175,7 +1062,7 @@ each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
       (domain) => domain.metricMasterCPUUtilization(),
       'MasterCPUUtilization',
       engineVersion,
-      Statistic.MAXIMUM,
+      Statistic.MAXIMUM
     );
   });
 
@@ -1184,59 +1071,32 @@ each(testedOpenSearchVersions).describe('metrics', (engineVersion) => {
       (domain) => domain.metricMasterJVMMemoryPressure(),
       'MasterJVMMemoryPressure',
       engineVersion,
-      Statistic.MAXIMUM,
+      Statistic.MAXIMUM
     );
   });
 
   test('metricKMSKeyError', () => {
-    testMetric(
-      (domain) => domain.metricKMSKeyError(),
-      'KMSKeyError',
-      engineVersion,
-      Statistic.MAXIMUM,
-    );
+    testMetric((domain) => domain.metricKMSKeyError(), 'KMSKeyError', engineVersion, Statistic.MAXIMUM);
   });
 
   test('metricKMSKeyInaccessible', () => {
-    testMetric(
-      (domain) => domain.metricKMSKeyInaccessible(),
-      'KMSKeyInaccessible',
-      engineVersion,
-      Statistic.MAXIMUM,
-    );
+    testMetric((domain) => domain.metricKMSKeyInaccessible(), 'KMSKeyInaccessible', engineVersion, Statistic.MAXIMUM);
   });
 
   test('metricSearchableDocuments', () => {
-    testMetric(
-      (domain) => domain.metricSearchableDocuments(),
-      'SearchableDocuments',
-      engineVersion,
-      Statistic.MAXIMUM,
-    );
+    testMetric((domain) => domain.metricSearchableDocuments(), 'SearchableDocuments', engineVersion, Statistic.MAXIMUM);
   });
 
   test('metricSearchLatency', () => {
-    testMetric(
-      (domain) => domain.metricSearchLatency(),
-      'SearchLatency',
-      engineVersion,
-      'p99',
-    );
+    testMetric((domain) => domain.metricSearchLatency(), 'SearchLatency', engineVersion, 'p99');
   });
 
   test('metricIndexingLatency', () => {
-    testMetric(
-      (domain) => domain.metricIndexingLatency(),
-      'IndexingLatency',
-      engineVersion,
-      'p99',
-    );
+    testMetric((domain) => domain.metricIndexingLatency(), 'IndexingLatency', engineVersion, 'p99');
   });
-
 });
 
 describe('import', () => {
-
   test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
@@ -1432,59 +1292,73 @@ each(testedOpenSearchVersions).describe('advanced security options', (engineVers
   });
 
   test('enabling fine-grained access control throws with Elasticsearch version < 6.7', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: EngineVersion.ELASTICSEARCH_6_5,
-      fineGrainedAccessControl: {
-        masterUserArn,
-      },
-      encryptionAtRest: {
-        enabled: true,
-      },
-      nodeToNodeEncryption: true,
-      enforceHttps: true,
-    })).toThrow(/Fine-grained access control requires Elasticsearch version 6\.7 or later or OpenSearch version 1\.0 or later/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: EngineVersion.ELASTICSEARCH_6_5,
+          fineGrainedAccessControl: {
+            masterUserArn,
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        })
+    ).toThrow(
+      /Fine-grained access control requires Elasticsearch version 6\.7 or later or OpenSearch version 1\.0 or later/
+    );
   });
 
   test('enabling fine-grained access control throws without node-to-node encryption enabled', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      fineGrainedAccessControl: {
-        masterUserArn,
-      },
-      encryptionAtRest: {
-        enabled: true,
-      },
-      nodeToNodeEncryption: false,
-      enforceHttps: true,
-    })).toThrow(/Node-to-node encryption is required when fine-grained access control is enabled/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: false,
+          enforceHttps: true,
+        })
+    ).toThrow(/Node-to-node encryption is required when fine-grained access control is enabled/);
   });
 
   test('enabling fine-grained access control throws without encryption-at-rest enabled', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      fineGrainedAccessControl: {
-        masterUserArn,
-      },
-      encryptionAtRest: {
-        enabled: false,
-      },
-      nodeToNodeEncryption: true,
-      enforceHttps: true,
-    })).toThrow(/Encryption-at-rest is required when fine-grained access control is enabled/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+          },
+          encryptionAtRest: {
+            enabled: false,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: true,
+        })
+    ).toThrow(/Encryption-at-rest is required when fine-grained access control is enabled/);
   });
 
   test('enabling fine-grained access control throws without enforceHttps enabled', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      fineGrainedAccessControl: {
-        masterUserArn,
-      },
-      encryptionAtRest: {
-        enabled: true,
-      },
-      nodeToNodeEncryption: true,
-      enforceHttps: false,
-    })).toThrow(/Enforce HTTPS is required when fine-grained access control is enabled/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          fineGrainedAccessControl: {
+            masterUserArn,
+          },
+          encryptionAtRest: {
+            enabled: true,
+          },
+          nodeToNodeEncryption: true,
+          enforceHttps: false,
+        })
+    ).toThrow(/Enforce HTTPS is required when fine-grained access control is enabled/);
   });
 
   describe('SAML authentication', () => {
@@ -1750,10 +1624,7 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
       },
       ResourceRecords: [
         {
-          'Fn::GetAtt': [
-            'Domain66AC69E0',
-            'DomainEndpoint',
-          ],
+          'Fn::GetAtt': ['Domain66AC69E0', 'DomainEndpoint'],
         },
       ],
     });
@@ -1796,35 +1667,33 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
       },
       ResourceRecords: [
         {
-          'Fn::GetAtt': [
-            'Domain66AC69E0',
-            'DomainEndpoint',
-          ],
+          'Fn::GetAtt': ['Domain66AC69E0', 'DomainEndpoint'],
         },
       ],
     });
   });
-
 });
 
 each(testedOpenSearchVersions).describe('custom error responses', (engineVersion) => {
-
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
     const vpc = new Vpc(stack, 'Vpc', {
       maxAzs: 1,
     });
 
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      zoneAwareness: {
-        enabled: true,
-        availabilityZoneCount: 2,
-      },
-      vpc,
-    })).toThrow(/you need to provide a subnet for each AZ you are using/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          zoneAwareness: {
+            enabled: true,
+            availabilityZoneCount: 2,
+          },
+          vpc,
+        })
+    ).toThrow(/you need to provide a subnet for each AZ you are using/);
   });
 
-  test('Imported VPC with subnets that are still pending lookup won\'t throw Az count mismatch', () => {
+  test("Imported VPC with subnets that are still pending lookup won't throw Az count mismatch", () => {
     const vpc = Vpc.fromLookup(stack, 'ExampleVpc', {
       vpcId: 'vpc-123',
     });
@@ -1847,121 +1716,175 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
 
   test('error when master, data or Ultra Warm instance types do not end with .search', () => {
     const error = /instance types must end with ".search"/;
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      capacity: {
-        masterNodeInstanceType: 'c5.large',
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType: 'c5.2xlarge',
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: engineVersion,
-      capacity: {
-        warmInstanceType: 'ultrawarm1.medium',
-      },
-    })).toThrow(error);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: engineVersion,
+          capacity: {
+            masterNodeInstanceType: 'c5.large',
+          },
+        })
+    ).toThrow(error);
+    expect(
+      () =>
+        new Domain(stack, 'Domain2', {
+          version: engineVersion,
+          capacity: {
+            dataNodeInstanceType: 'c5.2xlarge',
+          },
+        })
+    ).toThrow(error);
+    expect(
+      () =>
+        new Domain(stack, 'Domain3', {
+          version: engineVersion,
+          capacity: {
+            warmInstanceType: 'ultrawarm1.medium',
+          },
+        })
+    ).toThrow(error);
   });
 
   test('error when Ultra Warm instance types do not start with ultrawarm', () => {
     const error = /UltraWarm node instance type must start with "ultrawarm"./;
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      capacity: {
-        warmInstanceType: 't3.small.search',
-      },
-    })).toThrow(error);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: engineVersion,
+          capacity: {
+            warmInstanceType: 't3.small.search',
+          },
+        })
+    ).toThrow(error);
   });
 
   test('error when Elasticsearch version is unsupported/unknown', () => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.elasticsearch('5.4'),
-    })).toThrow('Unknown Elasticsearch version: 5.4');
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: EngineVersion.elasticsearch('5.4'),
+        })
+    ).toThrow('Unknown Elasticsearch version: 5.4');
   });
 
   test('error when invalid domain name is given', () => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.OPENSEARCH_1_0,
-      domainName: 'InvalidName',
-    })).toThrow(/Valid characters are a-z/);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: EngineVersion.OPENSEARCH_1_0,
-      domainName: 'a'.repeat(29),
-    })).toThrow(/It must be between 3 and 28 characters/);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: EngineVersion.OPENSEARCH_1_0,
-      domainName: '123domain',
-    })).toThrow(/It must start with a lowercase letter/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: EngineVersion.OPENSEARCH_1_0,
+          domainName: 'InvalidName',
+        })
+    ).toThrow(/Valid characters are a-z/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain2', {
+          version: EngineVersion.OPENSEARCH_1_0,
+          domainName: 'a'.repeat(29),
+        })
+    ).toThrow(/It must be between 3 and 28 characters/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain3', {
+          version: EngineVersion.OPENSEARCH_1_0,
+          domainName: '123domain',
+        })
+    ).toThrow(/It must start with a lowercase letter/);
   });
 
   test('error when error log publishing is enabled for Elasticsearch version < 5.1', () => {
-    const error = /Error logs publishing requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later/;
-    expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.ELASTICSEARCH_2_3,
-      logging: {
-        appLogEnabled: true,
-      },
-    })).toThrow(error);
+    const error =
+      /Error logs publishing requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later/;
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: EngineVersion.ELASTICSEARCH_2_3,
+          logging: {
+            appLogEnabled: true,
+          },
+        })
+    ).toThrow(error);
   });
 
   test('error when encryption at rest is enabled for Elasticsearch version < 5.1', () => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.ELASTICSEARCH_2_3,
-      encryptionAtRest: {
-        enabled: true,
-      },
-    })).toThrow(/Encryption of data at rest requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: EngineVersion.ELASTICSEARCH_2_3,
+          encryptionAtRest: {
+            enabled: true,
+          },
+        })
+    ).toThrow(
+      /Encryption of data at rest requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later/
+    );
   });
 
   test('error when cognito for OpenSearch Dashboards is enabled for elasticsearch version < 5.1', () => {
     const user = new iam.User(stack, 'user');
-    expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.ELASTICSEARCH_2_3,
-      cognitoDashboardsAuth: {
-        identityPoolId: 'test-identity-pool-id',
-        role: new iam.Role(stack, 'Role', { assumedBy: user }),
-        userPoolId: 'test-user-pool-id',
-      },
-    })).toThrow(/Cognito authentication for OpenSearch Dashboards requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: EngineVersion.ELASTICSEARCH_2_3,
+          cognitoDashboardsAuth: {
+            identityPoolId: 'test-identity-pool-id',
+            role: new iam.Role(stack, 'Role', { assumedBy: user }),
+            userPoolId: 'test-user-pool-id',
+          },
+        })
+    ).toThrow(
+      /Cognito authentication for OpenSearch Dashboards requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later/
+    );
   });
 
   test('error when C5, I3, M5, or R5 instance types are specified for Elasticsearch version < 5.1', () => {
-    const error = /C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later/;
-    expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.ELASTICSEARCH_2_3,
-      capacity: {
-        masterNodeInstanceType: 'c5.medium.search',
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: EngineVersion.ELASTICSEARCH_1_5,
-      capacity: {
-        dataNodeInstanceType: 'i3.2xlarge.search',
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: EngineVersion.ELASTICSEARCH_1_5,
-      capacity: {
-        dataNodeInstanceType: 'm5.2xlarge.search',
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain4', {
-      version: EngineVersion.ELASTICSEARCH_1_5,
-      capacity: {
-        masterNodeInstanceType: 'r5.2xlarge.search',
-      },
-    })).toThrow(error);
+    const error =
+      /C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later/;
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: EngineVersion.ELASTICSEARCH_2_3,
+          capacity: {
+            masterNodeInstanceType: 'c5.medium.search',
+          },
+        })
+    ).toThrow(error);
+    expect(
+      () =>
+        new Domain(stack, 'Domain2', {
+          version: EngineVersion.ELASTICSEARCH_1_5,
+          capacity: {
+            dataNodeInstanceType: 'i3.2xlarge.search',
+          },
+        })
+    ).toThrow(error);
+    expect(
+      () =>
+        new Domain(stack, 'Domain3', {
+          version: EngineVersion.ELASTICSEARCH_1_5,
+          capacity: {
+            dataNodeInstanceType: 'm5.2xlarge.search',
+          },
+        })
+    ).toThrow(error);
+    expect(
+      () =>
+        new Domain(stack, 'Domain4', {
+          version: EngineVersion.ELASTICSEARCH_1_5,
+          capacity: {
+            masterNodeInstanceType: 'r5.2xlarge.search',
+          },
+        })
+    ).toThrow(error);
   });
 
   test('error when node to node encryption is enabled for Elasticsearch version < 6.0', () => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.ELASTICSEARCH_5_6,
-      nodeToNodeEncryption: true,
-    })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: EngineVersion.ELASTICSEARCH_5_6,
+          nodeToNodeEncryption: true,
+        })
+    ).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later/);
   });
 
   test.each([
@@ -1972,58 +1895,68 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     'i4i.xlarge.search',
     'r7gd.xlarge.search',
   ])('error when %s instance type is specified with EBS enabled', (dataNodeInstanceType) => {
-    expect(() => new Domain(stack, 'Domain2', {
-      version: engineVersion,
-      capacity: {
-        dataNodeInstanceType,
-      },
-      ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-      },
-    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
+    expect(
+      () =>
+        new Domain(stack, 'Domain2', {
+          version: engineVersion,
+          capacity: {
+            dataNodeInstanceType,
+          },
+          ebs: {
+            volumeSize: 100,
+            volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+          },
+        })
+    ).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
   });
 
-  test.each([
-    'm3.2xlarge.search',
-    'r3.2xlarge.search',
-    't2.2xlarge.search',
-  ])
-  ('error when %s instance type is specified with encryption at rest enabled', (masterNodeInstanceType) => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      capacity: {
-        masterNodeInstanceType,
-      },
-      encryptionAtRest: {
-        enabled: true,
-      },
-    })).toThrow(/M3, R3 and T2 instance types do not support encryption of data at rest/);
-  });
+  test.each(['m3.2xlarge.search', 'r3.2xlarge.search', 't2.2xlarge.search'])(
+    'error when %s instance type is specified with encryption at rest enabled',
+    (masterNodeInstanceType) => {
+      expect(
+        () =>
+          new Domain(stack, 'Domain1', {
+            version: engineVersion,
+            capacity: {
+              masterNodeInstanceType,
+            },
+            encryptionAtRest: {
+              enabled: true,
+            },
+          })
+      ).toThrow(/M3, R3 and T2 instance types do not support encryption of data at rest/);
+    }
+  );
 
   test('error when t2.micro is specified with Elasticsearch version > 2.3', () => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      capacity: {
-        masterNodeInstanceType: 't2.micro.search',
-      },
-    })).toThrow(/t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: engineVersion,
+          capacity: {
+            masterNodeInstanceType: 't2.micro.search',
+          },
+        })
+    ).toThrow(/t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3/);
   });
 
-  test.each([
-    'm5.large.search',
-    'r5.large.search',
-  ])('error when any instance type other than R3, I3, R6GD, I4I, I4G, IM4GN or R7GD are specified without EBS enabled', (masterNodeInstanceType) => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      ebs: {
-        enabled: false,
-      },
-      capacity: {
-        masterNodeInstanceType,
-      },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, IM4GN or R7GD./);
-  });
+  test.each(['m5.large.search', 'r5.large.search'])(
+    'error when any instance type other than R3, I3, R6GD, I4I, I4G, IM4GN or R7GD are specified without EBS enabled',
+    (masterNodeInstanceType) => {
+      expect(
+        () =>
+          new Domain(stack, 'Domain1', {
+            version: engineVersion,
+            ebs: {
+              enabled: false,
+            },
+            capacity: {
+              masterNodeInstanceType,
+            },
+          })
+      ).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, IM4GN or R7GD./);
+    }
+  );
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
     new Domain(stack, 'Domain1', {
@@ -2054,30 +1987,39 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
   test('error when availabilityZoneCount is not 2 or 3', () => {
     const vpc = new Vpc(stack, 'Vpc');
 
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      vpc,
-      zoneAwareness: {
-        availabilityZoneCount: 4,
-      },
-    })).toThrow(/Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: engineVersion,
+          vpc,
+          zoneAwareness: {
+            availabilityZoneCount: 4,
+          },
+        })
+    ).toThrow(/Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3/);
   });
 
   test('error when UltraWarm instance is used with Elasticsearch version < 6.8', () => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: EngineVersion.ELASTICSEARCH_6_7,
-      capacity: {
-        masterNodes: 1,
-        warmNodes: 1,
-      },
-    })).toThrow(/UltraWarm requires Elasticsearch version 6\.8 or later or OpenSearch version 1.0 or later/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: EngineVersion.ELASTICSEARCH_6_7,
+          capacity: {
+            masterNodes: 1,
+            warmNodes: 1,
+          },
+        })
+    ).toThrow(/UltraWarm requires Elasticsearch version 6\.8 or later or OpenSearch version 1.0 or later/);
   });
 
   test('enabling cold storage without ultrawarm throws an error', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      coldStorageEnabled: true,
-    })).toThrow(/You must enable UltraWarm storage to enable cold storage./);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          coldStorageEnabled: true,
+        })
+    ).toThrow(/You must enable UltraWarm storage to enable cold storage./);
   });
 
   test('can enable cold storage', () => {
@@ -2146,30 +2088,34 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     });
   });
 
-  test.each([
-    't2.2xlarge.search',
-    't3.2xlarge.search',
-  ])
-  ('error when %s instance types is specified with UltramWarm enabled', (masterNodeInstanceType) => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      capacity: {
-        masterNodeInstanceType,
-        warmNodes: 1,
-      },
-    })).toThrow(/T2 and T3 instance types do not support UltraWarm storage/);
-  });
+  test.each(['t2.2xlarge.search', 't3.2xlarge.search'])(
+    'error when %s instance types is specified with UltramWarm enabled',
+    (masterNodeInstanceType) => {
+      expect(
+        () =>
+          new Domain(stack, 'Domain1', {
+            version: engineVersion,
+            capacity: {
+              masterNodeInstanceType,
+              warmNodes: 1,
+            },
+          })
+      ).toThrow(/T2 and T3 instance types do not support UltraWarm storage/);
+    }
+  );
 
   test('error when UltraWarm instance is used and no dedicated master instance specified', () => {
-    expect(() => new Domain(stack, 'Domain1', {
-      version: engineVersion,
-      capacity: {
-        warmNodes: 1,
-        masterNodes: 0,
-      },
-    })).toThrow(/Dedicated master node is required when UltraWarm storage is enabled/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain1', {
+          version: engineVersion,
+          capacity: {
+            warmNodes: 1,
+            masterNodes: 0,
+          },
+        })
+    ).toThrow(/Dedicated master node is required when UltraWarm storage is enabled/);
   });
-
 });
 
 test('can specify future version', () => {
@@ -2274,34 +2220,48 @@ each(testedOpenSearchVersions).describe('unsigned basic auth', (engineVersion) =
   });
 
   test('fails to create a domain with unsigned basic auth when enforce HTTPS is disabled', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      useUnsignedBasicAuth: true,
-      enforceHttps: false,
-    })).toThrow(/You cannot disable HTTPS and use unsigned basic auth/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          useUnsignedBasicAuth: true,
+          enforceHttps: false,
+        })
+    ).toThrow(/You cannot disable HTTPS and use unsigned basic auth/);
   });
 
   test('fails to create a domain with unsigned basic auth when node to node encryption is disabled', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      useUnsignedBasicAuth: true,
-      nodeToNodeEncryption: false,
-    })).toThrow(/You cannot disable node to node encryption and use unsigned basic auth/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          useUnsignedBasicAuth: true,
+          nodeToNodeEncryption: false,
+        })
+    ).toThrow(/You cannot disable node to node encryption and use unsigned basic auth/);
   });
 
   test('fails to create a domain with unsigned basic auth when encryption at rest is disabled', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: engineVersion,
-      useUnsignedBasicAuth: true,
-      encryptionAtRest: { enabled: false },
-    })).toThrow(/You cannot disable encryption at rest and use unsigned basic auth/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: engineVersion,
+          useUnsignedBasicAuth: true,
+          encryptionAtRest: { enabled: false },
+        })
+    ).toThrow(/You cannot disable encryption at rest and use unsigned basic auth/);
   });
 
   test('using unsigned basic auth throws with Elasticsearch < 6.7', () => {
-    expect(() => new Domain(stack, 'Domain', {
-      version: EngineVersion.ELASTICSEARCH_6_5,
-      useUnsignedBasicAuth: true,
-    })).toThrow(/Using unsigned basic auth requires Elasticsearch version 6\.7 or later or OpenSearch version 1.0 or later/);
+    expect(
+      () =>
+        new Domain(stack, 'Domain', {
+          version: EngineVersion.ELASTICSEARCH_6_5,
+          useUnsignedBasicAuth: true,
+        })
+    ).toThrow(
+      /Using unsigned basic auth requires Elasticsearch version 6\.7 or later or OpenSearch version 1.0 or later/
+    );
   });
 });
 
@@ -2363,10 +2323,7 @@ each(testedOpenSearchVersions).describe('cognito dashboards auth', (engineVersio
         Enabled: true,
         IdentityPoolId: identityPoolId,
         RoleArn: {
-          'Fn::GetAtt': [
-            'testroleFAA56B58',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['testroleFAA56B58', 'Arn'],
         },
         UserPoolId: userPoolId,
       },
@@ -2462,9 +2419,7 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
           minutes: 0,
         },
       });
-    }).toThrow(
-      /Hours must be a value between 0 and 23/,
-    );
+    }).toThrow(/Hours must be a value between 0 and 23/);
 
     expect(() => {
       new Domain(stack, 'Domain2', {
@@ -2475,14 +2430,11 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
           minutes: 90,
         },
       });
-    }).toThrow(
-      /Minutes must be a value between 0 and 59/,
-    );
+    }).toThrow(/Minutes must be a value between 0 and 59/);
   });
 });
 
 describe('EBS Options Configurations', () => {
-
   test('iops', () => {
     const domainProps: DomainProps = {
       version: EngineVersion.OPENSEARCH_2_5,
@@ -2674,29 +2626,20 @@ function testGrant(
   invocation: (user: iam.IPrincipal, domain: Domain) => void,
   engineVersion: EngineVersion,
   appliesToDomainRoot: Boolean = true,
-  paths: string[] = ['/*'],
+  paths: string[] = ['/*']
 ) {
   const domain = new Domain(stack, 'Domain', { version: engineVersion });
   const user = new iam.User(stack, 'user');
 
   invocation(user, domain);
 
-  const action = expectedActions.length > 1 ? expectedActions.map(a => `es:${a}`) : `es:${expectedActions[0]}`;
+  const action = expectedActions.length > 1 ? expectedActions.map((a) => `es:${a}`) : `es:${expectedActions[0]}`;
   const domainArn = {
-    'Fn::GetAtt': [
-      'Domain66AC69E0',
-      'Arn',
-    ],
+    'Fn::GetAtt': ['Domain66AC69E0', 'Arn'],
   };
-  const resolvedPaths = paths.map(path => {
+  const resolvedPaths = paths.map((path) => {
     return {
-      'Fn::Join': [
-        '',
-        [
-          domainArn,
-          path,
-        ],
-      ],
+      'Fn::Join': ['', [domainArn, path]],
     };
   });
   const resource = appliesToDomainRoot
@@ -2730,7 +2673,7 @@ function testMetric(
   metricName: string,
   engineVersion: EngineVersion,
   statistic: string = Statistic.SUM,
-  period: Duration = Duration.minutes(5),
+  period: Duration = Duration.minutes(5)
 ) {
   const domain = new Domain(stack, 'Domain', { version: engineVersion });
 

@@ -21,20 +21,24 @@ describe('virtual gateway', () => {
 
       new appmesh.VirtualGateway(stack, 'httpGateway', {
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.http({
-          port: 443,
-          healthCheck: appmesh.HealthCheck.http({
-            interval: cdk.Duration.seconds(10),
+        listeners: [
+          appmesh.VirtualGatewayListener.http({
+            port: 443,
+            healthCheck: appmesh.HealthCheck.http({
+              interval: cdk.Duration.seconds(10),
+            }),
           }),
-        })],
+        ],
       });
 
       new appmesh.VirtualGateway(stack, 'http2Gateway', {
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.http2({
-          port: 443,
-          healthCheck: appmesh.HealthCheck.http2({ interval: cdk.Duration.seconds(10) }),
-        })],
+        listeners: [
+          appmesh.VirtualGatewayListener.http2({
+            port: 443,
+            healthCheck: appmesh.HealthCheck.http2({ interval: cdk.Duration.seconds(10) }),
+          }),
+        ],
       });
 
       // THEN
@@ -111,10 +115,12 @@ describe('virtual gateway', () => {
 
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
-        listeners: [appmesh.VirtualGatewayListener.grpc({
-          port: 80,
-          healthCheck: appmesh.HealthCheck.grpc(),
-        })],
+        listeners: [
+          appmesh.VirtualGatewayListener.grpc({
+            port: 80,
+            healthCheck: appmesh.HealthCheck.grpc(),
+          }),
+        ],
         mesh: mesh,
         accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
       });
@@ -162,10 +168,12 @@ describe('virtual gateway', () => {
       });
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
-        listeners: [appmesh.VirtualGatewayListener.grpc({
-          port: 80,
-          healthCheck: appmesh.HealthCheck.grpc(),
-        })],
+        listeners: [
+          appmesh.VirtualGatewayListener.grpc({
+            port: 80,
+            healthCheck: appmesh.HealthCheck.grpc(),
+          }),
+        ],
         mesh: mesh,
         accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
       });
@@ -211,14 +219,17 @@ describe('virtual gateway', () => {
 
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
-        listeners: [appmesh.VirtualGatewayListener.grpc({
-          port: 80,
-          healthCheck: appmesh.HealthCheck.grpc(),
-        })],
+        listeners: [
+          appmesh.VirtualGatewayListener.grpc({
+            port: 80,
+            healthCheck: appmesh.HealthCheck.grpc(),
+          }),
+        ],
         mesh: mesh,
-        accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout',
-          appmesh.LoggingFormat.fromJson(
-            { testKey1: 'testValue1', testKey2: 'testValue2' })),
+        accessLog: appmesh.AccessLog.fromFilePath(
+          '/dev/stdout',
+          appmesh.LoggingFormat.fromJson({ testKey1: 'testValue1', testKey2: 'testValue2' })
+        ),
       });
 
       // THEN
@@ -275,10 +286,12 @@ describe('virtual gateway', () => {
       expect(() => {
         new appmesh.VirtualGateway(stack, 'testGateway', {
           virtualGatewayName: 'test-gateway',
-          listeners: [appmesh.VirtualGatewayListener.grpc({
-            port: 80,
-            healthCheck: appmesh.HealthCheck.grpc(),
-          })],
+          listeners: [
+            appmesh.VirtualGatewayListener.grpc({
+              port: 80,
+              healthCheck: appmesh.HealthCheck.grpc(),
+            }),
+          ],
           mesh: mesh,
           accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromJson({})),
         });
@@ -300,13 +313,15 @@ describe('virtual gateway', () => {
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.http({
-          port: 8080,
-          tls: {
-            mode: appmesh.TlsMode.STRICT,
-            certificate: appmesh.TlsCertificate.acm(cert),
-          },
-        })],
+        listeners: [
+          appmesh.VirtualGatewayListener.http({
+            port: 8080,
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.acm(cert),
+            },
+          }),
+        ],
       });
 
       // THEN
@@ -342,13 +357,15 @@ describe('virtual gateway', () => {
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.grpc({
-          port: 8080,
-          tls: {
-            mode: appmesh.TlsMode.STRICT,
-            certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
-          },
-        })],
+        listeners: [
+          appmesh.VirtualGatewayListener.grpc({
+            port: 8080,
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+            },
+          }),
+        ],
       });
 
       // THEN
@@ -382,13 +399,15 @@ describe('virtual gateway', () => {
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.http2({
-          port: 8080,
-          tls: {
-            mode: appmesh.TlsMode.STRICT,
-            certificate: appmesh.TlsCertificate.sds('secret_certificate'),
-          },
-        })],
+        listeners: [
+          appmesh.VirtualGatewayListener.http2({
+            port: 8080,
+            tls: {
+              mode: appmesh.TlsMode.STRICT,
+              certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+            },
+          }),
+        ],
       });
 
       // THEN
@@ -422,16 +441,18 @@ describe('virtual gateway', () => {
         new appmesh.VirtualGateway(stack, 'testGateway', {
           virtualGatewayName: 'test-gateway',
           mesh: mesh,
-          listeners: [appmesh.VirtualGatewayListener.grpc({
-            port: 8080,
-            tls: {
-              mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
-              mutualTlsValidation: {
-                trust: appmesh.TlsValidationTrust.file('path/to/certChain'),
+          listeners: [
+            appmesh.VirtualGatewayListener.grpc({
+              port: 8080,
+              tls: {
+                mode: appmesh.TlsMode.STRICT,
+                certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+                mutualTlsValidation: {
+                  trust: appmesh.TlsValidationTrust.file('path/to/certChain'),
+                },
               },
-            },
-          })],
+            }),
+          ],
         });
 
         // THEN
@@ -474,17 +495,19 @@ describe('virtual gateway', () => {
         new appmesh.VirtualGateway(stack, 'testGateway', {
           virtualGatewayName: 'test-gateway',
           mesh: mesh,
-          listeners: [appmesh.VirtualGatewayListener.http2({
-            port: 8080,
-            tls: {
-              mode: appmesh.TlsMode.STRICT,
-              certificate: appmesh.TlsCertificate.sds('secret_certificate'),
-              mutualTlsValidation: {
-                subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
-                trust: appmesh.TlsValidationTrust.sds('secret_validation'),
+          listeners: [
+            appmesh.VirtualGatewayListener.http2({
+              port: 8080,
+              tls: {
+                mode: appmesh.TlsMode.STRICT,
+                certificate: appmesh.TlsCertificate.sds('secret_certificate'),
+                mutualTlsValidation: {
+                  subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
+                  trust: appmesh.TlsValidationTrust.sds('secret_validation'),
+                },
               },
-            },
-          })],
+            }),
+          ],
         });
 
         // THEN
@@ -526,13 +549,15 @@ describe('virtual gateway', () => {
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.grpc({
-          port: 8080,
-          tls: {
-            mode: appmesh.TlsMode.PERMISSIVE,
-            certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
-          },
-        })],
+        listeners: [
+          appmesh.VirtualGatewayListener.grpc({
+            port: 8080,
+            tls: {
+              mode: appmesh.TlsMode.PERMISSIVE,
+              certificate: appmesh.TlsCertificate.file('path/to/certChain', 'path/to/privateKey'),
+            },
+          }),
+        ],
       });
 
       // THEN
@@ -565,8 +590,11 @@ describe('virtual gateway', () => {
         // Creating stack in Account 9987654321
         const stack = new cdk.Stack(app, 'mySharedStack', { env: virtualGatewayEnv });
         // Mesh is in Account 1234567899
-        const sharedMesh = appmesh.Mesh.fromMeshArn(stack, 'shared-mesh',
-          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`);
+        const sharedMesh = appmesh.Mesh.fromMeshArn(
+          stack,
+          'shared-mesh',
+          `arn:aws:appmesh:${meshEnv.region}:${meshEnv.account}:mesh/shared-mesh`
+        );
 
         // WHEN
         new appmesh.VirtualGateway(stack, 'test-node', {
@@ -724,7 +752,7 @@ describe('virtual gateway', () => {
           mesh: mesh,
           backendDefaults: {
             tlsClientPolicy: {
-              mutualTlsCertificate: appmesh.TlsCertificate.sds( 'secret_certificate'),
+              mutualTlsCertificate: appmesh.TlsCertificate.sds('secret_certificate'),
               validation: {
                 subjectAlternativeNames: appmesh.SubjectAlternativeNames.matchingExactly('mesh-endpoint.apps.local'),
                 trust: appmesh.TlsValidationTrust.sds('secret_validation'),
@@ -896,8 +924,7 @@ describe('virtual gateway', () => {
     const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualGateway/${virtualGatewayName}`;
 
     // WHEN
-    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayArn(
-      stack, 'importedGateway', arn);
+    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayArn(stack, 'importedGateway', arn);
     // THEN
     expect(virtualGateway.mesh.meshName).toEqual(meshName);
     expect(virtualGateway.virtualGatewayName).toEqual(virtualGatewayName);

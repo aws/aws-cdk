@@ -12,7 +12,9 @@ jest.mock('../lib/bundling', () => {
         bind: () => {
           return { s3Location: 'code' };
         },
-        bindToResource: () => { return; },
+        bindToResource: () => {
+          return;
+        },
       }),
     },
   };
@@ -30,9 +32,11 @@ test('GoFunction with defaults', () => {
     entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
@@ -47,9 +51,11 @@ test('GoFunction with using provided runtime', () => {
     runtime: Runtime.PROVIDED,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
@@ -64,9 +70,11 @@ test('GoFunction with using golang runtime', () => {
     runtime: Runtime.GO_1_X,
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api$/),
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
@@ -85,18 +93,23 @@ test('GoFunction with container env vars', () => {
     },
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    environment: {
-      KEY: 'VALUE',
-    },
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      environment: {
+        KEY: 'VALUE',
+      },
+    })
+  );
 });
 
 test('throws with the wrong runtime family', () => {
-  expect(() => new GoFunction(stack, 'handler', {
-    entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
-    runtime: Runtime.PYTHON_3_8,
-  })).toThrow(/Only `go` and `provided` runtimes are supported/);
+  expect(
+    () =>
+      new GoFunction(stack, 'handler', {
+        entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
+        runtime: Runtime.PYTHON_3_8,
+      })
+  ).toThrow(/Only `go` and `provided` runtimes are supported/);
 });
 
 test('resolves entry to an absolute path', () => {
@@ -105,23 +118,31 @@ test('resolves entry to an absolute path', () => {
     entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api', 'main.go'),
   });
 
-  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api\/main.go$/),
-  }));
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      entry: expect.stringMatching(/aws-lambda-go-alpha\/test\/lambda-handler-vendor\/cmd\/api\/main.go$/),
+    })
+  );
 });
 
 test('throws with no existing go.mod file', () => {
-  expect(() => new GoFunction(stack, 'handler', {
-    entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
-    moduleDir: '/does/not/exist/go.mod',
-  })).toThrow(/go.mod file at \/does\/not\/exist\/go.mod doesn't exist/);
+  expect(
+    () =>
+      new GoFunction(stack, 'handler', {
+        entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
+        moduleDir: '/does/not/exist/go.mod',
+      })
+  ).toThrow(/go.mod file at \/does\/not\/exist\/go.mod doesn't exist/);
 });
 
 test('throws with incorrect moduleDir file', () => {
-  expect(() => new GoFunction(stack, 'handler', {
-    entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
-    moduleDir: '/does/not/exist.mod',
-  })).toThrow(/moduleDir is specifying a file that is not go.mod/);
+  expect(
+    () =>
+      new GoFunction(stack, 'handler', {
+        entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
+        moduleDir: '/does/not/exist.mod',
+      })
+  ).toThrow(/moduleDir is specifying a file that is not go.mod/);
 });
 
 test('custom moduleDir can be used', () => {

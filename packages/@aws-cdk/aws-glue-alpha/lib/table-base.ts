@@ -279,37 +279,31 @@ export abstract class TableBase extends Resource implements ITable {
     this.validatePartitionIndex(index);
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-    const partitionIndexCustomResource = new cr.AwsCustomResource(
-      this,
-      `partition-index-${indexName}`,
-      {
-        onCreate: {
-          service: 'Glue',
-          action: 'createPartitionIndex',
-          parameters: {
-            DatabaseName: this.database.databaseName,
-            TableName: this.tableName,
-            PartitionIndex: {
-              IndexName: indexName,
-              Keys: index.keyNames,
-            },
+    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
+      onCreate: {
+        service: 'Glue',
+        action: 'createPartitionIndex',
+        parameters: {
+          DatabaseName: this.database.databaseName,
+          TableName: this.tableName,
+          PartitionIndex: {
+            IndexName: indexName,
+            Keys: index.keyNames,
           },
-          physicalResourceId: cr.PhysicalResourceId.of(indexName),
         },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-        }),
-        // APIs are available in 2.1055.0
-        installLatestAwsSdk: false,
-      }
-    );
+        physicalResourceId: cr.PhysicalResourceId.of(indexName),
+      },
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
+    });
     this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
 
     // Depend on previous partition index if possible, to avoid race condition
     if (numPartitions > 0) {
-      this.partitionIndexCustomResources[numPartitions - 1].node.addDependency(
-        partitionIndexCustomResource
-      );
+      this.partitionIndexCustomResources[numPartitions - 1].node.addDependency(partitionIndexCustomResource);
     }
     this.partitionIndexCustomResources.push(partitionIndexCustomResource);
   }
@@ -323,13 +317,8 @@ export abstract class TableBase extends Resource implements ITable {
   }
 
   private validatePartitionIndex(index: PartitionIndex) {
-    if (
-      index.indexName !== undefined &&
-      (index.indexName.length < 1 || index.indexName.length > 255)
-    ) {
-      throw new Error(
-        `Index name must be between 1 and 255 characters, but got ${index.indexName.length}`
-      );
+    if (index.indexName !== undefined && (index.indexName.length < 1 || index.indexName.length > 255)) {
+      throw new Error(`Index name must be between 1 and 255 characters, but got ${index.indexName.length}`);
     }
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
       throw new Error('The table must have partition keys to create a partition index');
@@ -374,9 +363,7 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   const names = new Set<string>();
   columns.concat(partitionKeys || []).forEach((column) => {
     if (names.has(column.name)) {
-      throw new Error(
-        `column names and partition keys must be unique, but \'${column.name}\' is duplicated`
-      );
+      throw new Error(`column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
     }
     names.add(column.name);
   });

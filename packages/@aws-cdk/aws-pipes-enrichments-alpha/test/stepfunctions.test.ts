@@ -13,7 +13,7 @@ describe('stepfunctions', () => {
     stack = new Stack(app, 'TestStack');
     const enrichmentTask = new sfn.Pass(stack, 'EnrichmentTask', {
       parameters: {
-        body: sfn.JsonPath.stringAt('States.Format(\'{}{}\',$[0].body,\'-enriched\')'),
+        body: sfn.JsonPath.stringAt("States.Format('{}{}',$[0].body,'-enriched')"),
       },
     });
     const definition = enrichmentTask;
@@ -94,7 +94,7 @@ test('cannot use STANDARD StateMachine', () => {
   const stack = new Stack();
   const enrichmentTask = new sfn.Pass(stack, 'EnrichmentTask', {
     parameters: {
-      body: sfn.JsonPath.stringAt('States.Format(\'{}{}\',$[0].body,\'-enriched\')'),
+      body: sfn.JsonPath.stringAt("States.Format('{}{}',$[0].body,'-enriched')"),
     },
   });
 
@@ -106,6 +106,7 @@ test('cannot use STANDARD StateMachine', () => {
   });
 
   // WHEN
-  expect(() => new StepFunctionsEnrichment(stateMachine),
-  ).toThrow('EventBridge pipes only support EXPRESS workflows as enrichment, got STANDARD');
+  expect(() => new StepFunctionsEnrichment(stateMachine)).toThrow(
+    'EventBridge pipes only support EXPRESS workflows as enrichment, got STANDARD'
+  );
 });

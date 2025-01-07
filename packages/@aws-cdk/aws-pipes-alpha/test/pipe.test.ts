@@ -62,7 +62,7 @@ describe('Pipe', () => {
 
     it('should pass parameters and arn', () => {
       // GIVEN
-      const sourceWithParameters: ISource =new TestSource({
+      const sourceWithParameters: ISource = new TestSource({
         sqsQueueParameters: {
           batchSize: 2,
         },
@@ -87,9 +87,7 @@ describe('Pipe', () => {
             },
           },
         },
-      },
-      );
-
+      });
     });
 
     it('should add filter criteria to the source parameters', () => {
@@ -122,13 +120,11 @@ describe('Pipe', () => {
             },
           },
         },
-      },
-      );
-
+      });
     });
     it('should merge filter criteria and source parameters', () => {
       // GIVEN
-      const sourceWithParameters: ISource =new TestSource({
+      const sourceWithParameters: ISource = new TestSource({
         sqsQueueParameters: {
           batchSize: 2,
         },
@@ -166,9 +162,7 @@ describe('Pipe', () => {
             },
           },
         },
-      },
-      );
-
+      });
     });
 
     test('grantPush is called for sources with an SNS topic DLQ', () => {
@@ -187,16 +181,20 @@ describe('Pipe', () => {
       // THEN
       template.hasResource('AWS::IAM::Policy', {
         Properties: {
-          Roles: [{
-            Ref: 'TestPipeRole0FD00B2B',
-          }],
+          Roles: [
+            {
+              Ref: 'TestPipeRole0FD00B2B',
+            },
+          ],
           PolicyDocument: {
-            Statement: [{
-              Action: 'sns:Publish',
-              Resource: {
-                Ref: 'MyTopic86869434',
+            Statement: [
+              {
+                Action: 'sns:Publish',
+                Resource: {
+                  Ref: 'MyTopic86869434',
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -218,23 +216,20 @@ describe('Pipe', () => {
       // THEN
       template.hasResource('AWS::IAM::Policy', {
         Properties: {
-          Roles: [{
-            Ref: 'TestPipeRole0FD00B2B',
-          }],
+          Roles: [
+            {
+              Ref: 'TestPipeRole0FD00B2B',
+            },
+          ],
           PolicyDocument: {
-            Statement: [{
-              Action: [
-                'sqs:SendMessage',
-                'sqs:GetQueueAttributes',
-                'sqs:GetQueueUrl',
-              ],
-              Resource: {
-                'Fn::GetAtt': [
-                  'MyQueueE6CA6235',
-                  'Arn',
-                ],
+            Statement: [
+              {
+                Action: ['sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl'],
+                Resource: {
+                  'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -242,7 +237,6 @@ describe('Pipe', () => {
   });
 
   describe('target', () => {
-
     it('should grant push permissions to the target', () => {
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
@@ -283,8 +277,7 @@ describe('Pipe', () => {
             },
           },
         },
-      },
-      );
+      });
     });
   });
 
@@ -307,10 +300,10 @@ describe('Pipe', () => {
 
     it('should pass enrichment parameters', () => {
       // GIVEN
-      const enrichmentWithParameters =new TestEnrichment({
+      const enrichmentWithParameters = new TestEnrichment({
         inputTemplate: 'input-template',
         // inputTransformation: { bind: () => 'input-template' },
-      } );
+      });
 
       // WHEN
       new Pipe(stack, 'TestPipe', {
@@ -330,8 +323,7 @@ describe('Pipe', () => {
             InputTemplate: 'input-template',
           },
         },
-      },
-      );
+      });
     });
   });
 
@@ -372,7 +364,6 @@ describe('Pipe', () => {
       expect(source.grantRead).toHaveBeenCalledWith(role);
       expect(target.grantPush).toHaveBeenCalledWith(role);
       expect(enrichment.grantInvoke).toHaveBeenCalledWith(role);
-
     });
 
     it('should call grant on the provided role', () => {

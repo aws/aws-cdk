@@ -163,23 +163,23 @@ describe('tests', () => {
     }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
   });
 
-  test.each([
-    elbv2.TargetGroupIpAddressType.IPV4,
-    elbv2.TargetGroupIpAddressType.IPV6,
-  ])('configure IP address type %s', (ipAddressType) => {
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
+  test.each([elbv2.TargetGroupIpAddressType.IPV4, elbv2.TargetGroupIpAddressType.IPV6])(
+    'configure IP address type %s',
+    (ipAddressType) => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    new elbv2.NetworkTargetGroup(stack, 'Group', {
-      vpc,
-      port: 80,
-      ipAddressType,
-    });
+      new elbv2.NetworkTargetGroup(stack, 'Group', {
+        vpc,
+        port: 80,
+        ipAddressType,
+      });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      IpAddressType: ipAddressType,
-    });
-  });
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        IpAddressType: ipAddressType,
+      });
+    }
+  );
 
   // for backwards compatibility these can be equal, see discussion in https://github.com/aws/aws-cdk/pull/26031
   test('No error for health check interval == timeout', () => {
@@ -344,7 +344,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS, TCP]`);
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
     'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s',
@@ -367,7 +368,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS, TCP]`);
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
     'Does not throw validation error, when `healthCheck` has `protocol` set to %s',
@@ -390,7 +392,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).not.toThrow();
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
     'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s',
@@ -413,7 +416,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).not.toThrow();
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
     'Does not throw a validation error, when `healthCheck` has `protocol` set to %s and `interval` is equal to `timeout`',
@@ -438,7 +442,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).not.toThrow();
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
     'Does not throw a validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is equal to `timeout`',
@@ -463,7 +468,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).not.toThrow();
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
     'Throws validation error,`healthCheck` has `protocol` set to %s and `path` is provided',
@@ -487,7 +493,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow(`'${protocol}' health checks do not support the path property. Must be one of [HTTP, HTTPS]`);
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
     'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and  `path` is provided',
@@ -511,7 +518,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).toThrow(`'${protocol}' health checks do not support the path property. Must be one of [HTTP, HTTPS]`);
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
     'Does not throw validation error, when `healthCheck` has `protocol` set to %s and `path` is provided',
@@ -535,7 +543,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).not.toThrow();
-    });
+    }
+  );
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
     'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s and `path` is provided',
@@ -559,7 +568,8 @@ describe('tests', () => {
       expect(() => {
         app.synth();
       }).not.toThrow();
-    });
+    }
+  );
 
   test('Throws error for invalid health check healthy threshold', () => {
     const app = new cdk.App();
@@ -626,14 +636,16 @@ describe('tests', () => {
     // from the listener ARN.
     const splitListenerName = { 'Fn::Split': ['/', { Ref: 'Listener828B0E81' }] };
     const loadBalancerNameFromListener = {
-      'Fn::Join': ['',
+      'Fn::Join': [
+        '',
         [
           { 'Fn::Select': [1, splitListenerName] },
           '/',
           { 'Fn::Select': [2, splitListenerName] },
           '/',
           { 'Fn::Select': [3, splitListenerName] },
-        ]],
+        ],
+      ],
     };
 
     for (const metric of metrics) {
@@ -655,8 +667,12 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(() => targetGroup.metrics.healthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
-    expect(() => targetGroup.metrics.unHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
+    expect(() => targetGroup.metrics.healthyHostCount()).toThrow(
+      /The TargetGroup needs to be attached to a LoadBalancer/
+    );
+    expect(() => targetGroup.metrics.unHealthyHostCount()).toThrow(
+      /The TargetGroup needs to be attached to a LoadBalancer/
+    );
   });
 
   test('imported targetGroup has targetGroupName', () => {
@@ -666,7 +682,8 @@ describe('tests', () => {
 
     // WHEN
     const importedTg = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
-      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myNlbTargetGroup/73e2d6bc24d8a067',
+      targetGroupArn:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myNlbTargetGroup/73e2d6bc24d8a067',
     });
 
     // THEN
@@ -727,8 +744,10 @@ describe('tests', () => {
 
     // WHEN
     const targetGroup = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
-      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
-      loadBalancerArns: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/net/my-load-balancer/73e2d6bc24d8a067',
+      targetGroupArn:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+      loadBalancerArns:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/net/my-load-balancer/73e2d6bc24d8a067',
     });
 
     const metric = targetGroup.metrics.custom('MetricName');
@@ -748,7 +767,8 @@ describe('tests', () => {
 
     // WHEN
     const targetGroup = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
-      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+      targetGroupArn:
+        'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
     });
 
     expect(() => targetGroup.metrics.custom('MetricName')).toThrow();

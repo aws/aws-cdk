@@ -77,10 +77,7 @@ export class Route extends cdk.Resource implements IRoute {
       readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
       readonly routeName = cdk.Fn.select(
         4,
-        cdk.Fn.split(
-          '/',
-          cdk.Stack.of(scope).splitArn(routeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!
-        )
+        cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(routeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!)
       );
     })(scope, id);
   }

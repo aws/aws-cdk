@@ -47,10 +47,7 @@ describe('grants', () => {
     const user = new User(stack, 'User');
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -64,10 +61,7 @@ describe('grants', () => {
             Action: ['dynamodb:action1', 'dynamodb:action2'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -88,10 +82,7 @@ describe('grants', () => {
     const user = new User(stack, 'User');
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -114,10 +105,7 @@ describe('grants', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -144,10 +132,7 @@ describe('grants', () => {
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -158,16 +143,10 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
           {
@@ -183,10 +162,7 @@ describe('grants', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -208,10 +184,7 @@ describe('grants', () => {
     const user = new User(stack, 'User');
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -231,10 +204,7 @@ describe('grants', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -261,10 +231,7 @@ describe('grants', () => {
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -275,19 +242,10 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
           {
@@ -300,10 +258,7 @@ describe('grants', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -325,10 +280,7 @@ describe('grants', () => {
     const user = new User(stack, 'User');
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -355,10 +307,7 @@ describe('grants', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -385,10 +334,7 @@ describe('grants', () => {
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -399,19 +345,10 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
           {
@@ -431,10 +368,7 @@ describe('grants', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -456,10 +390,7 @@ describe('grants', () => {
     const user = new User(stack, 'User');
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -473,10 +404,7 @@ describe('grants', () => {
             Action: 'dynamodb:*',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -503,10 +431,7 @@ describe('grants', () => {
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -517,29 +442,17 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
           {
             Action: 'dynamodb:*',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
             },
           },
         ],
@@ -567,10 +480,7 @@ describe('grants', () => {
           partitionKey: { name: 'gsi-pk', type: AttributeType.STRING },
         },
       ],
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -594,20 +504,14 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: [
               {
-                'Fn::GetAtt': [
-                  'GlobalTable89F068B2',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
               },
               {
                 'Fn::Join': [
                   '',
                   [
                     {
-                      'Fn::GetAtt': [
-                        'GlobalTable89F068B2',
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['GlobalTable89F068B2', 'Arn'],
                     },
                     '/index/*',
                   ],
@@ -633,10 +537,7 @@ describe('grants', () => {
     const user = new User(stack, 'User');
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -647,15 +548,9 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'dynamodb:StreamAction1',
-              'dynamodb:StreamAction2',
-            ],
+            Action: ['dynamodb:StreamAction1', 'dynamodb:StreamAction2'],
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'StreamArn'],
             },
           },
         ],
@@ -676,10 +571,7 @@ describe('grants', () => {
     const user = new User(stack, 'Stack');
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -693,24 +585,14 @@ describe('grants', () => {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'StreamArn'],
             },
           },
           {
-            Action: [
-              'dynamodb:DescribeStream',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
-            ],
+            Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'StreamArn'],
             },
           },
         ],
@@ -731,10 +613,7 @@ describe('grants', () => {
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -748,37 +627,21 @@ describe('grants', () => {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'StreamArn'],
             },
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
           {
-            Action: [
-              'dynamodb:DescribeStream',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
-            ],
+            Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'StreamArn'],
             },
           },
         ],
@@ -794,10 +657,7 @@ describe('grants', () => {
     const user = new User(stack, 'User');
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -811,10 +671,7 @@ describe('grants', () => {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'GlobalTable89F068B2',
-                'StreamArn',
-              ],
+              'Fn::GetAtt': ['GlobalTable89F068B2', 'StreamArn'],
             },
           },
         ],
@@ -841,10 +698,7 @@ describe('grants', () => {
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -879,19 +733,12 @@ describe('grants', () => {
             },
           },
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
             Effect: 'Allow',
             Resource: 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
           {
-            Action: [
-              'dynamodb:DescribeStream',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
-            ],
+            Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -939,10 +786,7 @@ describe('grants', () => {
     const globalTable = new TableV2(stack, 'GlobalTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(tableKey, replicaKeyArns),
-      replicas: [
-        { region: 'us-east-1' },
-        { region: 'us-east-2' },
-      ],
+      replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
     });
 
     // WHEN
@@ -953,10 +797,7 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
             Effect: 'Allow',
             Resource: 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
@@ -1014,10 +855,7 @@ describe('grants', () => {
 
         this.globalTable = new TableV2(this, 'GlobalTable', {
           partitionKey: { name: 'pk', type: AttributeType.STRING },
-          replicas: [
-            { region: 'us-east-1' },
-            { region: 'us-east-2' },
-          ],
+          replicas: [{ region: 'us-east-1' }, { region: 'us-east-2' }],
         });
       }
     }
@@ -1198,16 +1036,10 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:DescribeKey',
-            ],
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
           {
@@ -1426,7 +1258,9 @@ describe('metrics', () => {
     });
 
     // WHEN / THEN
-    expect(stack.resolve(table.metricSystemErrorsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+    expect(
+      stack.resolve(table.metricSystemErrorsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))
+    ).toEqual({
       expression: 'getitem + putitem',
       label: 'Sum of errors across all operations',
       period: {
@@ -1538,9 +1372,13 @@ describe('metrics', () => {
     });
 
     // WHEN / THEN
-    expect(stack.resolve(table.metricSuccessfulRequestLatency({
-      dimensionsMap: { TableName: table.tableName, Operation: 'GetItem' },
-    }))).toEqual({
+    expect(
+      stack.resolve(
+        table.metricSuccessfulRequestLatency({
+          dimensionsMap: { TableName: table.tableName, Operation: 'GetItem' },
+        })
+      )
+    ).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
@@ -1584,7 +1422,11 @@ describe('metrics', () => {
     });
 
     // WHEN / THEN
-    expect(stack.resolve(table.metricThrottledRequestsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+    expect(
+      stack.resolve(
+        table.metricThrottledRequestsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] })
+      )
+    ).toEqual({
       expression: 'getitem + putitem',
       label: 'Sum of throttled requests across all operations',
       period: {
@@ -1797,7 +1639,9 @@ describe('metrics', () => {
     });
 
     // WHEN / THEN
-    expect(stack.resolve(table.metricSystemErrors({ dimensionsMap: { TableName: table.tableName, Operation: 'GetItem' } }))).toEqual({
+    expect(
+      stack.resolve(table.metricSystemErrors({ dimensionsMap: { TableName: table.tableName, Operation: 'GetItem' } }))
+    ).toEqual({
       period: {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },

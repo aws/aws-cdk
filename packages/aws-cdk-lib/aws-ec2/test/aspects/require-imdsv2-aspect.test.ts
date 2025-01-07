@@ -95,7 +95,12 @@ describe('RequireImdsv2Aspect', () => {
       // Aspect normally creates a LaunchTemplate for the Instance to toggle IMDSv1,
       // so we can assert that one was not created
       Template.fromStack(stack).resourceCountIs('AWS::EC2::LaunchTemplate', 0);
-      Annotations.fromStack(stack).hasWarning('/Stack/Instance', Match.stringLikeRegexp('.*Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'));
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/Instance',
+        Match.stringLikeRegexp(
+          '.*Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'
+        )
+      );
     });
 
     test('suppresses Launch Template warnings', () => {
@@ -117,7 +122,10 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(instance);
 
       // THEN
-      Annotations.fromStack(stack).hasNoWarning('/Stack/Instance', 'Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.');
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Stack/Instance',
+        'Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'
+      );
     });
 
     test('launch template name is unique with feature flag', () => {
@@ -167,7 +175,10 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(launchTemplate);
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Stack/LaunchTemplate', Match.stringLikeRegexp('.*LaunchTemplateData is a CDK token.'));
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/LaunchTemplate',
+        Match.stringLikeRegexp('.*LaunchTemplateData is a CDK token.')
+      );
     });
 
     test('warns when MetadataOptions is a CDK token', () => {
@@ -185,7 +196,10 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(launchTemplate);
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Stack/LaunchTemplate', Match.stringLikeRegexp('.*LaunchTemplateData.MetadataOptions is a CDK token.'));
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/LaunchTemplate',
+        Match.stringLikeRegexp('.*LaunchTemplateData.MetadataOptions is a CDK token.')
+      );
     });
 
     test('requires IMDSv2', () => {

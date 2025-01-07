@@ -10,15 +10,17 @@ test('MultiNodeJobDefinition respects mainNode', () => {
 
   // WHEN
   new MultiNodeJobDefinition(stack, 'ECSJobDefn', {
-    containers: [{
-      container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
-        cpu: 256,
-        memory: Size.mebibytes(2048),
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      }),
-      startNode: 0,
-      endNode: 9,
-    }],
+    containers: [
+      {
+        container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
+          cpu: 256,
+          memory: Size.mebibytes(2048),
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        }),
+        startNode: 0,
+        endNode: 9,
+      },
+    ],
     mainNode: 5,
   });
 
@@ -26,10 +28,12 @@ test('MultiNodeJobDefinition respects mainNode', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
     NodeProperties: {
       MainNode: 5,
-      NodeRangeProperties: [{
-        Container: { },
-        TargetNodes: '0:9',
-      }],
+      NodeRangeProperties: [
+        {
+          Container: {},
+          TargetNodes: '0:9',
+        },
+      ],
       NumNodes: 10,
     },
     PlatformCapabilities: [Compatibility.EC2],
@@ -43,15 +47,17 @@ test('EcsJobDefinition respects propagateTags', () => {
   // WHEN
   new MultiNodeJobDefinition(stack, 'ECSJobDefn', {
     propagateTags: true,
-    containers: [{
-      container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
-        cpu: 256,
-        memory: Size.mebibytes(2048),
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      }),
-      startNode: 0,
-      endNode: 9,
-    }],
+    containers: [
+      {
+        container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
+          cpu: 256,
+          memory: Size.mebibytes(2048),
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        }),
+        startNode: 0,
+        endNode: 9,
+      },
+    ],
     mainNode: 0,
   });
 
@@ -67,26 +73,29 @@ test('MultiNodeJobDefinition respects instanceType', () => {
 
   // WHEN
   new MultiNodeJobDefinition(stack, 'ECSJobDefn', {
-    containers: [{
-      container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
-        cpu: 256,
-        memory: Size.mebibytes(2048),
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      }),
-      startNode: 0,
-      endNode: 9,
-    }],
+    containers: [
+      {
+        container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
+          cpu: 256,
+          memory: Size.mebibytes(2048),
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        }),
+        startNode: 0,
+        endNode: 9,
+      },
+    ],
     instanceType: InstanceType.of(InstanceClass.R4, InstanceSize.LARGE),
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
     NodeProperties: {
-      NodeRangeProperties: [{
-        Container: {
+      NodeRangeProperties: [
+        {
+          Container: {},
+          TargetNodes: '0:9',
         },
-        TargetNodes: '0:9',
-      }],
+      ],
       NumNodes: 10,
     },
     PlatformCapabilities: [Compatibility.EC2],
@@ -99,15 +108,17 @@ test('MultiNodeJobDefinition one container', () => {
 
   // WHEN
   new MultiNodeJobDefinition(stack, 'ECSJobDefn', {
-    containers: [{
-      container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
-        cpu: 256,
-        memory: Size.mebibytes(2048),
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      }),
-      startNode: 0,
-      endNode: 9,
-    }],
+    containers: [
+      {
+        container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
+          cpu: 256,
+          memory: Size.mebibytes(2048),
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        }),
+        startNode: 0,
+        endNode: 9,
+      },
+    ],
     mainNode: 0,
   });
 
@@ -115,11 +126,12 @@ test('MultiNodeJobDefinition one container', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
     NodeProperties: {
       MainNode: 0,
-      NodeRangeProperties: [{
-        Container: {
+      NodeRangeProperties: [
+        {
+          Container: {},
+          TargetNodes: '0:9',
         },
-        TargetNodes: '0:9',
-      }],
+      ],
       NumNodes: 10,
     },
     PlatformCapabilities: [Compatibility.EC2],
@@ -172,7 +184,6 @@ test('MultiNodeJobDefinition two containers', () => {
           },
           TargetNodes: '10:14',
         },
-
       ],
       NumNodes: 15,
     },

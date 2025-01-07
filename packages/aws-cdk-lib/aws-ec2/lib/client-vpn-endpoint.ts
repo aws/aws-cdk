@@ -1,8 +1,5 @@
 import { Construct, DependencyGroup, IDependable } from 'constructs';
-import {
-  ClientVpnAuthorizationRule,
-  ClientVpnAuthorizationRuleOptions,
-} from './client-vpn-authorization-rule';
+import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
 import {
   IClientVpnConnectionHandler,
   IClientVpnEndpoint,
@@ -340,9 +337,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       !Token.isUnresolved(props.clientLoginBanner) &&
       props.clientLoginBanner.length > 1400
     ) {
-      throw new Error(
-        `The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`
-      );
+      throw new Error(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`);
     }
 
     const logging = props.logging ?? true;
@@ -356,10 +351,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     this.connections = new Connections({ securityGroups });
 
     const endpoint = new CfnClientVpnEndpoint(this, 'Resource', {
-      authenticationOptions: renderAuthenticationOptions(
-        props.clientCertificateArn,
-        props.userBasedAuthentication
-      ),
+      authenticationOptions: renderAuthenticationOptions(props.clientCertificateArn, props.userBasedAuthentication),
       clientCidrBlock: props.cidr,
       clientConnectOptions: props.clientConnectionHandler
         ? {
@@ -428,10 +420,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Adds an authorization rule to this endpoint
    */
-  public addAuthorizationRule(
-    id: string,
-    props: ClientVpnAuthorizationRuleOptions
-  ): ClientVpnAuthorizationRule {
+  public addAuthorizationRule(id: string, props: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
     return new ClientVpnAuthorizationRule(this, id, {
       ...props,
       clientVpnEndpoint: this,

@@ -1,11 +1,4 @@
-import {
-  DefaultTokenResolver,
-  IResolveContext,
-  Lazy,
-  StringConcat,
-  Token,
-  Tokenization,
-} from 'aws-cdk-lib';
+import { DefaultTokenResolver, IResolveContext, Lazy, StringConcat, Token, Tokenization } from 'aws-cdk-lib';
 import { IPipe } from './pipe';
 import { unquote } from './unquote';
 

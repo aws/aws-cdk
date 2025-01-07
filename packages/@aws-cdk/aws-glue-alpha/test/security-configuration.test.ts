@@ -6,8 +6,9 @@ import * as glue from '../lib';
 test('throws when a security configuration has no encryption config', () => {
   const stack = new cdk.Stack();
 
-  expect(() => new glue.SecurityConfiguration(stack, 'SecurityConfiguration'))
-    .toThrow(/One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined/);
+  expect(() => new glue.SecurityConfiguration(stack, 'SecurityConfiguration')).toThrow(
+    /One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined/
+  );
 });
 
 test('a security configuration with encryption configuration requiring kms key and providing an explicit one', () => {
@@ -100,9 +101,11 @@ test('a security configuration with all encryption configs and mixed kms key inp
         // explicitly provided kms key
         KmsKeyArn: keyArn,
       },
-      S3Encryptions: [{
-        S3EncryptionMode: 'SSE-S3',
-      }],
+      S3Encryptions: [
+        {
+          S3EncryptionMode: 'SSE-S3',
+        },
+      ],
     },
   });
 });
@@ -111,7 +114,11 @@ test('fromSecurityConfigurationName', () => {
   const stack = new cdk.Stack();
   const name = 'name';
 
-  const securityConfiguration = glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'ImportedSecurityConfiguration', name);
+  const securityConfiguration = glue.SecurityConfiguration.fromSecurityConfigurationName(
+    stack,
+    'ImportedSecurityConfiguration',
+    name
+  );
 
   expect(securityConfiguration.securityConfigurationName).toEqual(name);
 });

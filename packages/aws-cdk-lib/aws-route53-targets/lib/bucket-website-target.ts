@@ -13,10 +13,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
     private readonly props?: IAliasRecordTargetProps
   ) {}
 
-  public bind(
-    _record: route53.IRecordSet,
-    _zone?: route53.IHostedZone
-  ): route53.AliasRecordTargetConfig {
+  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     const { region } = Stack.of(this.bucket.stack);
 
     if (Token.isUnresolved(region)) {
@@ -29,8 +26,7 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
       );
     }
 
-    const { s3StaticWebsiteHostedZoneId: hostedZoneId, s3StaticWebsiteEndpoint: dnsName } =
-      RegionInfo.get(region);
+    const { s3StaticWebsiteHostedZoneId: hostedZoneId, s3StaticWebsiteEndpoint: dnsName } = RegionInfo.get(region);
 
     if (!hostedZoneId || !dnsName) {
       throw new Error(`Bucket website target is not supported for the "${region}" region`);

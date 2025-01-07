@@ -17,28 +17,27 @@ test('minimal example renders correctly', () => {
   new ElasticsearchAccessPolicy(stack, 'ElasticsearchAccessPolicy', {
     domainName: 'TestDomain',
     domainArn: 'test:arn',
-    accessPolicies: [new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['es:ESHttp*'],
-      principals: [new iam.AnyPrincipal()],
-      resources: ['test:arn'],
-
-    })],
+    accessPolicies: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['es:ESHttp*'],
+        principals: [new iam.AnyPrincipal()],
+        resources: ['test:arn'],
+      }),
+    ],
   });
 
   Template.fromStack(stack).hasResourceProperties('Custom::ElasticsearchAccessPolicy', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AWS679f53fac002430cb0da5b7982bd22872D164C4C', 'Arn'],
     },
     Create: JSON.stringify({
       action: 'updateElasticsearchDomainConfig',
       service: 'ES',
       parameters: {
         DomainName: 'TestDomain',
-        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
+        AccessPolicies:
+          '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
       outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
@@ -48,7 +47,8 @@ test('minimal example renders correctly', () => {
       service: 'ES',
       parameters: {
         DomainName: 'TestDomain',
-        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
+        AccessPolicies:
+          '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
       outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
@@ -75,22 +75,20 @@ test('support access policy added inline and later', () => {
       actions: ['*'],
       principals: [new iam.AnyPrincipal()],
       resources: ['test:arn'],
-    }),
+    })
   );
 
   Template.fromStack(stack).hasResourceProperties('Custom::ElasticsearchAccessPolicy', {
     ServiceToken: {
-      'Fn::GetAtt': [
-        'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AWS679f53fac002430cb0da5b7982bd22872D164C4C', 'Arn'],
     },
     Create: JSON.stringify({
       action: 'updateElasticsearchDomainConfig',
       service: 'ES',
       parameters: {
         DomainName: 'TestDomain',
-        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"},{"Action":"*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
+        AccessPolicies:
+          '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"},{"Action":"*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
       outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
@@ -100,7 +98,8 @@ test('support access policy added inline and later', () => {
       service: 'ES',
       parameters: {
         DomainName: 'TestDomain',
-        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"},{"Action":"*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
+        AccessPolicies:
+          '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"},{"Action":"*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
       outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },

@@ -13,13 +13,17 @@ test('State machine can be used as Event Rule target', () => {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
+    definitionBody: sfn.DefinitionBody.fromChainable(
+      new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    ),
   });
 
   // WHEN
-  rule.addTarget(new targets.SfnStateMachine(stateMachine, {
-    input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
-  }));
+  rule.addTarget(
+    new targets.SfnStateMachine(stateMachine, {
+      input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -67,14 +71,18 @@ test('Existing role can be used for State machine Rule target', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
+    definitionBody: sfn.DefinitionBody.fromChainable(
+      new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    ),
   });
 
   // WHEN
-  rule.addTarget(new targets.SfnStateMachine(stateMachine, {
-    input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
-    role: role,
-  }));
+  rule.addTarget(
+    new targets.SfnStateMachine(stateMachine, {
+      input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+      role: role,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -124,15 +132,19 @@ test('specifying retry policy', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
+    definitionBody: sfn.DefinitionBody.fromChainable(
+      new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    ),
   });
 
-  rule.addTarget(new targets.SfnStateMachine(stateMachine, {
-    input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
-    maxEventAge: cdk.Duration.hours(2),
-    retryAttempts: 2,
-    role: role,
-  }));
+  rule.addTarget(
+    new targets.SfnStateMachine(stateMachine, {
+      input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+      maxEventAge: cdk.Duration.hours(2),
+      retryAttempts: 2,
+      role: role,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -150,10 +162,7 @@ test('specifying retry policy', () => {
           MaximumRetryAttempts: 2,
         },
         RoleArn: {
-          'Fn::GetAtt': [
-            'Role1ABCC5F0',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
         },
       },
     ],
@@ -172,14 +181,18 @@ test('specifying retry policy with 0 retryAttempts', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
+    definitionBody: sfn.DefinitionBody.fromChainable(
+      new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    ),
   });
 
-  rule.addTarget(new targets.SfnStateMachine(stateMachine, {
-    input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
-    retryAttempts: 0,
-    role: role,
-  }));
+  rule.addTarget(
+    new targets.SfnStateMachine(stateMachine, {
+      input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+      retryAttempts: 0,
+      role: role,
+    })
+  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -196,10 +209,7 @@ test('specifying retry policy with 0 retryAttempts', () => {
           MaximumRetryAttempts: 0,
         },
         RoleArn: {
-          'Fn::GetAtt': [
-            'Role1ABCC5F0',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
         },
       },
     ],
@@ -221,15 +231,19 @@ test('use a Dead Letter Queue for the rule target', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })),
+    definitionBody: sfn.DefinitionBody.fromChainable(
+      new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
+    ),
   });
 
   // WHEN
-  rule.addTarget(new targets.SfnStateMachine(stateMachine, {
-    input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
-    deadLetterQueue: dlq,
-    role: role,
-  }));
+  rule.addTarget(
+    new targets.SfnStateMachine(stateMachine, {
+      input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+      deadLetterQueue: dlq,
+      role: role,
+    })
+  );
 
   // the Permission resource should be in the event stack
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -242,19 +256,13 @@ test('use a Dead Letter Queue for the rule target', () => {
         },
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'DeadLetterQueue9F481546',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
           },
         },
         Id: 'Target0',
         Input: '{"SomeParam":"SomeValue"}',
         RoleArn: {
-          'Fn::GetAtt': [
-            'Role1ABCC5F0',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
         },
       },
     ],
@@ -268,10 +276,7 @@ test('use a Dead Letter Queue for the rule target', () => {
           Condition: {
             ArnEquals: {
               'aws:SourceArn': {
-                'Fn::GetAtt': [
-                  'Rule4C995B7F',
-                  'Arn',
-                ],
+                'Fn::GetAtt': ['Rule4C995B7F', 'Arn'],
               },
             },
           },
@@ -280,10 +285,7 @@ test('use a Dead Letter Queue for the rule target', () => {
             Service: 'events.amazonaws.com',
           },
           Resource: {
-            'Fn::GetAtt': [
-              'DeadLetterQueue9F481546',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
           },
           Sid: 'AllowEventRuleStackRuleF6E31DD0',
         },

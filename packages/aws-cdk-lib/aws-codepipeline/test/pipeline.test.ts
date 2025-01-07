@@ -25,22 +25,23 @@ describe('', () => {
       const sourceArtifact = new codepipeline.Artifact();
       testPipelineSetup(
         pipeline,
-        [new FakeSourceAction({
-          actionName: 'FakeSource',
-          output: sourceArtifact,
-        })],
-        [new FakeBuildAction({
-          actionName: 'FakeBuild',
-          input: sourceArtifact,
-        })],
+        [
+          new FakeSourceAction({
+            actionName: 'FakeSource',
+            output: sourceArtifact,
+          }),
+        ],
+        [
+          new FakeBuildAction({
+            actionName: 'FakeBuild',
+            input: sourceArtifact,
+          }),
+        ]
       );
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'RoleArn': {
-          'Fn::GetAtt': [
-            'Role1ABCC5F0',
-            'Arn',
-          ],
+        RoleArn: {
+          'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
         },
       });
     });
@@ -48,8 +49,11 @@ describe('', () => {
     test('can be imported by ARN', () => {
       const stack = new cdk.Stack();
 
-      const pipeline = codepipeline.Pipeline.fromPipelineArn(stack, 'Pipeline',
-        'arn:aws:codepipeline:us-east-1:123456789012:MyPipeline');
+      const pipeline = codepipeline.Pipeline.fromPipelineArn(
+        stack,
+        'Pipeline',
+        'arn:aws:codepipeline:us-east-1:123456789012:MyPipeline'
+      );
 
       expect(pipeline.pipelineArn).toEqual('arn:aws:codepipeline:us-east-1:123456789012:MyPipeline');
       expect(pipeline.pipelineName).toEqual('MyPipeline');
@@ -63,8 +67,11 @@ describe('', () => {
         },
       });
 
-      const pipeline = codepipeline.Pipeline.fromPipelineArn(stack, 'Pipeline',
-        'arn:aws:codepipeline:us-east-1:123456789012:MyPipeline');
+      const pipeline = codepipeline.Pipeline.fromPipelineArn(
+        stack,
+        'Pipeline',
+        'arn:aws:codepipeline:us-east-1:123456789012:MyPipeline'
+      );
 
       expect(pipeline.env.region).toEqual('us-east-1');
       expect(pipeline.env.account).toEqual('123456789012');
@@ -115,37 +122,41 @@ describe('', () => {
           stages: [
             {
               stageName: 'Source',
-              actions: [new FakeSourceAction({
-                actionName: 'Source',
-                output: sourceOutput,
-              })],
+              actions: [
+                new FakeSourceAction({
+                  actionName: 'Source',
+                  output: sourceOutput,
+                }),
+              ],
             },
             {
               stageName: 'Build',
-              actions: [new FakeBuildAction({
-                actionName: 'Build',
-                input: sourceOutput,
-                region: replicationRegion,
-              })],
+              actions: [
+                new FakeBuildAction({
+                  actionName: 'Build',
+                  input: sourceOutput,
+                  region: replicationRegion,
+                }),
+              ],
             },
           ],
         });
 
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-          'ArtifactStores': [
+          ArtifactStores: [
             {
-              'Region': replicationRegion,
-              'ArtifactStore': {
-                'Type': 'S3',
-                'EncryptionKey': {
-                  'Type': 'KMS',
-                  'Id': {
+              Region: replicationRegion,
+              ArtifactStore: {
+                Type: 'S3',
+                EncryptionKey: {
+                  Type: 'KMS',
+                  Id: {
                     'Fn::Join': [
                       '',
                       [
                         'arn:',
                         {
-                          'Ref': 'AWS::Partition',
+                          Ref: 'AWS::Partition',
                         },
                         ':kms:us-west-1:123456789012:alias/my-replication-alias',
                       ],
@@ -155,14 +166,14 @@ describe('', () => {
               },
             },
             {
-              'Region': pipelineRegion,
+              Region: pipelineRegion,
             },
           ],
         });
 
         Template.fromStack(replicationStack).hasResourceProperties('AWS::KMS::Key', {
-          'KeyPolicy': {
-            'Statement': [
+          KeyPolicy: {
+            Statement: [
               {
                 // owning account management permissions - we don't care about them in this test
               },
@@ -171,24 +182,14 @@ describe('', () => {
                 // Since the replication bucket must be deployed before the pipeline,
                 // we cannot put the pipeline role as the principal here -
                 // hence, we put the account itself
-                'Action': [
-                  'kms:Decrypt',
-                  'kms:DescribeKey',
-                  'kms:Encrypt',
-                  'kms:ReEncrypt*',
-                  'kms:GenerateDataKey*',
-                ],
-                'Effect': 'Allow',
-                'Principal': {
-                  'AWS': {
-                    'Fn::Join': ['', [
-                      'arn:',
-                      { 'Ref': 'AWS::Partition' },
-                      ':iam::123456789012:root',
-                    ]],
+                Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']],
                   },
                 },
-                'Resource': '*',
+                Resource: '*',
               },
             ],
           },
@@ -208,37 +209,41 @@ describe('', () => {
           stages: [
             {
               stageName: 'Source',
-              actions: [new FakeSourceAction({
-                actionName: 'Source',
-                output: sourceOutput,
-              })],
+              actions: [
+                new FakeSourceAction({
+                  actionName: 'Source',
+                  output: sourceOutput,
+                }),
+              ],
             },
             {
               stageName: 'Build',
-              actions: [new FakeBuildAction({
-                actionName: 'Build',
-                input: sourceOutput,
-                region: replicationRegion,
-              })],
+              actions: [
+                new FakeBuildAction({
+                  actionName: 'Build',
+                  input: sourceOutput,
+                  region: replicationRegion,
+                }),
+              ],
             },
           ],
         });
 
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-          'ArtifactStores': [
+          ArtifactStores: [
             {
-              'Region': replicationRegion,
-              'ArtifactStore': {
-                'Type': 'S3',
-                'EncryptionKey': {
-                  'Type': 'KMS',
-                  'Id': {
+              Region: replicationRegion,
+              ArtifactStore: {
+                Type: 'S3',
+                EncryptionKey: {
+                  Type: 'KMS',
+                  Id: {
                     'Fn::Join': [
                       '',
                       [
                         'arn:',
                         {
-                          'Ref': 'AWS::Partition',
+                          Ref: 'AWS::Partition',
                         },
                         ':kms:us-west-1:123456789012:alias/s-west-1tencryptionalias9b344b2b8e6825cb1f7d',
                       ],
@@ -248,14 +253,14 @@ describe('', () => {
               },
             },
             {
-              'Region': pipelineRegion,
+              Region: pipelineRegion,
             },
           ],
         });
 
         Template.fromStack(pipeline.crossRegionSupport[replicationRegion].stack).hasResource('AWS::KMS::Alias', {
-          'DeletionPolicy': 'Delete',
-          'UpdateReplacePolicy': 'Delete',
+          DeletionPolicy: 'Delete',
+          UpdateReplacePolicy: 'Delete',
         });
       });
 
@@ -271,44 +276,50 @@ describe('', () => {
           crossRegionReplicationBuckets: {
             [replicationRegion]: s3.Bucket.fromBucketAttributes(pipelineStack, 'ReplicationBucket', {
               bucketArn: 'arn:aws:s3:::my-us-west-1-replication-bucket',
-              encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'ReplicationKey',
-                `arn:aws:kms:${replicationRegion}:123456789012:key/1234-5678-9012`,
+              encryptionKey: kms.Key.fromKeyArn(
+                pipelineStack,
+                'ReplicationKey',
+                `arn:aws:kms:${replicationRegion}:123456789012:key/1234-5678-9012`
               ),
             }),
           },
           stages: [
             {
               stageName: 'Source',
-              actions: [new FakeSourceAction({
-                actionName: 'Source',
-                output: sourceOutput,
-              })],
+              actions: [
+                new FakeSourceAction({
+                  actionName: 'Source',
+                  output: sourceOutput,
+                }),
+              ],
             },
             {
               stageName: 'Build',
-              actions: [new FakeBuildAction({
-                actionName: 'Build',
-                input: sourceOutput,
-              })],
+              actions: [
+                new FakeBuildAction({
+                  actionName: 'Build',
+                  input: sourceOutput,
+                }),
+              ],
             },
           ],
         });
 
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-          'ArtifactStores': [
+          ArtifactStores: [
             {
-              'Region': replicationRegion,
-              'ArtifactStore': {
-                'Type': 'S3',
-                'Location': 'my-us-west-1-replication-bucket',
-                'EncryptionKey': {
-                  'Type': 'KMS',
-                  'Id': 'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012',
+              Region: replicationRegion,
+              ArtifactStore: {
+                Type: 'S3',
+                Location: 'my-us-west-1-replication-bucket',
+                EncryptionKey: {
+                  Type: 'KMS',
+                  Id: 'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012',
                 },
               },
             },
             {
-              'Region': pipelineRegion,
+              Region: pipelineRegion,
             },
           ],
         });
@@ -328,18 +339,22 @@ describe('', () => {
           stages: [
             {
               stageName: 'Source',
-              actions: [new FakeSourceAction({
-                actionName: 'Source',
-                output: sourceOutput,
-              })],
+              actions: [
+                new FakeSourceAction({
+                  actionName: 'Source',
+                  output: sourceOutput,
+                }),
+              ],
             },
             {
               stageName: 'Build',
-              actions: [new FakeBuildAction({
-                actionName: 'Build',
-                input: sourceOutput,
-                region: 'eu-south-1',
-              })],
+              actions: [
+                new FakeBuildAction({
+                  actionName: 'Build',
+                  input: sourceOutput,
+                  region: 'eu-south-1',
+                }),
+              ],
             },
           ],
         });
@@ -347,10 +362,11 @@ describe('', () => {
         const assembly = app.synth();
         const supportStackArtifact = assembly.getStackByName('PipelineStack-support-eu-south-1');
         expect(supportStackArtifact.assumeRoleArn).toEqual(
-          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2'
+        );
         expect(supportStackArtifact.cloudFormationExecutionRoleArn).toEqual(
-          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
-
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2'
+        );
       });
 
       test('generates the same support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
@@ -370,7 +386,6 @@ describe('', () => {
         expect(() => {
           assembly.getStackByName('PipelineStackB-support-eu-south-1');
         }).toThrow(/Unable to find stack with stack name/);
-
       });
 
       test('generates the unique support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
@@ -425,11 +440,13 @@ describe('', () => {
         const buildStage = pipeline.addStage({ stageName: 'Build' });
 
         expect(() => {
-          buildStage.addAction(new FakeBuildAction({
-            actionName: 'FakeBuild',
-            input: sourceOutput,
-            account: cdk.Aws.ACCOUNT_ID,
-          }));
+          buildStage.addAction(
+            new FakeBuildAction({
+              actionName: 'FakeBuild',
+              input: sourceOutput,
+              account: cdk.Aws.ACCOUNT_ID,
+            })
+          );
         }).toThrow(/The 'account' property must be a concrete value \(action: 'FakeBuild'\)/);
       });
 
@@ -448,11 +465,13 @@ describe('', () => {
         const buildStage = pipeline.addStage({ stageName: 'Build' });
 
         expect(() => {
-          buildStage.addAction(new FakeBuildAction({
-            actionName: 'FakeBuild',
-            input: sourceOutput,
-            account: '123456789012',
-          }));
+          buildStage.addAction(
+            new FakeBuildAction({
+              actionName: 'FakeBuild',
+              input: sourceOutput,
+              account: '123456789012',
+            })
+          );
         }).toThrow(/Pipeline stack which uses cross-environment actions must have an explicitly set account/);
       });
 
@@ -487,7 +506,7 @@ describe('', () => {
         });
 
         Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-          'EnableKeyRotation': true,
+          EnableKeyRotation: true,
         });
       });
 
@@ -546,14 +565,18 @@ describe('', () => {
       });
 
       const sourceArtifact = new codepipeline.Artifact();
-      const sourceActions = [new FakeSourceAction({
-        actionName: 'FakeSource',
-        output: sourceArtifact,
-      })];
-      const buildActions = [new FakeBuildAction({
-        actionName: 'FakeBuild',
-        input: sourceArtifact,
-      })];
+      const sourceActions = [
+        new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        }),
+      ];
+      const buildActions = [
+        new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        }),
+      ];
       testPipelineSetup(pipeline, sourceActions, buildActions);
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -573,14 +596,18 @@ describe('', () => {
       });
 
       const sourceArtifact = new codepipeline.Artifact();
-      const sourceActions = [new FakeSourceAction({
-        actionName: 'FakeSource',
-        output: sourceArtifact,
-      })];
-      const buildActions = [new FakeBuildAction({
-        actionName: 'FakeBuild',
-        input: sourceArtifact,
-      })];
+      const sourceActions = [
+        new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        }),
+      ];
+      const buildActions = [
+        new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        }),
+      ];
       testPipelineSetup(pipeline, sourceActions, buildActions);
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -600,14 +627,18 @@ describe('', () => {
       });
 
       const sourceArtifact = new codepipeline.Artifact();
-      const sourceActions = [new FakeSourceAction({
-        actionName: 'FakeSource',
-        output: sourceArtifact,
-      })];
-      const buildActions = [new FakeBuildAction({
-        actionName: 'FakeBuild',
-        input: sourceArtifact,
-      })];
+      const sourceActions = [
+        new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        }),
+      ];
+      const buildActions = [
+        new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        }),
+      ];
       testPipelineSetup(pipeline, sourceActions, buildActions);
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -624,7 +655,9 @@ describe('', () => {
           pipelineType: codepipeline.PipelineType.V1,
           executionMode: codepipeline.ExecutionMode.QUEUED,
         });
-      }).toThrow('QUEUED execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+      }).toThrow(
+        'QUEUED execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`'
+      );
     });
 
     test('throws if executionMode is PARALLEL but pipeline type is not V2', () => {
@@ -636,7 +669,9 @@ describe('', () => {
           pipelineType: codepipeline.PipelineType.V1,
           executionMode: codepipeline.ExecutionMode.PARALLEL,
         });
-      }).toThrow('PARALLEL execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+      }).toThrow(
+        'PARALLEL execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`'
+      );
     });
   });
 
@@ -750,25 +785,31 @@ describe('', () => {
     test('cross account key alias is properly shortened to 256 characters when stack name is too long and feature flag is enabled', () => {
       const stack = createPipelineStack({
         withFeatureFlag: true,
-        suffix: 'NeedsToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldUseButItStillMightHappenSoWeMustTestForTheTestCase',
+        suffix:
+          'NeedsToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldUseButItStillMightHappenSoWeMustTestForTheTestCase',
         stackId: 'too-long',
-        pipelineId: 'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd',
+        pipelineId:
+          'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd',
       });
 
       Template.fromStack(stack).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-actual-stack-needstobeshortenedduetothelengthofthisabsurdnamethatnooneshouldusebutitstillmighthappensowemusttestfohatwillneedtobeshortenedduetothealsoverysuperextralongnameofthestack-alsowithsomedifferentcharactersaddedtotheend-384b9343',
+        AliasName:
+          'alias/codepipeline-actual-stack-needstobeshortenedduetothelengthofthisabsurdnamethatnooneshouldusebutitstillmighthappensowemusttestfohatwillneedtobeshortenedduetothealsoverysuperextralongnameofthestack-alsowithsomedifferentcharactersaddedtotheend-384b9343',
       });
     });
 
     test('cross account key alias is properly shortened to 256 characters when stack name is too long and feature flag is not enabled', () => {
       const stack = createPipelineStack({
         suffix: 'too-long',
-        stackId: 'NeedsToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldUseButItStillMightHappenSoWeMustTestForTheTestCase',
-        pipelineId: 'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd',
+        stackId:
+          'NeedsToBeShortenedDueToTheLengthOfThisAbsurdNameThatNoOneShouldUseButItStillMightHappenSoWeMustTestForTheTestCase',
+        pipelineId:
+          'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd',
       });
 
       Template.fromStack(stack).hasResourceProperties(kmsAliasResource, {
-        AliasName: 'alias/codepipeline-ortenedduetothelengthofthisabsurdnamethatnooneshouldusebutitstillmighthappensowemusttestforthetestcaseactualpipelinewithextrasuperlongnamethatwillneedtobeshortenedduetothealsoverysuperextralongnameofthestackalsowithsomedifferentc498e0672',
+        AliasName:
+          'alias/codepipeline-ortenedduetothelengthofthisabsurdnamethatnooneshouldusebutitstillmighthappensowemusttestforthetestcaseactualpipelinewithextrasuperlongnamethatwillneedtobeshortenedduetothealsoverysuperextralongnameofthestackalsowithsomedifferentc498e0672',
       });
     });
 
@@ -785,7 +826,9 @@ describe('', () => {
         stackId: 'STACK-ID',
       });
 
-      expect(Template.fromStack(stack1).findResources(kmsAliasResource)).not.toEqual(Template.fromStack(stack2).findResources(kmsAliasResource));
+      expect(Template.fromStack(stack1).findResources(kmsAliasResource)).not.toEqual(
+        Template.fromStack(stack2).findResources(kmsAliasResource)
+      );
 
       Template.fromStack(stack1).hasResourceProperties(kmsAliasResource, {
         AliasName: 'alias/codepipeline-actual-stack-1-pipeline-b09fefee',
@@ -807,7 +850,9 @@ describe('', () => {
         stackId: 'STACK-ID',
       });
 
-      expect(Template.fromStack(stack1).findResources(kmsAliasResource)).toEqual(Template.fromStack(stack2).findResources(kmsAliasResource));
+      expect(Template.fromStack(stack1).findResources(kmsAliasResource)).toEqual(
+        Template.fromStack(stack2).findResources(kmsAliasResource)
+      );
 
       Template.fromStack(stack1).hasResourceProperties(kmsAliasResource, {
         AliasName: 'alias/codepipeline-stackidpipeline32fb88b3',
@@ -834,8 +879,9 @@ describe('', () => {
         pipelineId: 'PIPELINE-ID',
       });
 
-      expect(Template.fromStack(stack1.nestedStack!).findResources(kmsAliasResource))
-        .not.toEqual(Template.fromStack(stack2.nestedStack!).findResources(kmsAliasResource));
+      expect(Template.fromStack(stack1.nestedStack!).findResources(kmsAliasResource)).not.toEqual(
+        Template.fromStack(stack2.nestedStack!).findResources(kmsAliasResource)
+      );
 
       Template.fromStack(stack1.nestedStack!).hasResourceProperties(kmsAliasResource, {
         AliasName: 'alias/codepipeline-actual-stack-name-1-nested-pipeline-id-c8c9f252',
@@ -860,8 +906,9 @@ describe('', () => {
         pipelineId: 'PIPELINE-ID',
       });
 
-      expect(Template.fromStack(stack1.nestedStack!).findResources(kmsAliasResource))
-        .toEqual(Template.fromStack(stack2.nestedStack!).findResources(kmsAliasResource));
+      expect(Template.fromStack(stack1.nestedStack!).findResources(kmsAliasResource)).toEqual(
+        Template.fromStack(stack2.nestedStack!).findResources(kmsAliasResource)
+      );
 
       Template.fromStack(stack1.nestedStack!).hasResourceProperties(kmsAliasResource, {
         AliasName: 'alias/codepipeline-stackidnestedpipelineid3e91360a',
@@ -883,8 +930,9 @@ describe('', () => {
       const nestedStack2 = new cdk.NestedStack(stack, 'Second');
       createPipelineWithSourceAndBuildStages(nestedStack2, 'Actual-Pipeline-Name-2', 'PIPELINE-ID');
 
-      expect(Template.fromStack(stack.nestedStack!).findResources(kmsAliasResource))
-        .not.toEqual(Template.fromStack(nestedStack2).findResources(kmsAliasResource));
+      expect(Template.fromStack(stack.nestedStack!).findResources(kmsAliasResource)).not.toEqual(
+        Template.fromStack(nestedStack2).findResources(kmsAliasResource)
+      );
 
       Template.fromStack(stack.nestedStack!).hasResourceProperties(kmsAliasResource, {
         AliasName: 'alias/codepipeline-actual-stack-name-1-first-pipeline-id-3c59cb88',
@@ -905,8 +953,9 @@ describe('', () => {
       const nestedStack2 = new cdk.NestedStack(stack, 'Second');
       createPipelineWithSourceAndBuildStages(nestedStack2, 'Actual-Pipeline-Name-2', 'PIPELINE-ID');
 
-      expect(Template.fromStack(stack.nestedStack!).findResources(kmsAliasResource))
-        .not.toEqual(Template.fromStack(nestedStack2).findResources(kmsAliasResource));
+      expect(Template.fromStack(stack.nestedStack!).findResources(kmsAliasResource)).not.toEqual(
+        Template.fromStack(nestedStack2).findResources(kmsAliasResource)
+      );
 
       Template.fromStack(stack.nestedStack!).hasResourceProperties(kmsAliasResource, {
         AliasName: 'alias/codepipeline-stackidfirstpipelineid5abca693',
@@ -947,13 +996,12 @@ describe('test with shared setup', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Name: 'Build',
-        Actions: [
-          Match.objectLike({ Name: 'Gcc' }),
-          Match.objectLike({ Name: 'debug.com' }),
-        ],
-      }]),
+      Stages: Match.arrayWith([
+        {
+          Name: 'Build',
+          Actions: [Match.objectLike({ Name: 'Gcc' }), Match.objectLike({ Name: 'debug.com' })],
+        },
+      ]),
     });
   });
 });
@@ -963,7 +1011,7 @@ interface ReusePipelineStackProps extends cdk.StackProps {
 }
 
 class ReusePipelineStack extends cdk.Stack {
-  public constructor(scope: Construct, id: string, props: ReusePipelineStackProps ) {
+  public constructor(scope: Construct, id: string, props: ReusePipelineStackProps) {
     super(scope, id, props);
     const sourceOutput = new codepipeline.Artifact();
     const buildOutput = new codepipeline.Artifact();
@@ -972,27 +1020,33 @@ class ReusePipelineStack extends cdk.Stack {
       stages: [
         {
           stageName: 'Source',
-          actions: [new FakeSourceAction({
-            actionName: 'Source',
-            output: sourceOutput,
-          })],
+          actions: [
+            new FakeSourceAction({
+              actionName: 'Source',
+              output: sourceOutput,
+            }),
+          ],
         },
         {
           stageName: 'Build',
-          actions: [new FakeBuildAction({
-            actionName: 'Build',
-            input: sourceOutput,
-            region: 'eu-south-1',
-            output: buildOutput,
-          })],
+          actions: [
+            new FakeBuildAction({
+              actionName: 'Build',
+              input: sourceOutput,
+              region: 'eu-south-1',
+              output: buildOutput,
+            }),
+          ],
         },
         {
           stageName: 'Deploy',
-          actions: [new FakeBuildAction({
-            actionName: 'Deploy',
-            input: buildOutput,
-            region: 'eu-south-1',
-          })],
+          actions: [
+            new FakeBuildAction({
+              actionName: 'Deploy',
+              input: buildOutput,
+              region: 'eu-south-1',
+            }),
+          ],
         },
       ],
     });
@@ -1010,14 +1064,22 @@ class PipelineStack extends cdk.Stack {
   pipeline: codepipeline.Pipeline;
 
   constructor(scope?: Construct, id?: string, props?: PipelineStackProps) {
-    super (scope, id, props);
+    super(scope, id, props);
 
-    props?.nestedStackId ? this.nestedStack = new cdk.NestedStack(this, props!.nestedStackId!) : undefined;
-    this.pipeline = createPipelineWithSourceAndBuildStages(this.nestedStack || this, props?.pipelineName, props?.pipelineId);
+    props?.nestedStackId ? (this.nestedStack = new cdk.NestedStack(this, props!.nestedStackId!)) : undefined;
+    this.pipeline = createPipelineWithSourceAndBuildStages(
+      this.nestedStack || this,
+      props?.pipelineName,
+      props?.pipelineId
+    );
   }
 }
 
-function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?: string, pipelineId: string = 'Pipeline') {
+function createPipelineWithSourceAndBuildStages(
+  scope: Construct,
+  pipelineName?: string,
+  pipelineId: string = 'Pipeline'
+) {
   const artifact = new codepipeline.Artifact();
   return new codepipeline.Pipeline(scope, pipelineId, {
     pipelineName,
@@ -1034,7 +1096,7 @@ function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?:
       },
     ],
   });
-};
+}
 
 interface CreatePipelineStackOptions {
   readonly withFeatureFlag?: boolean;
@@ -1046,17 +1108,23 @@ interface CreatePipelineStackOptions {
 }
 
 function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack {
-  const context = options.withFeatureFlag ? { context: { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true } } : undefined;
+  const context = options.withFeatureFlag
+    ? { context: { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME]: true } }
+    : undefined;
   return new PipelineStack(new cdk.App(context), options.stackId, {
     stackName: options.undefinedStackName ? undefined : `Actual-Stack-${options.suffix}`,
     nestedStackId: options.nestedStackId,
     pipelineName: `Actual-Pipeline-${options.suffix}`.substring(0, 100),
     pipelineId: options.pipelineId,
   });
-};
+}
 
 // Adding 2 stages with actions so pipeline validation will pass
-function testPipelineSetup(pipeline: codepipeline.Pipeline, sourceActions?: codepipeline.IAction[], buildActions?: codepipeline.IAction[]) {
+function testPipelineSetup(
+  pipeline: codepipeline.Pipeline,
+  sourceActions?: codepipeline.IAction[],
+  buildActions?: codepipeline.IAction[]
+) {
   pipeline.addStage({
     stageName: 'Source',
     actions: sourceActions,

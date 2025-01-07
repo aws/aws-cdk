@@ -45,10 +45,7 @@ test('create a plan and add rules', () => {
           ScheduleExpression: 'cron(30 3 15 * ? *)',
           StartWindowMinutes: 60,
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'Vault23237E5B',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['Vault23237E5B', 'BackupVaultName'],
           },
         },
         {
@@ -59,10 +56,7 @@ test('create a plan and add rules', () => {
           RuleName: 'Monthly5Year',
           ScheduleExpression: 'cron(0 5 1 * ? *)',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'OtherVault3C99BCE2',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['OtherVault3C99BCE2', 'BackupVaultName'],
           },
         },
       ],
@@ -96,10 +90,7 @@ test('create a plan with continuous backup option', () => {
           },
           RuleName: 'PlanRule0',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'Vault23237E5B',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['Vault23237E5B', 'BackupVaultName'],
           },
         },
       ],
@@ -134,10 +125,7 @@ test('create a plan with continuous backup option and specify deleteAfter', () =
           },
           RuleName: 'PlanRule0',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'Vault23237E5B',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['Vault23237E5B', 'BackupVaultName'],
           },
         },
       ],
@@ -191,10 +179,7 @@ test('daily35DayRetention', () => {
           RuleName: 'Daily',
           ScheduleExpression: 'cron(0 5 * * ? *)',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'D35Vault2A9EB06F',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['D35Vault2A9EB06F', 'BackupVaultName'],
           },
         },
       ],
@@ -218,10 +203,7 @@ test('dailyWeeklyMonthly7YearRetention', () => {
           RuleName: 'Daily',
           ScheduleExpression: 'cron(0 5 * * ? *)',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'DWM7Vault21F17E61',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['DWM7Vault21F17E61', 'BackupVaultName'],
           },
         },
         {
@@ -231,10 +213,7 @@ test('dailyWeeklyMonthly7YearRetention', () => {
           RuleName: 'Weekly',
           ScheduleExpression: 'cron(0 5 ? * SAT *)',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'DWM7Vault21F17E61',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['DWM7Vault21F17E61', 'BackupVaultName'],
           },
         },
         {
@@ -245,10 +224,7 @@ test('dailyWeeklyMonthly7YearRetention', () => {
           RuleName: 'Monthly7Year',
           ScheduleExpression: 'cron(0 5 1 * ? *)',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'DWM7Vault21F17E61',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['DWM7Vault21F17E61', 'BackupVaultName'],
           },
         },
       ],
@@ -275,10 +251,7 @@ test('automatically creates a new vault', () => {
           RuleName: 'Daily',
           ScheduleExpression: 'cron(0 5 * * ? *)',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'PlanVault0284B0C2',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['PlanVault0284B0C2', 'BackupVaultName'],
           },
         },
       ],
@@ -296,11 +269,13 @@ test('create a plan and add rule to copy to a different vault', () => {
     backupVault: primaryVault,
     backupPlanRules: [
       new BackupPlanRule({
-        copyActions: [{
-          destinationBackupVault: secondaryVault,
-          deleteAfter: Duration.days(120),
-          moveToColdStorageAfter: Duration.days(30),
-        }],
+        copyActions: [
+          {
+            destinationBackupVault: secondaryVault,
+            deleteAfter: Duration.days(120),
+            moveToColdStorageAfter: Duration.days(30),
+          },
+        ],
       }),
     ],
   });
@@ -313,23 +288,19 @@ test('create a plan and add rule to copy to a different vault', () => {
         {
           RuleName: 'PlanRule0',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'PrimaryVault9BBEBB0D',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['PrimaryVault9BBEBB0D', 'BackupVaultName'],
           },
-          CopyActions: [{
-            DestinationBackupVaultArn: {
-              'Fn::GetAtt': [
-                'SecondaryVault67665B5E',
-                'BackupVaultArn',
-              ],
+          CopyActions: [
+            {
+              DestinationBackupVaultArn: {
+                'Fn::GetAtt': ['SecondaryVault67665B5E', 'BackupVaultArn'],
+              },
+              Lifecycle: {
+                DeleteAfterDays: 120,
+                MoveToColdStorageAfterDays: 30,
+              },
             },
-            Lifecycle: {
-              DeleteAfterDays: 120,
-              MoveToColdStorageAfterDays: 30,
-            },
-          }],
+          ],
         },
       ],
     },
@@ -359,10 +330,7 @@ test('create a plan and add rule with recoveryPointTags', () => {
         {
           RuleName: 'PlanRule0',
           TargetBackupVault: {
-            'Fn::GetAtt': [
-              'PlanVault0284B0C2',
-              'BackupVaultName',
-            ],
+            'Fn::GetAtt': ['PlanVault0284B0C2', 'BackupVaultName'],
           },
           RecoveryPointTags: {
             key: 'value',
@@ -374,16 +342,22 @@ test('create a plan and add rule with recoveryPointTags', () => {
 });
 
 test('throws when deleteAfter is not greater than moveToColdStorageAfter', () => {
-  expect(() => new BackupPlanRule({
-    deleteAfter: Duration.days(5),
-    moveToColdStorageAfter: Duration.days(6),
-  })).toThrow(/`deleteAfter` must be greater than `moveToColdStorageAfter`/);
+  expect(
+    () =>
+      new BackupPlanRule({
+        deleteAfter: Duration.days(5),
+        moveToColdStorageAfter: Duration.days(6),
+      })
+  ).toThrow(/`deleteAfter` must be greater than `moveToColdStorageAfter`/);
 });
 
 test('throws when scheduleExpression is not of type cron', () => {
-  expect(() => new BackupPlanRule({
-    scheduleExpression: events.Schedule.rate(Duration.hours(5)),
-  })).toThrow(/`scheduleExpression` must be of type `cron`/);
+  expect(
+    () =>
+      new BackupPlanRule({
+        scheduleExpression: events.Schedule.rate(Duration.hours(5)),
+      })
+  ).toThrow(/`scheduleExpression` must be of type `cron`/);
 });
 
 test('synth fails when plan has no rules', () => {
@@ -398,43 +372,66 @@ test('synth fails when plan has no rules', () => {
 });
 
 test('throws when moveToColdStorageAfter is used with enableContinuousBackup', () => {
-  expect(() => new BackupPlanRule({
-    enableContinuousBackup: true,
-    deleteAfter: Duration.days(30),
-    moveToColdStorageAfter: Duration.days(10),
-  })).toThrow(/`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled/);
+  expect(
+    () =>
+      new BackupPlanRule({
+        enableContinuousBackup: true,
+        deleteAfter: Duration.days(30),
+        moveToColdStorageAfter: Duration.days(10),
+      })
+  ).toThrow(/`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled/);
 });
 
 test('throws when deleteAfter is less than 1 in combination with enableContinuousBackup', () => {
-  expect(() => new BackupPlanRule({
-    enableContinuousBackup: true,
-    deleteAfter: Duration.days(0),
-  })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 0 days/);
+  expect(
+    () =>
+      new BackupPlanRule({
+        enableContinuousBackup: true,
+        deleteAfter: Duration.days(0),
+      })
+  ).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 0 days/);
 });
 
 test('throws when deleteAfter is greater than 35 in combination with enableContinuousBackup', () => {
-  expect(() => new BackupPlanRule({
-    enableContinuousBackup: true,
-    deleteAfter: Duration.days(36),
-  })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 36 days/);
+  expect(
+    () =>
+      new BackupPlanRule({
+        enableContinuousBackup: true,
+        deleteAfter: Duration.days(36),
+      })
+  ).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 36 days/);
 });
 
 test('throws when deleteAfter is not greater than moveToColdStorageAfter in a copy action', () => {
-  expect(() => new BackupPlanRule({
-    copyActions: [{
-      destinationBackupVault: new BackupVault(stack, 'Vault'),
-      deleteAfter: Duration.days(5),
-      moveToColdStorageAfter: Duration.days(6),
-    }],
-  })).toThrow(/deleteAfter' must at least 90 days later than corresponding 'moveToColdStorageAfter'\nreceived 'deleteAfter: 5' and 'moveToColdStorageAfter: 6'/);
+  expect(
+    () =>
+      new BackupPlanRule({
+        copyActions: [
+          {
+            destinationBackupVault: new BackupVault(stack, 'Vault'),
+            deleteAfter: Duration.days(5),
+            moveToColdStorageAfter: Duration.days(6),
+          },
+        ],
+      })
+  ).toThrow(
+    /deleteAfter' must at least 90 days later than corresponding 'moveToColdStorageAfter'\nreceived 'deleteAfter: 5' and 'moveToColdStorageAfter: 6'/
+  );
 });
 
 test('throws when deleteAfter is not greater than 90 days past moveToColdStorageAfter parameter in a copy action', () => {
-  expect(() => new BackupPlanRule({
-    copyActions: [{
-      destinationBackupVault: new BackupVault(stack, 'Vault'),
-      deleteAfter: Duration.days(45),
-      moveToColdStorageAfter: Duration.days(30),
-    }],
-  })).toThrow(/'deleteAfter' must at least 90 days later than corresponding 'moveToColdStorageAfter'\nreceived 'deleteAfter: 45' and 'moveToColdStorageAfter: 30'/);
+  expect(
+    () =>
+      new BackupPlanRule({
+        copyActions: [
+          {
+            destinationBackupVault: new BackupVault(stack, 'Vault'),
+            deleteAfter: Duration.days(45),
+            moveToColdStorageAfter: Duration.days(30),
+          },
+        ],
+      })
+  ).toThrow(
+    /'deleteAfter' must at least 90 days later than corresponding 'moveToColdStorageAfter'\nreceived 'deleteAfter: 45' and 'moveToColdStorageAfter: 30'/
+  );
 });

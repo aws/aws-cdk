@@ -109,8 +109,4 @@ metricAssertion.provider.addToRolePolicy({
   Resource: ['*'],
 });
 
-firstAssertion
-  .next(secondAssertion)
-  .next(thirdAssertion)
-  .next(forthAssertion)
-  .next(metricAssertion);
+firstAssertion.next(secondAssertion).next(thirdAssertion).next(forthAssertion).next(metricAssertion);

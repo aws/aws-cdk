@@ -54,10 +54,7 @@ describe('StepFunctionsIntegration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ConnectionType: 'INTERNET',
       CredentialsArn: {
-        'Fn::GetAtt': [
-          'StepFunctionsRouteInvokeRole5E3B5519',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['StepFunctionsRouteInvokeRole5E3B5519', 'Arn'],
       },
       IntegrationType: 'AWS_PROXY',
       IntegrationSubtype: 'StepFunctions-StartExecution',
@@ -90,10 +87,7 @@ describe('StepFunctionsIntegration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ConnectionType: 'INTERNET',
       CredentialsArn: {
-        'Fn::GetAtt': [
-          'StepFunctionsRouteInvokeRole5E3B5519',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['StepFunctionsRouteInvokeRole5E3B5519', 'Arn'],
       },
       IntegrationType: 'AWS_PROXY',
       IntegrationSubtype: 'StepFunctions-StartExecution',
@@ -138,28 +132,31 @@ describe('StepFunctionsIntegration', () => {
           {
             Action: action,
             Effect: 'Allow',
-            Resource: subtype === HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION ? {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:',
-                  { 'Fn::GetAtt': [stack.resolve(stateMachine.stateMachineArn).Ref, 'Name'] },
-                  ':*',
-                ],
-              ],
-            } : stack.resolve(stateMachine.stateMachineArn),
+            Resource:
+              subtype === HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION
+                ? {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':states:',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        ':',
+                        {
+                          Ref: 'AWS::AccountId',
+                        },
+                        ':execution:',
+                        { 'Fn::GetAtt': [stack.resolve(stateMachine.stateMachineArn).Ref, 'Name'] },
+                        ':*',
+                      ],
+                    ],
+                  }
+                : stack.resolve(stateMachine.stateMachineArn),
           },
         ],
       },
@@ -167,19 +164,15 @@ describe('StepFunctionsIntegration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ConnectionType: 'INTERNET',
       CredentialsArn: {
-        'Fn::GetAtt': [
-          'StepFunctionsRouteInvokeRole5E3B5519',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['StepFunctionsRouteInvokeRole5E3B5519', 'Arn'],
       },
       IntegrationType: 'AWS_PROXY',
       IntegrationSubtype: subtype,
       PayloadFormatVersion: '1.0',
       RequestParameters: {
-        ...(parameterMapping ?
-          parameterMapping.mappings :
-          { StateMachineArn: stack.resolve(stateMachine.stateMachineArn) }
-        ),
+        ...(parameterMapping
+          ? parameterMapping.mappings
+          : { StateMachineArn: stack.resolve(stateMachine.stateMachineArn) }),
       },
     });
   });
@@ -225,4 +218,3 @@ describe('StepFunctionsIntegration', () => {
     }).toThrow(/Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine/);
   });
 });
-

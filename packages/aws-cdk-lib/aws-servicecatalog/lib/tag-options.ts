@@ -37,9 +37,7 @@ export class TagOptions extends cdk.Resource {
     this._cfnTagOptions = this.createUnderlyingTagOptions(props.allowedValuesForTags);
   }
 
-  private createUnderlyingTagOptions(allowedValuesForTags: {
-    [tagKey: string]: string[];
-  }): CfnTagOption[] {
+  private createUnderlyingTagOptions(allowedValuesForTags: { [tagKey: string]: string[] }): CfnTagOption[] {
     if (Object.keys(allowedValuesForTags).length === 0) {
       throw new Error(`No tag option keys or values were provided for resource ${this.node.path}`);
     }

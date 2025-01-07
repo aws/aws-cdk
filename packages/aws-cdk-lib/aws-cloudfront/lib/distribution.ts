@@ -295,11 +295,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
-  public static fromDistributionAttributes(
-    scope: Construct,
-    id: string,
-    attrs: DistributionAttributes
-  ): IDistribution {
+  public static fromDistributionAttributes(scope: Construct, id: string, attrs: DistributionAttributes): IDistribution {
     return new (class extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
@@ -386,9 +382,7 @@ export class Distribution extends Resource implements IDistribution {
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
-      props.comment && props.comment.length > 128
-        ? `${props.comment.slice(0, 128 - 3)}...`
-        : props.comment;
+      props.comment && props.comment.length > 128 ? `${props.comment.slice(0, 128 - 3)}...` : props.comment;
 
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
@@ -407,11 +401,7 @@ export class Distribution extends Resource implements IDistribution {
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate
-          ? this.renderViewerCertificate(
-              this.certificate,
-              props.minimumProtocolVersion,
-              props.sslSupportMethod
-            )
+          ? this.renderViewerCertificate(this.certificate, props.minimumProtocolVersion, props.sslSupportMethod)
           : undefined,
         webAclId: Lazy.string({ produce: () => this.webAclId }),
       },
@@ -515,9 +505,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metricOriginLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error(
-        "Origin latency metric is only available if 'publishAdditionalMetrics' is set 'true'"
-      );
+      throw new Error("Origin latency metric is only available if 'publishAdditionalMetrics' is set 'true'");
     }
     return this.metric('OriginLatency', props);
   }
@@ -533,9 +521,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metricCacheHitRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error(
-        "Cache hit rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
-      );
+      throw new Error("Cache hit rate metric is only available if 'publishAdditionalMetrics' is set 'true'");
     }
     return this.metric('CacheHitRate', props);
   }
@@ -549,9 +535,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric401ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error(
-        "401 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
-      );
+      throw new Error("401 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'");
     }
     return this.metric('401ErrorRate', props);
   }
@@ -565,9 +549,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric403ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error(
-        "403 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
-      );
+      throw new Error("403 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'");
     }
     return this.metric('403ErrorRate', props);
   }
@@ -581,9 +563,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric404ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error(
-        "404 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
-      );
+      throw new Error("404 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'");
     }
     return this.metric('404ErrorRate', props);
   }
@@ -597,9 +577,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric502ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error(
-        "502 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
-      );
+      throw new Error("502 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'");
     }
     return this.metric('502ErrorRate', props);
   }
@@ -613,9 +591,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric503ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error(
-        "503 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
-      );
+      throw new Error("503 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'");
     }
     return this.metric('503ErrorRate', props);
   }
@@ -629,9 +605,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric504ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error(
-        "504 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
-      );
+      throw new Error("504 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'");
     }
     return this.metric('504ErrorRate', props);
   }
@@ -643,11 +617,7 @@ export class Distribution extends Resource implements IDistribution {
    * @param origin the origin to use for this behavior
    * @param behaviorOptions the options for the behavior at this path.
    */
-  public addBehavior(
-    pathPattern: string,
-    origin: IOrigin,
-    behaviorOptions: AddBehaviorOptions = {}
-  ) {
+  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: AddBehaviorOptions = {}) {
     if (pathPattern === '*') {
       throw new Error("Only the default behavior can have a path pattern of '*'");
     }
@@ -733,9 +703,7 @@ export class Distribution extends Resource implements IDistribution {
         this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
-          throw new Error(
-            'An Origin cannot use an Origin with its own failover configuration as its fallback origin!'
-          );
+          throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
         const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(
@@ -749,16 +717,8 @@ export class Distribution extends Resource implements IDistribution {
           ...originBindConfig,
         });
 
-        const failoverOriginId = this.addOrigin(
-          originBindConfig.failoverConfig.failoverOrigin,
-          true
-        );
-        this.addOriginGroup(
-          originGroupId,
-          originBindConfig.failoverConfig.statusCodes,
-          originId,
-          failoverOriginId
-        );
+        const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
+        this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
         return originGroupId;
       }
       return originBindConfig.originProperty?.id ?? originId;
@@ -877,9 +837,7 @@ export class Distribution extends Resource implements IDistribution {
     minimumProtocolVersionProp?: SecurityPolicyProtocol,
     sslSupportMethodProp?: SSLMethod
   ): CfnDistribution.ViewerCertificateProperty {
-    const defaultVersion = FeatureFlags.of(this).isEnabled(
-      CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021
-    )
+    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
       ? SecurityPolicyProtocol.TLS_V1_2_2021
       : SecurityPolicyProtocol.TLS_V1_2_2019;
     const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
@@ -986,15 +944,7 @@ export class AllowedMethods {
   /** HEAD, GET, and OPTIONS */
   public static readonly ALLOW_GET_HEAD_OPTIONS = new AllowedMethods(['GET', 'HEAD', 'OPTIONS']);
   /** All supported HTTP methods */
-  public static readonly ALLOW_ALL = new AllowedMethods([
-    'GET',
-    'HEAD',
-    'OPTIONS',
-    'PUT',
-    'PATCH',
-    'POST',
-    'DELETE',
-  ]);
+  public static readonly ALLOW_ALL = new AllowedMethods(['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE']);
 
   /** HTTP methods supported */
   public readonly methods: string[];

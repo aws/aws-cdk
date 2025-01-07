@@ -11,9 +11,7 @@ import * as elbv2 from '../../aws-elasticloadbalancingv2';
  * If you register a target of this type, you are responsible for making
  * sure the load balancer's security group can send packets to the IP address.
  */
-export class IpTarget
-  implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget
-{
+export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
   /**
    * Create a new IPAddress target
    *
@@ -48,9 +46,7 @@ export class IpTarget
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(
-    targetGroup: elbv2.IApplicationTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 
@@ -60,9 +56,7 @@ export class IpTarget
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(
-    targetGroup: elbv2.INetworkTargetGroup
-  ): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 

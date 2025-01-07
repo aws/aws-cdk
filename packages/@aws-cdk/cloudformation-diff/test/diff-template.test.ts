@@ -137,7 +137,12 @@ test('when a property changes', () => {
   expect(difference).not.toBeUndefined();
   expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
   expect(difference?.propertyUpdates).toEqual({
-    BucketName: { oldValue: bucketName, newValue: newBucketName, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true },
+    BucketName: {
+      oldValue: bucketName,
+      newValue: newBucketName,
+      changeImpact: ResourceImpact.WILL_REPLACE,
+      isDifferent: true,
+    },
   });
 });
 
@@ -203,7 +208,12 @@ test('when a property is deleted', () => {
   expect(difference).not.toBeUndefined();
   expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
   expect(difference?.propertyUpdates).toEqual({
-    BucketName: { oldValue: bucketName, newValue: undefined, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true },
+    BucketName: {
+      oldValue: bucketName,
+      newValue: undefined,
+      changeImpact: ResourceImpact.WILL_REPLACE,
+      isDifferent: true,
+    },
   });
 });
 
@@ -241,7 +251,12 @@ test('when a property is added', () => {
   expect(difference).not.toBeUndefined();
   expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
   expect(difference?.propertyUpdates).toEqual({
-    BucketName: { oldValue: undefined, newValue: bucketName, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true },
+    BucketName: {
+      oldValue: undefined,
+      newValue: bucketName,
+      changeImpact: ResourceImpact.WILL_REPLACE,
+      isDifferent: true,
+    },
   });
 });
 
@@ -333,12 +348,8 @@ test('adding and removing quotes from a numeric property causes no changes', () 
           CorsConfiguration: {
             CorsRules: [
               {
-                AllowedMethods: [
-                  'GET',
-                ],
-                AllowedOrigins: [
-                  '*',
-                ],
+                AllowedMethods: ['GET'],
+                AllowedOrigins: ['*'],
                 MaxAge: 10,
               },
             ],
@@ -356,12 +367,8 @@ test('adding and removing quotes from a numeric property causes no changes', () 
           CorsConfiguration: {
             CorsRules: [
               {
-                AllowedMethods: [
-                  'GET',
-                ],
-                AllowedOrigins: [
-                  '*',
-                ],
+                AllowedMethods: ['GET'],
+                AllowedOrigins: ['*'],
                 MaxAge: '10',
               },
             ],
@@ -479,43 +486,46 @@ test.each([
   ['2.2.2.2', '2.2.3.2'],
   ['3.3.3.3', '3.4.3.3'],
   ['2021-10-23T06:07:08.000Z', '2021-10-23T09:10:11.123Z'],
-])("reports a change when a string property with a number-like format changes from '%s' to '%s'", (oldValue, newValue) => {
-  // GIVEN
-  const currentTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        Properties: {
-          Tags: [oldValue],
+])(
+  "reports a change when a string property with a number-like format changes from '%s' to '%s'",
+  (oldValue, newValue) => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Tags: [oldValue],
+          },
         },
       },
-    },
-  };
-  const newTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        Properties: {
-          Tags: [newValue],
+    };
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Tags: [newValue],
+          },
         },
       },
-    },
-  };
-  // WHEN
-  const differences = fullDiff(currentTemplate, newTemplate);
+    };
+    // WHEN
+    const differences = fullDiff(currentTemplate, newTemplate);
 
-  // THEN
-  expect(differences.differenceCount).toBe(1);
-  expect(differences.resources.differenceCount).toBe(1);
-  const difference = differences.resources.changes.BucketResource;
-  expect(difference).not.toBeUndefined();
-  expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
-  expect(difference?.propertyUpdates).toEqual({
-    Tags: { oldValue: [oldValue], newValue: [newValue], changeImpact: ResourceImpact.WILL_UPDATE, isDifferent: true },
-  });
-});
+    // THEN
+    expect(differences.differenceCount).toBe(1);
+    expect(differences.resources.differenceCount).toBe(1);
+    const difference = differences.resources.changes.BucketResource;
+    expect(difference).not.toBeUndefined();
+    expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
+    expect(difference?.propertyUpdates).toEqual({
+      Tags: { oldValue: [oldValue], newValue: [newValue], changeImpact: ResourceImpact.WILL_UPDATE, isDifferent: true },
+    });
+  }
+);
 
-test('when a property with a number-like format doesn\'t change', () => {
+test("when a property with a number-like format doesn't change", () => {
   const tags = ['0.31.1-prod', '8.0.5.5.4-identifier', '1.1.1.1', '1.2.3'];
   const currentTemplate = {
     Resources: {
@@ -582,11 +592,14 @@ test('handles a resource changing its Type', () => {
 test('diffing any two arbitrary templates should not crash', () => {
   // We're not interested in making sure we find the right differences here -- just
   // that we're not crashing.
-  fc.assert(fc.property(arbitraryTemplate, arbitraryTemplate, (t1, t2) => {
-    fullDiff(t1, t2);
-  }), {
-    // path: '1:0:0:0:3:0:1:1:1:1:1:1:1:1:1:1:1:1:1:2:1:1:1',
-  });
+  fc.assert(
+    fc.property(arbitraryTemplate, arbitraryTemplate, (t1, t2) => {
+      fullDiff(t1, t2);
+    }),
+    {
+      // path: '1:0:0:0:3:0:1:1:1:1:1:1:1:1:1:1:1:1:1:2:1:1:1',
+    }
+  );
 });
 
 test('metadata changes are rendered in the diff', () => {

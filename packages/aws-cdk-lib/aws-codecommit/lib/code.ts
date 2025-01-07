@@ -28,9 +28,7 @@ export abstract class Code {
 
     const statResult = fs.statSync(resolvedPath);
     if (!statResult || !statResult.isDirectory()) {
-      throw new Error(
-        `'${directoryPath}' needs to be a path to a directory (resolved to: '${resolvedPath}')`
-      );
+      throw new Error(`'${directoryPath}' needs to be a path to a directory (resolved to: '${resolvedPath}')`);
     }
 
     return new PathResolvedCode(resolvedPath, branch);
@@ -46,9 +44,7 @@ export abstract class Code {
 
     const statResult = fs.statSync(resolvedPath);
     if (!statResult || !statResult.isFile()) {
-      throw new Error(
-        `'${filePath}' needs to be a path to a ZIP file (resolved to: '${resolvedPath}')`
-      );
+      throw new Error(`'${filePath}' needs to be a path to a ZIP file (resolved to: '${resolvedPath}')`);
     }
 
     return new PathResolvedCode(resolvedPath, branch);
@@ -98,9 +94,7 @@ class AssetCode extends Code {
 
   public bind(_scope: Construct): CodeConfig {
     if (!this.asset.isZipArchive) {
-      throw new Error(
-        'Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )'
-      );
+      throw new Error('Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )');
     }
 
     return {

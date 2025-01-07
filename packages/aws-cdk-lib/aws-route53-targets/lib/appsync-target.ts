@@ -1,11 +1,6 @@
 import { CloudFrontTarget } from './cloudfront-target';
 import { GraphqlApi } from '../../aws-appsync';
-import {
-  AliasRecordTargetConfig,
-  IAliasRecordTarget,
-  IHostedZone,
-  IRecordSet,
-} from '../../aws-route53';
+import { AliasRecordTargetConfig, IAliasRecordTarget, IHostedZone, IRecordSet } from '../../aws-route53';
 
 /**
  * Defines an AppSync Graphql API as the alias target. Requires that the domain

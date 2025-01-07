@@ -30,9 +30,7 @@ export class KinesisEventSource extends StreamEventSource {
     this.props.batchSize !== undefined &&
       cdk.withResolved(this.props.batchSize, (batchSize) => {
         if (batchSize < 1 || batchSize > 10000) {
-          throw new Error(
-            `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`
-          );
+          throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
         }
       });
   }

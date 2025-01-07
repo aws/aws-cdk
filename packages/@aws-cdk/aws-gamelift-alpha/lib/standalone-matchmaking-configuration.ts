@@ -66,10 +66,7 @@ export class StandaloneMatchmakingConfiguration extends MatchmakingConfiguration
       physicalName: props.matchmakingConfigurationName,
     });
 
-    if (
-      props.matchmakingConfigurationName &&
-      !cdk.Token.isUnresolved(props.matchmakingConfigurationName)
-    ) {
+    if (props.matchmakingConfigurationName && !cdk.Token.isUnresolved(props.matchmakingConfigurationName)) {
       if (props.matchmakingConfigurationName.length > 128) {
         throw new Error(
           `Matchmaking configuration name can not be longer than 128 characters but has ${props.matchmakingConfigurationName.length} characters.`
@@ -135,8 +132,7 @@ export class StandaloneMatchmakingConfiguration extends MatchmakingConfiguration
       flexMatchMode: 'STANDALONE',
       notificationTarget: this.notificationTarget.topicArn,
       requestTimeoutSeconds:
-        (props.requestTimeout && props.requestTimeout.toSeconds()) ||
-        cdk.Duration.seconds(300).toSeconds(),
+        (props.requestTimeout && props.requestTimeout.toSeconds()) || cdk.Duration.seconds(300).toSeconds(),
       ruleSetName: props.ruleSet.matchmakingRuleSetName,
     });
 

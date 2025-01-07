@@ -46,10 +46,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      CodeBuildStartBuildBatch.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, CodeBuildStartBuildBatch.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskMetrics = {
       metricPrefixSingular: 'CodeBuildProject',
@@ -75,11 +72,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
         policyStatements = [
           new iam.PolicyStatement({
             resources: [this.props.project.projectArn],
-            actions: [
-              'codebuild:StartBuildBatch',
-              'codebuild:StopBuildBatch',
-              'codebuild:BatchGetBuildBatches',
-            ],
+            actions: ['codebuild:StartBuildBatch', 'codebuild:StopBuildBatch', 'codebuild:BatchGetBuildBatches'],
           }),
           new iam.PolicyStatement({
             actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
@@ -124,9 +117,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
     };
   }
 
-  private serializeEnvVariables(environmentVariables: {
-    [name: string]: codebuild.BuildEnvironmentVariable;
-  }) {
+  private serializeEnvVariables(environmentVariables: { [name: string]: codebuild.BuildEnvironmentVariable }) {
     return Object.keys(environmentVariables).map((name) => ({
       Name: name,
       Type: environmentVariables[name].type || codebuild.BuildEnvironmentVariableType.PLAINTEXT,

@@ -12,16 +12,29 @@ beforeAll(() => {
   pool = workerpool.pool(path.join(__dirname, 'mock-extract_worker.js'));
 });
 beforeEach(() => {
-  jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'emptyDirSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+  jest.spyOn(fs, 'moveSync').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(fs, 'emptyDirSync').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(fs, 'removeSync').mockImplementation(() => {
+    return true;
+  });
 
   // fs-extra delegates to the built-in one, this also catches calls done directly
-  jest.spyOn(builtinFs, 'rmdirSync').mockImplementation(() => { return true; });
-  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => { return true; });
-  jest.spyOn(builtinFs, 'unlinkSync').mockImplementation(() => { return true; });
+  jest.spyOn(builtinFs, 'rmdirSync').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(builtinFs, 'unlinkSync').mockImplementation(() => {
+    return true;
+  });
 
-  spawnSyncMock = jest.spyOn(child_process, 'spawnSync')
+  spawnSyncMock = jest
+    .spyOn(child_process, 'spawnSync')
     .mockReturnValueOnce({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -37,14 +50,16 @@ beforeEach(() => {
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
-    }).mockReturnValueOnce({
+    })
+    .mockReturnValueOnce({
       status: 0,
       stderr: Buffer.from('abc'),
       stdout: Buffer.from('abc'),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
-    }).mockReturnValue({
+    })
+    .mockReturnValue({
       status: 0,
       stderr: Buffer.from('stack1'),
       stdout: Buffer.from('stack1'),
@@ -52,8 +67,12 @@ beforeEach(() => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
-  jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+    return true;
+  });
+  jest.spyOn(process.stdout, 'write').mockImplementation(() => {
+    return true;
+  });
 });
 afterEach(() => {
   jest.clearAllMocks();
@@ -84,12 +103,11 @@ describe('test runner', () => {
           CDK_INTEG_ACCOUNT: '12345678',
           CDK_INTEG_REGION: 'test-region',
         }),
-      }),
+      })
     );
   });
 
   test('legacy test throws', () => {
-
     // WHEN
     const test = {
       fileName: 'test/test-data/xxxxx.integ-test2.js',
@@ -112,10 +130,12 @@ describe('test runner', () => {
     });
 
     // THEN
-    expect(results).toEqual([{
-      discoveryRoot: 'test/test-data',
-      fileName: 'test/test-data/xxxxx.integ-test2.js',
-    }]);
+    expect(results).toEqual([
+      {
+        discoveryRoot: 'test/test-data',
+        fileName: 'test/test-data/xxxxx.integ-test2.js',
+      },
+    ]);
   });
 
   test('has snapshot', () => {
@@ -129,29 +149,31 @@ describe('test runner', () => {
       region: 'us-east-3',
     });
 
-    expect(spawnSyncMock.mock.calls).toEqual(expect.arrayContaining([
+    expect(spawnSyncMock.mock.calls).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/git/),
-        ['remote', 'show', 'origin'],
-        expect.objectContaining({
-          cwd: 'test/test-data',
-        }),
-      ]),
-      expect.arrayContaining([
-        expect.stringMatching(/git/),
-        ['merge-base', 'HEAD', 'master'],
-        expect.objectContaining({
-          cwd: 'test/test-data',
-        }),
-      ]),
-      expect.arrayContaining([
-        expect.stringMatching(/git/),
-        ['checkout', 'abc', '--', 'xxxxx.test-with-snapshot.js.snapshot'],
-        expect.objectContaining({
-          cwd: 'test/test-data',
-        }),
-      ]),
-    ]));
+        expect.arrayContaining([
+          expect.stringMatching(/git/),
+          ['remote', 'show', 'origin'],
+          expect.objectContaining({
+            cwd: 'test/test-data',
+          }),
+        ]),
+        expect.arrayContaining([
+          expect.stringMatching(/git/),
+          ['merge-base', 'HEAD', 'master'],
+          expect.objectContaining({
+            cwd: 'test/test-data',
+          }),
+        ]),
+        expect.arrayContaining([
+          expect.stringMatching(/git/),
+          ['checkout', 'abc', '--', 'xxxxx.test-with-snapshot.js.snapshot'],
+          expect.objectContaining({
+            cwd: 'test/test-data',
+          }),
+        ]),
+      ])
+    );
 
     expect(results).toEqual([]);
   });
@@ -200,34 +222,26 @@ describe('parallel worker', () => {
       regions: ['us-east-1', 'us-east-2'],
     });
 
-    expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running integration tests for failed tests...',
-    );
-    expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running in parallel across regions: us-east-1, us-east-2',
-    );
-    expect(stderrMock.mock.calls[2][0]).toContain(
-      'Running test xxxxx.another-test-with-snapshot.js in us-east-1',
-    );
-    expect(stderrMock.mock.calls[3][0]).toContain(
-      'Running test xxxxx.test-with-snapshot.js in us-east-2',
-    );
+    expect(stderrMock.mock.calls[0][0]).toContain('Running integration tests for failed tests...');
+    expect(stderrMock.mock.calls[1][0]).toContain('Running in parallel across regions: us-east-1, us-east-2');
+    expect(stderrMock.mock.calls[2][0]).toContain('Running test xxxxx.another-test-with-snapshot.js in us-east-1');
+    expect(stderrMock.mock.calls[3][0]).toContain('Running test xxxxx.test-with-snapshot.js in us-east-2');
   });
 
   test('run tests', async () => {
-    const tests = [{
-      fileName: 'xxxxx.test-with-snapshot.js',
-      discoveryRoot: 'test/test-data',
-    }];
+    const tests = [
+      {
+        fileName: 'xxxxx.test-with-snapshot.js',
+        discoveryRoot: 'test/test-data',
+      },
+    ];
     const results = await runIntegrationTestsInParallel({
       pool,
       tests,
       regions: ['us-east-1'],
     });
 
-    expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test xxxxx.test-with-snapshot.js in us-east-1',
-    );
+    expect(stderrMock.mock.calls[0][0]).toContain('Running test xxxxx.test-with-snapshot.js in us-east-1');
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
@@ -274,17 +288,15 @@ describe('parallel worker', () => {
     });
 
     expect(stderrMock.mock.calls[3][0]).toContain(
-      'Running test xxxxx.another-test-with-snapshot3.js in profile2/us-east-2',
+      'Running test xxxxx.another-test-with-snapshot3.js in profile2/us-east-2'
     );
     expect(stderrMock.mock.calls[2][0]).toContain(
-      'Running test xxxxx.another-test-with-snapshot2.js in profile2/us-east-1',
+      'Running test xxxxx.another-test-with-snapshot2.js in profile2/us-east-1'
     );
     expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running test xxxxx.another-test-with-snapshot.js in profile1/us-east-2',
+      'Running test xxxxx.another-test-with-snapshot.js in profile1/us-east-2'
     );
-    expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test xxxxx.test-with-snapshot.js in profile1/us-east-1',
-    );
+    expect(stderrMock.mock.calls[0][0]).toContain('Running test xxxxx.test-with-snapshot.js in profile1/us-east-1');
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
@@ -358,12 +370,8 @@ describe('parallel worker', () => {
       regions: ['us-east-1', 'us-east-2'],
     });
 
-    expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running test xxxxx.test-with-snapshot.js in us-east-2',
-    );
-    expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test xxxxx.another-test-with-snapshot.js in us-east-1',
-    );
+    expect(stderrMock.mock.calls[1][0]).toContain('Running test xxxxx.test-with-snapshot.js in us-east-2');
+    expect(stderrMock.mock.calls[0][0]).toContain('Running test xxxxx.another-test-with-snapshot.js in us-east-1');
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
@@ -411,12 +419,8 @@ describe('parallel worker', () => {
       regions: ['us-east-1'],
     });
 
-    expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running test xxxxx.test-with-snapshot.js in us-east-1',
-    );
-    expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test xxxxx.another-test-with-snapshot.js in us-east-1',
-    );
+    expect(stderrMock.mock.calls[1][0]).toContain('Running test xxxxx.test-with-snapshot.js in us-east-1');
+    expect(stderrMock.mock.calls[0][0]).toContain('Running test xxxxx.another-test-with-snapshot.js in us-east-1');
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {
@@ -458,12 +462,8 @@ describe('parallel worker', () => {
       regions: ['us-east-1', 'us-east-2', 'us-west-2'],
     });
 
-    expect(stderrMock.mock.calls[1][0]).toContain(
-      'Running test xxxxx.test-with-snapshot.js in us-east-2',
-    );
-    expect(stderrMock.mock.calls[0][0]).toContain(
-      'Running test xxxxx.another-test-with-snapshot.js in us-east-1',
-    );
+    expect(stderrMock.mock.calls[1][0]).toContain('Running test xxxxx.test-with-snapshot.js in us-east-2');
+    expect(stderrMock.mock.calls[0][0]).toContain('Running test xxxxx.another-test-with-snapshot.js in us-east-1');
     expect(results).toEqual({
       failedTests: expect.arrayContaining([
         {

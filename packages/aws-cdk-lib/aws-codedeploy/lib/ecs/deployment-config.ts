@@ -42,9 +42,7 @@ export interface EcsDeploymentConfigProps extends BaseDeploymentConfigOptions {
  */
 export class EcsDeploymentConfig extends BaseDeploymentConfig implements IEcsDeploymentConfig {
   /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated ECS task set at once. */
-  public static readonly ALL_AT_ONCE = EcsDeploymentConfig.deploymentConfig(
-    'CodeDeployDefault.ECSAllAtOnce'
-  );
+  public static readonly ALL_AT_ONCE = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSAllAtOnce');
   /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every minute until all traffic is shifted. */
   public static readonly LINEAR_10PERCENT_EVERY_1MINUTES = EcsDeploymentConfig.deploymentConfig(
     'CodeDeployDefault.ECSLinear10PercentEvery1Minutes'

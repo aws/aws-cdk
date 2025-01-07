@@ -76,11 +76,13 @@ export interface ResponseHeadersPolicyProps {
  */
 export class ResponseHeadersPolicy extends Resource implements IResponseHeadersPolicy {
   /** Use this managed policy to allow simple CORS requests from any origin. */
-  public static readonly CORS_ALLOW_ALL_ORIGINS =
-    ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('60669652-455b-4ae9-85a4-c4c02393f86c');
+  public static readonly CORS_ALLOW_ALL_ORIGINS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy(
+    '60669652-455b-4ae9-85a4-c4c02393f86c'
+  );
   /** Use this managed policy to allow CORS requests from any origin, including preflight requests. */
-  public static readonly CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT =
-    ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('5cc3b908-e619-4b99-88e5-2cf7f45965bd');
+  public static readonly CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy(
+    '5cc3b908-e619-4b99-88e5-2cf7f45965bd'
+  );
   /** Use this managed policy to add a set of security headers to all responses that CloudFront sends to viewers. */
   public static readonly SECURITY_HEADERS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy(
     '67f7725c-6f97-4210-82d7-5512b31e9d03'
@@ -106,9 +108,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     return new Import(scope, id);
   }
 
-  private static fromManagedResponseHeadersPolicy(
-    managedResponseHeadersPolicyId: string
-  ): IResponseHeadersPolicy {
+  private static fromManagedResponseHeadersPolicy(managedResponseHeadersPolicyId: string): IResponseHeadersPolicy {
     return new (class implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = managedResponseHeadersPolicyId;
     })();
@@ -138,9 +138,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
         securityHeadersConfig: props.securityHeadersBehavior
           ? this._renderSecurityHeadersConfig(props.securityHeadersBehavior)
           : undefined,
-        removeHeadersConfig: props.removeHeaders
-          ? this._renderRemoveHeadersConfig(props.removeHeaders)
-          : undefined,
+        removeHeadersConfig: props.removeHeaders ? this._renderRemoveHeadersConfig(props.removeHeaders) : undefined,
         serverTimingHeadersConfig: props.serverTimingSamplingRate
           ? this._renderServerTimingHeadersConfig(props.serverTimingSamplingRate)
           : undefined,
@@ -150,9 +148,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     this.responseHeadersPolicyId = resource.ref;
   }
 
-  private _renderCorsConfig(
-    behavior: ResponseHeadersCorsBehavior
-  ): CfnResponseHeadersPolicy.CorsConfigProperty {
+  private _renderCorsConfig(behavior: ResponseHeadersCorsBehavior): CfnResponseHeadersPolicy.CorsConfigProperty {
     return {
       accessControlAllowCredentials: behavior.accessControlAllowCredentials,
       accessControlAllowHeaders: { items: behavior.accessControlAllowHeaders },
@@ -161,9 +157,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       accessControlExposeHeaders: behavior.accessControlExposeHeaders
         ? { items: behavior.accessControlExposeHeaders }
         : undefined,
-      accessControlMaxAgeSec: behavior.accessControlMaxAge
-        ? behavior.accessControlMaxAge.toSeconds()
-        : undefined,
+      accessControlMaxAgeSec: behavior.accessControlMaxAge ? behavior.accessControlMaxAge.toSeconds() : undefined,
       originOverride: behavior.originOverride,
     };
   }
@@ -187,24 +181,15 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       strictTransportSecurity: behavior.strictTransportSecurity
         ? {
             ...behavior.strictTransportSecurity,
-            accessControlMaxAgeSec:
-              behavior.strictTransportSecurity.accessControlMaxAge.toSeconds(),
+            accessControlMaxAgeSec: behavior.strictTransportSecurity.accessControlMaxAge.toSeconds(),
           }
         : undefined,
       xssProtection: behavior.xssProtection,
     };
   }
 
-  private _renderRemoveHeadersConfig(
-    headers: string[]
-  ): CfnResponseHeadersPolicy.RemoveHeadersConfigProperty {
-    const readonlyHeaders = [
-      'content-encoding',
-      'content-length',
-      'transfer-encoding',
-      'warning',
-      'via',
-    ];
+  private _renderRemoveHeadersConfig(headers: string[]): CfnResponseHeadersPolicy.RemoveHeadersConfigProperty {
+    const readonlyHeaders = ['content-encoding', 'content-length', 'transfer-encoding', 'warning', 'via'];
 
     return {
       items: headers.map((header) => {
@@ -221,15 +206,11 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   ): CfnResponseHeadersPolicy.ServerTimingHeadersConfigProperty {
     if (!Token.isUnresolved(samplingRate)) {
       if (samplingRate < 0 || samplingRate > 100) {
-        throw new Error(
-          `Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`
-        );
+        throw new Error(`Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`);
       }
 
       if (!hasMaxDecimalPlaces(samplingRate, 4)) {
-        throw new Error(
-          `Sampling rate can have up to four decimal places, received ${samplingRate}`
-        );
+        throw new Error(`Sampling rate can have up to four decimal places, received ${samplingRate}`);
       }
     }
 

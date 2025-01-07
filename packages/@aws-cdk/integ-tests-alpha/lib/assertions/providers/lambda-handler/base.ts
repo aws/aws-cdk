@@ -45,9 +45,7 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
         await this.startExecution(req);
         return;
       } else {
-        const response = await this.processEvent(
-          this.event.ResourceProperties as unknown as Request
-        );
+        const response = await this.processEvent(this.event.ResourceProperties as unknown as Request);
         return response;
       }
     } catch (e) {

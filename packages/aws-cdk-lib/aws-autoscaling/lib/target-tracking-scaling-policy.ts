@@ -114,10 +114,7 @@ export class TargetTrackingScalingPolicy extends Construct {
       throw new Error("Exactly one of 'customMetric' or 'predefinedMetric' must be specified.");
     }
 
-    if (
-      props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET &&
-      !props.resourceLabel
-    ) {
+    if (props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET && !props.resourceLabel) {
       throw new Error(
         'When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel'
       );
@@ -135,8 +132,7 @@ export class TargetTrackingScalingPolicy extends Construct {
       policyType: 'TargetTrackingScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
-      estimatedInstanceWarmup:
-        props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
+      estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       targetTrackingConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,

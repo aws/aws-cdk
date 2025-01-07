@@ -102,7 +102,7 @@ function clone(obj: any): any {
   switch (typeof obj) {
     case 'object':
       if (Array.isArray(obj)) {
-        return obj.map(elt => clone(elt));
+        return obj.map((elt) => clone(elt));
       } else {
         const cloned: any = {};
         for (const key of Object.keys(obj)) {

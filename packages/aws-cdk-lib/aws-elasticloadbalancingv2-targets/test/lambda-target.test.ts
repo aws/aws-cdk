@@ -31,9 +31,7 @@ test('Can create target groups with lambda targets', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     TargetType: 'lambda',
-    Targets: [
-      { Id: { 'Fn::GetAtt': ['FunA2CCED21', 'Arn'] } },
-    ],
+    Targets: [{ Id: { 'Fn::GetAtt': ['FunA2CCED21', 'Arn'] } }],
   });
 });
 

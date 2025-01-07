@@ -25,10 +25,7 @@ test('custom resource exists', () => {
   Template.fromStack(stack).hasResource('Custom::AWS', {
     Properties: {
       ServiceToken: {
-        'Fn::GetAtt': [
-          'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['AWS679f53fac002430cb0da5b7982bd22872D164C4C', 'Arn'],
       },
       Create: {
         'Fn::Join': [
@@ -44,10 +41,7 @@ test('custom resource exists', () => {
       },
       InstallLatestAwsSdk: false,
     },
-    DependsOn: [
-      'GroupGlobalAcceleratorSGCustomResourceCustomResourcePolicy9C957AD2',
-      'GroupC77FDACD',
-    ],
+    DependsOn: ['GroupGlobalAcceleratorSGCustomResourceCustomResourcePolicy9C957AD2', 'GroupC77FDACD'],
   });
 });
 
@@ -77,16 +71,10 @@ test('can create security group rule', () => {
     IpProtocol: 'tcp',
     FromPort: 443,
     GroupId: {
-      'Fn::GetAtt': [
-        'SGADB53937',
-        'GroupId',
-      ],
+      'Fn::GetAtt': ['SGADB53937', 'GroupId'],
     },
     SourceSecurityGroupId: {
-      'Fn::GetAtt': [
-        'GroupGlobalAcceleratorSGCustomResource0C8056E9',
-        'SecurityGroups.0.GroupId',
-      ],
+      'Fn::GetAtt': ['GroupGlobalAcceleratorSGCustomResource0C8056E9', 'SecurityGroups.0.GroupId'],
     },
     ToPort: 443,
   });

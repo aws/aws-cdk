@@ -40,10 +40,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
         Ref: 'MyApp3CE31C26',
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': [
-          'MyDGServiceRole5E94FD88',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyDGServiceRole5E94FD88', 'Arn'],
       },
       AlarmConfiguration: {
         Enabled: false,
@@ -51,9 +48,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       },
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-        ],
+        Events: ['DEPLOYMENT_FAILURE'],
       },
       DeploymentConfigName: 'CodeDeployDefault.LambdaAllAtOnce',
       DeploymentStyle: {
@@ -69,10 +64,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           Ref: 'Function76856677',
         },
         FunctionVersion: {
-          'Fn::GetAtt': [
-            'Version6A868472',
-            'Version',
-          ],
+          'Fn::GetAtt': ['Version6A868472', 'Version'],
         },
         Name: 'my-alias',
       },
@@ -90,24 +82,22 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'codedeploy.amazonaws.com',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'codedeploy.amazonaws.com',
+            },
           },
-        }],
+        ],
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
         {
           'Fn::Join': [
             '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
-            ],
+            ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited'],
           ],
         },
       ],
@@ -151,7 +141,9 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       deploymentGroupName: 'my name',
     });
 
-    expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
+    expect(() => app.synth()).toThrow(
+      'Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).'
+    );
   });
 
   test('can be created with explicit role', () => {
@@ -171,24 +163,22 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'not-codedeploy.test',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'not-codedeploy.test',
+            },
           },
-        }],
+        ],
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
         {
           'Fn::Join': [
             '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
-            ],
+            ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited'],
           ],
         },
       ],
@@ -210,16 +200,11 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
         Ref: 'MyApp3CE31C26',
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': [
-          'MyDGServiceRole5E94FD88',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyDGServiceRole5E94FD88', 'Arn'],
       },
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-        ],
+        Events: ['DEPLOYMENT_FAILURE'],
       },
       DeploymentConfigName: 'CodeDeployDefault.LambdaLinear10PercentEvery1Minute',
       DeploymentStyle: {
@@ -237,29 +222,30 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       application,
       alias,
       deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
-      alarms: [new cloudwatch.Alarm(stack, 'Failures', {
-        metric: alias.metricErrors(),
-        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-        threshold: 1,
-        evaluationPeriods: 1,
-      })],
+      alarms: [
+        new cloudwatch.Alarm(stack, 'Failures', {
+          metric: alias.metricErrors(),
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+          threshold: 1,
+          evaluationPeriods: 1,
+        }),
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AlarmConfiguration: {
-        Alarms: [{
-          Name: {
-            Ref: 'Failures8A3E1A2F',
+        Alarms: [
+          {
+            Name: {
+              Ref: 'Failures8A3E1A2F',
+            },
           },
-        }],
+        ],
         Enabled: true,
       },
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-          'DEPLOYMENT_STOP_ON_ALARM',
-        ],
+        Events: ['DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_ALARM'],
       },
     });
   });
@@ -315,18 +301,22 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
-      Roles: [{
-        Ref: 'MyDGServiceRole5E94FD88',
-      }],
+      Roles: [
+        {
+          Ref: 'MyDGServiceRole5E94FD88',
+        },
+      ],
       PolicyDocument: {
-        Statement: [{
-          Action: 'lambda:InvokeFunction',
-          Resource: [
-            { 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] },
-            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] }, ':*']] },
-          ],
-          Effect: 'Allow',
-        }],
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Resource: [
+              { 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] }, ':*']] },
+            ],
+            Effect: 'Allow',
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -361,18 +351,22 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
-      Roles: [{
-        Ref: 'MyDGServiceRole5E94FD88',
-      }],
+      Roles: [
+        {
+          Ref: 'MyDGServiceRole5E94FD88',
+        },
+      ],
       PolicyDocument: {
-        Statement: [{
-          Action: 'lambda:InvokeFunction',
-          Resource: [
-            { 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] },
-            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] }, ':*']] },
-          ],
-          Effect: 'Allow',
-        }],
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Resource: [
+              { 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] }, ':*']] },
+            ],
+            Effect: 'Allow',
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -407,18 +401,22 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
-      Roles: [{
-        Ref: 'MyDGServiceRole5E94FD88',
-      }],
+      Roles: [
+        {
+          Ref: 'MyDGServiceRole5E94FD88',
+        },
+      ],
       PolicyDocument: {
-        Statement: [{
-          Action: 'lambda:InvokeFunction',
-          Resource: [
-            { 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] },
-            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] }, ':*']] },
-          ],
-          Effect: 'Allow',
-        }],
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Resource: [
+              { 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] }, ':*']] },
+            ],
+            Effect: 'Allow',
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -453,18 +451,22 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
-      Roles: [{
-        Ref: 'MyDGServiceRole5E94FD88',
-      }],
+      Roles: [
+        {
+          Ref: 'MyDGServiceRole5E94FD88',
+        },
+      ],
       PolicyDocument: {
-        Statement: [{
-          Action: 'lambda:InvokeFunction',
-          Resource: [
-            { 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] },
-            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] }, ':*']] },
-          ],
-          Effect: 'Allow',
-        }],
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Resource: [
+              { 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] }, ':*']] },
+            ],
+            Effect: 'Allow',
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -480,21 +482,25 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       postHook: mockFunction(stack, 'PostHook'),
       deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       ignorePollAlarmsFailure: true,
-      alarms: [new cloudwatch.Alarm(stack, 'Failures', {
-        metric: alias.metricErrors(),
-        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-        threshold: 1,
-        evaluationPeriods: 1,
-      })],
+      alarms: [
+        new cloudwatch.Alarm(stack, 'Failures', {
+          metric: alias.metricErrors(),
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+          threshold: 1,
+          evaluationPeriods: 1,
+        }),
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AlarmConfiguration: {
-        Alarms: [{
-          Name: {
-            Ref: 'Failures8A3E1A2F',
+        Alarms: [
+          {
+            Name: {
+              Ref: 'Failures8A3E1A2F',
+            },
           },
-        }],
+        ],
         Enabled: true,
         IgnorePollAlarmFailure: true,
       },
@@ -520,10 +526,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
         Ref: 'MyApp3CE31C26',
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': [
-          'MyDGServiceRole5E94FD88',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['MyDGServiceRole5E94FD88', 'Arn'],
       },
       DeploymentConfigName: 'CodeDeployDefault.LambdaAllAtOnce',
       DeploymentStyle: {
@@ -550,10 +553,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-          'DEPLOYMENT_STOP_ON_REQUEST',
-        ],
+        Events: ['DEPLOYMENT_FAILURE', 'DEPLOYMENT_STOP_ON_REQUEST'],
       },
     });
   });
@@ -570,20 +570,20 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       autoRollback: {
         deploymentInAlarm: false,
       },
-      alarms: [new cloudwatch.Alarm(stack, 'Failures', {
-        metric: alias.metricErrors(),
-        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-        threshold: 1,
-        evaluationPeriods: 1,
-      })],
+      alarms: [
+        new cloudwatch.Alarm(stack, 'Failures', {
+          metric: alias.metricErrors(),
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+          threshold: 1,
+          evaluationPeriods: 1,
+        }),
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AutoRollbackConfiguration: {
         Enabled: true,
-        Events: [
-          'DEPLOYMENT_FAILURE',
-        ],
+        Events: ['DEPLOYMENT_FAILURE'],
       },
     });
   });
@@ -625,7 +625,11 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     beforeEach(() => {
       stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'blabla-1' } });
 
-      application = codedeploy.LambdaApplication.fromLambdaApplicationArn(stack, 'Application', `arn:aws:codedeploy:${region}:${account}:application:MyApplication`);
+      application = codedeploy.LambdaApplication.fromLambdaApplicationArn(
+        stack,
+        'Application',
+        `arn:aws:codedeploy:${region}:${account}:application:MyApplication`
+      );
       group = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGroupAttributes(stack, 'Group', {
         application,
         deploymentGroupName: 'DeploymentGroup',
@@ -639,9 +643,11 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     });
 
     test('references the predefined DeploymentGroupConfig in the right region', () => {
-      expect(group.deploymentConfig.deploymentConfigArn).toEqual(expect.stringContaining(
-        `:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.LambdaCanary10Percent5Minutes`,
-      ));
+      expect(group.deploymentConfig.deploymentConfigArn).toEqual(
+        expect.stringContaining(
+          `:codedeploy:${region}:${account}:deploymentconfig:CodeDeployDefault.LambdaCanary10Percent5Minutes`
+        )
+      );
     });
   });
 
@@ -655,12 +661,14 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       postHook: mockFunction(stack, 'PostHook'),
       deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       ignoreAlarmConfiguration: true,
-      alarms: [new cloudwatch.Alarm(stack, 'Failures', {
-        metric: alias.metricErrors(),
-        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-        threshold: 1,
-        evaluationPeriods: 1,
-      })],
+      alarms: [
+        new cloudwatch.Alarm(stack, 'Failures', {
+          metric: alias.metricErrors(),
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+          threshold: 1,
+          evaluationPeriods: 1,
+        }),
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
@@ -682,12 +690,14 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       postHook: mockFunction(stack, 'PostHook'),
       deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
       ignoreAlarmConfiguration: true,
-      alarms: [new cloudwatch.Alarm(stack, 'Failures', {
-        metric: alias.metricErrors(),
-        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-        threshold: 1,
-        evaluationPeriods: 1,
-      })],
+      alarms: [
+        new cloudwatch.Alarm(stack, 'Failures', {
+          metric: alias.metricErrors(),
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+          threshold: 1,
+          evaluationPeriods: 1,
+        }),
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
@@ -708,7 +718,9 @@ describe('imported with fromLambdaDeploymentGroupAttributes', () => {
       deploymentGroupName: 'LambdaDeploymentGroup',
     });
 
-    expect(importedGroup.deploymentConfig.deploymentConfigName).toEqual('CodeDeployDefault.LambdaCanary10Percent5Minutes');
+    expect(importedGroup.deploymentConfig.deploymentConfigName).toEqual(
+      'CodeDeployDefault.LambdaCanary10Percent5Minutes'
+    );
   });
 });
 
@@ -734,8 +746,6 @@ test('dependency on the config exists to ensure ordering', () => {
     Properties: {
       DeploymentConfigName: stack.resolve(config.deploymentConfigName),
     },
-    DependsOn: [
-      stack.getLogicalId(config.node.defaultChild as codedeploy.CfnDeploymentConfig),
-    ],
+    DependsOn: [stack.getLogicalId(config.node.defaultChild as codedeploy.CfnDeploymentConfig)],
   });
 });

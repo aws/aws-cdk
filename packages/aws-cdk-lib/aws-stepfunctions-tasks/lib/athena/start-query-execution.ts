@@ -85,10 +85,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
     this.validateExecutionParameters(props.executionParameters);
     this.validateMaxAgeInMinutes(props.resultReuseConfigurationMaxAge);
 
@@ -100,20 +97,14 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     if (executionParameters.length == 0) {
       throw new Error("'executionParameters' must be a non-empty list");
     }
-    const invalidExecutionParameters = executionParameters.some(
-      (p) => p.length < 1 || p.length > 1024
-    );
+    const invalidExecutionParameters = executionParameters.some((p) => p.length < 1 || p.length > 1024);
     if (invalidExecutionParameters) {
       throw new Error("'executionParameters' items's length must be between 1 and 1024 characters");
     }
   }
 
   private validateMaxAgeInMinutes(resultReuseConfigurationMaxAge?: cdk.Duration) {
-    if (
-      resultReuseConfigurationMaxAge === undefined ||
-      cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)
-    )
-      return;
+    if (resultReuseConfigurationMaxAge === undefined || cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)) return;
     const maxAgeInMillis = resultReuseConfigurationMaxAge.toMilliseconds();
     if (maxAgeInMillis > 0 && maxAgeInMillis < cdk.Duration.minutes(1).toMilliseconds()) {
       throw new Error(
@@ -143,11 +134,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
             resourceName: this.props.workGroup ?? 'primary',
           }),
         ],
-        actions: [
-          'athena:getDataCatalog',
-          'athena:startQueryExecution',
-          'athena:getQueryExecution',
-        ],
+        actions: ['athena:getDataCatalog', 'athena:startQueryExecution', 'athena:getQueryExecution'],
       }),
     ];
 
@@ -243,8 +230,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     const encryptionConfiguration =
       this.props.resultConfiguration?.encryptionConfiguration !== undefined
         ? {
-            EncryptionOption:
-              this.props.resultConfiguration.encryptionConfiguration.encryptionOption,
+            EncryptionOption: this.props.resultConfiguration.encryptionConfiguration.encryptionOption,
             KmsKey: this.props.resultConfiguration.encryptionConfiguration.encryptionKey,
           }
         : undefined;
@@ -265,8 +251,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         QueryString: this.props.queryString,
         ClientRequestToken: this.props.clientRequestToken,
         QueryExecutionContext:
-          this.props.queryExecutionContext?.catalogName ||
-          this.props.queryExecutionContext?.databaseName
+          this.props.queryExecutionContext?.catalogName || this.props.queryExecutionContext?.databaseName
             ? {
                 Catalog: this.props.queryExecutionContext?.catalogName,
                 Database: this.props.queryExecutionContext?.databaseName,

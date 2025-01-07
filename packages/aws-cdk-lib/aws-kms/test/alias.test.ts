@@ -65,10 +65,13 @@ test('fails if alias is "alias/" (and nothing more)', () => {
     enabled: false,
   });
 
-  expect(() => new Alias(stack, 'Alias', {
-    aliasName: 'alias/',
-    targetKey: key,
-  })).toThrow(/Alias must include a value after/);
+  expect(
+    () =>
+      new Alias(stack, 'Alias', {
+        aliasName: 'alias/',
+        targetKey: key,
+      })
+  ).toThrow(/Alias must include a value after/);
 });
 
 test('fails if alias contains illegal characters', () => {
@@ -80,10 +83,13 @@ test('fails if alias contains illegal characters', () => {
     enabled: false,
   });
 
-  expect(() => new Alias(stack, 'Alias', {
-    aliasName: 'alias/@Nope',
-    targetKey: key,
-  })).toThrow('a-zA-Z0-9:/_-');
+  expect(
+    () =>
+      new Alias(stack, 'Alias', {
+        aliasName: 'alias/@Nope',
+        targetKey: key,
+      })
+  ).toThrow('a-zA-Z0-9:/_-');
 });
 
 test('fails if alias starts with "aws/"', () => {
@@ -106,20 +112,29 @@ test('fails if alias starts with "alias/aws/"', () => {
     enabled: false,
   });
 
-  expect(() => new Alias(stack, 'Alias1', {
-    aliasName: 'alias/aws/',
-    targetKey: key,
-  })).toThrow(/Alias cannot start with alias\/aws\/: alias\/aws\//);
+  expect(
+    () =>
+      new Alias(stack, 'Alias1', {
+        aliasName: 'alias/aws/',
+        targetKey: key,
+      })
+  ).toThrow(/Alias cannot start with alias\/aws\/: alias\/aws\//);
 
-  expect(() => new Alias(stack, 'Alias2', {
-    aliasName: 'alias/aws/Awesome',
-    targetKey: key,
-  })).toThrow(/Alias cannot start with alias\/aws\/: alias\/aws\/Awesome/);
+  expect(
+    () =>
+      new Alias(stack, 'Alias2', {
+        aliasName: 'alias/aws/Awesome',
+        targetKey: key,
+      })
+  ).toThrow(/Alias cannot start with alias\/aws\/: alias\/aws\/Awesome/);
 
-  expect(() => new Alias(stack, 'Alias3', {
-    aliasName: 'alias/AWS/awesome',
-    targetKey: key,
-  })).toThrow(/Alias cannot start with alias\/aws\/: alias\/AWS\/awesome/);
+  expect(
+    () =>
+      new Alias(stack, 'Alias3', {
+        aliasName: 'alias/AWS/awesome',
+        targetKey: key,
+      })
+  ).toThrow(/Alias cannot start with alias\/aws\/: alias\/AWS\/awesome/);
 });
 
 test('keyId includes reference to alias under feature flag', () => {
@@ -167,15 +182,18 @@ test('can be used wherever a key is expected', () => {
   });
   Template.fromStack(stack).hasOutput('OutArn', {
     Value: {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':kms:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':alias/myAlias',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':kms:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':alias/myAlias',
+        ],
+      ],
     },
   });
 });
@@ -192,15 +210,18 @@ test('imported alias by name - can be used where a key is expected', () => {
   });
   Template.fromStack(stack).hasOutput('OutArn', {
     Value: {
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':kms:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':alias/myAlias',
-      ]],
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':kms:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':alias/myAlias',
+        ],
+      ],
     },
   });
 });
@@ -210,7 +231,9 @@ test('imported alias by name - will throw an error when accessing the key', () =
 
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
-  expect(() => myAlias.aliasTargetKey).toThrow('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
+  expect(() => myAlias.aliasTargetKey).toThrow(
+    'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().'
+  );
 });
 
 test('fails if alias policy is invalid', () => {
@@ -219,10 +242,12 @@ test('fails if alias policy is invalid', () => {
   const key = new Key(stack, 'MyKey');
   const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
 
-  alias.addToResourcePolicy(new PolicyStatement({
-    resources: ['*'],
-    principals: [new ArnPrincipal('arn')],
-  }));
+  alias.addToResourcePolicy(
+    new PolicyStatement({
+      resources: ['*'],
+      principals: [new ArnPrincipal('arn')],
+    })
+  );
 
   expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
 });
@@ -293,10 +318,7 @@ test('adds alias prefix if its token with valid string prefix', () => {
       ],
     },
     TargetKeyId: {
-      'Fn::GetAtt': [
-        'Key961B73FD',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['Key961B73FD', 'Arn'],
     },
   });
 });
@@ -482,10 +504,7 @@ test('does not add alias again if already set', () => {
       ],
     },
     TargetKeyId: {
-      'Fn::GetAtt': [
-        'Key961B73FD',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['Key961B73FD', 'Arn'],
     },
   });
 });
@@ -521,10 +540,7 @@ test('does not add alias if starts with token', () => {
       ],
     },
     TargetKeyId: {
-      'Fn::GetAtt': [
-        'Key961B73FD',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['Key961B73FD', 'Arn'],
     },
   });
 });
@@ -546,11 +562,16 @@ test('aliasArn should be a valid ARN', () => {
 
   const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
 
-  expect(alias.aliasArn).toEqual(Arn.format({
-    service: 'kms',
-    // aliasName already contains the '/'
-    resource: alias.aliasName,
-  }, stack));
+  expect(alias.aliasArn).toEqual(
+    Arn.format(
+      {
+        service: 'kms',
+        // aliasName already contains the '/'
+        resource: alias.aliasName,
+      },
+      stack
+    )
+  );
 });
 
 class AliasOutputsConstruct extends Construct {

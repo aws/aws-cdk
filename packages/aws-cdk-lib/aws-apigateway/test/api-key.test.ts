@@ -28,7 +28,6 @@ describe('api key', () => {
       new apigateway.ApiKey(stack, 'my-api-key', {
         resources: [restApi],
       });
-
     }).toThrow(/Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage"/);
   });
 
@@ -222,12 +221,7 @@ describe('api key', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'apigateway:POST',
-              'apigateway:PUT',
-              'apigateway:PATCH',
-              'apigateway:DELETE',
-            ],
+            Action: ['apigateway:POST', 'apigateway:PUT', 'apigateway:PATCH', 'apigateway:DELETE'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -282,13 +276,7 @@ describe('api key', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'apigateway:GET',
-              'apigateway:POST',
-              'apigateway:PUT',
-              'apigateway:PATCH',
-              'apigateway:DELETE',
-            ],
+            Action: ['apigateway:GET', 'apigateway:POST', 'apigateway:PUT', 'apigateway:PATCH', 'apigateway:DELETE'],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [

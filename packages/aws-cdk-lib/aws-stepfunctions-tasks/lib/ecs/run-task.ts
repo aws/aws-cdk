@@ -191,10 +191,7 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the Fargate launch type configured on RunTask
    */
-  public bind(
-    _task: EcsRunTask,
-    launchTargetOptions: LaunchTargetBindOptions
-  ): EcsLaunchTargetConfig {
+  public bind(_task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
     if (!launchTargetOptions.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not compatible with Fargate');
     }
@@ -218,18 +215,13 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the EC2 launch type is configured on RunTask
    */
-  public bind(
-    _task: EcsRunTask,
-    launchTargetOptions: LaunchTargetBindOptions
-  ): EcsLaunchTargetConfig {
+  public bind(_task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
     if (!launchTargetOptions.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not compatible with EC2');
     }
 
     if (!launchTargetOptions.cluster?.hasEc2Capacity) {
-      throw new Error(
-        'Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.'
-      );
+      throw new Error('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.');
     }
 
     return {
@@ -240,14 +232,10 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
         // input: [ecs.PlacementConstraint.distinctInstances()] - distinctInstances() returns [{ type: 'distinctInstance' }]
         // output: {Type: 'distinctInstance'}
         PlacementConstraints: noEmpty(
-          flatten(
-            (this.options?.placementConstraints ?? []).map((c) => c.toJson().map(uppercaseKeys))
-          )
+          flatten((this.options?.placementConstraints ?? []).map((c) => c.toJson().map(uppercaseKeys)))
         ),
         PlacementStrategy: noEmpty(
-          flatten(
-            (this.options?.placementStrategies ?? []).map((c) => c.toJson().map(uppercaseKeys))
-          )
+          flatten((this.options?.placementStrategies ?? []).map((c) => c.toJson().map(uppercaseKeys)))
         ),
       },
     };
@@ -307,9 +295,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
     if (
       this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN &&
-      !sfn.FieldUtils.containsTaskToken(
-        props.containerOverrides?.map((override) => override.environment)
-      )
+      !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map((override) => override.environment))
     ) {
       throw new Error(
         'Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.'
@@ -333,9 +319,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.findContainer(name);
         if (!cont) {
-          throw new Error(
-            `Overrides mention container with name '${name}', but no such container in task definition`
-          );
+          throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
         }
       }
     }
@@ -373,18 +357,12 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
   private configureAwsVpcNetworking() {
     const subnetSelection = this.props.subnets ?? {
-      subnetType: this.props.assignPublicIp
-        ? ec2.SubnetType.PUBLIC
-        : ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      subnetType: this.props.assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
 
     this.networkConfiguration = {
       AwsvpcConfiguration: {
-        AssignPublicIp: this.props.assignPublicIp
-          ? this.props.assignPublicIp
-            ? 'ENABLED'
-            : 'DISABLED'
-          : undefined,
+        AssignPublicIp: this.props.assignPublicIp ? (this.props.assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
         SecurityGroups: cdk.Lazy.list({
           produce: () => this.securityGroups?.map((sg) => sg.securityGroupId),

@@ -4,7 +4,9 @@ import { IntegrationTests } from '../../lib/runner/integration-tests';
 describe('IntegrationTests Discovery', () => {
   const tests = new IntegrationTests('test');
   let stderrMock: jest.SpyInstance;
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+    return true;
+  });
 
   beforeEach(() => {
     mockfs({
@@ -69,25 +71,32 @@ describe('IntegrationTests Discovery', () => {
       });
 
       test('test not found', async () => {
-        const integTests = await tests.fromCliOptions({ ...cliOptions, tests: [`test-data/${namedTest}`.replace('test1', 'test42')] });
+        const integTests = await tests.fromCliOptions({
+          ...cliOptions,
+          tests: [`test-data/${namedTest}`.replace('test1', 'test42')],
+        });
 
         expect(integTests.length).toEqual(0);
         expect(stderrMock.mock.calls[0][0].trim()).toMatch(
-          new RegExp(`No such integ test: test-data\\/.*test42\\.${fileExtension}`),
+          new RegExp(`No such integ test: test-data\\/.*test42\\.${fileExtension}`)
         );
         expect(stderrMock.mock.calls[1][0]).toMatch(
-          new RegExp(`Available tests: test-data\\/.*test1\\.${fileExtension} test-data\\/.*test2\\.${fileExtension} test-data\\/.*test3\\.${fileExtension}`),
+          new RegExp(
+            `Available tests: test-data\\/.*test1\\.${fileExtension} test-data\\/.*test2\\.${fileExtension} test-data\\/.*test3\\.${fileExtension}`
+          )
         );
       });
 
       test('exclude tests', async () => {
-        const integTests = await tests.fromCliOptions({ ...cliOptions, tests: [`test-data/${namedTest}`], exclude: true });
+        const integTests = await tests.fromCliOptions({
+          ...cliOptions,
+          tests: [`test-data/${namedTest}`],
+          exclude: true,
+        });
 
-        const fileNames = integTests.map(test => test.fileName);
+        const fileNames = integTests.map((test) => test.fileName);
         expect(integTests.length).toEqual(2);
-        expect(fileNames).not.toContain(
-          `test/test-data/${namedTest}`,
-        );
+        expect(fileNames).not.toContain(`test/test-data/${namedTest}`);
       });
 
       test('match regex', async () => {

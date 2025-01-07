@@ -40,9 +40,7 @@ function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalin
 
   for (const interval of intervals) {
     if (interval.lower === undefined && interval.upper === undefined) {
-      throw new Error(
-        `Must supply at least one of 'upper' or 'lower', got: ${JSON.stringify(interval)}`
-      );
+      throw new Error(`Must supply at least one of 'upper' or 'lower', got: ${JSON.stringify(interval)}`);
     }
   }
 
@@ -68,9 +66,7 @@ function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalin
   }
   for (const interval of intervals) {
     if (interval.lower === undefined || interval.upper === undefined) {
-      throw new Error(
-        `Could not determine the lower and upper bounds for ${JSON.stringify(interval)}`
-      );
+      throw new Error(`Could not determine the lower and upper bounds for ${JSON.stringify(interval)}`);
     }
   }
 

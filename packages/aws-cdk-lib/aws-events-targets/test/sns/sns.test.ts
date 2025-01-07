@@ -85,9 +85,11 @@ test('dead letter queue is configured correctly', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.SnsTopic(topic, {
-    deadLetterQueue,
-  }));
+  rule.addTarget(
+    new targets.SnsTopic(topic, {
+      deadLetterQueue,
+    })
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
@@ -98,10 +100,7 @@ test('dead letter queue is configured correctly', () => {
         Id: 'Target0',
         DeadLetterConfig: {
           Arn: {
-            'Fn::GetAtt': [
-              'MyDeadLetterQueueD997968A',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyDeadLetterQueueD997968A', 'Arn'],
           },
         },
       },

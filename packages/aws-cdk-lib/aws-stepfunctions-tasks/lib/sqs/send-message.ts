@@ -72,16 +72,11 @@ export class SqsSendMessage extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(
-      this.integrationPattern,
-      SqsSendMessage.SUPPORTED_INTEGRATION_PATTERNS
-    );
+    validatePatternSupported(this.integrationPattern, SqsSendMessage.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (props.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new Error(
-          'Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.'
-        );
+        throw new Error('Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.');
       }
     }
 

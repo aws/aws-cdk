@@ -14,9 +14,7 @@ export class AwsApiCallHandler extends CustomResourceHandler<
     const apiCall = new ApiCall(request.service, request.api);
 
     const parameters = request.parameters ? decodeParameters(request.parameters) : {};
-    console.log(
-      `SDK request to ${apiCall.service}.${apiCall.action} with parameters ${JSON.stringify(parameters)}`
-    );
+    console.log(`SDK request to ${apiCall.service}.${apiCall.action} with parameters ${JSON.stringify(parameters)}`);
     const response = (await apiCall.invoke({ parameters })) as Record<string, unknown>;
 
     console.log(`SDK response received ${JSON.stringify(response)}`);
@@ -37,15 +35,12 @@ export class AwsApiCallHandler extends CustomResourceHandler<
 }
 
 function filterKeys(object: object, searchStrings: string[]): { [key: string]: string } {
-  return Object.entries(object).reduce(
-    (filteredObject: { [key: string]: string }, [key, value]) => {
-      for (const searchString of searchStrings) {
-        if (key.startsWith(`apiCallResponse.${searchString}`)) {
-          filteredObject[key] = value;
-        }
+  return Object.entries(object).reduce((filteredObject: { [key: string]: string }, [key, value]) => {
+    for (const searchString of searchStrings) {
+      if (key.startsWith(`apiCallResponse.${searchString}`)) {
+        filteredObject[key] = value;
       }
-      return filteredObject;
-    },
-    {}
-  );
+    }
+    return filteredObject;
+  }, {});
 }

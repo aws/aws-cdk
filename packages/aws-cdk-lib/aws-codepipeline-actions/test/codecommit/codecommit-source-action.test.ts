@@ -22,12 +22,12 @@ describe('CodeCommit Source Action', () => {
       minimalPipeline(stack, undefined);
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Actions': [
+            Actions: [
               {
-                'Configuration': {
-                  'PollForSourceChanges': false,
+                Configuration: {
+                  PollForSourceChanges: false,
                 },
               },
             ],
@@ -75,52 +75,37 @@ describe('CodeCommit Source Action', () => {
       Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         EventPattern: {
           source: ['aws.codecommit'],
-          resources: [
-            { 'Fn::GetAtt': ['MyRepoF4F48043', 'Arn'] },
-          ],
+          resources: [{ 'Fn::GetAtt': ['MyRepoF4F48043', 'Arn'] }],
         },
-        Targets: [{
-          RoleARN: Match.absent(),
-          Arn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { 'Ref': 'AWS::Partition' },
-              ':events:north-pole:5678:event-bus/default',
-            ]],
+        Targets: [
+          {
+            RoleARN: Match.absent(),
+            Arn: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':events:north-pole:5678:event-bus/default']],
+            },
           },
-        }],
+        ],
       });
 
       // THEN - creates a Rule in the pipeline stack using the role to start the pipeline
       Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'aws.codecommit',
-          ],
-          'resources': [
+        EventPattern: {
+          source: ['aws.codecommit'],
+          resources: [
             {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { 'Ref': 'AWS::Partition' },
-                  ':codecommit:north-pole:1234:my-repo',
-                ],
-              ],
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':codecommit:north-pole:1234:my-repo']],
             },
           ],
         },
-        'Targets': [
+        Targets: [
           {
-            'Arn': {
-              'Fn::Join': ['', [
-                'arn:',
-                { 'Ref': 'AWS::Partition' },
-                ':codepipeline:north-pole:5678:',
-                { 'Ref': 'MyPipelineAED38ECF' },
-              ]],
+            Arn: {
+              'Fn::Join': [
+                '',
+                ['arn:', { Ref: 'AWS::Partition' }, ':codepipeline:north-pole:5678:', { Ref: 'MyPipelineAED38ECF' }],
+              ],
             },
-            'RoleArn': { 'Fn::GetAtt': ['MyPipelineEventsRoleFAB99F32', 'Arn'] },
+            RoleArn: { 'Fn::GetAtt': ['MyPipelineEventsRoleFAB99F32', 'Arn'] },
           },
         ],
       });
@@ -132,12 +117,12 @@ describe('CodeCommit Source Action', () => {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS);
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Actions': [
+            Actions: [
               {
-                'Configuration': {
-                  'PollForSourceChanges': false,
+                Configuration: {
+                  PollForSourceChanges: false,
                 },
               },
             ],
@@ -155,12 +140,12 @@ describe('CodeCommit Source Action', () => {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.POLL);
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Actions': [
+            Actions: [
               {
-                'Configuration': {
-                  'PollForSourceChanges': true,
+                Configuration: {
+                  PollForSourceChanges: true,
                 },
               },
             ],
@@ -178,12 +163,12 @@ describe('CodeCommit Source Action', () => {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.NONE);
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Actions': [
+            Actions: [
               {
-                'Configuration': {
-                  'PollForSourceChanges': false,
+                Configuration: {
+                  PollForSourceChanges: false,
                 },
               },
             ],
@@ -198,12 +183,11 @@ describe('CodeCommit Source Action', () => {
     test('check when a custom event is provided', () => {
       const stack = new Stack();
 
-      const eventPattern
-      = {
+      const eventPattern = {
         'detail-type': ['CodeCommit Repository State Change'],
-        'resources': ['foo'],
-        'source': ['aws.codecommit'],
-        'detail': {
+        resources: ['foo'],
+        source: ['aws.codecommit'],
+        detail: {
           referenceType: ['branch'],
           event: ['referenceCreated', 'referenceUpdated'],
           referenceName: ['test-branch'],
@@ -213,47 +197,38 @@ describe('CodeCommit Source Action', () => {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS, {
         customEventRule: {
           eventPattern,
-          target: new LambdaFunction(new Function(stack, 'TestFunction', {
-            runtime: Runtime.NODEJS_LATEST,
-            handler: 'index.handler',
-            code: Code.fromInline('exports.handler = handler.toString()'),
-          })),
+          target: new LambdaFunction(
+            new Function(stack, 'TestFunction', {
+              runtime: Runtime.NODEJS_LATEST,
+              handler: 'index.handler',
+              code: Code.fromInline('exports.handler = handler.toString()'),
+            })
+          ),
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'aws.codecommit',
+        EventPattern: {
+          source: ['aws.codecommit'],
+          resources: [
+            'foo',
+            {
+              'Fn::GetAtt': ['MyRepoF4F48043', 'Arn'],
+            },
           ],
-          'resources': ['foo', {
-            'Fn::GetAtt': [
-              'MyRepoF4F48043',
-              'Arn',
-            ],
-          }],
-          'detail-type': [
-            'CodeCommit Repository State Change',
-          ],
-          'detail': {
-            'referenceType': [
-              'branch',
-            ],
-            'event': [
-              'referenceCreated',
-              'referenceUpdated',
-            ],
-            'referenceName': [
-              'test-branch',
-            ],
+          'detail-type': ['CodeCommit Repository State Change'],
+          detail: {
+            referenceType: ['branch'],
+            event: ['referenceCreated', 'referenceUpdated'],
+            referenceName: ['test-branch'],
           },
         },
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-        'Handler': 'index.handler',
-        'Code': {
-          'ZipFile': 'exports.handler = handler.toString()',
+        Handler: 'index.handler',
+        Code: {
+          ZipFile: 'exports.handler = handler.toString()',
         },
       });
     });
@@ -348,17 +323,18 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
+            Name: 'Source',
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'Build',
-                'Configuration': {
-                  'EnvironmentVariables': '[{"name":"AuthorDate","type":"PLAINTEXT","value":"#{Source_Source_NS.AuthorDate}"}]',
+                Name: 'Build',
+                Configuration: {
+                  EnvironmentVariables:
+                    '[{"name":"AuthorDate","type":"PLAINTEXT","value":"#{Source_Source_NS.AuthorDate}"}]',
                 },
               },
             ],
@@ -442,20 +418,22 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Name': 'Source',
-            'Actions': [{
-              'Configuration': {
-                'OutputArtifactFormat': 'CODEBUILD_CLONE_REF',
+            Name: 'Source',
+            Actions: [
+              {
+                Configuration: {
+                  OutputArtifactFormat: 'CODEBUILD_CLONE_REF',
+                },
               },
-            }],
+            ],
           },
           {
-            'Name': 'Build',
-            'Actions': [
+            Name: 'Build',
+            Actions: [
               {
-                'Name': 'Build',
+                Name: 'Build',
               },
             ],
           },
@@ -463,23 +441,16 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([
+        PolicyDocument: {
+          Statement: Match.arrayWith([
             Match.objectLike({
-              'Action': [
-                'logs:CreateLogGroup',
-                'logs:CreateLogStream',
-                'logs:PutLogEvents',
-              ],
+              Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
             }),
             Match.objectLike({
-              'Action': 'codecommit:GitPull',
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::GetAtt': [
-                  'RC21A1702',
-                  'Arn',
-                ],
+              Action: 'codecommit:GitPull',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['RC21A1702', 'Arn'],
               },
             }),
           ]),
@@ -487,10 +458,10 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-        'PolicyDocument': {
-          'Statement': Match.arrayWith([
+        PolicyDocument: {
+          Statement: Match.arrayWith([
             Match.objectLike({
-              'Action': [
+              Action: [
                 'codecommit:GetBranch',
                 'codecommit:GetCommit',
                 'codecommit:UploadArchive',
@@ -498,12 +469,9 @@ describe('CodeCommit Source Action', () => {
                 'codecommit:CancelUploadArchive',
                 'codecommit:GetRepository',
               ],
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::GetAtt': [
-                  'RC21A1702',
-                  'Arn',
-                ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['RC21A1702', 'Arn'],
               },
             }),
           ]),
@@ -521,10 +489,12 @@ describe('CodeCommit Source Action', () => {
       const triggerEventTestRole = new iam.Role(stack, 'Trigger-test-role', {
         assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
       });
-      triggerEventTestRole.addToPolicy(new iam.PolicyStatement({
-        actions: ['codepipeline:StartPipelineExecution'],
-        resources: [pipeline.pipelineArn],
-      }));
+      triggerEventTestRole.addToPolicy(
+        new iam.PolicyStatement({
+          actions: ['codepipeline:StartPipelineExecution'],
+          resources: [pipeline.pipelineArn],
+        })
+      );
 
       const sourceOutput = new codepipeline.Artifact();
 
@@ -579,43 +549,41 @@ describe('CodeCommit Source Action', () => {
       new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
         artifactBucket: s3.Bucket.fromBucketAttributes(pipelineStack, 'PipelineBucket', {
           bucketName: 'pipeline-bucket',
-          encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'PipelineKey',
-            'arn:aws:kms:us-east-1:456:key/my-key'),
+          encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'PipelineKey', 'arn:aws:kms:us-east-1:456:key/my-key'),
         }),
         stages: [
           {
             stageName: 'Source',
-            actions: [new cpactions.CodeCommitSourceAction({
-              actionName: 'Source',
-              output: new codepipeline.Artifact(),
-              repository: repoFomAnotherAccount,
-            })],
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source',
+                output: new codepipeline.Artifact(),
+                repository: repoFomAnotherAccount,
+              }),
+            ],
           },
           {
             stageName: 'Approve',
-            actions: [new cpactions.ManualApprovalAction({
-              actionName: 'Approve',
-            })],
+            actions: [
+              new cpactions.ManualApprovalAction({
+                actionName: 'Approve',
+              }),
+            ],
           },
         ],
       });
 
       Template.fromStack(repoStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: Match.arrayWith([{
-            'Action': [
-              's3:PutObjectAcl',
-              's3:PutObjectVersionAcl',
-            ],
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::Join': ['', [
-                'arn:',
-                { 'Ref': 'AWS::Partition' },
-                ':s3:::pipeline-bucket/*',
-              ]],
+          Statement: Match.arrayWith([
+            {
+              Action: ['s3:PutObjectAcl', 's3:PutObjectVersionAcl'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::pipeline-bucket/*']],
+              },
             },
-          }]),
+          ]),
         },
       });
     });
@@ -702,12 +670,12 @@ describe('CodeCommit Source Action', () => {
 
       const template = Template.fromStack(pipelineStack);
       template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Actions': [
+            Actions: [
               {
-                'Configuration': {
-                  'BranchName': 'main',
+                Configuration: {
+                  BranchName: 'main',
                 },
               },
             ],
@@ -716,24 +684,13 @@ describe('CodeCommit Source Action', () => {
         ],
       });
       template.hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'aws.codecommit',
-          ],
-          'resources': [
-            {},
-          ],
-          'detail-type': [
-            'CodeCommit Repository State Change',
-          ],
-          'detail': {
-            'event': [
-              'referenceCreated',
-              'referenceUpdated',
-            ],
-            'referenceName': [
-              'main',
-            ],
+        EventPattern: {
+          source: ['aws.codecommit'],
+          resources: [{}],
+          'detail-type': ['CodeCommit Repository State Change'],
+          detail: {
+            event: ['referenceCreated', 'referenceUpdated'],
+            referenceName: ['main'],
           },
         },
       });
@@ -777,12 +734,12 @@ describe('CodeCommit Source Action', () => {
 
       const template = Template.fromStack(pipelineStack);
       template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        Stages: [
           {
-            'Actions': [
+            Actions: [
               {
-                'Configuration': {
-                  'BranchName': 'master',
+                Configuration: {
+                  BranchName: 'master',
                 },
               },
             ],
@@ -791,24 +748,13 @@ describe('CodeCommit Source Action', () => {
         ],
       });
       template.hasResourceProperties('AWS::Events::Rule', {
-        'EventPattern': {
-          'source': [
-            'aws.codecommit',
-          ],
-          'resources': [
-            {},
-          ],
-          'detail-type': [
-            'CodeCommit Repository State Change',
-          ],
-          'detail': {
-            'event': [
-              'referenceCreated',
-              'referenceUpdated',
-            ],
-            'referenceName': [
-              'master',
-            ],
+        EventPattern: {
+          source: ['aws.codecommit'],
+          resources: [{}],
+          'detail-type': ['CodeCommit Repository State Change'],
+          detail: {
+            event: ['referenceCreated', 'referenceUpdated'],
+            referenceName: ['master'],
           },
         },
       });
@@ -816,7 +762,11 @@ describe('CodeCommit Source Action', () => {
   });
 });
 
-function minimalPipeline(stack: Stack, trigger?: cpactions.CodeCommitTrigger, customEventRule?: Pick<CodeCommitSourceActionProps, 'customEventRule'>): codepipeline.Pipeline {
+function minimalPipeline(
+  stack: Stack,
+  trigger?: cpactions.CodeCommitTrigger,
+  customEventRule?: Pick<CodeCommitSourceActionProps, 'customEventRule'>
+): codepipeline.Pipeline {
   const sourceOutput = new codepipeline.Artifact();
   return new codepipeline.Pipeline(stack, 'MyPipeline', {
     stages: [

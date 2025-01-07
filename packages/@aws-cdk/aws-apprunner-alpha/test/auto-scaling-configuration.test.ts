@@ -7,26 +7,26 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-test.each([
-  ['MyAutoScalingConfiguration'],
-  ['my-autoscaling-configuration_1'],
-])('create an Auto scaling Configuration with all properties (name: %s)', (autoScalingConfigurationName: string) => {
-  // WHEN
-  new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
-    autoScalingConfigurationName,
-    maxConcurrency: 150,
-    maxSize: 20,
-    minSize: 5,
-  });
+test.each([['MyAutoScalingConfiguration'], ['my-autoscaling-configuration_1']])(
+  'create an Auto scaling Configuration with all properties (name: %s)',
+  (autoScalingConfigurationName: string) => {
+    // WHEN
+    new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+      autoScalingConfigurationName,
+      maxConcurrency: 150,
+      maxSize: 20,
+      minSize: 5,
+    });
 
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::AutoScalingConfiguration', {
-    AutoScalingConfigurationName: autoScalingConfigurationName,
-    MaxConcurrency: 150,
-    MaxSize: 20,
-    MinSize: 5,
-  });
-});
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::AutoScalingConfiguration', {
+      AutoScalingConfigurationName: autoScalingConfigurationName,
+      MaxConcurrency: 150,
+      MaxSize: 20,
+      MinSize: 5,
+    });
+  }
+);
 
 test('create an Auto scaling Configuration without all properties', () => {
   // WHEN
@@ -74,28 +74,31 @@ test.each([0, 201])('invalid maxConcurrency', (maxConcurrency: number) => {
   }).toThrow(`maxConcurrency must be between 1 and 200, got ${maxConcurrency}.`);
 });
 
-test.each([
-  ['tes'],
-  ['test-autoscaling-configuration-name-over-limitation'],
-])('autoScalingConfigurationName length is invalid(name: %s)', (autoScalingConfigurationName: string) => {
-  expect(() => {
-    new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
-      autoScalingConfigurationName,
-    });
-  }).toThrow(`\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${autoScalingConfigurationName.length} characters.`);
-});
+test.each([['tes'], ['test-autoscaling-configuration-name-over-limitation']])(
+  'autoScalingConfigurationName length is invalid(name: %s)',
+  (autoScalingConfigurationName: string) => {
+    expect(() => {
+      new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+        autoScalingConfigurationName,
+      });
+    }).toThrow(
+      `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${autoScalingConfigurationName.length} characters.`
+    );
+  }
+);
 
-test.each([
-  ['-test'],
-  ['test-?'],
-  ['test-\\'],
-])('autoScalingConfigurationName includes invalid characters(name: %s)', (autoScalingConfigurationName: string) => {
-  expect(() => {
-    new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
-      autoScalingConfigurationName,
-    });
-  }).toThrow(`\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${autoScalingConfigurationName}.`);
-});
+test.each([['-test'], ['test-?'], ['test-\\']])(
+  'autoScalingConfigurationName includes invalid characters(name: %s)',
+  (autoScalingConfigurationName: string) => {
+    expect(() => {
+      new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+        autoScalingConfigurationName,
+      });
+    }).toThrow(
+      `\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${autoScalingConfigurationName}.`
+    );
+  }
+);
 
 test('create an Auto scaling Configuration with tags', () => {
   // WHEN

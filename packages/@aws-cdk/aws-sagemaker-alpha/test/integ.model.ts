@@ -74,10 +74,7 @@ const artifactFilePath = path.join(__dirname, 'test-artifacts', 'valid-artifact.
 const ecrImageAsset = new ecr_assets.DockerImageAsset(stack, 'EcrImage', {
   directory: dockerfileDirectory,
 });
-const ecrImage = sagemaker.ContainerImage.fromEcrRepository(
-  ecrImageAsset.repository,
-  ecrImageAsset.imageTag
-);
+const ecrImage = sagemaker.ContainerImage.fromEcrRepository(ecrImageAsset.repository, ecrImageAsset.imageTag);
 
 const localImage = sagemaker.ContainerImage.fromAsset(dockerfileDirectory);
 

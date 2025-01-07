@@ -60,9 +60,7 @@ export class CfnOutput extends CfnElement {
     } else if (Array.isArray(props.value)) {
       // `props.value` is a string, but because cross-stack exports allow passing any,
       // we need to check for lists here.
-      throw new Error(
-        `CloudFormation output was given a string list instead of a string at path "${this.node.path}"`
-      );
+      throw new Error(`CloudFormation output was given a string list instead of a string at path "${this.node.path}"`);
     }
 
     this._description = props.description;
@@ -153,9 +151,7 @@ export class CfnOutput extends CfnElement {
       Lazy.uncachedString({
         produce: (ctx) => {
           if (Stack.of(ctx.scope) === this.stack) {
-            throw new Error(
-              `'importValue' property of '${this.node.path}' should only be used in a different Stack`
-            );
+            throw new Error(`'importValue' property of '${this.node.path}' should only be used in a different Stack`);
           }
           if (!this._exportName) {
             throw new Error(
@@ -192,9 +188,7 @@ export class CfnOutput extends CfnElement {
         errors.push('Export name cannot be empty');
       }
       if (this._exportName.length > 255) {
-        errors.push(
-          `Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`
-        );
+        errors.push(`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`);
       }
       if (!/^[A-Za-z0-9-:]*$/.test(this._exportName)) {
         errors.push(

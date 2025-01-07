@@ -112,10 +112,12 @@ test('addShare() works', () => {
 
   // WHEN
   const policy = new FairshareSchedulingPolicy(stack, 'schedulingPolicy', {
-    shares: [{
-      shareIdentifier: 'myShareId',
-      weightFactor: 0.5,
-    }],
+    shares: [
+      {
+        shareIdentifier: 'myShareId',
+        weightFactor: 0.5,
+      },
+    ],
   });
   policy.addShare({
     shareIdentifier: 'addedShareId',
@@ -144,8 +146,11 @@ test('can be imported from ARN', () => {
   const stack = new Stack();
 
   // WHEN
-  const policy = FairshareSchedulingPolicy.fromFairshareSchedulingPolicyArn(stack, 'policyImport',
-    'arn:aws:batch:us-east-1:123456789012:scheduling-policy/policyImport');
+  const policy = FairshareSchedulingPolicy.fromFairshareSchedulingPolicyArn(
+    stack,
+    'policyImport',
+    'arn:aws:batch:us-east-1:123456789012:scheduling-policy/policyImport'
+  );
 
   // THEN
   expect(policy.schedulingPolicyArn).toEqual('arn:aws:batch:us-east-1:123456789012:scheduling-policy/policyImport');

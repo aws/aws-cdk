@@ -101,10 +101,7 @@ export class ConstructTree {
 
   private setLogicalId(stack: Stack, logicalId: string, child: Construct) {
     if (!this._constructByTemplatePathAndLogicalId.has(stack.templateFile)) {
-      this._constructByTemplatePathAndLogicalId.set(
-        stack.templateFile,
-        new Map([[logicalId, child]])
-      );
+      this._constructByTemplatePathAndLogicalId.set(stack.templateFile, new Map([[logicalId, child]]));
     } else {
       this._constructByTemplatePathAndLogicalId.get(stack.templateFile)?.set(logicalId, child);
     }
@@ -124,8 +121,7 @@ export class ConstructTree {
         if (CfnResource.isCfnResource(construct)) {
           trace = construct.node.metadata.find((meta) => !!meta.trace)?.trace ?? [];
         } else {
-          trace =
-            construct.node.defaultChild?.node.metadata.find((meta) => !!meta.trace)?.trace ?? [];
+          trace = construct.node.defaultChild?.node.metadata.find((meta) => !!meta.trace)?.trace ?? [];
         }
         // take just the items we need and reverse it since we are
         // displaying the trace bottom up

@@ -4,17 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import {
-  ArnFormat,
-  FeatureFlags,
-  Lazy,
-  RemovalPolicy,
-  Resource,
-  Size,
-  Stack,
-  Tags,
-  Token,
-} from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -659,15 +649,11 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @param grantee The principal to grant root access to
    */
   public grantRootAccess(grantee: iam.IGrantable): iam.Grant {
-    return this._grantClient(
-      grantee,
-      [ClientAction.MOUNT, ClientAction.WRITE, ClientAction.ROOT_ACCESS],
-      {
-        Bool: {
-          'elasticfilesystem:AccessedViaMountTarget': 'true',
-        },
-      }
-    );
+    return this._grantClient(grantee, [ClientAction.MOUNT, ClientAction.WRITE, ClientAction.ROOT_ACCESS], {
+      Bool: {
+        'elasticfilesystem:AccessedViaMountTarget': 'true',
+      },
+    });
   }
 
   /**
@@ -710,11 +696,7 @@ export class FileSystem extends FileSystemBase {
   /**
    * Import an existing File System from the given properties.
    */
-  public static fromFileSystemAttributes(
-    scope: Construct,
-    id: string,
-    attrs: FileSystemAttributes
-  ): IFileSystem {
+  public static fromFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
     return new ImportedFileSystem(scope, id, attrs);
   }
 
@@ -754,22 +736,12 @@ export class FileSystem extends FileSystemBase {
       this.oneZoneValidation();
     }
 
-    if (
-      props.throughputMode === ThroughputMode.PROVISIONED &&
-      props.provisionedThroughputPerSecond === undefined
-    ) {
-      throw new Error(
-        'Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED'
-      );
+    if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
+      throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
 
-    if (
-      props.throughputMode === ThroughputMode.ELASTIC &&
-      props.performanceMode === PerformanceMode.MAX_IO
-    ) {
-      throw new Error(
-        'ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO'
-      );
+    if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
+      throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
 
     if (
@@ -784,8 +756,7 @@ export class FileSystem extends FileSystemBase {
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted =
-      props.encrypted ??
-      (FeatureFlags.of(this).isEnabled(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
+      props.encrypted ?? (FeatureFlags.of(this).isEnabled(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
     // LifecyclePolicies must be an array of objects, each containing a single policy
     const lifecyclePolicies: CfnFileSystem.LifecyclePolicyProperty[] = [];
@@ -842,8 +813,7 @@ export class FileSystem extends FileSystemBase {
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
       fileSystemPolicy: Lazy.any({
         produce: () => {
-          const denyAnonymousAccessFlag =
-            FeatureFlags.of(this).isEnabled(cxapi.EFS_DENY_ANONYMOUS_ACCESS) ?? false;
+          const denyAnonymousAccessFlag = FeatureFlags.of(this).isEnabled(cxapi.EFS_DENY_ANONYMOUS_ACCESS) ?? false;
           const denyAnonymousAccessByDefault = denyAnonymousAccessFlag || this._grantedClient;
           const allowAnonymousAccess = props.allowAnonymousAccess ?? !denyAnonymousAccessByDefault;
           if (!allowAnonymousAccess) {
@@ -937,9 +907,7 @@ export class FileSystem extends FileSystemBase {
     if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
       // it has to be only one az
       if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
-        throw new Error(
-          'When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.'
-        );
+        throw new Error('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.');
       }
       // it has to be in availabilityZones
       // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)

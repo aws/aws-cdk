@@ -18,23 +18,20 @@ describe('KafkaEventSource', () => {
       const kafkaTopic = 'some-topic';
 
       // WHEN
-      fn.addEventSource(new sources.ManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.ManagedKafkaEventSource({
           clusterArn,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'kafka:DescribeCluster',
-                'kafka:GetBootstrapBrokers',
-                'kafka:ListScramSecrets',
-              ],
+              Action: ['kafka:DescribeCluster', 'kafka:GetBootstrapBrokers', 'kafka:ListScramSecrets'],
               Effect: 'Allow',
               Resource: clusterArn,
             },
@@ -56,11 +53,8 @@ describe('KafkaEventSource', () => {
         },
         BatchSize: 100,
         StartingPosition: 'TRIM_HORIZON',
-        Topics: [
-          kafkaTopic,
-        ],
+        Topics: [kafkaTopic],
       });
-
     });
     test('with secret', () => {
       // GIVEN
@@ -71,34 +65,28 @@ describe('KafkaEventSource', () => {
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
       // WHEN
-      fn.addEventSource(new sources.ManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.ManagedKafkaEventSource({
           clusterArn,
           topic: kafkaTopic,
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'secretsmanager:GetSecretValue',
-                'secretsmanager:DescribeSecret',
-              ],
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
               Effect: 'Allow',
               Resource: {
                 Ref: 'SecretA720EF05',
               },
             },
             {
-              Action: [
-                'kafka:DescribeCluster',
-                'kafka:GetBootstrapBrokers',
-                'kafka:ListScramSecrets',
-              ],
+              Action: ['kafka:DescribeCluster', 'kafka:GetBootstrapBrokers', 'kafka:ListScramSecrets'],
               Effect: 'Allow',
               Resource: clusterArn,
             },
@@ -120,9 +108,7 @@ describe('KafkaEventSource', () => {
         },
         BatchSize: 100,
         StartingPosition: 'TRIM_HORIZON',
-        Topics: [
-          kafkaTopic,
-        ],
+        Topics: [kafkaTopic],
         SourceAccessConfigurations: [
           {
             Type: 'SASL_SCRAM_512_AUTH',
@@ -132,7 +118,6 @@ describe('KafkaEventSource', () => {
           },
         ],
       });
-
     });
 
     test('with filters', () => {
@@ -143,8 +128,8 @@ describe('KafkaEventSource', () => {
       const kafkaTopic = 'some-topic';
 
       // WHEN
-      fn.addEventSource(new sources.ManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.ManagedKafkaEventSource({
           clusterArn,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
@@ -157,7 +142,8 @@ describe('KafkaEventSource', () => {
               numericEquals: lambda.FilterRule.isEqual(1),
             }),
           ],
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -183,12 +169,12 @@ describe('KafkaEventSource', () => {
       const myKey = Key.fromKeyArn(
         stack,
         'SourceBucketEncryptionKey',
-        'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+        'arn:aws:kms:us-east-1:123456789012:key/<key-id>'
       );
 
       // WHEN
-      fn.addEventSource(new sources.ManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.ManagedKafkaEventSource({
           clusterArn,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
@@ -202,7 +188,8 @@ describe('KafkaEventSource', () => {
             }),
           ],
           filterEncryption: myKey,
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -234,8 +221,8 @@ describe('KafkaEventSource', () => {
       });
 
       // WHEN
-      fn.addEventSource(new sources.ManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.ManagedKafkaEventSource({
           clusterArn,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
@@ -249,7 +236,8 @@ describe('KafkaEventSource', () => {
             }),
           ],
           filterEncryption: myKey,
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -288,13 +276,14 @@ describe('KafkaEventSource', () => {
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
       // WHEN
-      testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
-        {
+      testLambdaFunction.addEventSource(
+        new sources.ManagedKafkaEventSource({
           clusterArn,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           onFailure: s3OnFailureDestination,
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -317,8 +306,8 @@ describe('KafkaEventSource', () => {
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
       // WHEN
-      testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
-        {
+      testLambdaFunction.addEventSource(
+        new sources.ManagedKafkaEventSource({
           clusterArn,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
@@ -327,7 +316,8 @@ describe('KafkaEventSource', () => {
             minimumPollers: 1,
             maximumPollers: 3,
           },
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -353,17 +343,20 @@ describe('KafkaEventSource', () => {
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
-      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          onFailure: s3OnFailureDestination,
-          provisionedPollerConfig: {
-            minimumPollers: 1,
-            maximumPollers: 2001,
-          },
-        }))).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
+      expect(() =>
+        testLambdaFunction.addEventSource(
+          new sources.ManagedKafkaEventSource({
+            clusterArn,
+            topic: kafkaTopic,
+            startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+            onFailure: s3OnFailureDestination,
+            provisionedPollerConfig: {
+              minimumPollers: 1,
+              maximumPollers: 2001,
+            },
+          })
+        )
+      ).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
     });
 
     test('minimum provisioned poller is out of limit', () => {
@@ -374,17 +367,20 @@ describe('KafkaEventSource', () => {
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
-      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          onFailure: s3OnFailureDestination,
-          provisionedPollerConfig: {
-            minimumPollers: 0,
-            maximumPollers: 3,
-          },
-        }))).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
+      expect(() =>
+        testLambdaFunction.addEventSource(
+          new sources.ManagedKafkaEventSource({
+            clusterArn,
+            topic: kafkaTopic,
+            startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+            onFailure: s3OnFailureDestination,
+            provisionedPollerConfig: {
+              minimumPollers: 0,
+              maximumPollers: 3,
+            },
+          })
+        )
+      ).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
     });
 
     test('Minimum provisioned poller greater than maximum provisioned poller', () => {
@@ -395,17 +391,20 @@ describe('KafkaEventSource', () => {
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
-      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          onFailure: s3OnFailureDestination,
-          provisionedPollerConfig: {
-            minimumPollers: 3,
-            maximumPollers: 1,
-          },
-        }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+      expect(() =>
+        testLambdaFunction.addEventSource(
+          new sources.ManagedKafkaEventSource({
+            clusterArn,
+            topic: kafkaTopic,
+            startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+            onFailure: s3OnFailureDestination,
+            provisionedPollerConfig: {
+              minimumPollers: 3,
+              maximumPollers: 1,
+            },
+          })
+        )
+      ).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
   });
 
@@ -419,23 +418,21 @@ describe('KafkaEventSource', () => {
       const bootstrapServers = ['kafka-broker:9092'];
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
-              Action: [
-                'secretsmanager:GetSecretValue',
-                'secretsmanager:DescribeSecret',
-              ],
+              Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
               Effect: 'Allow',
               Resource: {
                 Ref: 'SecretA720EF05',
@@ -463,9 +460,7 @@ describe('KafkaEventSource', () => {
           },
         },
         StartingPosition: 'TRIM_HORIZON',
-        Topics: [
-          kafkaTopic,
-        ],
+        Topics: [kafkaTopic],
         SourceAccessConfigurations: [
           {
             Type: 'SASL_SCRAM_512_AUTH',
@@ -475,7 +470,6 @@ describe('KafkaEventSource', () => {
           },
         ],
       });
-
     });
 
     test('with filters', () => {
@@ -487,8 +481,8 @@ describe('KafkaEventSource', () => {
       const bootstrapServers = ['kafka-broker:9092'];
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: secret,
@@ -502,7 +496,8 @@ describe('KafkaEventSource', () => {
               numericEquals: lambda.FilterRule.isEqual(1),
             }),
           ],
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -529,12 +524,12 @@ describe('KafkaEventSource', () => {
       const myKey = Key.fromKeyArn(
         stack,
         'SourceBucketEncryptionKey',
-        'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
+        'arn:aws:kms:us-east-1:123456789012:key/<key-id>'
       );
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: secret,
@@ -549,7 +544,8 @@ describe('KafkaEventSource', () => {
             }),
           ],
           filterEncryption: myKey,
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -574,14 +570,14 @@ describe('KafkaEventSource', () => {
       const bootstrapServers = ['kafka-broker:9092'];
 
       expect(() => {
-        fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-          {
+        fn.addEventSource(
+          new sources.SelfManagedKafkaEventSource({
             bootstrapServers: bootstrapServers,
             topic: kafkaTopic,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          }));
+          })
+        );
       }).toThrow(/secret must be set/);
-
     });
 
     test('with s3 onFailure Destination', () => {
@@ -594,14 +590,15 @@ describe('KafkaEventSource', () => {
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
       // WHEN
-      testLambdaFunction.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      testLambdaFunction.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' }),
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           onFailure: s3OnFailureDestination,
-        }));
+        })
+      );
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
@@ -626,15 +623,16 @@ describe('KafkaEventSource', () => {
         const vpc = new Vpc(stack, 'Vpc');
 
         // WHEN
-        fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-          {
+        fn.addEventSource(
+          new sources.SelfManagedKafkaEventSource({
             bootstrapServers: bootstrapServers,
             topic: kafkaTopic,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
             vpc: vpc,
             vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             securityGroup: sg,
-          }));
+          })
+        );
 
         // THEN
         Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
@@ -649,9 +647,7 @@ describe('KafkaEventSource', () => {
             },
           },
           StartingPosition: 'TRIM_HORIZON',
-          Topics: [
-            kafkaTopic,
-          ],
+          Topics: [kafkaTopic],
           SourceAccessConfigurations: [
             {
               Type: 'VPC_SECURITY_GROUP',
@@ -671,7 +667,6 @@ describe('KafkaEventSource', () => {
             },
           ],
         });
-
       });
       test('with secret', () => {
         // GIVEN
@@ -684,8 +679,8 @@ describe('KafkaEventSource', () => {
         const vpc = new Vpc(stack, 'Vpc');
 
         // WHEN
-        fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-          {
+        fn.addEventSource(
+          new sources.SelfManagedKafkaEventSource({
             bootstrapServers: bootstrapServers,
             topic: kafkaTopic,
             secret: secret,
@@ -693,17 +688,15 @@ describe('KafkaEventSource', () => {
             vpc: vpc,
             vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             securityGroup: sg,
-          }));
+          })
+        );
 
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
-                Action: [
-                  'secretsmanager:GetSecretValue',
-                  'secretsmanager:DescribeSecret',
-                ],
+                Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
                 Effect: 'Allow',
                 Resource: {
                   Ref: 'SecretA720EF05',
@@ -731,9 +724,7 @@ describe('KafkaEventSource', () => {
             },
           },
           StartingPosition: 'TRIM_HORIZON',
-          Topics: [
-            kafkaTopic,
-          ],
+          Topics: [kafkaTopic],
           SourceAccessConfigurations: [
             {
               Type: 'SASL_SCRAM_512_AUTH',
@@ -759,7 +750,6 @@ describe('KafkaEventSource', () => {
             },
           ],
         });
-
       });
       test('setting vpc requires vpcSubnets to be set', () => {
         const stack = new cdk.Stack();
@@ -770,18 +760,17 @@ describe('KafkaEventSource', () => {
         const vpc = new Vpc(stack, 'Vpc');
 
         expect(() => {
-          fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-            {
+          fn.addEventSource(
+            new sources.SelfManagedKafkaEventSource({
               bootstrapServers: bootstrapServers,
               topic: kafkaTopic,
               secret: secret,
               startingPosition: lambda.StartingPosition.TRIM_HORIZON,
               vpc: vpc,
               securityGroup: SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789'),
-
-            }));
+            })
+          );
         }).toThrow(/vpcSubnets must be set/);
-
       });
 
       test('setting vpc requires securityGroup to be set', () => {
@@ -793,17 +782,17 @@ describe('KafkaEventSource', () => {
         const vpc = new Vpc(stack, 'Vpc');
 
         expect(() => {
-          fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-            {
+          fn.addEventSource(
+            new sources.SelfManagedKafkaEventSource({
               bootstrapServers: bootstrapServers,
               topic: kafkaTopic,
               secret: secret,
               startingPosition: lambda.StartingPosition.TRIM_HORIZON,
               vpc: vpc,
               vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
-            }));
+            })
+          );
         }).toThrow(/securityGroup must be set/);
-
       });
     });
 
@@ -818,8 +807,8 @@ describe('KafkaEventSource', () => {
       const vpc = new Vpc(stack, 'Vpc');
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: secret,
@@ -828,7 +817,8 @@ describe('KafkaEventSource', () => {
           vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.SASL_SCRAM_256_AUTH,
-        }));
+        })
+      );
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SourceAccessConfigurations: Match.arrayWith([
@@ -853,8 +843,8 @@ describe('KafkaEventSource', () => {
       const vpc = new Vpc(stack, 'Vpc');
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: secret,
@@ -863,7 +853,8 @@ describe('KafkaEventSource', () => {
           vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.BASIC_AUTH,
-        }));
+        })
+      );
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SourceAccessConfigurations: Match.arrayWith([
@@ -888,8 +879,8 @@ describe('KafkaEventSource', () => {
       const vpc = new Vpc(stack, 'Vpc');
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: secret,
@@ -898,7 +889,8 @@ describe('KafkaEventSource', () => {
           vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
-        }));
+        })
+      );
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SourceAccessConfigurations: Match.arrayWith([
@@ -924,8 +916,8 @@ describe('KafkaEventSource', () => {
       const vpc = new Vpc(stack, 'Vpc');
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           secret: secret,
@@ -935,7 +927,8 @@ describe('KafkaEventSource', () => {
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
           rootCACertificate: rootCACertificate,
-        }));
+        })
+      );
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SourceAccessConfigurations: Match.arrayWith([
@@ -966,8 +959,8 @@ describe('KafkaEventSource', () => {
       const vpc = new Vpc(stack, 'Vpc');
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
@@ -975,7 +968,8 @@ describe('KafkaEventSource', () => {
           vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           rootCACertificate: rootCACertificate,
-        }));
+        })
+      );
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SourceAccessConfigurations: Match.arrayWith([
@@ -1001,8 +995,8 @@ describe('KafkaEventSource', () => {
       const vpc = new Vpc(stack, 'Vpc');
 
       // WHEN
-      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-        {
+      fn.addEventSource(
+        new sources.SelfManagedKafkaEventSource({
           bootstrapServers: bootstrapServers,
           topic: kafkaTopic,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
@@ -1010,7 +1004,8 @@ describe('KafkaEventSource', () => {
           vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
           securityGroup: sg,
           rootCACertificate: rootCACertificate,
-        }));
+        })
+      );
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SourceAccessConfigurations: Match.arrayWith([
@@ -1030,14 +1025,13 @@ describe('KafkaEventSource', () => {
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
       const bootstrapServers = ['kafka-broker:9092'];
       const consumerGroupId = 'my-consumer-group-id';
-      const eventSourceMapping = new sources.SelfManagedKafkaEventSource(
-        {
-          bootstrapServers: bootstrapServers,
-          topic: kafkaTopic,
-          secret: secret,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          consumerGroupId: consumerGroupId,
-        });
+      const eventSourceMapping = new sources.SelfManagedKafkaEventSource({
+        bootstrapServers: bootstrapServers,
+        topic: kafkaTopic,
+        secret: secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        consumerGroupId: consumerGroupId,
+      });
       // WHEN
       fn.addEventSource(eventSourceMapping);
 
@@ -1046,11 +1040,9 @@ describe('KafkaEventSource', () => {
       template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SelfManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
       });
-
     });
 
     test('consumerGroupId can be set for ManagedKafkaEventSource', () => {
-
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -1058,13 +1050,12 @@ describe('KafkaEventSource', () => {
       const kafkaTopic = 'some-topic';
       const consumerGroupId = 'my-consumer-group-id';
 
-      const mskEventMapping = new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          consumerGroupId,
-        });
+      const mskEventMapping = new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        consumerGroupId,
+      });
 
       // WHEN
       fn.addEventSource(mskEventMapping);
@@ -1075,7 +1066,6 @@ describe('KafkaEventSource', () => {
       template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         AmazonManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
       });
-
     });
 
     test('ManagedKafkaEventSource name conforms to construct id rules', () => {
@@ -1085,12 +1075,11 @@ describe('KafkaEventSource', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
 
-      const mskEventMapping = new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-        });
+      const mskEventMapping = new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      });
 
       // WHEN
       fn.addEventSource(mskEventMapping);
@@ -1105,16 +1094,15 @@ describe('KafkaEventSource', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
 
-      const mskEventMapping = new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          provisionedPollerConfig: {
-            minimumPollers: 1,
-            maximumPollers: 3,
-          },
-        });
+      const mskEventMapping = new sources.ManagedKafkaEventSource({
+        clusterArn,
+        topic: kafkaTopic,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        provisionedPollerConfig: {
+          minimumPollers: 1,
+          maximumPollers: 3,
+        },
+      });
 
       // WHEN
       fn.addEventSource(mskEventMapping);
@@ -1137,16 +1125,19 @@ describe('KafkaEventSource', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
 
-      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          provisionedPollerConfig: {
-            minimumPollers: 1,
-            maximumPollers: 2001,
-          },
-        }))).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
+      expect(() =>
+        fn.addEventSource(
+          new sources.ManagedKafkaEventSource({
+            clusterArn,
+            topic: kafkaTopic,
+            startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+            provisionedPollerConfig: {
+              minimumPollers: 1,
+              maximumPollers: 2001,
+            },
+          })
+        )
+      ).toThrow(/Maximum provisioned pollers must be between 1 and 2000 inclusive/);
     });
 
     test('minimum provisioned poller is out of limit', () => {
@@ -1156,16 +1147,19 @@ describe('KafkaEventSource', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
 
-      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          provisionedPollerConfig: {
-            minimumPollers: 0,
-            maximumPollers: 3,
-          },
-        }))).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
+      expect(() =>
+        fn.addEventSource(
+          new sources.ManagedKafkaEventSource({
+            clusterArn,
+            topic: kafkaTopic,
+            startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+            provisionedPollerConfig: {
+              minimumPollers: 0,
+              maximumPollers: 3,
+            },
+          })
+        )
+      ).toThrow(/Minimum provisioned pollers must be between 1 and 200 inclusive/);
     });
 
     test('Minimum provisioned poller greater than maximum provisioned poller', () => {
@@ -1175,16 +1169,19 @@ describe('KafkaEventSource', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
 
-      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
-        {
-          clusterArn,
-          topic: kafkaTopic,
-          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          provisionedPollerConfig: {
-            minimumPollers: 3,
-            maximumPollers: 1,
-          },
-        }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+      expect(() =>
+        fn.addEventSource(
+          new sources.ManagedKafkaEventSource({
+            clusterArn,
+            topic: kafkaTopic,
+            startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+            provisionedPollerConfig: {
+              minimumPollers: 3,
+              maximumPollers: 1,
+            },
+          })
+        )
+      ).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
   });
 });

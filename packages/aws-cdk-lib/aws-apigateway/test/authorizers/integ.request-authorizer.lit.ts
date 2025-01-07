@@ -1,13 +1,7 @@
 import * as path from 'path';
 import * as lambda from '../../../aws-lambda';
 import { App, Stack } from '../../../core';
-import {
-  MockIntegration,
-  PassthroughBehavior,
-  RestApi,
-  RequestAuthorizer,
-  IdentitySource,
-} from '../../lib';
+import { MockIntegration, PassthroughBehavior, RestApi, RequestAuthorizer, IdentitySource } from '../../lib';
 
 // Against the RestApi endpoint from the stack output, run
 // `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401

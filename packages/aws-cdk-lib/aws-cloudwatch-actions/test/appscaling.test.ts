@@ -28,8 +28,6 @@ test('can use topic as alarm action', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-    AlarmActions: [
-      { Ref: 'Action62AD07C0' },
-    ],
+    AlarmActions: [{ Ref: 'Action62AD07C0' }],
   });
 });

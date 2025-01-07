@@ -20,10 +20,12 @@ describe('Create Schedule', () => {
 
   test('default settings', () => {
     const targetQueue = new sqs.Queue(stack, 'TargetQueue');
-    schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [targetQueue.queueArn],
-    }));
+    schedulerRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [targetQueue.queueArn],
+      })
+    );
 
     const schedule = tasks.Schedule.rate(Duration.minutes(1));
 
@@ -65,16 +67,10 @@ describe('Create Schedule', () => {
         State: 'ENABLED',
         Target: {
           Arn: {
-            'Fn::GetAtt': [
-              'TargetQueue08AD2B3C',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['TargetQueue08AD2B3C', 'Arn'],
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'SchedulerRole59E73443',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['SchedulerRole59E73443', 'Arn'],
           },
         },
       },
@@ -124,10 +120,7 @@ describe('Create Schedule', () => {
             Action: 'iam:PassRole',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'SchedulerRole59E73443',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['SchedulerRole59E73443', 'Arn'],
             },
           },
         ],
@@ -151,10 +144,12 @@ describe('Create Schedule', () => {
     const targetQueue = new sqs.Queue(stack, 'TargetQueue');
     const deadLetterQueue = new sqs.Queue(stack, 'DeadLetterQueue');
 
-    schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [targetQueue.queueArn],
-    }));
+    schedulerRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [targetQueue.queueArn],
+      })
+    );
 
     const testDate = new Date();
     const testEndDate = new Date(testDate.getTime() + 1000 * 60 * 60);
@@ -217,10 +212,7 @@ describe('Create Schedule', () => {
           Ref: 'ScheduleGroup',
         },
         KmsKeyArn: {
-          'Fn::GetAtt': [
-            'Key961B73FD',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['Key961B73FD', 'Arn'],
         },
         Name: 'TestSchedule',
         ScheduleExpression: schedule.expressionString,
@@ -229,17 +221,11 @@ describe('Create Schedule', () => {
         State: 'ENABLED',
         Target: {
           Arn: {
-            'Fn::GetAtt': [
-              'TargetQueue08AD2B3C',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['TargetQueue08AD2B3C', 'Arn'],
           },
           DeadLetterConfig: {
             Arn: {
-              'Fn::GetAtt': [
-                'DeadLetterQueue9F481546',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'],
             },
           },
           RetryPolicy: {
@@ -247,10 +233,7 @@ describe('Create Schedule', () => {
             MaximumRetryAttempts: 2,
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'SchedulerRole59E73443',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['SchedulerRole59E73443', 'Arn'],
           },
         },
       },
@@ -305,10 +288,7 @@ describe('Create Schedule', () => {
             Action: 'iam:PassRole',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'SchedulerRole59E73443',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['SchedulerRole59E73443', 'Arn'],
             },
           },
         ],
@@ -327,20 +307,14 @@ describe('Create Schedule', () => {
             Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'TargetQueue08AD2B3C',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['TargetQueue08AD2B3C', 'Arn'],
             },
           },
           {
             Action: 'kms:Decrypt',
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['Key961B73FD', 'Arn'],
             },
           },
         ],
@@ -365,10 +339,12 @@ describe('Create Schedule', () => {
     tasks.Schedule.oneTime(new Date('2023-12-29T11:55:00Z')),
   ])('with schedule', (schedule) => {
     const targetQueue = new sqs.Queue(stack, 'TargetQueue');
-    schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [targetQueue.queueArn],
-    }));
+    schedulerRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [targetQueue.queueArn],
+      })
+    );
 
     const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
@@ -408,25 +384,17 @@ describe('Create Schedule', () => {
         State: 'ENABLED',
         Target: {
           Arn: {
-            'Fn::GetAtt': [
-              'TargetQueue08AD2B3C',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['TargetQueue08AD2B3C', 'Arn'],
           },
           RoleArn: {
-            'Fn::GetAtt': [
-              'SchedulerRole59E73443',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['SchedulerRole59E73443', 'Arn'],
           },
         },
       },
     });
   });
 
-  test.each([
-    '', 'a'.repeat(65),
-  ])('throw error for invalid clientToken length', (clientToken) => {
+  test.each(['', 'a'.repeat(65)])('throw error for invalid clientToken length', (clientToken) => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
@@ -451,7 +419,9 @@ describe('Create Schedule', () => {
         }),
         clientToken,
       });
-    }).toThrow(`ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${clientToken}`);
+    }).toThrow(
+      `ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${clientToken}`
+    );
   });
 
   test('throw error for invalid description', () => {
@@ -469,25 +439,24 @@ describe('Create Schedule', () => {
     }).toThrow(`Description must be less than 512 characters long. Got: ${invalidDescription.length}`);
   });
 
-  test.each([
-    Duration.minutes(0), Duration.minutes(1441), Duration.seconds(59), Duration.millis(999),
-  ])('throw error for invalid flexibleTimeWindow', (flexibleTimeWindow) => {
-    expect(() => {
-      new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
-        scheduleName: 'TestSchedule',
-        schedule: tasks.Schedule.rate(Duration.minutes(1)),
-        target: new tasks.EventBridgeSchedulerTarget({
-          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-          role: schedulerRole,
-        }),
-        flexibleTimeWindow,
-      });
-    }).toThrow('FlexibleTimeWindow must be between 1 and 1440 minutes');
-  });
+  test.each([Duration.minutes(0), Duration.minutes(1441), Duration.seconds(59), Duration.millis(999)])(
+    'throw error for invalid flexibleTimeWindow',
+    (flexibleTimeWindow) => {
+      expect(() => {
+        new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+          scheduleName: 'TestSchedule',
+          schedule: tasks.Schedule.rate(Duration.minutes(1)),
+          target: new tasks.EventBridgeSchedulerTarget({
+            arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+            role: schedulerRole,
+          }),
+          flexibleTimeWindow,
+        });
+      }).toThrow('FlexibleTimeWindow must be between 1 and 1440 minutes');
+    }
+  );
 
-  test.each([
-    '', 'a'.repeat(65),
-  ])('throw error for invalid groupName length', (groupName) => {
+  test.each(['', 'a'.repeat(65)])('throw error for invalid groupName length', (groupName) => {
     expect(() => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
@@ -512,7 +481,9 @@ describe('Create Schedule', () => {
         }),
         groupName,
       });
-    }).toThrow(`GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${groupName}`);
+    }).toThrow(
+      `GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${groupName}`
+    );
   });
 
   test.each(['', 'a'.repeat(51)])('throw error for invalid timezone length', (timezone) => {
@@ -544,7 +515,7 @@ describe('Create Schedule', () => {
         startDate: testDate,
         endDate: testEndDate,
       });
-    }).toThrow('\'startDate\' must be before \'endDate\'');
+    }).toThrow("'startDate' must be before 'endDate'");
   });
 
   describe('EventBridgeSchedulerTarget', () => {
@@ -561,21 +532,20 @@ describe('Create Schedule', () => {
       }).toThrow(`MaximumRetryAttempts must be an integer between 0 and 185, got ${maximumRetryAttempts}`);
     });
 
-    test.each([
-      Duration.millis(1),
-      Duration.seconds(59),
-      Duration.seconds(86401),
-    ])('throw error for invalid maximumEventAge %s', (maximumEventAge) => {
-      expect(() => {
-        new tasks.EventBridgeSchedulerTarget({
-          arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
-          role: schedulerRole,
-          retryPolicy: {
-            maximumRetryAttempts: 2,
-            maximumEventAge,
-          },
-        });
-      }).toThrow('MaximumEventAgeInSeconds must be between 60 and 86400 seconds');
-    });
+    test.each([Duration.millis(1), Duration.seconds(59), Duration.seconds(86401)])(
+      'throw error for invalid maximumEventAge %s',
+      (maximumEventAge) => {
+        expect(() => {
+          new tasks.EventBridgeSchedulerTarget({
+            arn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+            role: schedulerRole,
+            retryPolicy: {
+              maximumRetryAttempts: 2,
+              maximumEventAge,
+            },
+          });
+        }).toThrow('MaximumEventAgeInSeconds must be between 60 and 86400 seconds');
+      }
+    );
   });
 });

@@ -59,8 +59,7 @@ export class PlaybackKeyPair extends PlaybackKeyPairBase {
       physicalName:
         props.playbackKeyPairName ??
         Lazy.string({
-          produce: () =>
-            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
+          produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
         }),
     });
 

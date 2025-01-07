@@ -10,7 +10,7 @@ import * as nock from 'nock';
 import { handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
 import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
 import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/load-sdk';
-import 'aws-sdk-client-mock-jest' ;
+import 'aws-sdk-client-mock-jest';
 
 // This test performs an 'npm install' which may take longer than the default
 // 5s timeout
@@ -20,7 +20,7 @@ const mockExecSync = jest.fn();
 jest.mock('child_process', () => {
   return jest.fn().mockImplementation(() => {
     return {
-      ...(jest.requireActual('child_process')),
+      ...jest.requireActual('child_process'),
       execSync: mockExecSync,
     };
   });
@@ -43,9 +43,7 @@ const eventCommon = {
 };
 
 function createRequest(bodyPredicate: (body: AWSLambda.CloudFormationCustomResourceResponse) => boolean) {
-  return nock('https://localhost')
-    .put('/', bodyPredicate)
-    .reply(200);
+  return nock('https://localhost').put('/', bodyPredicate).reply(200);
 }
 
 const s3MockClient = mockClient(S3.S3Client);
@@ -112,10 +110,11 @@ test('create event with physical resource id path', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'second-key-etag' &&
-    body.Data!['Contents.0.Key'] === 'first-key',
+  const request = createRequest(
+    (body) =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'second-key-etag' &&
+      body.Data!['Contents.0.Key'] === 'first-key'
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -149,10 +148,7 @@ test('update event with physical resource id', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'key',
-  );
+  const request = createRequest((body) => body.Status === 'SUCCESS' && body.PhysicalResourceId === 'key');
 
   await handler(event, {} as AWSLambda.Context);
 
@@ -179,10 +175,11 @@ test('delete event', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'physicalResourceId' &&
-    Object.keys(body.Data!).length === 0,
+  const request = createRequest(
+    (body) =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'physicalResourceId' &&
+      Object.keys(body.Data!).length === 0
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -213,9 +210,8 @@ test('delete event with Delete call and no physical resource id in call', async 
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'physicalResourceId',
+  const request = createRequest(
+    (body) => body.Status === 'SUCCESS' && body.PhysicalResourceId === 'physicalResourceId'
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -248,10 +244,7 @@ test('create event with Delete call only', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'logicalResourceId',
-  );
+  const request = createRequest((body) => body.Status === 'SUCCESS' && body.PhysicalResourceId === 'logicalResourceId');
 
   await handler(event, {} as AWSLambda.Context);
 
@@ -283,10 +276,11 @@ test('catch errors - name property', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'physicalResourceId' &&
-    Object.keys(body.Data!).length === 0,
+  const request = createRequest(
+    (body) =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'physicalResourceId' &&
+      Object.keys(body.Data!).length === 0
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -320,10 +314,11 @@ test('catch errors - constructor name', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'physicalResourceId' &&
-    Object.keys(body.Data!).length === 0,
+  const request = createRequest(
+    (body) =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'physicalResourceId' &&
+      Object.keys(body.Data!).length === 0
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -362,11 +357,12 @@ test('restrict output path', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'id' &&
-    body.Data!['Contents.0.Key'] === 'first-key' &&
-    body.Data!['Contents.1.Key'] === undefined,
+  const request = createRequest(
+    (body) =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'id' &&
+      body.Data!['Contents.0.Key'] === 'first-key' &&
+      body.Data!['Contents.1.Key'] === undefined
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -405,13 +401,15 @@ test('restrict output paths', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.PhysicalResourceId === 'id' &&
-    JSON.stringify(body.Data) === JSON.stringify({
-      'Contents.0.Key': 'first-key',
-      'Contents.1.Key': 'second-key',
-    }),
+  const request = createRequest(
+    (body) =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'id' &&
+      JSON.stringify(body.Data) ===
+        JSON.stringify({
+          'Contents.0.Key': 'first-key',
+          'Contents.1.Key': 'second-key',
+        })
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -441,10 +439,8 @@ test('can specify apiVersion and region', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.Data!.apiVersion === '2010-03-31' &&
-    body.Data!.region === 'eu-west-1',
+  const request = createRequest(
+    (body) => body.Status === 'SUCCESS' && body.Data!.apiVersion === '2010-03-31' && body.Data!.region === 'eu-west-1'
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -473,7 +469,7 @@ test('logApiResponseData can be false', async () => {
     },
   };
 
-  const request = createRequest(body => body.Status === 'SUCCESS');
+  const request = createRequest((body) => body.Status === 'SUCCESS');
 
   await handler(event, {} as AWSLambda.Context);
 
@@ -513,9 +509,7 @@ test('installs the latest SDK', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS',
-  );
+  const request = createRequest((body) => body.Status === 'SUCCESS');
 
   // Reset to 'false' so that the next run will reinstall aws-sdk
   forceSdkInstallation();
@@ -554,9 +548,7 @@ test('falls back to installed sdk if installation fails', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS',
-  );
+  const request = createRequest((body) => body.Status === 'SUCCESS');
 
   // Reset to 'false' so that the next run will reinstall aws-sdk
   forceSdkInstallation();
@@ -576,76 +568,85 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
   credentialProviderMock.mockClear();
 
   // WHEN
-  await handler({
-    LogicalResourceId: 'logicalResourceId',
-    RequestId: 'requestId',
-    RequestType: 'Create',
-    ResponseURL: 'responseUrl',
-    ResourceProperties: {
-      Create: JSON.stringify({
-        service: '@aws-sdk/client-s3',
-        action: 'GetObjectCommand',
-        parameters: {
-          Bucket: 'foo',
-          Key: 'bar',
-        },
-        physicalResourceId: { id: 'id' },
-      }),
+  await handler(
+    {
+      LogicalResourceId: 'logicalResourceId',
+      RequestId: 'requestId',
+      RequestType: 'Create',
+      ResponseURL: 'responseUrl',
+      ResourceProperties: {
+        Create: JSON.stringify({
+          service: '@aws-sdk/client-s3',
+          action: 'GetObjectCommand',
+          parameters: {
+            Bucket: 'foo',
+            Key: 'bar',
+          },
+          physicalResourceId: { id: 'id' },
+        }),
+        ServiceToken: 'serviceToken',
+      },
+      ResourceType: 'resourceType',
       ServiceToken: 'serviceToken',
+      StackId: 'stackId',
     },
-    ResourceType: 'resourceType',
-    ServiceToken: 'serviceToken',
-    StackId: 'stackId',
-  }, {} as AWSLambda.Context);
+    {} as AWSLambda.Context
+  );
   expect(credentialProviderMock).not.toBeCalled();
   credentialProviderMock.mockClear();
 
-  await handler({
-    LogicalResourceId: 'logicalResourceId',
-    RequestId: 'requestId',
-    RequestType: 'Create',
-    ResponseURL: 'responseUrl',
-    ResourceProperties: {
-      Create: JSON.stringify({
-        service: '@aws-sdk/client-s3',
-        action: 'GetObjectCommand',
-        assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
-        parameters: {
-          Bucket: 'foo',
-          Key: 'bar',
-        },
-        physicalResourceId: { id: 'id' },
-      }),
+  await handler(
+    {
+      LogicalResourceId: 'logicalResourceId',
+      RequestId: 'requestId',
+      RequestType: 'Create',
+      ResponseURL: 'responseUrl',
+      ResourceProperties: {
+        Create: JSON.stringify({
+          service: '@aws-sdk/client-s3',
+          action: 'GetObjectCommand',
+          assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
+          parameters: {
+            Bucket: 'foo',
+            Key: 'bar',
+          },
+          physicalResourceId: { id: 'id' },
+        }),
+        ServiceToken: 'serviceToken',
+      },
+      ResourceType: 'resourceType',
       ServiceToken: 'serviceToken',
+      StackId: 'stackId',
     },
-    ResourceType: 'resourceType',
-    ServiceToken: 'serviceToken',
-    StackId: 'stackId',
-  }, {} as AWSLambda.Context);
+    {} as AWSLambda.Context
+  );
   expect(credentialProviderMock).toBeCalled();
   credentialProviderMock.mockClear();
 
-  await handler({
-    LogicalResourceId: 'logicalResourceId',
-    RequestId: 'requestId',
-    RequestType: 'Create',
-    ResponseURL: 'responseUrl',
-    ResourceProperties: {
-      Create: JSON.stringify({
-        service: '@aws-sdk/client-s3',
-        action: 'GetObjectCommand',
-        parameters: {
-          Bucket: 'foo',
-          Key: 'bar',
-        },
-        physicalResourceId: { id: 'id' },
-      }),
+  await handler(
+    {
+      LogicalResourceId: 'logicalResourceId',
+      RequestId: 'requestId',
+      RequestType: 'Create',
+      ResponseURL: 'responseUrl',
+      ResourceProperties: {
+        Create: JSON.stringify({
+          service: '@aws-sdk/client-s3',
+          action: 'GetObjectCommand',
+          parameters: {
+            Bucket: 'foo',
+            Key: 'bar',
+          },
+          physicalResourceId: { id: 'id' },
+        }),
+        ServiceToken: 'serviceToken',
+      },
+      ResourceType: 'resourceType',
       ServiceToken: 'serviceToken',
+      StackId: 'stackId',
     },
-    ResourceType: 'resourceType',
-    ServiceToken: 'serviceToken',
-    StackId: 'stackId',
-  }, {} as AWSLambda.Context);
+    {} as AWSLambda.Context
+  );
   expect(credentialProviderMock).not.toBeCalled();
 });
 
@@ -667,9 +668,7 @@ test('Being able to call the AWS SDK v2 format', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS',
-  );
+  const request = createRequest((body) => body.Status === 'SUCCESS');
 
   await handler(event, {} as AWSLambda.Context);
   const commandCalls = s3MockClient.commandCalls(S3.GetObjectCommand);
@@ -701,9 +700,10 @@ test('invalid v3 package name throws explicit error', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'FAILED' &&
-    body.Reason!.startsWith('Package @aws-sdk/client-thisisnotarealservice does not exist.'),
+  const request = createRequest(
+    (body) =>
+      body.Status === 'FAILED' &&
+      body.Reason!.startsWith('Package @aws-sdk/client-thisisnotarealservice does not exist.')
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -731,9 +731,10 @@ test('invalid v2 service name throws explicit error', async () => {
     },
   };
 
-  const request = createRequest(body =>
-    body.Status === 'FAILED' &&
-    body.Reason!.startsWith('Package @aws-sdk/client-thisisnotarealservice does not exist.'),
+  const request = createRequest(
+    (body) =>
+      body.Status === 'FAILED' &&
+      body.Reason!.startsWith('Package @aws-sdk/client-thisisnotarealservice does not exist.')
   );
 
   await handler(event, {} as AWSLambda.Context);
@@ -749,29 +750,28 @@ test('automatic Uint8Array conversion when necessary', async () => {
     EncryptionAlgorithm: 'SYMMETRIC_DEFAULT',
   });
 
-  await handler({
-    ...eventCommon,
-    RequestType: 'Create',
-    ResourceProperties: {
-      ServiceToken: 'token',
-      Create: JSON.stringify({
-        service: 'KMS',
-        action: 'encrypt',
-        parameters: {
-          KeyId: 'key-id',
-          Plaintext: 'dummy-data',
-        },
-      } satisfies AwsSdkCall),
+  await handler(
+    {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: JSON.stringify({
+          service: 'KMS',
+          action: 'encrypt',
+          parameters: {
+            KeyId: 'key-id',
+            Plaintext: 'dummy-data',
+          },
+        } satisfies AwsSdkCall),
+      },
     },
-  }, {} as AWSLambda.Context);
+    {} as AWSLambda.Context
+  );
 
   expect(kmsMock).toHaveReceivedCommandWith(EncryptCommand, {
     KeyId: 'key-id',
-    Plaintext: new Uint8Array([
-      100, 117, 109, 109,
-      121, 45, 100, 97,
-      116, 97,
-    ]),
+    Plaintext: new Uint8Array([100, 117, 109, 109, 121, 45, 100, 97, 116, 97]),
   });
 });
 
@@ -788,41 +788,44 @@ test('automatic Date conversion when necessary', async () => {
     ],
   });
 
-  await handler({
-    ...eventCommon,
-    RequestType: 'Create',
-    ResourceProperties: {
-      ServiceToken: 'token',
-      Create: JSON.stringify({
-        service: 'CloudWatch',
-        action: 'getMetricData',
-        parameters: {
-          MetricDataQueries: [
-            {
-              Id: 'id1',
-              MetricStat: {
-                Metric: {
-                  Namespace: 'AWS/SQS',
-                  MetricName: 'NumberOfMessagesReceived',
-                  Dimensions: [
-                    {
-                      Name: 'QueueName',
-                      Value: 'my-queue',
-                    },
-                  ],
+  await handler(
+    {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: JSON.stringify({
+          service: 'CloudWatch',
+          action: 'getMetricData',
+          parameters: {
+            MetricDataQueries: [
+              {
+                Id: 'id1',
+                MetricStat: {
+                  Metric: {
+                    Namespace: 'AWS/SQS',
+                    MetricName: 'NumberOfMessagesReceived',
+                    Dimensions: [
+                      {
+                        Name: 'QueueName',
+                        Value: 'my-queue',
+                      },
+                    ],
+                  },
+                  Period: 60,
+                  Stat: 'Sum',
                 },
-                Period: 60,
-                Stat: 'Sum',
+                ReturnData: true,
               },
-              ReturnData: true,
-            },
-          ],
-          StartTime: new Date('2023-01-01'),
-          EndTime: new Date('2023-01-02'),
-        },
-      } satisfies AwsSdkCall),
+            ],
+            StartTime: new Date('2023-01-01'),
+            EndTime: new Date('2023-01-02'),
+          },
+        } satisfies AwsSdkCall),
+      },
     },
-  }, {} as AWSLambda.Context);
+    {} as AWSLambda.Context
+  );
 
   expect(cwMock).toHaveReceivedCommandWith(GetMetricDataCommand, {
     MetricDataQueries: [

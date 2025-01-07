@@ -81,8 +81,7 @@ class LambdaFunctionProvider extends Construct {
         },
         ManagedPolicyArns: [
           {
-            'Fn::Sub':
-              'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
           },
         ],
         Policies: Lazy.any({

@@ -1,14 +1,7 @@
 import { Construct } from 'constructs';
 import * as events from '../../../aws-events';
 import { ResourceEnvironment, Stack, Token, TokenComparison } from '../../../core';
-import {
-  ActionBindOptions,
-  ActionConfig,
-  ActionProperties,
-  IAction,
-  IPipeline,
-  IStage,
-} from '../action';
+import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, IStage } from '../action';
 
 /**
  * Helper routines to work with Actions
@@ -37,11 +30,7 @@ export class RichAction implements IAction {
     return this.action.bind(scope, stage, options);
   }
 
-  public onStateChange(
-    name: string,
-    target?: events.IRuleTarget,
-    options?: events.RuleProps
-  ): events.Rule {
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
     return this.action.onStateChange(name, target, options);
   }
 
@@ -50,10 +39,7 @@ export class RichAction implements IAction {
   }
 
   public get isCrossAccount(): boolean {
-    return !actionDimensionSameAsPipelineDimension(
-      this.effectiveAccount,
-      this.pipeline.env.account
-    );
+    return !actionDimensionSameAsPipelineDimension(this.effectiveAccount, this.pipeline.env.account);
   }
 
   /**
@@ -99,10 +85,7 @@ export class RichAction implements IAction {
   }
 }
 
-function actionDimensionSameAsPipelineDimension(
-  actionDim: string | undefined,
-  pipelineDim: string
-) {
+function actionDimensionSameAsPipelineDimension(actionDim: string | undefined, pipelineDim: string) {
   // if the action's dimension is `undefined`,
   // it means it is in the same region/account as the pipeline
   if (!actionDim) {
@@ -133,7 +116,5 @@ function sameEnv(env1: ResourceEnvironment, env2: ResourceEnvironment) {
  * are unresolved (in which case both are expted to be "current region" or "current account").
  */
 function sameEnvDimension(dim1: string, dim2: string) {
-  return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(
-    Token.compareStrings(dim1, dim2)
-  );
+  return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));
 }

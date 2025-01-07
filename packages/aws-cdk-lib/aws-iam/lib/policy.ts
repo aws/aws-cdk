@@ -3,12 +3,7 @@ import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import {
-  AddToPrincipalPolicyResult,
-  IGrantable,
-  IPrincipal,
-  PrincipalPolicyFragment,
-} from './principals';
+import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
@@ -248,23 +243,17 @@ export class Policy extends Resource implements IPolicy, IGrantable {
     // validate that the policy document is not empty
     if (this.document.isEmpty) {
       if (this.force) {
-        result.push(
-          'Policy created with force=true is empty. You must add statements to the policy'
-        );
+        result.push('Policy created with force=true is empty. You must add statements to the policy');
       }
       if (!this.force && this.referenceTaken) {
-        result.push(
-          'This Policy has been referenced by a resource, so it must contain at least one statement.'
-        );
+        result.push('This Policy has been referenced by a resource, so it must contain at least one statement.');
       }
     }
 
     // validate that the policy is attached to at least one principal (role, user or group).
     if (!this.isAttached) {
       if (this.force) {
-        result.push(
-          'Policy created with force=true must be attached to at least one principal: user, group or role'
-        );
+        result.push('Policy created with force=true must be attached to at least one principal: user, group or role');
       }
       if (!this.force && this.referenceTaken) {
         result.push(

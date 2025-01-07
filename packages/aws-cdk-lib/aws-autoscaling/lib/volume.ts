@@ -142,10 +142,7 @@ export class BlockDeviceVolume {
    * @param snapshotId The snapshot ID of the volume to use
    * @param options additional device options
    */
-  public static ebsFromSnapshot(
-    snapshotId: string,
-    options: EbsDeviceSnapshotOptions = {}
-  ): BlockDeviceVolume {
+  public static ebsFromSnapshot(snapshotId: string, options: EbsDeviceSnapshotOptions = {}): BlockDeviceVolume {
     return new this({ ...options, snapshotId });
   }
 

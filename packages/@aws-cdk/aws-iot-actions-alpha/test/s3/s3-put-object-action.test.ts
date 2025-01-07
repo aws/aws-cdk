@@ -14,9 +14,7 @@ test('Default s3 action', () => {
   const bucket = s3.Bucket.fromBucketArn(stack, 'MyBucket', 'arn:aws:s3::123456789012:test-bucket');
 
   // WHEN
-  topicRule.addAction(
-    new actions.S3PutObjectAction(bucket),
-  );
+  topicRule.addAction(new actions.S3PutObjectAction(bucket));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -62,9 +60,7 @@ test('Default s3 action', () => {
       Version: '2012-10-17',
     },
     PolicyName: 'MyTopicRuleTopicRuleActionRoleDefaultPolicy54A701F7',
-    Roles: [
-      { Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' },
-    ],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
@@ -80,15 +76,13 @@ test('can set key of bucket', () => {
   topicRule.addAction(
     new actions.S3PutObjectAction(bucket, {
       key: 'test-key',
-    }),
+    })
   );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ S3: { Key: 'test-key' } }),
-      ],
+      Actions: [Match.objectLike({ S3: { Key: 'test-key' } })],
     },
   });
 });
@@ -105,15 +99,13 @@ test('can set canned ACL and it convert to kebab case', () => {
   topicRule.addAction(
     new actions.S3PutObjectAction(bucket, {
       accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
-    }),
+    })
   );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ S3: { CannedAcl: 'bucket-owner-full-control' } }),
-      ],
+      Actions: [Match.objectLike({ S3: { CannedAcl: 'bucket-owner-full-control' } })],
     },
   });
 });
@@ -128,16 +120,12 @@ test('can set role', () => {
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
-  topicRule.addAction(
-    new actions.S3PutObjectAction(bucket, { role }),
-  );
+  topicRule.addAction(new actions.S3PutObjectAction(bucket, { role }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        Match.objectLike({ S3: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
-      ],
+      Actions: [Match.objectLike({ S3: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } })],
     },
   });
 

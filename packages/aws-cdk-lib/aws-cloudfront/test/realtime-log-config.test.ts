@@ -25,28 +25,25 @@ describe('RealtimeLogConfig', () => {
 
   test('realtime config setup', () => {
     new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-      endPoints: [
-        Endpoint.fromKinesisStream(stream, role),
-      ],
-      fields: [
-        'timestamp',
-        'c-ip',
-      ],
+      endPoints: [Endpoint.fromKinesisStream(stream, role)],
+      fields: ['timestamp', 'c-ip'],
       realtimeLogConfigName: 'realtime-log-collector',
       samplingRate: 1,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::RealtimeLogConfig', {
-      EndPoints: [{
-        KinesisStreamConfig: {
-          RoleArn: {
-            'Fn::GetAtt': ['myrole97476C1B', 'Arn'],
-          },
-          StreamArn: {
-            'Fn::GetAtt': ['stream19075594', 'Arn'],
+      EndPoints: [
+        {
+          KinesisStreamConfig: {
+            RoleArn: {
+              'Fn::GetAtt': ['myrole97476C1B', 'Arn'],
+            },
+            StreamArn: {
+              'Fn::GetAtt': ['stream19075594', 'Arn'],
+            },
           },
         },
-      }],
+      ],
       Fields: ['timestamp', 'c-ip'],
       Name: 'realtime-log-collector',
       SamplingRate: 1,
@@ -57,13 +54,8 @@ describe('RealtimeLogConfig', () => {
     const errorMessage = 'Sampling rate must be between 1 and 100 (inclusive), received 111';
     expect(() => {
       new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-        endPoints: [
-          Endpoint.fromKinesisStream(stream, role),
-        ],
-        fields: [
-          'timestamp',
-          'c-ip',
-        ],
+        endPoints: [Endpoint.fromKinesisStream(stream, role)],
+        fields: ['timestamp', 'c-ip'],
         realtimeLogConfigName: 'realtime-log-collector',
         samplingRate: 111,
       });
@@ -74,13 +66,8 @@ describe('RealtimeLogConfig', () => {
     const errorMessage = 'Sampling rate must be between 1 and 100 (inclusive), received 0';
     expect(() => {
       new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-        endPoints: [
-          Endpoint.fromKinesisStream(stream, role),
-        ],
-        fields: [
-          'timestamp',
-          'c-ip',
-        ],
+        endPoints: [Endpoint.fromKinesisStream(stream, role)],
+        fields: ['timestamp', 'c-ip'],
         realtimeLogConfigName: 'realtime-log-collector',
         samplingRate: 0,
       });
@@ -89,27 +76,24 @@ describe('RealtimeLogConfig', () => {
 
   test('realtime config setup - generate unique id', () => {
     new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-      endPoints: [
-        Endpoint.fromKinesisStream(stream, role),
-      ],
-      fields: [
-        'timestamp',
-        'c-ip',
-      ],
+      endPoints: [Endpoint.fromKinesisStream(stream, role)],
+      fields: ['timestamp', 'c-ip'],
       samplingRate: 1,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::RealtimeLogConfig', {
-      EndPoints: [{
-        KinesisStreamConfig: {
-          RoleArn: {
-            'Fn::GetAtt': ['myrole97476C1B', 'Arn'],
-          },
-          StreamArn: {
-            'Fn::GetAtt': ['stream19075594', 'Arn'],
+      EndPoints: [
+        {
+          KinesisStreamConfig: {
+            RoleArn: {
+              'Fn::GetAtt': ['myrole97476C1B', 'Arn'],
+            },
+            StreamArn: {
+              'Fn::GetAtt': ['stream19075594', 'Arn'],
+            },
           },
         },
-      }],
+      ],
       Fields: ['timestamp', 'c-ip'],
       Name: 'StackMyRealtimeLogConfig4A2E70EF',
       SamplingRate: 1,
@@ -118,27 +102,24 @@ describe('RealtimeLogConfig', () => {
 
   test('realtime config setup default role', () => {
     new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-      endPoints: [
-        Endpoint.fromKinesisStream(stream),
-      ],
-      fields: [
-        'timestamp',
-        'c-ip',
-      ],
+      endPoints: [Endpoint.fromKinesisStream(stream)],
+      fields: ['timestamp', 'c-ip'],
       samplingRate: 1,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::RealtimeLogConfig', {
-      EndPoints: [{
-        KinesisStreamConfig: {
-          RoleArn: {
-            'Fn::GetAtt': ['MyRealtimeLogConfigRealtimeLogKinesisRole3AD572A6', 'Arn'],
-          },
-          StreamArn: {
-            'Fn::GetAtt': ['stream19075594', 'Arn'],
+      EndPoints: [
+        {
+          KinesisStreamConfig: {
+            RoleArn: {
+              'Fn::GetAtt': ['MyRealtimeLogConfigRealtimeLogKinesisRole3AD572A6', 'Arn'],
+            },
+            StreamArn: {
+              'Fn::GetAtt': ['stream19075594', 'Arn'],
+            },
           },
         },
-      }],
+      ],
       Fields: ['timestamp', 'c-ip'],
       Name: 'StackMyRealtimeLogConfig4A2E70EF',
       SamplingRate: 1,
@@ -149,37 +130,34 @@ describe('RealtimeLogConfig', () => {
     const secondStream = new kinesis.Stream(stack, 'stream2');
 
     new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-      endPoints: [
-        Endpoint.fromKinesisStream(stream),
-        Endpoint.fromKinesisStream(secondStream),
-      ],
-      fields: [
-        'timestamp',
-        'c-ip',
-      ],
+      endPoints: [Endpoint.fromKinesisStream(stream), Endpoint.fromKinesisStream(secondStream)],
+      fields: ['timestamp', 'c-ip'],
       samplingRate: 1,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::RealtimeLogConfig', {
-      EndPoints: [{
-        KinesisStreamConfig: {
-          RoleArn: {
-            'Fn::GetAtt': ['MyRealtimeLogConfigRealtimeLogKinesisRole3AD572A6', 'Arn'],
-          },
-          StreamArn: {
-            'Fn::GetAtt': ['stream19075594', 'Arn'],
-          },
-        },
-      }, {
-        KinesisStreamConfig: {
-          RoleArn: {
-            'Fn::GetAtt': ['MyRealtimeLogConfigRealtimeLogKinesisRole3AD572A6', 'Arn'],
-          },
-          StreamArn: {
-            'Fn::GetAtt': ['stream25EB1FBCF', 'Arn'],
+      EndPoints: [
+        {
+          KinesisStreamConfig: {
+            RoleArn: {
+              'Fn::GetAtt': ['MyRealtimeLogConfigRealtimeLogKinesisRole3AD572A6', 'Arn'],
+            },
+            StreamArn: {
+              'Fn::GetAtt': ['stream19075594', 'Arn'],
+            },
           },
         },
-      }],
+        {
+          KinesisStreamConfig: {
+            RoleArn: {
+              'Fn::GetAtt': ['MyRealtimeLogConfigRealtimeLogKinesisRole3AD572A6', 'Arn'],
+            },
+            StreamArn: {
+              'Fn::GetAtt': ['stream25EB1FBCF', 'Arn'],
+            },
+          },
+        },
+      ],
       Fields: ['timestamp', 'c-ip'],
       Name: 'StackMyRealtimeLogConfig4A2E70EF',
       SamplingRate: 1,
@@ -190,37 +168,33 @@ describe('RealtimeLogConfig', () => {
     const secondStream = new kinesis.Stream(stack, 'stream2');
 
     new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-      endPoints: [
-        Endpoint.fromKinesisStream(stream),
-        Endpoint.fromKinesisStream(secondStream),
-      ],
-      fields: [
-        'timestamp',
-        'c-ip',
-      ],
+      endPoints: [Endpoint.fromKinesisStream(stream), Endpoint.fromKinesisStream(secondStream)],
+      fields: ['timestamp', 'c-ip'],
       samplingRate: 1,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: [
-            'kinesis:DescribeStreamSummary',
-            'kinesis:DescribeStream',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
-          Resource: { 'Fn::GetAtt': ['stream19075594', 'Arn'] },
-        },
-        {
-          Action: [
-            'kinesis:DescribeStreamSummary',
-            'kinesis:DescribeStream',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
-          Resource: { 'Fn::GetAtt': ['stream25EB1FBCF', 'Arn'] },
-        }],
+        Statement: [
+          {
+            Action: [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:DescribeStream',
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ],
+            Resource: { 'Fn::GetAtt': ['stream19075594', 'Arn'] },
+          },
+          {
+            Action: [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:DescribeStream',
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ],
+            Resource: { 'Fn::GetAtt': ['stream25EB1FBCF', 'Arn'] },
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -242,46 +216,45 @@ describe('RealtimeLogConfig', () => {
         Endpoint.fromKinesisStream(secondStream),
         Endpoint.fromKinesisStream(thirdStream),
       ],
-      fields: [
-        'timestamp',
-        'c-ip',
-      ],
+      fields: ['timestamp', 'c-ip'],
       samplingRate: 1,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: [
-            'kinesis:DescribeStreamSummary',
-            'kinesis:DescribeStream',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
-          Resource: { 'Fn::GetAtt': ['stream19075594', 'Arn'] },
-        },
-        {
-          Action: [
-            'kinesis:DescribeStreamSummary',
-            'kinesis:DescribeStream',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
-          Resource: { 'Fn::GetAtt': ['stream25EB1FBCF', 'Arn'] },
-        },
-        {
-          Action: 'kms:GenerateDataKey',
-          Resource: { 'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'] },
-        },
-        {
-          Action: [
-            'kinesis:DescribeStreamSummary',
-            'kinesis:DescribeStream',
-            'kinesis:PutRecord',
-            'kinesis:PutRecords',
-          ],
-          Resource: { 'Fn::GetAtt': ['stream358FA433A', 'Arn'] },
-        }],
+        Statement: [
+          {
+            Action: [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:DescribeStream',
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ],
+            Resource: { 'Fn::GetAtt': ['stream19075594', 'Arn'] },
+          },
+          {
+            Action: [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:DescribeStream',
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ],
+            Resource: { 'Fn::GetAtt': ['stream25EB1FBCF', 'Arn'] },
+          },
+          {
+            Action: 'kms:GenerateDataKey',
+            Resource: { 'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'] },
+          },
+          {
+            Action: [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:DescribeStream',
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ],
+            Resource: { 'Fn::GetAtt': ['stream358FA433A', 'Arn'] },
+          },
+        ],
         Version: '2012-10-17',
       },
     });
@@ -293,14 +266,8 @@ describe('RealtimeLogConfig', () => {
     });
 
     new RealtimeLogConfig(stack, 'MyRealtimeLogConfig', {
-      endPoints: [
-        Endpoint.fromKinesisStream(stream),
-        Endpoint.fromKinesisStream(secondStream, role),
-      ],
-      fields: [
-        'timestamp',
-        'c-ip',
-      ],
+      endPoints: [Endpoint.fromKinesisStream(stream), Endpoint.fromKinesisStream(secondStream, role)],
+      fields: ['timestamp', 'c-ip'],
       samplingRate: 1,
     });
 

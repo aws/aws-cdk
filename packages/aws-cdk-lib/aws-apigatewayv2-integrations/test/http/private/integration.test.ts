@@ -1,4 +1,10 @@
-import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, HttpRouteKey } from '../../../../aws-apigatewayv2';
+import {
+  HttpApi,
+  HttpRoute,
+  HttpRouteIntegrationBindOptions,
+  HttpRouteIntegrationConfig,
+  HttpRouteKey,
+} from '../../../../aws-apigatewayv2';
 import { Stack } from '../../../../core';
 import { HttpPrivateIntegration } from './../../../lib/http/private/integration';
 
@@ -27,10 +33,13 @@ describe('HttpPrivateIntegration', () => {
 
     // WHEN
     const api = new HttpApi(stack, 'HttpApi');
-    expect(() => new HttpRoute(stack, 'HttpProxyPrivateRoute', {
-      httpApi: api,
-      integration: new DummyPrivateIntegration(),
-      routeKey: HttpRouteKey.with('/pets'),
-    })).toThrow(/One of vpcLink or vpc should be provided for private integration/);
+    expect(
+      () =>
+        new HttpRoute(stack, 'HttpProxyPrivateRoute', {
+          httpApi: api,
+          integration: new DummyPrivateIntegration(),
+          routeKey: HttpRouteKey.with('/pets'),
+        })
+    ).toThrow(/One of vpcLink or vpc should be provided for private integration/);
   });
 });

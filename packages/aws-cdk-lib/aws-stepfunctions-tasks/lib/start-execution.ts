@@ -51,8 +51,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     private readonly stateMachine: sfn.IStateMachine,
     private readonly props: StartExecutionProps = {}
   ) {
-    this.integrationPattern =
-      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -70,9 +69,7 @@ export class StartExecution implements sfn.IStepFunctionsTask {
       this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN &&
       !sfn.FieldUtils.containsTaskToken(props.input)
     ) {
-      throw new Error(
-        'Task Token is missing in input (pass JsonPath.taskToken somewhere in input)'
-      );
+      throw new Error('Task Token is missing in input (pass JsonPath.taskToken somewhere in input)');
     }
   }
 

@@ -116,9 +116,7 @@ export class PlacementConstraint {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html
    */
   public static memberOf(...expressions: string[]) {
-    return new PlacementConstraint(
-      expressions.map((expression) => ({ type: 'memberOf', expression }))
-    );
+    return new PlacementConstraint(expressions.map((expression) => ({ type: 'memberOf', expression })));
   }
 
   /**

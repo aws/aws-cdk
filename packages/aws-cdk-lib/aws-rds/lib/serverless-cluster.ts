@@ -4,17 +4,8 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import {
-  applyDefaultRotationOptions,
-  defaultDeletionProtection,
-  renderCredentials,
-} from './private/util';
-import {
-  Credentials,
-  RotationMultiUserOptions,
-  RotationSingleUserOptions,
-  SnapshotCredentials,
-} from './props';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
+import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
@@ -39,10 +30,7 @@ import * as cxapi from '../../cx-api';
  * Interface representing a serverless database cluster.
  *
  */
-export interface IServerlessCluster
-  extends IResource,
-    ec2.IConnectable,
-    secretsmanager.ISecretAttachmentTarget {
+export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Identifier of the cluster
    */
@@ -448,9 +436,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
 
       // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
       if (subnetIds.length < 2) {
-        Annotations.of(this).addError(
-          `Cluster requires at least 2 subnets, got ${subnetIds.length}`
-        );
+        Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
       }
 
       subnetGroup =
@@ -459,8 +445,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
           description: `Subnets for ${id} database`,
           vpc: props.vpc,
           vpcSubnets: props.vpcSubnets,
-          removalPolicy:
-            props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+          removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
         });
 
       this.securityGroups = props.securityGroups ?? [
@@ -474,9 +459,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     if (props.backupRetention) {
       const backupRetentionDays = props.backupRetention.toDays();
       if (backupRetentionDays < 1 || backupRetentionDays > 35) {
-        throw new Error(
-          `backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`
-        );
+        throw new Error(`backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`);
       }
     }
 
@@ -502,9 +485,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
       enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
-      scalingConfiguration: props.scaling
-        ? this.renderScalingConfiguration(props.scaling)
-        : undefined,
+      scalingConfiguration: props.scaling ? this.renderScalingConfiguration(props.scaling) : undefined,
       storageEncrypted: true,
       vpcSecurityGroupIds: this.securityGroups.map((sg) => sg.securityGroupId),
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
@@ -516,9 +497,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     });
   }
 
-  private renderScalingConfiguration(
-    options: ServerlessScalingOptions
-  ): CfnDBCluster.ScalingConfigurationProperty {
+  private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
     const minCapacity = options.minCapacity;
     const maxCapacity = options.maxCapacity;
     const timeout = options.timeout?.toSeconds();
@@ -634,9 +613,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
   /**
    * Adds the single user rotation of the master password to this cluster.
    */
-  public addRotationSingleUser(
-    options: RotationSingleUserOptions = {}
-  ): secretsmanager.SecretRotation {
+  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
@@ -663,10 +640,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
   /**
    * Adds the multi user rotation to this cluster.
    */
-  public addRotationMultiUser(
-    id: string,
-    options: RotationMultiUserOptions
-  ): secretsmanager.SecretRotation {
+  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
@@ -714,20 +688,14 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
     this.secret = attrs.secret;
 
     this._clusterEndpoint =
-      attrs.clusterEndpointAddress && attrs.port
-        ? new Endpoint(attrs.clusterEndpointAddress, attrs.port)
-        : undefined;
+      attrs.clusterEndpointAddress && attrs.port ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint =
-      attrs.readerEndpointAddress && attrs.port
-        ? new Endpoint(attrs.readerEndpointAddress, attrs.port)
-        : undefined;
+      attrs.readerEndpointAddress && attrs.port ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
   }
 
   public get clusterEndpoint() {
     if (!this._clusterEndpoint) {
-      throw new Error(
-        'Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port'
-      );
+      throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
     }
     return this._clusterEndpoint;
   }
@@ -784,9 +752,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
     let secret = credentials?.secret;
     if (!secret && credentials?.generatePassword) {
       if (!credentials.username) {
-        throw new Error(
-          '`credentials` `username` must be specified when `generatePassword` is set to true'
-        );
+        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
@@ -802,8 +768,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
       masterUserPassword:
-        secret?.secretValueFromJson('password')?.unsafeUnwrap() ??
-        credentials?.password?.unsafeUnwrap(), // Safe usage
+        secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;

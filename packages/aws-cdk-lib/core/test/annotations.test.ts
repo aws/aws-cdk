@@ -24,7 +24,8 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
+        message:
+          'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
     ]);
   });
@@ -51,15 +52,18 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack1/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
+        message:
+          'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
       {
         path: '/MyStack1/World',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
+        message:
+          'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
       {
         path: '/MyStack2/FooBar',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
+        message:
+          'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release [ack: Deprecated:@aws-cdk/core.Construct.node]',
       },
     ]);
   });
@@ -72,7 +76,9 @@ describe('annotations', () => {
 
     // THEN
     process.env.CDK_BLOCK_DEPRECATIONS = '1';
-    expect(() => Annotations.of(c1).addDeprecation('foo', 'bar')).toThrow(/MyStack\/Hello: The API foo is deprecated: bar\. This API will be removed in the next major release/);
+    expect(() => Annotations.of(c1).addDeprecation('foo', 'bar')).toThrow(
+      /MyStack\/Hello: The API foo is deprecated: bar\. This API will be removed in the next major release/
+    );
   });
 
   test('addMessage deduplicates the message on the node level', () => {

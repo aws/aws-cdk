@@ -7,11 +7,21 @@ describe('geo location', () => {
 
   test('invalid country', () => {
     const error = /Invalid country format for country: .*/;
-    expect(() => { route53.GeoLocation.country('de'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.country('us'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.country('a'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.country('abc'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.country('01'); }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.country('de');
+    }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.country('us');
+    }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.country('a');
+    }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.country('abc');
+    }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.country('01');
+    }).toThrow(error);
   });
 
   test('valid country', () => {
@@ -21,15 +31,25 @@ describe('geo location', () => {
 
   test('invalid subdivision', () => {
     const error = /Invalid subdivision format for subdivision: .*/;
-    expect(() => { route53.GeoLocation.subdivision('aa'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.subdivision('ABCD'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.subdivision('abc'); }).toThrow(error);
-    expect(() => { route53.GeoLocation.subdivision('1234'); }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.subdivision('aa');
+    }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.subdivision('ABCD');
+    }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.subdivision('abc');
+    }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.subdivision('1234');
+    }).toThrow(error);
   });
 
   test('invalid country for subdivision', () => {
     const error = /Invalid country for subdivisions geolocation: .*/;
-    expect(() => { route53.GeoLocation.subdivision('DE', 'DE'); }).toThrow(error);
+    expect(() => {
+      route53.GeoLocation.subdivision('DE', 'DE');
+    }).toThrow(error);
   });
 
   test('valid subdivision', () => {

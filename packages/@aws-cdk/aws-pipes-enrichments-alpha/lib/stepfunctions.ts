@@ -1,9 +1,4 @@
-import {
-  EnrichmentParametersConfig,
-  IEnrichment,
-  IPipe,
-  InputTransformation,
-} from '@aws-cdk/aws-pipes-alpha';
+import { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IStateMachine, StateMachine, StateMachineType } from 'aws-cdk-lib/aws-stepfunctions';
 
@@ -30,10 +25,7 @@ export class StepFunctionsEnrichment implements IEnrichment {
     private readonly stateMachine: IStateMachine,
     props?: StepFunctionsEnrichmentProps
   ) {
-    if (
-      stateMachine instanceof StateMachine &&
-      stateMachine.stateMachineType !== StateMachineType.EXPRESS
-    ) {
+    if (stateMachine instanceof StateMachine && stateMachine.stateMachineType !== StateMachineType.EXPRESS) {
       throw new Error(
         `EventBridge pipes only support EXPRESS workflows as enrichment, got ${stateMachine.stateMachineType}`
       );

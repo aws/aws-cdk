@@ -7,15 +7,20 @@ test('complex placeholder substitution', async () => {
     partition: () => Promise.resolve('current_partition'),
   };
 
-  expect(await EnvironmentPlaceholders.replaceAsync({
-    destinations: {
-      theDestination: {
-        assumeRoleArn: 'arn:${AWS::Partition}:role-${AWS::AccountId}',
-        bucketName: 'some_bucket-${AWS::AccountId}-${AWS::Region}',
-        objectKey: 'some_key-${AWS::AccountId}-${AWS::Region}',
+  expect(
+    await EnvironmentPlaceholders.replaceAsync(
+      {
+        destinations: {
+          theDestination: {
+            assumeRoleArn: 'arn:${AWS::Partition}:role-${AWS::AccountId}',
+            bucketName: 'some_bucket-${AWS::AccountId}-${AWS::Region}',
+            objectKey: 'some_key-${AWS::AccountId}-${AWS::Region}',
+          },
+        },
       },
-    },
-  }, replacer)).toEqual({
+      replacer
+    )
+  ).toEqual({
     destinations: {
       theDestination: {
         assumeRoleArn: 'arn:current_partition:role-current_account',
@@ -33,15 +38,20 @@ test('sync placeholder substitution', () => {
     partition: 'current_partition',
   };
 
-  expect(EnvironmentPlaceholders.replace({
-    destinations: {
-      theDestination: {
-        assumeRoleArn: 'arn:${AWS::Partition}:role-${AWS::AccountId}',
-        bucketName: 'some_bucket-${AWS::AccountId}-${AWS::Region}',
-        objectKey: 'some_key-${AWS::AccountId}-${AWS::Region}',
+  expect(
+    EnvironmentPlaceholders.replace(
+      {
+        destinations: {
+          theDestination: {
+            assumeRoleArn: 'arn:${AWS::Partition}:role-${AWS::AccountId}',
+            bucketName: 'some_bucket-${AWS::AccountId}-${AWS::Region}',
+            objectKey: 'some_key-${AWS::AccountId}-${AWS::Region}',
+          },
+        },
       },
-    },
-  }, replacer)).toEqual({
+      replacer
+    )
+  ).toEqual({
     destinations: {
       theDestination: {
         assumeRoleArn: 'arn:current_partition:role-current_account',
@@ -50,5 +60,4 @@ test('sync placeholder substitution', () => {
       },
     },
   });
-
 });

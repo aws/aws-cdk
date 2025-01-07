@@ -1,9 +1,14 @@
 /* eslint-disable no-console */
-import { ECSClient, UpdateServiceCommand, UpdateServiceCommandInput, ServiceNotFoundException } from '@aws-sdk/client-ecs';
+import {
+  ECSClient,
+  UpdateServiceCommand,
+  UpdateServiceCommandInput,
+  ServiceNotFoundException,
+} from '@aws-sdk/client-ecs';
 import { PutRecordsCommand, KinesisClient } from '@aws-sdk/client-kinesis';
 import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';
 import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest' ;
+import 'aws-sdk-client-mock-jest';
 import { handler } from '../../../lib/aws-events-targets/aws-api-handler';
 
 console.log = jest.fn();
@@ -45,17 +50,23 @@ test('calls the SDK with the right parameters', async () => {
 });
 
 test('throws and logs in case of error', async () => {
-  ecsMock.on(UpdateServiceCommand).rejects(new ServiceNotFoundException({
-    $metadata: {},
-    message: 'error',
-  }));
-  await expect(handler(event)).rejects.toThrow(expect.objectContaining({
-    name: 'ServiceNotFoundException',
-  }));
+  ecsMock.on(UpdateServiceCommand).rejects(
+    new ServiceNotFoundException({
+      $metadata: {},
+      message: 'error',
+    })
+  );
+  await expect(handler(event)).rejects.toThrow(
+    expect.objectContaining({
+      name: 'ServiceNotFoundException',
+    })
+  );
 
-  expect(console.log).toHaveBeenLastCalledWith(expect.objectContaining({
-    name: 'ServiceNotFoundException',
-  }));
+  expect(console.log).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      name: 'ServiceNotFoundException',
+    })
+  );
 });
 
 test('catches and logs error', async () => {
@@ -64,16 +75,20 @@ test('catches and logs error', async () => {
     catchErrorPattern: 'ServiceNotFoundException',
   };
 
-  ecsMock.on(UpdateServiceCommand).rejects(new ServiceNotFoundException({
-    $metadata: {},
-    message: 'error',
-  }));
+  ecsMock.on(UpdateServiceCommand).rejects(
+    new ServiceNotFoundException({
+      $metadata: {},
+      message: 'error',
+    })
+  );
 
   await handler(catchEvent);
 
-  expect(console.log).toHaveBeenLastCalledWith(expect.objectContaining({
-    name: 'ServiceNotFoundException',
-  }));
+  expect(console.log).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      name: 'ServiceNotFoundException',
+    })
+  );
 });
 
 test('can convert string parameters to Uint8Array when needed', async () => {
@@ -94,11 +109,7 @@ test('can convert string parameters to Uint8Array when needed', async () => {
 
   expect(kmsMock).toHaveReceivedCommandWith(EncryptCommand, {
     KeyId: 'key-id',
-    Plaintext: new Uint8Array([
-      100, 117, 109, 109,
-      121, 45, 100, 97,
-      116, 97,
-    ]),
+    Plaintext: new Uint8Array([100, 117, 109, 109, 121, 45, 100, 97, 116, 97]),
   });
 });
 
