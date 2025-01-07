@@ -36,7 +36,7 @@ export interface ICluster extends core.IResource, ec2.IConnectable {
 /**
  * A new or imported MSK Cluster.
  */
-abstract class ClusterBase extends core.Resource implements ICluster {
+export abstract class ClusterBase extends core.Resource implements ICluster {
   public abstract readonly clusterArn: string;
   public abstract readonly clusterName: string;
   /** @internal */
