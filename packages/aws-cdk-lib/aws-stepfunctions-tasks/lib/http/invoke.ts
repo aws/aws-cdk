@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { integrationResourceArn } from '../private/task-utils';
+import { integrationResourceArn, isJsonataExpression } from '../private/task-utils';
 
 /**
  * The style used when applying URL encoding to array values.
@@ -118,17 +118,17 @@ interface HttpInvokeOptions {
 /**
  * Properties for calling an external HTTP endpoint with HttpInvoke using JSONPath.
  */
-export interface HttpInvokeJsonPathProps extends sfn.TaskStateJsonPathBaseProps, HttpInvokeOptions {}
+export interface HttpInvokeJsonPathProps extends sfn.TaskStateJsonPathBaseProps, HttpInvokeOptions { }
 
 /**
  * Properties for calling an external HTTP endpoint with HttpInvoke using JSONata.
  */
-export interface HttpInvokeJsonataProps extends sfn.TaskStateJsonataBaseProps, HttpInvokeOptions {}
+export interface HttpInvokeJsonataProps extends sfn.TaskStateJsonataBaseProps, HttpInvokeOptions { }
 
 /**
  * Properties for calling an external HTTP endpoint with HttpInvoke.
  */
-export interface HttpInvokeProps extends sfn.TaskStateBaseProps, HttpInvokeOptions {}
+export interface HttpInvokeProps extends sfn.TaskStateBaseProps, HttpInvokeOptions { }
 
 /**
  * A Step Functions Task to call a public third-party API.
@@ -196,8 +196,13 @@ export class HttpInvoke extends sfn.TaskStateBase {
   }
 
   private buildTaskParameters() {
+    const unJsonata = (v: string) => v.replace(/^{%/, '').replace(/%}$/, '').trim();
+    const useJsonata = isJsonataExpression(this.props.apiRoot) || isJsonataExpression(this.props.apiEndpoint.value);
+    const apiEndpoint = useJsonata ?
+      `{% ${unJsonata(this.props.apiRoot)} & '/' & ${unJsonata(this.props.apiEndpoint.value)} %}`
+      : `${this.props.apiRoot}/${this.props.apiEndpoint.value}`;
     const parameters: TaskParameters = {
-      ApiEndpoint: `${this.props.apiRoot}/${this.props.apiEndpoint.value}`,
+      ApiEndpoint: apiEndpoint,
       Authentication: {
         ConnectionArn: this.props.connection.connectionArn,
       },

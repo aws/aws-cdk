@@ -6,8 +6,9 @@ import * as lib from '../../lib';
 let stack: cdk.Stack;
 let connection: events.IConnection;
 
-const expectTaskWithParameters = (task: lib.HttpInvoke, parameters: any) => {
+const expectTaskWithParameters = (task: lib.HttpInvoke, parameters: any, queryLanguage?: sfn.QueryLanguage) => {
   expect(stack.resolve(task.toStateJson())).toEqual({
+    QueryLanguage: queryLanguage,
     Type: 'Task',
     Resource: {
       'Fn::Join': [
@@ -22,7 +23,8 @@ const expectTaskWithParameters = (task: lib.HttpInvoke, parameters: any) => {
       ],
     },
     End: true,
-    Parameters: parameters,
+    Parameters: queryLanguage === sfn.QueryLanguage.JSONATA ? undefined : parameters,
+    Arguments: queryLanguage === sfn.QueryLanguage.JSONATA ? parameters : undefined,
   });
 };
 
@@ -163,5 +165,22 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
       },
       Method: 'POST',
     });
+  });
+
+  test('Can use JSONata expression to apiEndpoint', () => {
+    const task = lib.HttpInvoke.jsonata(stack, 'Task', {
+      apiRoot: "{% 'https://' & $domain %}",
+      apiEndpoint: sfn.TaskInput.fromText("{% 'items/' & $item.id %}"),
+      method: sfn.TaskInput.fromText('GET'),
+      connection,
+    });
+
+    expectTaskWithParameters(task, {
+      ApiEndpoint: "{% 'https://' & $domain & '/' & 'items/' & $item.id %}",
+      Authentication: {
+        ConnectionArn: stack.resolve(connection.connectionArn),
+      },
+      Method: 'GET',
+    }, sfn.QueryLanguage.JSONATA);
   });
 });
