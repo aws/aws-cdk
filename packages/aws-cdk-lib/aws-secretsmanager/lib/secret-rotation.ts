@@ -164,7 +164,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-cn') {
       return '1.1.237';
     } else if (partition === 'aws-us-gov') {
-      return '1.1.93';
+      return '1.1.213';
     } else {
       throw new Error(`unsupported partition: ${partition}`);
     }

@@ -81,6 +81,24 @@ export interface SourceAccessConfiguration {
   readonly uri: string;
 }
 
+/**
+ * (Amazon MSK and self-managed Apache Kafka only) The provisioned mode configuration for the event source.
+ */
+export interface ProvisionedPollerConfig {
+  /**
+   * The minimum number of pollers that should be provisioned.
+   *
+   * @default - 1
+   */
+  readonly minimumPollers?: number;
+  /**
+   * The maximum number of pollers that can be provisioned.
+   *
+   * @default - 200
+   */
+  readonly maximumPollers?: number;
+}
+
 export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
@@ -269,6 +287,41 @@ export interface EventSourceMappingOptions {
    * @default false
    */
   readonly supportS3OnFailureDestination?: boolean;
+
+  /**
+   * Configuration for provisioned pollers that read from the event source.
+   * When specified, allows control over the minimum and maximum number of pollers
+   * that can be provisioned to process events from the source.
+   * @default - no provisioned pollers
+   */
+  readonly provisionedPollerConfig?: ProvisionedPollerConfig;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   * When specified, enables collection of additional metrics for the stream event source
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: MetricsConfig;
+}
+
+export enum MetricType {
+  /**
+   * Event Count metrics provide insights into the processing behavior of your event source mapping,
+   * including the number of events successfully processed, filtered out, or dropped.
+   * These metrics help you monitor the flow and status of events through your event source mapping.
+   */
+  EVENT_COUNT = 'EventCount',
+}
+
+/**
+ * Configuration for collecting metrics from the event source
+ */
+export interface MetricsConfig {
+  /**
+  * List of metric types to enable for this event source
+  */
+  readonly metrics: MetricType[];
 }
 
 /**
@@ -354,6 +407,25 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
     if (props.eventSourceArn !== undefined && props.kafkaBootstrapServers !== undefined) {
       throw new Error('eventSourceArn and kafkaBootstrapServers are mutually exclusive');
+    }
+
+    if (props.provisionedPollerConfig) {
+      const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
+      if (minimumPollers != undefined) {
+        if (minimumPollers < 1 || minimumPollers > 200) {
+          throw new Error('Minimum provisioned pollers must be between 1 and 200 inclusive');
+        }
+      }
+      if (maximumPollers != undefined) {
+        if (maximumPollers < 1 || maximumPollers > 2000) {
+          throw new Error('Maximum provisioned pollers must be between 1 and 2000 inclusive');
+        }
+      }
+      if (minimumPollers != undefined && maximumPollers != undefined) {
+        if (minimumPollers > maximumPollers) {
+          throw new Error('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
+        }
+      }
     }
 
     if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
@@ -455,6 +527,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       kmsKeyArn: props.filterEncryption?.keyArn,
       selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
+      provisionedPollerConfig: props.provisionedPollerConfig,
+      metricsConfig: props.metricsConfig,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
     this.eventSourceMappingArn = EventSourceMapping.formatArn(this, this.eventSourceMappingId);

@@ -2,7 +2,7 @@ import { IConstruct, MetadataEntry } from 'constructs';
 import * as cloudformation from '../../../aws-cloudformation';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
-import { Aspects, IAspect, RemovalPolicy } from '../../../core/lib';
+import { AspectPriority, Aspects, IAspect, RemovalPolicy } from '../../../core/lib';
 
 /* This is duplicated in @aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts */
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
@@ -32,7 +32,7 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addLogRetentionLifetime(rentention: logs.RetentionDays) {
-    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention));
+    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention), { priority: AspectPriority.MUTATING });
   }
 
   /**
@@ -41,7 +41,7 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addRemovalPolicy(removalPolicy: RemovalPolicy) {
-    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy));
+    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy), { priority: AspectPriority.MUTATING });
   }
 
   /**
@@ -50,7 +50,7 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addLambdaRuntime(lambdaRuntime: lambda.Runtime) {
-    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime));
+    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime), { priority: AspectPriority.MUTATING });
   }
 
 }

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.24",
   "artifacts": {
     "integ-user-pool-domain-cfdist.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9eb64b82217eb00710492bd6f31919884bf54462af97d7b632dd93bd20b8ce3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a8810725314595ecb35add986e2bb95495143f2d8c8ba8beec3a17c9789bc4d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -70,6 +70,16 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/integ-user-pool-domain-cfdist/AWS679f53fac002430cb0da5b7982bd2287": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
         "/integ-user-pool-domain-cfdist/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -86,6 +96,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CloudFrontDomainName"
+          }
+        ],
+        "/integ-user-pool-domain-cfdist/CloudFrontEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudFrontEndpoint"
           }
         ],
         "/integ-user-pool-domain-cfdist/BootstrapVersion": [

@@ -609,7 +609,7 @@ describe('IAM role', () => {
 
     const assumedBy = new ServicePrincipal('bla');
 
-    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' })).not.toThrowError();
+    expect(() => new Role(stack, 'MyRole', { assumedBy, path: '/' })).not.toThrow();
   });
 
   test('role path cannot be empty', () => {

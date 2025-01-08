@@ -3,7 +3,7 @@ import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptio
 import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
-import { IResource, Resource } from '../../core';
+import { Duration, IResource, Resource, Token } from '../../core';
 
 /**
  * A configuration set
@@ -67,6 +67,14 @@ export interface ConfigurationSetProps {
   readonly suppressionReasons?: SuppressionReasons;
 
   /**
+   * If true, account-level suppression list is disabled; email sent with this configuration set
+   * will not use any suppression settings at all
+   *
+   * @default false
+   */
+  readonly disableSuppressionList?: boolean;
+
+  /**
    * The custom subdomain that is used to redirect email recipients to the
    * Amazon SES event tracking domain
    *
@@ -80,6 +88,15 @@ export interface ConfigurationSetProps {
    * @default - VDM options not configured at the configuration set level. In this case, use account level settings. (To set the account level settings using CDK, use the `VdmAttributes` Construct.)
    */
   readonly vdmOptions?: VdmOptions;
+
+  /**
+   * The maximum amount of time that Amazon SES API v2 will attempt delivery of email.
+   *
+   * This value must be greater than or equal to 5 minutes and less than or equal to 14 hours.
+   *
+   * @default undefined - SES defaults to 14 hours
+   */
+  readonly maxDeliveryDuration?: Duration;
 }
 
 /**
@@ -158,10 +175,23 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       physicalName: props.configurationSetName,
     });
 
+    if (props.disableSuppressionList && props.suppressionReasons) {
+      throw new Error('When disableSuppressionList is true, suppressionReasons must not be specified.');
+    }
+    if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
+      if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
+        throw new Error(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`);
+      }
+      if (props.maxDeliveryDuration.toSeconds() > Duration.hours(14).toSeconds()) {
+        throw new Error(`The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`);
+      }
+    }
+
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
       deliveryOptions: undefinedIfNoKeys({
         sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolName,
         tlsPolicy: props.tlsPolicy,
+        maxDeliverySeconds: props.maxDeliveryDuration?.toSeconds(),
       }),
       name: this.physicalName,
       reputationOptions: undefinedIfNoKeys({
@@ -171,7 +201,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         sendingEnabled: props.sendingEnabled,
       }),
       suppressionOptions: undefinedIfNoKeys({
-        suppressedReasons: renderSuppressedReasons(props.suppressionReasons),
+        suppressedReasons: props.disableSuppressionList ? [] : renderSuppressedReasons(props.suppressionReasons),
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
@@ -183,8 +213,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         guardianOptions: props.vdmOptions?.optimizedSharedDelivery !== undefined ? {
           optimizedSharedDelivery: booleanToEnabledDisabled(props.vdmOptions?.optimizedSharedDelivery),
         } : undefined,
-      },
-      ),
+      }),
     });
 
     this.configurationSetName = configurationSet.ref;

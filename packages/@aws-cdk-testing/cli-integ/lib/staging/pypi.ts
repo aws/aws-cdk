@@ -32,7 +32,7 @@ export async function uploadPythonPackages(packages: string[], login: LoginInfor
         TWINE_REPOSITORY_URL: login.pypiEndpoint,
       },
       show: 'error',
-      output,
+      outputs: [output],
     });
 
     console.log(`✅ ${pkg}`);

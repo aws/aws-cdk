@@ -1,4 +1,5 @@
-import * as aws from 'aws-sdk';
+import type { StackEvent } from '@aws-sdk/client-cloudformation';
+import type { ICloudFormationClient } from '../../aws-auth';
 
 export interface StackEventPollerProps {
   /**
@@ -30,7 +31,7 @@ export interface StackEventPollerProps {
 }
 
 export interface ResourceEvent {
-  readonly event: aws.CloudFormation.StackEvent;
+  readonly event: StackEvent;
   readonly parentStackLogicalIds: string[];
 
   /**
@@ -48,14 +49,16 @@ export class StackEventPoller {
   private readonly eventIds = new Set<string>();
   private readonly nestedStackPollers: Record<string, StackEventPoller> = {};
 
-  constructor(private readonly cfn: aws.CloudFormation, private readonly props: StackEventPollerProps) {
-  }
+  constructor(
+    private readonly cfn: ICloudFormationClient,
+    private readonly props: StackEventPollerProps,
+  ) {}
 
   /**
    * From all accumulated events, return only the errors
    */
   public get resourceErrors(): ResourceEvent[] {
-    return this.events.filter(e => e.event.ResourceStatus?.endsWith('_FAILED') && !e.isStackEvent);
+    return this.events.filter((e) => e.event.ResourceStatus?.endsWith('_FAILED') && !e.isStackEvent);
   }
 
   /**
@@ -66,34 +69,47 @@ export class StackEventPoller {
    * Recurses into nested stacks, and returns events old-to-new.
    */
   public async poll(): Promise<ResourceEvent[]> {
+    const events: ResourceEvent[] = await this.doPoll();
+
+    // Also poll all nested stacks we're currently tracking
+    for (const [logicalId, poller] of Object.entries(this.nestedStackPollers)) {
+      events.push(...(await poller.poll()));
+      if (poller.complete) {
+        delete this.nestedStackPollers[logicalId];
+      }
+    }
+
+    // Return what we have so far
+    events.sort((a, b) => a.event.Timestamp!.valueOf() - b.event.Timestamp!.valueOf());
+    this.events.push(...events);
+    return events;
+  }
+
+  private async doPoll(): Promise<ResourceEvent[]> {
     const events: ResourceEvent[] = [];
     try {
       let nextToken: string | undefined;
       let finished = false;
-      while (!finished) {
-        const response = await this.cfn.describeStackEvents({ StackName: this.props.stackName, NextToken: nextToken }).promise();
-        const eventPage = response?.StackEvents ?? [];
 
-        for (const event of eventPage) {
+      while (!finished) {
+        const page = await this.cfn.describeStackEvents({ StackName: this.props.stackName, NextToken: nextToken });
+        for (const event of page?.StackEvents ?? []) {
           // Event from before we were interested in 'em
-          if (this.props.startTime !== undefined && event.Timestamp.valueOf() < this.props.startTime) {
-            finished = true;
-            break;
+          if (this.props.startTime !== undefined && event.Timestamp!.valueOf() < this.props.startTime) {
+            return events;
           }
 
           // Already seen this one
-          if (this.eventIds.has(event.EventId)) {
-            finished = true;
-            break;
+          if (this.eventIds.has(event.EventId!)) {
+            return events;
           }
-          this.eventIds.add(event.EventId);
+          this.eventIds.add(event.EventId!);
 
           // The events for the stack itself are also included next to events about resources; we can test for them in this way.
           const isParentStackEvent = event.PhysicalResourceId === event.StackId;
 
           if (isParentStackEvent && this.props.stackStatuses?.includes(event.ResourceStatus ?? '')) {
-            finished = true;
-            break;
+            return events;
           }
 
           // Fresh event
@@ -104,9 +120,13 @@ export class StackEventPoller {
           };
           events.push(resEvent);
 
-          if (!isParentStackEvent && event.ResourceType === 'AWS::CloudFormation::Stack' && isStackBeginOperationState(event.ResourceStatus)) {
+          if (
+            !isParentStackEvent &&
+              event.ResourceType === 'AWS::CloudFormation::Stack' &&
+              isStackBeginOperationState(event.ResourceStatus)
+          ) {
             // If the event is not for `this` stack and has a physical resource Id, recursively call for events in the nested stack
-            this.trackNestedStack(event, [...this.props.parentStackLogicalIds ?? [], event.LogicalResourceId ?? '']);
+            this.trackNestedStack(event, [...(this.props.parentStackLogicalIds ?? []), event.LogicalResourceId ?? '']);
           }
 
           if (isParentStackEvent && isStackTerminalState(event.ResourceStatus)) {
@@ -114,38 +134,25 @@ export class StackEventPoller {
           }
         }
 
-        // We're also done if there's nothing left to read
-        nextToken = response?.NextToken;
+        nextToken = page?.NextToken;
         if (nextToken === undefined) {
           finished = true;
         }
+
       }
     } catch (e: any) {
-      if (e.code === 'ValidationError' && e.message === `Stack [${this.props.stackName}] does not exist`) {
-        // Ignore
-      } else {
+      if (!(e.name === 'ValidationError' && e.message === `Stack [${this.props.stackName}] does not exist`)) {
         throw e;
       }
     }
 
-    // Also poll all nested stacks we're currently tracking
-    for (const [logicalId, poller] of Object.entries(this.nestedStackPollers)) {
-      events.push(...await poller.poll());
-      if (poller.complete) {
-        delete this.nestedStackPollers[logicalId];
-      }
-    }
-
-    // Return what we have so far
-    events.sort((a, b) => a.event.Timestamp.valueOf() - b.event.Timestamp.valueOf());
-    this.events.push(...events);
     return events;
   }
 
   /**
    * On the CREATE_IN_PROGRESS, UPDATE_IN_PROGRESS, DELETE_IN_PROGRESS event of a nested stack, poll the nested stack updates
    */
-  private trackNestedStack(event: aws.CloudFormation.StackEvent, parentStackLogicalIds: string[]) {
+  private trackNestedStack(event: StackEvent, parentStackLogicalIds: string[]) {
     const logicalId = event.LogicalResourceId;
     const physicalResourceId = event.PhysicalResourceId;
 
@@ -161,7 +168,7 @@ export class StackEventPoller {
       this.nestedStackPollers[logicalId] = new StackEventPoller(this.cfn, {
         stackName: physicalResourceId,
         parentStackLogicalIds: parentStackLogicalIds,
-        startTime: event.Timestamp.valueOf(),
+        startTime: event.Timestamp!.valueOf(),
       });
     }
   }

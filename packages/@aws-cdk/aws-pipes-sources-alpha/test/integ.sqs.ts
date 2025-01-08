@@ -9,6 +9,8 @@ const stack = new cdk.Stack(app, 'aws-cdk-pipes-sources-sqs');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
+// When this module is promoted from alpha, TestTarget should
+// be replaced with SqsTarget from @aws-cdk/aws-pipes-targets-alpha
 class TestTarget implements ITarget {
   targetArn: string;
   inputTransformation: InputTransformation = InputTransformation.fromEventPath('$.body');

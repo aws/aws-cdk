@@ -115,7 +115,7 @@ describe('database query', () => {
       expect(() => new DatabaseQuery(stack, 'Query', {
         ...minimalProps,
         cluster,
-      })).toThrowError('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)');
+      })).toThrow('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)');
     });
 
     it('throws error if admin user not provided and cluster was imported', () => {
@@ -128,7 +128,7 @@ describe('database query', () => {
       expect(() => new DatabaseQuery(stack, 'Query', {
         ...minimalProps,
         cluster,
-      })).toThrowError('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported');
+      })).toThrow('Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported');
     });
   });
 
@@ -166,6 +166,38 @@ describe('database query', () => {
     });
   });
 
+  describe('timeout', () => {
+    it('passes timeout', () => {
+      new DatabaseQuery(stack, 'Query', {
+        ...minimalProps,
+        timeout: cdk.Duration.minutes(5),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Timeout: 300,
+        Role: { 'Fn::GetAtt': ['QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717', 'Arn'] },
+        Handler: 'index.handler',
+        Code: {
+          S3Bucket: { 'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}' },
+        },
+      });
+    });
+
+    it('throw error for timeout being too short', () => {
+      expect(() => new DatabaseQuery(stack, 'Query', {
+        ...minimalProps,
+        timeout: cdk.Duration.millis(999),
+      })).toThrow('The timeout for the handler must be BETWEEN 1 second and 15 minutes, got 999 milliseconds.');
+    });
+
+    it('throw error for timeout being too long', () => {
+      expect(() => new DatabaseQuery(stack, 'Query', {
+        ...minimalProps,
+        timeout: cdk.Duration.minutes(16),
+      })).toThrow('The timeout for the handler must be between 1 second and 15 minutes, got 960 seconds.');
+    });
+  });
+
   it('passes removal policy through', () => {
     new DatabaseQuery(stack, 'Query', {
       ...minimalProps,
@@ -196,5 +228,26 @@ describe('database query', () => {
 
     expect(stack.resolve(query.getAtt('attribute'))).toStrictEqual({ 'Fn::GetAtt': ['Query435140A1', 'attribute'] });
     expect(stack.resolve(query.getAttString('attribute'))).toStrictEqual({ 'Fn::GetAtt': ['Query435140A1', 'attribute'] });
+  });
+
+  it('creates at most one IAM invoker role for handler', () => {
+    new DatabaseQuery(stack, 'Query0', {
+      ...minimalProps,
+    });
+
+    new DatabaseQuery(stack, 'Query1', {
+      ...minimalProps,
+    });
+
+    new DatabaseQuery(stack, 'Query2', {
+      ...minimalProps,
+    });
+
+    const template = Template.fromStack(stack).toJSON();
+    const iamRoles = Object.entries(template.Resources)
+      .map(([k, v]) => [k, Object.getOwnPropertyDescriptor(v, 'Type')?.value])
+      .filter(([k, v]) => v === 'AWS::IAM::Role' && k.toString().includes('InvokerRole'));
+
+    expect(iamRoles.length === 1);
   });
 });

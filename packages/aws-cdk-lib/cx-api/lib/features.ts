@@ -108,12 +108,18 @@ export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-reso
 export const S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET = '@aws-cdk/aws-s3:keepNotificationInImportedBucket';
 export const USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK = '@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask';
 export const REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS = '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions';
+export const DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA = '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica';
 export const EC2_SUM_TIMEOUT_ENABLED = '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled';
 export const APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION = '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission';
 export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId';
 export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
 export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
+export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
+export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
+export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
+export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
+export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1135,6 +1141,44 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [Enable_IMDS_Blocking_Deprecated_Feature]: {
+    type: FlagType.Temporary,
+    summary: 'When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated ' +
+      'commands will be added to UserData to block container accessing IMDS. ' +
+      '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
+    detailsMd: `
+    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
+    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
+    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+    guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: false,
+    compatibilityWithOldBehaviorMd: 'Set this flag to false in order to continue using old and outdated commands. ' +
+      'However, it is **not** recommended.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [Disable_ECS_IMDS_Blocking]: {
+    type: FlagType.Temporary,
+    summary: 'When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false.' +
+      ' **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**',
+    detailsMd: `
+    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
+    accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
+    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+    IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+    
+    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'It is strongly recommended to set this flag to true. However, if necessary, set ' +
+      'this flag to false to continue using the old implementation.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: {
     type: FlagType.BugFix,
     summary: 'When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration',
@@ -1147,6 +1191,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.159.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to continue grant permissions to log group when no log group is specified',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica.
+
+      If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
+      This will prevent you from creating a new table which has an additional replica and a resource policy.
+
+      This is a feature flag as the old behavior was technically incorrect but users may have come to depend on it.`,
+    introducedIn: { v2: '2.164.0' },
+    recommendedValue: true,
   },
 
   //////////////////////////////////////////////////////////////////////
@@ -1234,6 +1293,52 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.163.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2.',
+    detailsMd: `
+      Currently, if the machineImage property of the BastionHost construct defaults to using the latest Amazon Linux 2
+      AMI. Amazon Linux 2 hits end-of-life in June 2025, so using Amazon Linux 2023 by default is a more future-proof
+      and secure option.
+
+      When this feature flag is enabled, if you do not pass the machineImage property to the BastionHost construct,
+      the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
+    `,
+    introducedIn: { v2: '2.172.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag or explicitly pass an Amazon Linux 2 machine image to the BastionHost construct.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ASPECT_STABILIZATION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, a stabilization loop will be run when invoking Aspects during synthesis.',
+    detailsMd: `
+      Currently, when Aspects are invoked in one single pass of the construct tree.
+      This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
+
+      When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
+    `,
+    defaults: { v2: true },
+    introducedIn: { v2: '2.172.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.',
+    detailsMd: `
+    When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+    creates a custom resource internally, but the new method doesn't need a custom resource.
+
+    If the flag is set to false then a custom resource will be created when using \`UserPoolDomainTarget\`.
+    `,
+    introducedIn: { v2: '2.174.0' },
+    recommendedValue: true,
+  },
 };
 
 const CURRENT_MV = 'v2';
@@ -1252,10 +1357,13 @@ export const CURRENT_VERSION_EXPIRED_FLAGS: string[] = Object.entries(FLAGS)
  * Add a flag in here (typically with the value `true`), to enable
  * backwards-breaking behavior changes only for new projects.  New projects
  * generated through `cdk init` will include these flags in their generated
+ * project config.
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
+ *
+ * Going forward, this should *NOT* be consumed directly anymore.
  */
-export const NEW_PROJECT_CONTEXT = Object.fromEntries(
+export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
   Object.entries(FLAGS)
     .filter(([_, flag]) => flag.recommendedValue !== flag.defaults?.[CURRENT_MV] && flag.introducedIn[CURRENT_MV])
     .map(([name, flag]) => [name, flag.recommendedValue]),
@@ -1287,10 +1395,10 @@ export function futureFlagDefault(flag: string): boolean {
 /** @deprecated use CURRENT_VERSION_EXPIRED_FLAGS instead */
 export const FUTURE_FLAGS_EXPIRED = CURRENT_VERSION_EXPIRED_FLAGS;
 
-/** @deprecated use NEW_PROJECT_CONTEXT instead */
-export const FUTURE_FLAGS = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+/** @deprecated do not use at all! */
+export const FUTURE_FLAGS = Object.fromEntries(Object.entries(CURRENTLY_RECOMMENDED_FLAGS)
   .filter(([_, v]) => typeof v === 'boolean'));
 
-/** @deprecated use NEW_PROJECT_CONTEXT instead */
-export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(NEW_PROJECT_CONTEXT)
+/** @deprecated do not use at all! */
+export const NEW_PROJECT_DEFAULT_CONTEXT = Object.fromEntries(Object.entries(CURRENTLY_RECOMMENDED_FLAGS)
   .filter(([_, v]) => typeof v !== 'boolean'));

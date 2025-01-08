@@ -4,6 +4,9 @@ import { RequireApproval, StackActivityProgress } from '../lib/commands';
 let spawnSyncMock: jest.SpyInstance;
 let spawnMock: jest.SpyInstance;
 
+// Necessary to make the spyOn below work
+jest.mock('child_process', () => ({ __esModule: true, ...jest.requireActual('child_process') }));
+
 beforeEach(() => {
   spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,

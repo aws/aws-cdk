@@ -235,6 +235,19 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_0 = new Runtime('syn-nodejs-puppeteer-9.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-9.1` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 22.12.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Bug fixes** Bug fix related to date ranges and pending requests in HAR files.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_1 = new Runtime('syn-nodejs-puppeteer-9.1', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
@@ -349,9 +362,9 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime('syn-python-selenium-4.0', RuntimeFamily.PYTHON);
 
   /**
-    * @param name The name of the runtime version
-    * @param family The Lambda runtime family
-    */
+   * @param name The name of the runtime version
+   * @param family The Lambda runtime family
+   */
   public constructor(public readonly name: string, public readonly family: RuntimeFamily) {
   }
 }

@@ -40,7 +40,7 @@ export abstract class HttpPrivateIntegration extends HttpRouteIntegration {
   protected httpMethod = HttpMethod.ANY;
   protected payloadFormatVersion = PayloadFormatVersion.VERSION_1_0; // 1.0 is required and is the only supported format
   protected integrationType = HttpIntegrationType.HTTP_PROXY;
-  protected connectionType = HttpConnectionType.VPC_LINK
+  protected connectionType = HttpConnectionType.VPC_LINK;
 
   /**
    * Adds a vpcLink to the API if not passed in the options

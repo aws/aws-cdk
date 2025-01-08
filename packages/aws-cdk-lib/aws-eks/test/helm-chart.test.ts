@@ -43,7 +43,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should throw when chart and repository specified', () => {
@@ -63,7 +63,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should throw when chartAsset and version specified', () => {
@@ -83,7 +83,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should handle chart from S3 asset', () => {
