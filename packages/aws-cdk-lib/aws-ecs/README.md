@@ -1169,7 +1169,7 @@ taskDefinition.addContainer('TheContainer', {
 
 // An Rule that describes the event trigger (in this case a scheduled run)
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.expression('rate(1 min)'),
+  schedule: events.Schedule.expression('rate(1 minute)'),
 });
 
 // Pass an environment variable to the container 'TheContainer' in the task
