@@ -235,14 +235,20 @@ function invokeAspects(root: IConstruct) {
     let lastInvokedAspect: AspectApplication | undefined;
 
     let allAspectsHere = sortAspectsByPriority(inheritedAspects, getAspectApplications(construct));
+
+    // Legacy behavior: only initially applied aspects are inherited. Aspects V2
+    // behavior will inherit these as well.
+    const inheritableAspectApplications = [...allAspectsHere];
+
     const aspectsInitiallyHere = new Set(allAspectsHere.map(a => a.aspect));
     while (true) {
       const next = allAspectsHere.find((a) => !invoked.has(a.aspect));
       if (!next) {
         break;
       }
-      // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
-      // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
+      // If an aspect was added to the node by another aspect (of lower or equal
+      // priority) it will not be invoked: emit a warning instead. In
+      // `invokeAspectsV2` this will be an arror.
       if (lastInvokedAspect && lastInvokedAspect.priority >= next.priority && !aspectsInitiallyHere.has(next.aspect)) {
         if (!nestedAspectWarning) {
           Annotations.of(construct).addWarningV2('@aws-cdk/core:ignoredAspect', 'We detected an Aspect was added via another Aspect, and will not be applied');
@@ -263,7 +269,7 @@ function invokeAspects(root: IConstruct) {
 
     for (const child of construct.node.children) {
       if (!Stage.isStage(child)) {
-        recurse(child, allAspectsHere);
+        recurse(child, inheritableAspectApplications);
       }
     }
   }
