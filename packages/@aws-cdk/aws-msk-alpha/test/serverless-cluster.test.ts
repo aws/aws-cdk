@@ -130,7 +130,22 @@ describe('MSK Serverless Cluster', () => {
     ).toThrow('`vpcConfigs` must contain between 1 and 5 configurations, got 6 configurations.');
   });
 
-  test('throws error when a single VPC configuration has more than 5 security groups', () => {
+  test('throws an error when `securityGroups` in `vpcConfig` is empty', () => {
+
+    expect(() =>
+      new msk.ServerlessCluster(stack, 'ServerlessCluster', {
+        vpcConfigs: [
+          {
+            vpc,
+            securityGroups: [
+            ],
+          },
+        ],
+      }),
+    ).toThrow('`securityGroups` must contain between 1 and 5 elements, got 0 elements.');
+  });
+
+  test('throws error when a single `vpcConfig` has more than 5 security groups', () => {
     const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
       vpc,
     });
@@ -166,7 +181,7 @@ describe('MSK Serverless Cluster', () => {
           },
         ],
       }),
-    ).toThrow('`securityGroups` must not exceed 5 elements, got 6 elements.');
+    ).toThrow('`securityGroups` must contain between 1 and 5 elements, got 6 elements.');
   });
 
   test('throws error when a single VPC configuration has fewer than 2 subnets', () => {

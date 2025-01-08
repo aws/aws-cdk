@@ -126,8 +126,8 @@ export class ServerlessCluster extends ClusterBase {
     let securityGroups: ec2.ISecurityGroup[] = [];
 
     if (vpcConfig.securityGroups) {
-      if (vpcConfig.securityGroups.length > 5) {
-        throw Error(`\`securityGroups\` must not exceed 5 elements, got ${vpcConfig.securityGroups.length} elements.`);
+      if (vpcConfig.securityGroups.length < 1 || vpcConfig.securityGroups.length > 5) {
+        throw Error(`\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`);
       }
       securityGroups = vpcConfig.securityGroups;
     } else {
