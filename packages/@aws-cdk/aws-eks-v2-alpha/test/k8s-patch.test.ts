@@ -32,11 +32,11 @@ describe('k8s patch', () => {
       ApplyPatchJson: '{"patch":{"to":"apply"}}',
       RestorePatchJson: '{"restore":{"patch":123}}',
       ClusterName: {
-        Ref: 'MyCluster8AD82BF8',
+        Ref: 'MyCluster4C1BA579',
       },
       RoleArn: {
         'Fn::GetAtt': [
-          'MyClusterCreationRoleB5FA4FF3',
+          'MyClusterkubectlRole29979636',
           'Arn',
         ],
       },

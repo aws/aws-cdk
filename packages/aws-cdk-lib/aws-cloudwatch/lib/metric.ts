@@ -226,6 +226,35 @@ export interface MathExpressionProps extends MathExpressionOptions {
    * The key is the identifier that represents the given metric in the
    * expression, and the value is the actual Metric object.
    *
+   * The `period` of each metric in `usingMetrics` is ignored and instead overridden
+   * by the `period` specified for the `MathExpression` construct. Even if no `period`
+   * is specified for the `MathExpression`, it will be overridden by the default
+   * value (`Duration.minutes(5)`).
+   *
+   * Example:
+   *
+   * ```ts
+   * declare const metrics: elbv2.IApplicationLoadBalancerMetrics;
+   * new cloudwatch.MathExpression({
+   *   expression:  'm1+m2',
+   *   label: 'AlbErrors',
+   *   usingMetrics: {
+   *     m1: metrics.custom('HTTPCode_ELB_500_Count', {
+   *       period: Duration.minutes(1), // <- This period will be ignored
+   *       statistic: 'Sum',
+   *       label: 'HTTPCode_ELB_500_Count',
+   *     }),
+   *     m2: metrics.custom('HTTPCode_ELB_502_Count', {
+   *       period: Duration.minutes(1), // <- This period will be ignored
+   *       statistic: 'Sum',
+   *       label: 'HTTPCode_ELB_502_Count',
+   *     }),
+   *   },
+   *   period: Duration.minutes(3), // <- This overrides the period of each metric in `usingMetrics`
+   *                                //    (Even if not specified, it is overridden by the default value)
+   * });
+   * ```
+   *
    * @default - Empty map.
    */
   readonly usingMetrics?: Record<string, IMetric>;
@@ -605,11 +634,18 @@ export class MathExpression implements IMetric {
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
-    this.usingMetrics = changeAllPeriods(props.usingMetrics ?? {}, this.period);
     this.label = props.label;
     this.color = props.color;
     this.searchAccount = props.searchAccount;
     this.searchRegion = props.searchRegion;
+
+    const { record, overridden } = changeAllPeriods(props.usingMetrics ?? {}, this.period);
+    this.usingMetrics = record;
+
+    const warnings: { [id: string]: string } = {};
+    if (overridden) {
+      warnings['CloudWatch:Math:MetricsPeriodsOverridden'] = `Periods of metrics in 'usingMetrics' for Math expression '${this.expression}' have been overridden to ${this.period.toSeconds()} seconds.`;
+    }
 
     const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
@@ -624,7 +660,6 @@ export class MathExpression implements IMetric {
     // we can add warnings.
     const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
 
-    const warnings: { [id: string]: string } = {};
     if (!this.expression.toUpperCase().match('\\s*INSIGHT_RULE_METRIC|SELECT|SEARCH|METRICS\\s.*') && missingIdentifiers.length > 0) {
       warnings['CloudWatch:Math:UnknownIdentifier'] = `Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`;
     }
@@ -879,23 +914,33 @@ function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
 /**
  * Change periods of all metrics in the map
  */
-function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration): Record<string, IMetric> {
-  const ret: Record<string, IMetric> = {};
-  for (const [id, metric] of Object.entries(metrics)) {
-    ret[id] = changePeriod(metric, period);
+function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration): { record: Record<string, IMetric>; overridden: boolean } {
+  const retRecord: Record<string, IMetric> = {};
+  let retOverridden = false;
+  for (const [id, m] of Object.entries(metrics)) {
+    const { metric, overridden } = changePeriod(m, period);
+    retRecord[id] = metric;
+    if (overridden) {
+      retOverridden = true;
+    }
   }
-  return ret;
+  return { record: retRecord, overridden: retOverridden };
 }
 
 /**
- * Return a new metric object which is the same type as the input object, but with the period changed
+ * Return a new metric object which is the same type as the input object but with the period changed,
+ * and a flag to indicate whether the period has been overwritten.
  *
  * Relies on the fact that implementations of `IMetric` are also supposed to have
  * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
  */
-function changePeriod(metric: IMetric, period: cdk.Duration): IMetric {
+function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean} {
   if (isModifiableMetric(metric)) {
-    return metric.with({ period });
+    const overridden =
+      isMetricWithPeriod(metric) && // always true, as the period property is set with a default value even if it is not specified
+      metric.period.toSeconds() !== cdk.Duration.minutes(5).toSeconds() && // exclude the default value of a metric, assuming the user has not specified it
+      metric.period.toSeconds() !== period.toSeconds();
+    return { metric: metric.with({ period }), overridden };
   }
 
   throw new Error(`Metric object should also implement 'with': ${metric}`);
@@ -925,6 +970,14 @@ interface IModifiableMetric {
 
 function isModifiableMetric(m: any): m is IModifiableMetric {
   return typeof m === 'object' && m !== null && !!m.with;
+}
+
+interface IMetricWithPeriod {
+  period: cdk.Duration;
+}
+
+function isMetricWithPeriod(m: any): m is IMetricWithPeriod {
+  return typeof m === 'object' && m !== null && !!m.period;
 }
 
 // Polyfill for string.matchAll(regexp)

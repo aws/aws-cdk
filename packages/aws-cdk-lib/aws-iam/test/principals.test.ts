@@ -369,7 +369,7 @@ describe('deprecated ServicePrincipal behavior', () => {
   });
 
   test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+    expect(() => new iam.AccountPrincipal(1234)).toThrow('accountId should be of type string');
   });
 });
 

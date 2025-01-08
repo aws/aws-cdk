@@ -380,7 +380,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DEADLINE_CLOUD_SCHEDULING = new InterfaceVpcEndpointAwsService('deadline.scheduling');
   public static readonly DEVOPS_GURU = new InterfaceVpcEndpointAwsService('devops-guru');
   public static readonly DIRECTORY_SERVICE = new InterfaceVpcEndpointAwsService('ds');
+  public static readonly DIRECTORY_SERVICE_DATA = new InterfaceVpcEndpointAwsService('ds-data');
   public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
+  public static readonly DYNAMODB_FIPS = new InterfaceVpcEndpointAwsService('dynamodb-fips');
   public static readonly EBS_DIRECT = new InterfaceVpcEndpointAwsService('ebs');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
@@ -443,6 +445,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly IMAGE_BUILDER = new InterfaceVpcEndpointAwsService('imagebuilder');
   public static readonly INSPECTOR = new InterfaceVpcEndpointAwsService('inspector2');
   public static readonly INSPECTOR_SCAN = new InterfaceVpcEndpointAwsService('inspector-scan');
+  public static readonly INTERNET_MONITOR = new InterfaceVpcEndpointAwsService('internetmonitor');
+  public static readonly INTERNET_MONITOR_FIPS = new InterfaceVpcEndpointAwsService('internetmonitor-fips');
   public static readonly INVOICING = new InterfaceVpcEndpointAwsService('invoicing');
   public static readonly IOT_CORE = new InterfaceVpcEndpointAwsService('iot.data');
   public static readonly IOT_CORE_CREDENTIALS = new InterfaceVpcEndpointAwsService('iot.credentials');
@@ -495,12 +499,16 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly MIGRATIONHUB_ORCHESTRATOR = new InterfaceVpcEndpointAwsService('migrationhub-orchestrator');
   public static readonly MIGRATIONHUB_REFACTOR_SPACES = new InterfaceVpcEndpointAwsService('refactor-spaces');
   public static readonly MIGRATIONHUB_STRATEGY = new InterfaceVpcEndpointAwsService('migrationhub-strategy');
+  public static readonly MQ = new InterfaceVpcEndpointAwsService('mq');
   public static readonly NEPTUNE_ANALYTICS = new InterfaceVpcEndpointAwsService('neptune-graph');
   public static readonly NEPTUNE_ANALYTICS_DATA = new InterfaceVpcEndpointAwsService('neptune-graph-data');
   public static readonly NEPTUNE_ANALYTICS_FIPS = new InterfaceVpcEndpointAwsService('neptune-graph-fips');
   public static readonly NETWORK_FIREWALL = new InterfaceVpcEndpointAwsService('network-firewall');
   public static readonly NETWORK_FIREWALL_FIPS = new InterfaceVpcEndpointAwsService('network-firewall-fips');
+  public static readonly NETWORK_FLOW_MONITOR = new InterfaceVpcEndpointAwsService('networkflowmonitor');
+  public static readonly NETWORK_FLOW_MONITOR_REPORTS = new InterfaceVpcEndpointAwsService('networkflowmonitorreports');
   public static readonly NIMBLE_STUDIO = new InterfaceVpcEndpointAwsService('nimble');
+  public static readonly OBSERVABILITY_ADMIN = new InterfaceVpcEndpointAwsService('observabilityadmin');
   public static readonly OUTPOSTS = new InterfaceVpcEndpointAwsService('outposts');
   public static readonly ORGANIZATIONS = new InterfaceVpcEndpointAwsService('organizations');
   public static readonly ORGANIZATIONS_FIPS = new InterfaceVpcEndpointAwsService('organizations-fips');
@@ -567,6 +575,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly S3_TABLES = new InterfaceVpcEndpointAwsService('s3tables');
   public static readonly SAVINGS_PLANS = new InterfaceVpcEndpointAwsService('savingsplans', 'com.amazonaws', undefined, { global: true });
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
+  public static readonly SAGEMAKER_API_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.api-fips');
   public static readonly SAGEMAKER_DATA_SCIENCE_ASSISTANT = new InterfaceVpcEndpointAwsService('sagemaker-data-science-assistant');
   public static readonly SAGEMAKER_EXPERIMENTS = new InterfaceVpcEndpointAwsService('experiments', 'aws.sagemaker');
   public static readonly SAGEMAKER_FEATURESTORE_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.featurestore-runtime');
@@ -620,6 +629,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly WORKMAIL = new InterfaceVpcEndpointAwsService('workmail');
   public static readonly WORKSPACES = new InterfaceVpcEndpointAwsService('workspaces');
   public static readonly WORKSPACES_THIN_CLIENT = new InterfaceVpcEndpointAwsService('thinclient.api');
+  public static readonly WORKSPACES_WEB = new InterfaceVpcEndpointAwsService('workspaces-web');
+  public static readonly WORKSPACES_WEB_FIPS = new InterfaceVpcEndpointAwsService('workspaces-web-fips');
   public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
   public static readonly VERIFIED_PERMISSIONS = new InterfaceVpcEndpointAwsService('verifiedpermissions');
   public static readonly VPC_LATTICE = new InterfaceVpcEndpointAwsService('vpc-lattice');

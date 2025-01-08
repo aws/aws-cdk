@@ -249,7 +249,7 @@ describe('service account', () => {
         name: 'XXX',
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('throw error if ends with dot', () => {
@@ -261,7 +261,7 @@ describe('service account', () => {
         name: 'test.',
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('dot in the name is allowed', () => {
@@ -287,7 +287,7 @@ describe('service account', () => {
         name: 'x'.repeat(255),
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
   });
 
@@ -301,7 +301,7 @@ describe('service account', () => {
         namespace: 'XXX',
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('throw error if ends with dot', () => {
@@ -313,7 +313,7 @@ describe('service account', () => {
         namespace: 'test.',
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('throw error if dot is in the name', () => {
@@ -326,7 +326,7 @@ describe('service account', () => {
         namespace: valueWithDot,
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('throw error if name is too long', () => {
@@ -338,7 +338,7 @@ describe('service account', () => {
         namespace: 'x'.repeat(65),
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
   });
 
@@ -367,11 +367,11 @@ describe('service account', () => {
       // should have a eks pod identity agent addon
       t.hasResourceProperties('AWS::EKS::Addon', {
         AddonName: 'eks-pod-identity-agent',
-        ClusterName: { Ref: 'Cluster9EE0221C' },
+        ClusterName: { Ref: 'ClusterEB0386A7' },
       });
       // should have pod identity association
       t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
-        ClusterName: { Ref: 'Cluster9EE0221C' },
+        ClusterName: { Ref: 'ClusterEB0386A7' },
         Namespace: 'default',
         RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
         ServiceAccount: 'stackmyserviceaccount58b9529e',

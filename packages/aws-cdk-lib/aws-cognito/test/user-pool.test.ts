@@ -313,7 +313,7 @@ describe('User Pool', () => {
     // WHEN
     expect(() => {
       UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
-    }).toThrowError(/invalid user pool ARN/);
+    }).toThrow(/invalid user pool ARN/);
   });
 
   test('import from different account region using arn', () => {

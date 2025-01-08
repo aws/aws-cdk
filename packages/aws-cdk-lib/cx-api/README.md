@@ -494,3 +494,65 @@ _cdk.json_
   },
 }
 ```
+
+* `@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource`
+
+When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ecs:disableEcsImdsBlocking`
+
+When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false.
+
+In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
+accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
+to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
+IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+
+**It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.**
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs:disableEcsImdsBlocking": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature`
+
+When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only.**
+
+In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
+accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+feature alone with this feature flag will be deprecated by <ins>end of 2025</ins> as CDK cannot
+guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+
+**It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.**
+
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": false,
+  },
+}
+```

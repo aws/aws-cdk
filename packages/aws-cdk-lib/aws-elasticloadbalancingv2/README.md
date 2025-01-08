@@ -212,7 +212,7 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   // The idle timeout value, in seconds
   idleTimeout: Duration.seconds(1000),
 
-  // Whether HTTP headers with header fields thatare not valid
+  // Whether HTTP headers with header fields that are not valid
   // are removed by the load balancer (true), or routed to targets
   dropInvalidHeaderFields: true,
 
@@ -366,7 +366,6 @@ and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
 
-
 ### Dualstack Network Load Balancer
 
 You can create a dualstack Network Load Balancer using the `ipAddressType` property:
@@ -380,7 +379,23 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 });
 ```
 
-You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
+You can configure whether to use an IPv6 prefix from each subnet for source NAT by setting `enablePrefixForIpv6SourceNat` to `true`.
+This must be enabled if you want to create a dualstack Network Load Balancer with a listener that uses UDP protocol.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  enablePrefixForIpv6SourceNat: true,
+});
+
+const listener = lb.addListener('Listener', {
+  port: 1229,
+  protocol: elbv2.Protocol.UDP,
+});
+```
 
 ### Network Load Balancer attributes
 
@@ -563,7 +578,7 @@ You can set cross-zone load balancing setting at the target group level by setti
 
 If not specified, it will use the load balancer's configuration.
 
-For more infomation, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html).
+For more information, see [How Elastic Load Balancing works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html).
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -794,7 +809,7 @@ Node.of(resource).addDependency(targetGroup.loadBalancerAttached);
 You may look up load balancers and load balancer listeners by using one of the
 following lookup methods:
 
-- `ApplicationLoadBalancer.fromlookup(options)` - Look up an application load
+- `ApplicationLoadBalancer.fromLookup(options)` - Look up an application load
   balancer.
 - `ApplicationListener.fromLookup(options)` - Look up an application load
   balancer listener.
