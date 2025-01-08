@@ -50,7 +50,7 @@ export class AppSyncEventResource {
       Stack.of(api).formatArn({
         service: 'appsync',
         resource: `apis/${api.apiId}`,
-        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        arnFormat: arn === '' ? ArnFormat.NO_RESOURCE_NAME : ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: `${arn}`,
       }),
     );

@@ -15,7 +15,7 @@ beforeEach(() => {
   stack = new cdk.Stack(app);
 });
 
-describe('Appsync Event API Key Authorization', () => {
+describe('Appsync Event API Key Authorization - security related', () => {
   test('Appsync Event API - creates default api key', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', { apiName: 'api' });
@@ -69,7 +69,7 @@ describe('Appsync Event API Key Authorization', () => {
   });
 });
 
-describe('AppSync Event Api auth configuration', () => {
+describe('AppSync Event Api auth configuration - security related', () => {
   test('Authorization providers are used as allowed modes by default', () => {
     // WHEN
     new appsync.EventApi(stack, 'api', {
@@ -307,7 +307,7 @@ describe('owner contact configuration', () => {
   });
 });
 
-describe('grants', () => {
+describe('Event API security grant tests', () => {
   // GIVEN
   let func: lambda.Function;
   beforeEach(() => {
@@ -347,7 +347,6 @@ describe('grants', () => {
                   { Ref: 'AWS::AccountId' },
                   ':apis/',
                   { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
-                  '/',
                 ],
               ],
             },
