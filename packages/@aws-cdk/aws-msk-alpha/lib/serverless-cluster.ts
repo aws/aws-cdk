@@ -1,5 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Fn, Lazy, Names, Token } from 'aws-cdk-lib';
+import { Fn, Lazy, Names } from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import { ClusterBase, ICluster } from '.';
 import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
