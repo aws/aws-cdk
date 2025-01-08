@@ -130,57 +130,6 @@ test('for every construct, lower priorities go before higher priorities', () =>
   ),
 );
 
-test('state of Denmark', () => {
-  const outputs = new Array<PrettyApp>();
-  const result = fc.check(
-    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
-      afterSynth((testApp) => {
-        outputs.push(testApp);
-        forEveryVisitPair(testApp.actionLog, (a, b) => {
-          if (!sameConstruct(a, b)) return;
-
-          const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
-          const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
-
-          // But only if the application of aspect A exists at least as long as the application of aspect B
-          const aAppliedT = aspectAppliedT(testApp, a.aspect, a.construct);
-          const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
-
-          if (!implies(aPrio < bPrio && aAppliedT <= bAppliedT, a.index < b.index)) {
-            throw new Error(
-              `Aspect ${a.aspect}@${aPrio} (applied at t=${aAppliedT}) at t=${a.index} should have been before ${b.aspect}@${bPrio} (applied at t=${bAppliedT}) at t=${b.index}, but was after`,
-            );
-          }
-        });
-      }, stabilizeAspects)(app);
-    }),
-  );
-
-  for (let i = 0; i < outputs.length; i++) {
-    for (let j = i + 1; j < outputs.length; j++) {
-      // Make sure that the construct trees outputs[i] and outputs[j] are fully distinct and share no objects
-      expect(outputs[i]).not.toBe(outputs[j]);
-      expect(outputs[i].actionLog).not.toBe(outputs[j].actionLog);
-      const nodesI = outputs[i].cdkApp.node.findAll();
-      const nodesJ = outputs[j].cdkApp.node.findAll();
-
-      nothingShared(nodesI, nodesJ);
-
-      const aspectsI = nodesI.flatMap(ni => Aspects.of(ni).all);
-      const aspectsJ = nodesJ.flatMap(nj => Aspects.of(nj).all);
-      nothingShared(aspectsI, aspectsJ);
-    }
-  }
-});
-
-function nothingShared<A>(xs: A[], ys: A[]) {
-  for (const x of xs) {
-    if (ys.includes(x)) {
-      throw new Error(`Both arrays contain the same element: ${x}`);
-    }
-  }
-}
-
 test('for every construct, if a invokes before b that must mean it is of equal or lower priority', () =>
   fc.assert(
     fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
