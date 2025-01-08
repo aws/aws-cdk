@@ -8,7 +8,7 @@ export enum DeploymentState {
   COMPLETED = 'completed',
   FAILED = 'failed',
   SKIPPED = 'skipped',
-};
+}
 
 export type WorkNode = StackNode | AssetBuildNode | AssetPublishNode;
 

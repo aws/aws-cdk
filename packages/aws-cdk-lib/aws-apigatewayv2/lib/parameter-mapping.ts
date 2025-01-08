@@ -6,7 +6,7 @@ export interface IMappingValue {
    * Represents a Mapping Value.
    */
   readonly value: string;
-};
+}
 
 /**
  * Represents a Mapping Value.

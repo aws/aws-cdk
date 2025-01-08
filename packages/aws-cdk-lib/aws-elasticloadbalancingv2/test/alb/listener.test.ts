@@ -1704,7 +1704,7 @@ describe('tests', () => {
     interface TestCase {
       readonly removeSuffix?: boolean;
       readonly expectedLogicalId: string;
-    };
+    }
     const nonDefaultTestCases: TestCase[] = [
       { removeSuffix: true, expectedLogicalId: identifierToken },
       { removeSuffix: false, expectedLogicalId: identifierToken + 'Rule' },

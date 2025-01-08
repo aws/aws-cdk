@@ -605,7 +605,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
         accessToken: props.accessTokenValidity ? 'minutes' : undefined,
         refreshToken: props.refreshTokenValidity ? 'minutes' : undefined,
       };
-    };
+    }
 
     resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
     resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;

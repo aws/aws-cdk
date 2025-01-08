@@ -230,4 +230,4 @@ interface PrivateDnsConfiguration {
  */
 function hashcode(s: string): string {
   return md5hash(s);
-};
+}

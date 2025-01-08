@@ -980,7 +980,7 @@ export class CdkToolkit {
         confirm: options.confirm ?? true,
       });
       await gc.garbageCollect();
-    };
+    }
   }
 
   private async defineEnvironments(userEnvironmentSpecs: string[]): Promise<cxapi.Environment[]> {
@@ -1213,7 +1213,7 @@ export class CdkToolkit {
         const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${chalk.blue(pattern.closelyMatched.join(', '))}?` : '';
         warning(`${chalk.red(pattern.pattern)} does not exist.${closelyMatched}`);
       }
-    };
+    }
   }
 
   /**

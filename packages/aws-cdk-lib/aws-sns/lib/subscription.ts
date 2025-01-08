@@ -342,7 +342,7 @@ function buildFilterPolicyWithMessageBody(
   }
 
   return result;
-};
+}
 
 /**
  * The type of the MessageBody at a given key value pair

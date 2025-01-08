@@ -212,7 +212,7 @@ export class Topic extends TopicBase {
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     return Topic.fromTopicAttributes(scope, id, { topicArn });
-  };
+  }
 
   /**
    * Import an existing SNS topic provided a topic attributes

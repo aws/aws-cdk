@@ -61,7 +61,7 @@ export class DataProtectionPolicy {
           resourceName: identifier.name,
         }));
       }
-    };
+    }
 
     const statement = [
       {

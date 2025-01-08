@@ -1306,7 +1306,7 @@ export interface ServiceLoadBalancerAddressOptions {
 /**
  * Options for fetching an IngressLoadBalancerAddress.
  */
-export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {};
+export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
  * A Cluster represents a managed Kubernetes Service (EKS)
@@ -1580,7 +1580,7 @@ export class Cluster extends ClusterBase {
 
     if (!props.kubectlLayer) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterKubectlLayerNotSpecified', `You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer.`);
-    };
+    }
     this.version = props.version;
 
     // since this lambda role needs to be added to the trust policy of the creation role,

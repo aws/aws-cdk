@@ -545,14 +545,14 @@ export class Metric implements IMetric {
     dimsArray.map(key => {
       if (dims[key] === undefined || dims[key] === null) {
         throw new Error(`Dimension value of '${dims[key]}' is invalid`);
-      };
+      }
       if (key.length < 1 || key.length > 255) {
         throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
-      };
+      }
 
       if (dims[key].length < 1 || dims[key].length > 255) {
         throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
-      };
+      }
     });
 
     return dims;

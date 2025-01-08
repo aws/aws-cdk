@@ -137,7 +137,7 @@ export class CloudAssembly {
       const [head, ...tail] = assemblies;
       const nestedAssemblies = head.nestedAssemblies.map(asm => asm.nestedAssembly);
       return search(stackArtifacts.concat(head.stacks), tail.concat(nestedAssemblies));
-    };
+    }
 
     return search([], [this]);
   }

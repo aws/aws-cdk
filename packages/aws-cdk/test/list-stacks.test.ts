@@ -1,4 +1,4 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';;
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { Bootstrapper } from '../lib/api/bootstrap';
 import { Deployments } from '../lib/api/deployments';

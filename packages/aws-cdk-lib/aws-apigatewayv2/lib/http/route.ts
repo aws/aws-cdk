@@ -237,7 +237,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     // path variable and all that follows with a wildcard.
     if (path.length > 1000) {
       throw new Error(`Path is too long: ${path}`);
-    };
+    }
     const iamPath = path.replace(/\{.*?\}.*/, '*');
 
     return `arn:${Aws.PARTITION}:execute-api:${this.env.region}:${this.env.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;

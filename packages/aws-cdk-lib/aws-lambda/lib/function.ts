@@ -656,7 +656,7 @@ export class Function extends FunctionBase {
 
     if (this._warnIfCurrentVersionCalled) {
       this.warnInvokeFunctionPermissions(this);
-    };
+    }
 
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
@@ -1247,7 +1247,7 @@ export class Function extends FunctionBase {
       return loggingConfig;
     }
     return undefined;
-  };
+  }
 
   /**
    * Mix additional information into the hash of the Version object
@@ -1606,7 +1606,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         subnetIds: selectedSubnets.subnetIds,
         securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
       };
-    };
+    }
   }
 
   private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
@@ -1792,5 +1792,5 @@ export class FunctionVersionUpgrade implements IAspect {
       const desc = cfnFunction.description ? `${cfnFunction.description} ` : '';
       cfnFunction.addPropertyOverride('Description', `${desc}version-hash:${calculateFunctionHash(node)}`);
     }
-  };
+  }
 }

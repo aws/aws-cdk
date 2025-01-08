@@ -48,7 +48,7 @@ export abstract class LogGroupTargetInput {
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
     });
-  };
+  }
 
   /**
    * Return the input properties for this input object

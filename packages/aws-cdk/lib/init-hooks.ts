@@ -88,4 +88,4 @@ async function dotnetAddProject(targetDirectory: string, context: HookContext, e
   } catch (e: any) {
     throw new ToolkitError(`Could not add project ${pname}.${ext} to solution ${pname}.sln. ${e.message}`);
   }
-};
+}

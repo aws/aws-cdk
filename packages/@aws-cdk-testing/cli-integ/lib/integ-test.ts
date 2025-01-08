@@ -15,7 +15,7 @@ export interface TestContext {
   readonly randomString: string;
   readonly output: NodeJS.WritableStream;
   log(s: string): void;
-};
+}
 
 if (process.env.JEST_TEST_CONCURRENT === 'true') {
   process.stderr.write('ℹ️ JEST_TEST_CONCURRENT is true: tests will run concurrently and filters have no effect!\n0');

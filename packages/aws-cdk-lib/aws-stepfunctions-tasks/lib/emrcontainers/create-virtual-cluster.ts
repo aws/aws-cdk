@@ -119,7 +119,7 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
         Tags: this.props.tags,
       }),
     };
-  };
+  }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
     return [

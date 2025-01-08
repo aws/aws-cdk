@@ -843,7 +843,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       const pm = container.findPortMappingByName(name);
       if (pm) {
         portMapping = pm;
-      };
+      }
     });
 
     return portMapping;
@@ -913,7 +913,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     } else {
       throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
     }
-  };
+  }
 }
 
 /**

@@ -117,7 +117,7 @@ export class Default {
           return universal;
 
       }
-    };
+    }
 
     const configuration = determineConfiguration(serviceName);
     return configuration(serviceName, region, urlSuffix);
