@@ -540,6 +540,12 @@ export class TestFixture extends ShellHelper {
 
     await this.packages.makeCliAvailable();
 
+    const envCreds: Record<string, string> = this.aws.identity ? {
+      AWS_ACCESS_KEY_ID: this.aws.identity.accessKeyId,
+      AWS_SECRET_ACCESS_KEY: this.aws.identity.secretAccessKey,
+      AWS_SESSION_TOKEN: this.aws.identity.sessionToken!,
+    } : {};
+
     return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
@@ -547,6 +553,7 @@ export class TestFixture extends ShellHelper {
         AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
         PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+        ...envCreds,
         ...options.modEnv,
       },
     });

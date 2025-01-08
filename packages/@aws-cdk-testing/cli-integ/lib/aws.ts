@@ -58,8 +58,8 @@ export class AwsClients {
    *  - Region from caller input.
    *  - Account credentials from caller input.
    */
-  public static async forEnvironment(enviroment: Environment, output: NodeJS.WritableStream) {
-    return new AwsClients(enviroment.region, output, enviroment.credentials);
+  public static async forEnvironment(enviroment: Environment, credentials: AwsCredentialIdentity, output: NodeJS.WritableStream) {
+    return new AwsClients(enviroment.region, output, credentials);
   }
 
   private readonly config: ClientConfig;
@@ -77,7 +77,7 @@ export class AwsClients {
   private constructor(
     public readonly region: string,
     private readonly output: NodeJS.WritableStream,
-    private readonly identity?: AwsCredentialIdentity) {
+    public readonly identity?: AwsCredentialIdentity) {
     this.config = {
       credentials: this.identity ?? chainableCredentials(this.region),
       region: this.region,

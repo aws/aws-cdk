@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 import { AwsClients } from './aws';
 import { TestContext } from './integ-test';
@@ -29,16 +30,24 @@ export function withAws<A extends TestContext>(
         throw new Error('CDK_INTEG_ATMOSPHERE_ENABLED is set but CDK_INTEG_ATMOSPHERE_ENDPOINT is not');
       }
 
-      const atmosphere = AtmosphereClient.getOrCreate(CDK_ATMOSPHERE_ENDPOINT);
-      const allocation = await atmosphere.acquire();
-      const aws = await AwsClients.forEnvironment(allocation.environment, context.output);
+      const atmosphere = new AtmosphereClient(CDK_ATMOSPHERE_ENDPOINT);
+      const allocation = await atmosphere.acquire({ pool: 'pool-1', requester: 'eli-test-run' });
+      const aws = await AwsClients.forEnvironment(allocation.environment, {
+        accessKeyId: allocation.credentials.accessKeyId,
+        secretAccessKey: allocation.credentials.secretAccessKey,
+        sessionToken: allocation.credentials.sessionToken,
+        accountId: allocation.environment.account,
+      }, context.output);
 
       await sanityCheck(aws);
 
       try {
-        return await block({ ...context, disableBootstrap, aws });
-      } finally {
-        await atmosphere.release(allocation.id);
+        const result = await block({ ...context, disableBootstrap, aws });
+        await atmosphere.release(allocation.id, 'success');
+        return result;
+      } catch (e: any) {
+        await atmosphere.release(allocation.id, 'failure');
+        throw e;
       }
     }
     return regionPool().using(async (region) => {
