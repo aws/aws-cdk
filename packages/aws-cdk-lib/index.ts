@@ -199,6 +199,7 @@ export * as aws_panorama from './aws-panorama';
 export * as aws_paymentcryptography from './aws-paymentcryptography';
 export * as aws_pcaconnectorad from './aws-pcaconnectorad';
 export * as aws_pcaconnectorscep from './aws-pcaconnectorscep';
+export * as aws_pcs from './aws-pcs';
 export * as aws_personalize from './aws-personalize';
 export * as aws_pinpoint from './aws-pinpoint';
 export * as aws_pinpointemail from './aws-pinpointemail';

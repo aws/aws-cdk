@@ -18,9 +18,6 @@
   "MyVpcPublicSubnet1SubnetF6608456": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPublicSubnet1RouteTableC46AB2F4": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB": {
@@ -75,12 +75,12 @@
   "MyVpcPublicSubnet1DefaultRoute95FDF9EB": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "MyVpcIGW5C4A4F63"
+    },
+    "RouteTableId": {
+     "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "MyVpcPublicSubnet1NATGatewayAD3400C1": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "MyVpcPublicSubnet1SubnetF6608456"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "MyVpcPublicSubnet1EIP096967CB",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "MyVpcPublicSubnet1SubnetF6608456"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "MyVpcPublicSubnet2Subnet492B6BFB": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPublicSubnet2RouteTable1DF17386": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "test-apigateway-vpcendpoint/MyVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPublicSubnet2RouteTableAssociation227DE78D": {
@@ -183,12 +183,12 @@
   "MyVpcPublicSubnet2DefaultRoute052936F6": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "MyVpcIGW5C4A4F63"
+    },
+    "RouteTableId": {
+     "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "MyVpcPublicSubnet2NATGateway91BFBEC9": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "MyVpcPublicSubnet2EIP8CCBA239",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "MyVpcPrivateSubnet1Subnet5057CF7E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPrivateSubnet1RouteTable8819E6E2": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E": {
@@ -291,21 +291,18 @@
   "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "MyVpcPublicSubnet1NATGatewayAD3400C1"
+    },
+    "RouteTableId": {
+     "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
     }
    }
   },
   "MyVpcPrivateSubnet2Subnet0040C983": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPrivateSubnet2RouteTableCEDCEECE": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyVpcPrivateSubnet2RouteTableAssociation86A610DA": {
@@ -360,12 +360,12 @@
   "MyVpcPrivateSubnet2DefaultRoute9CE96294": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "MyVpcPublicSubnet2NATGateway91BFBEC9"
+    },
+    "RouteTableId": {
+     "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
     }
    }
   },
@@ -383,11 +383,11 @@
   "MyVpcVPCGW488ACE0D": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
     "InternetGatewayId": {
      "Ref": "MyVpcIGW5C4A4F63"
+    },
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
     }
    }
   },
@@ -444,6 +444,15 @@
   "MyVpcMyVpcEndpointA401F313": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "MyVpcMyVpcEndpointSecurityGroup52BE62B3",
+       "GroupId"
+      ]
+     }
+    ],
     "ServiceName": {
      "Fn::Join": [
       "",
@@ -456,18 +465,6 @@
       ]
      ]
     },
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
-    "PrivateDnsEnabled": true,
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "MyVpcMyVpcEndpointSecurityGroup52BE62B3",
-       "GroupId"
-      ]
-     }
-    ],
     "SubnetIds": [
      {
       "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
@@ -476,7 +473,16 @@
       "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
      }
     ],
-    "VpcEndpointType": "Interface"
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-apigateway-vpcendpoint/MyVpc"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
    }
   },
   "MyApi49610EDF": {
@@ -559,10 +565,10 @@
   "MyApiDeploymentECB0D05E58dcfc85d01f2b81270e177f5347476d": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "MyApi49610EDF"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "MyApiGETD0C7AA0C"
@@ -571,11 +577,11 @@
   "MyApiDeploymentStageprodE1054AF0": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "MyApi49610EDF"
-    },
     "DeploymentId": {
      "Ref": "MyApiDeploymentECB0D05E58dcfc85d01f2b81270e177f5347476d"
+    },
+    "RestApiId": {
+     "Ref": "MyApi49610EDF"
     },
     "StageName": "prod"
    },
@@ -586,7 +592,11 @@
   "MyApiGETD0C7AA0C": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Fn::GetAtt": [
       "MyApi49610EDF",
@@ -595,10 +605,6 @@
     },
     "RestApiId": {
      "Ref": "MyApi49610EDF"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   }

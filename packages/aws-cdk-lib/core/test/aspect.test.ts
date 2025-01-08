@@ -309,4 +309,24 @@ describe('aspect', () => {
       }
     }
   }
+
+  test.each([
+    { stabilization: true },
+    { stabilization: false },
+  ])('Error is not thrown if Aspects.applied does not exist (stabilization: $stabilization)', ({ stabilization }) => {
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': stabilization } });
+    const root = new Stack(app, 'My-Stack');
+
+    Aspects.of(root).add(new Tag('AspectA', 'Visited'));
+
+    // "Monkey patching" - Override `applied` to simulate its absence
+    Object.defineProperty(Aspects.prototype, 'applied', {
+      value: undefined,
+      configurable: true,
+    });
+
+    expect(() => {
+      app.synth();
+    }).not.toThrow();
+  });
 });
