@@ -27,6 +27,17 @@
         }
        },
        "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -132,12 +143,6 @@
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "DisplayName": "fooDisplayName2",
-    "KmsMasterKeyId": {
-     "Fn::GetAtt": [
-      "CustomKey1E6D0D07",
-      "Arn"
-     ]
-    },
     "TopicName": "fooTopic2"
    }
   },
@@ -166,8 +171,26 @@
       {
        "Action": "sns:Publish",
        "Effect": "Allow",
+       "Resource": [
+        {
+         "Ref": "MyTopic288CE2107"
+        },
+        {
+         "Ref": "MyTopic3134CFDFB"
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
        "Resource": {
-        "Ref": "MyTopic288CE2107"
+        "Fn::GetAtt": [
+         "CustomKey1E6D0D07",
+         "Arn"
+        ]
        }
       }
      ],
@@ -179,6 +202,19 @@
       "Ref": "PublishRoleF42F66B6"
      }
     ]
+   }
+  },
+  "MyTopic3134CFDFB": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "fooDisplayName3",
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "CustomKey1E6D0D07",
+      "Arn"
+     ]
+    },
+    "TopicName": "fooTopic3"
    }
   }
  },
