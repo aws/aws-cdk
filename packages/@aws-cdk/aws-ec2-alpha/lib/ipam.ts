@@ -100,12 +100,17 @@ export interface PoolOptions {
   readonly addressFamily: AddressFamily;
 
   /**
-   * Information about the CIDRs provisioned to the pool.
+   * Information about the IPv4 CIDRs provisioned to the pool.
    *
    * @default - No CIDRs are provisioned
    */
   readonly ipamIpv4Cidrs?: IpamPoolCidrProvisioningOptions[];
 
+  /**
+   * Information about the IPv6 CIDRs provisioned to the pool.
+   *
+   * @default - No CIDRs are provisioned
+   */
   readonly ipamIpv6Cidrs?: IpamPoolCidrProvisioningOptions[];
 
   /**
@@ -186,11 +191,13 @@ export interface IpamPoolCidrProvisioningOptions {
  */
 export interface IIpamPool {
   /**
- * Pool ID to be passed to the VPC construct
- * @attribute IpamPoolId
- */
+   * IpamPool ID
+   */
   readonly ipamPoolId: string;
 
+  /**
+   * IpamPool address family
+   */
   readonly addressFamily: AddressFamily;
 
   /**
@@ -301,10 +308,29 @@ export interface IIpamScopeBase {
 
 }
 
-export interface IpamPoolAttributes {
+/**
+ * Properties required to import a IpamPool
+ */
+interface IpamPoolAttributes {
+  /**
+   * The IPAM Pool ID
+   * */
   readonly ipamPoolId: string;
+  /**
+   * The Address Family of the IPAM Pool
+   * */
   readonly addressFamily: AddressFamily;
+
+  /**
+   * IPv4 IPAM pool CIDR definitions
+   * @default - no IPv4 cidrs are provided
+   * */
   readonly ipamIpv4Cidrs?: IpamPoolCidrProvisioningOptions[];
+
+  /**
+   * IPv6 IPAM pool CIDR definitions
+   * @default - no IPv6 cidrs are provided
+   * */
   readonly ipamIpv6Cidrs?: IpamPoolCidrProvisioningOptions[];
 }
 
@@ -352,6 +378,9 @@ export class IpamPool extends Resource implements IIpamPool {
    */
   public readonly ipamPoolId: string;
 
+  /**
+   * Address family of the IpamPool.
+   * */
   public readonly addressFamily: AddressFamily;
 
   /**

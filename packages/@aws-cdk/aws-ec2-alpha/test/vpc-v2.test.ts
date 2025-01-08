@@ -145,6 +145,7 @@ describe('Vpc V2 with full control', () => {
       enableDnsSupport: true,
     },
     );
+
     Template.fromStack(stack).templateMatches({
       Resources: {
         TestIpamDBF92BA8: { Type: 'AWS::EC2::IPAM' },
@@ -154,11 +155,15 @@ describe('Vpc V2 with full control', () => {
             AddressFamily: 'ipv4',
             IpamScopeId: { 'Fn::GetAtt': ['TestIpamDBF92BA8', 'PrivateDefaultScopeId'] },
             Locale: 'us-west-1',
-            ProvisionedCidrs: [
-              {
-                Cidr: '10.1.0.1/24',
-              },
-            ],
+          },
+        },
+        TestIpamPrivatePool0CidrIpv40E9445D19: {
+          Type: 'AWS::EC2::IPAMPoolCidr',
+          Properties: {
+            Cidr: '10.1.0.1/24',
+            IpamPoolId: {
+              'Fn::GetAtt': ['TestIpamPrivatePool0E8589980', 'IpamPoolId'],
+            },
           },
         },
         TestVpcE77CE678: {
@@ -204,6 +209,7 @@ describe('Vpc V2 with full control', () => {
       enableDnsSupport: true,
     },
     );
+
     Template.fromStack(stack).templateMatches({
       Resources: {
         TestIpamDBF92BA8: { Type: 'AWS::EC2::IPAM' },
@@ -217,7 +223,7 @@ describe('Vpc V2 with full control', () => {
           },
         },
         // Test Amazon Provided IPAM IPv6
-        TestIpamPublicPool0PublicPoolCidrB0FF20F7: {
+        TestIpamPublicPool0CidrIpv609B5B512E: {
           Type: 'AWS::EC2::IPAMPoolCidr',
           Properties: {
             IpamPoolId: {

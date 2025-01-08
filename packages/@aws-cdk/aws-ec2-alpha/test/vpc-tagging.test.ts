@@ -52,7 +52,7 @@ describe('Vpc V2 with full control', () => {
 
     new SubnetV2(stack, 'TestSubnet', {
       vpc: testVpc,
-      ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+      ipv4Cidr: new IpCidr('10.0.0.0/24'),
       availabilityZone: 'us-east-1a',
       subnetType: cdk.aws_ec2.SubnetType.PRIVATE_WITH_EGRESS,
       subnetName: 'MyTestSubnet',
@@ -118,7 +118,7 @@ describe('Vpc V2 with full control', () => {
     });
     const testSubnet = new SubnetV2(stack, 'TestSubnet', {
       vpc: testVpc,
-      ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+      ipv4Cidr: new IpCidr('10.0.0.0/24'),
       availabilityZone: 'us-east-1a',
       subnetType: SubnetType.PUBLIC,
       subnetName: 'MyTestSubnet',
@@ -192,7 +192,7 @@ describe('Vpc V2 with full control', () => {
     });
     const testSubnet = new SubnetV2(stack, 'TestSubnet', {
       vpc: testVpc,
-      ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+      ipv4Cidr: new IpCidr('10.0.0.0/24'),
       availabilityZone: 'us-east-1a',
       subnetType: SubnetType.PUBLIC,
       subnetName: 'MyTestSubnet',

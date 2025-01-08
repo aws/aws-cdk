@@ -31,7 +31,7 @@ const routeTable = new RouteTable(stack, 'TestRouteTable', {
 const subnet = new SubnetV2(stack, 'testsubnet', {
   vpc,
   availabilityZone: 'us-west-2b',
-  ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+  ipv4Cidr: new IpCidr('10.1.0.0/24'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'CDKIntegTestSubnet',
   routeTable: routeTable,

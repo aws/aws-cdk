@@ -85,4 +85,5 @@ new SubnetV2(stack, 'testsbubnet', {
  */
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
+  regions: ['us-west-2'],
 });

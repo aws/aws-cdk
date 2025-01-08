@@ -494,7 +494,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     }
 
     // Add default route to IGW for IPv6
-    if (subnet.ipv6CidrBlock) {
+    if (subnet.ipv6Cidr) {
       new Route(this, `${subnet.node.id}-DefaultIPv6Route`, {
         routeTable: subnet.routeTable,
         destination: options?.ipv6Destination ?? '::/0',
