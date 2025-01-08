@@ -278,7 +278,7 @@ export class CdkToolkit {
 
     if (stackCollection.stackCount === 0) {
       // eslint-disable-next-line no-console
-      console.error('This app contains no stacks');
+      error('This app contains no stacks');
       return;
     }
 
@@ -579,7 +579,7 @@ export class CdkToolkit {
 
     if (stackCollection.stackCount === 0) {
       // eslint-disable-next-line no-console
-      console.error('No stacks selected');
+      error('No stacks selected');
       return;
     }
 

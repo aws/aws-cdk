@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
 import * as chalk from 'chalk';
-import { debug } from './logging';
+import { debug, data } from './logging';
 import { ToolkitError } from './toolkit/error';
 
 /**
@@ -23,7 +23,7 @@ export async function shell(command: string[]): Promise<string> {
 
     // Both write to stdout and collect
     child.stdout.on('data', chunk => {
-      process.stdout.write(chunk);
+      data(chunk);
       stdout.push(chunk);
     });
 

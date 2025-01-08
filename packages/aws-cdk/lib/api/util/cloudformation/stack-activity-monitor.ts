@@ -3,7 +3,7 @@ import { ArtifactMetadataEntryType, type MetadataEntry } from '@aws-cdk/cloud-as
 import type { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { ResourceEvent, StackEventPoller } from './stack-event-poller';
-import { error, setIoMessageThreshold } from '../../../logging';
+import { error, setIoMessageThreshold, info } from '../../../logging';
 import { IoMessageLevel } from '../../../toolkit/cli-io-host';
 import type { ICloudFormationClient } from '../../aws-auth';
 import { RewritableBlock } from '../display';
@@ -515,7 +515,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
   public stop() {
     // Print failures at the end
     if (this.failures.length > 0) {
-      this.stream.write('\nFailed resources:\n');
+      info('\nFailed resources:');
       for (const failure of this.failures) {
         // Root stack failures are not interesting
         if (failure.isStackEvent) {
@@ -549,9 +549,9 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
 
     const logicalId = resourceName !== event.LogicalResourceId ? `(${event.LogicalResourceId}) ` : '';
 
-    this.stream.write(
+    info(
       util.format(
-        '%s | %s%s | %s | %s | %s %s%s%s\n',
+        '%s | %s%s | %s | %s | %s %s%s%s',
         event.StackName,
         progress !== false ? `${this.progress()} | ` : '',
         new Date(event.Timestamp!).toLocaleTimeString(),
@@ -592,9 +592,9 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     }
 
     if (Object.keys(this.resourcesInProgress).length > 0) {
-      this.stream.write(
+      info(
         util.format(
-          '%s Currently in progress: %s\n',
+          '%s Currently in progress: %s',
           this.progress(),
           chalk.bold(Object.keys(this.resourcesInProgress).join(', ')),
         ),

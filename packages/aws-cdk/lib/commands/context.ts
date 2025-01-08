@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as version from '../../lib/version';
-import { print, error, warning } from '../logging';
+import { print, error, warning, info } from '../logging';
 import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
 import { renderTable } from '../util';
 
@@ -56,7 +56,7 @@ export async function contextHandler(options: ContextOptions): Promise<number> {
     if (options.json) {
       /* istanbul ignore next */
       const contextValues = options.context.all;
-      process.stdout.write(JSON.stringify(contextValues, undefined, 2));
+      info(JSON.stringify(contextValues, undefined, 2));
     } else {
       listContext(options.context);
     }

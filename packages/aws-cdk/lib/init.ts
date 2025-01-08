@@ -466,7 +466,7 @@ async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
       if (status === 0) {
         return ok(stdout);
       } else {
-        process.stderr.write(stdout);
+        error(stdout);
         return fail(new ToolkitError(`${cmd} exited with status ${status}`));
       }
     });
