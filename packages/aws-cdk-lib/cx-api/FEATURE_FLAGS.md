@@ -86,7 +86,7 @@ Flags come in three types:
 | [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | 2.174.0 | (fix) |
 | [@aws-cdk/aws-ecs:disableEcsImdsBlocking](#aws-cdkaws-ecsdisableecsimdsblocking) | When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)** | V2NEXT | (temporary) |
 | [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | V2NEXT | (temporary) |
-| [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | V2NEXT | (default) |
+| [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -160,7 +160,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
     "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
-    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
+    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true
   }
 }
 ```
@@ -206,7 +207,6 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | (default) |  | `false` | `true` |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | (fix) |  | `false` | `true` |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | (config) |  | `false` | `true` |
-| [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | (default) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -224,8 +224,7 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
     "@aws-cdk/pipelines:reduceAssetRoleTrustScope": false,
     "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": false,
-    "@aws-cdk/core:aspectStabilization": false,
-    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": false
+    "@aws-cdk/core:aspectStabilization": false
   }
 }
 ```
@@ -1429,6 +1428,20 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 | (not in v1) |  |  |
 | 2.172.0 | `true` | `true` |
 
+### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
+
+*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.174.0 | `false` | `true` |
+
 ### @aws-cdk/aws-ecs:disableEcsImdsBlocking
 
 *When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)*** (temporary)
@@ -1464,23 +1477,9 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 
 **Compatibility with old behavior:** Set this flag to false in order to continue using old and outdated commands. However, it is **not** recommended.
 
-### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
-
-*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
-
-When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
-creates a custom resource internally, but the new method doesn't need a custom resource.
-
-If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.174.0 | `false` | `true` |
-
 ### @aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault
 
-*When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere* (default)
+*When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere* (fix)
 
 For internet facing ALBs with 'dualstack-without-public-ipv4' IP address type, the default security group rules
 will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
@@ -1493,6 +1492,6 @@ on the overly restrictive permissions are not broken.
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
-**Compatibility with old behavior:** Disable the feature flag to only allow IPv4 ingress in the default security group rules
+**Compatibility with old behavior:** Disable the feature flag to only allow IPv4 ingress in the default security group rules.
 
 <!-- END details -->
