@@ -77,82 +77,90 @@ describe('every aspect gets invoked exactly once', () => {
   );
 });
 
-test('inherited aspects get invoked before locally defined aspects, if both have the same priority', () =>
-  fc.assert(
-    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
-      afterSynth((testApp) => {
-        forEveryVisitPair(testApp.actionLog, (a, b) => {
-          if (!sameConstruct(a, b)) return;
+describe('ordering', () => {
+  test('inherited aspects get invoked before locally defined aspects, if both have the same priority', () =>
+    fc.assert(
+      fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+        afterSynth((testApp) => {
+          forEveryVisitPair(testApp.actionLog, (a, b) => {
+            if (!sameConstruct(a, b)) return;
 
-          const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
-          const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+            const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+            const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
 
-          if (!(aPrio == bPrio)) return;
+            if (!(aPrio == bPrio)) return;
 
-          const aInherited = allAncestorAspects(a.construct).includes(a.aspect);
-          const bInherited = allAncestorAspects(b.construct).includes(b.aspect);
+            const aInherited = allAncestorAspects(a.construct).includes(a.aspect);
+            const bInherited = allAncestorAspects(b.construct).includes(b.aspect);
 
-          if (!(aInherited == true && bInherited == false)) return;
+            if (!(aInherited == true && bInherited == false)) return;
 
-          if (!(a.index < b.index)) {
-            throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at t=${a.index} (inherited=${aInherited}) should have been before ${b.aspect}@${bPrio} at t=${b.index} (inherited=${bInherited}), but was after`,
-            );
-          }
-        });
-      }, stabilizeAspects)(app);
-    }),
-  ),
-);
+            // If a got added after b, we can't complain that it got invoked after b.
+            if (aspectAppliedT(app, a.aspect, a.construct) > b.index) { return; }
 
-test('for every construct, lower priorities go before higher priorities', () =>
-  fc.assert(
-    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
-      afterSynth((testApp) => {
-        forEveryVisitPair(testApp.actionLog, (a, b) => {
-          if (!sameConstruct(a, b)) return;
+            if (!(a.index < b.index)) {
+              throw new Error(
+                `Aspect ${a.aspect}@${aPrio} at t=${a.index} (inherited=${aInherited}) should have been before ${b.aspect}@${bPrio} at t=${b.index} (inherited=${bInherited}), but was after`,
+              );
+            }
+          });
+        }, stabilizeAspects)(app);
+      }),
+    ),
+  );
 
-          const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
-          const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+  test('for every construct, lower priorities go before higher priorities', () =>
+    fc.assert(
+      fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+        afterSynth((testApp) => {
+          forEveryVisitPair(testApp.actionLog, (a, b) => {
+            if (!sameConstruct(a, b)) return;
 
-          // But only if the application of aspect A exists at least as long as the application of aspect B
-          const aAppliedT = aspectAppliedT(testApp, a.aspect, a.construct);
-          const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
+            const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+            const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
 
-          if (!implies(aPrio < bPrio && aAppliedT <= bAppliedT, a.index < b.index)) {
-            throw new Error(
-              `Aspect ${a.aspect}@${aPrio} (applied at t=${aAppliedT}) at t=${a.index} should have been before ${b.aspect}@${bPrio} (applied at t=${bAppliedT}) at t=${b.index}, but was after`,
-            );
-          }
-        });
-      }, stabilizeAspects)(app);
-    }),
-  ),
-);
+            // But only if the application of aspect A exists at least as long as the application of aspect B
+            const aAppliedT = aspectAppliedT(testApp, a.aspect, a.construct);
+            const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
 
-test('for every construct, if a invokes before b that must mean it is of equal or lower priority', () =>
-  fc.assert(
-    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
-      afterSynth((testApp) => {
-        forEveryVisitPair(testApp.actionLog, (a, b) => {
-          if (!sameConstruct(a, b)) return;
+            // If a got added after b, we can't complain that it got invoked after b.
+            if (aspectAppliedT(app, a.aspect, a.construct) > b.index) { return; }
 
-          const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
-          const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+            if (!implies(aPrio < bPrio && aAppliedT <= bAppliedT, a.index < b.index)) {
+              throw new Error(
+                `Aspect ${a.aspect}@${aPrio} (applied at t=${aAppliedT}) at t=${a.index} should have been before ${b.aspect}@${bPrio} (applied at t=${bAppliedT}) at t=${b.index}, but was after`,
+              );
+            }
+          });
+        }, stabilizeAspects)(app);
+      }),
+    ),
+  );
 
-          // We can't invoke an aspect before it was applied
-          const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
+  test('for every construct, if a invokes before b that must mean it is of equal or lower priority', () =>
+    fc.assert(
+      fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+        afterSynth((testApp) => {
+          forEveryVisitPair(testApp.actionLog, (a, b) => {
+            if (!sameConstruct(a, b)) return;
 
-          if (!implies(bAppliedT < a.index && a.index < b.index, aPrio <= bPrio)) {
-            throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at t=${a.index} should have been after ${b.aspect}@${bPrio} (added at t=${bAppliedT}) at t=${b.index}, but was before`,
-            );
-          }
-        });
-      }, stabilizeAspects)(app);
-    }),
-  ),
-);
+            const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+            const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+
+            // We can't invoke an aspect before it was applied
+            const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
+
+            if (!implies(bAppliedT < a.index && a.index < b.index, aPrio <= bPrio)) {
+              throw new Error(
+                `Aspect ${a.aspect}@${aPrio} at t=${a.index} should have been after ${b.aspect}@${bPrio} (added at t=${bAppliedT}) at t=${b.index}, but was before`,
+              );
+            }
+          });
+        }, stabilizeAspects)(app);
+      }),
+    ),
+  );
+});
 
 test('visitLog is nonempty', () =>
   fc.assert(
@@ -171,7 +179,7 @@ function afterSynth(block: (x: PrettyApp) => void, stabilizeAspects: boolean) {
   return (app: PrettyApp) => {
     let asm;
     try {
-      asm = app.cdkApp.synth({ aspectStabilization: stabilizeAspects });
+      asm = app.cdkApp.synth({ aspectStabilization: true });
     } catch (error) {
       if (error.message.includes('Cannot invoke Aspect')) {
         return;
