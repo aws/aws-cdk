@@ -100,28 +100,6 @@ describe('MSK Serverless Cluster', () => {
     });
   });
 
-  test('throws error for invalid cluster name', () => {
-    expect(() =>
-      new msk.ServerlessCluster(stack, 'ServerlessCluster', {
-        clusterName: 'invalid-name',
-        vpcConfigs: [{
-          vpc,
-        }],
-      }),
-    ).toThrow('The cluster name must only contain alphanumeric characters. got: invalid-name.');
-  });
-
-  test('throws error when cluster name exceeds maximum length', () => {
-    expect(() =>
-      new msk.ServerlessCluster(stack, 'ServerlessCluster', {
-        clusterName: 'a'.repeat(65),
-        vpcConfigs: [{
-          vpc,
-        }],
-      }),
-    ).toThrow('The cluster name must not exceed 64 characters. got: 65 characters.');
-  });
-
   test('throws error when VPC configurations are empty', () => {
     expect(() =>
       new msk.ServerlessCluster(stack, 'ServerlessCluster', {

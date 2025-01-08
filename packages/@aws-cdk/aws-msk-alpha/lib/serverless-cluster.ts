@@ -76,16 +76,6 @@ export class ServerlessCluster extends ClusterBase {
   private _securityGroups: ec2.ISecurityGroup[] = [];
 
   constructor(scope: constructs.Construct, id: string, props: ServerlessClusterProps) {
-    if (!Token.isUnresolved(props.clusterName) && props.clusterName !== undefined) {
-      if (!/^[a-zA-Z0-9]+$/.test(props.clusterName)) {
-        throw Error(`The cluster name must only contain alphanumeric characters. got: ${props.clusterName}.`);
-      }
-
-      if (props.clusterName.length > 64) {
-        throw Error(`The cluster name must not exceed 64 characters. got: ${props.clusterName.length} characters.`);
-      }
-    }
-
     super(scope, id, {
       physicalName: props.clusterName ??
         Lazy.string({
