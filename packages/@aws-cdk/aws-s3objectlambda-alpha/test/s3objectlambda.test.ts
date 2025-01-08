@@ -46,6 +46,9 @@ test('Can create a valid access point', () => {
       regional: false,
     }),
   });
+  new cdk.CfnOutput(stack, 'S3AccessPointArn', {
+    value: accessPoint.s3AccessPointArn,
+  });
 
   expect(Template.fromStack(stack).findOutputs('*')).toEqual(
     {
@@ -95,6 +98,14 @@ test('Can create a valid access point', () => {
                 Ref: 'AWS::URLSuffix',
               },
             ],
+          ],
+        },
+      },
+      S3AccessPointArn: {
+        Value: {
+          'Fn::GetAtt': [
+            'MyObjectLambdaSupportingAccessPointA2D2026E',
+            'Arn',
           ],
         },
       },
