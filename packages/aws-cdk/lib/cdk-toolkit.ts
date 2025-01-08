@@ -4,6 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
+import { minimatch } from 'minimatch';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
@@ -799,6 +800,16 @@ export class CdkToolkit {
   public async destroy(options: DestroyOptions) {
     let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
 
+    await this.suggestStacks({
+      selector: options.selector,
+      stacks,
+      exclusively: options.exclusively,
+    });
+    if (stacks.stackArtifacts.length === 0) {
+      warning(`No stacks match the name(s): ${chalk.red(options.selector.patterns.join(', '))}`);
+      return;
+    }
+
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
 
@@ -1160,6 +1171,49 @@ export class CdkToolkit {
     // No validation
 
     return stacks;
+  }
+
+  private async suggestStacks(props: {
+    selector: StackSelector;
+    stacks: StackCollection;
+    exclusively?: boolean;
+  }) {
+    const assembly = await this.assembly();
+    const selectorWithoutPatterns: StackSelector = {
+      ...props.selector,
+      allTopLevel: true,
+      patterns: [],
+    };
+    const stacksWithoutPatterns = await assembly.selectStacks(selectorWithoutPatterns, {
+      extend: props.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
+      defaultBehavior: DefaultSelection.OnlySingle,
+    });
+
+    const patterns = props.selector.patterns.map(pattern => {
+      const notExist = !props.stacks.stackArtifacts.find(stack =>
+        minimatch(stack.hierarchicalId, pattern),
+      );
+
+      const closelyMatched = notExist ? stacksWithoutPatterns.stackArtifacts.map(stack => {
+        if (minimatch(stack.hierarchicalId.toLowerCase(), pattern.toLowerCase())) {
+          return stack.hierarchicalId;
+        }
+        return;
+      }).filter((stack): stack is string => stack !== undefined) : [];
+
+      return {
+        pattern,
+        notExist,
+        closelyMatched,
+      };
+    });
+
+    for (const pattern of patterns) {
+      if (pattern.notExist) {
+        const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${chalk.blue(pattern.closelyMatched.join(', '))}?` : '';
+        warning(`${chalk.red(pattern.pattern)} does not exist.${closelyMatched}`);
+      }
+    };
   }
 
   /**
