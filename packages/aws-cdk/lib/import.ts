@@ -2,7 +2,6 @@ import { DeployOptions } from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { ResourceDifference } from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { DeploymentMethod } from './api';
@@ -13,6 +12,7 @@ import { StackActivityProgress } from './api/util/cloudformation/stack-activity-
 import { Tag } from './cdk-toolkit';
 import { error, print, success, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
+import * as chalk from './util/cdk-chalk';
 
 export interface ImportDeploymentOptions extends DeployOptions {
   deploymentMethod?: DeploymentMethod;

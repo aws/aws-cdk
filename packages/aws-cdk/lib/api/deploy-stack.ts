@@ -7,7 +7,6 @@ import type {
   UpdateStackCommandInput,
   Tag,
 } from '@aws-sdk/client-cloudformation';
-import * as chalk from 'chalk';
 import * as uuid from 'uuid';
 import type { SDK, SdkProvider, ICloudFormationClient } from './aws-auth';
 import type { EnvironmentResources } from './environment-resources';
@@ -32,6 +31,7 @@ import { type TemplateBodyParameter, makeBodyParameter } from './util/template-b
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
+import * as chalk from '../util/cdk-chalk';
 import { StringWithoutPlaceholders } from './util/placeholders';
 
 export type DeployStackResult =

@@ -1,9 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
-import * as chalk from 'chalk';
 import * as promptly from 'promptly';
 import { debug, print } from '../../logging';
+import * as chalk from '../../util/cdk-chalk';
 import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';

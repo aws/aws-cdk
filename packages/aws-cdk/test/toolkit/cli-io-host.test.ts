@@ -1,5 +1,5 @@
-import * as chalk from 'chalk';
 import { CliIoHost, IoMessage, validateMessageCode } from '../../lib/toolkit/cli-io-host';
+import * as chalk from '../../lib/util/cdk-chalk';
 
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;

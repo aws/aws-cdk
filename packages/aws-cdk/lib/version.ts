@@ -1,7 +1,7 @@
 import * as path from 'path';
-import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
+import * as chalk from './util/cdk-chalk';
 import { cdkCacheDir, rootDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
 import { debug, print } from '../lib/logging';

@@ -1,6 +1,6 @@
 import * as childProcess from 'child_process';
-import * as chalk from 'chalk';
 import { debug, print, warning } from '../../lib/logging';
+import * as chalk from '../util/cdk-chalk';
 
 export const command = 'docs';
 export const describe = 'Opens the reference documentation in a browser';

@@ -1,6 +1,6 @@
 import * as util from 'util';
-import * as chalk from 'chalk';
 import { IoMessageLevel, IoMessage, CliIoHost, validateMessageCode } from './toolkit/cli-io-host';
+import * as chalk from './util/cdk-chalk';
 
 // Corking mechanism
 let CORK_COUNTER = 0;
@@ -70,10 +70,10 @@ interface LogOptions {
    */
   forceStdout?: boolean;
   /**
- * Message code of the format [CATEGORY]_[NUMBER_CODE]
- * @pattern [A-Z]+_[0-2][0-9]{3}
- * @default TOOLKIT_[0/1/2]000
- */
+   * Message code of the format [CATEGORY]_[NUMBER_CODE]
+   * @pattern [A-Z]+_[0-2][0-9]{3}
+   * @default TOOLKIT_[0/1/2]000
+   */
   code?: string;
 }
 

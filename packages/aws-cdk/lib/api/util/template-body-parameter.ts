@@ -2,11 +2,11 @@ import * as path from 'path';
 import { type CloudFormationStackArtifact, type Environment, EnvironmentPlaceholders } from '@aws-cdk/cx-api';
 import { HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getEndpointFromInstructions } from '@smithy/middleware-endpoint';
-import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { debug, error } from '../../logging';
 import { toYAML } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
+import * as chalk from '../../util/cdk-chalk';
 import { contentHash } from '../../util/content-hash';
 import { EnvironmentResources } from '../environment-resources';
 

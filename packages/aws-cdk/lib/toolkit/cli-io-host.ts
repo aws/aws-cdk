@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import * as chalk from '../util/cdk-chalk';
 
 /**
  * Basic message structure for toolkit notifications.
@@ -97,13 +97,17 @@ export class CliIoHost {
 
   /**
    * Whether the host should apply chalk styles to messages. Defaults to false if the host is not running in a TTY.
+   *
+   * @default false
    */
   private isTTY: boolean;
 
   /**
    * Whether the CliIoHost is running in CI mode. In CI mode, all non-error output goes to stdout instead of stderr.
+   *
+   * @default false
    */
-  private ci: boolean = false;
+  private ci: boolean;
 
   /**
    * the current {@link IoAction} set by the CLI.
@@ -112,6 +116,7 @@ export class CliIoHost {
 
   private constructor() {
     this.isTTY = process.stdout.isTTY ?? false;
+    this.ci = false;
   }
 
   public static get currentAction(): IoAction | undefined {

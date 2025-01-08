@@ -1,11 +1,11 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { WaiterResult } from '@smithy/util-waiter';
-import * as chalk from 'chalk';
 import type { SDK, SdkProvider } from './aws-auth';
 import type { SuccessfulDeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 import { print } from '../logging';
+import * as chalk from '../util/cdk-chalk';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
 import {

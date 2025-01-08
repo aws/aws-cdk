@@ -1,10 +1,10 @@
 import * as util from 'util';
 import { ArtifactMetadataEntryType, type MetadataEntry } from '@aws-cdk/cloud-assembly-schema';
 import type { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
-import * as chalk from 'chalk';
 import { ResourceEvent, StackEventPoller } from './stack-event-poller';
 import { error, setIoMessageThreshold, info } from '../../../logging';
 import { IoMessageLevel } from '../../../toolkit/cli-io-host';
+import * as chalk from '../../../util/cdk-chalk';
 import type { ICloudFormationClient } from '../../aws-auth';
 import { RewritableBlock } from '../display';
 

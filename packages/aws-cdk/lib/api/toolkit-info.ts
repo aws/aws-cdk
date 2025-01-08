@@ -1,7 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as chalk from 'chalk';
 import type { SDK } from './aws-auth';
 import { debug } from '../logging';
+import * as chalk from '../util/cdk-chalk';
 import {
   BOOTSTRAP_VARIANT_PARAMETER,
   BOOTSTRAP_VERSION_OUTPUT,

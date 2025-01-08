@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
-import * as chalk from 'chalk';
 import { debug, data } from './logging';
 import { ToolkitError } from './toolkit/error';
+import * as chalk from './util/cdk-chalk';
 
 /**
  * OS helpers
