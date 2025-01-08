@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "KeyAgreementIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kms-key-agreement"
+      ],
+      "assertionStack": "KeyAgreementIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "KeyAgreementIntegTestDefaultTestDeployAssert01B3C2C1"
+    }
+  }
+}

@@ -1,6 +1,5 @@
 import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 
 /**
@@ -46,10 +45,7 @@ export class KinesisStream implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.stream);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['kinesis:PutRecord', 'kinesis:PutRecords'],
-      resources: [this.stream.streamArn],
-    }));
+    this.stream.grantWrite(role);
 
     return {
       ...bindBaseTargetConfig(this.props),

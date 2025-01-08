@@ -327,7 +327,7 @@ export class Bundle {
 
       if (this.test) {
         const command = `${path.join(bundleDir, this.test)}`;
-        console.log(`Running santiy test: ${command}`);
+        console.log(`Running sanity test: ${command}`);
         shell(command, { cwd: bundleDir });
       }
 
@@ -443,7 +443,7 @@ export class Bundle {
       bundle: true,
       target: 'node14',
       platform: 'node',
-      sourcemap: this.sourcemap ?? 'inline',
+      sourcemap: this.sourcemap,
       metafile: true,
       minify: this.minify,
       minifyWhitespace: this.minifyWhitespace,

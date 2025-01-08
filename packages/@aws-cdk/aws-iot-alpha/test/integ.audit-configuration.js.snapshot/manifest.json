@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d809d9222ee845df66ea2b3540b3dffe1098b00da280f913784b983e7e4ddf35.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c093a5b4a568daafc27fab102fea007eaf70c883b8e02171441d44e702e0cebc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,6 +57,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AuditConfiguration8C793652"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/DailyAudit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DailyAudit1160906D"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/WeeklyAudit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WeeklyAudit5489D5FF"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/MonthlyAudit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MonthlyAudit11A7B28C"
           }
         ],
         "/IotAuditConfigurationTestStack/BootstrapVersion": [

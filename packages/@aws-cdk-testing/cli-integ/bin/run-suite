@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('./run-suite.js');
+require('../lib/cli/run-suite.js');

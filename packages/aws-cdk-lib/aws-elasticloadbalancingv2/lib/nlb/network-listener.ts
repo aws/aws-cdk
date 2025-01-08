@@ -7,7 +7,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, IpAddressType, Protocol, SslPolicy } from '../shared/enums';
+import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
@@ -193,13 +193,6 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     if (proto !== Protocol.TLS && props.alpnPolicy) {
       throw new Error('Protocol must be TLS when alpnPolicy have been specified');
-    }
-
-    if (
-      props.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK &&
-      (props.protocol === Protocol.UDP || props.protocol === Protocol.TCP_UDP)
-    ) {
-      throw new Error('UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer.');
     }
 
     super(scope, id, {

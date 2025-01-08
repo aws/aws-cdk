@@ -4,6 +4,7 @@
    "Type": "AWS::KMS::Key",
    "Properties": {
     "Description": "Created by aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket",
+    "EnableKeyRotation": true,
     "KeyPolicy": {
      "Statement": [
       {
@@ -46,8 +47,8 @@
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ServerAccessLogsBucket05F29982": {
    "Type": "AWS::S3::Bucket",

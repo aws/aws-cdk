@@ -1,0 +1,197 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "s3-lifecycle-transitions": {
+        "id": "s3-lifecycle-transitions",
+        "path": "s3-lifecycle-transitions",
+        "children": {
+          "AllStorageClasses128K": {
+            "id": "AllStorageClasses128K",
+            "path": "s3-lifecycle-transitions/AllStorageClasses128K",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "s3-lifecycle-transitions/AllStorageClasses128K/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "DEEP_ARCHIVE",
+                              "transitionInDays": 30
+                            }
+                          ]
+                        },
+                        {
+                          "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "ONEZONE_IA",
+                              "transitionInDays": 30
+                            }
+                          ],
+                          "objectSizeLessThan": 300000,
+                          "objectSizeGreaterThan": 200000
+                        }
+                      ],
+                      "transitionDefaultMinimumObjectSize": "all_storage_classes_128K"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "VariesByStorageClass": {
+            "id": "VariesByStorageClass",
+            "path": "s3-lifecycle-transitions/VariesByStorageClass",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "s3-lifecycle-transitions/VariesByStorageClass/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "DEEP_ARCHIVE",
+                              "transitionInDays": 30
+                            }
+                          ]
+                        },
+                        {
+                          "status": "Enabled",
+                          "transitions": [
+                            {
+                              "storageClass": "ONEZONE_IA",
+                              "transitionInDays": 30
+                            }
+                          ],
+                          "objectSizeLessThan": 300000,
+                          "objectSizeGreaterThan": 200000
+                        }
+                      ],
+                      "transitionDefaultMinimumObjectSize": "varies_by_storage_class"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "s3-lifecycle-transitions/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "s3-lifecycle-transitions/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "cdk-integ-s3-lifecycle-transitions": {
+        "id": "cdk-integ-s3-lifecycle-transitions",
+        "path": "cdk-integ-s3-lifecycle-transitions",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-s3-lifecycle-transitions/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}

@@ -8,20 +8,20 @@ import { hashValues } from './common';
   */
 export interface TargetApplicationCommonOptions extends cdk.StackProps {
   /**
-    * Stack ID in which application will be created or imported. The id of a stack is also the identifier that you use to
-    * refer to it in the [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html).
-    *
-    * @default - The value of `stackName` will be used as stack id
-    * @deprecated - Use `stackName` instead to control the name and id of the stack
-    */
+   * Stack ID in which application will be created or imported. The id of a stack is also the identifier that you use to
+   * refer to it in the [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html).
+   *
+   * @default - The value of `stackName` will be used as stack id
+   * @deprecated - Use `stackName` instead to control the name and id of the stack
+   */
   readonly stackId?: string;
 
   /**
-    * Determines whether any cross-account stacks defined in the CDK app definition should be associated with the
-    * target application. If set to `true`, the application will first be shared with the accounts that own the stacks.
-    *
-    * @default - false
-    */
+   * Determines whether any cross-account stacks defined in the CDK app definition should be associated with the
+   * target application. If set to `true`, the application will first be shared with the accounts that own the stacks.
+   *
+   * @default - false
+   */
   readonly associateCrossAccountStacks?: boolean;
 }
 
@@ -30,15 +30,15 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
   */
 export interface CreateTargetApplicationOptions extends TargetApplicationCommonOptions {
   /**
-    * Enforces a particular physical application name.
-    */
+   * Enforces a particular physical application name.
+   */
   readonly applicationName: string;
 
   /**
-    * Application description.
-    *
-    * @default - Application containing stacks deployed via CDK.
-    */
+   * Application description.
+   *
+   * @default - Application containing stacks deployed via CDK.
+   */
   readonly applicationDescription?: string;
 
   /**
@@ -54,8 +54,8 @@ export interface CreateTargetApplicationOptions extends TargetApplicationCommonO
   */
 export interface ExistingTargetApplicationOptions extends TargetApplicationCommonOptions {
   /**
-    * Enforces a particular application arn.
-    */
+   * Enforces a particular application arn.
+   */
   readonly applicationArnValue: string;
 }
 
@@ -65,24 +65,24 @@ export interface ExistingTargetApplicationOptions extends TargetApplicationCommo
   */
 export abstract class TargetApplication {
   /**
-    * Factory method to build the input using the provided
-    * application ARN.
-    */
+   * Factory method to build the input using the provided
+   * application ARN.
+   */
   public static existingApplicationFromArn(options: ExistingTargetApplicationOptions) : TargetApplication {
     return new ExistingTargetApplication(options);
   }
 
   /**
-    * Factory method to build the input using the provided
-    * application name and stack props.
-    */
+   * Factory method to build the input using the provided
+   * application name and stack props.
+   */
   public static createApplicationStack(options: CreateTargetApplicationOptions) : TargetApplication {
     return new CreateTargetApplication(options);
   }
 
   /**
-    * Called when the ApplicationAssociator is initialized
-    */
+   * Called when the ApplicationAssociator is initialized
+   */
   public abstract bind(scope: Construct): BindTargetApplicationResult;
 }
 

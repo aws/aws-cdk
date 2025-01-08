@@ -536,8 +536,21 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 ## Extension
 
 An extension augments your ability to inject logic or behavior at different points during the AWS AppConfig workflow of
-creating or deploying a configuration.
+creating or deploying a configuration. You can associate these types of tasks with AWS AppConfig applications, environments, and configuration profiles.
 See: https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html
+
+An extension defines one or more actions, that it performs during an AWS AppConfig workflow. Each action is invoked either when you interact with AWS AppConfig or when AWS AppConfig is performing a process on your behalf. These invocation points are called action points. AWS AppConfig extensions support the following action points: 
+
+* PRE_START_DEPLOYMENT
+* PRE_CREATE_HOSTED_CONFIGURATION_VERSION
+* ON_DEPLOYMENT_START
+* ON_DEPLOYMENT_STEP
+* ON_DEPLOYMENT_BAKING
+* ON_DEPLOYMENT_COMPLETE
+* ON_DEPLOYMENT_ROLLED_BACK
+* AT_DEPLOYMENT_TICK
+
+See: https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions-about.html
 
 ### AWS Lambda destination
 

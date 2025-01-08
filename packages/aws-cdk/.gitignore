@@ -4,6 +4,7 @@
 !lib/init-templates/**/javascript/**/*
 lib/init-templates/**/*.hook.js
 lib/init-templates/**/*.hook.d.ts
+lib/init-templates/.*.json
 node_modules
 dist
 
@@ -39,6 +40,7 @@ test/integ/cli/*.d.ts
 .DS_Store
 
 junit.xml
+
 
 lib/**/*.wasm
 db.json.gz

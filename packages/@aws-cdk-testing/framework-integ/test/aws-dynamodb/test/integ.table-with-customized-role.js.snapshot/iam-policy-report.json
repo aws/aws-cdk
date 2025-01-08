@@ -1,0 +1,90 @@
+{
+  "roles": [
+    {
+      "roleConstructPath": "cdk-table-with-customized-role/Table/ScalingRole",
+      "roleName": "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable",
+      "assumeRolePolicy": [],
+      "managedPolicyArns": [],
+      "managedPolicyStatements": [],
+      "identityPolicyStatements": []
+    },
+    {
+      "roleConstructPath": "cdk-table-with-customized-role/Role",
+      "roleName": "my-precreated-role-name",
+      "missing": false,
+      "assumeRolePolicy": [
+        {
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "dynamodb.amazonaws.com"
+          }
+        }
+      ],
+      "managedPolicyArns": [],
+      "managedPolicyStatements": [],
+      "identityPolicyStatements": [
+        {
+          "Action": [
+            "dynamodb:BatchGetItem",
+            "dynamodb:GetRecords",
+            "dynamodb:GetShardIterator",
+            "dynamodb:Query",
+            "dynamodb:GetItem",
+            "dynamodb:Scan",
+            "dynamodb:ConditionCheckItem",
+            "dynamodb:DescribeTable"
+          ],
+          "Effect": "Allow",
+          "Resource": [
+            "(cdk-table-with-customized-role/Table/Resource.Arn)",
+            "(cdk-table-with-customized-role/Table/Resource.Arn)/index/*"
+          ]
+        }
+      ]
+    },
+    {
+      "roleConstructPath": "cdk-table-with-customized-role2/Table/ScalingRole",
+      "roleName": "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable",
+      "assumeRolePolicy": [],
+      "managedPolicyArns": [],
+      "managedPolicyStatements": [],
+      "identityPolicyStatements": []
+    },
+    {
+      "roleConstructPath": "cdk-table-with-customized-role2/Role",
+      "roleName": "my-precreated-role-name",
+      "missing": false,
+      "assumeRolePolicy": [
+        {
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "dynamodb.amazonaws.com"
+          }
+        }
+      ],
+      "managedPolicyArns": [],
+      "managedPolicyStatements": [],
+      "identityPolicyStatements": [
+        {
+          "Action": [
+            "dynamodb:BatchGetItem",
+            "dynamodb:GetRecords",
+            "dynamodb:GetShardIterator",
+            "dynamodb:Query",
+            "dynamodb:GetItem",
+            "dynamodb:Scan",
+            "dynamodb:ConditionCheckItem",
+            "dynamodb:DescribeTable"
+          ],
+          "Effect": "Allow",
+          "Resource": [
+            "(cdk-table-with-customized-role2/Table/Resource.Arn)",
+            "(NOVALUE)"
+          ]
+        }
+      ]
+    }
+  ]
+}

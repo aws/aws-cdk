@@ -18,6 +18,16 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
   enableLocalWriteForwarding: true,
 });
 
+new rds.DatabaseCluster(stack, 'DatabaseClusterPostgresql', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_4 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  readers: [
+    rds.ClusterInstance.serverlessV2('readerInstance1'),
+  ],
+  vpc,
+  enableLocalWriteForwarding: true,
+});
+
 new integ.IntegTest(app, 'EnableLocalWriteForwardingClusterStackInteg', {
   testCases: [stack],
 });
