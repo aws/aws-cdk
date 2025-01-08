@@ -2,7 +2,6 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-// istanbul ignore file
 /* eslint-disable @stylistic/max-len */
 import { CliArguments, GlobalOptions } from './cli-arguments';
 import { Command } from './settings';
@@ -42,6 +41,7 @@ export function convertToCliArgs(args: any): CliArguments {
       commandOptions = {
         long: args.long,
         showDependencies: args.showDependencies,
+        STACKS: args.STACKS,
       };
       break;
 
@@ -50,6 +50,7 @@ export function convertToCliArgs(args: any): CliArguments {
         exclusively: args.exclusively,
         validation: args.validation,
         quiet: args.quiet,
+        STACKS: args.STACKS,
       };
       break;
 
@@ -73,6 +74,7 @@ export function convertToCliArgs(args: any): CliArguments {
         toolkitStackName: args.toolkitStackName,
         template: args.template,
         previousParameters: args.previousParameters,
+        ENVIRONMENTS: args.ENVIRONMENTS,
       };
       break;
 
@@ -84,6 +86,7 @@ export function convertToCliArgs(args: any): CliArguments {
         createdBufferDays: args.createdBufferDays,
         confirm: args.confirm,
         bootstrapStackName: args.bootstrapStackName,
+        ENVIRONMENTS: args.ENVIRONMENTS,
       };
       break;
 
@@ -114,6 +117,7 @@ export function convertToCliArgs(args: any): CliArguments {
         assetParallelism: args.assetParallelism,
         assetPrebuild: args.assetPrebuild,
         ignoreNoStacks: args.ignoreNoStacks,
+        STACKS: args.STACKS,
       };
       break;
 
@@ -124,6 +128,7 @@ export function convertToCliArgs(args: any): CliArguments {
         force: args.force,
         validateBootstrapVersion: args.validateBootstrapVersion,
         orphan: args.orphan,
+        STACKS: args.STACKS,
       };
       break;
 
@@ -136,6 +141,7 @@ export function convertToCliArgs(args: any): CliArguments {
         force: args.force,
         recordResourceMapping: args.recordResourceMapping,
         resourceMapping: args.resourceMapping,
+        STACK: args.STACK,
       };
       break;
 
@@ -152,6 +158,7 @@ export function convertToCliArgs(args: any): CliArguments {
         hotswapFallback: args.hotswapFallback,
         logs: args.logs,
         concurrency: args.concurrency,
+        STACKS: args.STACKS,
       };
       break;
 
@@ -160,6 +167,7 @@ export function convertToCliArgs(args: any): CliArguments {
         all: args.all,
         exclusively: args.exclusively,
         force: args.force,
+        STACKS: args.STACKS,
       };
       break;
 
@@ -174,15 +182,20 @@ export function convertToCliArgs(args: any): CliArguments {
         processed: args.processed,
         quiet: args.quiet,
         changeSet: args.changeSet,
+        STACKS: args.STACKS,
       };
       break;
 
     case 'metadata':
-      commandOptions = {};
+      commandOptions = {
+        STACK: args.STACK,
+      };
       break;
 
     case 'acknowledge':
-      commandOptions = {};
+      commandOptions = {
+        ID: args.ID,
+      };
       break;
 
     case 'notices':
@@ -196,6 +209,7 @@ export function convertToCliArgs(args: any): CliArguments {
         language: args.language,
         list: args.list,
         generateOnly: args.generateOnly,
+        TEMPLATE: args.TEMPLATE,
       };
       break;
 
@@ -233,7 +247,7 @@ export function convertToCliArgs(args: any): CliArguments {
       break;
   }
   const cliArguments: CliArguments = {
-    _: args._,
+    _: args._[0],
     globalOptions,
     [args._[0]]: commandOptions,
   };
