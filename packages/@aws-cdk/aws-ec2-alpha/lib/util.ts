@@ -148,6 +148,22 @@ export class CidrBlock {
   }
 
   /**
+   * Checks if two IPv4 address ranges overlap.
+   *
+   * @param range1 The first IP address range represented as an array [start, end].
+   * @param range2 The second IP address range represented as an array [start, end].
+   * @returns True if the two IP address ranges overlap, false otherwise.
+   *
+   * Note: This method assumes that the start and end addresses are valid IPv4 addresses.
+   */
+  public static rangesOverlap(range1: CidrBlock, range2: CidrBlock): boolean {
+    const [start1, end1] = [range1.minIp(), range1.maxIp()].map(ip => NetworkUtils.ipToNum(ip));
+    const [start2, end2] = [range2.minIp(), range2.maxIp()].map(ip => NetworkUtils.ipToNum(ip));
+    // Check if ranges overlap
+    return start1 <= end2 && start2 <= end1;
+  }
+
+  /**
    * IP address in the CIDR block.
    */
   public readonly cidr: string;
@@ -259,22 +275,6 @@ export class CidrBlock {
       (this.minAddress() <= other.minAddress());
   }
 
-  /**
-   * Checks if two IPv4 address ranges overlap.
-   *
-   * @param range1 The first IP address range represented as an array [start, end].
-   * @param range2 The second IP address range represented as an array [start, end].
-   * @returns True if the two IP address ranges overlap, false otherwise.
-   *
-   * Note: This method assumes that the start and end addresses are valid IPv4 addresses.
-   */
-  public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
-    const [start1, end1] = range1.map(ip => NetworkUtils.ipToNum(ip));
-    const [start2, end2] = range2.map(ip => NetworkUtils.ipToNum(ip));
-    // Check if ranges overlap
-    return start1 <= end2 && start2 <= end1;
-  }
-
 }
 
 /**
@@ -285,6 +285,53 @@ export class CidrBlock {
  * IP addresses in a CIDR block, and checking if two CIDR blocks overlap.
  */
 export class CidrBlockIpv6 {
+
+  /**
+   *
+   * @param range1 Ipv6 CIDR range to compare
+   * @param range2 Ipv6 CIDR range to compare
+   * @returns true if two ranges overlap, false otherwise
+   */
+  public static rangesOverlap(cidr1: CidrBlockIpv6, cidr2: CidrBlockIpv6): boolean {
+    const [start1, end1] = this.getIPv6Range(cidr1.cidr);
+    const [start2, end2] = this.getIPv6Range(cidr2.cidr);
+
+    return (start1 <= end2) && (start2 <= end1);
+  }
+
+  private static parseBigIntParts(ipAddress: string): bigint[] {
+    return ipAddress.split(':').map((part) => BigInt(`0x${part.padStart(4, '0')}` || '0'));
+  }
+
+  /**
+   *
+   * @param cidr
+   * @returns Range in the form of big int number [start, end]
+   */
+  private static getIPv6Range(cidr: string): [bigint, bigint] {
+    const [ipv6Address, prefixLength] = cidr.split('/');
+    const ipv6Number = this.ipv6ToNumber(ipv6Address);
+    const mask = (BigInt(1) << BigInt(128 - Number(prefixLength))) - BigInt(1);
+    const networkPrefix = ipv6Number & ~mask;
+    const start = networkPrefix;
+    const end = networkPrefix | mask;
+
+    return [start, end];
+  }
+
+  /**
+   * @param ipv6Address
+   * @returns Converts given ipv6 address range to big int number
+   */
+  private static ipv6ToNumber(ipv6Address: string): bigint {
+    const blocks = this.parseBigIntParts(ipv6Address);
+    let ipv6Number = BigInt(0);
+    for (const block of blocks) {
+      /* tslint:disable:no-bitwise */
+      ipv6Number = (ipv6Number << BigInt(16)) + block;
+    }
+    return ipv6Number;
+  }
 
   /**
    * Ipv6 CIDR range
@@ -302,13 +349,9 @@ export class CidrBlockIpv6 {
     this.cidr = cidr;
     const [ipAddress, prefix] = cidr.split('/');
     this.cidrPrefix = parseInt(prefix, 10);
-    this.ipParts = this.parseBigIntParts(ipAddress);
+    this.ipParts = CidrBlockIpv6.parseBigIntParts(ipAddress);
     this.networkBits = this.cidrPrefix;
     this.networkPart = this.ipParts.slice(0, Math.ceil(this.networkBits / 16));
-  }
-
-  private parseBigIntParts(ipAddress: string): bigint[] {
-    return ipAddress.split(':').map((part) => BigInt(`0x${part.padStart(4, '0')}` || '0'));
   }
 
   /**
@@ -335,46 +378,4 @@ export class CidrBlockIpv6 {
 
   private formatIPv6Part = (part: bigint) => part.toString(16).padStart(4, '0');
 
-  /**
-   *
-   * @param range1 Ipv6 CIDR range to compare
-   * @param range2 Ipv6 CIDR range to compare
-   * @returns true if two ranges overlap, false otherwise
-   */
-  public rangesOverlap(range1: string, range2: string): boolean {
-    const [start1, end1] = this.getIPv6Range(range1);
-    const [start2, end2] = this.getIPv6Range(range2);
-
-    return (start1 <= end2) && (start2 <= end1);
-  }
-
-  /**
-   *
-   * @param cidr
-   * @returns Range in the from of big int number [start, end]
-   */
-  private getIPv6Range(cidr: string): [bigint, bigint] {
-    const [ipv6Address, prefixLength] = cidr.split('/');
-    const ipv6Number = this.ipv6ToNumber(ipv6Address);
-    const mask = (BigInt(1) << BigInt(128 - Number(prefixLength))) - BigInt(1);
-    const networkPrefix = ipv6Number & ~mask;
-    const start = networkPrefix;
-    const end = networkPrefix | mask;
-
-    return [start, end];
-  }
-
-  /**
-   * @param ipv6Address
-   * @returns Converts given ipv6 address range to big int number
-   */
-  private ipv6ToNumber(ipv6Address: string): bigint {
-    const blocks = this.parseBigIntParts(ipv6Address);
-    let ipv6Number = BigInt(0);
-    for (const block of blocks) {
-      /* tslint:disable:no-bitwise */
-      ipv6Number = (ipv6Number << BigInt(16)) + block;
-    }
-    return ipv6Number;
-  }
 }

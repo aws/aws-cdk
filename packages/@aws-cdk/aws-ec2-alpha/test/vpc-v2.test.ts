@@ -129,7 +129,9 @@ describe('Vpc V2 with full control', () => {
 
     const pool = ipam.privateScope.addPool('PrivatePool0', {
       addressFamily: AddressFamily.IP_V4,
-      ipv4ProvisionedCidrs: ['10.1.0.1/24'],
+      ipamIpv4Cidrs: [{
+        cidr: '10.1.0.1/24',
+      }],
       locale: 'us-west-1',
     });
 
@@ -186,9 +188,9 @@ describe('Vpc V2 with full control', () => {
       awsService: AwsServiceName.EC2,
       publicIpSource: IpamPoolPublicIpSource.AMAZON,
       locale: 'us-west-1',
-    });
-    pool.provisionCidr('PublicPoolCidr', {
-      netmaskLength: 60,
+      ipamIpv6Cidrs: [{
+        netmaskLength: 60,
+      }],
     });
 
     new vpc.VpcV2(stack, 'TestVpc', {
@@ -257,4 +259,3 @@ describe('Vpc V2 with full control', () => {
     });
   });
 });
-

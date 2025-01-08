@@ -549,13 +549,9 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
     for (const requestorCidr of requestorCidrs) {
       const requestorRange = new CidrBlock(requestorCidr);
-      const requestorIpRange: [string, string] = [requestorRange.minIp(), requestorRange.maxIp()];
-
       for (const acceptorCidr of acceptorCidrs) {
         const acceptorRange = new CidrBlock(acceptorCidr);
-        const acceptorIpRange: [string, string] = [acceptorRange.minIp(), acceptorRange.maxIp()];
-
-        if (requestorRange.rangesOverlap(acceptorIpRange, requestorIpRange)) {
+        if (CidrBlock.rangesOverlap(acceptorRange, requestorRange)) {
           return true;
         }
       }

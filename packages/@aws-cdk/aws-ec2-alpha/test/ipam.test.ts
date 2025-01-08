@@ -55,7 +55,9 @@ describe('IPAM Test', () => {
 
     const pool = ipam.privateScope.addPool('Private', {
       addressFamily: vpc.AddressFamily.IP_V4,
-      ipv4ProvisionedCidrs: ['10.2.0.0/16'],
+      ipamIpv4Cidrs: [{
+        cidr: '10.2.0.0/16',
+      }],
       locale: 'us-west-2',
     });
 
@@ -67,6 +69,7 @@ describe('IPAM Test', () => {
         cidrBlockName: 'SecondaryIpv4',
       })],
     });
+
     Template.fromStack(stack).hasResourceProperties(
       'AWS::EC2::IPAMPool',
       {

@@ -36,7 +36,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'SubnetTest', {
 new SubnetV2(stack, 'testSubnet1', {
   vpc,
   availabilityZone: 'us-west-2a',
-  ipv4CidrBlock: new IpCidr('10.1.0.0/20'),
+  ipv4Cidr: new IpCidr('10.1.0.0/20'),
   //defined on the basis of allocation done in IPAM console
   //ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
@@ -64,7 +64,7 @@ routeTable.addRoute('eigwRoute', '0.0.0.0/0', { gateway: igw });
 new SubnetV2(stack, 'testSubnet2', {
   vpc,
   availabilityZone: 'us-west-2a',
-  ipv4CidrBlock: new IpCidr('10.1.128.0/20'),
+  ipv4Cidr: new IpCidr('10.1.128.0/20'),
   routeTable: routeTable,
   subnetType: SubnetType.PUBLIC,
 });
@@ -72,4 +72,3 @@ new SubnetV2(stack, 'testSubnet2', {
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
 });
-

@@ -51,7 +51,7 @@ const imported_new_vpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedNewVPC'
 //Test to add new subnet to imported VPC against secondary range
 new SubnetV2(stack, 'AddnewImportedSubnet', {
   availabilityZone: 'us-west-2a',
-  ipv4CidrBlock: new IpCidr('10.2.2.0/24'),
+  ipv4Cidr: new IpCidr('10.2.2.0/24'),
   //can be uncommented and modified after allocation is done using Amazon Provided Ipv6
   //ipv6CidrBlock: new IpCidr('2600:1f14:b1d:6500::/64'),
   vpc: imported_new_vpc,
@@ -61,7 +61,7 @@ new SubnetV2(stack, 'AddnewImportedSubnet', {
 //Test to add new subnet to imported VPC against secondary range
 new SubnetV2(stack, 'AddnewImportedSubnet2', {
   availabilityZone: 'us-west-2a',
-  ipv4CidrBlock: new IpCidr('10.3.2.0/24'),
+  ipv4Cidr: new IpCidr('10.3.2.0/24'),
   //can be uncommented and modified after allocation is done using Amazon Provided Ipv6
   //ipv6CidrBlock: new IpCidr('2600:1f14:b1d:6500::/64'),
   vpc: imported_new_vpc,
@@ -107,9 +107,9 @@ ipamvpc.addEgressOnlyInternetGateway();
 //Test to add new subnet to imported VPC against IPAM range
 new SubnetV2(stack, 'AddnewSubnettoImportedIpam', {
   availabilityZone: 'us-west-2a',
-  ipv4CidrBlock: new IpCidr('10.2.1.0/28'),
+  ipv4Cidr: new IpCidr('10.2.1.0/28'),
   //can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
-  ipv6CidrBlock: new IpCidr('2600:1f24:6c:4000::/64'),
+  ipv6Cidr: new IpCidr('2600:1f24:6c:4000::/64'),
   vpc: ipamvpc,
   subnetType: SubnetType.PUBLIC,
 });

@@ -1,9 +1,19 @@
-import { Resource, Names, Lazy, Tags } from 'aws-cdk-lib';
-import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { Lazy, Names, Resource, Tags } from 'aws-cdk-lib';
+import {
+  CfnSubnet,
+  CfnSubnetRouteTableAssociation,
+  INetworkAcl,
+  IRouteTable,
+  ISubnet,
+  NetworkAcl,
+  SubnetNetworkAclAssociation,
+  SubnetType,
+} from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
 import { RouteTable } from './route';
+import { AddressFamily, IIpamPool, IpamPool } from './ipam';
 
 /**
  * Interface to define subnet CIDR
@@ -27,6 +37,11 @@ export class IpCidr implements ICidr {
   }
 }
 
+export interface CidrIpamOption {
+  ipamPool: IIpamPool;
+  netmaskLength: number;
+}
+
 /**
  * Name tag constant
  */
@@ -47,17 +62,17 @@ export interface SubnetV2Props {
   readonly vpc: IVpcV2;
 
   /**
-   * ipv4 cidr to assign to this subnet.
+   * IPv4 CIDR to assign to this subnet.
    * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-cidrblock
    */
-  readonly ipv4CidrBlock: IpCidr;
+  readonly ipv4Cidr?: ICidr | CidrIpamOption;
 
   /**
-   * Ipv6 CIDR Range for subnet
+   * IPv6 CIDR Range for subnet
    *
    * @default - No Ipv6 address
    */
-  readonly ipv6CidrBlock?: IpCidr;
+  readonly ipv6Cidr?: ICidr | CidrIpamOption;
 
   /**
    * Custom AZ for the subnet
@@ -104,9 +119,14 @@ export interface SubnetV2Props {
 export interface ISubnetV2 extends ISubnet {
 
   /**
+   * The IPv4 CIDR block for this subnet
+   * */
+  readonly ipv4Cidr?: ICidr | CidrIpamOption;
+
+  /**
    * The IPv6 CIDR block for this subnet
    */
-  readonly ipv6CidrBlock?: string;
+  readonly ipv6Cidr?: ICidr | CidrIpamOption;
 
   /**
    * The type of subnet (public or private) that this subnet represents.
@@ -139,11 +159,22 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     * @resource AWS::EC2::Subnet
     */
     class ImportedSubnetV2 extends Resource implements ISubnetV2 {
+      public readonly ipv4Cidr?: ICidr | CidrIpamOption = importIpv4CidrFrom({
+        scope,
+        cidrBlock: attrs.ipv4CidrBlock,
+        ipamPoolId: attrs.ipv4IpamPoolId,
+        netmaskLength: attrs.ipv4NetmaskLength,
+      });
 
       /**
       * The IPv6 CIDR Block assigned to this subnet
       */
-      public readonly ipv6CidrBlock?: string = attrs.ipv6CidrBlock;
+      public readonly ipv6Cidr?: ICidr | CidrIpamOption = importIpv6CidrFrom({
+        scope,
+        cidrBlock: attrs.ipv6CidrBlock,
+        ipamPoolId: attrs.ipv6IpamPoolId,
+        netmaskLength: attrs.ipv6NetmaskLength,
+      });
 
       /**
       * The type of subnet (eg. public or private) that this subnet represents.
@@ -167,14 +198,20 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
 
       /**
-      * The IPv4 CIDR block assigned to this subnet
-      */
-      public readonly ipv4CidrBlock: string = attrs.ipv4CidrBlock;
-
-      /**
       *  Current route table associated with this subnet
       */
       public readonly routeTable: IRouteTable = { routeTableId: attrs.routeTableId! };
+
+      public get ipv4CidrBlock(): string {
+        if (isICidr(this.ipv4Cidr)) {
+          return this.ipv4Cidr.cidr;
+        }
+
+        throw new Error(`
+        Unable to derive the ipv4CidrBlock from the ipv4Cidr. 
+        Please verify that the correct ipv4Cidr confirm to the ICidr interface.
+        `);
+      }
 
       /**
       * Associate a Network ACL with this subnet
@@ -189,6 +226,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
         });
       }
     }
+
     return new ImportedSubnetV2(scope, id);
   }
 
@@ -217,15 +255,12 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    */
   private readonly _internetConnectivityEstablished = new DependencyGroup();
 
-  /**
-   * The IPv4 CIDR block for this subnet
-   */
-  public readonly ipv4CidrBlock: string;
+  public readonly ipv4Cidr?: ICidr | CidrIpamOption;
 
   /**
    * The IPv6 CIDR Block for this subnet
    */
-  public readonly ipv6CidrBlock?: string;
+  public readonly ipv6Cidr?: ICidr | CidrIpamOption;
 
   /**
    * The type of subnet (public or private) that this subnet represents.
@@ -250,43 +285,26 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
       }),
     });
 
-    const ipv4CidrBlock = props.ipv4CidrBlock.cidr;
-    const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
-
-    if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
-      throw new Error('CIDR block should be within the range of VPC');
-    };
-
-    let overlap: boolean = false;
-    let overlapIpv6: boolean = false;
-
-    overlap = validateOverlappingCidrRanges(props.vpc, props.ipv4CidrBlock.cidr);
-
-    //check whether VPC supports ipv6
-    if (props.ipv6CidrBlock?.cidr) {
-      validateSupportIpv6(props.vpc);
-      overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);
-    }
-
-    if (overlap || overlapIpv6) {
-      throw new Error('CIDR block should not overlap with existing subnet blocks');
-    }
-
-    if (props.assignIpv6AddressOnCreation && !props.ipv6CidrBlock) {
-      throw new Error('IPv6 CIDR block is required when assigning IPv6 address on creation');
+    let validationError = validateIpAddressBlocks(props);
+    if (validationError != null) {
+      throw validationError;
     }
 
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
-      cidrBlock: ipv4CidrBlock,
-      ipv6CidrBlock: ipv6CidrBlock,
+      cidrBlock: asICidr(props.ipv4Cidr)?.cidr,
+      ipv4IpamPoolId: asCidrIpamOption(props.ipv4Cidr)?.ipamPool.ipamPoolId,
+      ipv4NetmaskLength: asCidrIpamOption(props.ipv4Cidr)?.netmaskLength,
+      ipv6CidrBlock: asICidr(props.ipv6Cidr)?.cidr,
+      ipv6IpamPoolId: asCidrIpamOption(props.ipv6Cidr)?.ipamPool.ipamPoolId,
+      ipv6NetmaskLength: asCidrIpamOption(props.ipv6Cidr)?.netmaskLength,
       availabilityZone: props.availabilityZone,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation ?? false,
     });
 
     this.node.defaultChild = subnet;
-    this.ipv4CidrBlock = props.ipv4CidrBlock.cidr;
-    this.ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
+    this.ipv4Cidr = props.ipv4Cidr;
+    this.ipv6Cidr = props.ipv6Cidr;
     this.subnetId = subnet.ref;
     this.availabilityZone = props.availabilityZone;
 
@@ -355,6 +373,17 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
   public get networkAcl(): INetworkAcl {
     return this._networkAcl;
   }
+
+  public get ipv4CidrBlock(): string {
+    if (isICidr(this.ipv4Cidr)) {
+      return this.ipv4Cidr.cidr;
+    }
+
+    throw new Error(`
+    Unable to derive the ipv4CidrBlock from the ipv4Cidr. 
+    Please verify that the correct ipv4Cidr confirm to the ICidr interface.
+    `);
+  }
 }
 
 /**
@@ -375,12 +404,18 @@ export interface SubnetV2Attributes {
    */
   readonly ipv4CidrBlock: string;
 
+  readonly ipv4IpamPoolId?: string;
+  readonly ipv4NetmaskLength?: number;
+
   /**
    * The IPv4 CIDR block associated with the subnet
    *
    * @default - No CIDR information, cannot use CIDR filter features
    */
   readonly ipv6CidrBlock?: string;
+
+  readonly ipv6IpamPoolId?: string;
+  readonly ipv6NetmaskLength?: number;
 
   /**
    * The ID of the route table for this particular subnet
@@ -452,131 +487,193 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
  * @returns True if the VPC supports IPv6 addresses, false otherwise.
  * @internal
  */
-function validateSupportIpv6(vpc: IVpcV2) {
+function validateSupportIpv6(vpc: IVpcV2): Error | undefined {
   if (vpc.secondaryCidrBlock) {
-    if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
+    if (!vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
   secondaryAddress.ipv6IpamPoolId != undefined)) {
-      return true;
-    } else {
-      throw new Error('To use IPv6, the VPC must enable IPv6 support.');
+      return new Error('To use IPv6, the VPC must enable IPv6 support.');
     }
-  } else {return false;}
+  }
+  return undefined;
 }
 
 /**
  * Checks if the provided CIDR range falls within the IP address ranges of the given VPC.
  *
  * @param vpc The VPC instance to check against.
- * @param cidrRange The CIDR range to be checked.
+ * @param cidr The IPv4 CIDR range to be checked.
  * @returns True if the CIDR range falls within the VPC's IP address ranges, false otherwise.
  * @internal
  */
-function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
+function checkIpv4CidrRanges(vpc: IVpcV2, cidr: SubnetV2Props['ipv4Cidr']): Error | undefined {
+  if (!isICidr(cidr)) {
+    return undefined;
+  }
   const vpcCidrBlock = [vpc.ipv4CidrBlock];
-  const subnetCidrBlock = new CidrBlock(cidrRange);
+  const subnetCidrBlock = new CidrBlock(cidr.cidr);
   const allCidrs: CidrBlock[] = [];
 
-  // Secondary IP addresses assoicated using user defined IPv4 range
+  // Secondary IP addresses associated using user defined IPv4 range
   if (vpc.secondaryCidrBlock) {
     for (const ipAddress of vpc.secondaryCidrBlock) {
       if (ipAddress.cidrBlock) {
         vpcCidrBlock.push(ipAddress.cidrBlock);
       }
     }
-    const cidrs = vpcCidrBlock.map(cidr => new CidrBlock(cidr));
+    const cidrs = vpcCidrBlock.map(x => new CidrBlock(x));
     allCidrs.push(...cidrs);
   }
 
-  // Secondary IP addresses assoicated using IPAM IPv4 range
+  // Secondary IP addresses associated using IPAM IPv4 range
   if (vpc.ipv4IpamProvisionedCidrs) {
-    const cidrs = vpc.ipv4IpamProvisionedCidrs.map(cidr => new CidrBlock(cidr));
+    const cidrs = vpc.ipv4IpamProvisionedCidrs.map(x => new CidrBlock(x));
     allCidrs.push(...cidrs);
   }
 
   // If no IPv4 is assigned as secondary address
   if (allCidrs.length === 0) {
-    throw new Error('No secondary IP address attached to VPC');
+    return new Error('No secondary IP address attached to VPC');
   }
 
-  return allCidrs.some(c => c.containsCidr(subnetCidrBlock));
+  if (!allCidrs.some(c => c.containsCidr(subnetCidrBlock))) {
+    return new Error('CIDR block should be within the range of VPC');
+  }
+  return undefined;
 }
+
+const allSubnetsOfVpc = (vpc: IVpcV2): ISubnetV2[] => {
+  try {
+    return vpc.selectSubnets().subnets;
+  } catch (e) {
+    return [];
+  }
+};
 
 /**
  * Validates if the provided IPv4 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
  *
  * @param vpc The VPC instance to check against.
- * @param ipv4CidrBlock The IPv4 CIDR block to be validated.
+ * @param cidr The IPv4 address block to be validated.
  * @returns True if the IPv4 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
  * @internal
  */
-
-function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): boolean {
-
-  let allSubnets: ISubnetV2[];
-  try {
-    allSubnets = vpc.selectSubnets().subnets;
-  } catch (e) {
-    'No subnets in VPC';
-    return false;
+const validateOverlappingCidrRangesIpv4 = (
+  vpc: IVpcV2,
+  cidr: SubnetV2Props['ipv4Cidr'],
+): Error | undefined => {
+  if (!isICidr(cidr)) {
+    return undefined;
   }
 
-  const ipMap: [string, string][] = new Array();
-
-  const inputRange = new CidrBlock(ipv4CidrBlock);
-
-  const inputIpMap: [string, string] = [inputRange.minIp(), inputRange.maxIp()];
-
-  for (const subnet of allSubnets) {
-    const cidrBlock = new CidrBlock(subnet.ipv4CidrBlock);
-    ipMap.push([cidrBlock.minIp(), cidrBlock.maxIp()]);
+  const allSubnets = allSubnetsOfVpc(vpc);
+  const newCidr = new CidrBlock(cidr.cidr);
+  const validCidrs = allSubnets.flatMap(x => isICidr(x.ipv4Cidr) ? [new CidrBlock(x.ipv4Cidr.cidr)] : []);
+  const isOverlapped = validCidrs.reduce((p, c) => p || CidrBlock.rangesOverlap(c, newCidr), false);
+  if (isOverlapped) {
+    return new Error('CIDR block should not overlap with existing subnet blocks');
   }
 
-  for (const range of ipMap) {
-    if (inputRange.rangesOverlap(range, inputIpMap)) {
-      return true;
-    }
-  }
-
-  return false;
-}
+  return undefined;
+};
 
 /**
- * Validates if the provided IPv6 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
+ * Validates if the provided IPv4 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
  *
  * @param vpc The VPC instance to check against.
- * @param ipv6CidrBlock The IPv6 CIDR block to be validated.
+ * @param cidr The IPv6 address block to be validated.
  * @returns True if the IPv6 CIDR block overlaps with existing subnet CIDR blocks, false otherwise.
- * @throws Error if no subnets are found in the VPC.
  * @internal
  */
-function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
-
-  let allSubnets: ISubnetV2[];
-  try {
-    allSubnets = vpc.selectSubnets().subnets;
-  } catch (e) {
-    'No subnets in VPC';
-    return false;
+const validateOverlappingCidrRangesIpv6 = (
+  vpc: IVpcV2,
+  cidr: SubnetV2Props['ipv6Cidr'],
+): Error | undefined => {
+  if (!isICidr(cidr)) {
+    return undefined;
   }
 
-  const ipv6Map: string[]= [];
-
-  const inputRange = new CidrBlockIpv6(ipv6CidrBlock);
-
-  let result : boolean = false;
-
-  for (const subnet of allSubnets) {
-    if (subnet.ipv6CidrBlock) {
-      const cidrBlock = new CidrBlockIpv6(subnet.ipv6CidrBlock);
-      ipv6Map.push(cidrBlock.cidr);
-    }
+  const allSubnets = allSubnetsOfVpc(vpc);
+  const newCidr = new CidrBlockIpv6(cidr.cidr);
+  const validCidrs = allSubnets.flatMap(x => isICidr(x.ipv6Cidr) ? [new CidrBlockIpv6(x.ipv6Cidr.cidr)] : []);
+  const isOverlapped = validCidrs.reduce((p, c) => p || CidrBlockIpv6.rangesOverlap(c, newCidr), false);
+  if (isOverlapped) {
+    return new Error('CIDR block should not overlap with existing subnet blocks');
   }
 
-  for (const range of ipv6Map) {
-    if (inputRange.rangesOverlap(range, inputRange.cidr)) {
-      result = true;
-    }
-  }
+  return undefined;
+};
 
-  return result;
+function isICidr(value: any): value is ICidr {
+  return value != null && typeof value.cidr === 'string';
 }
+
+function isCidrIpamOption(value: any): value is CidrIpamOption {
+  return value != null && typeof value.netmaskLength === 'number' && value.ipamPool != null;
+}
+
+const asICidr = (value: any): ICidr | undefined => isICidr(value) ? value : undefined;
+const asCidrIpamOption = (value: any): CidrIpamOption | undefined => isCidrIpamOption(value) ? value : undefined;
+
+const validateIpAddressBlocks = (
+  { ipv4Cidr, ipv6Cidr, vpc, assignIpv6AddressOnCreation }: SubnetV2Props,
+): Error | undefined => {
+  if (ipv4Cidr == null && ipv6Cidr == null) {
+    return new Error('An ipv4Cidr or ipv6Cidr option must be provided.');
+  }
+
+  if (assignIpv6AddressOnCreation && !ipv6Cidr) {
+    return new Error('IPv6 CIDR block is required when assigning IPv6 address on creation');
+  }
+
+  if (ipv4Cidr != null) {
+    const error = checkIpv4CidrRanges(vpc, ipv4Cidr) ?? validateOverlappingCidrRangesIpv4(vpc, ipv4Cidr);
+    if (error != null) return error;
+  }
+
+  if (ipv6Cidr != null) {
+    const error = validateSupportIpv6(vpc) ?? validateOverlappingCidrRangesIpv6(vpc, ipv6Cidr);
+    if (error != null) return error;
+  }
+
+  return undefined;
+};
+
+const importCidrFrom = (addressFamily: AddressFamily) => ({
+  scope,
+  cidrBlock,
+  ipamPoolId,
+  netmaskLength,
+}: {
+  scope: Construct;
+  cidrBlock?: string;
+  ipamPoolId?: string;
+  netmaskLength?: number;
+}): ICidr | CidrIpamOption | undefined => {
+  if (cidrBlock == null) {
+    if (ipamPoolId != null && netmaskLength != null) {
+      const cidrs = addressFamily === AddressFamily.IP_V4
+        ? { ipamIpv4Cidrs: [{ netmaskLength: netmaskLength }] }
+        : { ipamIpv6Cidrs: [{ netmaskLength: netmaskLength }] };
+      const ipamPool = IpamPool.fromIpamPoolAttributes(scope, `Imported${ipamPoolId}`, {
+        ipamPoolId: ipamPoolId,
+        addressFamily,
+        ...cidrs,
+      });
+
+      return {
+        ipamPool,
+        netmaskLength: netmaskLength,
+      };
+    }
+  } else if (netmaskLength == null && ipamPoolId == null) {
+    return {
+      cidr: cidrBlock,
+    };
+  }
+
+  // To create a ipv4Cidr you need at least provide the ipv4CidrBlock or ipv4IpamPoolId and ipv4NetmaskLength
+  return undefined;
+};
+
+const importIpv4CidrFrom = importCidrFrom(AddressFamily.IP_V4);
+const importIpv6CidrFrom = importCidrFrom(AddressFamily.IP_V6);

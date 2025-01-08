@@ -106,7 +106,7 @@ describe('Vpc V2 with full control', () => {
     new SubnetV2(stack, 'testsubnet', {
       vpc,
       availabilityZone: 'us-west-2a',
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      ipv4Cidr: new IpCidr('10.1.0.0/24'),
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
@@ -128,7 +128,7 @@ describe('Vpc V2 with full control', () => {
     new SubnetV2(stack, 'testsubnet', {
       vpc,
       availabilityZone: 'us-west-2a',
-      ipv4CidrBlock: new IpCidr('10.2.0.0/24'),
+      ipv4Cidr: new IpCidr('10.2.0.0/24'),
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
@@ -152,9 +152,9 @@ describe('Vpc V2 with full control', () => {
     //will throw error if IPv6 not enabled using Amazon Provided IPv6
     new SubnetV2(stack, 'AddnewSubnettoImportedIpam', {
       availabilityZone: 'us-west-2a',
-      ipv4CidrBlock: new IpCidr('10.0.1.0/28'),
+      ipv4Cidr: new IpCidr('10.0.1.0/28'),
       //can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
-      ipv6CidrBlock: new IpCidr('2600:1f24:6c:4000::/64'),
+      ipv6Cidr: new IpCidr('2600:1f24:6c:4000::/64'),
       vpc: vpc,
       subnetType: SubnetType.PUBLIC,
     });
@@ -176,9 +176,9 @@ describe('Vpc V2 with full control', () => {
     //will throw error if IPv6 not enabled using Amazon Provided IPv6
     new SubnetV2(stack, 'AddnewSubnettoImportedIpam', {
       availabilityZone: 'us-west-2a',
-      ipv4CidrBlock: new IpCidr('10.0.1.0/28'),
+      ipv4Cidr: new IpCidr('10.0.1.0/28'),
       //can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
-      ipv6CidrBlock: new IpCidr('2600:1f24:6c:4000::/64'),
+      ipv6Cidr: new IpCidr('2600:1f24:6c:4000::/64'),
       vpc: vpc,
       subnetType: SubnetType.PUBLIC,
     });

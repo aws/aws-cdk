@@ -608,7 +608,7 @@ class IpamIpv6 implements IIpAddresses {
     return {
       ipv6NetmaskLength: this.props.netmaskLength,
       ipv6IpamPool: this.props.ipamPool,
-      dependencies: this.props.ipamPool?.ipamCidrs.map(c => c as CfnResource),
+      dependencies: this.props.ipamPool?.ipamIpv6Cidrs?.map(c => c as CfnResource),
       cidrBlockName: this.props.cidrBlockName,
     };
   }
@@ -628,7 +628,7 @@ class IpamIpv4 implements IIpAddresses {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
       cidrBlockName: this.props?.cidrBlockName,
-      ipv4IpamProvisionedCidrs: this.props.ipamPool?.ipamIpv4Cidrs,
+      dependencies: this.props.ipamPool?.ipamIpv4Cidrs?.map(c => c as CfnResource),
     };
   }
 }

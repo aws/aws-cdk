@@ -32,8 +32,10 @@ describe('EC2 Routing', () => {
     mySubnet = new subnet.SubnetV2(stack, 'TestSubnet', {
       vpc: myVpc,
       availabilityZone: 'us-east-1a',
-      ipv4CidrBlock: new subnet.IpCidr('10.0.0.0/24'),
-      ipv6CidrBlock: new subnet.IpCidr(cdk.Fn.select(0, myVpc.ipv6CidrBlocks)),
+      ipv4Cidr: {
+        cidr: '10.0.0.0/24',
+      },
+      ipv6Cidr: new subnet.IpCidr(cdk.Fn.select(0, myVpc.ipv6CidrBlocks)),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
       routeTable: routeTable,
     });
@@ -108,7 +110,7 @@ describe('EC2 Routing', () => {
         ],
       },
     });
-  }),
+  });
 
   test('Route to VPN Gateway with optional properties', () => {
     new route.VPNGatewayV2(stack, 'TestVpnGw', {
@@ -121,7 +123,7 @@ describe('EC2 Routing', () => {
       AmazonSideAsn: 12345678,
       Type: 'ipsec.1',
     });
-  }),
+  });
 
   test('Route to Internet Gateway', () => {
     const igw = new route.InternetGateway(stack, 'TestIGW', {

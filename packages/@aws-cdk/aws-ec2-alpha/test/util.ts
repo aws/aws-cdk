@@ -20,8 +20,8 @@ export function createTestSubnet(
   return new subnet.SubnetV2(stack, 'TestSubnet', {
     vpc: vpcV2,
     availabilityZone,
-    ipv4CidrBlock: cidrBlock,
+    ipv4Cidr: cidrBlock,
     subnetType,
-    ipv6CidrBlock: ipv6Cidr,
+    ipv6Cidr: ipv6Cidr,
   });
 }

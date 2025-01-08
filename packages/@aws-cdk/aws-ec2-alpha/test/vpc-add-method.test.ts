@@ -25,10 +25,10 @@ describe('Vpc V2 with full control', () => {
     });
     mySubnet = new SubnetV2(stack, 'TestSubnet', {
       vpc: myVpc,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      ipv4Cidr: new IpCidr('10.1.0.0/24'),
       availabilityZone: 'ap-south-1b',
       subnetType: SubnetType.PUBLIC,
-      ipv6CidrBlock: new IpCidr('2001:db8::/48'),
+      ipv6Cidr: new IpCidr('2001:db8::/48'),
     });
   });
   test('Method to add a new Egress-Only IGW', () => {
@@ -71,10 +71,10 @@ describe('Vpc V2 with full control', () => {
     });
     new SubnetV2(stack, 'validateIpv6', {
       vpc: vpc1,
-      ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+      ipv4Cidr: new IpCidr('10.1.0.0/24'),
       availabilityZone: 'ap-south-1b',
       //Test secondary ipv6 address after IPAM pool creation
-      ipv6CidrBlock: new IpCidr('2001:db8::/48'),
+      ipv6Cidr: new IpCidr('2001:db8::/48'),
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
     expect(() => {
