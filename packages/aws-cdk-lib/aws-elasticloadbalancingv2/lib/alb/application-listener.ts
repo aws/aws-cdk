@@ -303,8 +303,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
-      if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK ||
-        this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) {
+      if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK) {
         this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv6(), `Allow from anyone on port ${port}`);
       }
     }

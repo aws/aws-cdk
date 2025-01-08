@@ -28,7 +28,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@cdklabs/typewriter": "^0.0.4",
+    "@cdklabs/typewriter": "^0.0.5",
     "lodash.clonedeep": "^4.5.0",
     "prettier": "^2.8.8"
   },

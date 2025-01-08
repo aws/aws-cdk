@@ -821,13 +821,6 @@
                             "fromPort": 80,
                             "toPort": 80,
                             "description": "Allow from anyone on port 80"
-                          },
-                          {
-                            "cidrIpv6": "::/0",
-                            "ipProtocol": "tcp",
-                            "fromPort": 80,
-                            "toPort": 80,
-                            "description": "Allow from anyone on port 80"
                           }
                         ],
                         "vpcId": {
@@ -1276,7 +1269,7 @@
                 "path": "AlbDualstackWithoutPublicIpv4/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1322,7 +1315,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },
