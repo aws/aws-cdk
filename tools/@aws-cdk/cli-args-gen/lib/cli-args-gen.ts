@@ -21,7 +21,7 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
   });
 
   // add required command
-  scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
+  scope.addImport(new SelectiveModuleImport(scope, './command', ['Command']));
   const commandEnum = Type.fromName(scope, 'Command');
 
   cliArgType.addProperty({

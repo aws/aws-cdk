@@ -6,7 +6,7 @@ import { DeploymentMethod } from './api';
 import { HotswapMode } from './api/hotswap/common';
 import { ILock } from './api/util/rwlock';
 import { CliArguments } from './cli-arguments';
-import { convertToCliArgs } from './convert-to-cli-args';
+import { convertYargsToCliArgs } from './convert-to-cli-args';
 import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
@@ -41,7 +41,7 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-  const argv: CliArguments = convertToCliArgs(await parseCommandLineArguments(args));
+  const argv: CliArguments = convertYargsToCliArgs(await parseCommandLineArguments(args));
 
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level

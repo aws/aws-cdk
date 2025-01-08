@@ -52,7 +52,7 @@ describe('render', () => {
       import { Command } from './settings';
 
       // @ts-ignore TS6133
-      export function convertToCliArgs(args: any): CliArguments {
+      export function convertYargsToCliArgs(args: any): CliArguments {
         const globalOptions: GlobalOptions = {
           app: args.app,
           debug: args.debug,

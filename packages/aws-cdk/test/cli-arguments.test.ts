@@ -1,10 +1,10 @@
-import { convertToCliArgs } from '../lib/convert-to-cli-args';
+import { convertYargsToCliArgs } from '../lib/convert-to-cli-args';
 import { parseCommandLineArguments } from '../lib/parse-command-line-arguments';
 
 test('yargs object can be converted to cli arguments', async () => {
   const input = await parseCommandLineArguments(['deploy', '-R', '-v', '--ci']);
 
-  const result = convertToCliArgs(input);
+  const result = convertYargsToCliArgs(input);
 
   expect(result).toEqual({
     _: 'deploy',
@@ -69,7 +69,7 @@ test('yargs object can be converted to cli arguments', async () => {
 test('positional argument is correctly passed through -- variadic', async () => {
   const input = await parseCommandLineArguments(['deploy', 'stack1', 'stack2', '-R', '-v', '--ci']);
 
-  const result = convertToCliArgs(input);
+  const result = convertYargsToCliArgs(input);
 
   expect(result).toEqual({
     _: 'deploy',
@@ -83,7 +83,7 @@ test('positional argument is correctly passed through -- variadic', async () => 
 test('positional argument is correctly passed through -- single', async () => {
   const input = await parseCommandLineArguments(['acknowledge', 'id1', '-v', '--ci']);
 
-  const result = convertToCliArgs(input);
+  const result = convertYargsToCliArgs(input);
 
   expect(result).toEqual({
     _: 'acknowledge',

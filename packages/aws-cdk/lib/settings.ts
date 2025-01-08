@@ -2,7 +2,8 @@ import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
 import { CliArguments } from './cli-arguments';
-import { convertToCliArgs } from './convert-to-cli-args';
+import { Command } from './command';
+import { convertConfigToCliArgs } from './convert-to-cli-args';
 import { debug, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 import * as util from './util';
@@ -19,30 +20,6 @@ export const USER_DEFAULTS = '~/.cdk.json';
 export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
 
 const CONTEXT_KEY = 'context';
-
-export enum Command {
-  LS = 'ls',
-  LIST = 'list',
-  DIFF = 'diff',
-  BOOTSTRAP = 'bootstrap',
-  DEPLOY = 'deploy',
-  DESTROY = 'destroy',
-  SYNTHESIZE = 'synthesize',
-  SYNTH = 'synth',
-  METADATA = 'metadata',
-  INIT = 'init',
-  VERSION = 'version',
-  WATCH = 'watch',
-  GC = 'gc',
-  ROLLBACK = 'rollback',
-  IMPORT = 'import',
-  ACKNOWLEDGE = 'acknowledge',
-  NOTICES = 'notices',
-  MIGRATE = 'migrate',
-  CONTEXT = 'context',
-  DOCS = 'docs',
-  DOCTOR = 'doctor',
-}
 
 export interface ConfigurationProps {
   /**
@@ -129,8 +106,8 @@ export class Configuration {
 
     // Build settings from what's left
     this.settings = this.defaultConfig
-      .merge(userConfig)
-      .merge(this.projectConfig)
+      .merge(new ArgumentSettings(convertConfigToCliArgs(userConfig.all)))
+      .merge(new ArgumentSettings(convertConfigToCliArgs(this.projectConfig.all)))
       .merge(this.commandLineArguments)
       .makeReadOnly();
 
@@ -291,7 +268,7 @@ export class Settings {
     return ret;
   }
 
-  constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}
+  constructor(protected settings: SettingsMap = {}, public readonly readOnly = false) {}
 
   public async load(fileName: string): Promise<this> {
     if (this.readOnly) {
@@ -406,12 +383,16 @@ export class ArgumentSettings extends Settings {
     return new ArgumentSettings(argv);
   }
 
-  public static fromConfigFileArguments(argv: any): ArgumentSettings {
-    return new ArgumentSettings(convertToCliArgs(argv));
+  public static fromConfigFileArguments(argv: CliArguments): ArgumentSettings {
+    return new ArgumentSettings(argv);
   }
 
   public constructor(args: Partial<CliArguments> = {}) {
     super(args);
+  }
+
+  public merge(other: ArgumentSettings): ArgumentSettings {
+    return new ArgumentSettings(util.deepMerge(this.settings, other.settings));
   }
 }
 

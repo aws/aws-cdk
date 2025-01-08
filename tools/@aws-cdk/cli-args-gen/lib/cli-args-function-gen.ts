@@ -15,10 +15,10 @@ export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
   scope.addImport(new SelectiveModuleImport(scope, './cli-arguments', ['CliArguments', 'GlobalOptions']));
   const cliArgType = Type.fromName(scope, 'CliArguments');
 
-  scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
+  scope.addImport(new SelectiveModuleImport(scope, './command', ['Command']));
 
   const createCliArguments = new FreeFunction(scope, {
-    name: 'convertToCliArgs',
+    name: 'convertYargsToCliArgs',
     export: true,
     returnType: cliArgType,
     parameters: [
@@ -26,6 +26,16 @@ export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
     ],
   });
   createCliArguments.addBody(code.expr.directCode(buildCliArgsFunction(config)));
+
+  const createConfigArguments = new FreeFunction(scope, {
+    name: 'convertConfigToCliArgs',
+    export: true,
+    returnType: cliArgType,
+    parameters: [
+      { name: 'args', type: Type.ANY },
+    ],
+  });
+  createConfigArguments.addBody(code.expr.directCode(buildConfigArgsFunction(config)));
 
   const ts = new TypeScriptRenderer({
     disabledEsLintRules: [EsLintRules.MAX_LEN], // the default disabled rules result in 'Definition for rule 'prettier/prettier' was not found'
@@ -50,6 +60,17 @@ function buildCliArgsFunction(config: CliConfig): string {
   ].join('\n');
 }
 
+function buildConfigArgsFunction(config: CliConfig): string {
+  const globalOptions = buildGlobalOptions(config);
+  const commandList = buildCommandsList(config);
+  const configArgs = buildConfigArgs(config);
+  return [
+    globalOptions,
+    commandList,
+    configArgs,
+  ].join('\n');
+}
+
 function buildGlobalOptions(config: CliConfig): string {
   const globalOptionExprs = ['const globalOptions: GlobalOptions = {'];
   for (const optionName of Object.keys(config.globalOptions)) {
@@ -58,6 +79,16 @@ function buildGlobalOptions(config: CliConfig): string {
   }
   globalOptionExprs.push('}');
   return globalOptionExprs.join('\n');
+}
+
+function buildCommandsList(config: CliConfig): string {
+  const commandOptions = [];
+  for (const commandName of Object.keys(config.commands)) {
+    commandOptions.push(`const ${kebabToCamelCase(commandName)}Options = {`);
+    commandOptions.push(...buildCommandOptions(config.commands[commandName]));
+    commandOptions.push('}');
+  }
+  return commandOptions.join('\n');
 }
 
 function buildCommandSwitch(config: CliConfig): string {
@@ -98,6 +129,20 @@ function buildCliArgs(): string {
     '_: args._[0],',
     'globalOptions,',
     '[args._[0]]: commandOptions',
+    '}',
+    '',
+    'return cliArguments',
+  ].join('\n');
+}
+
+function buildConfigArgs(config: CliConfig): string {
+  return [
+    'const cliArguments: CliArguments = {',
+    '_: Command.SOME,',
+    'globalOptions,',
+    ...(Object.keys(config.commands).map((commandName) => {
+      return `'${commandName}': ${kebabToCamelCase(commandName)}Options,`;
+    })),
     '}',
     '',
     'return cliArguments',
