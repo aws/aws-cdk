@@ -84,6 +84,7 @@ describe('ordering', () => {
         afterSynth((testApp) => {
           forEveryVisitPair(testApp.actionLog, (a, b) => {
             if (!sameConstruct(a, b)) return;
+            if (noGuaranteesDueToLegacyMode(app, stabilizeAspects, a, b)) return;
 
             const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
             const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
@@ -115,6 +116,7 @@ describe('ordering', () => {
         afterSynth((testApp) => {
           forEveryVisitPair(testApp.actionLog, (a, b) => {
             if (!sameConstruct(a, b)) return;
+            if (noGuaranteesDueToLegacyMode(app, stabilizeAspects, a, b)) return;
 
             const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
             const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
@@ -143,6 +145,7 @@ describe('ordering', () => {
         afterSynth((testApp) => {
           forEveryVisitPair(testApp.actionLog, (a, b) => {
             if (!sameConstruct(a, b)) return;
+            if (noGuaranteesDueToLegacyMode(app, stabilizeAspects, a, b)) return;
 
             const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
             const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
@@ -175,11 +178,11 @@ test('visitLog is nonempty', () =>
 //////////////////////////////////////////////////////////////////////
 //  Test Helpers
 
-function afterSynth(block: (x: PrettyApp) => void, stabilizeAspects: boolean) {
+function afterSynth(block: (x: PrettyApp) => void, aspectStabilization: boolean) {
   return (app: PrettyApp) => {
     let asm;
     try {
-      asm = app.cdkApp.synth({ aspectStabilization: true });
+      asm = app.cdkApp.synth({ aspectStabilization });
     } catch (error) {
       if (error.message.includes('Cannot invoke Aspect')) {
         return;
@@ -192,6 +195,21 @@ function afterSynth(block: (x: PrettyApp) => void, stabilizeAspects: boolean) {
       fs.rmSync(asm.directory, { recursive: true, force: true });
     }
   };
+}
+
+/**
+ * Return true if we are in legacy mode (stabilize = false) and either of the aspects were not applied yet at tree start.
+ *
+ * The behavior of the old code is too hard to specify in those cases, so we just don't.
+ */
+function noGuaranteesDueToLegacyMode(app: PrettyApp, stabilizeAspects: boolean, a: AspectVisitWithIndex, b: AspectVisitWithIndex) {
+  if (stabilizeAspects) { return false; }
+
+  if (aspectAppliedT(app, a.aspect, a.construct) !== -1 || aspectAppliedT(app, b.aspect, b.construct) !== -1) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -233,6 +251,38 @@ function arraysEqual<T>(arr1: T[], arr2: T[]): boolean {
 
 function arraysEqualUnordered<T>(arr1: T[], arr2: T[]): boolean {
   return arr1.length === arr2.length && new Set(arr1).size === new Set(arr2).size;
+}
+
+/**
+ * Whether the given aspect was inheritable at the given construct and timestamp
+ *
+ * If we do AspectsV2 behavior it will be inheritable, or for V1 behavior if it
+ * was in scope of the construct's parent before we first visited the parent.
+ */
+function aspectWasInheritable(a: AspectVisitWithIndex, testApp: PrettyApp, stabilizeAspects: boolean) {
+  if (stabilizeAspects) { return true; }
+
+  const p = parent(testApp, a.construct);
+  const parentAppliedT = aspectAppliedT(testApp, a.aspect, p);
+  return parentAppliedT < firstVisitOf(testApp, p);
+}
+
+/**
+ * Return the first timestamp that we visited the parent of the given construct
+ */
+function firstVisitOf(testApp: PrettyApp, c: IConstruct) {
+  for (let i = 0; i < testApp.actionLog.length; i++) {
+    const visit = testApp.actionLog[i];
+    if (visit.action === 'visit' && visit.construct === c) {
+      return i;
+    }
+  }
+  return testApp.actionLog.length;
+}
+
+function parent(testApp: PrettyApp, c: IConstruct) {
+  const parentPath = c.node.path.split('/').slice(0, -1).join('/');
+  return findConstructDeep(testApp.cdkApp, parentPath);
 }
 
 /**
