@@ -130,6 +130,57 @@ test('for every construct, lower priorities go before higher priorities', () =>
   ),
 );
 
+test('state of Denmark', () => {
+  const outputs = new Array<PrettyApp>();
+  const result = fc.check(
+    fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
+      afterSynth((testApp) => {
+        outputs.push(testApp);
+        forEveryVisitPair(testApp.actionLog, (a, b) => {
+          if (!sameConstruct(a, b)) return;
+
+          const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
+          const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
+
+          // But only if the application of aspect A exists at least as long as the application of aspect B
+          const aAppliedT = aspectAppliedT(testApp, a.aspect, a.construct);
+          const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
+
+          if (!implies(aPrio < bPrio && aAppliedT <= bAppliedT, a.index < b.index)) {
+            throw new Error(
+              `Aspect ${a.aspect}@${aPrio} (applied at t=${aAppliedT}) at t=${a.index} should have been before ${b.aspect}@${bPrio} (applied at t=${bAppliedT}) at t=${b.index}, but was after`,
+            );
+          }
+        });
+      }, stabilizeAspects)(app);
+    }),
+  );
+
+  for (let i = 0; i < outputs.length; i++) {
+    for (let j = i + 1; j < outputs.length; j++) {
+      // Make sure that the construct trees outputs[i] and outputs[j] are fully distinct and share no objects
+      expect(outputs[i]).not.toBe(outputs[j]);
+      expect(outputs[i].actionLog).not.toBe(outputs[j].actionLog);
+      const nodesI = outputs[i].cdkApp.node.findAll();
+      const nodesJ = outputs[j].cdkApp.node.findAll();
+
+      nothingShared(nodesI, nodesJ);
+
+      const aspectsI = nodesI.flatMap(ni => Aspects.of(ni).all);
+      const aspectsJ = nodesJ.flatMap(nj => Aspects.of(nj).all);
+      nothingShared(aspectsI, aspectsJ);
+    }
+  }
+});
+
+function nothingShared<A>(xs: A[], ys: A[]) {
+  for (const x of xs) {
+    if (ys.includes(x)) {
+      throw new Error(`Both arrays contain the same element: ${x}`);
+    }
+  }
+}
+
 test('for every construct, if a invokes before b that must mean it is of equal or lower priority', () =>
   fc.assert(
     fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
@@ -168,7 +219,7 @@ test('visitLog is nonempty', () =>
 //  Test Helpers
 
 function afterSynth(block: (x: PrettyApp) => void, stabilizeAspects: boolean) {
-  return (app) => {
+  return (app: PrettyApp) => {
     let asm;
     try {
       asm = app.cdkApp.synth({ aspectStabilization: stabilizeAspects });
@@ -194,7 +245,7 @@ function implies(a: boolean, b: boolean) {
 }
 
 interface AspectVisitWithIndex extends AspectVisit {
-  index: number;
+  readonly index: number;
 }
 
 /**
@@ -354,9 +405,9 @@ function lowestAspectPrioFor(a: IAspect, c: IConstruct) {
 //  Arbitraries
 
 function appWithAspects() {
-  return arbCdkAppFactory().chain(arbAddAspects).map(([a, l]) => {
-    return new PrettyApp(a, l);
-  });
+  return arbCdkAppFactory()
+    .chain((a) => fc.tuple(fc.constant(a), arbAspectApplications(a)))
+    .map(([a, l]) => buildApplication(a, l));
 }
 
 /**
@@ -370,6 +421,7 @@ function appWithAspects() {
 function arbCdkAppFactory(props?: AppProps): fc.Arbitrary<AppFactory> {
   return arbConstructTreeFactory().map((fac) => () => {
     const app = new App(props);
+    // UUID = 1000;
     fac(app, 'First');
     return app;
   });
@@ -502,19 +554,19 @@ function unique(xs: string[]): string[] {
 }
 
 interface AspectVisit {
-  action: 'visit';
-  construct: IConstruct;
-  aspect: TracingAspect;
+  readonly action: 'visit';
+  readonly construct: IConstruct;
+  readonly aspect: TracingAspect;
 }
 
 interface ConstructAdded {
-  action: 'constructAdded';
-  construct: IConstruct;
+  readonly action: 'constructAdded';
+  readonly construct: IConstruct;
 }
 
 interface AspectApplied extends PartialTestAspectApplication {
-  action: 'aspectApplied';
-  construct: IConstruct;
+  readonly action: 'aspectApplied';
+  readonly construct: IConstruct;
 }
 
 type AspectAction = AspectVisit | ConstructAdded | AspectApplied;
@@ -524,38 +576,38 @@ type AspectActionLog = AspectAction[];
 /**
  * Add arbitrary aspects to the given tree
  */
-function arbAddAspects(appFac: AppFactory): fc.Arbitrary<[App, ExecutionState]> {
+function arbAspectApplications(appFac: AppFactory): fc.Arbitrary<TestAspectApplication[]> {
   // Synthesize the tree, but just to get the construct paths to apply aspects to.
   // We won't hold on to the instances, because we will clone the tree later (or
   // regenerate it, which is easier), and attach the aspects in the clone.
   const baseTree = appFac();
   const constructs = baseTree.node.findAll();
 
-  const applications = fc.array(arbAspectApplication(constructs), {
+  return fc.array(arbAspectApplication(constructs), {
     size: 'small',
     minLength: 1,
     maxLength: 5,
   });
+}
 
-  return applications.map((appls) => {
-    // A fresh tree copy for every tree with aspects. `fast-check` may re-use old values
-    // when generating variants, so if we mutate the tree in place different runs will
-    // interfere with each other. Also a different aspect invocation log for every tree.
-    const tree = appFac();
-    const state: ExecutionState = {
-      actionLog: [],
-    };
-    tree[EXECUTIONSTATE_SYM] = state; // Stick this somewhere the aspects can find it
+function buildApplication(appFac: AppFactory, appls: TestAspectApplication[]): PrettyApp {
+  // A fresh tree copy for every tree with aspects. `fast-check` may re-use old values
+  // when generating variants, so if we mutate the tree in place different runs will
+  // interfere with each other. Also a different aspect invocation log for every tree.
+  const tree = appFac();
+  const state: ExecutionState = {
+    actionLog: [],
+  };
+  tree[EXECUTIONSTATE_SYM] = state; // Stick this somewhere the aspects can find it
 
-    for (const app of appls) {
-      const ctrs = app.constructPaths.map((p) => findConstructDeep(tree, p));
-      for (const ctr of ctrs) {
-        Aspects.of(ctr).add(app.aspect, { priority: app.priority });
-      }
+  for (const app of appls) {
+    const ctrs = app.constructPaths.map((p) => findConstructDeep(tree, p));
+    for (const ctr of ctrs) {
+      Aspects.of(ctr).add(app.aspect, { priority: app.priority });
     }
+  }
 
-    return [tree, state];
-  });
+  return new PrettyApp(tree, state);
 }
 
 function arbAspectApplication(constructs: Construct[]): fc.Arbitrary<TestAspectApplication> {
@@ -602,8 +654,8 @@ function arbConstructLoc(constructs: Construct[]): fc.Arbitrary<ConstructLoc> {
  * A location for a construct (scope and id)
  */
 interface ConstructLoc {
-  scope: string;
-  id: string;
+  readonly scope: string;
+  readonly id: string;
 }
 
 /**
@@ -623,7 +675,7 @@ interface ExecutionState {
   /**
    * Visit log of all aspects
    */
-  actionLog: AspectActionLog;
+  readonly actionLog: AspectActionLog;
 }
 
 /**
@@ -737,15 +789,15 @@ class MutatingAspect extends TracingAspect {
  * Contains just the aspect and priority
  */
 interface PartialTestAspectApplication {
-  aspect: IAspect;
-  priority?: number;
+  readonly aspect: IAspect;
+  readonly priority?: number;
 }
 
 interface TestAspectApplication extends PartialTestAspectApplication {
   /**
    * Need to go by path because the constructs themselves are mutable and these paths remain valid in multiple trees
    */
-  constructPaths: string[];
+  readonly constructPaths: string[];
 }
 
 /**
