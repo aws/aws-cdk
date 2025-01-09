@@ -1,0 +1,190 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "EnableTelemtryStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EnableTelemtryStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EnableTelemtryStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EnableTelemtryStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9febe67ad809636564602131bb0c8b1291904d92789bd3e6803a3cb2409d768b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EnableTelemtryStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EnableTelemtryStack.assets"
+      ],
+      "metadata": {
+        "/EnableTelemtryStack/01234test": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "visibilityTimeout": {
+                "amount": 300,
+                "unit": {
+                  "label": "seconds",
+                  "isoLabel": "S",
+                  "inMillis": 1000
+                }
+              }
+            }
+          }
+        ],
+        "/EnableTelemtryStack/01234test/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "01234test13C610BE"
+          }
+        ],
+        "/EnableTelemtryStack/MyFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": {
+                "name": "python3.8",
+                "supportsInlineCode": true,
+                "family": 2,
+                "isVariable": false,
+                "bundlingDockerImage": {
+                  "image": "public.ecr.aws/sam/build-python3.8"
+                },
+                "bundlingImage": {
+                  "image": "public.ecr.aws/sam/build-python3.8"
+                },
+                "supportsCodeGuruProfiling": true,
+                "supportsSnapStart": false
+              },
+              "handler": "index.handler",
+              "code": {
+                "code": "def handler(event, context):\n\tprint('The function has been invoked.')",
+                "isInline": true
+              }
+            }
+          }
+        ],
+        "/EnableTelemtryStack/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2"
+          }
+        ],
+        "/EnableTelemtryStack/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1"
+          }
+        ],
+        "/EnableTelemtryStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/EnableTelemtryStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/EnableTelemtryStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EnableTelemtryStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EnableTelemtryStack"
+    },
+    "EnableAdditionalMetadataDefaultTestDeployAssert3F14AD57.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EnableAdditionalMetadataDefaultTestDeployAssert3F14AD57.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EnableAdditionalMetadataDefaultTestDeployAssert3F14AD57": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EnableAdditionalMetadataDefaultTestDeployAssert3F14AD57.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d1a201f6686b51e0991e72889d4bd4a576adc2c45fed86dbb7418437b2cb3251.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EnableAdditionalMetadataDefaultTestDeployAssert3F14AD57.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EnableAdditionalMetadataDefaultTestDeployAssert3F14AD57.assets"
+      ],
+      "metadata": {
+        "/Enable Additional Metadata/DefaultTest/DeployAssert/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/Enable Additional Metadata/DefaultTest/DeployAssert/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/Enable Additional Metadata/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Enable Additional Metadata/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Enable Additional Metadata/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

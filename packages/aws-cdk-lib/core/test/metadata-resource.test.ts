@@ -1,6 +1,9 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1 } from '../lib';
+import { Code, Function, Runtime } from '../../aws-lambda';
+import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
+import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1, FeatureFlags } from '../lib';
+import { MetadataType } from '../lib/metadata-resource';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
@@ -47,6 +50,30 @@ describe('MetadataResource', () => {
 
     expect(stackTemplate.Resources?.CDKMetadata).toBeDefined();
     expect(stackTemplate.Resources?.CDKMetadata?.Condition).toBeDefined();
+  });
+
+  it.each(
+    [
+      [true, { Condition: 'CDKMetadataAvailable', Properties: { Analytics: 'v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzMy0DM00jNSzCrOzNQtKs0rycxN1QuC0ACoQHZIJQAAAA==' }, Type: 'AWS::CDK::Metadata' }],
+      [false, { Condition: 'CDKMetadataAvailable', Properties: { Analytics: 'v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzMy0DM00jNSzCrOzNQtKs0rycxN1QuC0ACoQHZIJQAAAA==' }, Type: 'AWS::CDK::Metadata' }],
+      [undefined, { Condition: 'CDKMetadataAvailable', Properties: { Analytics: 'v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzMy0DM00jNSzCrOzNQtKs0rycxN1QuC0ACoQHZIJQAAAA==' }, Type: 'AWS::CDK::Metadata' }],
+    ],
+  )('when no metadata is added by default, CDKMetadata should be the same', (enableAdditionalTelemtry, cdkMetadata) => {
+    const myApp = new App({
+      analyticsReporting: true,
+    });
+    myApp.node.setContext(ENABLE_ADDITIONAL_METADATA_COLLECTION, enableAdditionalTelemtry);
+    const myStack = new Stack(myApp, 'MyStack');
+    new Function(myStack, 'MyFunction', {
+      runtime: Runtime.PYTHON_3_9,
+      handler: 'index.handler',
+      code: Code.fromInline(
+        "def handler(event, context):\n\tprint('The function has been invoked.')",
+      ),
+    });
+
+    const stackTemplate = myApp.synth().getStackByName('MyStack').template;
+    expect(stackTemplate.Resources?.CDKMetadata).toEqual(cdkMetadata);
   });
 
   test('includes the formatted Analytics property', () => {
@@ -160,6 +187,18 @@ describe('formatAnalytics', () => {
     ];
 
     expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack},0.1.2!aws-cdk-lib.{CoolResource,OtherResource}');
+  });
+
+  it.each([
+    [true, '1.2.3!aws-cdk-lib.Construct[{\"custom\":{\"foo\":\"bar\"}}]'],
+    [false, '1.2.3!aws-cdk-lib.Construct'],
+    [undefined, '1.2.3!aws-cdk-lib.Construct'],
+  ])('format analytics with metadata and enabled additional telemetry', (enableAdditionalTelemtry, output) => {
+    const constructInfo = [
+      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3', metadata: [{ custom: { foo: 'bar' } }] },
+    ];
+
+    expect(plaintextConstructsFromAnalytics(formatAnalytics(constructInfo, enableAdditionalTelemtry))).toMatch(output);
   });
 
   test('ensure gzip is encoded with "unknown" operating system to maintain consistent output across systems', () => {

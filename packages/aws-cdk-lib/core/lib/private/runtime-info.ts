@@ -1,5 +1,7 @@
-import { IConstruct } from 'constructs';
+import { IConstruct, MetadataEntry } from 'constructs';
 import { App } from '../app';
+import { MetadataType } from '../metadata-resource';
+import { Resource } from '../resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
@@ -24,6 +26,7 @@ const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 export interface ConstructInfo {
   readonly fqn: string;
   readonly version: string;
+  readonly metadata?: Record<string, any>[];
 }
 
 export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo | undefined {
@@ -32,12 +35,66 @@ export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo
     && jsiiRuntimeInfo !== null
     && typeof jsiiRuntimeInfo.fqn === 'string'
     && typeof jsiiRuntimeInfo.version === 'string') {
-    return { fqn: jsiiRuntimeInfo.fqn, version: jsiiRuntimeInfo.version };
+    return {
+      fqn: jsiiRuntimeInfo.fqn,
+      version: jsiiRuntimeInfo.version,
+      metadata: isResource(construct) ? redactTelemetryData(construct.node.metadata) : undefined,
+    };
   } else if (jsiiRuntimeInfo) {
     // There is something defined, but doesn't match our expectations. Fail fast and hard.
     throw new Error(`malformed jsii runtime info for construct: '${construct.node.path}'`);
   }
   return undefined;
+}
+
+/**
+ * Filter for Construct, Method, and Feature flag metadata. Redact values from it.
+ *
+ * @param metadata a list of metadata entries
+ */
+export function redactTelemetryData(metadata: MetadataEntry[]): Record<string, any>[] {
+  const validTypes = new Set([
+    MetadataType.CONSTRUCT,
+    MetadataType.METHOD,
+    MetadataType.FEATURE_FLAGS,
+  ]);
+
+  return metadata
+    .filter((entry) => validTypes.has(entry.type as MetadataType))
+    .map((entry) => ({
+      type: entry.type,
+      data: redactTelemetryDataHelper(entry.data),
+    }));
+}
+
+/**
+ * Redact values from dictionary values other than Boolean and ENUM-type values.
+ * @TODO complete the ENUM-type values redaction in a follow-up change.
+ */
+function redactTelemetryDataHelper(data: any): any {
+  if (typeof data === 'boolean') {
+    return data; // Return booleans as-is
+  }
+
+  if (Array.isArray(data)) {
+    // Handle arrays by recursively redacting each element
+    return data.map((item) => redactTelemetryDataHelper(item));
+  }
+
+  if (data && typeof data === 'object') {
+    // Handle objects by iterating over their key-value pairs
+    if (isResource(data)) {
+      return '*';
+    }
+
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data)) {
+      result[key] = redactTelemetryDataHelper(value);
+    }
+    return result;
+  }
+
+  return '*';
 }
 
 /**
@@ -106,14 +163,26 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
 
   addValidationPluginInfo(stack, allConstructInfos);
 
-  // Filter out duplicate values
-  const uniqKeys = new Set();
-  return allConstructInfos.filter(construct => {
-    const constructKey = `${construct.fqn}@${construct.version}`;
-    const isDuplicate = uniqKeys.has(constructKey);
-    uniqKeys.add(constructKey);
-    return !isDuplicate;
+  // Filter out duplicate values and append the metadata information to the array
+  const uniqueMap = new Map<string, ConstructInfo>();
+  allConstructInfos.forEach(info => {
+    const key = `${info.fqn}@${info.version}`;
+    if (uniqueMap.has(key)) {
+      const existingInfo = uniqueMap.get(key);
+      if (existingInfo && existingInfo.metadata && info.metadata) {
+        existingInfo.metadata.push(...info.metadata);
+      }
+    } else {
+      uniqueMap.set(key, info);
+    }
   });
+
+  return Array.from(uniqueMap.values());
+}
+
+function isResource(construct: IConstruct): construct is Resource {
+  const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
+  return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
 }
 
 /**

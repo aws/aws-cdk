@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "9febe67ad809636564602131bb0c8b1291904d92789bd3e6803a3cb2409d768b": {
+      "source": {
+        "path": "EnableTelemtryStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9febe67ad809636564602131bb0c8b1291904d92789bd3e6803a3cb2409d768b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
