@@ -981,6 +981,20 @@ export interface WatchOptions {
   readonly concurrency?: number;
 
   /**
+   * Exclude these file names from cdk watch
+   *
+   * @default - []
+   */
+  readonly exclude?: Array<string>;
+
+  /**
+   * Include only these file names in cdk watch
+   *
+   * @default - []
+   */
+  readonly include?: Array<string>;
+
+  /**
    * Positional argument for watch
    */
   readonly STACKS?: Array<string>;

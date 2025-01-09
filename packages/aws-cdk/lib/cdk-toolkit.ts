@@ -617,21 +617,22 @@ export class CdkToolkit {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
 
-    const watchSettings: { include?: string | string[]; exclude: string | string[] } | undefined =
-      this.props.configuration.settings.get(['watch']);
-    if (!watchSettings) {
+    if ((options.include === undefined) && (options.exclude === undefined)) {
       throw new ToolkitError(
         "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
-          'Make sure to add a "watch" key to your cdk.json',
+          'Make sure to add a "watch" key to your cdk.json or add "--include/exclude" options to the CLI command',
       );
     }
+
+    // eslint-disable-next-line no-console
+    console.log('A', options.include, options.exclude);
 
     // For the "include" subkey under the "watch" key, the behavior is:
     // 1. No "watch" setting? We error out.
     // 2. "watch" setting without an "include" key? We default to observing "./**".
     // 3. "watch" setting with an empty "include" key? We default to observing "./**".
     // 4. Non-empty "include" key? Just use the "include" key.
-    const watchIncludes = this.patternsArrayForWatch(watchSettings.include, {
+    const watchIncludes = this.patternsArrayForWatch(options.include, {
       rootDir,
       returnRootDirIfEmpty: true,
     });
@@ -644,7 +645,7 @@ export class CdkToolkit {
     // 3. Any directory's content whose name starts with a dot.
     // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
     const outputDir = this.props.configuration.settings.get(['output']);
-    const watchExcludes = this.patternsArrayForWatch(watchSettings.exclude, {
+    const watchExcludes = this.patternsArrayForWatch(options.exclude, {
       rootDir,
       returnRootDirIfEmpty: false,
     }).concat(`${outputDir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
@@ -1533,18 +1534,19 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    *
    * @default false
    */
-  exclusively?: boolean;
+  readonly exclusively?: boolean;
 
   /**
    * Reuse the assets with the given asset IDs
    */
-  reuseAssets?: string[];
+  readonly reuseAssets?: string[];
 
   /**
    * Always deploy, even if templates are identical.
+   *
    * @default false
    */
-  force?: boolean;
+  readonly force?: boolean;
 
   /**
    * Whether to perform a 'hotswap' deployment.
@@ -1577,6 +1579,20 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * @default 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Watch only these files
+   *
+   * @default []
+   */
+  readonly include?: string[];
+
+  /**
+   * Watch all files except these
+   *
+   * @default []
+   */
+  readonly exclude?: string[];
 }
 
 export interface DeployOptions extends CfnDeployOptions, WatchOptions {

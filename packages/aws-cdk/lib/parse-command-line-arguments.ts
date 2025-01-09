@@ -634,6 +634,20 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'number',
           desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.',
           requiresArg: true,
+        })
+        .option('exclude', {
+          default: [],
+          type: 'array',
+          desc: 'Exclude these file names from cdk watch',
+          nargs: 1,
+          requiresArg: true,
+        })
+        .option('include', {
+          default: [],
+          type: 'array',
+          desc: 'Include only these file names in cdk watch',
+          nargs: 1,
+          requiresArg: true,
         }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', (yargs: Argv) =>

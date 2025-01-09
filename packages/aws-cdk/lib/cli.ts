@@ -379,6 +379,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'watch':
+        const include = configuration.settings.get(['watch']).include;
+        const exclude = configuration.settings.get(['watch']).exclude;
+
         return cli.watch({
           selector,
           exclusively: args.exclusively,
@@ -395,6 +398,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
           traceLogs: args.logs,
           concurrency: args.concurrency,
+          include: include ? (Array.isArray(include) ? include : [include]) : args.include, // for legacy reasons we allow single strings
+          exclude: exclude ? (Array.isArray(exclude) ? exclude : [exclude]) : args.exclude,
         });
 
       case 'destroy':

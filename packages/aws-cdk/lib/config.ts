@@ -278,6 +278,8 @@ export async function makeConfig(): Promise<CliConfig> {
               "'true' by default, use --no-logs to turn off",
           },
           'concurrency': { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true },
+          'exclude': { type: 'array', desc: 'Exclude these file names from cdk watch', default: [] },
+          'include': { type: 'array', desc: 'Include only these file names in cdk watch', default: [] },
         },
       },
       destroy: {

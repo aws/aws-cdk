@@ -1030,7 +1030,7 @@ describe('watch', () => {
       });
     }).rejects.toThrow(
       "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
-        'Make sure to add a "watch" key to your cdk.json',
+        'Make sure to add a "watch" key to your cdk.json or add "--include/exclude" options to the CLI command',
     );
   });
 
@@ -1047,29 +1047,13 @@ describe('watch', () => {
     expect(includeArgs.length).toBe(1);
   });
 
-  test("allows providing a single string in 'watch.include'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
-      include: 'my-dir',
-    });
-    const toolkit = defaultToolkitSetup();
-
-    await toolkit.watch({
-      selector: { patterns: [] },
-      hotswap: HotswapMode.HOTSWAP_ONLY,
-    });
-
-    expect(fakeChokidarWatch.includeArgs).toStrictEqual(['my-dir']);
-  });
-
   test("allows providing an array of strings in 'watch.include'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
-      include: ['my-dir1', '**/my-dir2/*'],
-    });
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      include: ['my-dir1', '**/my-dir2/*'],
     });
 
     expect(fakeChokidarWatch.includeArgs).toStrictEqual(['my-dir1', '**/my-dir2/*']);
@@ -1083,36 +1067,19 @@ describe('watch', () => {
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      include: [],
     });
 
     expect(fakeChokidarWatch.excludeArgs).toStrictEqual(['cdk.out/**', '**/.*', '**/.*/**', '**/node_modules/**']);
   });
 
-  test("allows providing a single string in 'watch.exclude'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
-      exclude: 'my-dir',
-    });
-    const toolkit = defaultToolkitSetup();
-
-    await toolkit.watch({
-      selector: { patterns: [] },
-      hotswap: HotswapMode.HOTSWAP_ONLY,
-    });
-
-    const excludeArgs = fakeChokidarWatch.excludeArgs;
-    expect(excludeArgs.length).toBe(5);
-    expect(excludeArgs[0]).toBe('my-dir');
-  });
-
   test("allows providing an array of strings in 'watch.exclude'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
-      exclude: ['my-dir1', '**/my-dir2'],
-    });
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      exclude: ['my-dir1', '**/my-dir2'],
     });
 
     const excludeArgs = fakeChokidarWatch.excludeArgs;

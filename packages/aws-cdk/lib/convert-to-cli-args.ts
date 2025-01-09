@@ -158,6 +158,8 @@ export function convertToCliArgs(args: any): CliArguments {
         hotswapFallback: args.hotswapFallback,
         logs: args.logs,
         concurrency: args.concurrency,
+        exclude: args.exclude,
+        include: args.include,
         STACKS: args.STACKS,
       };
       break;
