@@ -64,6 +64,8 @@ function buildCommandSwitch(config: CliConfig): string {
   const commandSwitchExprs = ['let commandOptions;', 'switch (args._[0] as Command) {'];
   for (const commandName of Object.keys(config.commands)) {
     commandSwitchExprs.push(
+      // All aliases of the command should map to the same switch branch
+      // This ensures that we store options of the command regardless of what alias is specified
       ...buildAliases(commandName, config.commands[commandName].aliases),
       'commandOptions = {',
       ...buildCommandOptions(config.commands[commandName]),
