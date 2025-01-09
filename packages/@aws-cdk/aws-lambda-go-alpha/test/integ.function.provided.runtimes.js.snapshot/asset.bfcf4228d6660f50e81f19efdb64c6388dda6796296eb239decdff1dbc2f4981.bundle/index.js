@@ -152,7 +152,6 @@ var init_matcher = __esm({
        */
       toHumanStrings() {
         const failures = new Array();
-        debugger;
         recurse(this, []);
         return failures.map((r) => {
           const loc = r.path.length === 0 ? "" : ` at /${r.path.join("/")}`;
