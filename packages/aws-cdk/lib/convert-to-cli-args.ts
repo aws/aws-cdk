@@ -45,7 +45,7 @@ export function convertToCliArgs(args: any): CliArguments {
       };
       break;
 
-    case 'synthesize':
+    case 'synth':
       commandOptions = {
         exclusively: args.exclusively,
         validation: args.validation,

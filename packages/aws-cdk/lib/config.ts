@@ -53,12 +53,12 @@ export async function makeConfig(): Promise<CliConfig> {
           'show-dependencies': { type: 'boolean', default: false, alias: 'd', desc: 'Display stack dependency information for each stack' },
         },
       },
-      synthesize: {
+      synth: {
         arg: {
           name: 'STACKS',
           variadic: true,
         },
-        aliases: ['synth'],
+        aliases: ['synthesize'],
         description: 'Synthesizes and prints the CloudFormation template for this stack',
         options: {
           exclusively: { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' },
