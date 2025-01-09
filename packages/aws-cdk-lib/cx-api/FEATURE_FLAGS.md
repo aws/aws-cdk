@@ -87,6 +87,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:disableEcsImdsBlocking](#aws-cdkaws-ecsdisableecsimdsblocking) | When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)** | V2NEXT | (temporary) |
 | [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | V2NEXT | (temporary) |
 | [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | V2NEXT | (fix) |
+| [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | V2NEXT | (config) |
 
 <!-- END table -->
 
@@ -161,7 +162,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
-    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true
+    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
+    "@aws-cdk/core:enableAdditionalMetadataCollection": true
   }
 }
 ```
