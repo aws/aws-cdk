@@ -112,7 +112,7 @@ function buildCommandOptions(options: CliAction, prefix?: string): string[] {
   for (const optionName of Object.keys(options.options ?? {})) {
     const name = kebabToCamelCase(optionName);
     if (prefix) {
-      commandOptions.push(`'${name}': args.${prefix}.${name},`);
+      commandOptions.push(`'${name}': args.${prefix}?.${name},`);
     } else {
       commandOptions.push(`'${name}': args.${name},`);
     }
