@@ -1,0 +1,102 @@
+export const CommonExporting = {
+  OTEL_EXPORTER_OTLP_PROTOCOL: 'OTEL_EXPORTER_OTLP_PROTOCOL',
+  OTEL_EXPORTER_OTLP_PROTOCOL_HTTP_PROTOBUF: 'http/protobuf',
+
+  OTEL_RESOURCE_ATTRIBUTES: 'OTEL_RESOURCE_ATTRIBUTES',
+
+  OTEL_AWS_APPLICATION_SIGNALS: 'OTEL_AWS_APPLICATION_SIGNALS_ENABLED',
+  OTEL_AWS_APPLICATION_SIGNALS_ENABLED: 'true',
+  OTEL_AWS_APPLICATION_SIGNALS_DISABLED: 'false',
+  OTEL_AWS_APPLICATION_SIGNALS_RUNTIME: 'OTEL_AWS_APPLICATION_SIGNALS_RUNTIME_ENABLED',
+  OTEL_AWS_APPLICATION_SIGNALS_RUNTIME_ENABLED: 'true',
+  OTEL_AWS_APPLICATION_SIGNALS_RUNTIME_DISABLED: 'false',
+
+  OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT: 'OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT',
+  OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT_LOCAL_CWA: 'http://localhost:4316/v1/metrics',
+};
+
+export const LogsExporting = {
+  OTEL_LOGS_EXPORTER: 'OTEL_LOGS_EXPORTER',
+  OTEL_LOGS_EXPORTER_NONE: 'none',
+  OTEL_LOGS_EXPORTER_OTLP: 'otlp',
+} as const;
+
+export const MetricsExporting = {
+  OTEL_METRICS_EXPORTER: 'OTEL_METRICS_EXPORTER',
+  OTEL_METRICS_EXPORTER_NONE: 'none',
+  OTEL_METRICS_EXPORTER_OTLP: 'otlp',
+} as const;
+
+export const TraceExporting = {
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: 'OTEL_EXPORTER_OTLP_TRACES_ENDPOINT',
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT_LOCAL_CWA: 'http://localhost:4316/v1/traces',
+
+  OTEL_TRACES_SAMPLER: 'OTEL_TRACES_SAMPLER',
+  OTEL_TRACES_SAMPLER_XRAY: 'xray',
+  OTEL_TRACES_SAMPLER_TRACEID_RATIO: 'traceidratio',
+  OTEL_TRACES_SAMPLER_ALWAYS_ON: 'always_on',
+  OTEL_TRACES_SAMPLER_ALWAYS_OFF: 'always_off',
+  OTEL_TRACES_SAMPLER_PARENT_BASED_TRACEID_RATIO: 'parentbased_traceidratio',
+  OTEL_TRACES_SAMPLER_PARENT_BASED_ALWAYS_ON: 'parentbased_always_on',
+  OTEL_TRACES_SAMPLER_PARENT_BASED_ALWAYS_OFF: 'parentbased_always_off',
+
+  OTEL_TRACES_SAMPLER_ARG: 'OTEL_TRACES_SAMPLER_ARG',
+  OTEL_TRACES_SAMPLER_ARG_LOCAL_CWA: 'endpoint=http://localhost:2000',
+
+  OTEL_PROPAGATORS: 'OTEL_PROPAGATORS',
+  OTEL_PROPAGATORS_APPLICATION_SIGNALS: 'tracecontext,baggage,b3,xray',
+} as const;
+
+export const JavaInstrumentation = {
+  JAVA_TOOL_OPTIONS: 'JAVA_TOOL_OPTIONS',
+  JAVA_TOOL_OPTIONS_ADOT: ' -javaagent:/otel-auto-instrumentation/javaagent.jar',
+} as const;
+
+export const PythonInstrumentation = {
+  OTEL_PYTHON_DISTRO: 'OTEL_PYTHON_DISTRO',
+  OTEL_PYTHON_DISTRO_AWS_DISTRO: 'aws_distro',
+
+  OTEL_PYTHON_CONFIGURATOR: 'OTEL_PYTHON_CONFIGURATOR',
+  OTEL_PYTHON_CONFIGURATOR_AWS_CONFIGURATOR: 'aws_configurator',
+
+  PYTHONPATH: 'PYTHONPATH',
+  PYTHONPATH_ADOT: '/otel-auto-instrumentation-python/opentelemetry/instrumentation/auto_instrumentation:/otel-auto-instrumentation-python',
+} as const;
+
+export const DotnetInstrumentation = {
+  OTEL_DOTNET_DISTRO: 'OTEL_DOTNET_DISTRO',
+  OTEL_DOTNET_DISTRO_AWS_DISTRO: 'aws_distro',
+
+  OTEL_DOTNET_CONFIGURATOR: 'OTEL_DOTNET_CONFIGURATOR',
+  OTEL_DOTNET_CONFIGURATOR_AWS_CONFIGURATOR: 'aws_configurator',
+
+  OTEL_DOTNET_AUTO_PLUGINS: 'OTEL_DOTNET_AUTO_PLUGINS',
+  OTEL_DOTNET_AUTO_PLUGINS_ADOT: 'AWS.Distro.OpenTelemetry.AutoInstrumentation.Plugin, AWS.Distro.OpenTelemetry.AutoInstrumentation',
+
+  CORECLR_ENABLE_PROFILING: 'CORECLR_ENABLE_PROFILING',
+  CORECLR_ENABLE_PROFILING_ENABLED: '1',
+  CORECLR_ENABLE_PROFILING_DISABLED: '0',
+
+  CORECLR_PROFILER: 'CORECLR_PROFILER',
+  CORECLR_PROFILER_OTEL: '{918728DD-259F-4A6A-AC2B-B85E1B658318}',
+
+  CORECLR_PROFILER_PATH: 'CORECLR_PROFILER_PATH',
+  CORECLR_PROFILER_PATH_LINUX_X64: '/otel-auto-instrumentation-dotnet/linux-x64/OpenTelemetry.AutoInstrumentation.Native.so',
+  CORECLR_PROFILER_PATH_WINDOWS_X64: 'C:\\otel-auto-instrumentation-dotnet\\win-x64\\OpenTelemetry.AutoInstrumentation.Native.dll',
+
+  DOTNET_STARTUP_HOOKS: 'DOTNET_STARTUP_HOOKS',
+  DOTNET_STARTUP_HOOKS_LINUX_ADOT: '/otel-auto-instrumentation-dotnet/net/OpenTelemetry.AutoInstrumentation.StartupHook.dll',
+  DOTNET_STARTUP_HOOKS_WINDOWS_ADOT: 'C:\\otel-auto-instrumentation-dotnet\\net\\OpenTelemetry.AutoInstrumentation.StartupHook.dll',
+
+  DOTNET_ADDITIONAL_DEPS: 'DOTNET_ADDITIONAL_DEPS',
+  DOTNET_ADDITIONAL_DEPS_LINUX_ADOT: '/otel-auto-instrumentation-dotnet/AdditionalDeps',
+  DOTNET_ADDITIONAL_DEPS_WINDOWS_ADOT: 'C:\\otel-auto-instrumentation-dotnet\\AdditionalDeps',
+
+  OTEL_DOTNET_AUTO_HOME: 'OTEL_DOTNET_AUTO_HOME',
+  OTEL_DOTNET_AUTO_HOME_LINUX_ADOT: '/otel-auto-instrumentation-dotnet',
+  OTEL_DOTNET_AUTO_HOME_WINDOWS_ADOT: 'C:\\otel-auto-instrumentation-dotnet',
+
+  DOTNET_SHARED_STORE: 'DOTNET_SHARED_STORE',
+  DOTNET_SHARED_STORE_LINUX_ADOT: '/otel-auto-instrumentation-dotnet/store',
+  DOTNET_SHARED_STORE_WINDOWS_ADOT: 'C:\\otel-auto-instrumentation-dotnet\\store',
+} as const;

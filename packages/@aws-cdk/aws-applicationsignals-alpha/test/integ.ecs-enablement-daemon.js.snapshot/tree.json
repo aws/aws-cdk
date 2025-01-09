@@ -1,0 +1,303 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "ecs-enablement-integration": {
+        "id": "ecs-enablement-integration",
+        "path": "ecs-enablement-integration",
+        "children": {
+          "Ec2TaskDefinition": {
+            "id": "Ec2TaskDefinition",
+            "path": "ecs-enablement-integration/Ec2TaskDefinition",
+            "children": {
+              "TaskRole": {
+                "id": "TaskRole",
+                "path": "ecs-enablement-integration/Ec2TaskDefinition/TaskRole",
+                "children": {
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "ecs-enablement-integration/Ec2TaskDefinition/TaskRole/ImportTaskRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ecs-enablement-integration/Ec2TaskDefinition/TaskRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ecs-enablement-integration/Ec2TaskDefinition/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "cpu": 0,
+                        "dependsOn": [
+                          {
+                            "containerName": "adot-init",
+                            "condition": "SUCCESS"
+                          }
+                        ],
+                        "essential": true,
+                        "image": "nathanpeck/name",
+                        "memory": 512,
+                        "mountPoints": [
+                          {
+                            "containerPath": "/otel-auto-instrumentation-python",
+                            "readOnly": false,
+                            "sourceVolume": "opentelemetry-auto-instrumentation"
+                          }
+                        ],
+                        "name": "app",
+                        "environment": [
+                          {
+                            "name": "OTEL_LOGS_EXPORTER",
+                            "value": "none"
+                          },
+                          {
+                            "name": "OTEL_METRICS_EXPORTER",
+                            "value": "none"
+                          },
+                          {
+                            "name": "OTEL_EXPORTER_OTLP_PROTOCOL",
+                            "value": "http/protobuf"
+                          },
+                          {
+                            "name": "OTEL_AWS_APPLICATION_SIGNALS_ENABLED",
+                            "value": "true"
+                          },
+                          {
+                            "name": "OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT",
+                            "value": "http://cwagent.local:4316/v1/metrics"
+                          },
+                          {
+                            "name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+                            "value": "http://cwagent.local:4316/v1/traces"
+                          },
+                          {
+                            "name": "OTEL_TRACES_SAMPLER",
+                            "value": "xray"
+                          },
+                          {
+                            "name": "OTEL_TRACES_SAMPLER_ARG",
+                            "value": "endpoint=http://ccwagent.local:2000"
+                          },
+                          {
+                            "name": "OTEL_PROPAGATORS",
+                            "value": "tracecontext,baggage,b3,xray"
+                          },
+                          {
+                            "name": "OTEL_PYTHON_DISTRO",
+                            "value": "aws_distro"
+                          },
+                          {
+                            "name": "OTEL_PYTHON_CONFIGURATOR",
+                            "value": "aws_configurator"
+                          },
+                          {
+                            "name": "PYTHONPATH",
+                            "value": "/otel-auto-instrumentation-python/opentelemetry/instrumentation/auto_instrumentation:/otel-auto-instrumentation-python"
+                          },
+                          {
+                            "name": "OTEL_RESOURCE_ATTRIBUTES",
+                            "value": "service.name=demo"
+                          }
+                        ]
+                      },
+                      {
+                        "command": [
+                          "cp",
+                          "-a",
+                          "/autoinstrumentation/.",
+                          "/otel-auto-instrumentation-python"
+                        ],
+                        "cpu": 0,
+                        "essential": false,
+                        "image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-python:v0.8.0",
+                        "memory": 32,
+                        "mountPoints": [
+                          {
+                            "containerPath": "/otel-auto-instrumentation-python",
+                            "readOnly": false,
+                            "sourceVolume": "opentelemetry-auto-instrumentation"
+                          }
+                        ],
+                        "name": "adot-init"
+                      }
+                    ],
+                    "family": "ecsenablementintegrationEc2TaskDefinition9DAAE5F5",
+                    "networkMode": "host",
+                    "requiresCompatibilities": [
+                      "EC2"
+                    ],
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "Ec2TaskDefinitionTaskRole0B78BC85",
+                        "Arn"
+                      ]
+                    },
+                    "volumes": [
+                      {
+                        "name": "opentelemetry-auto-instrumentation"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "app": {
+                "id": "app",
+                "path": "ecs-enablement-integration/Ec2TaskDefinition/app",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "adot-init": {
+                "id": "adot-init",
+                "path": "ecs-enablement-integration/Ec2TaskDefinition/adot-init",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.Ec2TaskDefinition",
+              "version": "0.0.0"
+            }
+          },
+          "TestEc2TaskDefinitionIntegration": {
+            "id": "TestEc2TaskDefinitionIntegration",
+            "path": "ecs-enablement-integration/TestEc2TaskDefinitionIntegration",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-applicationsignals-alpha.ApplicationSignalsIntegration",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ecs-enablement-integration/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ecs-enablement-integration/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ApplicationSignalsIntegrationECSDaemon": {
+        "id": "ApplicationSignalsIntegrationECSDaemon",
+        "path": "ApplicationSignalsIntegrationECSDaemon",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ApplicationSignalsIntegrationECSDaemon/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ApplicationSignalsIntegrationECSDaemon/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ApplicationSignalsIntegrationECSDaemon/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ApplicationSignalsIntegrationECSDaemon/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ApplicationSignalsIntegrationECSDaemon/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

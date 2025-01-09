@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "ApplicationSignalsIntegrationECSSidecar/DefaultTest": {
+      "stacks": [
+        "ecs-enablement-integration"
+      ],
+      "assertionStack": "ApplicationSignalsIntegrationECSSidecar/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationSignalsIntegrationECSSidecarDefaultTestDeployAssert7F3E5290"
+    }
+  }
+}
