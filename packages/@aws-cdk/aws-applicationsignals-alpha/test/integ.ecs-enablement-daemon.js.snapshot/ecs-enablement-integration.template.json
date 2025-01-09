@@ -1,0 +1,172 @@
+{
+ "Resources": {
+  "Ec2TaskDefinitionTaskRole0B78BC85": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Ec2TaskDefinitionB25030BE": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Cpu": 0,
+      "DependsOn": [
+       {
+        "Condition": "SUCCESS",
+        "ContainerName": "adot-init"
+       }
+      ],
+      "Environment": [
+       {
+        "Name": "OTEL_LOGS_EXPORTER",
+        "Value": "none"
+       },
+       {
+        "Name": "OTEL_METRICS_EXPORTER",
+        "Value": "none"
+       },
+       {
+        "Name": "OTEL_EXPORTER_OTLP_PROTOCOL",
+        "Value": "http/protobuf"
+       },
+       {
+        "Name": "OTEL_AWS_APPLICATION_SIGNALS_ENABLED",
+        "Value": "true"
+       },
+       {
+        "Name": "OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT",
+        "Value": "http://cwagent.local:4316/v1/metrics"
+       },
+       {
+        "Name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+        "Value": "http://cwagent.local:4316/v1/traces"
+       },
+       {
+        "Name": "OTEL_TRACES_SAMPLER",
+        "Value": "xray"
+       },
+       {
+        "Name": "OTEL_TRACES_SAMPLER_ARG",
+        "Value": "endpoint=http://ccwagent.local:2000"
+       },
+       {
+        "Name": "OTEL_PROPAGATORS",
+        "Value": "tracecontext,baggage,b3,xray"
+       },
+       {
+        "Name": "OTEL_PYTHON_DISTRO",
+        "Value": "aws_distro"
+       },
+       {
+        "Name": "OTEL_PYTHON_CONFIGURATOR",
+        "Value": "aws_configurator"
+       },
+       {
+        "Name": "PYTHONPATH",
+        "Value": "/otel-auto-instrumentation-python/opentelemetry/instrumentation/auto_instrumentation:/otel-auto-instrumentation-python"
+       },
+       {
+        "Name": "OTEL_RESOURCE_ATTRIBUTES",
+        "Value": "service.name=demo"
+       }
+      ],
+      "Essential": true,
+      "Image": "nathanpeck/name",
+      "Memory": 512,
+      "MountPoints": [
+       {
+        "ContainerPath": "/otel-auto-instrumentation-python",
+        "ReadOnly": false,
+        "SourceVolume": "opentelemetry-auto-instrumentation"
+       }
+      ],
+      "Name": "app"
+     },
+     {
+      "Command": [
+       "cp",
+       "-a",
+       "/autoinstrumentation/.",
+       "/otel-auto-instrumentation-python"
+      ],
+      "Cpu": 0,
+      "Essential": false,
+      "Image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-python:v0.8.0",
+      "Memory": 32,
+      "MountPoints": [
+       {
+        "ContainerPath": "/otel-auto-instrumentation-python",
+        "ReadOnly": false,
+        "SourceVolume": "opentelemetry-auto-instrumentation"
+       }
+      ],
+      "Name": "adot-init"
+     }
+    ],
+    "Family": "ecsenablementintegrationEc2TaskDefinition9DAAE5F5",
+    "NetworkMode": "host",
+    "RequiresCompatibilities": [
+     "EC2"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "Ec2TaskDefinitionTaskRole0B78BC85",
+      "Arn"
+     ]
+    },
+    "Volumes": [
+     {
+      "Name": "opentelemetry-auto-instrumentation"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
