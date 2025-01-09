@@ -261,3 +261,88 @@ test('can pass additional IAM statements', () => {
     },
   });
 });
+
+test('throws if integrationPattern is WAIT_FOR_TASK_TOKEN but payloadResponseOnly=true', () => {
+  expect(
+    () =>
+      new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+        service: 's3',
+        action: 'GetObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: sfn.JsonPath.stringAt('$.key'),
+        },
+        region: 'us-east-1',
+        iamResources: ['*'],
+        integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      }),
+  ).toThrow(/The 'payloadResponseOnly' property cannot be true/);
+});
+
+test('integrationPattern is WAIT_FOR_TASK_TOKEN', () => {
+  // WHEN
+  const task = new tasks.CallAwsServiceCrossRegion(stack, 'StartExecution', {
+    integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    service: 'sfn',
+    action: 'startExecution',
+    region: 'us-east-1',
+    parameters: {
+      StateMachineArn: 'dummy-arn',
+      Input: sfn.TaskInput.fromObject({
+        taskToken: sfn.JsonPath.taskToken,
+        payload: sfn.JsonPath.stringAt('$.payload'),
+      }),
+    },
+    iamResources: ['*'],
+    payloadResponseOnly: false,
+  });
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      FunctionName: {
+        'Fn::GetAtt': ['CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F', 'Arn'],
+      },
+      Payload: {
+        action: 'startExecution',
+        parameters: {
+          Input: {
+            type: 1,
+            value: {
+              'payload.$': '$.payload',
+              'taskToken.$': '$$.Task.Token',
+            },
+          },
+          StateMachineArn: 'dummy-arn',
+        },
+        region: 'us-east-1',
+        service: 'sfn',
+      },
+    },
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::lambda:invoke.waitForTaskToken',
+        ],
+      ],
+    },
+    Retry: [
+      {
+        BackoffRate: 2,
+        ErrorEquals: ['Lambda.ClientExecutionTimeoutException', 'Lambda.ServiceException', 'Lambda.AWSLambdaException', 'Lambda.SdkClientException'],
+        IntervalSeconds: 2,
+        MaxAttempts: 6,
+      },
+    ],
+    Type: 'Task',
+  });
+});
