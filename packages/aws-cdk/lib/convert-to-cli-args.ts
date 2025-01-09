@@ -256,7 +256,7 @@ export function convertYargsToCliArgs(args: any): CliArguments {
 }
 
 // @ts-ignore TS6133
-export function convertConfigToCliArgs(args: any): CliArguments {
+export function convertConfigToCliArgs(config: any): CliArguments {
   const globalOptions: GlobalOptions = {
     app: args.app,
     build: args.build,
