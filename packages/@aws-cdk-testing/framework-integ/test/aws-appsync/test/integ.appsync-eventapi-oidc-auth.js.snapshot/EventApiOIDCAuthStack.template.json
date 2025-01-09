@@ -1,0 +1,88 @@
+{
+ "Resources": {
+  "EventApiOIDCAuthStack4D8FB0F9": {
+   "Type": "AWS::AppSync::Api",
+   "Properties": {
+    "EventConfig": {
+     "AuthProviders": [
+      {
+       "AuthType": "OPENID_CONNECT",
+       "OpenIDConnectConfig": {
+        "ClientId": "pgO9YTZZ4Zk4HNFwnyyWx6H9HyHmYPhG",
+        "Issuer": "https://dev-z0etnjn4uol5vcg0.us.auth0.com"
+       }
+      }
+     ],
+     "ConnectionAuthModes": [
+      {
+       "AuthType": "OPENID_CONNECT"
+      }
+     ],
+     "DefaultPublishAuthModes": [
+      {
+       "AuthType": "OPENID_CONNECT"
+      }
+     ],
+     "DefaultSubscribeAuthModes": [
+      {
+       "AuthType": "OPENID_CONNECT"
+      }
+     ]
+    },
+    "Name": "api-oidc-auth-test"
+   }
+  }
+ },
+ "Outputs": {
+  "AWSAppSyncEventsHTTPendpoint": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EventApiOIDCAuthStack4D8FB0F9",
+     "Dns.Http"
+    ]
+   }
+  },
+  "AWSAppSyncEventsRealtimeendpoint": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EventApiOIDCAuthStack4D8FB0F9",
+     "Dns.Realtime"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

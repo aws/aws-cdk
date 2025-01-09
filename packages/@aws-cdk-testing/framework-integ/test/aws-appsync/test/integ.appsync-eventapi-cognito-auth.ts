@@ -21,8 +21,8 @@ class EventApiCognitoAuthStack extends cdk.Stack {
       },
     };
 
-    this.eventApi = new appsync.EventApi(this, 'event-api', {
-      apiName: 'event-api',
+    this.eventApi = new appsync.EventApi(this, 'EventApiCognitoAuth', {
+      apiName: 'api-cognito-auth-test',
       authorizationConfig: {
         authProviders: [
           cognitoProvider,
@@ -38,3 +38,6 @@ const stack = new EventApiCognitoAuthStack(app, 'EventApiCognitoAuthStack');
 new IntegTest(app, 'appsync-event-api-cognito-auth', {
   testCases: [stack],
 });
+
+new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.eventApi.httpDns });
+new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.eventApi.realtimeDns });

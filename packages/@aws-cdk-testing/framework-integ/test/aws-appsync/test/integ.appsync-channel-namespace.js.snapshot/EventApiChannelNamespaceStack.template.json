@@ -1,56 +1,5 @@
 {
  "Resources": {
-  "Certificate4E7ABB08": {
-   "Type": "AWS::CertificateManager::Certificate",
-   "Properties": {
-    "DomainName": "*.*.example.com",
-    "DomainValidationOptions": [
-     {
-      "DomainName": "*.*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "appsync-event-api-stack/Certificate"
-     }
-    ],
-    "ValidationMethod": "DNS"
-   }
-  },
-  "PoolD3F588B8": {
-   "Type": "AWS::Cognito::UserPool",
-   "Properties": {
-    "AccountRecoverySetting": {
-     "RecoveryMechanisms": [
-      {
-       "Name": "verified_phone_number",
-       "Priority": 1
-      },
-      {
-       "Name": "verified_email",
-       "Priority": 2
-      }
-     ]
-    },
-    "AdminCreateUserConfig": {
-     "AllowAdminCreateUserOnly": true
-    },
-    "EmailVerificationMessage": "The verification code to your new account is {####}",
-    "EmailVerificationSubject": "Verify your new account",
-    "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolName": "myPool",
-    "VerificationMessageTemplate": {
-     "DefaultEmailOption": "CONFIRM_WITH_CODE",
-     "EmailMessage": "The verification code to your new account is {####}",
-     "EmailSubject": "Verify your new account",
-     "SmsMessage": "The verification code to your new account is {####}"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "AuthorizerFunctionServiceRole5B2A061B": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -157,17 +106,6 @@
     "EventConfig": {
      "AuthProviders": [
       {
-       "AuthType": "AMAZON_COGNITO_USER_POOLS",
-       "CognitoConfig": {
-        "AwsRegion": {
-         "Ref": "AWS::Region"
-        },
-        "UserPoolId": {
-         "Ref": "PoolD3F588B8"
-        }
-       }
-      },
-      {
        "AuthType": "AWS_LAMBDA",
        "LambdaAuthorizerConfig": {
         "AuthorizerUri": {
@@ -179,23 +117,29 @@
        }
       },
       {
-       "AuthType": "API_KEY"
-      },
-      {
        "AuthType": "AWS_IAM"
       }
      ],
      "ConnectionAuthModes": [
       {
-       "AuthType": "API_KEY"
+       "AuthType": "AWS_LAMBDA"
+      },
+      {
+       "AuthType": "AWS_IAM"
       }
      ],
      "DefaultPublishAuthModes": [
       {
-       "AuthType": "AMAZON_COGNITO_USER_POOLS"
+       "AuthType": "AWS_LAMBDA"
+      },
+      {
+       "AuthType": "AWS_IAM"
       }
      ],
      "DefaultSubscribeAuthModes": [
+      {
+       "AuthType": "AWS_LAMBDA"
+      },
       {
        "AuthType": "AWS_IAM"
       }
@@ -210,45 +154,9 @@
       "LogLevel": "ERROR"
      }
     },
-    "Name": "api-overall-test",
+    "Name": "api-channel-namespace-test",
     "OwnerContact": "test-owner-contact"
    }
-  },
-  "EventApiDefaultApiKeyB9AB1E44": {
-   "Type": "AWS::AppSync::ApiKey",
-   "Properties": {
-    "ApiId": {
-     "Fn::GetAtt": [
-      "EventApiE141E6C0",
-      "ApiId"
-     ]
-    }
-   }
-  },
-  "EventApiDomainName1C1CA3FD": {
-   "Type": "AWS::AppSync::DomainName",
-   "Properties": {
-    "CertificateArn": {
-     "Ref": "Certificate4E7ABB08"
-    },
-    "Description": "domain for api-overall-test Event API",
-    "DomainName": "api.*.example.com"
-   }
-  },
-  "EventApiDomainAssociationECB84F09": {
-   "Type": "AWS::AppSync::DomainNameApiAssociation",
-   "Properties": {
-    "ApiId": {
-     "Fn::GetAtt": [
-      "EventApiE141E6C0",
-      "ApiId"
-     ]
-    },
-    "DomainName": "api.*.example.com"
-   },
-   "DependsOn": [
-    "EventApiDomainName1C1CA3FD"
-   ]
   },
   "EventApiLogRetention68604E65": {
    "Type": "Custom::LogRetention",
@@ -399,37 +307,6 @@
      }
     ]
    }
-  },
-  "WebAcl": {
-   "Type": "AWS::WAFv2::WebACL",
-   "Properties": {
-    "DefaultAction": {
-     "Allow": {}
-    },
-    "Scope": "REGIONAL",
-    "VisibilityConfig": {
-     "CloudWatchMetricsEnabled": false,
-     "MetricName": "webAclMetric",
-     "SampledRequestsEnabled": false
-    }
-   }
-  },
-  "WafAssociation": {
-   "Type": "AWS::WAFv2::WebACLAssociation",
-   "Properties": {
-    "ResourceArn": {
-     "Fn::GetAtt": [
-      "EventApiE141E6C0",
-      "ApiArn"
-     ]
-    },
-    "WebACLArn": {
-     "Fn::GetAtt": [
-      "WebAcl",
-      "Arn"
-     ]
-    }
-   }
   }
  },
  "Mappings": {
@@ -559,35 +436,17 @@
  "Outputs": {
   "AWSAppSyncEventsHTTPendpoint": {
    "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "https://",
-      {
-       "Fn::GetAtt": [
-        "EventApiDomainName1C1CA3FD",
-        "DomainName"
-       ]
-      },
-      "/event"
-     ]
+    "Fn::GetAtt": [
+     "EventApiE141E6C0",
+     "Dns.Http"
     ]
    }
   },
   "AWSAppSyncEventsRealtimeendpoint": {
    "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "wss://",
-      {
-       "Fn::GetAtt": [
-        "EventApiDomainName1C1CA3FD",
-        "DomainName"
-       ]
-      },
-      "/event/realtime"
-     ]
+    "Fn::GetAtt": [
+     "EventApiE141E6C0",
+     "Dns.Realtime"
     ]
    }
   }

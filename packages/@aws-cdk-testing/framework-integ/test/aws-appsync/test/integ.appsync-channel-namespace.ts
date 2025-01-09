@@ -6,7 +6,6 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-
 class EventApiChannelNamespaceStack extends cdk.Stack {
   public readonly eventApi: appsync.EventApi;
   constructor(scope: Construct, id: string) {
@@ -48,7 +47,7 @@ class EventApiChannelNamespaceStack extends cdk.Stack {
     };
 
     const api = new appsync.EventApi(this, 'EventApi', {
-      apiName: 'my-event-api',
+      apiName: 'api-channel-namespace-test',
       ownerContact: 'test-owner-contact',
       authorizationConfig: {
         authProviders: [
@@ -95,3 +94,6 @@ const stack = new EventApiChannelNamespaceStack(app, 'EventApiChannelNamespaceSt
 new IntegTest(app, 'appsync-event-api-channel-namespace', {
   testCases: [stack],
 });
+
+new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.eventApi.httpDns });
+new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.eventApi.realtimeDns });

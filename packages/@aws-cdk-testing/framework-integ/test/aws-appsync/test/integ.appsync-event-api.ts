@@ -83,7 +83,7 @@ class EventApiStack extends cdk.Stack {
     };
 
     const api = new appsync.EventApi(this, 'EventApi', {
-      apiName: 'my-event-api',
+      apiName: 'api-overall-test',
       ownerContact: 'test-owner-contact',
       authorizationConfig: {
         authProviders: [

@@ -12,8 +12,8 @@ class EventApiApiKeyAuthStack extends cdk.Stack {
       authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
     };
 
-    this.eventApi = new appsync.EventApi(this, 'event-api', {
-      apiName: 'event-api',
+    this.eventApi = new appsync.EventApi(this, 'EventApiApiKeyAuth', {
+      apiName: 'api-key-auth-test',
       authorizationConfig: {
         authProviders: [
           apiKeyProvider,
@@ -29,3 +29,6 @@ const stack = new EventApiApiKeyAuthStack(app, 'EventApiApiKeyAuthStack');
 new IntegTest(app, 'appsync-event-api-api-key-auth', {
   testCases: [stack],
 });
+
+new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.eventApi.httpDns });
+new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.eventApi.realtimeDns });

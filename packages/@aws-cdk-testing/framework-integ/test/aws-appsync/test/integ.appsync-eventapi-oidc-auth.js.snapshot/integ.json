@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "appsync-event-api-oidc-auth/DefaultTest": {
+      "stacks": [
+        "EventApiOIDCAuthStack"
+      ],
+      "assertionStack": "appsync-event-api-oidc-auth/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapioidcauthDefaultTestDeployAssert08E0A19C"
+    }
+  }
+}

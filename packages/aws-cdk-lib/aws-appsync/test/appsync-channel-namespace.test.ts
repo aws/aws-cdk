@@ -326,12 +326,7 @@ describe('Channel namespace security tests', () => {
       },
     });
     const cn = api.addChannelNamespace('default');
-    const fn = new lambda.Function(stack, 'auth-function', {
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline('/* lambda authentication code here.*/'),
-    });
-    cn.grantPublish(fn);
+    cn.grantPublish(func);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -371,12 +366,7 @@ describe('Channel namespace security tests', () => {
       },
     });
     const cn = api.addChannelNamespace('default');
-    const fn = new lambda.Function(stack, 'auth-function', {
-      runtime: lambda.Runtime.NODEJS_LATEST,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline('/* lambda authentication code here.*/'),
-    });
-    cn.grantSubscribe(fn);
+    cn.grantSubscribe(func);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

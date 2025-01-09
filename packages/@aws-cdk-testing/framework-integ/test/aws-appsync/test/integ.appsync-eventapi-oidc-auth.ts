@@ -21,8 +21,8 @@ class EventApiOIDCAuthStack extends cdk.Stack {
       },
     };
 
-    this.eventApi = new appsync.EventApi(this, 'event-api', {
-      apiName: 'event-api',
+    this.eventApi = new appsync.EventApi(this, 'EventApiOIDCAuthStack', {
+      apiName: 'api-oidc-auth-test',
       authorizationConfig: {
         authProviders: [
           oidcProvider,
@@ -50,3 +50,6 @@ const stack = new EventApiOIDCAuthStack(app, 'EventApiOIDCAuthStack', {
 new IntegTest(app, 'appsync-event-api-oidc-auth', {
   testCases: [stack],
 });
+
+new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.eventApi.httpDns });
+new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.eventApi.realtimeDns });

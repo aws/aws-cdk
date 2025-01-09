@@ -19,7 +19,7 @@ import {
 import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { IResolvable, Lazy, Names, Stack, Token } from '../../core';
+import { Lazy, Names, Stack, Token } from '../../core';
 
 /**
  * Authorization configuration for the Event API
@@ -108,11 +108,18 @@ export interface IEventApi extends IApi {
   readonly authProviderTypes: AppSyncAuthorizationType[];
 
   /**
-   * The domain name of the Api's endpoints.
+   * The domain name of the Api's HTTP endpoint.
    *
    * @attribute
    */
-  readonly dns: IResolvable;
+  readonly httpDns: string;
+
+  /**
+   * The domain name of the Api's real-time endpoint.
+   *
+   * @attribute
+   */
+  readonly realtimeDns: string;
 
   /**
    * add a new channel namespace.
@@ -168,14 +175,14 @@ export interface IEventApi extends IApi {
  */
 export abstract class EventApiBase extends ApiBase implements IEventApi {
   /**
-   * the domain name of the API
+   * The domain name of the Api's HTTP endpoint.
    */
-  //public abstract readonly dns: IResolvable; TODO figure this out
+  public abstract readonly httpDns: string;
 
   /**
-   * the domain name of the API
+   * The domain name of the Api's real-time endpoint.
    */
-  public abstract readonly dns: IResolvable;
+  public abstract readonly realtimeDns: string;
 
   /**
    * The Authorization Types for this Event Api
@@ -317,9 +324,14 @@ export interface EventApiAttributes {
   readonly apiArn: string;
 
   /**
-   * the domain name of the API
+   * the domain name of the Api's HTTP endpoint.
    */
-  readonly dns: IResolvable;
+  readonly httpDns: string;
+
+  /**
+   * the domain name of the Api's real-time endpoint.
+   */
+  readonly realtimeDns: string;
 
   /**
    * The Authorization Types for this Event Api
@@ -352,7 +364,8 @@ export class EventApi extends EventApiBase {
     class Import extends EventApiBase {
       public readonly apiId = attrs.apiId;
       public readonly apiArn = arn;
-      public readonly dns = attrs.dns;
+      public readonly httpDns = attrs.httpDns;
+      public readonly realtimeDns = attrs.realtimeDns;
       public readonly authProviderTypes = attrs.authProviderTypes ?? [];
     }
     return new Import(scope, id);
@@ -370,9 +383,14 @@ export class EventApi extends EventApiBase {
   public readonly apiArn: string;
 
   /**
-   * the domain name of the API
+   * the domain name of the Api's HTTP endpoint.
    */
-  public readonly dns: IResolvable;
+  public readonly httpDns: string;
+
+  /**
+   * the domain name of the Api's real-time endpoint.
+   */
+  public readonly realtimeDns: string;
 
   /**
    * The Authorization Types for this Event Api
@@ -463,7 +481,8 @@ export class EventApi extends EventApiBase {
 
     this.apiId = this.api.attrApiId;
     this.apiArn = this.api.attrApiArn;
-    this.dns = this.api.attrDns;
+    this.httpDns = this.api.attrDnsHttp;
+    this.realtimeDns = this.api.attrDnsRealtime;
 
     const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AppSyncAuthorizationType.API_KEY);
     for (const mode of apiKeyConfigs) {

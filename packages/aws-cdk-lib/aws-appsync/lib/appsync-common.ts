@@ -46,14 +46,22 @@ export class AppSyncEventResource {
    * @param api The AppSync API to give permissions
    */
   public resourceArns(api: EventApiBase): string[] {
-    return this.arns.map((arn) =>
-      Stack.of(api).formatArn({
-        service: 'appsync',
-        resource: `apis/${api.apiId}`,
-        arnFormat: arn === '' ? ArnFormat.NO_RESOURCE_NAME : ArnFormat.SLASH_RESOURCE_NAME,
-        resourceName: `${arn}`,
-      }),
-    );
+    return this.arns.map((arn) => {
+      if (arn === '') {
+        return Stack.of(api).formatArn({
+          service: 'appsync',
+          resource: `apis/${api.apiId}`,
+          arnFormat: ArnFormat.NO_RESOURCE_NAME,
+        });
+      } else {
+        return Stack.of(api).formatArn({
+          service: 'appsync',
+          resource: `apis/${api.apiId}`,
+          arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+          resourceName: arn,
+        });
+      }
+    });
   }
 }
 

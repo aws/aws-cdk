@@ -6,6 +6,7 @@ import * as appsync from 'aws-cdk-lib/aws-appsync';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class EventApiLambdaAuthStack extends cdk.Stack {
+  public readonly eventApi: appsync.EventApi;
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -40,8 +41,8 @@ class EventApiLambdaAuthStack extends cdk.Stack {
       },
     };
 
-    const api = new appsync.EventApi(this, 'EventApi', {
-      apiName: 'my-event-api',
+    this.eventApi = new appsync.EventApi(this, 'EventApiLambdaAuth', {
+      apiName: 'api-iam-auth-test',
       ownerContact: 'test-owner-contact',
       authorizationConfig: {
         authProviders: [
@@ -58,3 +59,6 @@ const stack = new EventApiLambdaAuthStack(app, 'EventApiLambdaAuthStack');
 new IntegTest(app, 'appsync-event-api-lambda-auth', {
   testCases: [stack],
 });
+
+new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.eventApi.httpDns });
+new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.eventApi.realtimeDns });
