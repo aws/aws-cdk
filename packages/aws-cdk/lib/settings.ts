@@ -394,6 +394,10 @@ export class ArgumentSettings extends Settings {
   public merge(other: ArgumentSettings): ArgumentSettings {
     return new ArgumentSettings(util.deepMerge(this.settings, other.settings));
   }
+
+  public get all(): CliArguments {
+    return this.get([]);
+  }
 }
 
 function expandHomeDir(x: string) {

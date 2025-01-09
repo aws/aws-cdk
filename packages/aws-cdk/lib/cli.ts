@@ -43,11 +43,19 @@ if (!process.stdout.isTTY) {
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
   const argv: CliArguments = convertYargsToCliArgs(await parseCommandLineArguments(args));
 
+  debug('Command line arguments:', argv);
+
+  const configuration = new Configuration({
+    commandLineArguments: argv,
+  });
+  await configuration.load();
+  const settings = configuration.settings.all;
+
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level
-  if (argv.globalOptions?.verbose) {
+  if (settings.globalOptions?.verbose) {
     let logLevel: LogLevel;
-    switch (argv.globalOptions.verbose) {
+    switch (settings.globalOptions.verbose) {
       case 1:
         logLevel = LogLevel.DEBUG;
         break;
@@ -60,11 +68,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   // Debug should always imply tracing
-  if (argv.globalOptions?.debug || (argv.globalOptions?.verbose ?? 0) > 2) {
+  if (settings.globalOptions?.debug || (settings.globalOptions?.verbose ?? 0) > 2) {
     enableTracing(true);
   }
 
-  if (argv.globalOptions?.ci) {
+  if (settings.globalOptions?.ci) {
     setCI(true);
   }
 
@@ -75,32 +83,27 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
-  debug('Command line arguments:', argv);
+  debug('Command line arguments:', settings);
 
-  const configuration = new Configuration({
-    commandLineArguments: argv,
-  });
-  await configuration.load();
-
-  const cmd = argv._[0];
+  const cmd = settings._;
 
   const notices = Notices.create({
     context: configuration.context,
-    output: configuration.settings.get(['output']),
-    shouldDisplay: configuration.settings.get(['notices']),
-    includeAcknowledged: cmd === 'notices' ? !argv.notices?.unacknowledged : false,
+    output: settings.globalOptions?.output, //  configuration.settings.get(['output']),
+    shouldDisplay: settings.globalOptions?.notices, // configuration.settings.get(['notices']),
+    includeAcknowledged: cmd === 'notices' ? !settings.notices?.unacknowledged : false,
     httpOptions: {
-      proxyAddress: configuration.settings.get(['proxy']),
-      caBundlePath: argv.globalOptions?.caBundlePath, // configuration.settings.get(['caBundlePath']),
+      proxyAddress: settings.globalOptions?.proxy, //  configuration.settings.get(['proxy']),
+      caBundlePath: settings.globalOptions?.caBundlePath, // configuration.settings.get(['caBundlePath']),
     },
   });
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
-    profile: configuration.settings.get(['profile']),
+    profile: settings.globalOptions?.profile, // configuration.settings.get(['profile']),
     httpOptions: {
-      proxyAddress: argv.globalOptions?.proxy,
-      caBundlePath: argv.globalOptions?.caBundlePath,
+      proxyAddress: settings.globalOptions?.proxy,
+      caBundlePath: settings.globalOptions?.caBundlePath,
     },
     logger: new SdkToCliLogger(),
   });
@@ -155,7 +158,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   try {
-    return await main(cmd, argv);
+    return await main(cmd, settings);
   } finally {
     // If we locked the 'cdk.out' directory, release it here.
     await outDirLock?.release();
@@ -165,7 +168,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     if (cmd === 'notices') {
       await notices.refresh({ force: true });
-      notices.display({ showTotal: argv.notices?.unacknowledged });
+      notices.display({ showTotal: settings.notices?.unacknowledged });
 
     } else if (cmd !== 'version') {
       await notices.refresh();
@@ -173,11 +176,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     }
   }
 
-  async function main(command: string, argv: CliArguments): Promise<number | void> {
+  async function main(command: string, settings: CliArguments): Promise<number | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
-    const globalOptions = argv.globalOptions ?? {};
+    const globalOptions = settings.globalOptions ?? {};
 
     const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
 
@@ -193,7 +196,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     switch (command) {
       case 'context':
-        const contextOptions = argv.context ?? {};
+        const contextOptions = settings.context ?? {};
         return context({
           context: configuration.context,
           clear: contextOptions.clear,
@@ -203,14 +206,14 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'docs':
-        return docs({ browser: configuration.settings.get(['browser']) });
+        return docs({ browser: settings.docs?.browser ?? '' });
 
       case 'doctor':
         return doctor();
 
       case 'ls':
       case 'list':
-        const listOptions = argv.list ?? {};
+        const listOptions = settings.list ?? {};
         return cli.list(listOptions.STACKS ?? [], {
           long: listOptions.long,
           json: globalOptions.json,
@@ -219,7 +222,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
-        const diffOptions = argv.diff ?? {};
+        const diffOptions = settings.diff ?? {};
         return cli.diff({
           stackNames: diffOptions.STACKS ?? [],
           exclusively: diffOptions.exclusively,
@@ -236,7 +239,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'bootstrap':
-        const bootstrapOptions = argv.bootstrap ?? {};
+        const bootstrapOptions = settings.bootstrap ?? {};
         const source: BootstrapSource = determineBootstrapVersion(bootstrapOptions.template);
 
         if (bootstrapOptions.showTemplate) {
@@ -254,8 +257,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           terminationProtection: bootstrapOptions.terminationProtection,
           usePreviousParameters: bootstrapOptions.previousParameters,
           parameters: {
-            bucketName: configuration.settings.get(['toolkitBucket', 'bucketName']),
-            kmsKeyId: configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
+            bucketName: bootstrapOptions.bootstrapBucketName, // configuration.settings.get(['toolkitBucket', 'bucketName']),
+            kmsKeyId: bootstrapOptions.bootstrapKmsKeyId, // configuration.settings.get(['toolkitBucket', 'kmsKeyId']),
             createCustomerMasterKey: bootstrapOptions.bootstrapCustomerKey,
             qualifier: bootstrapOptions.qualifier ?? configuration.context.get('@aws-cdk/core:bootstrapQualifier'),
             publicAccessBlockConfiguration: bootstrapOptions.publicAccessBlockConfiguration,
@@ -268,7 +271,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'deploy':
-        const deployOptions = argv.deploy ?? {};
+        const deployOptions = settings.deploy ?? {};
         const parameterMap: { [name: string]: string | undefined } = {};
         for (const parameter of deployOptions.parameters ?? []) {
           if (typeof parameter === 'string') {
@@ -328,30 +331,30 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           toolkitStackName,
           roleArn: globalOptions.roleArn,
           notificationArns: deployOptions.notificationArns,
-          requireApproval: configuration.settings.get(['requireApproval']),
+          requireApproval: deployOptions.requireApproval as any, // configuration.settings.get(['requireApproval']),
           reuseAssets: deployOptions.buildExclude,
           tags: parseStringTagsListToObject(deployOptions.tags),
           deploymentMethod,
           force: deployOptions.force,
           parameters: parameterMap,
           usePreviousParameters: deployOptions.previousParameters,
-          outputsFile: configuration.settings.get(['outputsFile']),
-          progress: configuration.settings.get(['progress']),
+          outputsFile: deployOptions.outputsFile, // configuration.settings.get(['outputsFile']),
+          progress: deployOptions.progress as any, // configuration.settings.get(['progress']),
           ci: globalOptions.ci,
-          rollback: configuration.settings.get(['rollback']),
+          rollback: deployOptions.rollback, // configuration.settings.get(['rollback']),
           hotswap: determineHotswapMode(deployOptions.hotswap, deployOptions.hotswapFallback),
           watch: deployOptions.watch,
           traceLogs: deployOptions.logs,
           concurrency: deployOptions.concurrency,
-          assetParallelism: configuration.settings.get(['assetParallelism']),
-          assetBuildTime: configuration.settings.get(['assetPrebuild'])
+          assetParallelism: deployOptions.assetParallelism, // configuration.settings.get(['assetParallelism']),
+          assetBuildTime: deployOptions.assetPrebuild // configuration.settings.get(['assetPrebuild'])
             ? AssetBuildTime.ALL_BEFORE_DEPLOY
             : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: deployOptions.ignoreNoStacks,
         });
 
       case 'rollback':
-        const rollbackOptions = argv.rollback ?? {};
+        const rollbackOptions = settings.rollback ?? {};
         return cli.rollback({
           selector: createSelector(rollbackOptions.STACKS, rollbackOptions.all),
           toolkitStackName,
@@ -362,7 +365,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'import':
-        const importOptions = argv.import ?? {};
+        const importOptions = settings.import ?? {};
         return cli.import({
           selector: createSelector(importOptions.STACK ? [importOptions.STACK] : []),
           toolkitStackName,
@@ -372,15 +375,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             execute: importOptions.execute,
             changeSetName: importOptions.changeSetName,
           },
-          progress: configuration.settings.get(['progress']),
-          rollback: configuration.settings.get(['rollback']),
+          progress: configuration.settings.get(['progress']), // THIS DNE!!!
+          rollback: importOptions.rollback, // configuration.settings.get(['rollback']),
           recordResourceMapping: importOptions.recordResourceMapping,
           resourceMappingFile: importOptions.resourceMapping,
           force: importOptions.force,
         });
 
       case 'watch':
-        const watchOptions = argv.watch ?? {};
+        const watchOptions = settings.watch ?? {};
         return cli.watch({
           selector: createSelector(watchOptions.STACKS),
           exclusively: watchOptions.exclusively,
@@ -392,15 +395,15 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             changeSetName: watchOptions.changeSetName,
           },
           force: watchOptions.force,
-          progress: configuration.settings.get(['progress']),
-          rollback: configuration.settings.get(['rollback']),
+          progress: watchOptions.progress as any, // configuration.settings.get(['progress']),
+          rollback: watchOptions.rollback, // configuration.settings.get(['rollback']),
           hotswap: determineHotswapMode(watchOptions.hotswap, watchOptions.hotswapFallback, true),
           traceLogs: watchOptions.logs,
           concurrency: watchOptions.concurrency,
         });
 
       case 'destroy':
-        const destroyOptions = argv.destroy ?? {};
+        const destroyOptions = settings.destroy ?? {};
         return cli.destroy({
           selector: createSelector(destroyOptions.STACKS, destroyOptions.all),
           exclusively: destroyOptions.exclusively ?? false,
@@ -410,11 +413,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'gc':
-        if (!configuration.settings.get(['unstable']).includes('gc')) {
+        if (!(globalOptions ?? {}).unstable?.includes('gc')) {
           throw new ToolkitError('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
         }
 
-        const gcOptions = argv.gc ?? {};
+        const gcOptions = settings.gc ?? {};
 
         if (gcOptions.action && ['full', 'tag', 'delete-tagged', 'print'].includes(gcOptions.action)) {
           throw new ToolkitError(`Invalid action ${gcOptions.action} for cdk gc. Valid actions are 'full', 'tag', 'delete-tagged', 'print'`);
@@ -435,8 +438,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
-        const synthOptions = argv.synthesize ?? {};
-        const quiet = configuration.settings.get(['quiet']) ?? synthOptions.quiet;
+        const synthOptions = settings.synthesize ?? {};
+        const quiet = synthOptions.quiet ?? false;
         if (synthOptions.exclusively) {
           return cli.synth(synthOptions.STACKS ?? [], synthOptions.exclusively, quiet, synthOptions.validation, globalOptions.json);
         } else {
@@ -448,26 +451,27 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return;
 
       case 'metadata':
-        return cli.metadata(argv.metadata?.STACK!, globalOptions.json ?? false);
+        return cli.metadata(settings.metadata?.STACK!, globalOptions.json ?? false);
 
       case 'acknowledge':
       case 'ack':
-        return cli.acknowledge(argv.acknowledge?.ID!);
+        return cli.acknowledge(settings.acknowledge?.ID!);
 
       case 'init':
-        const language = configuration.settings.get(['language']);
-        if (argv.list) {
+        const initOptions = settings.init ?? {};
+        const language = initOptions.language;
+        if (settings.list) {
           return printAvailableTemplates(language);
         } else {
           return cliInit({
-            type: argv.init?.TEMPLATE,
+            type: settings.init?.TEMPLATE,
             language,
             canUseNetwork: undefined,
-            generateOnly: argv.init?.generateOnly,
+            generateOnly: settings.init?.generateOnly,
           });
         }
       case 'migrate':
-        const migrateOptions = argv.migrate ?? {};
+        const migrateOptions = settings.migrate ?? {};
         return cli.migrate({
           stackName: migrateOptions.stackName!,
           fromPath: migrateOptions.fromPath,
@@ -550,7 +554,7 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
 }
 
 /* istanbul ignore next: we never call this in unit tests */
-export function cli(args: string[] = process.argv.slice(2)) {
+export function cli(args: string[] = process.settings.slice(2)) {
   exec(args)
     .then(async (value) => {
       if (typeof value === 'number') {
