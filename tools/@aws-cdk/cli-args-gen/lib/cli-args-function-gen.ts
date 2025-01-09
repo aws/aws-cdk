@@ -64,7 +64,7 @@ function buildCommandSwitch(config: CliConfig): string {
   const commandSwitchExprs = ['let commandOptions;', 'switch (args._[0] as Command) {'];
   for (const commandName of Object.keys(config.commands)) {
     commandSwitchExprs.push(
-      `case '${commandName}':`,
+      ...buildAliases(commandName, config.commands[commandName].aliases),
       'commandOptions = {',
       ...buildCommandOptions(config.commands[commandName]),
       ...(config.commands[commandName].arg ? [buildPositionalArguments(config.commands[commandName].arg)] : []),
@@ -74,6 +74,11 @@ function buildCommandSwitch(config: CliConfig): string {
   }
   commandSwitchExprs.push('}');
   return commandSwitchExprs.join('\n');
+}
+
+function buildAliases(commandName: string, aliases: string[] = []): string[] {
+  const cases = [commandName, ...aliases];
+  return cases.map((c) => `case '${c}':`);
 }
 
 function buildCommandOptions(options: CliAction): string[] {

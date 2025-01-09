@@ -38,6 +38,7 @@ export function convertToCliArgs(args: any): CliArguments {
   let commandOptions;
   switch (args._[0] as Command) {
     case 'list':
+    case 'ls':
       commandOptions = {
         long: args.long,
         showDependencies: args.showDependencies,
@@ -46,6 +47,7 @@ export function convertToCliArgs(args: any): CliArguments {
       break;
 
     case 'synthesize':
+    case 'synth':
       commandOptions = {
         exclusively: args.exclusively,
         validation: args.validation,
@@ -193,6 +195,7 @@ export function convertToCliArgs(args: any): CliArguments {
       break;
 
     case 'acknowledge':
+    case 'ack':
       commandOptions = {
         ID: args.ID,
       };
@@ -237,6 +240,7 @@ export function convertToCliArgs(args: any): CliArguments {
       break;
 
     case 'docs':
+    case 'doc':
       commandOptions = {
         browser: args.browser,
       };
