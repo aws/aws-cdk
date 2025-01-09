@@ -31,6 +31,7 @@ describe('render', () => {
             variadic: true,
           },
           description: 'Deploy a stack',
+          aliases: ['d'],
           options: {
             all: {
               type: 'boolean',
@@ -62,6 +63,7 @@ describe('render', () => {
         let commandOptions;
         switch (args._[0] as Command) {
           case 'deploy':
+          case 'd':
             commandOptions = {
               all: args.all,
               STACKS: args.STACKS,
