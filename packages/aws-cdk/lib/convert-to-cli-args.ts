@@ -7,7 +7,7 @@ import { CliArguments, GlobalOptions } from './cli-arguments';
 import { Command } from './settings';
 
 // @ts-ignore TS6133
-export function convertToCliArgs(args: any): CliArguments {
+export function convertYargsToCliArgs(args: any): CliArguments {
   const globalOptions: GlobalOptions = {
     app: args.app,
     build: args.build,
@@ -250,6 +250,200 @@ export function convertToCliArgs(args: any): CliArguments {
     _: args._[0],
     globalOptions,
     [args._[0]]: commandOptions,
+  };
+
+  return cliArguments;
+}
+
+// @ts-ignore TS6133
+export function convertConfigToCliArgs(args: any): CliArguments {
+  const globalOptions: GlobalOptions = {
+    app: args.app,
+    build: args.build,
+    context: args.context,
+    plugin: args.plugin,
+    trace: args.trace,
+    strict: args.strict,
+    lookups: args.lookups,
+    ignoreErrors: args.ignoreErrors,
+    json: args.json,
+    verbose: args.verbose,
+    debug: args.debug,
+    profile: args.profile,
+    proxy: args.proxy,
+    caBundlePath: args.caBundlePath,
+    ec2creds: args.ec2creds,
+    versionReporting: args.versionReporting,
+    pathMetadata: args.pathMetadata,
+    assetMetadata: args.assetMetadata,
+    roleArn: args.roleArn,
+    staging: args.staging,
+    output: args.output,
+    notices: args.notices,
+    noColor: args.noColor,
+    ci: args.ci,
+    unstable: args.unstable,
+  };
+  const listOptions = {
+    long: args.list.long,
+    showDependencies: args.list.showDependencies,
+  };
+  const synthesizeOptions = {
+    exclusively: args.synthesize.exclusively,
+    validation: args.synthesize.validation,
+    quiet: args.synthesize.quiet,
+  };
+  const bootstrapOptions = {
+    bootstrapBucketName: args.bootstrap.bootstrapBucketName,
+    bootstrapKmsKeyId: args.bootstrap.bootstrapKmsKeyId,
+    examplePermissionsBoundary: args.bootstrap.examplePermissionsBoundary,
+    customPermissionsBoundary: args.bootstrap.customPermissionsBoundary,
+    bootstrapCustomerKey: args.bootstrap.bootstrapCustomerKey,
+    qualifier: args.bootstrap.qualifier,
+    publicAccessBlockConfiguration: args.bootstrap.publicAccessBlockConfiguration,
+    tags: args.bootstrap.tags,
+    execute: args.bootstrap.execute,
+    trust: args.bootstrap.trust,
+    trustForLookup: args.bootstrap.trustForLookup,
+    cloudformationExecutionPolicies: args.bootstrap.cloudformationExecutionPolicies,
+    force: args.bootstrap.force,
+    terminationProtection: args.bootstrap.terminationProtection,
+    showTemplate: args.bootstrap.showTemplate,
+    toolkitStackName: args.bootstrap.toolkitStackName,
+    template: args.bootstrap.template,
+    previousParameters: args.bootstrap.previousParameters,
+  };
+  const gcOptions = {
+    action: args.gc.action,
+    type: args.gc.type,
+    rollbackBufferDays: args.gc.rollbackBufferDays,
+    createdBufferDays: args.gc.createdBufferDays,
+    confirm: args.gc.confirm,
+    bootstrapStackName: args.gc.bootstrapStackName,
+  };
+  const deployOptions = {
+    all: args.deploy.all,
+    buildExclude: args.deploy.buildExclude,
+    exclusively: args.deploy.exclusively,
+    requireApproval: args.deploy.requireApproval,
+    notificationArns: args.deploy.notificationArns,
+    tags: args.deploy.tags,
+    execute: args.deploy.execute,
+    changeSetName: args.deploy.changeSetName,
+    method: args.deploy.method,
+    importExistingResources: args.deploy.importExistingResources,
+    force: args.deploy.force,
+    parameters: args.deploy.parameters,
+    outputsFile: args.deploy.outputsFile,
+    previousParameters: args.deploy.previousParameters,
+    toolkitStackName: args.deploy.toolkitStackName,
+    progress: args.deploy.progress,
+    rollback: args.deploy.rollback,
+    hotswap: args.deploy.hotswap,
+    hotswapFallback: args.deploy.hotswapFallback,
+    watch: args.deploy.watch,
+    logs: args.deploy.logs,
+    concurrency: args.deploy.concurrency,
+    assetParallelism: args.deploy.assetParallelism,
+    assetPrebuild: args.deploy.assetPrebuild,
+    ignoreNoStacks: args.deploy.ignoreNoStacks,
+  };
+  const rollbackOptions = {
+    all: args.rollback.all,
+    toolkitStackName: args.rollback.toolkitStackName,
+    force: args.rollback.force,
+    validateBootstrapVersion: args.rollback.validateBootstrapVersion,
+    orphan: args.rollback.orphan,
+  };
+  const importOptions = {
+    execute: args.import.execute,
+    changeSetName: args.import.changeSetName,
+    toolkitStackName: args.import.toolkitStackName,
+    rollback: args.import.rollback,
+    force: args.import.force,
+    recordResourceMapping: args.import.recordResourceMapping,
+    resourceMapping: args.import.resourceMapping,
+  };
+  const watchOptions = {
+    buildExclude: args.watch.buildExclude,
+    exclusively: args.watch.exclusively,
+    changeSetName: args.watch.changeSetName,
+    force: args.watch.force,
+    toolkitStackName: args.watch.toolkitStackName,
+    progress: args.watch.progress,
+    rollback: args.watch.rollback,
+    hotswap: args.watch.hotswap,
+    hotswapFallback: args.watch.hotswapFallback,
+    logs: args.watch.logs,
+    concurrency: args.watch.concurrency,
+  };
+  const destroyOptions = {
+    all: args.destroy.all,
+    exclusively: args.destroy.exclusively,
+    force: args.destroy.force,
+  };
+  const diffOptions = {
+    exclusively: args.diff.exclusively,
+    contextLines: args.diff.contextLines,
+    template: args.diff.template,
+    strict: args.diff.strict,
+    securityOnly: args.diff.securityOnly,
+    fail: args.diff.fail,
+    processed: args.diff.processed,
+    quiet: args.diff.quiet,
+    changeSet: args.diff.changeSet,
+  };
+  const metadataOptions = {};
+  const acknowledgeOptions = {};
+  const noticesOptions = {
+    unacknowledged: args.notices.unacknowledged,
+  };
+  const initOptions = {
+    language: args.init.language,
+    list: args.init.list,
+    generateOnly: args.init.generateOnly,
+  };
+  const migrateOptions = {
+    stackName: args.migrate.stackName,
+    language: args.migrate.language,
+    account: args.migrate.account,
+    region: args.migrate.region,
+    fromPath: args.migrate.fromPath,
+    fromStack: args.migrate.fromStack,
+    outputPath: args.migrate.outputPath,
+    fromScan: args.migrate.fromScan,
+    filter: args.migrate.filter,
+    compress: args.migrate.compress,
+  };
+  const contextOptions = {
+    reset: args.context.reset,
+    force: args.context.force,
+    clear: args.context.clear,
+  };
+  const docsOptions = {
+    browser: args.docs.browser,
+  };
+  const doctorOptions = {};
+  const cliArguments: CliArguments = {
+    globalOptions,
+    list: listOptions,
+    synthesize: synthesizeOptions,
+    bootstrap: bootstrapOptions,
+    gc: gcOptions,
+    deploy: deployOptions,
+    rollback: rollbackOptions,
+    import: importOptions,
+    watch: watchOptions,
+    destroy: destroyOptions,
+    diff: diffOptions,
+    metadata: metadataOptions,
+    acknowledge: acknowledgeOptions,
+    notices: noticesOptions,
+    init: initOptions,
+    migrate: migrateOptions,
+    context: contextOptions,
+    docs: docsOptions,
+    doctor: doctorOptions,
   };
 
   return cliArguments;
