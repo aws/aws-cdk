@@ -435,7 +435,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     if (!useIpv6) {
       throw new Error('Egress only IGW can only be added to Ipv6 enabled VPC');
-    };
+    }
 
     if (options?.subnets) {
       const subnets = flatten(options.subnets.map(s => this.selectSubnets(s).subnets));

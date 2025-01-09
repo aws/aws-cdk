@@ -584,7 +584,7 @@ class AmazonProvided implements IIpAddresses {
    * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
    */
 
-  constructor(private readonly props: { cidrBlockName: string}) {};
+  constructor(private readonly props: { cidrBlockName: string}) {}
 
   allocateVpcCidr(): VpcCidrOptions {
     return {

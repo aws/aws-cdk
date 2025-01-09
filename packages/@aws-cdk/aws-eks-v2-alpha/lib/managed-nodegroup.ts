@@ -471,7 +471,7 @@ export class Nodegroup extends Resource implements INodegroup {
             'ec2:UnassignIpv6Addresses',
           ],
         }));
-      };
+      }
       this.role = ngRole;
     } else {
       this.role = props.nodeRole;

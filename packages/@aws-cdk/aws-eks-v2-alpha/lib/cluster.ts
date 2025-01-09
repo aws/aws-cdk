@@ -1263,7 +1263,7 @@ export interface ServiceLoadBalancerAddressOptions {
 /**
  * Options for fetching an IngressLoadBalancerAddress.
  */
-export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {};
+export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
  * A Cluster represents a managed Kubernetes Service (EKS)
@@ -1487,7 +1487,7 @@ export class Cluster extends ClusterBase {
   private readonly version: KubernetesVersion;
 
   // TODO: revisit logging format
-  private readonly logging?: { [key: string]: { [key:string]: any} };;
+  private readonly logging?: { [key: string]: { [key:string]: any} };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1525,7 +1525,7 @@ export class Cluster extends ClusterBase {
     const kubectlVersion = new semver.SemVer(`${props.version.version}.0`);
     if (semver.gte(kubectlVersion, '1.22.0') && !props.kubectlLayer) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterKubectlLayerNotSpecified', `You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
-    };
+    }
     this.version = props.version;
 
     // since this lambda role needs to be added to the trust policy of the creation role,
@@ -1680,7 +1680,7 @@ export class Cluster extends ClusterBase {
 
     this.adminRole = new iam.Role(this, 'kubectlRole', {
       assumedBy: this.kubectlLambdaRole,
-    });;
+    });
 
     this.kubectlRole = this.adminRole;
 
