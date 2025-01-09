@@ -1,0 +1,124 @@
+{
+ "Resources": {
+  "Ec2TaskDefinitionTaskRole0B78BC85": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Ec2TaskDefinitionB25030BE": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+      "Memory": 512,
+      "Name": "Ec2Container"
+     }
+    ],
+    "EnableFaultInjection": true,
+    "Family": "awsecstaskdefinitionenablefaultinjectionEc2TaskDefinition28DF45DB",
+    "NetworkMode": "host",
+    "RequiresCompatibilities": [
+     "EC2"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "Ec2TaskDefinitionTaskRole0B78BC85",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "FargateTaskDefinitionTaskRoleE3C2BCAA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "FargateTaskDefinition8E3B365E": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+      "Memory": 512,
+      "Name": "FargateContainer"
+     }
+    ],
+    "Cpu": "256",
+    "EnableFaultInjection": true,
+    "Family": "awsecstaskdefinitionenablefaultinjectionFargateTaskDefinition203B68EF",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "FargateTaskDefinitionTaskRoleE3C2BCAA",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

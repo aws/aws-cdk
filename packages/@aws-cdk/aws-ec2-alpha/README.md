@@ -645,3 +645,22 @@ SubnetV2.fromSubnetV2Attributes(this, 'ImportedSubnet', {
 ```
 
 By importing existing VPCs and subnets, you can easily integrate your existing AWS infrastructure with new resources created through CDK. This is particularly useful when you need to work with pre-existing network configurations or when you're migrating existing infrastructure to CDK.
+
+### Tagging VPC and its components
+
+By default, when a resource name is given to the construct, it automatically adds a tag with the key `Name` and the value set to the provided resource name. To add additional custom tags, use the Tag Manager, like this: `Tags.of(myConstruct).add('key', 'value');`.
+
+For example, if the `vpcName` is set to `TestVpc`, the following code will add a tag to the VPC with `key: Name` and `value: TestVpc`.
+
+```ts
+
+const vpc = new VpcV2(this, 'VPC-integ-test-tag', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+  enableDnsHostnames: true,
+  enableDnsSupport: true,
+  vpcName: 'CDKintegTestVPC',
+});
+
+// Add custom tags if needed
+Tags.of(vpc).add('Environment', 'Production');
+```

@@ -112,6 +112,12 @@
   "AddnewImportedSubnetRouteTable73C1E1B7": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": "vpc-08193db3ccc4f909f"
    }
   },
@@ -141,6 +147,12 @@
   "AddnewImportedSubnet2RouteTable2F07FB4F": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": "vpc-08193db3ccc4f909f"
    }
   },
@@ -177,6 +189,12 @@
   "AddnewSubnettoImportedIpamRouteTable1AE0FBA3": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": "vpc-02407f4a207815a97"
    }
   },

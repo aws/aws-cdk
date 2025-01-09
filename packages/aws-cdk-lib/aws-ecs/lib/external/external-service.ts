@@ -3,7 +3,7 @@ import * as appscaling from '../../../aws-applicationautoscaling';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cloudmap from '../../../aws-servicediscovery';
-import { ArnFormat, Resource, Stack } from '../../../core';
+import { ArnFormat, Resource, Stack, Annotations } from '../../../core';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAttributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
@@ -132,6 +132,11 @@ export class ExternalService extends BaseService implements IExternalService {
     this.node.addValidation({
       validate: () => this.networkConfiguration !== undefined ? ['Network configurations not supported for an external service'] : [],
     });
+
+    if (props.minHealthyPercent === undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercentExternal', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705');
+    }
+
   }
 
   /**

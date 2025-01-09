@@ -201,6 +201,11 @@ export class AccessPoint extends AccessPointBase {
    */
   public readonly accessPointCreationDate: string;
 
+  /**
+   * The ARN of the S3 access point.
+   */
+  public readonly s3AccessPointArn: string;
+
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id, {
       physicalName: props.accessPointName,
@@ -241,6 +246,7 @@ export class AccessPoint extends AccessPointBase {
         ],
       },
     });
+    this.s3AccessPointArn = supporting.attrArn;
     this.accessPointName = accessPoint.ref;
     this.accessPointArn = accessPoint.attrArn;
     this.accessPointCreationDate = accessPoint.attrCreationDate;

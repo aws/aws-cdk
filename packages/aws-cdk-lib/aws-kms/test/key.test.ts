@@ -253,6 +253,123 @@ describe('key policies', () => {
     });
   });
 
+  test('sign', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    key.grantSign(user);
+
+    // THEN
+    // Key policy should be unmodified by the grant.
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Sign',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('verify', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    key.grantVerify(user);
+
+    // THEN
+    // Key policy should be unmodified by the grant.
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Verify',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('signverify', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    key.grantSignVerify(user);
+
+    // THEN
+    // Key policy should be unmodified by the grant.
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['kms:Sign', 'kms:Verify'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('grant for a principal in a dependent stack works correctly', () => {
     const app = new cdk.App();
     const principalStack = new cdk.Stack(app, 'PrincipalStack');

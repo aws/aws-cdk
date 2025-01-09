@@ -43,7 +43,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|comcalvi|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|HBobertz|sumupitchayan|colifran|moelasmar|paulhcsun|GavinZZ|aaythapa|xazhao|gracelu0|jfuss|shikha372|kirtishrinkhala|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|michelle-wangg|jiayiwang7|1kaileychen|saiyush|5d)$
+      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|comcalvi|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|HBobertz|sumupitchayan|colifran|moelasmar|paulhcsun|GavinZZ|aaythapa|xazhao|gracelu0|jfuss|shikha372|kirtishrinkhala|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|michelle-wangg|jiayiwang7|1kaileychen|saiyush|5d|iankhou)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:

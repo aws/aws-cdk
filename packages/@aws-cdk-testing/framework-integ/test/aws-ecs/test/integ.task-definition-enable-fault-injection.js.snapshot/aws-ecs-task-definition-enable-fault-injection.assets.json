@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "1f3359944a7dd8e04b4348673a74c55d7a4cf0f9645dcc981b79e1b9bb77dbd9": {
+      "source": {
+        "path": "aws-ecs-task-definition-enable-fault-injection.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1f3359944a7dd8e04b4348673a74c55d7a4cf0f9645dcc981b79e1b9bb77dbd9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

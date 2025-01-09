@@ -7,7 +7,7 @@ test('yargs object can be converted to cli arguments', async () => {
   const result = convertToCliArgs(input);
 
   expect(result).toEqual({
-    _: ['deploy'],
+    _: 'deploy',
     globalOptions: {
       app: undefined,
       assetMetadata: undefined,
@@ -36,6 +36,7 @@ test('yargs object can be converted to cli arguments', async () => {
       output: undefined,
     },
     deploy: {
+      STACKS: undefined,
       all: false,
       assetParallelism: undefined,
       assetPrebuild: true,
@@ -62,5 +63,33 @@ test('yargs object can be converted to cli arguments', async () => {
       toolkitStackName: undefined,
       watch: undefined,
     },
+  });
+});
+
+test('positional argument is correctly passed through -- variadic', async () => {
+  const input = await parseCommandLineArguments(['deploy', 'stack1', 'stack2', '-R', '-v', '--ci']);
+
+  const result = convertToCliArgs(input);
+
+  expect(result).toEqual({
+    _: 'deploy',
+    deploy: expect.objectContaining({
+      STACKS: ['stack1', 'stack2'],
+    }),
+    globalOptions: expect.anything(),
+  });
+});
+
+test('positional argument is correctly passed through -- single', async () => {
+  const input = await parseCommandLineArguments(['acknowledge', 'id1', '-v', '--ci']);
+
+  const result = convertToCliArgs(input);
+
+  expect(result).toEqual({
+    _: 'acknowledge',
+    acknowledge: expect.objectContaining({
+      ID: 'id1',
+    }),
+    globalOptions: expect.anything(),
   });
 });

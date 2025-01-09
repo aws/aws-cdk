@@ -6,7 +6,13 @@
     "CidrBlock": "10.1.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ]
    }
   },
   "VPCintegtest1SecondaryAddress2B60D56E9": {
@@ -68,6 +74,12 @@
       ]
      ]
     },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "VpcEndpointType": "Gateway",
     "VpcId": {
      "Fn::GetAtt": [
@@ -116,6 +128,12 @@
       "ToPort": 443
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -154,6 +172,12 @@
      },
      {
       "Ref": "testsubnetSubnetDD417829"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
      }
     ],
     "VpcEndpointType": "Interface",
@@ -200,6 +224,12 @@
   "VPCintegtest1VpnGatewayIGWBC493574": {
    "Type": "AWS::EC2::VPNGateway",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ],
     "Type": "ipsec.1"
    }
   },
@@ -243,7 +273,15 @@
    ]
   },
   "VPCintegtest1InternetGatewayIGWAA29FB02": {
-   "Type": "AWS::EC2::InternetGateway"
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ]
+   }
   },
   "VPCintegtest1InternetGatewayGWAttachment69B1C71E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -290,7 +328,13 @@
     "ConnectivityType": "private",
     "SubnetId": {
      "Ref": "testsbubnetSubnet77337845"
-    }
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha/VPC-integ-test-1"
+     }
+    ]
    },
    "DependsOn": [
     "testsbubnetRouteTableAssociationD6D083FA",
@@ -321,6 +365,12 @@
   "testsbubnetRouteTableD0136BEA": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -375,6 +425,12 @@
   "testsubnetRouteTable682580B2": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
@@ -429,6 +485,12 @@
   "validateIpv6RouteTable09389F8D": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",
