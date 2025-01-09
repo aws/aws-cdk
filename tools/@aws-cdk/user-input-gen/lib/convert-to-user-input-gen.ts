@@ -94,7 +94,7 @@ function buildPositionalArguments(arg: { name: string; variadic: boolean }): str
 function buildUserInput(): string {
   return [
     'const userInput: UserInput = {',
-    '_: args._[0],',
+    'command: args._[0],',
     'globalOptions,',
     '[args._[0]]: commandOptions',
     '}',
