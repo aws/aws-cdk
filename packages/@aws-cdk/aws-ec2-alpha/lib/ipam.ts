@@ -1,6 +1,6 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
-import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
+import { IResource, Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -125,11 +125,17 @@ export interface PoolOptions {
   readonly locale?: string;
 
   /**
+   * The ID of the source IPAM pool. You can use this option to create an IPAM pool within an existing source pool.
+   * @default - not created from an IPAM pool.
+   * */
+  readonly sourceIpamPoolId?: string;
+
+  /**
    * The IP address source for pools in the public scope.
    * Only used for IPv6 address
    * Only allowed values to this are 'byoip' or 'amazon'
    *
-   * @default amazon
+   * @default - no IP Address source is provided
    */
   readonly publicIpSource?: IpamPoolPublicIpSource;
 
@@ -172,14 +178,14 @@ interface IpamPoolProps extends PoolOptions {
  */
 export interface IpamPoolCidrProvisioningOptions {
   /**
-   * Ipv6 Netmask length for the CIDR
+   * Netmask length for the IPAM pool
    *
    * @default - pool provisioned without netmask length, need cidr range in this case
    */
   readonly netmaskLength?: number;
 
   /**
-   * Ipv6 CIDR block for the IPAM pool
+   * CIDR block for the IPAM pool
    *
    * @default - pool provisioned without netmask length, need netmask length in this case
    */
@@ -189,7 +195,7 @@ export interface IpamPoolCidrProvisioningOptions {
 /**
  * Definition used to add or create a new IPAM pool
  */
-export interface IIpamPool {
+export interface IIpamPool extends IResource {
   /**
    * IpamPool ID
    */
@@ -203,13 +209,26 @@ export interface IIpamPool {
   /**
    * Pool CIDR for IPv6 to be provisioned with Public IP source set to 'Amazon'
    */
-  readonly ipamIpv6Cidrs?: CfnIPAMPoolCidr[];
+  readonly ipamIpv6Cidrs?: IpamPoolCidrProvisioningOptions[];
 
   /**
    * Pool CIDR for IPv4 to be provisioned using IPAM
    * Required to check for subnet IP range is within the VPC range
    */
-  readonly ipamIpv4Cidrs?: CfnIPAMPoolCidr[];
+  readonly ipamIpv4Cidrs?: IpamPoolCidrProvisioningOptions[];
+
+  /**
+   * The ID of the scope in which you would like to create the IPAM pool.
+   * */
+  readonly ipamScopeId?: string;
+
+  /**
+   * Add a pool under the current IPAM pool. The netmask length should be greater or equal to the current one.
+   * @param id the id of the new IPAM pool.
+   * @param option General pool options for the new IPAM pool.
+   * @returns new IpamPool
+   * */
+  addPool(id: string, option: PoolOptions): IIpamPool;
 }
 
 /**
@@ -322,6 +341,16 @@ interface IpamPoolAttributes {
   readonly addressFamily: AddressFamily;
 
   /**
+   * The ID of the scope the IPAM pool bleongs to.
+   * */
+  readonly ipamScopeId: string;
+
+  /**
+   * Limits which service in AWS that the pool can be used in. "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
+   * */
+  readonly awsService?: AwsServiceName;
+
+  /**
    * IPv4 IPAM pool CIDR definitions
    * @default - no IPv4 cidrs are provided
    * */
@@ -344,32 +373,34 @@ interface IpamPoolAttributes {
 export class IpamPool extends Resource implements IIpamPool {
   public static fromIpamPoolAttributes(scope: Construct, id: string, attrs: IpamPoolAttributes): IIpamPool {
     class ImportedIpamPool extends Resource implements IIpamPool {
+      public readonly ipamScopeId: string = attrs.ipamScopeId;
+
       public readonly ipamPoolId: string = attrs.ipamPoolId;
+
+      public readonly awsService?: string = attrs.awsService;
 
       public readonly addressFamily: AddressFamily = attrs.addressFamily;
 
-      public ipamIpv4Cidrs?: CfnIPAMPoolCidr[] = attrs.addressFamily === AddressFamily.IP_V4
-        ? attrs.ipamIpv4Cidrs?.map((cidr, i) => IpamPool.provisionCidr(scope, `CidrIpv4${i}`, attrs.ipamPoolId, cidr))
+      public ipamIpv4Cidrs?: IpamPoolCidrProvisioningOptions[] = attrs.addressFamily === AddressFamily.IP_V4
+        ? attrs.ipamIpv4Cidrs
         : undefined;
 
-      public ipamIpv6Cidrs?: CfnIPAMPoolCidr[] = attrs.addressFamily === AddressFamily.IP_V6
-        ? attrs.ipamIpv6Cidrs?.map((cidr, i) => IpamPool.provisionCidr(scope, `CidrIpv6${i}`, attrs.ipamPoolId, cidr))
+      public ipamIpv6Cidrs?: IpamPoolCidrProvisioningOptions[] = attrs.addressFamily === AddressFamily.IP_V6
+        ? attrs.ipamIpv6Cidrs
         : undefined;
+
+      public addPool(poolId: string, option: PoolOptions): IIpamPool {
+        return new IpamPool(scope, poolId, {
+          ...option,
+          sourceIpamPoolId: attrs.ipamPoolId,
+          addressFamily: attrs.addressFamily,
+          ipamScopeId: attrs.ipamScopeId,
+          awsService: attrs.awsService,
+        });
+      }
     }
 
     return new ImportedIpamPool(scope, id);
-  }
-
-  private static provisionCidr(
-    scope: Construct,
-    id: string,
-    ipamPoolId: string,
-    options: IpamPoolCidrProvisioningOptions,
-  ): CfnIPAMPoolCidr {
-    return new CfnIPAMPoolCidr(scope, id, {
-      ipamPoolId,
-      ...options,
-    });
   }
 
   /**
@@ -384,20 +415,47 @@ export class IpamPool extends Resource implements IIpamPool {
   public readonly addressFamily: AddressFamily;
 
   /**
-   * Pool CIDR for IPv6 to be provisioned with Public IP source set to 'Amazon'
+   * Pool CIDR options for IPv6 to be provisioned with Public IP source set to 'Amazon'
    */
-  public readonly ipamIpv6Cidrs?: CfnIPAMPoolCidr[];
+  public readonly ipamIpv6Cidrs?: IpamPoolCidrProvisioningOptions[];
 
   /**
-   * Pool CIDR for IPv4 to be provisioned using IPAM
+   * Pool CIDR options for IPv4 to be provisioned using IPAM
    * Required to check for subnet IP range is within the VPC range
    */
-  public readonly ipamIpv4Cidrs?: CfnIPAMPoolCidr[];
+  public readonly ipamIpv4Cidrs?: IpamPoolCidrProvisioningOptions[];
+
+  /**
+   * The ID of the scope in which you would like to create the IPAM pool.
+   * */
+  public readonly ipamScopeId: string;
+
+  /**
+   * The IP address source for pools in the public scope.
+   * */
+  public readonly publicIpSource?: IpamPoolPublicIpSource;
+
+  /**
+   * The locale of the IPAM pool.
+   * @default - Current operating region of stack
+   */
+  private readonly locale?: string;
+
+  /**
+   * Limits which service in AWS that the pool can be used in.
+   * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
+   * */
+  private readonly awsService?: AwsServiceName;
 
   /**
    * Reference to ipamPool resource created in this class
    */
   private readonly _ipamPool: CfnIPAMPool;
+
+  /**
+   * The source IPAM pool ID.
+   * */
+  private readonly sourceIpamPoolId?: string;
 
   constructor(scope: Construct, id: string, props: IpamPoolProps) {
     super(scope, id, {
@@ -415,21 +473,65 @@ export class IpamPool extends Resource implements IIpamPool {
       Tags.of(this).add(NAME_TAG, props.ipamPoolName);
     }
 
+    this.ipamScopeId = props.ipamScopeId;
+    this.sourceIpamPoolId = props.sourceIpamPoolId;
     this.addressFamily = props.addressFamily;
+    this.ipamIpv4Cidrs = props.ipamIpv4Cidrs;
+    this.ipamIpv6Cidrs = props.ipamIpv6Cidrs;
+    this.locale = props.locale ?? Stack.of(this).region;
+    this.awsService = props.awsService;
+    this.publicIpSource = props.publicIpSource;
+
     this._ipamPool = new CfnIPAMPool(this, id, {
-      addressFamily: props.addressFamily,
-      locale: props.locale,
-      ipamScopeId: props.ipamScopeId,
-      publicIpSource: props.publicIpSource,
-      awsService: props.awsService,
+      addressFamily: this.addressFamily,
+      locale: this.locale,
+      ipamScopeId: this.ipamScopeId,
+      publicIpSource: this.publicIpSource,
+      awsService: this.awsService,
+      sourceIpamPoolId: this.sourceIpamPoolId,
     });
     this.ipamPoolId = this._ipamPool.attrIpamPoolId;
 
     this.node.defaultChild = this._ipamPool;
 
     // Provisioning CIDRs
-    this.ipamIpv4Cidrs = props.ipamIpv4Cidrs?.map((cidr, i) => IpamPool.provisionCidr(this, `CidrIpv4${i}`, this.ipamPoolId, cidr));
-    this.ipamIpv6Cidrs = props.ipamIpv6Cidrs?.map((cidr, i) => IpamPool.provisionCidr(this, `CidrIpv6${i}`, this.ipamPoolId, cidr));
+    this.ipamIpv4Cidrs?.forEach((cidr, i) => this.provisionCidr(`CidrIPv4${i}`, cidr));
+    if (props.publicIpSource === IpamPoolPublicIpSource.AMAZON) {
+      // https://docs.aws.amazon.com/vpc/latest/ipam/quotas-ipam.html
+      if (this.ipamIpv6Cidrs?.length !== 1 || this.ipamIpv6Cidrs.some(x => x.netmaskLength == null || x.netmaskLength > 52)) {
+        throw new Error(`
+        For creating IpamPool with publicIpSource from Amazon, 
+        the CIDRs should be a single config with netmaskLength greater or equal to 52.
+        No other Ipv6Cidrs should be provide.
+        `);
+      }
+    }
+    this.ipamIpv6Cidrs?.forEach((cidr, i) => this.provisionCidr(`CidrIPv6${i}`, cidr));
+  }
+
+  public addPool(id: string, option: PoolOptions): IIpamPool {
+    return new IpamPool(this, id, {
+      awsService: this.awsService,
+      sourceIpamPoolId: this.ipamPoolId,
+      ipamScopeId: this.ipamScopeId,
+      locale: this.locale,
+      ...option,
+    });
+  }
+
+  /**
+   * Provision L1 IPAMPoolCidr resource
+   * */
+  private provisionCidr(
+    id: string,
+    options: IpamPoolCidrProvisioningOptions,
+  ): CfnIPAMPoolCidr {
+    const cidr = new CfnIPAMPoolCidr(this, id, {
+      ipamPoolId: this.ipamPoolId,
+      ...options,
+    });
+    cidr.node.addDependency(this._ipamPool);
+    return cidr;
   }
 
 }

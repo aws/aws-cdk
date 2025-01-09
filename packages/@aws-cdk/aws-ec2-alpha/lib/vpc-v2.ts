@@ -1,7 +1,7 @@
 import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { Arn, CfnResource, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
+import { Arn, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { IpamOptions, IIpamPool } from './ipam';
+import { IIpamPool, IpamOptions } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
 import { ISubnetV2, SubnetV2, SubnetV2Attributes } from './subnet-v2';
 import { region_info } from 'aws-cdk-lib';
@@ -98,13 +98,6 @@ export interface VpcCidrOptions {
    * @default false
    */
   readonly amazonProvided?: boolean;
-
-  /**
-   * Dependency to associate Ipv6 CIDR block
-   *
-   * @default - No dependency
-   */
-  readonly dependencies?: CfnResource[];
 
   /**
    * Required to set Secondary cidr block resource name
@@ -415,14 +408,7 @@ export class VpcV2 extends VpcV2Base {
   /**
    * reference to all secondary blocks attached
    */
-  public readonly secondaryCidrBlock?: IVPCCidrBlock[] = new Array<IVPCCidrBlock>;
-
-  /**
-   * IPv4 CIDR provisioned using IPAM pool
-   * Required to check for overlapping CIDRs after provisioning
-   * is complete under IPAM
-   */
-  public readonly ipv4IpamProvisionedCidrs?: string[];
+  public readonly secondaryCidrBlock?: IVPCCidrBlock[] = [];
 
   /**
    * Region for this VPC
@@ -461,8 +447,8 @@ export class VpcV2 extends VpcV2Base {
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();
 
-    this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
-    this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
+    this.dnsHostnamesEnabled = props.enableDnsHostnames ?? true;
+    this.dnsSupportEnabled = props.enableDnsSupport ?? true;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
     this.resource = new CfnVPC(this, 'Resource', {
       cidrBlock: vpcOptions.ipv4CidrBlock, //for Ipv4 addresses CIDR block
@@ -509,23 +495,20 @@ export class VpcV2 extends VpcV2Base {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
         }
-        if (secondaryVpcOptions.ipv4IpamProvisionedCidrs!) {
-          this.ipv4IpamProvisionedCidrs?.push(...secondaryVpcOptions.ipv4IpamProvisionedCidrs);
-        }
+
         const vpcCidrBlock = new VPCCidrBlock(this, secondaryVpcOptions.cidrBlockName, {
           vpcId: this.vpcId,
           cidrBlock: secondaryVpcOptions.ipv4CidrBlock,
           ipv4IpamPoolId: secondaryVpcOptions.ipv4IpamPool?.ipamPoolId,
           ipv4NetmaskLength: secondaryVpcOptions.ipv4NetmaskLength,
-          ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
           ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPool?.ipamPoolId,
+          ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
           amazonProvidedIpv6CidrBlock: secondaryVpcOptions.amazonProvided,
         });
-        if (secondaryVpcOptions.dependencies) {
-          for (const dep of secondaryVpcOptions.dependencies) {
-            vpcCidrBlock.node.addDependency(dep);
-          }
-        }
+        [secondaryVpcOptions.ipv4IpamPool, secondaryVpcOptions.ipv6IpamPool]
+          .filter(x => x != null)
+          .forEach(x => vpcCidrBlock.node.addDependency(x));
+
         //Create secondary blocks for Ipv4 and Ipv6
         this.secondaryCidrBlock?.push(vpcCidrBlock);
       }
@@ -608,7 +591,6 @@ class IpamIpv6 implements IIpAddresses {
     return {
       ipv6NetmaskLength: this.props.netmaskLength,
       ipv6IpamPool: this.props.ipamPool,
-      dependencies: this.props.ipamPool?.ipamIpv6Cidrs?.map(c => c as CfnResource),
       cidrBlockName: this.props.cidrBlockName,
     };
   }
@@ -628,7 +610,6 @@ class IpamIpv4 implements IIpAddresses {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
       cidrBlockName: this.props?.cidrBlockName,
-      dependencies: this.props.ipamPool?.ipamIpv4Cidrs?.map(c => c as CfnResource),
     };
   }
 }
@@ -745,9 +726,9 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
   public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockattributes) : IVPCCidrBlock {
     class Import extends Resource implements IVPCCidrBlock {
       public readonly cidrBlock = props.cidrBlock;
-      public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;
-      public readonly ipv6IpamPoolId ?: string = props.ipv6IpamPoolId;
-      public readonly ipv4IpamPoolId ?: string = props.ipv4IpamPoolId;
+      public readonly amazonProvidedIpv6CidrBlock?: boolean = props.amazonProvidedIpv6CidrBlock;
+      public readonly ipv6IpamPoolId?: string = props.ipv6IpamPoolId;
+      public readonly ipv4IpamPoolId?: string = props.ipv4IpamPoolId;
     }
     return new Import(scope, id);
   }

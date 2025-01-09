@@ -83,7 +83,7 @@ new SubnetV2(stack, 'testsbubnet', {
  * Integ test for VPC with IPAM pool to be run with --no-clean
  *  due to dependency on de-allocation of provisioned ipv6 CIDR
  */
+
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
-  regions: ['us-west-2'],
 });

@@ -13,7 +13,7 @@ import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
 import { RouteTable } from './route';
-import { AddressFamily, IIpamPool, IpamPool } from './ipam';
+import { IIpamPool } from './ipam';
 
 /**
  * Interface to define subnet CIDR
@@ -189,20 +189,18 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     * @resource AWS::EC2::Subnet
     */
     class ImportedSubnetV2 extends Resource implements ISubnetV2 {
-      public readonly ipv4Cidr?: SubnetV2CidrOption = importIpv4CidrFrom({
-        scope,
+      public readonly ipv4Cidr?: SubnetV2CidrOption = importCidrFrom({
         cidr: attrs.ipv4CidrBlock,
-        ipamPoolId: attrs.ipv4IpamPoolId,
+        ipamPool: attrs.ipv4IpamPool,
         netmaskLength: attrs.ipv4NetmaskLength,
       });
 
       /**
       * The IPv6 CIDR Block assigned to this subnet
       */
-      public readonly ipv6Cidr?: SubnetV2CidrOption = importIpv6CidrFrom({
-        scope,
+      public readonly ipv6Cidr?: SubnetV2CidrOption = importCidrFrom({
         cidr: attrs.ipv6CidrBlock,
-        ipamPoolId: attrs.ipv6IpamPoolId,
+        ipamPool: attrs.ipv6IpamPool,
         netmaskLength: attrs.ipv6NetmaskLength,
       });
 
@@ -447,7 +445,7 @@ export interface SubnetV2Attributes {
    *
    * @default - undefined
    */
-  readonly ipv4IpamPoolId?: string;
+  readonly ipv4IpamPool?: IIpamPool;
 
   /**
    * The associated IPv4 IpamPool netmask length
@@ -468,7 +466,7 @@ export interface SubnetV2Attributes {
    *
    * @default - undefined
    */
-  readonly ipv6IpamPoolId?: string;
+  readonly ipv6IpamPool?: IIpamPool;
 
   /**
    * The associated IPv6 IpamPool netmask length
@@ -581,12 +579,6 @@ function checkIpv4CidrRanges(vpc: IVpcV2, cidr: SubnetV2Props['ipv4Cidr']): Erro
       }
     }
     const cidrs = vpcCidrBlock.map(x => new CidrBlock(x));
-    allCidrs.push(...cidrs);
-  }
-
-  // Secondary IP addresses associated using IPAM IPv4 range
-  if (vpc.ipv4IpamProvisionedCidrs) {
-    const cidrs = vpc.ipv4IpamProvisionedCidrs.map(x => new CidrBlock(x));
     allCidrs.push(...cidrs);
   }
 
@@ -717,38 +709,25 @@ const validateIpAddressBlocks = (props: SubnetV2Props): Error | undefined => {
 };
 
 /**
- * A higher order function to create SubnetV2CidrOption from attributes for both ipv4 and ipv6.
+ * Create SubnetV2CidrOption from attributes for both ipv4 and ipv6.
  * */
-const importCidrFrom = (addressFamily: AddressFamily) => ({
-  scope,
-  cidr,
-  ipamPoolId,
-  netmaskLength,
-}: {
-  scope: Construct;
+const importCidrFrom = (props: {
   cidr?: string;
-  ipamPoolId?: string;
+  ipamPool?: IIpamPool;
   netmaskLength?: number;
 }): SubnetV2CidrOption | undefined => {
+  const {
+    cidr,
+    ipamPool,
+    netmaskLength,
+  } = props;
   if (cidr == null) {
-    if (ipamPoolId != null && netmaskLength != null) {
-      const cidrs = addressFamily === AddressFamily.IP_V4
-        ? { ipamIpv4Cidrs: [{ netmaskLength }] }
-        : { ipamIpv6Cidrs: [{ netmaskLength }] };
-      const ipamPool = IpamPool.fromIpamPoolAttributes(scope, `Imported${ipamPoolId}`, {
-        ipamPoolId: ipamPoolId,
-        addressFamily,
-        ...cidrs,
-      });
-
+    if (ipamPool != null) {
       return { ipamPool, netmaskLength };
     }
-  } else if (netmaskLength == null && ipamPoolId == null) {
+  } else if (ipamPool == null) {
     return { cidr: cidr };
   }
 
   return undefined;
 };
-
-const importIpv4CidrFrom = importCidrFrom(AddressFamily.IP_V4);
-const importIpv6CidrFrom = importCidrFrom(AddressFamily.IP_V6);
