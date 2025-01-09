@@ -15,7 +15,7 @@ import {
 import type { SDK } from '../api';
 import type { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { Mode } from '../api/plugin/mode';
-import { debug, error, print } from '../logging';
+import { debug, error, print, data } from '../logging';
 
 export interface PublishAssetsOptions {
   /**
@@ -70,7 +70,6 @@ export async function publishAssets(
     publishInParallel: options.parallel ?? true,
     buildAssets: options.buildAssets ?? true,
     publishAssets: true,
-    quiet: options.quiet,
   });
   await publisher.publish({ allowCrossAccount: options.allowCrossAccount });
   if (publisher.hasFailures) {
@@ -235,8 +234,11 @@ export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
 class PublishingProgressListener implements IPublishProgressListener {
   constructor(private readonly quiet: boolean) {}
 
-  public onPublishEvent(type: EventType, event: IPublishProgress): void {
-    const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
+  public onPublishEvent(type: EventType, event: IPublishProgress, forceStdOut = false): void {
+    const handler = forceStdOut ? data 
+      : this.quiet && type !== 'fail' ? debug 
+      : EVENT_TO_LOGGER[type];
+    
     handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
   }
 }
