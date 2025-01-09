@@ -86,7 +86,7 @@ describe('render', () => {
           plugin: args.plugin,
         };
         const deployOptions = {
-          all: args.all,
+          all: args.deploy?.all,
         };
         const cliArguments: CliArguments = {
           globalOptions,
