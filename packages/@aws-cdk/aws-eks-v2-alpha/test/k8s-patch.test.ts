@@ -23,8 +23,8 @@ describe('k8s patch', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ServiceToken: {
         'Fn::GetAtt': [
-          'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-          'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+          'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+          'Arn',
         ],
       },
       ResourceName: 'myResourceName',

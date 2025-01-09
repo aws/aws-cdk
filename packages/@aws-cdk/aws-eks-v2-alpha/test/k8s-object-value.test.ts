@@ -29,8 +29,8 @@ describe('k8s object value', () => {
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+            'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+            'Arn',
           ],
         },
         ClusterName: { Ref: 'MyCluster4C1BA579' },
@@ -70,8 +70,8 @@ describe('k8s object value', () => {
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+            'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+            'Arn',
           ],
         },
         ClusterName: { Ref: 'MyCluster4C1BA579' },
