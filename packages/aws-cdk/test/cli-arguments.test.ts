@@ -1,7 +1,3 @@
-/* eslint-disable import/order */
-import * as os from 'os';
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import { convertConfigToCliArgs, convertYargsToCliArgs } from '../lib/convert-to-cli-args';
 import { parseCommandLineArguments } from '../lib/parse-command-line-arguments';
 
@@ -101,26 +97,6 @@ describe('yargs', () => {
 });
 
 describe('config', () => {
-  const state: {
-    previousWorkingDir?: string;
-    tempDir?: string;
-  } = {};
-
-  beforeEach(async () => {
-    state.previousWorkingDir = process.cwd();
-    state.tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
-    // eslint-disable-next-line no-console
-    console.log('Temporary working directory:', state.tempDir);
-    process.chdir(state.tempDir);
-  });
-
-  afterEach(async () => {
-    // eslint-disable-next-line no-console
-    console.log('Switching back to', state.previousWorkingDir, 'cleaning up', state.tempDir);
-    process.chdir(state.previousWorkingDir!);
-    await fs.remove(state.tempDir!);
-  });
-
   test('cdk.json arguments can be converted to cli argumets', async () => {
     const input = {
       output: 'blah.out',
