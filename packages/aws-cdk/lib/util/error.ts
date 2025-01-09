@@ -1,4 +1,4 @@
-function formatErrorMessage(error: any): string {
+export function formatErrorMessage(error: any): string {
   if (error && Array.isArray(error.errors)) {
     const innerMessages = error.errors
       .map((innerError: { message: any; toString: () => any }) => (innerError?.message || innerError?.toString()))
