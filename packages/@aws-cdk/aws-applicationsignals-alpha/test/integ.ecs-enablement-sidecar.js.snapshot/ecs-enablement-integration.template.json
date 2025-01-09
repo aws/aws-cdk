@@ -1,0 +1,220 @@
+{
+ "Resources": {
+  "FargateTaskDefinitionTaskRoleE3C2BCAA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "FargateTaskDefinition8E3B365E": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "DependsOn": [
+       {
+        "Condition": "SUCCESS",
+        "ContainerName": "adot-init"
+       },
+       {
+        "Condition": "START",
+        "ContainerName": "cwagent"
+       }
+      ],
+      "Environment": [
+       {
+        "Name": "OTEL_LOGS_EXPORTER",
+        "Value": "none"
+       },
+       {
+        "Name": "OTEL_METRICS_EXPORTER",
+        "Value": "none"
+       },
+       {
+        "Name": "OTEL_EXPORTER_OTLP_PROTOCOL",
+        "Value": "http/protobuf"
+       },
+       {
+        "Name": "OTEL_AWS_APPLICATION_SIGNALS_ENABLED",
+        "Value": "true"
+       },
+       {
+        "Name": "OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT",
+        "Value": "http://localhost:4316/v1/metrics"
+       },
+       {
+        "Name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+        "Value": "http://localhost:4316/v1/traces"
+       },
+       {
+        "Name": "OTEL_TRACES_SAMPLER",
+        "Value": "xray"
+       },
+       {
+        "Name": "OTEL_TRACES_SAMPLER_ARG",
+        "Value": "endpoint=http://localhost:2000"
+       },
+       {
+        "Name": "OTEL_PROPAGATORS",
+        "Value": "tracecontext,baggage,b3,xray"
+       },
+       {
+        "Name": "OTEL_DOTNET_DISTRO",
+        "Value": "aws_distro"
+       },
+       {
+        "Name": "OTEL_DOTNET_CONFIGURATOR",
+        "Value": "aws_configurator"
+       },
+       {
+        "Name": "OTEL_DOTNET_AUTO_PLUGINS",
+        "Value": "AWS.Distro.OpenTelemetry.AutoInstrumentation.Plugin, AWS.Distro.OpenTelemetry.AutoInstrumentation"
+       },
+       {
+        "Name": "CORECLR_ENABLE_PROFILING",
+        "Value": "1"
+       },
+       {
+        "Name": "CORECLR_PROFILER",
+        "Value": "{918728DD-259F-4A6A-AC2B-B85E1B658318}"
+       },
+       {
+        "Name": "CORECLR_PROFILER_PATH",
+        "Value": "C:\\otel-auto-instrumentation-dotnet\\win-x64\\OpenTelemetry.AutoInstrumentation.Native.dll"
+       },
+       {
+        "Name": "DOTNET_STARTUP_HOOKS",
+        "Value": "C:\\otel-auto-instrumentation-dotnet\\net\\OpenTelemetry.AutoInstrumentation.StartupHook.dll"
+       },
+       {
+        "Name": "DOTNET_ADDITIONAL_DEPS",
+        "Value": "C:\\otel-auto-instrumentation-dotnet\\AdditionalDeps"
+       },
+       {
+        "Name": "OTEL_DOTNET_AUTO_HOME",
+        "Value": "C:\\otel-auto-instrumentation-dotnet"
+       },
+       {
+        "Name": "DOTNET_SHARED_STORE",
+        "Value": "C:\\otel-auto-instrumentation-dotnet\\store"
+       },
+       {
+        "Name": "OTEL_RESOURCE_ATTRIBUTES",
+        "Value": "service.name=demo"
+       }
+      ],
+      "Essential": true,
+      "Image": "nathanpeck/name",
+      "MountPoints": [
+       {
+        "ContainerPath": "C:\\otel-auto-instrumentation-dotnet",
+        "ReadOnly": false,
+        "SourceVolume": "opentelemetry-auto-instrumentation"
+       }
+      ],
+      "Name": "app"
+     },
+     {
+      "Command": [
+       "CMD",
+       "/c",
+       "xcopy",
+       "/e",
+       "C:\\autoinstrumentation\\*",
+       "C:\\otel-auto-instrumentation-dotnet",
+       "&&",
+       "icacls",
+       "C:\\otel-auto-instrumentation-dotnet",
+       "/grant",
+       "*S-1-1-0:R",
+       "/T"
+      ],
+      "Cpu": 0,
+      "Essential": false,
+      "Image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-dotnet:v1.6.0-windows2019",
+      "Memory": 128,
+      "MountPoints": [
+       {
+        "ContainerPath": "C:\\otel-auto-instrumentation-dotnet",
+        "ReadOnly": false,
+        "SourceVolume": "opentelemetry-auto-instrumentation"
+       }
+      ],
+      "Name": "adot-init"
+     },
+     {
+      "Essential": true,
+      "Image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:1.300051.0b992-windowsservercore2019",
+      "Name": "cwagent"
+     }
+    ],
+    "Cpu": "2048",
+    "Family": "ecsenablementintegrationFargateTaskDefinition0E588E5D",
+    "Memory": "4096",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "RuntimePlatform": {
+     "OperatingSystemFamily": "WINDOWS_SERVER_2019_CORE"
+    },
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "FargateTaskDefinitionTaskRoleE3C2BCAA",
+      "Arn"
+     ]
+    },
+    "Volumes": [
+     {
+      "Name": "opentelemetry-auto-instrumentation"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
