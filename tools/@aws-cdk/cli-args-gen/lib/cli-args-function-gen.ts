@@ -4,6 +4,9 @@ import * as prettier from 'prettier';
 import { kebabToCamelCase } from './util';
 import { CliAction, CliConfig } from './yargs-types';
 
+const CLI_ARG_NAME = 'args';
+const CONFIG_ARG_NAME = 'config';
+
 export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
@@ -18,7 +21,7 @@ export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
   scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
 
   const createCliArguments = new FreeFunction(scope, {
-    name: 'convertToCliArgs',
+    name: 'convertYargsToCliArgs',
     export: true,
     returnType: cliArgType,
     parameters: [
@@ -26,6 +29,16 @@ export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
     ],
   });
   createCliArguments.addBody(code.expr.directCode(buildCliArgsFunction(config)));
+
+  const createConfigArguments = new FreeFunction(scope, {
+    name: 'convertConfigToCliArgs',
+    export: true,
+    returnType: cliArgType,
+    parameters: [
+      { name: 'config', type: Type.ANY },
+    ],
+  });
+  createConfigArguments.addBody(code.expr.directCode(buildConfigArgsFunction(config)));
 
   const ts = new TypeScriptRenderer({
     disabledEsLintRules: [EsLintRules.MAX_LEN], // the default disabled rules result in 'Definition for rule 'prettier/prettier' was not found'
@@ -40,9 +53,9 @@ export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
 }
 
 function buildCliArgsFunction(config: CliConfig): string {
-  const globalOptions = buildGlobalOptions(config);
-  const commandSwitch = buildCommandSwitch(config);
-  const cliArgs = buildCliArgs();
+  const globalOptions = buildGlobalOptions(config, CLI_ARG_NAME);
+  const commandSwitch = buildCommandSwitch(config, CLI_ARG_NAME);
+  const cliArgs = buildCliArgs(CLI_ARG_NAME);
   return [
     globalOptions,
     commandSwitch,
@@ -50,26 +63,50 @@ function buildCliArgsFunction(config: CliConfig): string {
   ].join('\n');
 }
 
-function buildGlobalOptions(config: CliConfig): string {
+function buildConfigArgsFunction(config: CliConfig): string {
+  const globalOptions = buildGlobalOptions(config, CONFIG_ARG_NAME);
+  const commandList = buildCommandsList(config, CONFIG_ARG_NAME);
+  const configArgs = buildConfigArgs(config);
+  return [
+    globalOptions,
+    commandList,
+    configArgs,
+  ].join('\n');
+}
+
+function buildGlobalOptions(config: CliConfig, argName: string): string {
   const globalOptionExprs = ['const globalOptions: GlobalOptions = {'];
   for (const optionName of Object.keys(config.globalOptions)) {
     const name = kebabToCamelCase(optionName);
-    globalOptionExprs.push(`'${name}': args.${name},`);
+    globalOptionExprs.push(`'${name}': ${argName}.${name},`);
   }
   globalOptionExprs.push('}');
   return globalOptionExprs.join('\n');
 }
 
-function buildCommandSwitch(config: CliConfig): string {
-  const commandSwitchExprs = ['let commandOptions;', 'switch (args._[0] as Command) {'];
+function buildCommandsList(config: CliConfig, argName: string): string {
+  const commandOptions = [];
+  // Note: we are intentionally not including aliases for the default options that can be
+  // specified via `cdk.json`. These options must be specified by the command name
+  // i.e. acknowledge rather than ack.
+  for (const commandName of Object.keys(config.commands)) {
+    commandOptions.push(`const ${kebabToCamelCase(commandName)}Options = {`);
+    commandOptions.push(...buildCommandOptions(config.commands[commandName], argName, kebabToCamelCase(commandName)));
+    commandOptions.push('}');
+  }
+  return commandOptions.join('\n');
+}
+
+function buildCommandSwitch(config: CliConfig, argName: string): string {
+  const commandSwitchExprs = ['let commandOptions;', `switch (${argName}._[0] as Command) {`];
   for (const commandName of Object.keys(config.commands)) {
     commandSwitchExprs.push(
       // All aliases of the command should map to the same switch branch
       // This ensures that we store options of the command regardless of what alias is specified
       ...buildAliases(commandName, config.commands[commandName].aliases),
       'commandOptions = {',
-      ...buildCommandOptions(config.commands[commandName]),
-      ...(config.commands[commandName].arg ? [buildPositionalArguments(config.commands[commandName].arg)] : []),
+      ...buildCommandOptions(config.commands[commandName], argName),
+      ...(config.commands[commandName].arg ? [buildPositionalArguments(config.commands[commandName].arg, argName)] : []),
       '};',
       `break;
     `);
@@ -83,28 +120,45 @@ function buildAliases(commandName: string, aliases: string[] = []): string[] {
   return cases.map((c) => `case '${c}':`);
 }
 
-function buildCommandOptions(options: CliAction): string[] {
+function buildCommandOptions(options: CliAction, argName: string, prefix?: string): string[] {
   const commandOptions: string[] = [];
   for (const optionName of Object.keys(options.options ?? {})) {
     const name = kebabToCamelCase(optionName);
-    commandOptions.push(`'${name}': args.${name},`);
+    if (prefix) {
+      commandOptions.push(`'${name}': ${argName}.${prefix}?.${name},`);
+    } else {
+      commandOptions.push(`'${name}': ${argName}.${name},`);
+    }
   }
   return commandOptions;
 }
 
-function buildPositionalArguments(arg: { name: string; variadic: boolean }): string {
+function buildPositionalArguments(arg: { name: string; variadic: boolean }, argName: string): string {
   if (arg.variadic) {
-    return `${arg.name}: args.${arg.name}`;
+    return `${arg.name}: ${argName}.${arg.name}`;
   }
-  return `${arg.name}: args.${arg.name}`;
+  return `${arg.name}: ${argName}.${arg.name}`;
 }
 
-function buildCliArgs(): string {
+function buildCliArgs(argName: string): string {
   return [
     'const cliArguments: CliArguments = {',
-    '_: args._[0],',
+    `_: ${argName}._[0],`,
     'globalOptions,',
-    '[args._[0]]: commandOptions',
+    `[${argName}._[0]]: commandOptions`,
+    '}',
+    '',
+    'return cliArguments',
+  ].join('\n');
+}
+
+function buildConfigArgs(config: CliConfig): string {
+  return [
+    'const cliArguments: CliArguments = {',
+    'globalOptions,',
+    ...(Object.keys(config.commands).map((commandName) => {
+      return `'${commandName}': ${kebabToCamelCase(commandName)}Options,`;
+    })),
     '}',
     '',
     'return cliArguments',

@@ -7,7 +7,7 @@ import { CliArguments, GlobalOptions } from './cli-arguments';
 import { Command } from './settings';
 
 // @ts-ignore TS6133
-export function convertToCliArgs(args: any): CliArguments {
+export function convertYargsToCliArgs(args: any): CliArguments {
   const globalOptions: GlobalOptions = {
     app: args.app,
     build: args.build,
@@ -254,6 +254,200 @@ export function convertToCliArgs(args: any): CliArguments {
     _: args._[0],
     globalOptions,
     [args._[0]]: commandOptions,
+  };
+
+  return cliArguments;
+}
+
+// @ts-ignore TS6133
+export function convertConfigToCliArgs(config: any): CliArguments {
+  const globalOptions: GlobalOptions = {
+    app: config.app,
+    build: config.build,
+    context: config.context,
+    plugin: config.plugin,
+    trace: config.trace,
+    strict: config.strict,
+    lookups: config.lookups,
+    ignoreErrors: config.ignoreErrors,
+    json: config.json,
+    verbose: config.verbose,
+    debug: config.debug,
+    profile: config.profile,
+    proxy: config.proxy,
+    caBundlePath: config.caBundlePath,
+    ec2creds: config.ec2creds,
+    versionReporting: config.versionReporting,
+    pathMetadata: config.pathMetadata,
+    assetMetadata: config.assetMetadata,
+    roleArn: config.roleArn,
+    staging: config.staging,
+    output: config.output,
+    notices: config.notices,
+    noColor: config.noColor,
+    ci: config.ci,
+    unstable: config.unstable,
+  };
+  const listOptions = {
+    long: config.list?.long,
+    showDependencies: config.list?.showDependencies,
+  };
+  const synthesizeOptions = {
+    exclusively: config.synthesize?.exclusively,
+    validation: config.synthesize?.validation,
+    quiet: config.synthesize?.quiet,
+  };
+  const bootstrapOptions = {
+    bootstrapBucketName: config.bootstrap?.bootstrapBucketName,
+    bootstrapKmsKeyId: config.bootstrap?.bootstrapKmsKeyId,
+    examplePermissionsBoundary: config.bootstrap?.examplePermissionsBoundary,
+    customPermissionsBoundary: config.bootstrap?.customPermissionsBoundary,
+    bootstrapCustomerKey: config.bootstrap?.bootstrapCustomerKey,
+    qualifier: config.bootstrap?.qualifier,
+    publicAccessBlockConfiguration: config.bootstrap?.publicAccessBlockConfiguration,
+    tags: config.bootstrap?.tags,
+    execute: config.bootstrap?.execute,
+    trust: config.bootstrap?.trust,
+    trustForLookup: config.bootstrap?.trustForLookup,
+    cloudformationExecutionPolicies: config.bootstrap?.cloudformationExecutionPolicies,
+    force: config.bootstrap?.force,
+    terminationProtection: config.bootstrap?.terminationProtection,
+    showTemplate: config.bootstrap?.showTemplate,
+    toolkitStackName: config.bootstrap?.toolkitStackName,
+    template: config.bootstrap?.template,
+    previousParameters: config.bootstrap?.previousParameters,
+  };
+  const gcOptions = {
+    action: config.gc?.action,
+    type: config.gc?.type,
+    rollbackBufferDays: config.gc?.rollbackBufferDays,
+    createdBufferDays: config.gc?.createdBufferDays,
+    confirm: config.gc?.confirm,
+    bootstrapStackName: config.gc?.bootstrapStackName,
+  };
+  const deployOptions = {
+    all: config.deploy?.all,
+    buildExclude: config.deploy?.buildExclude,
+    exclusively: config.deploy?.exclusively,
+    requireApproval: config.deploy?.requireApproval,
+    notificationArns: config.deploy?.notificationArns,
+    tags: config.deploy?.tags,
+    execute: config.deploy?.execute,
+    changeSetName: config.deploy?.changeSetName,
+    method: config.deploy?.method,
+    importExistingResources: config.deploy?.importExistingResources,
+    force: config.deploy?.force,
+    parameters: config.deploy?.parameters,
+    outputsFile: config.deploy?.outputsFile,
+    previousParameters: config.deploy?.previousParameters,
+    toolkitStackName: config.deploy?.toolkitStackName,
+    progress: config.deploy?.progress,
+    rollback: config.deploy?.rollback,
+    hotswap: config.deploy?.hotswap,
+    hotswapFallback: config.deploy?.hotswapFallback,
+    watch: config.deploy?.watch,
+    logs: config.deploy?.logs,
+    concurrency: config.deploy?.concurrency,
+    assetParallelism: config.deploy?.assetParallelism,
+    assetPrebuild: config.deploy?.assetPrebuild,
+    ignoreNoStacks: config.deploy?.ignoreNoStacks,
+  };
+  const rollbackOptions = {
+    all: config.rollback?.all,
+    toolkitStackName: config.rollback?.toolkitStackName,
+    force: config.rollback?.force,
+    validateBootstrapVersion: config.rollback?.validateBootstrapVersion,
+    orphan: config.rollback?.orphan,
+  };
+  const importOptions = {
+    execute: config.import?.execute,
+    changeSetName: config.import?.changeSetName,
+    toolkitStackName: config.import?.toolkitStackName,
+    rollback: config.import?.rollback,
+    force: config.import?.force,
+    recordResourceMapping: config.import?.recordResourceMapping,
+    resourceMapping: config.import?.resourceMapping,
+  };
+  const watchOptions = {
+    buildExclude: config.watch?.buildExclude,
+    exclusively: config.watch?.exclusively,
+    changeSetName: config.watch?.changeSetName,
+    force: config.watch?.force,
+    toolkitStackName: config.watch?.toolkitStackName,
+    progress: config.watch?.progress,
+    rollback: config.watch?.rollback,
+    hotswap: config.watch?.hotswap,
+    hotswapFallback: config.watch?.hotswapFallback,
+    logs: config.watch?.logs,
+    concurrency: config.watch?.concurrency,
+  };
+  const destroyOptions = {
+    all: config.destroy?.all,
+    exclusively: config.destroy?.exclusively,
+    force: config.destroy?.force,
+  };
+  const diffOptions = {
+    exclusively: config.diff?.exclusively,
+    contextLines: config.diff?.contextLines,
+    template: config.diff?.template,
+    strict: config.diff?.strict,
+    securityOnly: config.diff?.securityOnly,
+    fail: config.diff?.fail,
+    processed: config.diff?.processed,
+    quiet: config.diff?.quiet,
+    changeSet: config.diff?.changeSet,
+  };
+  const metadataOptions = {};
+  const acknowledgeOptions = {};
+  const noticesOptions = {
+    unacknowledged: config.notices?.unacknowledged,
+  };
+  const initOptions = {
+    language: config.init?.language,
+    list: config.init?.list,
+    generateOnly: config.init?.generateOnly,
+  };
+  const migrateOptions = {
+    stackName: config.migrate?.stackName,
+    language: config.migrate?.language,
+    account: config.migrate?.account,
+    region: config.migrate?.region,
+    fromPath: config.migrate?.fromPath,
+    fromStack: config.migrate?.fromStack,
+    outputPath: config.migrate?.outputPath,
+    fromScan: config.migrate?.fromScan,
+    filter: config.migrate?.filter,
+    compress: config.migrate?.compress,
+  };
+  const contextOptions = {
+    reset: config.context?.reset,
+    force: config.context?.force,
+    clear: config.context?.clear,
+  };
+  const docsOptions = {
+    browser: config.docs?.browser,
+  };
+  const doctorOptions = {};
+  const cliArguments: CliArguments = {
+    globalOptions,
+    list: listOptions,
+    synthesize: synthesizeOptions,
+    bootstrap: bootstrapOptions,
+    gc: gcOptions,
+    deploy: deployOptions,
+    rollback: rollbackOptions,
+    import: importOptions,
+    watch: watchOptions,
+    destroy: destroyOptions,
+    diff: diffOptions,
+    metadata: metadataOptions,
+    acknowledge: acknowledgeOptions,
+    notices: noticesOptions,
+    init: initOptions,
+    migrate: migrateOptions,
+    context: contextOptions,
+    docs: docsOptions,
+    doctor: doctorOptions,
   };
 
   return cliArguments;
