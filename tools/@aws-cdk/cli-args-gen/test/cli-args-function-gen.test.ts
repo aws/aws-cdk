@@ -78,15 +78,15 @@ describe('render', () => {
       }
 
       // @ts-ignore TS6133
-      export function convertConfigToCliArgs(args: any): CliArguments {
+      export function convertConfigToCliArgs(config: any): CliArguments {
         const globalOptions: GlobalOptions = {
-          app: args.app,
-          debug: args.debug,
-          context: args.context,
-          plugin: args.plugin,
+          app: config.app,
+          debug: config.debug,
+          context: config.context,
+          plugin: config.plugin,
         };
         const deployOptions = {
-          all: args.deploy?.all,
+          all: config.deploy?.all,
         };
         const cliArguments: CliArguments = {
           globalOptions,
