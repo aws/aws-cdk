@@ -7,6 +7,7 @@ import { error, print, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 import { cdkHomeDir, rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
+import { formatErrorMessage } from './util/error';
 
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -388,7 +389,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   try {
     await execute(command, ['install'], { cwd });
   } catch (e: any) {
-    warning(`${command} install failed: ` + e.message);
+    warning(`${command} install failed: ` + formatErrorMessage(e));
   }
 }
 

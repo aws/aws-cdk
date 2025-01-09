@@ -321,6 +321,7 @@ import { defaultCliUserAgent } from './user-agent';
 import { debug } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
 import { traceMethods } from '../../util/tracing';
+import { formatErrorMessage } from '../../util/error';
 
 export interface S3ClientOptions {
   /**
@@ -903,7 +904,7 @@ export class SDK {
 
           return upload.done();
         } catch (e: any) {
-          throw new AuthenticationError(`Upload failed: ${e.message}`);
+          throw new AuthenticationError(`Upload failed: ${formatErrorMessage(e)}`);
         }
       },
     };

@@ -6,6 +6,7 @@ import { EnvironmentAccess } from '../environment-access';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 import { Mode } from '../plugin/mode';
 import { DEFAULT_TOOLKIT_STACK_NAME } from '../toolkit-info';
+import { formatErrorMessage } from '../../util/error';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored
 const IGNORE_LOGS_RESOURCE_TYPES = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail', 'AWS::CodeBuild::Project'];
@@ -44,7 +45,7 @@ export async function findCloudWatchLogGroups(
   try {
     sdk = (await new EnvironmentAccess(sdkProvider, DEFAULT_TOOLKIT_STACK_NAME).accessStackForLookup(stackArtifact)).sdk;
   } catch (e: any) {
-    debug(`Failed to access SDK environment: ${e.message}`);
+    debug(`Failed to access SDK environment: ${formatErrorMessage(e)}`);
     sdk = (await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading)).sdk;
   }
 

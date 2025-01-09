@@ -14,6 +14,7 @@ import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
+import { formatErrorMessage } from './util/error';
 
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
@@ -429,11 +430,11 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
                   debug('Notices refreshed');
                   resolve(data ?? []);
                 } catch (e: any) {
-                  reject(new ToolkitError(`Failed to parse notices: ${e.message}`));
+                  reject(new ToolkitError(`Failed to parse notices: ${formatErrorMessage(e)}`));
                 }
               });
               res.on('error', e => {
-                reject(new ToolkitError(`Failed to fetch notices: ${e.message}`));
+                reject(new ToolkitError(`Failed to fetch notices: ${formatErrorMessage(e)}`));
               });
             } else {
               reject(new ToolkitError(`Failed to fetch notices. Status code: ${res.statusCode}`));
@@ -441,7 +442,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
           });
         req.on('error', reject);
       } catch (e: any) {
-        reject(new ToolkitError(`HTTPS 'get' call threw an error: ${e.message}`));
+        reject(new ToolkitError(`HTTPS 'get' call threw an error: ${formatErrorMessage(e)}`));
       }
     });
   }

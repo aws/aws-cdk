@@ -56,6 +56,7 @@ import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { formatErrorMessage } from './util/error';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -202,7 +203,7 @@ export class CdkToolkit {
               tryLookupRole: true,
             });
           } catch (e: any) {
-            debug(e.message);
+            debug(formatErrorMessage(e));
             if (!quiet) {
               stream.write(
                 `Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`,
@@ -512,7 +513,7 @@ export class CdkToolkit {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
         throw new ToolkitError(
-          [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
+          [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), formatErrorMessage(e)].join(' '),
         );
       } finally {
         if (options.cloudWatchLogMonitor) {
@@ -604,7 +605,7 @@ export class CdkToolkit {
         const elapsedRollbackTime = new Date().getTime() - startRollbackTime;
         print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime));
       } catch (e: any) {
-        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
+        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), formatErrorMessage(e));
         throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');
       }
     }

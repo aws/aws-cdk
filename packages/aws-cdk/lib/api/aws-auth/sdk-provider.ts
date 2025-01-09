@@ -14,6 +14,7 @@ import { debug, warning } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
 import { traceMethods } from '../../util/tracing';
 import { Mode } from '../plugin/mode';
+import { formatErrorMessage } from '../../util/error';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
 
@@ -281,7 +282,7 @@ export class SdkProvider {
           return undefined;
         }
 
-        debug(`Unable to determine the default AWS account (${e.name}): ${e.message}`);
+        debug(`Unable to determine the default AWS account (${e.name}): ${formatErrorMessage(e)}`);
         return undefined;
       }
     });

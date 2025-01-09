@@ -3,6 +3,7 @@ import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
 import { mockSTSClient } from '../util/mock-sdk';
+import { formatErrorMessage } from '../../lib/util/error';
 
 interface RegisteredIdentity {
   readonly account: string;
@@ -81,7 +82,7 @@ export class FakeSts {
                   Error: {
                     Type: 'Sender',
                     Code: e.name ?? 'Error',
-                    Message: e.message,
+                    Message: formatErrorMessage(e),
                   },
                   RequestId: '1',
                 },
