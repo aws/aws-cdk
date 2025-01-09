@@ -73,13 +73,6 @@ export interface IRestApi extends IResourceBase {
    * @param stage The stage (default `*`)
    */
   arnForExecuteApi(method?: string, path?: string, stage?: string): string;
-
-  /**
-   * Add a policy statement to the API's resource policy
-   *
-   * @param statement the policy statement to add
-   */
-  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 }
 
 /**
@@ -308,7 +301,7 @@ export interface SpecRestApiProps extends RestApiBaseProps {
 /**
  * Base implementation that are common to various implementations of IRestApi
  */
-export abstract class RestApiBase extends Resource implements IRestApi {
+export abstract class RestApiBase extends Resource implements IRestApi, IResourceWithPolicy {
   /**
    * Checks if the given object is an instance of RestApiBase.
    * @internal
