@@ -86,6 +86,9 @@ function buildGlobalOptions(config: CliConfig, argName: string): string {
 
 function buildCommandsList(config: CliConfig, argName: string): string {
   const commandOptions = [];
+  // Note: we are intentionally not including aliases for the default options that can be
+  // specified via `cdk.json`. These options must be specified by the command name
+  // i.e. acknowledge rather than ack.
   for (const commandName of Object.keys(config.commands)) {
     commandOptions.push(`const ${kebabToCamelCase(commandName)}Options = {`);
     commandOptions.push(...buildCommandOptions(config.commands[commandName], argName, kebabToCamelCase(commandName)));
