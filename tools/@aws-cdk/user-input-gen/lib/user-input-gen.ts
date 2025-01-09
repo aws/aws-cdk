@@ -30,6 +30,7 @@ export async function renderUserInputType(config: CliConfig): Promise<string> {
     docs: {
       summary: 'The CLI command name',
     },
+    optional: true,
   });
 
   // add global options

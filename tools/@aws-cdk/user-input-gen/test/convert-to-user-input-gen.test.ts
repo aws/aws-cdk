@@ -31,6 +31,7 @@ describe('render', () => {
             variadic: true,
           },
           description: 'Deploy a stack',
+          aliases: ['d'],
           options: {
             all: {
               type: 'boolean',
@@ -62,6 +63,7 @@ describe('render', () => {
         let commandOptions;
         switch (args._[0] as Command) {
           case 'deploy':
+          case 'd':
             commandOptions = {
               all: args.all,
               STACKS: args.STACKS,
@@ -72,6 +74,25 @@ describe('render', () => {
           _: args._[0],
           globalOptions,
           [args._[0]]: commandOptions,
+        };
+
+        return userInput;
+      }
+
+      // @ts-ignore TS6133
+      export function convertConfigToUserInput(config: any): UserInput {
+        const globalOptions: GlobalOptions = {
+          app: config.app,
+          debug: config.debug,
+          context: config.context,
+          plugin: config.plugin,
+        };
+        const deployOptions = {
+          all: config.deploy?.all,
+        };
+        const userInput: UserInput = {
+          globalOptions,
+          deploy: deployOptions,
         };
 
         return userInput;
