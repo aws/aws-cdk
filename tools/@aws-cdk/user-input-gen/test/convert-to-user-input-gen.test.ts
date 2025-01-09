@@ -48,8 +48,8 @@ describe('render', () => {
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
-      import { UserInput, GlobalOptions } from './user-input';
       import { Command } from './settings';
+      import { UserInput, GlobalOptions } from './user-input';
 
       // @ts-ignore TS6133
       export function convertYargsToUserInput(args: any): UserInput {
