@@ -1153,7 +1153,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.175.0' },
     recommendedValue: false,
     compatibilityWithOldBehaviorMd: 'Set this flag to false in order to continue using old and outdated commands. ' +
       'However, it is **not** recommended.',
@@ -1172,7 +1172,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.175.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'It is strongly recommended to set this flag to true. However, if necessary, set ' +
       'this flag to false to continue using the old implementation.',
