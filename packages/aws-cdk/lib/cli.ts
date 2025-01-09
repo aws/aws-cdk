@@ -177,7 +177,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   async function main(command: string, settings: CliArguments): Promise<number | void> {
-    const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
+    const toolkitStackName: string = ToolkitInfo.determineName(settings.bootstrap?.toolkitStackName); // TODO, mroe than bootstrap has toolkitstackname
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
     const globalOptions = settings.globalOptions ?? {};
@@ -554,7 +554,7 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
 }
 
 /* istanbul ignore next: we never call this in unit tests */
-export function cli(args: string[] = process.settings.slice(2)) {
+export function cli(args: string[] = process.argv.slice(2)) {
   exec(args)
     .then(async (value) => {
       if (typeof value === 'number') {

@@ -85,7 +85,7 @@ function buildCommandsList(config: CliConfig): string {
   const commandOptions = [];
   for (const commandName of Object.keys(config.commands)) {
     commandOptions.push(`const ${kebabToCamelCase(commandName)}Options = {`);
-    commandOptions.push(...buildCommandOptions(config.commands[commandName]));
+    commandOptions.push(...buildCommandOptions(config.commands[commandName], kebabToCamelCase(commandName)));
     commandOptions.push('}');
   }
   return commandOptions.join('\n');
@@ -107,11 +107,15 @@ function buildCommandSwitch(config: CliConfig): string {
   return commandSwitchExprs.join('\n');
 }
 
-function buildCommandOptions(options: CliAction): string[] {
+function buildCommandOptions(options: CliAction, prefix?: string): string[] {
   const commandOptions: string[] = [];
   for (const optionName of Object.keys(options.options ?? {})) {
     const name = kebabToCamelCase(optionName);
-    commandOptions.push(`'${name}': args.${name},`);
+    if (prefix) {
+      commandOptions.push(`'${name}': args.${prefix}.${name},`);
+    } else {
+      commandOptions.push(`'${name}': args.${name},`);
+    }
   }
   return commandOptions;
 }
