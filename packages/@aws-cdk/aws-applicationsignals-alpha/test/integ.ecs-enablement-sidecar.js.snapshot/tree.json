@@ -1,0 +1,359 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "ecs-enablement-integration": {
+        "id": "ecs-enablement-integration",
+        "path": "ecs-enablement-integration",
+        "children": {
+          "FargateTaskDefinition": {
+            "id": "FargateTaskDefinition",
+            "path": "ecs-enablement-integration/FargateTaskDefinition",
+            "children": {
+              "TaskRole": {
+                "id": "TaskRole",
+                "path": "ecs-enablement-integration/FargateTaskDefinition/TaskRole",
+                "children": {
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "ecs-enablement-integration/FargateTaskDefinition/TaskRole/ImportTaskRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ecs-enablement-integration/FargateTaskDefinition/TaskRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ecs-enablement-integration/FargateTaskDefinition/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "dependsOn": [
+                          {
+                            "containerName": "adot-init",
+                            "condition": "SUCCESS"
+                          },
+                          {
+                            "containerName": "cwagent",
+                            "condition": "START"
+                          }
+                        ],
+                        "essential": true,
+                        "image": "nathanpeck/name",
+                        "mountPoints": [
+                          {
+                            "containerPath": "C:\\otel-auto-instrumentation-dotnet",
+                            "readOnly": false,
+                            "sourceVolume": "opentelemetry-auto-instrumentation"
+                          }
+                        ],
+                        "name": "app",
+                        "environment": [
+                          {
+                            "name": "OTEL_LOGS_EXPORTER",
+                            "value": "none"
+                          },
+                          {
+                            "name": "OTEL_METRICS_EXPORTER",
+                            "value": "none"
+                          },
+                          {
+                            "name": "OTEL_EXPORTER_OTLP_PROTOCOL",
+                            "value": "http/protobuf"
+                          },
+                          {
+                            "name": "OTEL_AWS_APPLICATION_SIGNALS_ENABLED",
+                            "value": "true"
+                          },
+                          {
+                            "name": "OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT",
+                            "value": "http://localhost:4316/v1/metrics"
+                          },
+                          {
+                            "name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+                            "value": "http://localhost:4316/v1/traces"
+                          },
+                          {
+                            "name": "OTEL_TRACES_SAMPLER",
+                            "value": "xray"
+                          },
+                          {
+                            "name": "OTEL_TRACES_SAMPLER_ARG",
+                            "value": "endpoint=http://localhost:2000"
+                          },
+                          {
+                            "name": "OTEL_PROPAGATORS",
+                            "value": "tracecontext,baggage,b3,xray"
+                          },
+                          {
+                            "name": "OTEL_DOTNET_DISTRO",
+                            "value": "aws_distro"
+                          },
+                          {
+                            "name": "OTEL_DOTNET_CONFIGURATOR",
+                            "value": "aws_configurator"
+                          },
+                          {
+                            "name": "OTEL_DOTNET_AUTO_PLUGINS",
+                            "value": "AWS.Distro.OpenTelemetry.AutoInstrumentation.Plugin, AWS.Distro.OpenTelemetry.AutoInstrumentation"
+                          },
+                          {
+                            "name": "CORECLR_ENABLE_PROFILING",
+                            "value": "1"
+                          },
+                          {
+                            "name": "CORECLR_PROFILER",
+                            "value": "{918728DD-259F-4A6A-AC2B-B85E1B658318}"
+                          },
+                          {
+                            "name": "CORECLR_PROFILER_PATH",
+                            "value": "C:\\otel-auto-instrumentation-dotnet\\win-x64\\OpenTelemetry.AutoInstrumentation.Native.dll"
+                          },
+                          {
+                            "name": "DOTNET_STARTUP_HOOKS",
+                            "value": "C:\\otel-auto-instrumentation-dotnet\\net\\OpenTelemetry.AutoInstrumentation.StartupHook.dll"
+                          },
+                          {
+                            "name": "DOTNET_ADDITIONAL_DEPS",
+                            "value": "C:\\otel-auto-instrumentation-dotnet\\AdditionalDeps"
+                          },
+                          {
+                            "name": "OTEL_DOTNET_AUTO_HOME",
+                            "value": "C:\\otel-auto-instrumentation-dotnet"
+                          },
+                          {
+                            "name": "DOTNET_SHARED_STORE",
+                            "value": "C:\\otel-auto-instrumentation-dotnet\\store"
+                          },
+                          {
+                            "name": "OTEL_RESOURCE_ATTRIBUTES",
+                            "value": "service.name=demo"
+                          }
+                        ]
+                      },
+                      {
+                        "command": [
+                          "CMD",
+                          "/c",
+                          "xcopy",
+                          "/e",
+                          "C:\\autoinstrumentation\\*",
+                          "C:\\otel-auto-instrumentation-dotnet",
+                          "&&",
+                          "icacls",
+                          "C:\\otel-auto-instrumentation-dotnet",
+                          "/grant",
+                          "*S-1-1-0:R",
+                          "/T"
+                        ],
+                        "cpu": 0,
+                        "essential": false,
+                        "image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-dotnet:v1.6.0-windows2019",
+                        "memory": 128,
+                        "mountPoints": [
+                          {
+                            "containerPath": "C:\\otel-auto-instrumentation-dotnet",
+                            "readOnly": false,
+                            "sourceVolume": "opentelemetry-auto-instrumentation"
+                          }
+                        ],
+                        "name": "adot-init"
+                      },
+                      {
+                        "essential": true,
+                        "image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:1.300051.0b992-windowsservercore2019",
+                        "name": "cwagent"
+                      }
+                    ],
+                    "cpu": "2048",
+                    "family": "ecsenablementintegrationFargateTaskDefinition0E588E5D",
+                    "memory": "4096",
+                    "networkMode": "awsvpc",
+                    "requiresCompatibilities": [
+                      "FARGATE"
+                    ],
+                    "runtimePlatform": {
+                      "operatingSystemFamily": "WINDOWS_SERVER_2019_CORE"
+                    },
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "FargateTaskDefinitionTaskRoleE3C2BCAA",
+                        "Arn"
+                      ]
+                    },
+                    "volumes": [
+                      {
+                        "name": "opentelemetry-auto-instrumentation"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "app": {
+                "id": "app",
+                "path": "ecs-enablement-integration/FargateTaskDefinition/app",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "adot-init": {
+                "id": "adot-init",
+                "path": "ecs-enablement-integration/FargateTaskDefinition/adot-init",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "cloudwatch-agent": {
+                "id": "cloudwatch-agent",
+                "path": "ecs-enablement-integration/FargateTaskDefinition/cloudwatch-agent",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.FargateTaskDefinition",
+              "version": "0.0.0"
+            }
+          },
+          "TestFargateSidecarIntegration": {
+            "id": "TestFargateSidecarIntegration",
+            "path": "ecs-enablement-integration/TestFargateSidecarIntegration",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-applicationsignals-alpha.ApplicationSignalsIntegration",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ecs-enablement-integration/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ecs-enablement-integration/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ApplicationSignalsIntegrationECSSidecar": {
+        "id": "ApplicationSignalsIntegrationECSSidecar",
+        "path": "ApplicationSignalsIntegrationECSSidecar",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ApplicationSignalsIntegrationECSSidecar/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ApplicationSignalsIntegrationECSSidecar/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ApplicationSignalsIntegrationECSSidecar/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ApplicationSignalsIntegrationECSSidecar/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ApplicationSignalsIntegrationECSSidecar/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
