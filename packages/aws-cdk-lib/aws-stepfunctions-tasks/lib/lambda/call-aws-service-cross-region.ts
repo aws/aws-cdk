@@ -4,6 +4,7 @@ import { IFunction } from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token, Duration } from '../../../core';
 import { CrossRegionAwsSdkSingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated';
+import { integrationResourceArn } from '../private/task-utils';
 
 /**
  * Properties for calling an AWS service's API action from your
@@ -77,6 +78,16 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
   readonly endpoint?: string;
 
   /**
+   * Invoke the Lambda in a way that only returns the payload response without additional metadata.
+   *
+   * The `payloadResponseOnly` property cannot be true if `integrationPattern` is specified.
+   * If true, it always uses the REQUEST_RESPONSE behavior.
+   *
+   * @default true
+   */
+  readonly payloadResponseOnly?: boolean;
+
+  /**
    * Whether to retry on the backend Lambda service exceptions.
    *
    * This handles `Lambda.ServiceException`, `Lambda.AWSLambdaException`,
@@ -101,12 +112,21 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly lambdaFunction: IFunction;
 
+  private readonly payloadResponseOnly: boolean;
+
   constructor(scope: Construct, id: string, private readonly props: CallAwsServiceCrossRegionProps) {
     super(scope, id, props);
+
+    this.payloadResponseOnly = props.payloadResponseOnly ?? true;
 
     if (props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
     }
+
+    if (this.payloadResponseOnly && props.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
+      throw new Error("The 'payloadResponseOnly' property cannot be true if integrationPattern is set to WAIT_FOR_TASK_TOKEN");
+    }
+
     if (!Token.isUnresolved(props.action) && !props.action.startsWith(props.action[0]?.toLowerCase())) {
       throw new Error(`action must be camelCase, got: ${props.action}`);
     }
@@ -162,15 +182,31 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    return {
-      Resource: this.lambdaFunction.functionArn,
-      Parameters: sfn.FieldUtils.renderObject({
-        region: this.props.region,
-        endpoint: this.props.endpoint,
-        action: this.props.action,
-        service: this.props.service,
-        parameters: this.props.parameters,
-      }),
-    };
+    if (this.payloadResponseOnly) {
+      return {
+        Resource: this.lambdaFunction.functionArn,
+        Parameters: sfn.FieldUtils.renderObject({
+          region: this.props.region,
+          endpoint: this.props.endpoint,
+          action: this.props.action,
+          service: this.props.service,
+          parameters: this.props.parameters,
+        }),
+      };
+    } else {
+      return {
+        Resource: integrationResourceArn('lambda', 'invoke', this.props.integrationPattern),
+        Parameters: sfn.FieldUtils.renderObject({
+          FunctionName: this.lambdaFunction.functionArn,
+          Payload: sfn.FieldUtils.renderObject({
+            region: this.props.region,
+            endpoint: this.props.endpoint,
+            action: this.props.action,
+            service: this.props.service,
+            parameters: this.props.parameters,
+          }),
+        }),
+      };
+    }
   }
 }
