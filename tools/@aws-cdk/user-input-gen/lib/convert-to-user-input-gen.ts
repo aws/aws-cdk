@@ -12,10 +12,9 @@ export async function renderUserInputFuncs(config: CliConfig): Promise<string> {
   scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
   scope.documentation.push('-------------------------------------------------------------------------------------------');
 
+  scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
   scope.addImport(new SelectiveModuleImport(scope, './user-input', ['UserInput', 'GlobalOptions']));
   const userInputType = Type.fromName(scope, 'UserInput');
-
-  scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
 
   const convertYargsToUserInput = new FreeFunction(scope, {
     name: 'convertYargsToUserInput',
