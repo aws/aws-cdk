@@ -173,6 +173,8 @@ The `change-set` flag will make `diff` create a change set and extract resource 
 The `--no-change-set` mode will consider any change to a property that requires replacement to be a resource replacement,
 even if the change is purely cosmetic (like replacing a resource reference with a hardcoded arn).
 
+If the `change-set` flag is enabled and an error is encountered during changeset creation, CDK will automatically fall back to template-only diff. This behaviour can be disabled by passing the `--no-fallback` flag.
+
 ### `cdk deploy`
 
 Deploys a stack of your CDK app to its environment. During the deployment, the toolkit will output progress
