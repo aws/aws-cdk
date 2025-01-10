@@ -17,7 +17,7 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
-import { CdkToolkit, AssetBuildTime, ActionType, TypeType, Tag } from '../lib/cdk-toolkit';
+import { CdkToolkit, AssetBuildTime, Tag } from '../lib/cdk-toolkit';
 import { contextHandler as context } from '../lib/commands/context';
 import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
@@ -85,7 +85,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', settings);
 
-  const cmd = settings._;
+  const cmd = settings.command;
 
   const notices = Notices.create({
     context: configuration.context,
@@ -428,8 +428,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         }
 
         return cli.garbageCollect(gcOptions.ENVIRONMENTS ?? [], {
-          action: gcOptions.action as ActionType,
-          type: gcOptions.type as TypeType,
+          action: gcOptions.action as any,
+          type: gcOptions.type as any,
           rollbackBufferDays: gcOptions.rollbackBufferDays ?? 0,
           createdBufferDays: gcOptions.createdBufferDays ?? 1,
           bootstrapStackName: gcOptions.bootstrapStackName,

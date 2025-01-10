@@ -1,11 +1,11 @@
 import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
-import { CliArguments } from './cli-arguments';
 import { Command } from './command';
 import { convertConfigToUserInput } from './convert-to-user-input';
 import { debug, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
+import { UserInput } from './user-input';
 import * as util from './util';
 
 export type SettingsMap = {[key: string]: any};
@@ -27,7 +27,7 @@ export interface ConfigurationProps {
    *
    * @default - Nothing passed
    */
-  readonly commandLineArguments?: CliArguments;
+  readonly commandLineArguments?: UserInput;
 
   /**
    * Whether or not to use context from `.cdk.json` in user home directory
@@ -61,7 +61,7 @@ export class Configuration {
   private loaded = false;
 
   constructor(private readonly props: ConfigurationProps = {}) {
-    this.command = props.commandLineArguments?._;
+    this.command = props.commandLineArguments?.command;
     this.commandLineArguments = props.commandLineArguments
       ? ArgumentSettings.fromCommandLineArguments(props.commandLineArguments)
       : new ArgumentSettings();
@@ -246,7 +246,7 @@ export class Context {
 // }
 // for backwards compat we will allow existing options to be specified at the base rather than within command
 // this will translate to
-// cliArguments: {
+// UserInput: {
 //   command: Command.ALL,
 //   globalOptions: {
 //     someGlobalOption: true,
@@ -379,15 +379,15 @@ export class ArgumentSettings extends Settings {
    * @param argv the received CLI arguments.
    * @returns a new Settings object.
    */
-  public static fromCommandLineArguments(argv: CliArguments): ArgumentSettings {
+  public static fromCommandLineArguments(argv: UserInput): ArgumentSettings {
     return new ArgumentSettings(argv);
   }
 
-  public static fromConfigFileArguments(argv: CliArguments): ArgumentSettings {
+  public static fromConfigFileArguments(argv: UserInput): ArgumentSettings {
     return new ArgumentSettings(argv);
   }
 
-  public constructor(args: Partial<CliArguments> = {}) {
+  public constructor(args: UserInput = {}) {
     super(args);
   }
 
@@ -395,7 +395,7 @@ export class ArgumentSettings extends Settings {
     return new ArgumentSettings(util.deepMerge(this.settings, other.settings));
   }
 
-  public get all(): CliArguments {
+  public get all(): UserInput {
     return this.get([]);
   }
 }

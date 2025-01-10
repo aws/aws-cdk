@@ -224,23 +224,31 @@ export async function prepareContext(config: Configuration, env: { [key: string]
 }
 
 function setBundlingStacks(config: Configuration) {
-  let bundlingStacks: string[];
-  if (config.command && [
+  // Command may not exist if we are not executing a CLI command
+  if (!config.command) {
+    return [];
+  }
+
+  const stackCommands = [
     Command.DEPLOY,
     Command.DIFF,
     Command.SYNTH,
     Command.SYNTHESIZE,
     Command.WATCH,
-  ].includes(config.command)) {
+  ];
+
+  // command doesn't operate on a stack selection
+  if (!stackCommands.includes(config.command)) {
+    return [];
+  }
+
   // If we deploy, diff, synth or watch a list of stacks exclusively we skip
   // bundling for all other stacks.
-    bundlingStacks = config.settings.get(['exclusively'])
-      ? config.settings.get(['STACKS']) ?? ['**']
-      : ['**'];
-  } else { // Skip bundling for all stacks
-    bundlingStacks = [];
+  if (config.settings.get(['exclusively']) && config.settings.get(['STACKS'])) {
+    return config.settings.get(['STACKS']);
   }
-  return bundlingStacks;
+
+  return ['**'];
 }
 
 /**
