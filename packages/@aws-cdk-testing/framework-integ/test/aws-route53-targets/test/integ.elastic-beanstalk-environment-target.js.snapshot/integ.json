@@ -1,0 +1,15 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-cdk-elasticbeanstalk-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-elasticbeanstalk-integ"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "aws-cdk-elasticbeanstalk-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkelasticbeanstalkintegtestDefaultTestDeployAssertF173BB65"
+    }
+  }
+}

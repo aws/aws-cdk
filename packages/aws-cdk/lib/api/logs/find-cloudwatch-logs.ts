@@ -4,7 +4,7 @@ import { debug } from '../../logging';
 import type { SDK, SdkProvider } from '../aws-auth';
 import { EnvironmentAccess } from '../environment-access';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
-import { Mode } from '../plugin';
+import { Mode } from '../plugin/mode';
 import { DEFAULT_TOOLKIT_STACK_NAME } from '../toolkit-info';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored

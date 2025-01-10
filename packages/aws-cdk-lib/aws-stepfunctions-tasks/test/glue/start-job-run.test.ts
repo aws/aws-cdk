@@ -39,6 +39,73 @@ test('Invoke glue job with just job ARN', () => {
   });
 });
 
+test('Cannot set both workerType properties', () => {
+  expect(() => {
+    const task = new GlueStartJobRun(stack, 'Task', {
+      glueJobName,
+      workerConfiguration: {
+        workerTypeV2: tasks.WorkerTypeV2.of(sfn.JsonPath.stringAt('$.workerType')),
+        workerType: WorkerType.G_1X,
+        numberOfWorkers: 2,
+      },
+    });
+
+    new sfn.StateMachine(stack, 'SM', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+  }).toThrow(/You cannot set both 'workerType' and 'workerTypeV2' properties/);
+});
+
+test('Must set either workerType or workerTypeV2 property', () => {
+  expect(() => {
+    const task = new GlueStartJobRun(stack, 'Task', {
+      glueJobName,
+      workerConfiguration: {
+        numberOfWorkers: 2,
+      },
+    });
+    new sfn.StateMachine(stack, 'SM', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+  }).toThrow(/You must set either 'workerType' or 'workerTypeV2' property/);
+});
+
+test('Invoke glue job with dynamic worker type', () => {
+  const task = new GlueStartJobRun(stack, 'Task', {
+    glueJobName,
+    workerConfiguration: {
+      workerTypeV2: tasks.WorkerTypeV2.of(sfn.JsonPath.stringAt('$.workerType')),
+      numberOfWorkers: 2,
+    },
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::glue:startJobRun',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'JobName': glueJobName,
+      'NumberOfWorkers': 2,
+      'WorkerType.$': '$.workerType',
+    },
+  });
+});
+
 test('Invoke glue job with full properties', () => {
   const jobArguments = {
     key: 'value',

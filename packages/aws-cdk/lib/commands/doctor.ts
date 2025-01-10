@@ -3,9 +3,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { print } from '../../lib/logging';
 import * as version from '../../lib/version';
-import { CommandOptions } from '../command-api';
 
-export async function realHandler(_options: CommandOptions): Promise<number> {
+export async function doctor(): Promise<number> {
   let exitStatus: number = 0;
   for (const verification of verifications) {
     if (!await verification()) {

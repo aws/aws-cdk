@@ -433,7 +433,7 @@ describe('role mappings', () => {
         providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
         useToken: true,
       }],
-    })).toThrowError('mappingKey must be provided when providerUrl.value is a token');
+    })).toThrow('mappingKey must be provided when providerUrl.value is a token');
   });
 
   test('mappingKey respected when identity provider is a token', () => {
@@ -517,7 +517,7 @@ describe('role mappings', () => {
       roleMappings: [{
         providerUrl: IdentityPoolProviderUrl.AMAZON,
       }],
-    })).toThrowError('IdentityPoolRoleMapping.rules is required when useToken is false');
+    })).toThrow('IdentityPoolRoleMapping.rules is required when useToken is false');
   });
 
   test('role mapping with rules configuration', () => {
