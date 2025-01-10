@@ -180,8 +180,8 @@ To configure the script the canary executes, use the `test` property. The `test`
 The `synthetics.Code` class exposes static methods to bundle your code artifacts:
 
   - `code.fromInline(code)` - specify an inline script.
-  - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See the above Note for directory structure.
-  - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See the above Note for directory structure.
+  - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See the below Note for directory structure.
+  - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See the below Note for directory structure.
 
 Using the `Code` class static initializers:
 
