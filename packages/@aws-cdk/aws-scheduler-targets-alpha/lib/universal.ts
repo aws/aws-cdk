@@ -40,7 +40,7 @@ const NOT_SUPPORTED_ACTION_PREFIX = [
 /**
  * Properties for a Universal Target
  */
-export interface UniversalProps extends ScheduleTargetBaseProps {
+export interface UniversalTargetProps extends ScheduleTargetBaseProps {
   /**
    * The AWS service to call.
    *
@@ -97,7 +97,7 @@ export interface UniversalProps extends ScheduleTargetBaseProps {
  */
 export class Universal extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
-    private readonly props: UniversalProps,
+    private readonly props: UniversalTargetProps,
   ) {
     const service = props.service;
     const action = props.action;
