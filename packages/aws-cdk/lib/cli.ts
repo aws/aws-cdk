@@ -1,18 +1,17 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
+import * as fs from 'fs-extra';
 
 import { DeploymentMethod } from './api';
 import { HotswapMode } from './api/hotswap/common';
-import { ILock } from './api/util/rwlock';
 import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { checkForPlatformWarnings } from './platform-warnings';
+import { ICloudAssemblySource } from './toolkit/cloud-assembly-source';
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
-import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
-import { execProgram } from '../lib/api/cxapp/exec';
 import { Deployments } from '../lib/api/deployments';
 import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
@@ -24,10 +23,11 @@ import { getMigrateScanType } from '../lib/commands/migrate';
 import { cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
 import { Notices } from '../lib/notices';
-import { Command, Configuration, Settings } from '../lib/settings';
+import { Command, Configuration, PROJECT_CONFIG, Settings, USER_DEFAULTS } from '../lib/settings';
 import * as version from '../lib/version';
 import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 import { ToolkitError } from './toolkit/error';
+import { CliAssembly } from './cli/cli-cx';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -37,7 +37,7 @@ if (!process.stdout.isTTY) {
   process.env.FORCE_COLOR = '0';
 }
 
-export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
+export async function exec(args: string[]): Promise<number | void> {
   const argv = await parseCommandLineArguments(args);
 
   // if one -v, log at a DEBUG level
@@ -105,25 +105,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     logger: new SdkToCliLogger(),
   });
 
-  let outDirLock: ILock | undefined;
-  const cloudExecutable = new CloudExecutable({
-    configuration,
-    context: configuration.context,
-    lookups: Boolean(configuration.settings.get(['lookups']) ?? true),
-    sdkProvider,
-    synthesizer:
-      synthesizer ??
-      (async (aws, config) => {
-        // Invoke 'execProgram', and copy the lock for the directory in the global
-        // variable here. It will be released when the CLI exits. Locks are not re-entrant
-        // so release it if we have to synthesize more than once (because of context lookups).
-        await outDirLock?.release();
-        const { assembly, lock } = await execProgram(aws, config);
-        outDirLock = lock;
-        return assembly;
-      }),
-  });
-
   /** Function to load plug-ins, using configurations additively. */
   function loadPlugins(...settings: Settings[]) {
     const loaded = new Set<string>();
@@ -160,7 +141,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     return await main(cmd, argv);
   } finally {
     // If we locked the 'cdk.out' directory, release it here.
-    await outDirLock?.release();
+    // await outDirLock?.release();
+    // should automatically happen
 
     // Do PSAs here
     await version.displayVersionMessage();
@@ -193,7 +175,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       patterns: args.STACKS,
     };
 
-    const cli = new CdkToolkit({
+    await using cli = new CdkToolkit({
       deployments: cloudFormation,
       verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
@@ -201,10 +183,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       configuration,
       sdkProvider,
     });
+    await using cloudAssembly = new CliAssembly(cli, configuration);
 
     switch (command) {
       case 'context':
-        return contextHandler({
+        return await contextHandler({
           context: configuration.context,
           clear: argv.clear,
           json: argv.json,
@@ -213,14 +196,14 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'docs':
-        return docs({ browser: configuration.settings.get(['browser']) });
+        return await docs({ browser: configuration.settings.get(['browser']) });
 
       case 'doctor':
-        return doctor();
+        return await doctor();
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, {
+        return await cli.list(args.STACKS, {
           long: args.long,
           json: argv.json,
           showDeps: args.showDependencies,
@@ -228,7 +211,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
-        return cli.diff(cloudExecutable, {
+        return await cli.diff(cloudAssembly, {
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           templatePath: args.template,
@@ -248,12 +231,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
         if (args.showTemplate) {
           const bootstrapper = new Bootstrapper(source);
-          return bootstrapper.showTemplate(args.json);
+          return await bootstrapper.showTemplate(args.json);
         }
 
-        return cli.bootstrap(args.ENVIRONMENTS, {
+        return await cli.bootstrap(args.ENVIRONMENTS, {
           source,
-          app: configuration.settings.get(['app']) ? cloudExecutable : undefined,
+          app: configuration.settings.get(['app']) ? cloudAssembly : undefined,
           roleArn: args.roleArn,
           force: argv.force,
           toolkitStackName: toolkitStackName,
@@ -325,7 +308,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             break;
         }
 
-        return cli.deploy(cloudExecutable, {
+        return await cli.deploy(cloudAssembly, {
           selector,
           exclusively: args.exclusively,
           toolkitStackName,
@@ -354,7 +337,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'rollback':
-        return cli.rollback(cloudExecutable, {
+        return await cli.rollback(cloudAssembly, {
           selector,
           toolkitStackName,
           roleArn: args.roleArn,
@@ -364,7 +347,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'import':
-        return cli.import(cloudExecutable, {
+        return await cli.import(cloudAssembly, {
           selector,
           toolkitStackName,
           roleArn: args.roleArn,
@@ -381,7 +364,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'watch':
-        return cli.watch(cloudExecutable, {
+        return await cli.watch(cloudAssembly, {
           selector,
           exclusively: args.exclusively,
           toolkitStackName,
@@ -400,7 +383,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'destroy':
-        return cli.destroy(cloudExecutable, {
+        return await cli.destroy(cloudAssembly, {
           selector,
           exclusively: args.exclusively,
           force: args.force,
@@ -412,7 +395,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         if (!configuration.settings.get(['unstable']).includes('gc')) {
           throw new ToolkitError('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
         }
-        return cli.garbageCollect(cloudExecutable, args.ENVIRONMENTS, {
+        return await cli.garbageCollect(cloudAssembly, args.ENVIRONMENTS, {
           action: args.action,
           type: args.type,
           rollbackBufferDays: args['rollback-buffer-days'],
@@ -424,7 +407,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       case 'synthesize':
       case 'synth':
         const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
-        return cli.synth(cloudExecutable, {
+        return await cli.synth(cloudAssembly, {
           stackNames: args.STACKS,
           exclusively: args.exclusively ?? false,
           quiet,
@@ -436,18 +419,18 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return;
 
       case 'metadata':
-        return cli.metadata(cloudExecutable, args.STACK, argv.json);
+        return await cli.metadata(cloudAssembly, args.STACK, argv.json);
 
       case 'acknowledge':
       case 'ack':
-        return cli.acknowledge(args.ID);
+        return await cli.acknowledge(args.ID);
 
       case 'init':
         const language = configuration.settings.get(['language']);
         if (args.list) {
-          return printAvailableTemplates(language);
+          return await printAvailableTemplates(language);
         } else {
-          return cliInit({
+          return await cliInit({
             type: args.TEMPLATE,
             language,
             canUseNetwork: undefined,
@@ -455,7 +438,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           });
         }
       case 'migrate':
-        return cli.migrate({
+        return await cli.migrate({
           stackName: args['stack-name'],
           fromPath: args['from-path'],
           fromStack: args['from-stack'],

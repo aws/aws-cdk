@@ -3,7 +3,7 @@ import * as path from 'path';
 import { ArtifactMetadataEntryType, ArtifactType, type AssetManifest, type AssetMetadataEntry, type AwsCloudFormationStackProperties, type MetadataEntry, type MissingContext } from '@aws-cdk/cloud-assembly-schema';
 import { type CloudAssembly, CloudAssemblyBuilder, type CloudFormationStackArtifact, type StackMetadata } from '@aws-cdk/cx-api';
 import { MockSdkProvider } from './util/mock-sdk';
-import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
+import { ContextAwareCloudAssembly } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
 import { cxapiAssemblyWithForcedVersion } from './api/assembly-versions';
 
@@ -36,7 +36,7 @@ export interface TestAssembly {
   schemaVersion?: string;
 }
 
-export class MockCloudExecutable extends CloudExecutable {
+export class MockCloudExecutable extends ContextAwareCloudAssembly {
   public readonly configuration: Configuration;
   public readonly sdkProvider: MockSdkProvider;
 

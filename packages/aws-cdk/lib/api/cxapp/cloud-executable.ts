@@ -1,43 +1,30 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as contextproviders from '../../context-providers';
 import { debug } from '../../logging';
-import { Configuration, Context, PROJECT_CONTEXT } from '../../settings';
+import { Context, PROJECT_CONTEXT } from '../../settings';
 import { ICloudAssemblySource } from '../../toolkit/cloud-assembly-source';
 import { ToolkitError } from '../../toolkit/error';
 import { SdkProvider } from '../aws-auth';
-
-/**
- * @returns output directory
- */
-export type Synthesizer = (aws: SdkProvider, config: Configuration) => Promise<cxapi.CloudAssembly>;
+import { ILock } from '../util/rwlock';
+import type { MissingContext } from '@aws-cdk/cloud-assembly-schema';
 
 export interface CloudExecutableProps {
   /**
-   * Application configuration (settings and context)
+   * AWS object (used by contextprovider)
    */
-  configuration: Configuration;
+  readonly sdkProvider: SdkProvider;
 
   /**
    * Application context
    */
-  context: Context;
+  readonly context: Context;
 
   /**
    * The file used to store application context in (relative to cwd).
    *
    * @default "cdk.context.json"
    */
-  contextFile?: string;
-
-  /**
-   * AWS object (used by synthesizer and contextprovider)
-   */
-  sdkProvider: SdkProvider;
-
-  /**
-   * Callback invoked to synthesize the actual stacks
-   */
-  synthesizer: Synthesizer;
+  readonly contextFile?: string;
 
   /**
    * Enable context lookups.
@@ -52,15 +39,20 @@ export interface CloudExecutableProps {
 /**
  * Represent the Cloud Executable and the synthesis we can do on it
  */
-export class CloudExecutable implements ICloudAssemblySource {
+export class ContextAwareCloudAssembly implements ICloudAssemblySource, AsyncDisposable {
   private canLookup: boolean;
   private context: Context;
   private contextFile: string;
+  private lock?: ILock;
 
-  constructor(private readonly props: CloudExecutableProps) {
+  constructor(private readonly source: ICloudAssemblySource, private readonly props: CloudExecutableProps) {
     this.canLookup = props.lookups ?? true;
     this.context = props.context;
-    this.contextFile = props.contextFile ?? PROJECT_CONTEXT;
+    this.contextFile = props.contextFile ?? PROJECT_CONTEXT; // @todo new feature not needed right now
+  }
+
+  async [Symbol.asyncDispose](): Promise<void> {
+    await this.lock?.release();
   }
 
   /**
@@ -73,7 +65,7 @@ export class CloudExecutable implements ICloudAssemblySource {
     // again, until it doesn't complain anymore or we've stopped making progress).
     let previouslyMissingKeys: Set<string> | undefined;
     while (true) {
-      const assembly = await this.props.synthesizer(this.props.sdkProvider, this.props.configuration);
+      const assembly = await this.source.produce();
 
       if (assembly.manifest.missing && assembly.manifest.missing.length > 0) {
         const missingKeys = missingContextKeys(assembly.manifest.missing);
@@ -86,7 +78,7 @@ export class CloudExecutable implements ICloudAssemblySource {
         }
 
         let tryLookup = true;
-        if (previouslyMissingKeys && setsEqual(missingKeys, previouslyMissingKeys)) {
+        if (previouslyMissingKeys && equalSets(missingKeys, previouslyMissingKeys)) {
           debug('Not making progress trying to resolve environmental context. Giving up.');
           tryLookup = false;
         }
@@ -119,11 +111,14 @@ export class CloudExecutable implements ICloudAssemblySource {
 /**
  * Return all keys of missing context items
  */
-function missingContextKeys(missing?: cxapi.MissingContext[]): Set<string> {
+function missingContextKeys(missing?: MissingContext[]): Set<string> {
   return new Set((missing || []).map(m => m.key));
 }
 
-function setsEqual<A>(a: Set<A>, b: Set<A>) {
+/**
+ * Are two sets equal to each other
+ */
+function equalSets<A>(a: Set<A>, b: Set<A>) {
   if (a.size !== b.size) { return false; }
   for (const x of a) {
     if (!b.has(x)) { return false; }

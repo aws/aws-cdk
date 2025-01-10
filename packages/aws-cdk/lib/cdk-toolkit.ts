@@ -16,7 +16,8 @@ import {
   StackCollection,
   StackSelector,
 } from './api/cxapp/cloud-assembly';
-import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { CloudExecutableProps, ContextAwareCloudAssembly } from './api/cxapp/cloud-executable';
+import { changeDir, createAssembly, exec, guessExecutable, prepareDefaultEnvironment, withContext, withEnv } from './api/cxapp/exec';
 import { Deployments } from './api/deployments';
 import { GarbageCollector } from './api/garbage-collection/garbage-collector';
 import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
@@ -24,6 +25,7 @@ import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { ILock, RWLock } from './api/util/rwlock';
 import {
   generateCdkApp,
   generateStack,
@@ -124,13 +126,144 @@ export enum AssetBuildTime {
 }
 
 /**
+ * Configuration for creating a CLI from an AWS CDK App directory
+ */
+export interface FromCdkAppProps {
+  /**
+   * @default - current working directory
+   */
+  readonly workingDirectory?: string;
+
+  /**
+   * Emits the synthesized cloud assembly into a directory
+   *
+   * @default cdk.out
+   */
+  readonly output?: string;
+}
+
+/**
  * Toolkit logic
  *
  * The toolkit runs the `cloudExecutable` to obtain a cloud assembly and
  * deploys applies them to `cloudFormation`.
  */
-export class CdkToolkit {
+export class CdkToolkit implements AsyncDisposable {
+  private lock?: ILock;
   constructor(private readonly props: CdkToolkitProps) {}
+
+  public async [Symbol.asyncDispose](): Promise<void> {
+    await this.lock?.release();
+  }
+
+  /**
+   * Use a directory containing an AWS CDK app as source.
+   * @param directory the directory of the AWS CDK app. Defaults to the current working directory.
+   * @param props additional configuration properties
+   * @returns an instance of `AwsCdkCli`
+   */
+  public fromCdkApp(app: string, props: FromCdkAppProps = {}): ICloudAssemblySource & AsyncDisposable {
+    return new ContextAwareCloudAssembly(
+      {
+        produce: async () => {
+          await this.lock?.release();
+
+          try {
+            const build = this.props.configuration.settings.get(['build']);
+            if (build) {
+              await exec(build, { cwd: props.workingDirectory });
+            }
+
+            const commandLine = await guessExecutable(app);
+            const outdir = props.output ?? 'cdk.out';
+
+            try {
+              fs.mkdirpSync(outdir);
+            } catch (e: any) {
+              throw new ToolkitError(`Could not create output directory at '${outdir}' (${e.message}).`);
+            }
+
+            this.lock = await new RWLock(outdir).acquireWrite();
+
+            const env = await prepareDefaultEnvironment(this.props.sdkProvider, { outdir });
+            return await withContext(env, this.props.configuration, async (envWithContext, _context) => {
+              await exec(commandLine.join(' '), { extraEnv: envWithContext, cwd: props.workingDirectory });
+              return createAssembly(outdir);
+            });
+          } finally {
+            await this.lock?.release();
+          }
+        },
+      },
+      this.propsForContextAssembly,
+    );
+  }
+
+  /**
+   * Creates a Cloud Assembly from an existing assembly directory.
+   * @param directory the directory of the AWS CDK app. Defaults to the current working directory.
+   * @param props additional configuration properties
+   * @returns an instance of `AwsCdkCli`
+   */
+  public fromAssemblyDirectory(directory: string): ICloudAssemblySource & AsyncDisposable {
+    return new ContextAwareCloudAssembly(
+      {
+        produce:
+      async () => {
+        await this.lock?.release();
+        const build = this.props.configuration.settings.get(['build']);
+        if (build) {
+          await exec(build);
+        }
+
+        try {
+          debug('--app points to a cloud assembly, so we bypass synth');
+          this.lock = await await new RWLock(directory).acquireRead();
+          return await createAssembly(directory);
+        } finally {
+          await this.lock?.release();
+        }
+      },
+      },
+      this.propsForContextAssembly,
+    );
+  }
+
+  /**
+   * Create the CLI from a Cloud Assembly builder function.
+   */
+  public fromAssemblyBuilder(
+    builder: (context: Record<string, any>) => Promise<cxapi.CloudAssembly>,
+    props: FromCdkAppProps = {},
+  ): ICloudAssemblySource & AsyncDisposable {
+    return new ContextAwareCloudAssembly(
+      {
+        produce: async () => {
+          await this.lock?.release();
+          try {
+            const env = await prepareDefaultEnvironment(this.props.sdkProvider, { outdir: props.output });
+            return await changeDir(async () =>
+              withContext(env, this.props.configuration, async (envWithContext, context) =>
+                withEnv(envWithContext, () =>
+                  builder(context)),
+              ), props.workingDirectory);
+
+          } finally {
+            await this.lock?.release();
+          }
+        },
+      },
+      this.propsForContextAssembly,
+    );
+  }
+
+  private get propsForContextAssembly(): CloudExecutableProps {
+    return {
+      context: this.props.configuration.context,
+      lookups: Boolean(this.props.configuration.settings.get(['lookups']) ?? true),
+      sdkProvider: this.props.sdkProvider,
+    };
+  }
 
   public async metadata(assemblySource: ICloudAssemblySource, stackName: string, json: boolean) {
     const assembly = await this.assemblyFromSource(assemblySource);
@@ -897,7 +1030,7 @@ export class CdkToolkit {
   public async synth(
     assemblySource: ICloudAssemblySource,
     options: SynthOptions,
-  ): Promise<any> {
+  ): Promise<void> {
     const assembly = await this.assemblyFromSource(assemblySource);
     const stacks = await this.selectStacksForDiff(assembly, options.stackNames, options.exclusively, options.autoValidate);
 
@@ -1986,3 +2119,7 @@ async function askUserConfirmation(
     if (!confirmed) { throw new ToolkitError('Aborted by user'); }
   });
 }
+function spaceAvailableForContext(env: any, envVariableSizeLimit: number): number {
+  throw new Error('Function not implemented.');
+}
+
