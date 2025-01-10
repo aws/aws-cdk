@@ -6,6 +6,7 @@ import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '.
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * NodeGroup interface
@@ -390,6 +391,7 @@ export class Nodegroup extends Resource implements INodegroup {
     super(scope, id, {
       physicalName: props.nodegroupName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.cluster = props.cluster;
 

@@ -4,6 +4,7 @@ import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Aws, Names } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -94,6 +95,7 @@ export class DatabaseSecret extends secretsmanager.Secret {
       },
       replicaRegions: props.replicaRegions,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.replaceOnPasswordCriteriaChanges) {
       const hash = md5hash(JSON.stringify({

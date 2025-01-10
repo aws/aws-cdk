@@ -4,6 +4,7 @@ import { IWebSocketRoute } from './route';
 import { CfnAuthorizer } from '.././index';
 import { Resource } from '../../../core';
 
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { IAuthorizer } from '../common';
 
 /**
@@ -104,6 +105,7 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
 
   constructor(scope: Construct, id: string, props: WebSocketAuthorizerProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.type === WebSocketAuthorizerType.LAMBDA && !props.authorizerUri) {
       throw new Error('authorizerUri is mandatory for Lambda authorizers');

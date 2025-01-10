@@ -13,6 +13,7 @@ import {
   Stage,
   Token,
 } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { CrossRegionStringParamReaderProvider } from '../../../custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated';
 
 /**
@@ -57,6 +58,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
   constructor(scope: Construct, id: string, props: EdgeFunctionProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
     const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';

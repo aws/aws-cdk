@@ -6,6 +6,7 @@ import { ITopic } from './topic-base';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import { IQueue } from '../../aws-sqs';
 import { Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Options for creating a new subscription
@@ -105,6 +106,7 @@ export class Subscription extends Resource {
 
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.rawMessageDelivery &&
       [

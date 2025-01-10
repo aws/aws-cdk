@@ -3,6 +3,7 @@ import { IdentitySource } from './identity-source';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Arn, ArnFormat, Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
@@ -208,6 +209,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
 
   constructor(scope: Construct, id: string, props: TokenAuthorizerProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const restApiId = this.lazyRestApiId();
 

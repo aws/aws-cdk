@@ -3,6 +3,7 @@ import { Connections } from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnVpcConnector } from 'aws-cdk-lib/aws-apprunner';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of the AppRunner VPC Connector
@@ -135,6 +136,7 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
     super(scope, id, {
       physicalName: props.vpcConnectorName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.vpcConnectorName !== undefined && !cdk.Token.isUnresolved(props.vpcConnectorName)) {
 

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IdentitySource } from './identity-source';
 import * as cognito from '../../../aws-cognito';
 import { Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
@@ -71,6 +72,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
 
   constructor(scope: Construct, id: string, props: CognitoUserPoolsAuthorizerProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const restApiId = this.lazyRestApiId();
 

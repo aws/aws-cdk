@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -79,6 +80,7 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
       compatibility: Compatibility.EXTERNAL,
       networkMode: props.networkMode ?? NetworkMode.BRIDGE,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 
   /**

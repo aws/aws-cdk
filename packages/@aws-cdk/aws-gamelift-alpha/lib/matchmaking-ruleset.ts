@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import { RuleSetContent } from './matchmaking-ruleset-body';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Gamelift matchmaking ruleset
@@ -195,6 +196,7 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
     super(scope, id, {
       physicalName: props.matchmakingRuleSetName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (!cdk.Token.isUnresolved(props.matchmakingRuleSetName)) {
       if (props.matchmakingRuleSetName.length > 128) {

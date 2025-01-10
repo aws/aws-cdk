@@ -3,6 +3,7 @@ import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an UnmanagedComputeEnvironment. Batch will not provision instances on your behalf
@@ -67,6 +68,7 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
 
   constructor(scope: Construct, id: string, props?: UnmanagedComputeEnvironmentProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.unmanagedvCPUs = props?.unmanagedvCpus;
     const resource = new CfnComputeEnvironment(this, 'Resource', {

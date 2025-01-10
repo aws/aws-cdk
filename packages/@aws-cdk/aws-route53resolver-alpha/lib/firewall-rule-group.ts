@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { IFirewallDomainList } from './firewall-domain-list';
 import { FirewallRuleGroupAssociation, FirewallRuleGroupAssociationOptions } from './firewall-rule-group-association';
 import { CfnFirewallRuleGroup } from 'aws-cdk-lib/aws-route53resolver';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Firewall Rule Group
@@ -225,6 +226,7 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
 
   constructor(scope: Construct, id: string, props: FirewallRuleGroupProps = {}) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.rules = props.rules ?? [];
 

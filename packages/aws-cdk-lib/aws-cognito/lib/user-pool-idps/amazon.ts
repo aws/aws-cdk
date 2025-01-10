@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 
 /**
  * Properties to initialize UserPoolAmazonIdentityProvider
@@ -34,6 +35,7 @@ export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderAmazonProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const scopes = props.scopes ?? ['profile'];
 

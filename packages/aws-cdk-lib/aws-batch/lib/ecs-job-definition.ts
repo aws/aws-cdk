@@ -5,6 +5,7 @@ import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefi
 import { IJobQueue } from './job-queue';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * A JobDefinition that uses ECS orchestration
@@ -83,6 +84,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
 
   constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.container = props.container;
     this.propagateTags = props?.propagateTags;

@@ -3,6 +3,7 @@ import { isPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { validateName } from './utils';
 import * as iam from '../../../aws-iam';
 import { Resource, IResource, ArnFormat, Arn, Aws } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 
@@ -51,6 +52,7 @@ export class ImportedDeploymentGroupBase extends Resource {
     });
 
     super(scope, id, { environmentFromArn: deploymentGroupArn });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
     this.deploymentGroupName = deploymentGroupName;
     this.deploymentGroupArn = deploymentGroupArn;
   }

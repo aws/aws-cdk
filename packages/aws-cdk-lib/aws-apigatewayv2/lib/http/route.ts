@@ -5,6 +5,7 @@ import { HttpRouteIntegration } from './integration';
 import { CfnRoute, CfnRouteProps } from '.././index';
 import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { IRoute } from '../common';
 
 /**
@@ -182,6 +183,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.httpApi = props.httpApi;
     this.path = props.routeKey.path;

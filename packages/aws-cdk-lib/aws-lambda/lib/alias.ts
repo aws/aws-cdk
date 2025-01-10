@@ -10,6 +10,7 @@ import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 export interface IAlias extends IFunction {
   /**
@@ -145,6 +146,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     super(scope, id, {
       physicalName: props.aliasName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.lambda = props.version.lambda;
     this.aliasName = this.physicalName;

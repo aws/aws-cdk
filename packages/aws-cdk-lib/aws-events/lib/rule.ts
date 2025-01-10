@@ -9,6 +9,7 @@ import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -95,6 +96,7 @@ export class Rule extends Resource implements IRule {
     super(determineRuleScope(scope, props), id, {
       physicalName: props.ruleName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.eventBus && props.schedule) {
       throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');

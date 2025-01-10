@@ -4,6 +4,7 @@ import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new SNS topic
@@ -255,6 +256,7 @@ export class Topic extends TopicBase {
     super(scope, id, {
       physicalName: props.topicName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.enforceSSL = props.enforceSSL;
 

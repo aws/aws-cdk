@@ -4,6 +4,7 @@ import { IHttpRoute } from './route';
 import { CfnAuthorizer } from '.././index';
 import { Duration, Resource } from '../../../core';
 
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { IAuthorizer } from '../common';
 
 /**
@@ -157,6 +158,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     let authorizerPayloadFormatVersion = props.payloadFormatVersion;
 

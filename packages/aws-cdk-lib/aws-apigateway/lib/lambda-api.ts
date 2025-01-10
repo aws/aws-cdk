@@ -5,6 +5,7 @@ import { Method } from './method';
 import { ProxyResource, Resource } from './resource';
 import { RestApi, RestApiProps } from './restapi';
 import * as lambda from '../../aws-lambda';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**
@@ -60,6 +61,7 @@ export class LambdaRestApi extends RestApi {
       ...props.options, // deprecated, but we still support
       ...props,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.proxy !== false) {
       this.root.addProxy();

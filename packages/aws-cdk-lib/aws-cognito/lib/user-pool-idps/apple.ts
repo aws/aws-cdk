@@ -3,6 +3,7 @@ import { UserPoolIdentityProviderProps } from './base';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { SecretValue } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 
 /**
  * Properties to initialize UserPoolAppleIdentityProvider
@@ -50,6 +51,7 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderAppleProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const scopes = props.scopes ?? ['name'];
 

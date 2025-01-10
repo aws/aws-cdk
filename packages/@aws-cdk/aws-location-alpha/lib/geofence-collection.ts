@@ -4,6 +4,7 @@ import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { CfnGeofenceCollection } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Geofence Collection
@@ -131,6 +132,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     super(scope, id, {
       physicalName: props.geofenceCollectionName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {
       collectionName: this.physicalName,

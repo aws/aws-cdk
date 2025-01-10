@@ -10,6 +10,7 @@ import { FirehoseMetrics } from 'aws-cdk-lib/aws-kinesisfirehose/lib/kinesisfire
 import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { StreamEncryption } from './encryption';
 import { ISource } from './source';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 const PUT_RECORD_ACTIONS = [
   'firehose:PutRecord',
@@ -319,6 +320,7 @@ export class DeliveryStream extends DeliveryStreamBase {
     super(scope, id, {
       physicalName: props.deliveryStreamName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this._role = props.role;
 

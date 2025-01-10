@@ -4,6 +4,7 @@ import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
 import { IResource, Lazy, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * A backup plan
@@ -130,6 +131,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
   constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {

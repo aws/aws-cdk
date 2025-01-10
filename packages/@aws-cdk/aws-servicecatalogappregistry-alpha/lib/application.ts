@@ -7,6 +7,7 @@ import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } fr
 import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
 import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly`;
 const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation`;
@@ -314,6 +315,7 @@ export class Application extends ApplicationBase {
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.validateApplicationProps(props);
 

@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Initialization properties for `OpenIdConnectProvider`.
@@ -48,5 +49,6 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
       url: props.url,
       clientIds,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 }

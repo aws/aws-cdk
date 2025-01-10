@@ -23,6 +23,7 @@ import {
   Token,
   FeatureFlags,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -597,6 +598,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     // Basic validation of the provided spot block duration
     const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });

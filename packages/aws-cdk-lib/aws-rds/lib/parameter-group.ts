@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -140,6 +141,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const family = props.engine.parameterGroupFamily;
     if (!family) {

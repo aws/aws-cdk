@@ -13,6 +13,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -557,6 +558,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
 
   constructor(scope: Construct, id: string, props: ServerlessClusterProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;

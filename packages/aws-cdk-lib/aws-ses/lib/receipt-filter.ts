@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnReceiptFilter } from './ses.generated';
 import { Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * The policy for the receipt filter.
@@ -52,6 +53,7 @@ export class ReceiptFilter extends Resource {
     super(scope, id, {
       physicalName: props.receiptFilterName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     new CfnReceiptFilter(this, 'Resource', {
       filter: {

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnUserPoolResourceServer } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { IResource, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Cognito user pool resource server
@@ -102,6 +103,7 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
     super(scope, id, {
       physicalName: props.identifier,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const resource = new CfnUserPoolResourceServer(this, 'Resource', {
       identifier: this.physicalName,

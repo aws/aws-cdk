@@ -8,6 +8,7 @@ import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 export interface IVersion extends IFunction {
   /**
@@ -189,6 +190,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;

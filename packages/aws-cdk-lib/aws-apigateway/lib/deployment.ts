@@ -4,6 +4,7 @@ import { Method } from './method';
 import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 export interface DeploymentProps {
   /**
@@ -80,6 +81,7 @@ export class Deployment extends Resource {
 
   constructor(scope: Construct, id: string, props: DeploymentProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,

@@ -3,6 +3,7 @@ import { ISecret } from './secret';
 import { CfnResourcePolicy } from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import { Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for a ResourcePolicy
@@ -36,6 +37,7 @@ export class ResourcePolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: ResourcePolicyProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     new CfnResourcePolicy(this, 'Resource', {
       resourcePolicy: this.document,

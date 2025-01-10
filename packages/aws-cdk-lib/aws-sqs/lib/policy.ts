@@ -3,6 +3,7 @@ import { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties to associate SQS queues with a policy
@@ -36,6 +37,7 @@ export class QueuePolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: QueuePolicyProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,

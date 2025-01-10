@@ -2,6 +2,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as codestar from 'aws-cdk-lib/aws-codestar';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * GitHubRepository resource interface
@@ -90,6 +91,7 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
 
   constructor(scope: Construct, id: string, props: GitHubRepositoryProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const resource = new codestar.CfnGitHubRepository(this, 'Resource', {
       repositoryOwner: props.owner,

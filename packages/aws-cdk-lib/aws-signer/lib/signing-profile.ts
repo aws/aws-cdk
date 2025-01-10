@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnSigningProfile } from './signer.generated';
 import { Duration, IResource, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Platforms that are allowed with signing config.
@@ -173,6 +174,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
     super(scope, id, {
       physicalName: props.signingProfileName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const resource = new CfnSigningProfile( this, 'Resource', {
       platformId: props.platform.platformId,

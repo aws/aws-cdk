@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
 import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
@@ -103,5 +104,6 @@ export class LambdaDeploymentConfig extends BaseDeploymentConfig implements ILam
       computePlatform: ComputePlatform.LAMBDA,
       trafficRouting: props?.trafficRouting ?? TrafficRouting.allAtOnce(),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 }

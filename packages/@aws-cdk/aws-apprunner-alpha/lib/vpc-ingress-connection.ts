@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IService } from './service';
 import { CfnVpcIngressConnection } from 'aws-cdk-lib/aws-apprunner';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of the AppRunner VPC Ingress Connection
@@ -142,6 +143,7 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
     super(scope, id, {
       physicalName: props.vpcIngressConnectionName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.vpcIngressConnectionName !== undefined && !cdk.Token.isUnresolved(props.vpcIngressConnectionName)) {
 

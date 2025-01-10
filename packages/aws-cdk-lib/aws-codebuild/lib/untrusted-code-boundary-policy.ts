@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for UntrustedCodeBoundaryPolicy
@@ -91,5 +92,6 @@ export class UntrustedCodeBoundaryPolicy extends iam.ManagedPolicy {
         ...props.additionalStatements ?? [],
       ],
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 }

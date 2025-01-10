@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new Slack channel configuration
@@ -290,6 +291,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     super(scope, id, {
       physicalName: props.slackChannelConfigurationName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.role = props.role || new iam.Role(this, 'ConfigurationRole', {
       assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),

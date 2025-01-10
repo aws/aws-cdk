@@ -29,6 +29,7 @@ import {
   TagType,
   Token,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -543,6 +544,7 @@ export class TableV2 extends TableBaseV2 {
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;

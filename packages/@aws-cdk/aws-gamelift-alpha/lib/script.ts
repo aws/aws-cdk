@@ -5,6 +5,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Content } from './content';
 import { CfnScript } from 'aws-cdk-lib/aws-gamelift';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Your configuration and custom game logic for use with Realtime Servers.
@@ -191,6 +192,7 @@ export class Script extends ScriptBase {
     super(scope, id, {
       physicalName: props.scriptName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.scriptName && !cdk.Token.isUnresolved(props.scriptName)) {
       if (props.scriptName.length > 1024) {

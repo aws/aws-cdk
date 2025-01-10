@@ -6,6 +6,7 @@ import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
 import { Resource, IResource, Lazy, Fn } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * the base properties for AppSync Functions
@@ -157,6 +158,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
   public constructor(scope: Construct, id: string, props: AppsyncFunctionProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {

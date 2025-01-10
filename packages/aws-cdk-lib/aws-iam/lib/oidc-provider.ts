@@ -6,6 +6,7 @@ import {
   Resource,
   Token,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
@@ -137,6 +138,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    */
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const provider = this.getOrCreateProvider();
     const resource = new CustomResource(this, 'Resource', {

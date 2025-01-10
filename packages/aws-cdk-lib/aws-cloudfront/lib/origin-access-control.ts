@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a CloudFront Origin Access Control
@@ -195,6 +196,7 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
 
   constructor(scope: Construct, id: string, props: S3OriginAccessControlProps = {}) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {

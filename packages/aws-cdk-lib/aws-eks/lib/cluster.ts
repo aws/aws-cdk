@@ -26,6 +26,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1572,6 +1573,7 @@ export class Cluster extends ClusterBase {
     super(scope, id, {
       physicalName: props.clusterName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const stack = Stack.of(this);
 

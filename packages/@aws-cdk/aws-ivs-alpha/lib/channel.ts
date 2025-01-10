@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnChannel } from 'aws-cdk-lib/aws-ivs';
 import { StreamKey } from './stream-key';
 import { IRecordingConfiguration } from './recording-configuration';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an IVS Channel
@@ -211,6 +212,7 @@ export class Channel extends ChannelBase {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
       }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (this.physicalName && !core.Token.isUnresolved(this.physicalName) && !/^[a-zA-Z0-9-_]*$/.test(this.physicalName)) {
       throw new Error(`channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`);

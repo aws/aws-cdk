@@ -5,6 +5,7 @@ import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from '.
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a CrossAccountDestination
@@ -72,6 +73,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
         // In the underlying model, the name is not optional, but we make it so anyway.
         cdk.Lazy.string({ produce: () => this.generateUniqueName() }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.resource = new CfnDestination(this, 'Resource', {
       destinationName: this.physicalName!,

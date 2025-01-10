@@ -1,6 +1,7 @@
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -42,5 +43,6 @@ export class DatabaseSecret extends secretsmanager.Secret {
         excludeCharacters: props.excludeCharacters ?? '"@/\\\ \'',
       },
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 }

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExternalCompatible } from './task-definition';
 import { IRole } from '../../../aws-iam';
 import { Resource } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
 import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
 
@@ -76,6 +77,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   constructor(scope: Construct, id: string, props: ImportedTaskDefinitionProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.compatibility = props.compatibility ?? Compatibility.EC2_AND_FARGATE;
     this.taskDefinitionArn = props.taskDefinitionArn;

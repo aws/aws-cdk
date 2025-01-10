@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -101,6 +102,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
       throw new Error('VPC Endpoint Service must have at least one load balancer specified.');

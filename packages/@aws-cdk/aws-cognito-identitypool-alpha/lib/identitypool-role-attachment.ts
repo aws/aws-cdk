@@ -3,6 +3,7 @@ import { IRole } from 'aws-cdk-lib/aws-iam';
 import { Resource, IResource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IIdentityPool, IdentityPoolProviderUrl } from './identitypool';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an Identity Pool Role Attachment
@@ -144,6 +145,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
 
   constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
     this.identityPoolId = props.identityPool.identityPoolId;
     const mappings = props.roleMappings || [];
     let roles: any = undefined, roleMappings: any = undefined;

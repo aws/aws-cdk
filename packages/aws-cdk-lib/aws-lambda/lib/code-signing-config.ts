@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnCodeSigningConfig } from './lambda.generated';
 import { ISigningProfile } from '../../aws-signer';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Code signing configuration policy for deployment validation failure.
@@ -100,6 +101,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
 
   constructor(scope: Construct, id: string, props: CodeSigningConfigProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const signingProfileVersionArns = props.signingProfiles.map(signingProfile => {
       return signingProfile.signingProfileVersionArn;

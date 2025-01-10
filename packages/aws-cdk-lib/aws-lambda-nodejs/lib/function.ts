@@ -8,6 +8,7 @@ import { callsites, findUpMultiple, isSdkV2Runtime } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
 import { Annotations, FeatureFlags } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
@@ -154,6 +155,7 @@ export class NodejsFunction extends lambda.Function {
         handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
       });
     }
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     // Enable connection reuse for aws-sdk v2, do not set for sdk v3
     if (isSdkV2Runtime(runtime)) {

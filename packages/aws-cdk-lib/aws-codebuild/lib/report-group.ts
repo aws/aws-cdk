@@ -4,6 +4,7 @@ import { renderReportGroupArn, reportGroupArnComponents } from './report-group-u
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * The interface representing the ReportGroup resource -
@@ -157,6 +158,7 @@ export class ReportGroup extends ReportGroupBase {
     super(scope, id, {
       physicalName: props.reportGroupName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
     this.type = props.type ? props.type : ReportGroupType.TEST;
     const resource = new CfnReportGroup(this, 'Resource', {
       type: this.type,

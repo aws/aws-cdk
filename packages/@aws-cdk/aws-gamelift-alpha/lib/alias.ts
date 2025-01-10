@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { IFleet } from './fleet-base';
 import { IGameSessionQueueDestination } from './game-session-queue';
 import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Gamelift Alias for a Gamelift fleet destination.
@@ -199,6 +200,7 @@ export class Alias extends AliasBase {
     super(scope, id, {
       physicalName: props.aliasName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (!cdk.Token.isUnresolved(props.aliasName)) {
       if (props.aliasName.length > 1024) {

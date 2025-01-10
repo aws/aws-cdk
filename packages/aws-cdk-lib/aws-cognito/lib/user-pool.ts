@@ -13,6 +13,7 @@ import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, Servic
 import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -972,6 +973,7 @@ export class UserPool extends UserPoolBase {
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const signIn = this.signInConfiguration(props);
 

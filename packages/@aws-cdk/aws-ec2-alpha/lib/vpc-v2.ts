@@ -5,6 +5,7 @@ import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
 import { ISubnetV2, SubnetV2, SubnetV2Attributes } from './subnet-v2';
 import { region_info } from 'aws-cdk-lib';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Additional props needed for secondary Address
@@ -457,6 +458,8 @@ export class VpcV2 extends VpcV2Base {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
+
     this.vpcName = props.vpcName;
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();

@@ -11,6 +11,7 @@ import { BlockDevice } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 import { IPrincipal, IRole, PolicyStatement } from '../../aws-iam';
 import { CfnOutput, FeatureFlags, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
 
 /**
@@ -192,6 +193,7 @@ export class BastionHostLinux extends Resource implements IInstance {
 
   constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
     this.stack = Stack.of(scope);
     const instanceType = props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO);
     this.instance = new Instance(this, 'Resource', {

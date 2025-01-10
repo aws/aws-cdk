@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
 import { IResource, Resource, Stack, SecretValue } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * An API Destination Connection
@@ -342,6 +343,7 @@ export class Connection extends Resource implements IConnection {
     super(scope, id, {
       physicalName: props.connectionName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const authBind = props.authorization._bind();
 

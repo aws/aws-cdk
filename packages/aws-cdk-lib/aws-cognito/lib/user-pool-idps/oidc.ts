@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -106,6 +107,7 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderOidcProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const scopes = props.scopes ?? ['openid'];
 

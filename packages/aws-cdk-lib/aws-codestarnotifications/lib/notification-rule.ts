@@ -3,6 +3,7 @@ import { CfnNotificationRule } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 import { IResource, Resource, Names } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -141,6 +142,7 @@ export class NotificationRule extends Resource implements INotificationRule {
 
   constructor(scope: constructs.Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const source = props.source.bindAsNotificationRuleSource(this);
 

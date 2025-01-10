@@ -4,6 +4,7 @@ import { Resource, IResource, Stack, ArnFormat, Lazy, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { IdentityPoolRoleAttachment, IdentityPoolRoleMapping } from './identitypool-role-attachment';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Cognito Identity Pool
@@ -362,6 +363,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     super(scope, id, {
       physicalName: props.identityPoolName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
     const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this, this)) : undefined;
     if (providers && providers.length) this.cognitoIdentityProviders = providers;

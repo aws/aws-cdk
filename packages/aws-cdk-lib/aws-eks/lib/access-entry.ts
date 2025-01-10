@@ -4,6 +4,7 @@ import { CfnAccessEntry } from './eks.generated';
 import {
   Resource, IResource, Aws, Lazy,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -326,6 +327,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.cluster = props.cluster;
     this.principal = props.principal;

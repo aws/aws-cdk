@@ -3,6 +3,7 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnGameSessionQueue } from 'aws-cdk-lib/aws-gamelift';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a game session queue destination
@@ -363,6 +364,7 @@ export class GameSessionQueue extends GameSessionQueueBase {
     super(scope, id, {
       physicalName: props.gameSessionQueueName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (!cdk.Token.isUnresolved(props.gameSessionQueueName)) {
       if (props.gameSessionQueueName.length > 128) {

@@ -4,6 +4,7 @@ import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import { Aws, IResource, Lazy, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
 
 /**
@@ -118,6 +119,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     super(scope, id, {
       physicalName: props.receiptRuleName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const resource = new CfnReceiptRule(this, 'Resource', {
       after: props.after?.receiptRuleName,

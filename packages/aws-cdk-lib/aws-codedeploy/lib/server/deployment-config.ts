@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig, ZonalConfig } from '../base-deployment-config';
 import { MinimumHealthyHosts } from '../host-health-config';
 import { deploymentConfig } from '../private/utils';
@@ -77,5 +78,6 @@ export class ServerDeploymentConfig extends BaseDeploymentConfig implements ISer
 
   constructor(scope: Construct, id: string, props: ServerDeploymentConfigProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 }

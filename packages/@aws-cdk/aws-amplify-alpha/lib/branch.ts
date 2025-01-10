@@ -17,6 +17,7 @@ import { IApp } from './app';
 import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A branch
@@ -162,6 +163,7 @@ export class Branch extends Resource implements IBranch {
 
   constructor(scope: Construct, id: string, props: BranchProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.environmentVariables = props.environmentVariables || {};
 

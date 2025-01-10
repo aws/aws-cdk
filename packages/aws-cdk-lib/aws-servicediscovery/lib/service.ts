@@ -9,6 +9,7 @@ import { defaultDiscoveryType } from './private/utils';
 import { CfnService } from './servicediscovery.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration, IResource, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 export interface IService extends IResource {
   /**
@@ -218,6 +219,7 @@ export class Service extends ServiceBase {
 
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const namespaceType = props.namespace.type;
     const discoveryType = props.discoveryType || defaultDiscoveryType(props.namespace);

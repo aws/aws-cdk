@@ -4,6 +4,7 @@ import { RequestContext } from './integrations';
 import { StepFunctionsIntegration } from './integrations/stepfunctions';
 import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for StepFunctionsRestApi
@@ -129,6 +130,7 @@ export class StepFunctionsRestApi extends RestApi {
     });
 
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.root.addMethod('ANY', stepfunctionsIntegration);
   }

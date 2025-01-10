@@ -8,6 +8,7 @@ import { IRestApi, RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an APIGateway Stage.
@@ -375,6 +376,7 @@ export class Stage extends StageBase {
 
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.enableCacheCluster = props.cacheClusterEnabled;
 

@@ -5,6 +5,7 @@ import { renderMeshOwner } from './private/utils';
 import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Interface for which all Route based classes MUST implement
@@ -113,6 +114,7 @@ export class Route extends cdk.Resource implements IRoute {
     super(scope, id, {
       physicalName: props.routeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.virtualRouter = props.virtualRouter;
 

@@ -5,6 +5,7 @@ import { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * The auth types for a function url
@@ -218,6 +219,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
 
   constructor(scope: Construct, id: string, props: FunctionUrlProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (this.instanceOfVersion(props.function)) {
       throw new Error('FunctionUrl cannot be used with a Version');

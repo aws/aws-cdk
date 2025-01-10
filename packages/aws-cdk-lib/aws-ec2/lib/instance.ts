@@ -17,6 +17,7 @@ import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -462,6 +463,7 @@ export class Instance extends Resource implements IInstance {
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.initOptions && !props.init) {
       throw new Error('Setting \'initOptions\' requires that \'init\' is also set');

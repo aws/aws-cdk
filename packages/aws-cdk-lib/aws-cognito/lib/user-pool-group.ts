@@ -3,6 +3,7 @@ import { CfnUserPoolGroup } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { IRole } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a user pool group.
@@ -86,6 +87,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
 
   constructor(scope: Construct, id: string, props: UserPoolGroupProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&

@@ -8,6 +8,7 @@ import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
 import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an IAM user
@@ -258,6 +259,7 @@ export class User extends Resource implements IIdentity, IUser {
     super(scope, id, {
       physicalName: props.userName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.managedPolicies.push(...props.managedPolicies || []);
     this.permissionsBoundary = props.permissionsBoundary;

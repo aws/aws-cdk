@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { IConnection } from './connection';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**
@@ -52,6 +53,7 @@ export class ExternalTable extends TableBase {
 
   constructor(scope: Construct, id: string, props: ExternalTableProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
     this.connection = props.connection;
     this.tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,

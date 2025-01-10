@@ -4,6 +4,7 @@ import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer
 import { WebSocketRouteIntegration } from './integration';
 import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { IRoute } from '../common';
 
 /**
@@ -83,6 +84,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
 
   constructor(scope: Construct, id: string, props: WebSocketRouteProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.routeKey != '$connect' && props.authorizer) {
       throw new Error('You can only set a WebSocket authorizer to a $connect route.');

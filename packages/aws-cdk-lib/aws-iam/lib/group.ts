@@ -8,6 +8,7 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFr
 import { AttachedPolicies } from './private/util';
 import { IUser } from './user';
 import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an IAM Group.
@@ -183,6 +184,7 @@ export class Group extends GroupBase {
     super(scope, id, {
       physicalName: props.groupName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.managedPolicies.push(...props.managedPolicies || []);
 

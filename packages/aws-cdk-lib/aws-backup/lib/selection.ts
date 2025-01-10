@@ -5,6 +5,7 @@ import { IBackupPlan } from './plan';
 import { BackupResource, TagOperation } from './resource';
 import * as iam from '../../aws-iam';
 import { Lazy, Resource, Aspects, AspectPriority } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Options for a BackupSelection
@@ -92,6 +93,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
 
   constructor(scope: Construct, id: string, props: BackupSelectionProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),

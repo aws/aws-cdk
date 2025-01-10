@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnOriginRequestPolicy } from './cloudfront.generated';
 import { Names, Resource, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Origin Request Policy
@@ -91,6 +92,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
     super(scope, id, {
       physicalName: props.originRequestPolicyName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const originRequestPolicyName = props.originRequestPolicyName ?? Names.uniqueId(this);
     if (!Token.isUnresolved(originRequestPolicyName) && !originRequestPolicyName.match(/^[\w-]+$/i)) {

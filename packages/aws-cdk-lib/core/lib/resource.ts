@@ -39,6 +39,48 @@ export interface ResourceEnvironment {
 }
 
 /**
+ * Enumeration of metadata types used for tracking analytics in AWS CDK.
+ */
+export enum MetadataType {
+  /**
+   * Metadata type for construct properties.
+   * This is used to represent properties of CDK constructs.
+   */
+  CONSTRUCT = 'aws:cdk:analytics:construct',
+
+  /**
+   * Metadata type for method properties.
+   * This is used to track parameters and details of CDK method calls.
+   */
+  METHOD = 'aws:cdk:analytics:method',
+
+  /**
+   * Metadata type for feature flags.
+   * This is used to track analytics related to feature flags in the CDK.
+   */
+  FEATURE_FLAGS = 'aws:cdk:analytics:featureflag',
+}
+
+// /**
+//  *
+//  * @param _target
+//  * @param propertyKey
+//  * @param descriptor
+//  */
+// export function metadata(_target: any, propertyKey: string, descriptor: PropertyDescriptor): void {
+//   const originalMethod = descriptor.value;
+
+//   descriptor.value = function (...args: any[]) {
+//     if (this instanceof Resource) {
+//       this.node.addMetadata();
+//     }
+
+//     // Call the original method
+//     return originalMethod.apply(this, args);
+//   };
+// }
+
+/**
  * Interface for the Resource construct.
  */
 export interface IResource extends IConstruct {

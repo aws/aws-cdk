@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnRequestValidator, CfnRequestValidatorProps } from './apigateway.generated';
 import { IRestApi, RestApi } from './restapi';
 import { IResource, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 export interface IRequestValidator extends IResource {
   /**
@@ -68,6 +69,7 @@ export class RequestValidator extends Resource implements IRequestValidator {
     super(scope, id, {
       physicalName: props.requestValidatorName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const validatorProps: CfnRequestValidatorProps = {
       name: this.physicalName,

@@ -6,6 +6,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, IResource, Lazy, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Additional options to pass to the notification rule.
@@ -563,6 +564,7 @@ export class Repository extends RepositoryBase {
     super(scope, id, {
       physicalName: props.repositoryName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,

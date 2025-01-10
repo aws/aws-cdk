@@ -8,6 +8,7 @@ import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
 import { IResource, Lazy, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an IAM Policy
@@ -137,6 +138,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
         // that shouod be sufficient to ensure uniqueness within a principal.
         Lazy.string({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const self = this;
 

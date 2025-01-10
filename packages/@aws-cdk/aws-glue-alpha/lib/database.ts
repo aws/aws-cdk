@@ -1,6 +1,7 @@
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 export interface IDatabase extends IResource {
   /**
@@ -102,6 +103,7 @@ export class Database extends Resource implements IDatabase {
           produce: () => Names.uniqueResourceName(this, {}).toLowerCase(),
         }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.description !== undefined) {
       validateDescription(props.description);

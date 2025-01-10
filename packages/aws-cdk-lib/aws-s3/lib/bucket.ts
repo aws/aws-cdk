@@ -26,6 +26,7 @@ import {
   Tokenization,
   Annotations,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
@@ -1964,6 +1965,7 @@ export class Bucket extends BucketBase {
     super(scope, id, {
       physicalName: props.bucketName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
     this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;

@@ -9,6 +9,7 @@ import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -608,6 +609,7 @@ export class GraphqlApi extends GraphqlApiBase {
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const defaultMode = props.authorizationConfig?.defaultAuthorization ??
       { authorizationType: AuthorizationType.API_KEY };

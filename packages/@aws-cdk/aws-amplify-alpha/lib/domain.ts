@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { IBranch } from './branch';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Options to add a domain to an application
@@ -127,6 +128,7 @@ export class Domain extends Resource {
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.subDomains = props.subDomains || [];
 

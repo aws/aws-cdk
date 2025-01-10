@@ -6,6 +6,7 @@ import * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import { IRole } from '../../aws-iam';
 import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -645,6 +646,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);

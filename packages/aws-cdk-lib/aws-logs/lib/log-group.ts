@@ -10,6 +10,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -606,6 +607,7 @@ export class LogGroup extends LogGroupBase {
     super(scope, id, {
       physicalName: props.logGroupName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     let retentionInDays = props.retention;
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnResource } from './cfn-resource';
 import { Duration } from './duration';
+import { MetadataType } from './metadata-resource';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -137,6 +138,7 @@ export class CustomResource extends Resource {
 
   constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const type = renderResourceType(props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;

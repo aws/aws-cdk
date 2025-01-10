@@ -25,6 +25,7 @@ import {
   Token,
   Tokenization, withResolved,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
@@ -1337,6 +1338,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     super(scope, id, {
       physicalName: props.autoScalingGroupName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
 

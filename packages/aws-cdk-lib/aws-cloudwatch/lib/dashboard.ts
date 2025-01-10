@@ -4,6 +4,7 @@ import { Column, Row } from './layout';
 import { IVariable } from './variable';
 import { IWidget } from './widget';
 import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Specify the period for graphs when the CloudWatch dashboard loads
@@ -121,6 +122,7 @@ export class Dashboard extends Resource {
     super(scope, id, {
       physicalName: props.dashboardName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     {
       const { dashboardName } = props;

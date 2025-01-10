@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Configuration props for EKS Fargate.
@@ -35,6 +36,7 @@ export class FargateCluster extends Cluster {
       coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE,
       version: props.version,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.defaultProfile = this.addFargateProfile(
       props.defaultProfile?.fargateProfileName ?? (props.defaultProfile ? 'custom' : 'default'),

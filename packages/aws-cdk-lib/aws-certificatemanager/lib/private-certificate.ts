@@ -3,6 +3,7 @@ import { ICertificate, KeyAlgorithm } from './certificate';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import * as acmpca from '../../aws-acmpca';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for your private certificate
@@ -66,6 +67,7 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
 
   constructor(scope: Construct, id: string, props: PrivateCertificateProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,

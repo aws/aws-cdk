@@ -5,6 +5,7 @@ import { CfnEventSourceMapping } from './lambda.generated';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
@@ -400,6 +401,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
       throw new Error('Either eventSourceArn or kafkaBootstrapServers must be set');

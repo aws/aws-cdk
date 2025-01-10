@@ -9,6 +9,7 @@ import { IRole } from './role';
 import { IUser } from './user';
 import { ArnFormat, Resource, Stack, Arn, Aws } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * A managed policy
@@ -214,6 +215,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     super(scope, id, {
       physicalName: props.managedPolicyName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.description = props.description || '';
     this.path = props.path || '/';

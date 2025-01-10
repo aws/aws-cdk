@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { SecretValue } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -43,6 +44,7 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderGoogleProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const scopes = props.scopes ?? ['profile'];
 

@@ -6,6 +6,7 @@ import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 import * as cdk from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for defining a LazyRole
@@ -37,6 +38,7 @@ export class LazyRole extends cdk.Resource implements IRole {
 
   constructor(scope: Construct, id: string, private readonly props: LazyRoleProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 
   /**

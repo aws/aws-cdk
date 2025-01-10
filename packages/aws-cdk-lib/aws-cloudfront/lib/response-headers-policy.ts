@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnResponseHeadersPolicy } from './cloudfront.generated';
 import { Duration, Names, Resource, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a response headers policy.
@@ -109,6 +110,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     super(scope, id, {
       physicalName: props.responseHeadersPolicyName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const responseHeadersPolicyName = props.responseHeadersPolicyName ?? Names.uniqueResourceName(this, {
       maxLength: 128,

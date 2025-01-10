@@ -19,6 +19,7 @@ import {
   CustomResource,
   Aws,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
@@ -723,6 +724,7 @@ export class Repository extends RepositoryBase {
     super(scope, id, {
       physicalName: props.repositoryName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     Repository.validateRepositoryName(this.physicalName);
 

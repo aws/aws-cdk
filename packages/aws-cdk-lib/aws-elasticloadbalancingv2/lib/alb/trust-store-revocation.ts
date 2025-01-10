@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ITrustStore } from './trust-store';
 import { IBucket } from '../../../aws-s3';
 import { Resource } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { CfnTrustStoreRevocation } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -66,6 +67,7 @@ export class TrustStoreRevocation extends Resource {
 
   constructor(scope: Construct, id: string, props: TrustStoreRevocationProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     new CfnTrustStoreRevocation(this, 'Resource', {
       trustStoreArn: props.trustStore.trustStoreArn,

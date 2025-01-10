@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnWarmPool } from './autoscaling.generated';
 import { Lazy, Names, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Options for a warm pool
@@ -59,6 +60,7 @@ export class WarmPool extends Resource {
     super(scope, id, {
       physicalName: Lazy.string({ produce: () => Names.uniqueId(this) }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.maxGroupPreparedCapacity && props.maxGroupPreparedCapacity < -1) {
       throw new Error('\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1');

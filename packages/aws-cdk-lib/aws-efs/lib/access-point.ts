@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
 import { ArnFormat, IResource, Resource, Stack, Tags, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an EFS AccessPoint
@@ -209,6 +210,7 @@ export class AccessPoint extends AccessPointBase {
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const clientToken = props.clientToken;
     if ((clientToken?.length === 0 || (clientToken && clientToken.length > 64)) && !Token.isUnresolved(clientToken)) {

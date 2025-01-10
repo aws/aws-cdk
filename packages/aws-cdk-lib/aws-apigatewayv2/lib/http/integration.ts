@@ -4,6 +4,7 @@ import { HttpMethod, IHttpRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Aws, Duration, Resource } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
 
@@ -252,6 +253,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (!props.integrationSubtype && !props.integrationUri) {
       throw new Error('Either `integrationSubtype` or `integrationUri` must be specified.');

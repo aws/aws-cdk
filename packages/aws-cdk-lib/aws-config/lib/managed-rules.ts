@@ -3,6 +3,7 @@ import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import { Duration, Lazy, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for a AccessKeysRotated
@@ -37,6 +38,7 @@ export class AccessKeysRotated extends ManagedRule {
           : {},
       },
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 }
 

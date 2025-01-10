@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
 import { IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents the function's source code
@@ -194,6 +195,7 @@ export class Function extends Resource implements IFunction {
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.functionName = props.functionName ?? this.generateName();
 

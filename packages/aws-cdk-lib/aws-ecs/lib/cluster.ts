@@ -28,6 +28,7 @@ import {
   FeatureFlags, Annotations,
 } from '../../core';
 import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -254,6 +255,7 @@ export class Cluster extends Resource implements ICluster {
     super(scope, id, {
       physicalName: props.clusterName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     /**
      * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any

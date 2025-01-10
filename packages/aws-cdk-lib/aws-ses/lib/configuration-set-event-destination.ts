@@ -4,6 +4,7 @@ import { CfnConfigurationSetEventDestination } from './ses.generated';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import { Aws, IResource, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * A configuration set event destination
@@ -237,6 +238,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     super(scope, id, {
       physicalName: props.configurationSetEventDestinationName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const configurationSet = new CfnConfigurationSetEventDestination(this, 'Resource', {
       configurationSetName: props.configurationSet.configurationSetName,

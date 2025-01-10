@@ -10,6 +10,7 @@ import { InstanceType } from './instance';
 import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -594,6 +595,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };

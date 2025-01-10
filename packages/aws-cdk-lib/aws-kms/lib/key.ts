@@ -19,6 +19,7 @@ import {
   Stack,
   Token,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -766,6 +767,7 @@ export class Key extends KeyBase {
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const denyLists = {
       [KeyUsage.ENCRYPT_DECRYPT]: [

@@ -3,6 +3,7 @@ import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
 import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
@@ -251,6 +252,7 @@ export class Alias extends AliasBase {
     super(scope, id, {
       physicalName: aliasName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.aliasTargetKey = props.targetKey;
 

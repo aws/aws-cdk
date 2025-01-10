@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Interface which all EventBus based classes MUST implement
@@ -345,6 +346,7 @@ export class EventBus extends EventBusBase {
     );
 
     super(scope, id, { physicalName: eventBusName });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
       throw new Error(`description must be less than or equal to 512 characters, got ${props.description.length}`);

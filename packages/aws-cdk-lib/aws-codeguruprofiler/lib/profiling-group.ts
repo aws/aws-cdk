@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * The compute platform of the profiling group.
@@ -188,6 +189,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
     super(scope, id, {
       physicalName: props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
       profilingGroupName: this.physicalName,

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IKey } from '../../aws-kms';
 import { ISecret, Secret } from '../../aws-secretsmanager';
 import { Aws } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -80,6 +81,7 @@ export class DatabaseSecret extends Secret {
         excludeCharacters: excludedCharacters,
       },
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this._excludedCharacters = excludedCharacters;
   }

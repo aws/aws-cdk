@@ -7,6 +7,7 @@ import { InstanceType } from './instance-type';
 import { IModel } from './model';
 import { sameEnv } from './private/util';
 import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The interface for a SageMaker EndpointConfig resource.
@@ -206,6 +207,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     super(scope, id, {
       physicalName: props.endpointConfigName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     (props.instanceProductionVariants || []).map(p => this.addInstanceProductionVariant(p));
 

@@ -5,6 +5,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { IResource, Lazy, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Interface representing an AWS Config rule
@@ -288,6 +289,7 @@ export class ManagedRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.ruleScope = props.ruleScope;
 

@@ -4,6 +4,7 @@ import { CfnKeySigningKey } from './route53.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Resource, IResource, Lazy, Names } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for constructing a Key Signing Key.
@@ -135,6 +136,7 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.grantKeyPermissionsForZone(props.kmsKey, props.hostedZone);
 

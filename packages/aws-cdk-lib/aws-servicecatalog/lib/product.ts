@@ -7,6 +7,7 @@ import { CfnCloudFormationProduct } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
 import { IBucket } from '../../aws-s3';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -188,6 +189,7 @@ export class CloudFormationProduct extends Product {
 
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.validateProductProps(props);
 

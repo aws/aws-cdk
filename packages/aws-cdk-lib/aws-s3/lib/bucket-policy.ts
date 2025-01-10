@@ -3,6 +3,7 @@ import { Bucket, IBucket } from './bucket';
 import { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 
 export interface BucketPolicyProps {
@@ -101,6 +102,7 @@ export class BucketPolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: BucketPolicyProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.bucket = props.bucket;
 

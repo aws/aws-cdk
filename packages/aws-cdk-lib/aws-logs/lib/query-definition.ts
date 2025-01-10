@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnQueryDefinition } from '.';
 import { ILogGroup } from './log-group';
 import { Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a QueryString
@@ -202,6 +203,7 @@ export class QueryDefinition extends Resource {
     super(scope, id, {
       physicalName: props.queryDefinitionName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const queryDefinition = new CfnQueryDefinition(this, 'Resource', {
       name: props.queryDefinitionName,

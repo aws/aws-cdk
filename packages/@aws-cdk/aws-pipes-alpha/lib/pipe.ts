@@ -7,6 +7,7 @@ import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
 import { ISource, SourceWithDeadLetterTarget } from './source';
 import { ITarget } from './target';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Interface representing a created or an imported `Pipe`.
@@ -183,6 +184,7 @@ class ImportedPipe extends PipeBase {
 
   constructor(scope: Construct, id: string, pipeName: string) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, { pipeineName: pipeName });
     this.pipeName = pipeName;
     this.pipeArn = Stack.of(this).formatArn({
       service: 'pipes',

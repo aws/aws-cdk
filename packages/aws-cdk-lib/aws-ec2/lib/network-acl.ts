@@ -3,6 +3,7 @@ import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } fro
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import { IResource, Resource, Tags } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Name tag constant
@@ -117,6 +118,7 @@ export class NetworkAcl extends NetworkAclBase {
 
   constructor(scope: Construct, id: string, props: NetworkAclProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.vpc = props.vpc;
 

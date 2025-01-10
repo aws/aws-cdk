@@ -4,6 +4,7 @@ import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
 import * as util from './util';
 import { Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 export interface IModel {
   /**
@@ -164,6 +165,7 @@ export class Model extends Resource implements IModel {
     super(scope, id, {
       physicalName: props.modelName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const modelProps: CfnModelProps = {
       name: this.physicalName,

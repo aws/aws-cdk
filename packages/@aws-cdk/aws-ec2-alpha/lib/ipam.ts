@@ -1,6 +1,7 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -340,6 +341,7 @@ class IpamPool extends Resource implements IIpamPool {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.addressFamily === AddressFamily.IP_V6 && !props.awsService) {
       throw new Error('awsService is required when addressFamily is set to ipv6');

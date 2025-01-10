@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
+import { MetadataType } from '../../../core/lib/metadata-resource';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -121,6 +122,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderSamlProps) {
     super(scope, id, props);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.validateName(props.name);
 

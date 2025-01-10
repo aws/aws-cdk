@@ -3,6 +3,7 @@ import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScheduledAction } from './autoscaling.generated';
 import { Schedule } from './schedule';
 import { Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a scheduled scaling action
@@ -99,6 +100,7 @@ export class ScheduledAction extends Resource {
 
   constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {
       throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');

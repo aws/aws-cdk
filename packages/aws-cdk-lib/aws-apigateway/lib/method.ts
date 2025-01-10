@@ -14,6 +14,7 @@ import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 
 export interface MethodOptions {
@@ -177,6 +178,7 @@ export class Method extends Resource {
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.resource = props.resource;
     this.api = props.resource.api;

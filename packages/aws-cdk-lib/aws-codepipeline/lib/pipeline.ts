@@ -36,6 +36,7 @@ import {
   Stage as CdkStage,
   Token,
 } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -472,6 +473,7 @@ export class Pipeline extends PipelineBase {
     super(scope, id, {
       physicalName: props.pipelineName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     validateName('Pipeline', this.physicalName);
 

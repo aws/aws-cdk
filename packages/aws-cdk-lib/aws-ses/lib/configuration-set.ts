@@ -4,6 +4,7 @@ import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
 import { Duration, IResource, Resource, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * A configuration set
@@ -174,6 +175,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     super(scope, id, {
       physicalName: props.configurationSetName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.disableSuppressionList && props.suppressionReasons) {
       throw new Error('When disableSuppressionList is true, suppressionReasons must not be specified.');

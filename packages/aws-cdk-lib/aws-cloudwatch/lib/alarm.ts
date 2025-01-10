@@ -10,6 +10,7 @@ import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for Alarms
@@ -165,6 +166,7 @@ export class Alarm extends AlarmBase {
     super(scope, id, {
       physicalName: props.alarmName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 

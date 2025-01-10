@@ -5,6 +5,7 @@ import { Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for a PythonFunction
@@ -80,5 +81,6 @@ export class PythonFunction extends Function {
       }),
       handler: resolvedHandler,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
   }
 }

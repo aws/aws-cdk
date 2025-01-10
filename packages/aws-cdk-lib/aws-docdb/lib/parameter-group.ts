@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup } from './docdb.generated';
 import { IResource, Resource } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * A parameter group
@@ -74,6 +75,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase implements 
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       name: props.dbClusterParameterGroupName,

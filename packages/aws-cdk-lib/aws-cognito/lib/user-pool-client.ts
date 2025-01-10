@@ -4,6 +4,7 @@ import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -413,6 +414,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     if (props.disableOAuth && props.oAuth) {
       throw new Error('OAuth settings cannot be specified when disableOAuth is set.');

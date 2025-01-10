@@ -1061,6 +1061,7 @@ export class Project extends ProjectBase {
     super(scope, id, {
       physicalName: props.projectName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -1793,6 +1794,7 @@ interface LinuxBuildImageProps {
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
 // eslint-disable-next-line import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * A CodeBuild image running x86-64 Linux.

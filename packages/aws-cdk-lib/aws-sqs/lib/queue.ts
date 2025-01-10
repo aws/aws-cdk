@@ -5,6 +5,7 @@ import { validateProps } from './validate-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for creating a new Queue
@@ -382,6 +383,7 @@ export class Queue extends QueueBase {
     super(scope, id, {
       physicalName: props.queueName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     validateProps(props);
 

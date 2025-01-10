@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAddon } from './eks.generated';
 import { ArnFormat, IResource, Resource, Stack, Fn } from '../../core';
+import { MetadataType } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -126,6 +127,7 @@ export class Addon extends Resource implements IAddon {
     super(scope, id, {
       physicalName: props.addonName,
     });
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     this.clusterName = props.cluster.clusterName;
     this.addonName = props.addonName;

@@ -15,6 +15,7 @@ import { Construct } from 'constructs';
 // for files that are part of this package or part of core, we do import individual classes or functions
 import { CfnWaitCondition, CfnWaitConditionHandle, Fn, IResource, RemovalPolicy, Resource, Stack, Token } from 'aws-cdk-lib/core';
 import { exampleResourceArnComponents } from './private/example-resource-common';
+import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The interface that represents the ExampleResource resource.
@@ -401,6 +402,9 @@ export class ExampleResource extends ExampleResourceBase {
       // see the CDK guide: https://docs.aws.amazon.com/cdk/latest/guide/resources.html#resources_physical_names
       physicalName: props.waitConditionHandleName,
     });
+
+    // Add construct props to metadata for analytics collection purposes
+    this.node.addMetadata(MetadataType.CONSTRUCT, props);
 
     // We often add validations for properties,
     // so that customers receive feedback about incorrect properties
