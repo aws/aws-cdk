@@ -370,8 +370,6 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
   protected hookFailureMap = new Map<string, Map<string, string>>();
 
-  protected readonly stream: NodeJS.WriteStream;
-
   constructor(protected readonly props: PrinterProps) {
     // +1 because the stack also emits a "COMPLETE" event at the end, and that wasn't
     // counted yet. This makes it line up with the amount of events we expect.
@@ -379,8 +377,6 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
     // How many digits does this number take to represent?
     this.resourceDigits = this.resourcesTotal ? Math.ceil(Math.log10(this.resourcesTotal)) : 0;
-
-    this.stream = props.stream;
   }
 
   public failureReason(activity: StackActivity) {
@@ -628,10 +624,13 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   public readonly updateSleep: number = 2_000;
 
   private oldLogThreshold: IoMessageLevel = 'info';
-  private block = new RewritableBlock(this.stream);
+  private readonly stream: NodeJS.WriteStream;
+  private block: RewritableBlock;
 
   constructor(props: PrinterProps) {
     super(props);
+    this.stream = props.stream;
+    this.block = new RewritableBlock(this.stream);
   }
 
   public print(): void {
