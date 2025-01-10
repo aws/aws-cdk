@@ -27,8 +27,8 @@ import {
   AspectPriority,
   FeatureFlags, Annotations,
 } from '../../core';
-import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 import { MetadataType } from '../../core/lib/metadata-resource';
+import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
