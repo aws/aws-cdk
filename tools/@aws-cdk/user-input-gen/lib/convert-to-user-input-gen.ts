@@ -7,7 +7,7 @@ import { CliAction, CliConfig } from './yargs-types';
 const CLI_ARG_NAME = 'args';
 const CONFIG_ARG_NAME = 'config';
 
-export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
+export async function renderUserInputFuncs(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
   scope.documentation.push( '-------------------------------------------------------------------------------------------');
@@ -15,25 +15,24 @@ export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
   scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
   scope.documentation.push('-------------------------------------------------------------------------------------------');
 
-  scope.addImport(new SelectiveModuleImport(scope, './cli-arguments', ['CliArguments', 'GlobalOptions']));
-  const cliArgType = Type.fromName(scope, 'CliArguments');
-
   scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
+  scope.addImport(new SelectiveModuleImport(scope, './user-input', ['UserInput', 'GlobalOptions']));
+  const userInputType = Type.fromName(scope, 'UserInput');
 
-  const createCliArguments = new FreeFunction(scope, {
-    name: 'convertYargsToCliArgs',
+  const convertYargsToUserInput = new FreeFunction(scope, {
+    name: 'convertYargsToUserInput',
     export: true,
-    returnType: cliArgType,
+    returnType: userInputType,
     parameters: [
       { name: 'args', type: Type.ANY },
     ],
   });
-  createCliArguments.addBody(code.expr.directCode(buildCliArgsFunction(config)));
+  convertYargsToUserInput.addBody(code.expr.directCode(buildYargsToUserInputFunction(config)));
 
   const createConfigArguments = new FreeFunction(scope, {
-    name: 'convertConfigToCliArgs',
+    name: 'convertConfigToUserInput',
     export: true,
-    returnType: cliArgType,
+    returnType: userInputType,
     parameters: [
       { name: 'config', type: Type.ANY },
     ],
@@ -52,14 +51,14 @@ export async function renderCliArgsFunc(config: CliConfig): Promise<string> {
   });
 }
 
-function buildCliArgsFunction(config: CliConfig): string {
+function buildYargsToUserInputFunction(config: CliConfig): string {
   const globalOptions = buildGlobalOptions(config, CLI_ARG_NAME);
   const commandSwitch = buildCommandSwitch(config, CLI_ARG_NAME);
-  const cliArgs = buildCliArgs(CLI_ARG_NAME);
+  const userInput = buildUserInput(CLI_ARG_NAME);
   return [
     globalOptions,
     commandSwitch,
-    cliArgs,
+    userInput,
   ].join('\n');
 }
 
@@ -85,7 +84,7 @@ function buildGlobalOptions(config: CliConfig, argName: string): string {
 }
 
 function buildCommandsList(config: CliConfig, argName: string): string {
-  const commandOptions = [];
+  const commandOptions: string[] = [];
   // Note: we are intentionally not including aliases for the default options that can be
   // specified via `cdk.json`. These options must be specified by the command name
   // i.e. acknowledge rather than ack.
@@ -140,27 +139,27 @@ function buildPositionalArguments(arg: { name: string; variadic: boolean }, argN
   return `${arg.name}: ${argName}.${arg.name}`;
 }
 
-function buildCliArgs(argName: string): string {
+function buildUserInput(argName: string): string {
   return [
-    'const cliArguments: CliArguments = {',
+    'const userInput: UserInput = {',
     `_: ${argName}._[0],`,
     'globalOptions,',
     `[${argName}._[0]]: commandOptions`,
     '}',
     '',
-    'return cliArguments',
+    'return userInput',
   ].join('\n');
 }
 
 function buildConfigArgs(config: CliConfig): string {
   return [
-    'const cliArguments: CliArguments = {',
+    'const userInput: UserInput = {',
     'globalOptions,',
     ...(Object.keys(config.commands).map((commandName) => {
       return `'${commandName}': ${kebabToCamelCase(commandName)}Options,`;
     })),
     '}',
     '',
-    'return cliArguments',
+    'return userInput',
   ].join('\n');
 }

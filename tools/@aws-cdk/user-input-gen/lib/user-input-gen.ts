@@ -4,7 +4,7 @@ import * as prettier from 'prettier';
 import { generateDefault, kebabToCamelCase, kebabToPascal } from './util';
 import { CliConfig } from './yargs-types';
 
-export async function renderCliArgsType(config: CliConfig): Promise<string> {
+export async function renderUserInputType(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
   scope.documentation.push( '-------------------------------------------------------------------------------------------');
@@ -12,11 +12,11 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
   scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
   scope.documentation.push('-------------------------------------------------------------------------------------------');
 
-  const cliArgType = new StructType(scope, {
+  const userInputType = new StructType(scope, {
     export: true,
-    name: 'CliArguments',
+    name: 'UserInput',
     docs: {
-      summary: 'The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts',
+      summary: 'The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts',
     },
   });
 
@@ -24,7 +24,7 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
   scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
   const commandEnum = Type.fromName(scope, 'Command');
 
-  cliArgType.addProperty({
+  userInputType.addProperty({
     name: '_',
     type: commandEnum,
     docs: {
@@ -54,7 +54,7 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
     });
   }
 
-  cliArgType.addProperty({
+  userInputType.addProperty({
     name: 'globalOptions',
     type: Type.fromName(scope, globalOptionType.name),
     docs: {
@@ -102,7 +102,7 @@ export async function renderCliArgsType(config: CliConfig): Promise<string> {
       });
     }
 
-    cliArgType.addProperty({
+    userInputType.addProperty({
       name: kebabToCamelCase(commandName),
       type: Type.fromName(scope, commandType.name),
       docs: {
