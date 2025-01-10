@@ -86,7 +86,7 @@ import {
   RollbackStackResult,
 } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
-import { Mode } from '../lib/api/plugin';
+import { Mode } from '../lib/api/plugin/mode';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
@@ -94,8 +94,6 @@ import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
 
 markTesting();
-
-process.env.CXAPI_DISABLE_SELECT_BY_ID = '1';
 
 const defaultBootstrapSource: BootstrapSource = { source: 'default' };
 const bootstrapEnvironmentMock = jest.spyOn(Bootstrapper.prototype, 'bootstrapEnvironment');
@@ -954,6 +952,70 @@ describe('destroy', () => {
         fromDeploy: true,
       });
     }).resolves;
+  });
+
+  test('does not throw and warns if there are only non-existent stacks', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await toolkit.destroy({
+      selector: { patterns: ['Test-Stack-X', 'Test-Stack-Y'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    });
+
+    expect(flatten(stderrMock.mock.calls)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/Test-Stack-X does not exist./),
+        expect.stringMatching(/Test-Stack-Y does not exist./),
+        expect.stringMatching(/No stacks match the name\(s\): Test-Stack-X, Test-Stack-Y/),
+      ]),
+    );
+  });
+
+  test('does not throw and warns if there is a non-existent stack and the other exists', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await toolkit.destroy({
+      selector: { patterns: ['Test-Stack-X', 'Test-Stack-B'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    });
+
+    expect(flatten(stderrMock.mock.calls)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/Test-Stack-X does not exist./),
+      ]),
+    );
+    expect(flatten(stderrMock.mock.calls)).not.toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/Test-Stack-B does not exist./),
+      ]),
+    );
+    expect(flatten(stderrMock.mock.calls)).not.toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/No stacks match the name\(s\)/),
+      ]),
+    );
+  });
+
+  test('does not throw and suggests valid names if there is a non-existent but closely matching stack', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await toolkit.destroy({
+      selector: { patterns: ['test-stack-b'] },
+      exclusively: true,
+      force: true,
+      fromDeploy: true,
+    });
+
+    expect(flatten(stderrMock.mock.calls)).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/test-stack-b does not exist. Do you mean Test-Stack-B?/),
+        expect.stringMatching(/No stacks match the name\(s\): test-stack-b/),
+      ]),
+    );
   });
 });
 

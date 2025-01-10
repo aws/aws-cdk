@@ -4,6 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
+import { minimatch } from 'minimatch';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
@@ -48,6 +49,7 @@ import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
+import { ToolkitError } from './toolkit/error';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
@@ -161,13 +163,13 @@ export class CdkToolkit {
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.stackCount !== 1) {
-        throw new Error(
+        throw new ToolkitError(
           'Can only select one stack when comparing to fixed template. Use --exclusively to avoid selecting multiple stacks.',
         );
       }
 
       if (!(await fs.pathExists(options.templatePath))) {
-        throw new Error(`There is no file at ${options.templatePath}`);
+        throw new ToolkitError(`There is no file at ${options.templatePath}`);
       }
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
@@ -336,7 +338,7 @@ export class CdkToolkit {
 
       if (!stack.environment) {
         // eslint-disable-next-line max-len
-        throw new Error(
+        throw new ToolkitError(
           `Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`,
         );
       }
@@ -381,7 +383,7 @@ export class CdkToolkit {
 
       for (const notificationArn of notificationArns ?? []) {
         if (!validateSnsTopicArn(notificationArn)) {
-          throw new Error(`Notification arn ${notificationArn} is not a valid arn for an SNS topic`);
+          throw new ToolkitError(`Notification arn ${notificationArn} is not a valid arn for an SNS topic`);
         }
       }
 
@@ -402,7 +404,7 @@ export class CdkToolkit {
         let iteration = 0;
         while (!deployResult) {
           if (++iteration > 2) {
-            throw new Error('This loop should have stabilized in 2 iterations, but didn\'t. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose');
+            throw new ToolkitError('This loop should have stabilized in 2 iterations, but didn\'t. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose');
           }
 
           const r = await this.props.deployments.deployStack({
@@ -480,7 +482,7 @@ export class CdkToolkit {
             }
 
             default:
-              throw new Error(`Unexpected result type from deployStack: ${JSON.stringify(r)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose`);
+              throw new ToolkitError(`Unexpected result type from deployStack: ${JSON.stringify(r)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose`);
           }
         }
 
@@ -509,7 +511,7 @@ export class CdkToolkit {
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
-        throw new Error(
+        throw new ToolkitError(
           [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
         );
       } finally {
@@ -603,11 +605,11 @@ export class CdkToolkit {
         print('\n✨  Rollback time: %ss\n', formatTime(elapsedRollbackTime));
       } catch (e: any) {
         error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e.message);
-        throw new Error('Rollback failed (use --force to orphan failing resources)');
+        throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');
       }
     }
     if (!anyRollbackable) {
-      throw new Error('No stacks were in a state that could be rolled back');
+      throw new ToolkitError('No stacks were in a state that could be rolled back');
     }
   }
 
@@ -618,7 +620,7 @@ export class CdkToolkit {
     const watchSettings: { include?: string | string[]; exclude: string | string[] } | undefined =
       this.props.configuration.settings.get(['watch']);
     if (!watchSettings) {
-      throw new Error(
+      throw new ToolkitError(
         "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
           'Make sure to add a "watch" key to your cdk.json',
       );
@@ -716,13 +718,13 @@ export class CdkToolkit {
     const stacks = await this.selectStacksForDeploy(options.selector, true, true, false);
 
     if (stacks.stackCount > 1) {
-      throw new Error(
+      throw new ToolkitError(
         `Stack selection is ambiguous, please choose a specific stack for import [${stacks.stackArtifacts.map((x) => x.id).join(', ')}]`,
       );
     }
 
     if (!process.stdout.isTTY && !options.resourceMappingFile) {
-      throw new Error('--resource-mapping is required when input is not a terminal');
+      throw new ToolkitError('--resource-mapping is required when input is not a terminal');
     }
 
     const stack = stacks.stackArtifacts[0];
@@ -797,6 +799,16 @@ export class CdkToolkit {
 
   public async destroy(options: DestroyOptions) {
     let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
+
+    await this.suggestStacks({
+      selector: options.selector,
+      stacks,
+      exclusively: options.exclusively,
+    });
+    if (stacks.stackArtifacts.length === 0) {
+      warning(`No stacks match the name(s): ${chalk.red(options.selector.patterns.join(', '))}`);
+      return;
+    }
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
@@ -980,12 +992,12 @@ export class CdkToolkit {
     if (globSpecs.length > 0 && !this.props.cloudExecutable.hasApp) {
       if (userEnvironmentSpecs.length > 0) {
         // User did request this glob
-        throw new Error(
+        throw new ToolkitError(
           `'${globSpecs}' is not an environment name. Specify an environment name like 'aws://123456789012/us-east-1', or run in a directory with 'cdk.json' to use wildcards.`,
         );
       } else {
         // User did not request anything
-        throw new Error(
+        throw new ToolkitError(
           "Specify an environment name like 'aws://123456789012/us-east-1', or run in a directory with 'cdk.json'.",
         );
       }
@@ -1053,7 +1065,7 @@ export class CdkToolkit {
       } else if (scanType == TemplateSourceOptions.STACK) {
         const template = await readFromStack(options.stackName, this.props.sdkProvider, environment);
         if (!template) {
-          throw new Error(`No template found for stack-name: ${options.stackName}`);
+          throw new ToolkitError(`No template found for stack-name: ${options.stackName}`);
         }
         generateTemplateOutput = {
           migrateJson: {
@@ -1063,7 +1075,7 @@ export class CdkToolkit {
         };
       } else {
         // We shouldn't ever get here, but just in case.
-        throw new Error(`Invalid source option provided: ${scanType}`);
+        throw new ToolkitError(`Invalid source option provided: ${scanType}`);
       }
       const stack = generateStack(generateTemplateOutput.migrateJson.templateBody, options.stackName, language);
       success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
@@ -1161,6 +1173,49 @@ export class CdkToolkit {
     return stacks;
   }
 
+  private async suggestStacks(props: {
+    selector: StackSelector;
+    stacks: StackCollection;
+    exclusively?: boolean;
+  }) {
+    const assembly = await this.assembly();
+    const selectorWithoutPatterns: StackSelector = {
+      ...props.selector,
+      allTopLevel: true,
+      patterns: [],
+    };
+    const stacksWithoutPatterns = await assembly.selectStacks(selectorWithoutPatterns, {
+      extend: props.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
+      defaultBehavior: DefaultSelection.OnlySingle,
+    });
+
+    const patterns = props.selector.patterns.map(pattern => {
+      const notExist = !props.stacks.stackArtifacts.find(stack =>
+        minimatch(stack.hierarchicalId, pattern),
+      );
+
+      const closelyMatched = notExist ? stacksWithoutPatterns.stackArtifacts.map(stack => {
+        if (minimatch(stack.hierarchicalId.toLowerCase(), pattern.toLowerCase())) {
+          return stack.hierarchicalId;
+        }
+        return;
+      }).filter((stack): stack is string => stack !== undefined) : [];
+
+      return {
+        pattern,
+        notExist,
+        closelyMatched,
+      };
+    });
+
+    for (const pattern of patterns) {
+      if (pattern.notExist) {
+        const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${chalk.blue(pattern.closelyMatched.join(', '))}?` : '';
+        warning(`${chalk.red(pattern.pattern)} does not exist.${closelyMatched}`);
+      }
+    };
+  }
+
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
@@ -1177,7 +1232,7 @@ export class CdkToolkit {
    */
   private validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
     if (stackNames.length != 0 && stacks.stackCount == 0) {
-      throw new Error(`No stacks match the name(s) ${stackNames}`);
+      throw new ToolkitError(`No stacks match the name(s) ${stackNames}`);
     }
   }
 
@@ -1197,7 +1252,7 @@ export class CdkToolkit {
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.stackCount > 1) {
-      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.stackIds}`);
+      throw new ToolkitError(`This command requires exactly one stack and we matched more than one: ${stacks.stackIds}`);
     }
 
     return assembly.stackById(stacks.firstStack.id);
@@ -1939,15 +1994,15 @@ async function askUserConfirmation(
   await withCorkedLogging(async () => {
     // only talk to user if STDIN is a terminal (otherwise, fail)
     if (!TESTING && !process.stdin.isTTY) {
-      throw new Error(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
+      throw new ToolkitError(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
     }
 
     // only talk to user if concurrency is 1 (otherwise, fail)
     if (concurrency > 1) {
-      throw new Error(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
+      throw new ToolkitError(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
     }
 
     const confirmed = await promptly.confirm(`${chalk.cyan(question)} (y/n)?`);
-    if (!confirmed) { throw new Error('Aborted by user'); }
+    if (!confirmed) { throw new ToolkitError('Aborted by user'); }
   });
 }

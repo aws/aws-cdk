@@ -11,13 +11,14 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "module": "NodeNext",
-    "outDir": "dist",
     "declaration": true,
-    "composite": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "lib": ["es2022"]
+    "inlineSourceMap": true,
+    "lib": ["es2022"],
+    "composite": true,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "**/*.d.ts", "dist"]
+  "exclude": ["node_modules", "**/*.d.ts", "dist"],
+  "references": [{ "path": "../cx-api" }]
 }
