@@ -1,8 +1,8 @@
 import { inspect } from 'util';
+import type { CredentialProviderSource, IPluginHost, Plugin } from '@aws-cdk/cli-plugin-contract';
 import * as chalk from 'chalk';
 
 import { type ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
-import type { CredentialProviderSource } from './credential-provider-source';
 import { error } from '../../logging';
 import { ToolkitError } from '../../toolkit/error';
 
@@ -13,41 +13,10 @@ export function markTesting() {
 }
 
 /**
- * The basic contract for plug-ins to adhere to::
- *
- *   import { Plugin, PluginHost } from 'aws-cdk';
- *   import { CustomCredentialProviderSource } from './custom-credential-provider-source';
- *
- *   export default class FooCDKPlugIn implements PluginHost {
- *     public readonly version = '1';
- *
- *     public init(host: PluginHost) {
- *     host.registerCredentialProviderSource(new CustomCredentialProviderSource());
- *     }
- *   }
- *
- */
-export interface Plugin {
-  /**
-   * The version of the plug-in interface used by the plug-in. This will be used by
-   * the plug-in host to handle version changes.
-   */
-  version: '1';
-
-  /**
-   * When defined, this function is invoked right after the plug-in has been loaded,
-   * so that the plug-in is able to initialize itself. It may call methods of the
-   * ``PluginHost`` instance it receives to register new ``CredentialProviderSource``
-   * instances.
-   */
-  init?: (host: PluginHost) => void;
-}
-
-/**
  * A utility to manage plug-ins.
  *
  */
-export class PluginHost {
+export class PluginHost implements IPluginHost {
   public static instance = new PluginHost();
 
   /**

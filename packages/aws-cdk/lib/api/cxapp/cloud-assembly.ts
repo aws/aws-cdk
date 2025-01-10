@@ -38,7 +38,7 @@ export interface SelectStacksOptions {
   extend?: ExtendedStackSelection;
 
   /**
-   * The behavior if if no selectors are provided.
+   * The behavior if no selectors are provided.
    */
   defaultBehavior: DefaultSelection;
 
