@@ -69,7 +69,8 @@ export function redactTelemetryData(metadata: MetadataEntry[]): Record<string, a
 
 /**
  * Redact values from dictionary values other than Boolean and ENUM-type values.
- * @TODO complete the ENUM-type values redaction in a follow-up change.
+ * @TODO we will build a JSON blueprint of ENUM-type values in the codebase and
+ * do not redact the ENUM-type values if it match any key in the blueprint.
  */
 function redactTelemetryDataHelper(data: any): any {
   if (typeof data === 'boolean') {
@@ -87,6 +88,11 @@ function redactTelemetryDataHelper(data: any): any {
       return '*';
     }
 
+    /**
+     * @TODO we need to build a JSON blueprint of class and props. If 'data' matches
+     * any leaf node in the blueprint, then redact the value to avoid logging customer
+     * data.
+     */
     const result: Record<string, any> = {};
     for (const [key, value] of Object.entries(data)) {
       result[key] = redactTelemetryDataHelper(value);
@@ -180,6 +186,11 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
   return Array.from(uniqueMap.values());
 }
 
+/**
+ * Check whether the given construct is a Resource. Note that this is
+ * duplicated function from 'core/lib/resource.ts' to avoid circular
+ * dependencies in imports.
+ */
 function isResource(construct: IConstruct): construct is Resource {
   const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
   return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
