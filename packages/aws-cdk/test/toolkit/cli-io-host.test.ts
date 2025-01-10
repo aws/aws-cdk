@@ -122,6 +122,47 @@ describe('CliIoHost', () => {
       expect(mockStdout).toHaveBeenCalledWith('test message\n');
     });
 
+    test('default value matches process.stdout.isTTY', () => {
+      const expectedTTY = process.stdout.isTTY ?? false;
+      expect(CliIoHost.isTTY).toBe(expectedTTY);
+    });
+
+    test('setting isTTY affects message formatting', async () => {
+      const mockStdout = jest.fn();
+      jest.spyOn(process.stdout, 'write').mockImplementation((str: any, encoding?: any, cb?: any) => {
+        mockStdout(str.toString());
+        const callback = typeof encoding === 'function' ? encoding : cb;
+        if (callback) callback();
+        return true;
+      });
+
+      // Test with TTY enabled
+      CliIoHost.isTTY = true;
+      await CliIoHost.getIoHost().notify({
+        time: new Date('2024-01-01T12:00:00'),
+        level: 'info',
+        action: 'synth',
+        code: 'TEST_0001',
+        message: 'test message',
+        forceStdout: true
+      });
+      expect(mockStdout).toHaveBeenLastCalledWith(expect.stringContaining('\u001b')); // Should contain ANSI color codes
+
+      // Test with TTY disabled
+      CliIoHost.isTTY = false;
+      await CliIoHost.getIoHost().notify({
+        time: new Date('2024-01-01T12:00:00'),
+        level: 'info',
+        action: 'synth',
+        code: 'TEST_0001',
+        message: 'test message',
+        forceStdout: true
+      });
+      expect(mockStdout).toHaveBeenLastCalledWith('test message\n'); // Should not contain ANSI color codes
+
+      jest.restoreAllMocks();
+    });
+
     test('applies correct color styles for different message levels', async () => {
       const testCases = [
         { level: 'error' as const, style: chalk.red },
