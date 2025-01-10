@@ -710,6 +710,11 @@ export function parseCommandLineArguments(args: Array<string>): any {
             type: 'boolean',
             alias: 'changeset',
             desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.',
+          })
+          .option('import-existing-resources', {
+            default: false,
+            type: 'boolean',
+            desc: 'Indicates if the stack set imports resources that already exist.',
           }),
     )
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')

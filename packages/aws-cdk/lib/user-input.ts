@@ -1099,6 +1099,13 @@ export interface DiffOptions {
   readonly changeSet?: boolean;
 
   /**
+   * Indicates if the stack set imports resources that already exist.
+   *
+   * @default - false
+   */
+  readonly importExistingResources?: boolean;
+
+  /**
    * Positional argument for diff
    */
   readonly STACKS?: Array<string>;

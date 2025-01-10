@@ -326,6 +326,7 @@ export type PrepareChangeSetOptions = {
   stream: NodeJS.WritableStream;
   parameters: { [name: string]: string | undefined };
   resourcesToImport?: ResourcesToImport;
+  importExistingResources?: boolean;
 }
 
 export type CreateChangeSetOptions = {
@@ -338,6 +339,7 @@ export type CreateChangeSetOptions = {
   bodyParameter: TemplateBodyParameter;
   parameters: { [name: string]: string | undefined };
   resourcesToImport?: ResourceToImport[];
+  importExistingResources?: boolean;
   role?: string;
 };
 
@@ -419,6 +421,7 @@ async function uploadBodyParameterAndCreateChangeSet(
       bodyParameter,
       parameters: options.parameters,
       resourcesToImport: options.resourcesToImport,
+      importExistingResources: options.importExistingResources,
       role: executionRoleArn,
     });
   } catch (e: any) {
@@ -476,6 +479,7 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<Describ
     TemplateBody: options.bodyParameter.TemplateBody,
     Parameters: stackParams.apiParameters,
     ResourcesToImport: options.resourcesToImport,
+    ImportExistingResources: options.importExistingResources,
     RoleARN: options.role,
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
   });
