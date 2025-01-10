@@ -105,26 +105,6 @@ describe('fixed template', () => {
 ✨  Number of stacks with differences: 1
 `);
   });
-
-  test('--import-existing-resources is propagated to createChangeSet', async () => {
-    // GIVEN
-    const buffer = new StringWritable();
-    const createDiffChangeSet = jest.spyOn(cfn, 'createDiffChangeSet');
-
-    // WHEN
-    const exitCode = await toolkit.diff({
-      stackNames: ['A'],
-      stream: buffer,
-      templatePath,
-      importExistingResources: true,
-    });
-
-    // THEN
-    expect(exitCode).toBe(0);
-    expect(createDiffChangeSet).toHaveBeenCalledWith(expect.objectContaining({
-      importExistingResources: true,
-    }));
-  });
 });
 
 describe('imports', () => {
@@ -267,6 +247,26 @@ Resources
 
     expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(0);
+  });
+
+  test('--import-existing-resources is propagated to createChangeSet', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: true,
+      importExistingResources: true,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(createDiffChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+      importExistingResources: true,
+    }));
   });
 });
 
