@@ -1,14 +1,14 @@
-import { convertConfigToCliArgs, convertYargsToCliArgs } from '../lib/convert-to-cli-args';
+import { convertConfigToUserInput, convertYargsToUserInput } from '../lib/convert-to-user-input';
 import { parseCommandLineArguments } from '../lib/parse-command-line-arguments';
 
 describe('yargs', () => {
   test('yargs object can be converted to cli arguments', async () => {
     const input = await parseCommandLineArguments(['deploy', '-R', '-v', '--ci']);
 
-    const result = convertYargsToCliArgs(input);
+    const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
-      _: 'deploy',
+      command: 'deploy',
       globalOptions: {
         app: undefined,
         assetMetadata: undefined,
@@ -70,10 +70,10 @@ describe('yargs', () => {
   test('positional argument is correctly passed through -- variadic', async () => {
     const input = await parseCommandLineArguments(['deploy', 'stack1', 'stack2', '-R', '-v', '--ci']);
 
-    const result = convertYargsToCliArgs(input);
+    const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
-      _: 'deploy',
+      command: 'deploy',
       deploy: expect.objectContaining({
         STACKS: ['stack1', 'stack2'],
       }),
@@ -84,10 +84,10 @@ describe('yargs', () => {
   test('positional argument is correctly passed through -- single', async () => {
     const input = await parseCommandLineArguments(['acknowledge', 'id1', '-v', '--ci']);
 
-    const result = convertYargsToCliArgs(input);
+    const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
-      _: 'acknowledge',
+      command: 'acknowledge',
       acknowledge: expect.objectContaining({
         ID: 'id1',
       }),
@@ -109,7 +109,7 @@ describe('config', () => {
       },
     };
 
-    const result = convertConfigToCliArgs(input);
+    const result = convertConfigToUserInput(input);
 
     expect(result).toEqual({
       globalOptions: expect.objectContaining({
@@ -131,7 +131,7 @@ describe('config', () => {
       metadata: expect.anything(),
       migrate: expect.anything(),
       rollback: expect.anything(),
-      synthesize: expect.anything(),
+      synth: expect.anything(),
       watch: expect.anything(),
       notices: expect.anything(),
       import: expect.anything(),
