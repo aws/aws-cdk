@@ -46,8 +46,8 @@ export function convertYargsToUserInput(args: any): UserInput {
       };
       break;
 
-    case 'synthesize':
     case 'synth':
+    case 'synthesize':
       commandOptions = {
         exclusively: args.exclusively,
         validation: args.validation,
@@ -292,10 +292,10 @@ export function convertConfigToUserInput(config: any): UserInput {
     long: config.list?.long,
     showDependencies: config.list?.showDependencies,
   };
-  const synthesizeOptions = {
-    exclusively: config.synthesize?.exclusively,
-    validation: config.synthesize?.validation,
-    quiet: config.synthesize?.quiet,
+  const synthOptions = {
+    exclusively: config.synth?.exclusively,
+    validation: config.synth?.validation,
+    quiet: config.synth?.quiet,
   };
   const bootstrapOptions = {
     bootstrapBucketName: config.bootstrap?.bootstrapBucketName,
@@ -431,7 +431,7 @@ export function convertConfigToUserInput(config: any): UserInput {
   const userInput: UserInput = {
     globalOptions,
     list: listOptions,
-    synthesize: synthesizeOptions,
+    synth: synthOptions,
     bootstrap: bootstrapOptions,
     gc: gcOptions,
     deploy: deployOptions,

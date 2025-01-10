@@ -31,9 +31,9 @@ export interface UserInput {
   /**
    * Synthesizes and prints the CloudFormation template for this stack
    *
-   * aliases: synth
+   * aliases: synthesize
    */
-  readonly synthesize?: SynthesizeOptions;
+  readonly synth?: SynthOptions;
 
   /**
    * Deploys the CDK toolkit stack into an AWS environment
@@ -337,11 +337,11 @@ export interface ListOptions {
 /**
  * Synthesizes and prints the CloudFormation template for this stack
  *
- * aliases: synth
+ * aliases: synthesize
  *
  * @struct
  */
-export interface SynthesizeOptions {
+export interface SynthOptions {
   /**
    * Only synthesize requested stacks, don't include dependencies
    *
@@ -368,7 +368,7 @@ export interface SynthesizeOptions {
   readonly quiet?: boolean;
 
   /**
-   * Positional argument for synthesize
+   * Positional argument for synth
    */
   readonly STACKS?: Array<string>;
 }

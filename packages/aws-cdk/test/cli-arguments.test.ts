@@ -131,7 +131,7 @@ describe('config', () => {
       metadata: expect.anything(),
       migrate: expect.anything(),
       rollback: expect.anything(),
-      synthesize: expect.anything(),
+      synth: expect.anything(),
       watch: expect.anything(),
       notices: expect.anything(),
       import: expect.anything(),
