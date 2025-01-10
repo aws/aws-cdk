@@ -1,4 +1,4 @@
-import { CliConfig, renderCliArgsFunc } from '../lib';
+import { CliConfig, renderUserInputFuncs } from '../lib';
 
 describe('render', () => {
   test('can generate conversion function', async () => {
@@ -43,17 +43,17 @@ describe('render', () => {
       },
     };
 
-    expect(await renderCliArgsFunc(config)).toMatchInlineSnapshot(`
+    expect(await renderUserInputFuncs(config)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
-      import { CliArguments, GlobalOptions } from './cli-arguments';
       import { Command } from './settings';
+      import { UserInput, GlobalOptions } from './user-input';
 
       // @ts-ignore TS6133
-      export function convertYargsToCliArgs(args: any): CliArguments {
+      export function convertYargsToUserInput(args: any): UserInput {
         const globalOptions: GlobalOptions = {
           app: args.app,
           debug: args.debug,
@@ -70,17 +70,17 @@ describe('render', () => {
             };
             break;
         }
-        const cliArguments: CliArguments = {
-          _: args._[0],
+        const userInput: UserInput = {
+          command: args._[0],
           globalOptions,
           [args._[0]]: commandOptions,
         };
 
-        return cliArguments;
+        return userInput;
       }
 
       // @ts-ignore TS6133
-      export function convertConfigToCliArgs(config: any): CliArguments {
+      export function convertConfigToUserInput(config: any): UserInput {
         const globalOptions: GlobalOptions = {
           app: config.app,
           debug: config.debug,
@@ -90,12 +90,12 @@ describe('render', () => {
         const deployOptions = {
           all: config.deploy?.all,
         };
-        const cliArguments: CliArguments = {
+        const userInput: UserInput = {
           globalOptions,
           deploy: deployOptions,
         };
 
-        return cliArguments;
+        return userInput;
       }
       "
     `);
