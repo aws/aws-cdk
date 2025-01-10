@@ -5,7 +5,7 @@ import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
 test('all future flags have defaults configured', () => {
   Object.keys(feats.FLAGS).forEach(flag => {
-    expect(typeof(feats.futureFlagDefault(flag))).toEqual('boolean');
+    expect(typeof (feats.futureFlagDefault(flag))).toEqual('boolean');
   });
 });
 
