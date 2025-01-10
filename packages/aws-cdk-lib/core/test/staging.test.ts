@@ -5,7 +5,18 @@ import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
 import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
+import {
+  App,
+  AssetHashType,
+  AssetStaging,
+  BundlingFileAccess,
+  BundlingOptions,
+  BundlingOutput,
+  DockerImage,
+  FileSystem,
+  Stack,
+  Stage,
+} from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -311,7 +322,7 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
@@ -390,7 +401,7 @@ describe('staging', () => {
     // We're testing that docker was run exactly once even though there are two bundling assets.
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -435,7 +446,7 @@ describe('staging', () => {
     // and that the hash is based on the output
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -483,8 +494,8 @@ describe('staging', () => {
     // operating on the same source asset.
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS\n` +
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env UNIQUE_ENV_VAR=SOMEVALUE -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS\n' +
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env UNIQUE_ENV_VAR=SOMEVALUE -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -532,7 +543,7 @@ describe('staging', () => {
     // We're testing that docker was run once, only for the first Asset, since the only difference is the token.
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
@@ -663,7 +674,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
 
     expect(appAssembly.directory).toEqual(app2Assembly.directory);
@@ -725,7 +736,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInputConcat()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_EXTRA_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env PIP_EXTRA_INDEX_URL=https://aws:MY_SECRET_TOKEN@your-code-repo.d.codeartifact.us-west-2.amazonaws.com/pypi/python/simple/ -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
 
     expect(appAssembly.directory).toEqual(app2Assembly.directory);
@@ -755,7 +766,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT',
     );
   });
 
@@ -778,7 +789,7 @@ describe('staging', () => {
     // THEN
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -803,7 +814,7 @@ describe('staging', () => {
     // THEN
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm --security-opt no-new-privileges -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -828,7 +839,7 @@ describe('staging', () => {
     // THEN
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS',
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
   });
@@ -946,7 +957,7 @@ describe('staging', () => {
     })).toThrow(/Failed to bundle asset stack\/Asset/);
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL',
     );
   });
 
@@ -1237,7 +1248,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
   });
@@ -1261,7 +1272,7 @@ describe('staging', () => {
 
     expect(
       readDockerStubInput()).toEqual(
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      'run --rm -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS',
     );
     expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
   });
@@ -1569,15 +1580,11 @@ describe('staging with docker cp', () => {
     expect(staging.isArchive).toEqual(true);
     const dockerCalls: string[] = readDockerStubInputConcat(STUB_INPUT_CP_CONCAT_FILE).split(/\r?\n/);
     expect(dockerCalls).toEqual(expect.arrayContaining([
-      expect.stringContaining('volume create assetInput'),
-      expect.stringContaining('volume create assetOutput'),
-      expect.stringMatching('run --name copyContainer.* -v /input:/asset-input -v /output:/asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R .* /asset-output && chown -R .* /asset-input'),
+      expect.stringMatching('run --name copyContainer.* -v /asset-input -v /asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R 1000:1000 /asset-input && mkdir -p /asset-output && chown -R 1000:1000 /asset-output'),
       expect.stringMatching('cp .*fs/fixtures/test1/\. copyContainer.*:/asset-input'),
       expect.stringMatching('run --rm -u .* --volumes-from copyContainer.* -w /asset-input alpine DOCKER_STUB_VOLUME_SINGLE_ARCHIVE'),
       expect.stringMatching('cp copyContainer.*:/asset-output/\. .*'),
-      expect.stringContaining('rm copyContainer'),
-      expect.stringContaining('volume rm assetInput'),
-      expect.stringContaining('volume rm assetOutput'),
+      expect.stringContaining('rm -v copyContainer'),
     ]));
   });
 

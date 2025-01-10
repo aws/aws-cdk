@@ -4,7 +4,9 @@ import { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
+import {
+  exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime,
+} from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
@@ -83,7 +85,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly image: cdk.DockerImage;
   public readonly entrypoint?: string[];
   public readonly command: string[];
-  public readonly volumes?: cdk.DockerVolume[];
+  public readonly volumes?: (cdk.DockerVolume | cdk.VolumeCopyDockerVolume | cdk.ExistingDockerVolume)[];
   public readonly volumesFrom?: string[];
   public readonly environment?: { [key: string]: string };
   public readonly workingDirectory: string;

@@ -3,11 +3,10 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingFileAccess, BundlingOptions, BundlingOutput } from './bundling';
+import { BundlingFileAccess, BundlingOptions, BundlingOutput, DockerVolumeType } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
-import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
@@ -452,17 +451,42 @@ export class AssetStaging extends Construct {
           sourcePath: this.sourcePath,
           bundleDir,
           ...options,
+          volumes: [...(options.volumes ?? [])],
         };
 
+        // Add the asset input and output volumes based on BundlingFileAccess setting
         switch (options.bundlingFileAccess) {
           case BundlingFileAccess.VOLUME_COPY:
-            new AssetBundlingVolumeCopy(assetStagingOptions).run();
+            assetStagingOptions.volumes.push({
+              dockerVolumeType: DockerVolumeType.VOLUME_COPY,
+              hostInputPath: assetStagingOptions.sourcePath,
+              containerPath: AssetStaging.BUNDLING_INPUT_DIR,
+            },
+            {
+              dockerVolumeType: DockerVolumeType.VOLUME_COPY,
+              hostOutputPath: assetStagingOptions.bundleDir,
+              containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
+            });
             break;
           case BundlingFileAccess.BIND_MOUNT:
           default:
-            new AssetBundlingBindMount(assetStagingOptions).run();
+            assetStagingOptions.volumes.push({
+              hostPath: assetStagingOptions.sourcePath,
+              containerPath: AssetStaging.BUNDLING_INPUT_DIR,
+            },
+            {
+              hostPath: assetStagingOptions.bundleDir,
+              containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
+            });
             break;
         }
+
+        assetStagingOptions.image.run({
+          workingDirectory:
+            assetStagingOptions.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
+          securityOpt: assetStagingOptions.securityOpt ?? '',
+          ...assetStagingOptions,
+        });
       }
     } catch (err) {
       // When bundling fails, keep the bundle output for diagnosability, but
