@@ -1,11 +1,11 @@
-import { convertConfigToCliArgs, convertYargsToCliArgs } from '../lib/convert-to-cli-args';
+import { convertConfigToUserInput, convertYargsToUserInput } from '../lib/convert-to-user-input';
 import { parseCommandLineArguments } from '../lib/parse-command-line-arguments';
 
 describe('yargs', () => {
   test('yargs object can be converted to cli arguments', async () => {
     const input = await parseCommandLineArguments(['deploy', '-R', '-v', '--ci']);
 
-    const result = convertYargsToCliArgs(input);
+    const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
       _: 'deploy',
@@ -70,7 +70,7 @@ describe('yargs', () => {
   test('positional argument is correctly passed through -- variadic', async () => {
     const input = await parseCommandLineArguments(['deploy', 'stack1', 'stack2', '-R', '-v', '--ci']);
 
-    const result = convertYargsToCliArgs(input);
+    const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
       _: 'deploy',
@@ -84,7 +84,7 @@ describe('yargs', () => {
   test('positional argument is correctly passed through -- single', async () => {
     const input = await parseCommandLineArguments(['acknowledge', 'id1', '-v', '--ci']);
 
-    const result = convertYargsToCliArgs(input);
+    const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
       _: 'acknowledge',
@@ -109,7 +109,7 @@ describe('config', () => {
       },
     };
 
-    const result = convertConfigToCliArgs(input);
+    const result = convertConfigToUserInput(input);
 
     expect(result).toEqual({
       globalOptions: expect.objectContaining({

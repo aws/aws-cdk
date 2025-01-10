@@ -3,11 +3,11 @@
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
 /* eslint-disable @stylistic/max-len */
-import { CliArguments, GlobalOptions } from './cli-arguments';
 import { Command } from './settings';
+import { UserInput, GlobalOptions } from './user-input';
 
 // @ts-ignore TS6133
-export function convertYargsToCliArgs(args: any): CliArguments {
+export function convertYargsToUserInput(args: any): UserInput {
   const globalOptions: GlobalOptions = {
     app: args.app,
     build: args.build,
@@ -250,17 +250,17 @@ export function convertYargsToCliArgs(args: any): CliArguments {
       commandOptions = {};
       break;
   }
-  const cliArguments: CliArguments = {
+  const userInput: UserInput = {
     _: args._[0],
     globalOptions,
     [args._[0]]: commandOptions,
   };
 
-  return cliArguments;
+  return userInput;
 }
 
 // @ts-ignore TS6133
-export function convertConfigToCliArgs(config: any): CliArguments {
+export function convertConfigToUserInput(config: any): UserInput {
   const globalOptions: GlobalOptions = {
     app: config.app,
     build: config.build,
@@ -428,7 +428,7 @@ export function convertConfigToCliArgs(config: any): CliArguments {
     browser: config.docs?.browser,
   };
   const doctorOptions = {};
-  const cliArguments: CliArguments = {
+  const userInput: UserInput = {
     globalOptions,
     list: listOptions,
     synthesize: synthesizeOptions,
@@ -450,5 +450,5 @@ export function convertConfigToCliArgs(config: any): CliArguments {
     doctor: doctorOptions,
   };
 
-  return cliArguments;
+  return userInput;
 }
