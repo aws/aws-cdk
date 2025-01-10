@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "gohandlerprovidedal20ServiceRole8426AEF6": {
+  "gohandlerprovidedal2ServiceRole0304E98B": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
     ]
    }
   },
-  "gohandlerprovidedal20A3EC5933": {
+  "gohandlerprovidedal263372523": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -43,17 +43,17 @@
     "Handler": "bootstrap",
     "Role": {
      "Fn::GetAtt": [
-      "gohandlerprovidedal20ServiceRole8426AEF6",
+      "gohandlerprovidedal2ServiceRole0304E98B",
       "Arn"
      ]
     },
     "Runtime": "provided.al2"
    },
    "DependsOn": [
-    "gohandlerprovidedal20ServiceRole8426AEF6"
+    "gohandlerprovidedal2ServiceRole0304E98B"
    ]
   },
-  "gohandlerprovidedal20231ServiceRole68A34C3F": {
+  "gohandlerprovidedal2023ServiceRole27484815": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -84,7 +84,7 @@
     ]
    }
   },
-  "gohandlerprovidedal2023182E754E4": {
+  "gohandlerprovidedal2023FA840EAA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -96,32 +96,32 @@
     "Handler": "bootstrap",
     "Role": {
      "Fn::GetAtt": [
-      "gohandlerprovidedal20231ServiceRole68A34C3F",
+      "gohandlerprovidedal2023ServiceRole27484815",
       "Arn"
      ]
     },
     "Runtime": "provided.al2023"
    },
    "DependsOn": [
-    "gohandlerprovidedal20231ServiceRole68A34C3F"
+    "gohandlerprovidedal2023ServiceRole27484815"
    ]
   }
  },
  "Outputs": {
-  "ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606": {
+  "ExportsOutputRefgohandlerprovidedal2633725233CB9A54A": {
    "Value": {
-    "Ref": "gohandlerprovidedal20A3EC5933"
+    "Ref": "gohandlerprovidedal263372523"
    },
    "Export": {
-    "Name": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606"
+    "Name": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2633725233CB9A54A"
    }
   },
-  "ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B": {
+  "ExportsOutputRefgohandlerprovidedal2023FA840EAA50E75800": {
    "Value": {
-    "Ref": "gohandlerprovidedal2023182E754E4"
+    "Ref": "gohandlerprovidedal2023FA840EAA"
    },
    "Export": {
-    "Name": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B"
+    "Name": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023FA840EAA50E75800"
    }
   }
  },

@@ -96,6 +96,24 @@ const user = new iam.User(this, 'MyUser');
 env.grantReadConfig(user);
 ```
 
+### Deletion Protection Check
+
+You can enable [deletion protection](https://docs.aws.amazon.com/appconfig/latest/userguide/deletion-protection.html) on the environment by setting the `deletionProtectionCheck` property.
+
+- ACCOUNT_DEFAULT: The default setting, which uses account-level deletion protection. To configure account-level deletion protection, use the UpdateAccountSettings API.
+- APPLY: Instructs the deletion protection check to run, even if deletion protection is disabled at the account level. APPLY also forces the deletion protection check to run against resources created in the past hour, which are normally excluded from deletion protection checks.
+- BYPASS: Instructs AWS AppConfig to bypass the deletion protection check and delete an environment even if deletion protection would have otherwise prevented it.
+
+```ts
+declare const application: appconfig.Application;
+declare const alarm: cloudwatch.Alarm;
+declare const compositeAlarm: cloudwatch.CompositeAlarm;
+
+new appconfig.Environment(this, 'MyEnvironment', {
+  application,
+  deletionProtectionCheck: appconfig.DeletionProtectionCheck.APPLY,
+});
+```
 
 ## Deployment Strategy
 
