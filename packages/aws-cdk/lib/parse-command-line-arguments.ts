@@ -710,6 +710,11 @@ export function parseCommandLineArguments(args: Array<string>): any {
             type: 'boolean',
             alias: 'changeset',
             desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.',
+          })
+          .option('fallback', {
+            default: true,
+            type: 'boolean',
+            desc: 'If the changeset option is turned on, whether to enable falling back to template-only diff in case creating the changeset results in an error.',
           }),
     )
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')

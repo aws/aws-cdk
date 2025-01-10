@@ -212,16 +212,30 @@ export class CdkToolkit {
           }
 
           if (stackExists) {
-            changeSet = await createDiffChangeSet({
-              stack,
-              uuid: uuid.v4(),
-              deployments: this.props.deployments,
-              willExecute: false,
-              sdkProvider: this.props.sdkProvider,
-              parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
-              resourcesToImport,
-              stream,
-            });
+            try {
+              changeSet = await createDiffChangeSet({
+                stack,
+                uuid: uuid.v4(),
+                deployments: this.props.deployments,
+                willExecute: false,
+                sdkProvider: this.props.sdkProvider,
+                parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+                resourcesToImport,
+                stream,
+              });
+            } catch (e: any) {
+              if (options.fallback ?? true) {
+                debug(e);
+                stream.write(
+                  'Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n',
+                );
+              } else {
+                stream.write(
+                  `Could not create change set. Reason: ${e.message}\n`,
+                );
+                return 1;
+              }
+            }
           } else {
             debug(
               `the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`,
@@ -1416,6 +1430,13 @@ export interface DiffOptions {
    * @default true
    */
   changeSet?: boolean;
+
+  /**
+   * If the changeset option is turned on, whether to enable falling back to template-only diff in case creating the changeset results in an error
+   *
+   * @default true
+   */
+  fallback?: boolean;
 }
 
 interface CfnDeployOptions {

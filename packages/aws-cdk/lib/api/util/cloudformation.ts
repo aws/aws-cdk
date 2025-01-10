@@ -392,44 +392,35 @@ function templatesFromAssetManifestArtifact(
 async function uploadBodyParameterAndCreateChangeSet(
   options: PrepareChangeSetOptions,
 ): Promise<DescribeChangeSetCommandOutput | undefined> {
-  try {
-    await uploadStackTemplateAssets(options.stack, options.deployments);
-    const env = await options.deployments.envs.accessStackForMutableStackOperations(options.stack);
+  await uploadStackTemplateAssets(options.stack, options.deployments);
+  const env = await options.deployments.envs.accessStackForMutableStackOperations(options.stack);
 
-    const bodyParameter = await makeBodyParameter(
-      options.stack,
-      env.resolvedEnvironment,
-      new AssetManifestBuilder(),
-      env.resources,
-    );
-    const cfn = env.sdk.cloudFormation();
-    const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
+  const bodyParameter = await makeBodyParameter(
+    options.stack,
+    env.resolvedEnvironment,
+    new AssetManifestBuilder(),
+    env.resources,
+  );
+  const cfn = env.sdk.cloudFormation();
+  const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
-    const executionRoleArn = await env.replacePlaceholders(options.stack.cloudFormationExecutionRoleArn);
-    options.stream.write(
-      'Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n',
-    );
+  const executionRoleArn = await env.replacePlaceholders(options.stack.cloudFormationExecutionRoleArn);
+  options.stream.write(
+    'Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n',
+  );
 
-    return await createChangeSet({
-      cfn,
-      changeSetName: 'cdk-diff-change-set',
-      stack: options.stack,
-      exists,
-      uuid: options.uuid,
-      willExecute: options.willExecute,
-      bodyParameter,
-      parameters: options.parameters,
-      resourcesToImport: options.resourcesToImport,
-      role: executionRoleArn,
-    });
-  } catch (e: any) {
-    debug(e);
-    options.stream.write(
-      'Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n',
-    );
-
-    return undefined;
-  }
+  return createChangeSet({
+    cfn,
+    changeSetName: 'cdk-diff-change-set',
+    stack: options.stack,
+    exists,
+    uuid: options.uuid,
+    willExecute: options.willExecute,
+    bodyParameter,
+    parameters: options.parameters,
+    resourcesToImport: options.resourcesToImport,
+    role: executionRoleArn,
+  });
 }
 
 /**

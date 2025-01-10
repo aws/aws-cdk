@@ -311,6 +311,7 @@ export async function makeConfig(): Promise<CliConfig> {
           'processed': { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false },
           'quiet': { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false },
           'change-set': { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true },
+          'fallback': { type: 'boolean', desc: 'If the changeset option is turned on, whether to enable falling back to template-only diff in case creating the changeset results in an error.', default: true },
         },
       },
       metadata: {

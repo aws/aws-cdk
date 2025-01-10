@@ -1099,6 +1099,13 @@ export interface DiffOptions {
   readonly changeSet?: boolean;
 
   /**
+   * If the changeset option is turned on, whether to enable falling back to template-only diff in case creating the changeset results in an error.
+   *
+   * @default - true
+   */
+  readonly fallback?: boolean;
+
+  /**
    * Positional argument for diff
    */
   readonly STACKS?: Array<string>;

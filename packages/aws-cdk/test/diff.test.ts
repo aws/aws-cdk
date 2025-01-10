@@ -471,6 +471,31 @@ describe('non-nested stacks', () => {
     expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(0);
   });
+
+  test('when changeset creation fails but fallback to template only diff is disabled, the error is surfaced', async () => {
+
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
+    const createDiffChangeSet = jest.spyOn(cfn, 'createDiffChangeSet');
+    createDiffChangeSet.mockImplementation(async () => {
+      throw new Error('Something went wrong');
+    });
+
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: true,
+      fallback: false,
+    });
+
+    // THEN
+    expect(cloudFormation.stackExists).toHaveBeenCalled();
+    expect(buffer.data.trim()).toContain('Something went wrong');
+    expect(exitCode).toBe(1);
+  });
 });
 
 describe('stack exists checks', () => {
