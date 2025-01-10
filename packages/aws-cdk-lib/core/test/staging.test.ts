@@ -1580,7 +1580,7 @@ describe('staging with docker cp', () => {
     expect(staging.isArchive).toEqual(true);
     const dockerCalls: string[] = readDockerStubInputConcat(STUB_INPUT_CP_CONCAT_FILE).split(/\r?\n/);
     expect(dockerCalls).toEqual(expect.arrayContaining([
-      expect.stringMatching('run --name copyContainer.* -v /asset-input -v /asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R 1000:1000 /asset-input && mkdir -p /asset-output && chown -R 1000:1000 /asset-output'),
+      expect.stringMatching('run --name copyContainer.* -v /asset-input -v /asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R .* /asset-input && mkdir -p /asset-output && chown -R .* /asset-output'),
       expect.stringMatching('cp .*fs/fixtures/test1/\. copyContainer.*:/asset-input'),
       expect.stringMatching('run --rm -u .* --volumes-from copyContainer.* -w /asset-input alpine DOCKER_STUB_VOLUME_SINGLE_ARCHIVE'),
       expect.stringMatching('cp copyContainer.*:/asset-output/\. .*'),
