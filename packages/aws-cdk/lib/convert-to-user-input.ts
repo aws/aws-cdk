@@ -251,7 +251,7 @@ export function convertYargsToUserInput(args: any): UserInput {
       break;
   }
   const userInput: UserInput = {
-    _: args._[0],
+    command: args._[0],
     globalOptions,
     [args._[0]]: commandOptions,
   };

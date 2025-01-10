@@ -25,7 +25,7 @@ export async function renderUserInputType(config: CliConfig): Promise<string> {
   const commandEnum = Type.fromName(scope, 'Command');
 
   userInputType.addProperty({
-    name: '_',
+    name: 'command',
     type: commandEnum,
     docs: {
       summary: 'The CLI command name',

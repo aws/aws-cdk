@@ -60,7 +60,7 @@ describe('render', () => {
         /**
          * The CLI command name
          */
-        readonly _?: Command;
+        readonly command?: Command;
 
         /**
          * Global options available to all CLI commands
@@ -169,7 +169,7 @@ describe('render', () => {
         /**
          * The CLI command name
          */
-        readonly _?: Command;
+        readonly command?: Command;
 
         /**
          * Global options available to all CLI commands
@@ -251,7 +251,7 @@ describe('render', () => {
         /**
          * The CLI command name
          */
-        readonly _?: Command;
+        readonly command?: Command;
 
         /**
          * Global options available to all CLI commands
