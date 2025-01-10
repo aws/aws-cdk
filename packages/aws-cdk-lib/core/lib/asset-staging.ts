@@ -471,10 +471,12 @@ export class AssetStaging extends Construct {
           case BundlingFileAccess.BIND_MOUNT:
           default:
             assetStagingOptions.volumes.push({
+              dockerVolumeType: DockerVolumeType.BIND_MOUNT,
               hostPath: assetStagingOptions.sourcePath,
               containerPath: AssetStaging.BUNDLING_INPUT_DIR,
             },
             {
+              dockerVolumeType: DockerVolumeType.BIND_MOUNT,
               hostPath: assetStagingOptions.bundleDir,
               containerPath: AssetStaging.BUNDLING_OUTPUT_DIR,
             });
