@@ -2931,3 +2931,40 @@ function actions(requests: CompletedRequest[]): string[] {
     .map(x => x.Action as string)
     .filter(action => action != null))];
 }
+
+integTest(
+  'cdk diff noFallback',
+  withSpecificFixture('diff-no-fallback-app', async (fixture) => {
+    // Should succeed
+    await fixture.cdkDeploy('test-diff-no-fallback', {
+      verbose: false,
+    });
+    try {
+      // Should surface the missing transform error from cloudformation in the output
+      const diffOutput = await fixture.cdk(['diff', '--no-fallback', fixture.fullStackName('test-diff-no-fallback')], {
+        modEnv: { DIFF_PHASE: 'on' },
+        allowErrExit: true,
+        captureStderr: true,
+      });
+      expect(diffOutput).toContain('No transform named');
+
+      // Should throw
+      await expect(fixture.cdk(['diff', '--no-fallback', fixture.fullStackName('test-diff-no-fallback')], {
+        modEnv: { DIFF_PHASE: 'on' },
+        captureStderr: true,
+      })).rejects.toThrow();
+
+      // Should fallback to template-only diff as normal
+      const diffOutputWithFallback = await fixture.cdk(['diff', fixture.fullStackName('test-diff-no-fallback')], {
+        modEnv: { DIFF_PHASE: 'on' },
+        captureStderr: true,
+        allowErrExit: true,
+      });
+
+      expect(diffOutputWithFallback).toContain('will base the diff on template differences');
+
+    } finally {
+      await fixture.cdkDestroy('test-diff-no-fallback', { verbose: false });
+    }
+  }),
+);
