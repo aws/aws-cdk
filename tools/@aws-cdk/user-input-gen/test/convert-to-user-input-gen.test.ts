@@ -49,7 +49,7 @@ describe('render', () => {
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
-      import { Command } from './settings';
+      import { Command } from './command';
       import { UserInput, GlobalOptions } from './user-input';
 
       // @ts-ignore TS6133

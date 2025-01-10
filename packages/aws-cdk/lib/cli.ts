@@ -5,8 +5,7 @@ import * as chalk from 'chalk';
 import { DeploymentMethod } from './api';
 import { HotswapMode } from './api/hotswap/common';
 import { ILock } from './api/util/rwlock';
-import { CliArguments } from './cli-arguments';
-import { convertYargsToCliArgs } from './convert-to-cli-args';
+import { convertYargsToUserInput } from './convert-to-user-input';
 import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
@@ -31,6 +30,7 @@ import * as version from '../lib/version';
 import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
 import { StringWithoutPlaceholders } from './api/util/placeholders';
 import { ToolkitError } from './toolkit/error';
+import { UserInput } from './user-input';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -41,7 +41,7 @@ if (!process.stdout.isTTY) {
 }
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
-  const argv: CliArguments = convertYargsToCliArgs(await parseCommandLineArguments(args));
+  const argv: UserInput = convertYargsToUserInput(await parseCommandLineArguments(args));
 
   debug('Command line arguments:', argv);
 
@@ -176,7 +176,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     }
   }
 
-  async function main(command: string, settings: CliArguments): Promise<number | void> {
+  async function main(command: string, settings: UserInput): Promise<number | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(settings.bootstrap?.toolkitStackName); // TODO, mroe than bootstrap has toolkitstackname
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
@@ -438,7 +438,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
-        const synthOptions = settings.synthesize ?? {};
+        const synthOptions = settings.synth ?? {};
         const quiet = synthOptions.quiet ?? false;
         if (synthOptions.exclusively) {
           return cli.synth(synthOptions.STACKS ?? [], synthOptions.exclusively, quiet, synthOptions.validation, globalOptions.json);

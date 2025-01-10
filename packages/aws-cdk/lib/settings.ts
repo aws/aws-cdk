@@ -3,7 +3,7 @@ import * as fs_path from 'path';
 import * as fs from 'fs-extra';
 import { CliArguments } from './cli-arguments';
 import { Command } from './command';
-import { convertConfigToCliArgs } from './convert-to-cli-args';
+import { convertConfigToUserInput } from './convert-to-user-input';
 import { debug, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 import * as util from './util';
@@ -106,8 +106,8 @@ export class Configuration {
 
     // Build settings from what's left
     this.settings = this.defaultConfig
-      .merge(new ArgumentSettings(convertConfigToCliArgs(userConfig.all)))
-      .merge(new ArgumentSettings(convertConfigToCliArgs(this.projectConfig.all)))
+      .merge(new ArgumentSettings(convertConfigToUserInput(userConfig.all)))
+      .merge(new ArgumentSettings(convertConfigToUserInput(this.projectConfig.all)))
       .merge(this.commandLineArguments)
       .makeReadOnly();
 

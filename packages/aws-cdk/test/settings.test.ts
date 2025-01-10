@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { Context, ArgumentSettings, Settings } from '../lib/settings';
 import { Tag } from '../lib/cdk-toolkit';
-import { convertYargsToCliArgs } from '../lib/convert-to-cli-args';
+import { convertYargsToUserInput } from '../lib/convert-to-user-input';
 import { Command } from '../lib/command';
 
 test('can delete values from Context object', () => {
@@ -66,8 +66,8 @@ test('can clear all values in all objects', () => {
 
 test('can parse string context from command line arguments', () => {
   // GIVEN
-  const settings1 = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({ context: ['foo=bar'], _: [Command.DEPLOY] }));
-  const settings2 = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({ context: ['foo='], _: [Command.DEPLOY] }));
+  const settings1 = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({ context: ['foo=bar'], _: [Command.DEPLOY] }));
+  const settings2 = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({ context: ['foo='], _: [Command.DEPLOY] }));
 
   // THEN
   expect(settings1.get(['context']).foo).toEqual( 'bar');
@@ -76,8 +76,8 @@ test('can parse string context from command line arguments', () => {
 
 test('can parse string context from command line arguments with equals sign in value', () => {
   // GIVEN
-  const settings1 = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({ context: ['foo==bar='], _: [Command.DEPLOY] }));
-  const settings2 = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({ context: ['foo=bar='], _: [Command.DEPLOY] }));
+  const settings1 = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({ context: ['foo==bar='], _: [Command.DEPLOY] }));
+  const settings2 = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({ context: ['foo=bar='], _: [Command.DEPLOY] }));
 
   // THEN
   expect(settings1.get(['context']).foo).toEqual( '=bar=');
@@ -86,8 +86,8 @@ test('can parse string context from command line arguments with equals sign in v
 
 test('can parse tag values from command line arguments', () => {
   // GIVEN
-  const settings1 = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({ tags: ['foo=bar'], _: [Command.DEPLOY] }));
-  const settings2 = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({ tags: ['foo='], _: [Command.DEPLOY] }));
+  const settings1 = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({ tags: ['foo=bar'], _: [Command.DEPLOY] }));
+  const settings2 = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({ tags: ['foo='], _: [Command.DEPLOY] }));
 
   // THEN
   expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('bar');
@@ -96,8 +96,8 @@ test('can parse tag values from command line arguments', () => {
 
 test('can parse tag values from command line arguments with equals sign in value', () => {
   // GIVEN
-  const settings1 = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({ tags: ['foo==bar='], _: [Command.DEPLOY] }));
-  const settings2 = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({ tags: ['foo=bar='], _: [Command.DEPLOY] }));
+  const settings1 = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({ tags: ['foo==bar='], _: [Command.DEPLOY] }));
+  const settings2 = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({ tags: ['foo=bar='], _: [Command.DEPLOY] }));
 
   // THEN
   expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('=bar=');
@@ -106,7 +106,7 @@ test('can parse tag values from command line arguments with equals sign in value
 
 test('bundling stacks defaults to an empty list', () => {
   // GIVEN
-  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({
+  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({
     _: [Command.LIST],
   }));
 
@@ -116,7 +116,7 @@ test('bundling stacks defaults to an empty list', () => {
 
 test('bundling stacks defaults to ** for deploy', () => {
   // GIVEN
-  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({
+  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({
     _: [Command.DEPLOY],
   }));
 
@@ -126,7 +126,7 @@ test('bundling stacks defaults to ** for deploy', () => {
 
 test('bundling stacks defaults to ** for watch', () => {
   // GIVEN
-  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({
+  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({
     _: [Command.WATCH],
   }));
 
@@ -136,7 +136,7 @@ test('bundling stacks defaults to ** for watch', () => {
 
 test('bundling stacks with deploy exclusively', () => {
   // GIVEN
-  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({
+  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({
     _: [Command.DEPLOY],
     exclusively: true,
     STACKS: ['cool-stack'],
@@ -148,7 +148,7 @@ test('bundling stacks with deploy exclusively', () => {
 
 test('bundling stacks with watch exclusively', () => {
   // GIVEN
-  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({
+  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({
     _: [Command.WATCH],
     exclusively: true,
     STACKS: ['cool-stack'],
@@ -160,7 +160,7 @@ test('bundling stacks with watch exclusively', () => {
 
 test('should include outputs-file in settings', () => {
   // GIVEN
-  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({
+  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({
     _: [Command.DEPLOY],
     outputsFile: 'my-outputs-file.json',
   }));
@@ -171,7 +171,7 @@ test('should include outputs-file in settings', () => {
 
 test('providing a build arg', () => {
   // GIVEN
-  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToCliArgs({
+  const settings = ArgumentSettings.fromCommandLineArguments(convertYargsToUserInput({
     _: [Command.SYNTH],
     build: 'mvn package',
   }));
