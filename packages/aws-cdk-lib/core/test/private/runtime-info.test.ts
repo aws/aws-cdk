@@ -61,6 +61,8 @@ test('test metadata is redacted correctly', () => {
     },
   ];
 
+  // TODO: change this test case to verify that we only collect objects
+  // that's part of CDK and redact any customer provided object.
   expect(redactTelemetryData(metadata)).toEqual([
     {
       type: MetadataType.CONSTRUCT,
