@@ -6,11 +6,11 @@
 import { Command } from './settings';
 
 /**
- * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
+ * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts
  *
  * @struct
  */
-export interface CliArguments {
+export interface UserInput {
   /**
    * The CLI command name
    */
