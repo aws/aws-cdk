@@ -195,7 +195,7 @@ describe('MSK Serverless Cluster', () => {
           { vpc: vpc1Az },
         ],
       }),
-    ).toThrow('Cluster requires at least 2 subnets, got 1.');
+    ).toThrow('Cluster requires at least 2 subnets, got 1 subnet.');
   });
 
   test('imports an existing serverless cluster by ARN', () => {
