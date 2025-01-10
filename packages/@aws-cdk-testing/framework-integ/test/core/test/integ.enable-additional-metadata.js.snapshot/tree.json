@@ -168,32 +168,6 @@
               ]
             }
           },
-          "CDKMetadata": {
-            "id": "CDKMetadata",
-            "path": "EnableTelemtryStack/CDKMetadata",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "EnableTelemtryStack/CDKMetadata/Default",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
-                }
-              },
-              "Condition": {
-                "id": "Condition",
-                "path": "EnableTelemtryStack/CDKMetadata/Condition",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "EnableTelemtryStack/BootstrapVersion",
@@ -236,32 +210,6 @@
                 "id": "DeployAssert",
                 "path": "Enable Additional Metadata/DefaultTest/DeployAssert",
                 "children": {
-                  "CDKMetadata": {
-                    "id": "CDKMetadata",
-                    "path": "Enable Additional Metadata/DefaultTest/DeployAssert/CDKMetadata",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "Enable Additional Metadata/DefaultTest/DeployAssert/CDKMetadata/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Condition": {
-                        "id": "Condition",
-                        "path": "Enable Additional Metadata/DefaultTest/DeployAssert/CDKMetadata/Condition",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnCondition",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.4.2"
-                    }
-                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "Enable Additional Metadata/DefaultTest/DeployAssert/BootstrapVersion",

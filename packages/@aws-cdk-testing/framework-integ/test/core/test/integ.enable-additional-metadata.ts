@@ -10,7 +10,6 @@ import { MetadataType } from 'aws-cdk-lib/core/lib/metadata-resource';
  */
 
 const app = new cdk.App({
-  analyticsReporting: true,
   postCliContext: {
     [ENABLE_ADDITIONAL_METADATA_COLLECTION]: true,
   },

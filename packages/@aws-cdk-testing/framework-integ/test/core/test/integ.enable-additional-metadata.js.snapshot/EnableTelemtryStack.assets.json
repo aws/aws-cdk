@@ -1,7 +1,7 @@
 {
   "version": "39.0.0",
   "files": {
-    "9febe67ad809636564602131bb0c8b1291904d92789bd3e6803a3cb2409d768b": {
+    "b6503dca5951e510ce013d2525009c961587cc7267ceff8ecacb15d7fb7db461": {
       "source": {
         "path": "EnableTelemtryStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9febe67ad809636564602131bb0c8b1291904d92789bd3e6803a3cb2409d768b.json",
+          "objectKey": "b6503dca5951e510ce013d2525009c961587cc7267ceff8ecacb15d7fb7db461.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
