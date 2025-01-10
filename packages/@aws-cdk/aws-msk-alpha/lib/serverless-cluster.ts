@@ -119,7 +119,7 @@ export class ServerlessCluster extends ClusterBase {
 
     if (subnetSelection.subnets.length < 2) {
       throw Error(
-        `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}.`,
+        `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`,
       );
     }
 
