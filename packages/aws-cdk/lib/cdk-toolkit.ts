@@ -160,7 +160,7 @@ export class CdkToolkit {
     let diffs = 0;
     const parameterMap = buildParameterMap(options.parameters);
 
-    if (options.importExistingResources && !(options.changeSet)) {
+    if (options.importExistingResources && !(options.changeSet ?? true)) {
       throw new ToolkitError('--import-existing-resources cannot be enabled without changeSet');
     }
 
