@@ -221,10 +221,7 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": false,
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
-    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
-    "@aws-cdk/pipelines:reduceAssetRoleTrustScope": false,
-    "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": false,
-    "@aws-cdk/core:aspectStabilization": false
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false
   }
 }
 ```
@@ -1442,6 +1439,22 @@ If the flag is set to false then a custom resource will be created when using `U
 | (not in v1) |  |  |
 | 2.174.0 | `false` | `true` |
 
+### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
+
+*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
+
+When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
+creates a custom resource internally, but the new method doesn't need a custom resource.
+
+If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.174.0 | `false` | `true` |
+
+
 ### @aws-cdk/aws-ecs:disableEcsImdsBlocking
 
 *When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)*** (temporary)
@@ -1456,7 +1469,7 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.175.0 | `false` | `true` |
 
 **Compatibility with old behavior:** It is strongly recommended to set this flag to true. However, if necessary, set this flag to false to continue using the old implementation.
 
@@ -1473,7 +1486,7 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `false` |
+| 2.175.0 | `false` | `false` |
 
 **Compatibility with old behavior:** Set this flag to false in order to continue using old and outdated commands. However, it is **not** recommended.
 
