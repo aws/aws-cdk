@@ -18,5 +18,5 @@ export enum MetadataType {
    * Metadata type for feature flags.
    * This is used to track analytics related to feature flags in the CDK.
    */
-  FEATURE_FLAGS = 'aws:cdk:analytics:featureflag',
+  FEATURE_FLAG = 'aws:cdk:analytics:featureflag',
 }

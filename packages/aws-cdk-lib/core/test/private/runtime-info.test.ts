@@ -52,7 +52,7 @@ test('test metadata is redacted correctly', () => {
       data: { bool: true, nested: { foo: 'bar' }, arr: [1, 2, 3], str: 'foo' },
     },
     {
-      type: MetadataType.FEATURE_FLAGS,
+      type: MetadataType.FEATURE_FLAG,
       data: 'foobar',
     },
     {
@@ -82,7 +82,7 @@ test('test metadata is redacted correctly', () => {
       },
     },
     {
-      type: MetadataType.FEATURE_FLAGS,
+      type: MetadataType.FEATURE_FLAG,
       data: '*',
     },
     {

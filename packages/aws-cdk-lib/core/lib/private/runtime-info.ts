@@ -56,7 +56,7 @@ export function redactTelemetryData(metadata: MetadataEntry[]): Record<string, a
   const validTypes = new Set([
     MetadataType.CONSTRUCT,
     MetadataType.METHOD,
-    MetadataType.FEATURE_FLAGS,
+    MetadataType.FEATURE_FLAG,
   ]);
 
   return metadata
