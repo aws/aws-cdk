@@ -1,4 +1,4 @@
-import { setIoMessageThreshold, setCI, data, print, success, highlight, error, warning, info, debug, trace, withCorkedLogging } from '../../../lib/logging';
+import { setIoMessageThreshold, setCI, data, success, highlight, error, warning, info, debug, trace, withCorkedLogging } from '../../../lib/logging';
 
 describe('logging', () => {
   let mockStdout: jest.Mock;
@@ -54,25 +54,25 @@ describe('logging', () => {
       expect(mockStdout).not.toHaveBeenCalled();
     });
 
-    test('print() writes to stderr by default with both styles', () => {
+    test('info() writes to stderr by default with both styles', () => {
       // String style
-      print('test print');
+      info('test print');
       expect(mockStderr).toHaveBeenCalledWith('test print\n');
 
       // Object style
-      print({ message: 'test print 2' });
+      info({ message: 'test print 2' });
       expect(mockStderr).toHaveBeenCalledWith('test print 2\n');
       expect(mockStdout).not.toHaveBeenCalled();
     });
 
-    test('print() writes to stdout in CI mode with both styles', () => {
+    test('info() writes to stdout in CI mode with both styles', () => {
       setCI(true);
       // String style
-      print('test print');
+      info('test print');
       expect(mockStdout).toHaveBeenCalledWith('test print\n');
 
       // Object style
-      print({ message: 'test print 2' });
+      info({ message: 'test print 2' });
       expect(mockStdout).toHaveBeenCalledWith('test print 2\n');
       expect(mockStderr).not.toHaveBeenCalled();
     });
@@ -85,12 +85,12 @@ describe('logging', () => {
       // String style
       error('error message');
       warning('warning message');
-      print('print message');
+      info('print message');
 
       // Object style
       error({ message: 'error message 2' });
       warning({ message: 'warning message 2' });
-      print({ message: 'print message 2' });
+      info({ message: 'print message 2' });
 
       expect(mockStderr).toHaveBeenCalledWith('error message\n');
       expect(mockStderr).toHaveBeenCalledWith('error message 2\n');
@@ -138,22 +138,22 @@ describe('logging', () => {
   describe('formatted messages', () => {
     test('handles format strings correctly with both styles', () => {
       // String style
-      print('Hello %s, you have %d messages', 'User', 5);
+      info('Hello %s, you have %d messages', 'User', 5);
       expect(mockStderr).toHaveBeenCalledWith('Hello User, you have 5 messages\n');
 
       // Object style
-      print({ message: 'Hello %s, you have %d messages' }, 'User', 5);
+      info({ message: 'Hello %s, you have %d messages' }, 'User', 5);
       expect(mockStderr).toHaveBeenCalledWith('Hello User, you have 5 messages\n');
     });
 
     test('handles objects in format strings with both styles', () => {
       const obj = { name: 'test' };
       // String style
-      print('Object: %j', obj);
+      info('Object: %j', obj);
       expect(mockStderr).toHaveBeenCalledWith('Object: {"name":"test"}\n');
 
       // Object style
-      print({ message: 'Object: %j' }, obj);
+      info({ message: 'Object: %j' }, obj);
       expect(mockStderr).toHaveBeenCalledWith('Object: {"name":"test"}\n');
     });
 
@@ -210,11 +210,11 @@ describe('logging', () => {
   describe('edge cases', () => {
     test('handles null and undefined arguments with both styles', () => {
       // String style
-      print('Values: %s, %s', null, undefined);
+      info('Values: %s, %s', null, undefined);
       expect(mockStderr).toHaveBeenCalledWith('Values: null, undefined\n');
 
       // Object style
-      print({ message: 'Values: %s, %s' }, null, undefined);
+      info({ message: 'Values: %s, %s' }, null, undefined);
       expect(mockStderr).toHaveBeenCalledWith('Values: null, undefined\n');
     });
 
@@ -223,11 +223,11 @@ describe('logging', () => {
       obj.self = obj;
 
       // String style
-      print('Object: %j', obj);
+      info('Object: %j', obj);
       expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining('[Circular'));
 
       // Object style
-      print({ message: 'Object: %j' }, obj);
+      info({ message: 'Object: %j' }, obj);
       expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining('[Circular'));
     });
   });
@@ -255,8 +255,8 @@ describe('logging', () => {
   describe('corked logging', () => {
     test('buffers messages when corked', async () => {
       await withCorkedLogging(async () => {
-        print('message 1');
-        print({ message: 'message 2' });
+        info('message 1');
+        info({ message: 'message 2' });
         expect(mockStderr).not.toHaveBeenCalled();
       });
 
@@ -266,11 +266,11 @@ describe('logging', () => {
 
     test('handles nested corking correctly', async () => {
       await withCorkedLogging(async () => {
-        print('outer 1');
+        info('outer 1');
         await withCorkedLogging(async () => {
-          print({ message: 'inner' });
+          info({ message: 'inner' });
         });
-        print({ message: 'outer 2' });
+        info({ message: 'outer 2' });
         expect(mockStderr).not.toHaveBeenCalled();
       });
 
@@ -282,7 +282,7 @@ describe('logging', () => {
 
     test('handles errors in corked block while preserving buffer', async () => {
       await expect(withCorkedLogging(async () => {
-        print('message 1');
+        info('message 1');
         throw new Error('test error');
       })).rejects.toThrow('test error');
 

@@ -150,7 +150,6 @@ function v3ProviderFromV2Credentials(x: SDKv2CompatibleCredentials): AwsCredenti
 
 function refreshFromPluginProvider(current: AwsCredentialIdentity, producer: () => Promise<PluginProviderResult>): AwsCredentialIdentityProvider {
   return async () => {
-    // eslint-disable-next-line no-console
     info(format(current), Date.now());
     if (credentialsAboutToExpire(current)) {
       const newCreds = await producer();

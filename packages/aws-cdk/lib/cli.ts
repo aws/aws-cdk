@@ -23,7 +23,7 @@ import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
 import { cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setCI, setIoMessageThreshold } from '../lib/logging';
+import { data, debug, error, info, setCI, setIoMessageThreshold } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -484,10 +484,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 function determineBootstrapVersion(args: { template?: string }): BootstrapSource {
   let source: BootstrapSource;
   if (args.template) {
-    print(`Using bootstrapping template from ${args.template}`);
+    info(`Using bootstrapping template from ${args.template}`);
     source = { source: 'custom', templateFile: args.template };
   } else if (process.env.CDK_LEGACY_BOOTSTRAP) {
-    print('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
+    info('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
     source = { source: 'legacy' };
   } else {
     // in V2, the "new" bootstrapping is the default

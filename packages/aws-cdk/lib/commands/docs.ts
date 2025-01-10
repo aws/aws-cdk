@@ -1,5 +1,5 @@
 import * as childProcess from 'child_process';
-import { debug, print, warning } from '../../lib/logging';
+import { debug, info, warning } from '../../lib/logging';
 import * as chalk from '../util/cdk-chalk';
 
 export const command = 'docs';
@@ -18,7 +18,7 @@ export interface DocsOptions {
 
 export async function docs(options: DocsOptions): Promise<number> {
   const url = 'https://docs.aws.amazon.com/cdk/api/v2/';
-  print(chalk.green(url));
+  info(chalk.green(url));
   const browserCommand = (options.browser).replace(/%u/g, url);
   debug(`Opening documentation ${chalk.green(browserCommand)}`);
   return new Promise<number>((resolve, _reject) => {

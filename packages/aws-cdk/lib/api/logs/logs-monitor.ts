@@ -1,6 +1,6 @@
 import * as util from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
-import { print, error } from '../../logging';
+import { info, error } from '../../logging';
 import { flatten } from '../../util/arrays';
 import * as chalk from '../../util/cdk-chalk';
 import type { SDK } from '../aws-auth';
@@ -162,7 +162,7 @@ export class CloudWatchLogEventMonitor {
    * Print out a cloudwatch event
    */
   private print(event: CloudWatchLogEvent): void {
-    print(
+    info(
       util.format(
         '[%s] %s %s',
         chalk.blue(event.logGroupName),

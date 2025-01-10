@@ -20,21 +20,20 @@ export interface IoMessage {
    */
   readonly action: IoAction;
 
-  /**
-   * A short message code uniquely identifying a message type of the format [CATEGORY]_[NUMBER_CODE].
-   * All 'error' level message codes begin with 0.
-   * All 'warning' level message codes begin with 1.
-   * All 'info' level message codes begin with 2.
+/**
+   * A short message code uniquely identifying a message type using the format CDK_[CATEGORY]_[E/W/I][000-999].
+   * 
+   * The level indicator follows these rules:
+   * - 'E' for error level messages
+   * - 'W' for warning level messages
+   * - 'I' for info/debug/trace level messages
    *
    * Codes ending in 000 are generic messages, while codes ending in 001-999 are specific to a particular message.
    * The following are examples of valid and invalid message codes:
    * ```ts
-   * 'ASSETS_2000'            // valid cdk-assets info message with generic info code _2000
-   * 'TOOLKIT_0002'           // valid toolkit error message with specific error code _0002
-   * 'SDK_1023'               // valid sdk warning message with specific warning code _1023
-   * 'sdk_0001'               // invalid: lowercase
-   * 'TOOLKIT-0001'           // invalid: invalid separator
-   * 'SDK_3000'               // invalid: all message codes must be between 0000 and 2999
+   * 'CDK_ASSETS_I000'       // valid: generic assets info message
+   * 'CDK_TOOLKIT_E002'      // valid: specific toolkit error message
+   * 'CDK_SDK_W023'          // valid: specific sdk warning message
    * ```
    */
   readonly code: string;
@@ -188,46 +187,39 @@ export class CliIoHost {
 }
 
 /**
- * Validates a message code. The code must:
- * - Be in the format [A-Z]+_[0-2][0-9]{3}
- * - Have a numeric prefix that matches the message level:
- *   - Error level codes must begin with 0
- *   - Warning level codes must begin with 1
- *   - Info/debug/trace level codes must begin with 2
- *
+ * Validates that a message code follows the required format:
+ * CDK_[CATEGORY]_[E/W/I][000-999]
+ * 
+ * Examples:
+ * - CDK_ASSETS_E005 (specific asset error)
+ * - CDK_SDK_W001 (specific SDK warning)
+ * - CDK_TOOLKIT_I000 (generic toolkit info)
+ * 
  * @param code The message code to validate
- * @param level The IoMessageLevel of the message
- * @returns boolean indicating if the code is valid for the given level
+ * @param level The message level (used to validate level indicator matches)
+ * @throws Error if the code format is invalid
  */
-export function validateMessageCode(code: string, level?: IoMessageLevel): boolean {
-  // Basic format validation
-  const pattern = /^[A-Z]+_([0-2])\d{3}$/;
-  const match = code.match(pattern);
-
-  if (!match) {
-    return false;
+export function validateMessageCode(code: string, level: IoMessageLevel): void {
+  const MESSAGE_CODE_PATTERN = /^CDK_[A-Z]+_[EWI][0-9]{3}$/;
+  if (!MESSAGE_CODE_PATTERN.test(code)) {
+    throw new Error(
+      `Invalid message code format: "${code}". ` +
+      'Code must match pattern: CDK_[CATEGORY]_[E/W/I][000-999]'
+    );
   }
 
-  // If no level is provided, only validate the format
-  if (!level) {
-    return true;
-  }
-
-  // Extract the level number from the code
-  const levelNum = parseInt(match[1]);
-
-  // Validate level-specific prefix
-  switch (level) {
-    case 'error':
-      return levelNum === 0;
-    case 'warn':
-      return levelNum === 1;
-    case 'info':
-    case 'debug':
-    case 'trace':
-      return levelNum === 2;
-    default:
-      return false;
+  // Extract level indicator from code (E/W/I after second underscore)
+  const levelIndicator = code.split('_')[2][0];
+  
+  // Validate level indicator matches message level
+  const expectedIndicator = level === 'error' ? 'E' :
+                          level === 'warn' ? 'W' : 'I';
+  
+  if (levelIndicator !== expectedIndicator) {
+    throw new Error(
+      `Message code level indicator '${levelIndicator}' does not match message level '${level}'. ` +
+      `Expected '${expectedIndicator}'`
+    );
   }
 }
 

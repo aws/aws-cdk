@@ -2,7 +2,7 @@ import * as childProcess from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { invokeBuiltinHooks } from './init-hooks';
-import { error, print, warning } from './logging';
+import { error, info, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 import * as chalk from './util/cdk-chalk';
 import { cdkHomeDir, rootDir } from './util/directories';
@@ -50,7 +50,7 @@ export async function cliInit(options: CliInitOptions) {
     );
   }
   if (!options.language) {
-    print(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
+    info(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
     throw new ToolkitError('No language was selected');
   }
 
@@ -295,18 +295,18 @@ async function listDirectory(dirPath: string) {
 }
 
 export async function printAvailableTemplates(language?: string) {
-  print('Available templates:');
+  info('Available templates:');
   for (const template of await availableInitTemplates()) {
     if (language && template.languages.indexOf(language) === -1) {
       continue;
     }
-    print(`* ${chalk.green(template.name)}: ${template.description}`);
+    info(`* ${chalk.green(template.name)}: ${template.description}`);
     const languageArg = language
       ? chalk.bold(language)
       : template.languages.length > 1
         ? `[${template.languages.map((t) => chalk.bold(t)).join('|')}]`
         : chalk.bold(template.languages[0]);
-    print(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
+    info(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
   }
 }
 
@@ -320,14 +320,14 @@ async function initializeProject(
   migrate?: boolean,
 ) {
   await assertIsEmptyDirectory(workDir);
-  print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
+  info(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir, stackName);
   if (migrate) {
     await template.addMigrateContext(workDir);
   }
   if (await fs.pathExists(`${workDir}/README.md`)) {
     const readme = await fs.readFile(`${workDir}/README.md`, { encoding: 'utf-8' });
-    print(chalk.green(readme));
+    info(chalk.green(readme));
   }
 
   if (!generateOnly) {
@@ -335,7 +335,7 @@ async function initializeProject(
     await postInstall(language, canUseNetwork, workDir);
   }
 
-  print('✅ All done!');
+  info('✅ All done!');
 }
 
 async function assertIsEmptyDirectory(workDir: string) {
@@ -349,7 +349,7 @@ async function initializeGitRepository(workDir: string) {
   if (await isInGitRepository(workDir)) {
     return;
   }
-  print('Initializing a new git repository...');
+  info('Initializing a new git repository...');
   try {
     await execute('git', ['init'], { cwd: workDir });
     await execute('git', ['add', '.'], { cwd: workDir });
@@ -384,7 +384,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
     return;
   }
 
-  print(`Executing ${chalk.green(`${command} install`)}...`);
+  info(`Executing ${chalk.green(`${command} install`)}...`);
   try {
     await execute(command, ['install'], { cwd });
   } catch (e: any) {
@@ -399,7 +399,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
     return;
   }
 
-  print("Executing 'mvn package'");
+  info("Executing 'mvn package'");
   try {
     await execute('mvn', ['package'], { cwd });
   } catch {
@@ -411,7 +411,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
   warning(`Please run '${python} -m venv .venv'!`);
-  print(`Executing ${chalk.green('Creating virtualenv...')}`);
+  info(`Executing ${chalk.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.venv'], { cwd });
   } catch {

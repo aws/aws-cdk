@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
 import * as promptly from 'promptly';
-import { debug, print } from '../../logging';
+import { debug, info } from '../../logging';
 import * as chalk from '../../util/cdk-chalk';
 import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
@@ -526,7 +526,7 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting images: ${err}`));
+      info(chalk.red(`Error deleting images: ${err}`));
     }
   }
 
@@ -559,7 +559,7 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting objects: ${err}`));
+      info(chalk.red(`Error deleting objects: ${err}`));
     }
   }
 

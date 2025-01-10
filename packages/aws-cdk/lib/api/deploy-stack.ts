@@ -14,7 +14,7 @@ import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { addMetadataAssetsToManifest } from '../assets';
-import { debug, print, warning } from '../logging';
+import { debug, info, warning } from '../logging';
 import {
   changeSetHasNoChanges,
   CloudFormationStack,
@@ -332,7 +332,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // if we can skip deployment and we are performing a hotswap, let the user know
     // that no hotswap deployment happened
     if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
-      print(
+      info(
         `\n ${ICON} %s\n`,
         chalk.bold('hotswap deployment skipped - no changes were detected (use --force to override)'),
       );
@@ -378,7 +378,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }
-      print(
+      info(
         'Could not perform a hotswap deployment, as the stack %s contains non-Asset changes',
         stackArtifact.displayName,
       );
@@ -386,14 +386,14 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       if (!(e instanceof CfnEvaluationException)) {
         throw e;
       }
-      print(
+      info(
         'Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s',
         e.message,
       );
     }
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
-      print('Falling back to doing a full deployment');
+      info('Falling back to doing a full deployment');
       options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
     } else {
       return {
@@ -504,7 +504,7 @@ class FullCloudFormationDeployment {
     }
 
     if (!execute) {
-      print(
+      info(
         'Changeset %s created and waiting in review for manual execution (--no-execute)',
         changeSetDescription.ChangeSetId,
       );
@@ -537,7 +537,7 @@ class FullCloudFormationDeployment {
     await this.cleanupOldChangeset(changeSetName);
 
     debug(`Attempting to create ChangeSet with name ${changeSetName} to ${this.verb} stack ${this.stackName}`);
-    print('%s: creating CloudFormation changeset...', chalk.bold(this.stackName));
+    info('%s: creating CloudFormation changeset...', chalk.bold(this.stackName));
     const changeSet = await this.cfn.createChangeSet({
       StackName: this.stackName,
       ChangeSetName: changeSetName,
@@ -608,7 +608,7 @@ class FullCloudFormationDeployment {
   }
 
   private async directDeployment(): Promise<SuccessfulDeployStackResult> {
-    print('%s: %s stack...', chalk.bold(this.stackName), this.update ? 'updating' : 'creating');
+    info('%s: %s stack...', chalk.bold(this.stackName), this.update ? 'updating' : 'creating');
 
     const startTime = new Date();
 
