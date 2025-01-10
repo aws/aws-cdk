@@ -52,28 +52,44 @@ describe('MetadataResource', () => {
     expect(stackTemplate.Resources?.CDKMetadata?.Condition).toBeDefined();
   });
 
-  it.each(
-    [
-      [true, { Condition: 'CDKMetadataAvailable', Properties: { Analytics: 'v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzMy0DM00jNSzCrOzNQtKs0rycxN1QuC0ACoQHZIJQAAAA==' }, Type: 'AWS::CDK::Metadata' }],
-      [false, { Condition: 'CDKMetadataAvailable', Properties: { Analytics: 'v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzMy0DM00jNSzCrOzNQtKs0rycxN1QuC0ACoQHZIJQAAAA==' }, Type: 'AWS::CDK::Metadata' }],
-      [undefined, { Condition: 'CDKMetadataAvailable', Properties: { Analytics: 'v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzMy0DM00jNSzCrOzNQtKs0rycxN1QuC0ACoQHZIJQAAAA==' }, Type: 'AWS::CDK::Metadata' }],
-    ],
-  )('when no metadata is added by default, CDKMetadata should be the same', (enableAdditionalTelemtry, cdkMetadata) => {
-    const myApp = new App({
-      analyticsReporting: true,
-    });
-    myApp.node.setContext(ENABLE_ADDITIONAL_METADATA_COLLECTION, enableAdditionalTelemtry);
-    const myStack = new Stack(myApp, 'MyStack');
-    new Function(myStack, 'MyFunction', {
-      runtime: Runtime.PYTHON_3_9,
-      handler: 'index.handler',
-      code: Code.fromInline(
-        "def handler(event, context):\n\tprint('The function has been invoked.')",
-      ),
-    });
+  test('when no metadata is added by default, CDKMetadata should be the same', () => {
+    const myApps = [
+      new App({
+        analyticsReporting: true,
+        postCliContext: {
+          [ENABLE_ADDITIONAL_METADATA_COLLECTION]: true,
+        },
+      }),
+      new App({
+        analyticsReporting: true,
+        postCliContext: {
+          [ENABLE_ADDITIONAL_METADATA_COLLECTION]: false,
+        },
+      }),
+      new App({
+        analyticsReporting: true,
+        postCliContext: {
+          [ENABLE_ADDITIONAL_METADATA_COLLECTION]: undefined,
+        },
+      }),
+    ];
 
-    const stackTemplate = myApp.synth().getStackByName('MyStack').template;
-    expect(stackTemplate.Resources?.CDKMetadata).toEqual(cdkMetadata);
+    for (const myApp of myApps) {
+      const myStack = new Stack(myApp, 'MyStack');
+      new Function(myStack, 'MyFunction', {
+        runtime: Runtime.PYTHON_3_9,
+        handler: 'index.handler',
+        code: Code.fromInline(
+          "def handler(event, context):\n\tprint('The function has been invoked.')",
+        ),
+      });
+    }
+
+    const stackTemplate1 = myApps[0].synth().getStackByName('MyStack').template;
+    const stackTemplate2 = myApps[1].synth().getStackByName('MyStack').template;
+    const stackTemplate3 = myApps[2].synth().getStackByName('MyStack').template;
+    expect(stackTemplate1.Resources?.CDKMetadata).toEqual(stackTemplate2.Resources?.CDKMetadata);
+    expect(stackTemplate1.Resources?.CDKMetadata).toEqual(stackTemplate3.Resources?.CDKMetadata);
   });
 
   test('includes the formatted Analytics property', () => {
