@@ -154,10 +154,12 @@ export class AssetCode extends Code {
         if (family === RuntimeFamily.NODEJS && runtimeName.includes('puppeteer') && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
           throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
         }
+        // Requires the canary handler file to have the extension '.js', '.mjs', or '.cjs' for playwright runtime.
         if (family === RuntimeFamily.NODEJS && runtimeName.includes('playwright') && !hasValidExtension) {
           throw new Error(`The canary resource requires that the handler is present at one of the following extensions: ${playwrightValidExtensions.join(', ')} but not found at ${this.assetPath}`);
         }
       }
+      // Requires asset directory to have the structure 'python/{canary-handler-name}.py' for Python runtime.
       if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
         throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
       }
