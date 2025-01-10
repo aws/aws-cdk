@@ -11,6 +11,7 @@ import {
   UpdateStackCommand,
   waitUntilStackUpdateComplete,
 } from '@aws-sdk/client-cloudformation';
+import { CreateRepositoryCommand, DeleteRepositoryCommand } from '@aws-sdk/client-ecr';
 import { DescribeServicesCommand } from '@aws-sdk/client-ecs';
 import {
   CreateRoleCommand,
@@ -1522,6 +1523,31 @@ integTest(
     expect(diff).not.toContain('There were no differences');
   }),
 );
+
+integTest('cdk diff --import-existing-resources print diff of imported resources', withDefaultFixture(async (fixture) => {
+  const repositoryName = `${fixture.stackNamePrefix}-repository`;
+  await fixture.aws.ecr.send(new CreateRepositoryCommand({ repositoryName: repositoryName }));
+
+  try {
+    await fixture.cdkDeploy('simplified-import', {
+    });
+
+    const diff = await fixture.cdk(['diff --import-existing-resources', fixture.fullStackName('simplified-import')], {
+      modEnv: {
+        IMPORTED_REPOSITORY_NAME: repositoryName,
+      },
+    });
+    const plainTextOutput = diff.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain('[←] AWS::ECR::Repository ImportedRepository ImportedRepository1921D649 import');
+  } finally {
+    await fixture.cdkDestroy('simplified-import');
+    await fixture.aws.ecr.send(
+      new DeleteRepositoryCommand({
+        repositoryName,
+      }),
+    );
+  }
+}));
 
 integTest(
   'deploy stack with docker asset',
