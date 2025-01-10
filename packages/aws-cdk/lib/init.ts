@@ -6,8 +6,8 @@ import { invokeBuiltinHooks } from './init-hooks';
 import { error, print, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 import { cdkHomeDir, rootDir } from './util/directories';
-import { rangeFromSemver } from './util/version-range';
 import { formatErrorMessage } from './util/error';
+import { rangeFromSemver } from './util/version-range';
 
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports

@@ -15,9 +15,9 @@ import { makeBodyParameter, TemplateBodyParameter } from './template-body-parame
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
+import { formatErrorMessage } from '../../util/error';
 import type { ICloudFormationClient, SdkProvider } from '../aws-auth';
 import type { Deployments } from '../deployments';
-import { formatErrorMessage } from '../../util/error';
 
 export type ResourcesToImport = ResourceToImport[];
 export type ResourceIdentifierSummaries = ResourceIdentifierSummary[];

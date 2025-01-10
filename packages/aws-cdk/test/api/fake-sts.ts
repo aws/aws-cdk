@@ -2,8 +2,8 @@ import { AssumeRoleCommand, GetCallerIdentityCommand, Tag } from '@aws-sdk/clien
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
-import { mockSTSClient } from '../util/mock-sdk';
 import { formatErrorMessage } from '../../lib/util/error';
+import { mockSTSClient } from '../util/mock-sdk';
 
 interface RegisteredIdentity {
   readonly account: string;

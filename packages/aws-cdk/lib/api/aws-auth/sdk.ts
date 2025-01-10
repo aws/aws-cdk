@@ -320,8 +320,8 @@ import { Account } from './sdk-provider';
 import { defaultCliUserAgent } from './user-agent';
 import { debug } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
-import { traceMethods } from '../../util/tracing';
 import { formatErrorMessage } from '../../util/error';
+import { traceMethods } from '../../util/tracing';
 
 export interface S3ClientOptions {
   /**

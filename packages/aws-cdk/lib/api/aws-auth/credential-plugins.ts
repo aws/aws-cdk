@@ -4,9 +4,9 @@ import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smit
 import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
 import { debug, warning } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
 import { Mode } from '../plugin/mode';
 import { PluginHost } from '../plugin/plugin';
-import { formatErrorMessage } from '../../util/error';
 
 /**
  * Cache for credential providers.
