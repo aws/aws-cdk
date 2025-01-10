@@ -1,8 +1,9 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
 import { Code, Function, Runtime } from '../../aws-lambda';
+import { Queue } from '../../aws-sqs';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1, FeatureFlags } from '../lib';
+import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1, FeatureFlags, Duration } from '../lib';
 import { MetadataType } from '../lib/metadata-resource';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
@@ -90,6 +91,34 @@ describe('MetadataResource', () => {
     const stackTemplate3 = myApps[2].synth().getStackByName('MyStack').template;
     expect(stackTemplate1.Resources?.CDKMetadata).toEqual(stackTemplate2.Resources?.CDKMetadata);
     expect(stackTemplate1.Resources?.CDKMetadata).toEqual(stackTemplate3.Resources?.CDKMetadata);
+  });
+
+  test('enable additional metadata with metadata', () => {
+    const myApp = new App({
+      analyticsReporting: true,
+      postCliContext: {
+        [ENABLE_ADDITIONAL_METADATA_COLLECTION]: true,
+      },
+    });
+
+    const myStack = new Stack(myApp, 'EnableTelemtryStack');
+    const queueProp = {
+      visibilityTimeout: Duration.seconds(300),
+    };
+    const queue = new Queue(myStack, '01234test', queueProp);
+    queue.node.addMetadata(MetadataType.CONSTRUCT, queueProp);
+
+    const funcProp = {
+      runtime: Runtime.PYTHON_3_9,
+      handler: 'index.handler',
+      code: Code.fromInline('def handler(event, context):\n\tprint(\'The function has been invoked.\')'),
+    };
+    const func = new Function(myStack, 'MyFunction', funcProp);
+    func.node.addMetadata(MetadataType.CONSTRUCT, funcProp);
+
+    const template = myApp.synth().getStackByName('EnableTelemtryStack').template;
+    expect(template.Resources?.CDKMetadata).toBeDefined();
+    expect(template.Resources?.CDKMetadata?.Properties?.Analytics).toEqual('v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzO00DMy0DNQzCrOzNQtKs0rycxN1QuC0ADZIqxKJQAAAA==');
   });
 
   test('includes the formatted Analytics property', () => {
