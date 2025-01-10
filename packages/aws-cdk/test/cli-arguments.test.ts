@@ -8,7 +8,7 @@ describe('yargs', () => {
     const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
-      _: 'deploy',
+      command: 'deploy',
       globalOptions: {
         app: undefined,
         assetMetadata: undefined,
@@ -73,7 +73,7 @@ describe('yargs', () => {
     const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
-      _: 'deploy',
+      command: 'deploy',
       deploy: expect.objectContaining({
         STACKS: ['stack1', 'stack2'],
       }),
@@ -87,7 +87,7 @@ describe('yargs', () => {
     const result = convertYargsToUserInput(input);
 
     expect(result).toEqual({
-      _: 'acknowledge',
+      command: 'acknowledge',
       acknowledge: expect.objectContaining({
         ID: 'id1',
       }),
@@ -131,7 +131,7 @@ describe('config', () => {
       metadata: expect.anything(),
       migrate: expect.anything(),
       rollback: expect.anything(),
-      synthesize: expect.anything(),
+      synth: expect.anything(),
       watch: expect.anything(),
       notices: expect.anything(),
       import: expect.anything(),
