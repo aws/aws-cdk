@@ -1342,4 +1342,128 @@ describe('User Pool Client', () => {
     ).toThrow(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${invalidUrl}`);
   });
 
+  describe('analytics configuration', () => {
+    test('with user data shared', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      new UserPoolClient(stack, 'PoolClient', {
+        userPool: pool,
+        analyticsConfig: {
+          applicationArn: 'arn:aws:mobiletargeting:us-west-2:123456789012:apps/12345678-1234-1234-1234-123456789012',
+          shareUserData: true,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        AnalyticsConfiguration: {
+          UserDataShared: true,
+        },
+      });
+    });
+
+    test('using pinpoint app arn', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      new UserPoolClient(stack, 'PoolClient', {
+        userPool: pool,
+        analyticsConfig: {
+          applicationArn: 'arn:aws:mobiletargeting:us-west-2:123456789012:apps/12345678-1234-1234-1234-123456789012',
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        AnalyticsConfiguration: {
+          ApplicationArn: 'arn:aws:mobiletargeting:us-west-2:123456789012:apps/12345678-1234-1234-1234-123456789012',
+        },
+      });
+    });
+
+    test('using pinpoint app id and role arn and external id', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      new UserPoolClient(stack, 'PoolClient', {
+        userPool: pool,
+        analyticsConfig: {
+          applicationId: '12345678-1234-1234-1234-123456789012',
+          externalId: 'MyExternalId',
+          roleArn: 'arn:aws:iam::123456789012:role/service-role/MyRole',
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        AnalyticsConfiguration: {
+          ApplicationId: '12345678-1234-1234-1234-123456789012',
+          ExternalId: 'MyExternalId',
+          RoleArn: 'arn:aws:iam::123456789012:role/service-role/MyRole',
+        },
+      });
+    });
+
+    test('fails when both applicationArn and applicationId are specified', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // THEN
+      expect(
+        () =>
+          new UserPoolClient(stack, 'PoolClient', {
+            userPool: pool,
+            analyticsConfig: {
+              applicationArn: 'arn:aws:mobiletargeting:us-west-2:123456789012:apps/12345678-1234-1234-1234-123456789012',
+              applicationId: '12345678-1234-1234-1234-123456789012',
+            },
+          }),
+      ).toThrow('Either `applicationArn` or all of `applicationId`, `externalId` and `roleArn` must be specified.');
+    });
+
+    test('fails when either applicationId, externalId or roleArn is not specified', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // THEN
+      expect(
+        () =>
+          new UserPoolClient(stack, 'PoolClient1', {
+            userPool: pool,
+            analyticsConfig: {
+              applicationId: '12345678-1234-1234-1234-123456789012',
+            },
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `roleArn` must be specified or `applicationArn` must be specified.');
+
+      expect(
+        () =>
+          new UserPoolClient(stack, 'PoolClient2', {
+            userPool: pool,
+            analyticsConfig: {
+              externalId: 'MyExternalId',
+            },
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `roleArn` must be specified or `applicationArn` must be specified.');
+
+      expect(
+        () =>
+          new UserPoolClient(stack, 'PoolClient3', {
+            userPool: pool,
+            analyticsConfig: {
+              roleArn: 'arn:aws:iam::123456789012:role/service-role/MyRole',
+            },
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `roleArn` must be specified or `applicationArn` must be specified.');
+    });
+  });
 });

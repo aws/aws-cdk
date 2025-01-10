@@ -343,6 +343,12 @@ export interface UserPoolClientOptions {
    * @default false for new user pool clients
    */
   readonly enablePropagateAdditionalUserContextData?: boolean;
+
+  /**
+   * The user pool analytics configuration for collecting metrics and sending them to your Amazon Pinpoint campaign.
+   * @default - no analytics configuration
+   */
+  readonly analyticsConfig?: AnalyticsConfigurationProps;
 }
 
 /**
@@ -353,6 +359,49 @@ export interface UserPoolClientProps extends UserPoolClientOptions {
    * The UserPool resource this client will have access to
    */
   readonly userPool: IUserPool;
+}
+
+/**
+ * The settings for Amazon Pinpoint analytics configuration. With an analytics configuration, your application can collect user-activity metrics for user notifications with a Amazon Pinpoint campaign.
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html
+ */
+export interface AnalyticsConfigurationProps {
+  /**
+   * The ARN of an Amazon Pinpoint project that you want to connect to your user pool app client.
+   *
+   * @default - no configuration, you need to specify either `applicationArn` or all of `applicationId`, `externalId`, and `roleArn`.
+   */
+  readonly applicationArn?: string;
+
+  /**
+   * Your Amazon Pinpoint project ID.
+   *
+   * @default - no configuration, you need to specify either this property along with `externalId` and `roleArn` or `applicationArn`.
+   */
+  readonly applicationId?: string;
+
+  /**
+   * The external ID of the role that Amazon Cognito assumes to send analytics data to Amazon Pinpoint.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html
+   * @default - no configuration, you need to specify either this property along with `applicationId` and `roleArn` or `applicationArn`.
+   */
+  readonly externalId?: string;
+
+  /**
+   * The ARN of an IAM role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
+   *
+   * @default - no configuration, you need to specify either this property along with `applicationId` and `externalId` or `applicationArn`.
+   */
+  readonly roleArn?: string;
+
+  /**
+   * If true, Amazon Cognito will include user data in the events it publishes to Amazon Pinpoint analytics.
+   *
+   * @default false
+   */
+  readonly shareUserData?: boolean;
 }
 
 /**
@@ -467,6 +516,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
+      analyticsConfiguration: this.configureAnalytics(props),
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
@@ -617,5 +667,33 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
       throw new Error(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`);
     }
+  }
+
+  private configureAnalytics(props: UserPoolClientProps): CfnUserPoolClient.AnalyticsConfigurationProperty | undefined {
+    if (props.analyticsConfig) {
+      if (
+        props.analyticsConfig.applicationArn &&
+        (props.analyticsConfig.applicationId || props.analyticsConfig.externalId || props.analyticsConfig.roleArn)
+      ) {
+        throw new Error('Either `applicationArn` or all of `applicationId`, `externalId`, and `roleArn` must be specified.');
+      }
+
+      if (
+        !props.analyticsConfig.applicationArn &&
+        !(props.analyticsConfig.applicationId && props.analyticsConfig.externalId && props.analyticsConfig.roleArn)
+      ) {
+        throw new Error('Either all of `applicationId`, `externalId`, and `roleArn` must be specified or `applicationArn` must be specified.');
+      }
+
+      return {
+        applicationArn: props.analyticsConfig.applicationArn,
+        applicationId: props.analyticsConfig.applicationId,
+        externalId: props.analyticsConfig.externalId,
+        roleArn: props.analyticsConfig.roleArn,
+        userDataShared: props.analyticsConfig.shareUserData,
+      };
+    }
+
+    return undefined;
   }
 }
