@@ -99,6 +99,15 @@ export interface CommonTaskDefinitionProps {
    * @default - No volumes are passed to the Docker daemon on a container instance.
    */
   readonly volumes?: Volume[];
+
+  /**
+   * Enables fault injection and allows for fault injection requests to be accepted from the task's containers.
+   *
+   * Fault injection only works with tasks using the {@link NetworkMode.AWS_VPC} or {@link NetworkMode.HOST} network modes.
+   *
+   * @default undefined - ECS default setting is false
+   */
+  readonly enableFaultInjection?: boolean;
 }
 
 /**
@@ -458,6 +467,11 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot specify runtimePlatform in non-Fargate compatible tasks');
     }
 
+    // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html
+    if (props.enableFaultInjection && ![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
+      throw new Error(`Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`);
+    }
+
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
@@ -514,6 +528,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
         operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
+      enableFaultInjection: props.enableFaultInjection,
     });
 
     if (props.placementConstraints) {
@@ -565,7 +580,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
     return this._inferenceAccelerators.map(renderInferenceAccelerator);
 
-    function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) : CfnTaskDefinition.InferenceAcceleratorProperty {
+    function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator): CfnTaskDefinition.InferenceAcceleratorProperty {
       return {
         deviceName: inferenceAccelerator.deviceName,
         deviceType: inferenceAccelerator.deviceType,
@@ -675,7 +690,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this.volumes.push(volume);
   }
 
-  private validateVolume(volume: Volume):void {
+  private validateVolume(volume: Volume): void {
     if (volume.configuredAtLaunch !== true) {
       return;
     }
@@ -884,7 +899,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
     if (Number(cpu) === 1024) {
-      if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory)% 1024 !== 0)) {
+      if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory) % 1024 !== 0)) {
         throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was ${Number(memory)}.`);
       }
     } else if (Number(cpu) === 2048) {
@@ -893,7 +908,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     } else if (Number(cpu) === 4096) {
       if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
-        throw new Error(`If provided cpu is ${ cpu }, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${ Number(memory) }.`);
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${Number(memory)}.`);
       }
     } else {
       throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
@@ -1031,7 +1046,7 @@ export interface Volume {
    *
    * @default false
    */
-  readonly configuredAtLaunch ?: boolean;
+  readonly configuredAtLaunch?: boolean;
 
   /**
    * This property is specified when you are using Docker volumes.
@@ -1131,7 +1146,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No options
    */
-  readonly driverOpts?: {[key: string]: string};
+  readonly driverOpts?: { [key: string]: string };
   /**
    * Custom metadata to add to your Docker volume.
    *

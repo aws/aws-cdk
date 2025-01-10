@@ -6,15 +6,15 @@
 import { Command } from './command';
 
 /**
- * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
+ * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts
  *
  * @struct
  */
-export interface CliArguments {
+export interface UserInput {
   /**
    * The CLI command name
    */
-  readonly _: Command;
+  readonly command?: Command;
 
   /**
    * Global options available to all CLI commands
@@ -31,9 +31,9 @@ export interface CliArguments {
   /**
    * Synthesizes and prints the CloudFormation template for this stack
    *
-   * aliases: synth
+   * aliases: synthesize
    */
-  readonly synthesize?: SynthesizeOptions;
+  readonly synth?: SynthOptions;
 
   /**
    * Deploys the CDK toolkit stack into an AWS environment
@@ -337,11 +337,11 @@ export interface ListOptions {
 /**
  * Synthesizes and prints the CloudFormation template for this stack
  *
- * aliases: synth
+ * aliases: synthesize
  *
  * @struct
  */
-export interface SynthesizeOptions {
+export interface SynthOptions {
   /**
    * Only synthesize requested stacks, don't include dependencies
    *
@@ -368,7 +368,7 @@ export interface SynthesizeOptions {
   readonly quiet?: boolean;
 
   /**
-   * Positional argument for synthesize
+   * Positional argument for synth
    */
   readonly STACKS?: Array<string>;
 }
