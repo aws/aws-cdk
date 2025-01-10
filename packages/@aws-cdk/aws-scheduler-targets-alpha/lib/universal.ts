@@ -49,11 +49,11 @@ export interface UniversalProps extends ScheduleTargetBaseProps {
   readonly service: string;
 
   /**
-   * The API action to call.
+   * The API action to call. Must be camelCase.
    *
    * You cannot use read-only API actions such as common GET operations.
    *
-   * Also, This must be in camelCase.
+   * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html#unsupported-api-actions
    */
   readonly action: string;
 
