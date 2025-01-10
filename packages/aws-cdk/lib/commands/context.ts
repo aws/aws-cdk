@@ -80,14 +80,14 @@ function listContext(context: Context) {
   }
 
   // Print config by default
-  const data: any[] = [[chalk.green('#'), chalk.green('Key'), chalk.green('Value')]];
+  const data_out: any[] = [[chalk.green('#'), chalk.green('Key'), chalk.green('Value')]];
   for (const [i, key] of keys) {
     const jsonWithoutNewlines = JSON.stringify(context.all[key], undefined, 2).replace(/\s+/g, ' ');
-    data.push([i, key, jsonWithoutNewlines]);
+    data_out.push([i, key, jsonWithoutNewlines]);
   }
   info('Context found in %s:', chalk.blue(PROJECT_CONFIG));
   info('');
-  info(renderTable(data, process.stdout.columns));
+  info(renderTable(data_out, process.stdout.columns));
 
   // eslint-disable-next-line max-len
   info(`Run ${chalk.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);

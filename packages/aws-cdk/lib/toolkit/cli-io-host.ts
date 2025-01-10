@@ -20,9 +20,9 @@ export interface IoMessage {
    */
   readonly action: IoAction;
 
-/**
+  /**
    * A short message code uniquely identifying a message type using the format CDK_[CATEGORY]_[E/W/I][000-999].
-   * 
+   *
    * The level indicator follows these rules:
    * - 'E' for error level messages
    * - 'W' for warning level messages
@@ -189,12 +189,12 @@ export class CliIoHost {
 /**
  * Validates that a message code follows the required format:
  * CDK_[CATEGORY]_[E/W/I][000-999]
- * 
+ *
  * Examples:
  * - CDK_ASSETS_E005 (specific asset error)
  * - CDK_SDK_W001 (specific SDK warning)
  * - CDK_TOOLKIT_I000 (generic toolkit info)
- * 
+ *
  * @param code The message code to validate
  * @param level The message level (used to validate level indicator matches)
  * @throws Error if the code format is invalid
@@ -204,21 +204,21 @@ export function validateMessageCode(code: string, level: IoMessageLevel): void {
   if (!MESSAGE_CODE_PATTERN.test(code)) {
     throw new Error(
       `Invalid message code format: "${code}". ` +
-      'Code must match pattern: CDK_[CATEGORY]_[E/W/I][000-999]'
+      'Code must match pattern: CDK_[CATEGORY]_[E/W/I][000-999]',
     );
   }
 
   // Extract level indicator from code (E/W/I after second underscore)
   const levelIndicator = code.split('_')[2][0];
-  
+
   // Validate level indicator matches message level
   const expectedIndicator = level === 'error' ? 'E' :
-                          level === 'warn' ? 'W' : 'I';
-  
+    level === 'warn' ? 'W' : 'I';
+
   if (levelIndicator !== expectedIndicator) {
     throw new Error(
       `Message code level indicator '${levelIndicator}' does not match message level '${level}'. ` +
-      `Expected '${expectedIndicator}'`
+      `Expected '${expectedIndicator}'`,
     );
   }
 }

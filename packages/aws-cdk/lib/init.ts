@@ -81,8 +81,8 @@ export class InitTemplate {
   public static async fromName(templatesDir: string, name: string) {
     const basePath = path.join(templatesDir, name);
     const languages = await listDirectory(basePath);
-    const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
-    return new InitTemplate(basePath, name, languages, info);
+    const initInfo = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
+    return new InitTemplate(basePath, name, languages, initInfo);
   }
 
   public readonly description: string;
@@ -92,10 +92,10 @@ export class InitTemplate {
     private readonly basePath: string,
     public readonly name: string,
     public readonly languages: string[],
-    info: any,
+    initInfo: any,
   ) {
-    this.description = info.description;
-    for (const alias of info.aliases || []) {
+    this.description = initInfo.description;
+    for (const alias of initInfo.aliases || []) {
       this.aliases.add(alias);
     }
   }

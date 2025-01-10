@@ -564,18 +564,18 @@ export class GarbageCollector {
   }
 
   private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bucketName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bucketName;
   }
 
   private async bootstrapRepositoryName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.repositoryName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.repositoryName;
   }
 
   private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bootstrapStack.parameters.Qualifier;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bootstrapStack.parameters.Qualifier;
   }
 
   private async numObjectsInBucket(s3: IS3Client, bucket: string): Promise<number> {

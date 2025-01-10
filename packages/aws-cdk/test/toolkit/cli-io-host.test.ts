@@ -1,4 +1,4 @@
-import { CliIoHost, IoMessage, validateMessageCode } from '../../lib/toolkit/cli-io-host';
+import { CliIoHost, IoMessage, IoMessageLevel, validateMessageCode } from '../../lib/toolkit/cli-io-host';
 import * as chalk from '../../lib/util/cdk-chalk';
 
 describe('CliIoHost', () => {
@@ -244,30 +244,52 @@ describe('CliIoHost', () => {
 describe('validateMessageCode', () => {
   test('accepts valid message codes', () => {
     const validCodes = [
-      'SDK_0001',
-      'TOOLKIT_1999',
-      'ASSETS_2000',
+      { code: 'CDK_TOOLKIT_I000', level: 'info' },
+      { code: 'CDK_ASSETS_W999', level: 'warn' },
+      { code: 'CDK_SDK_E000', level: 'error' },
     ];
 
-    validCodes.forEach(code => {
-      expect(validateMessageCode(code)).toBe(true);
+    validCodes.forEach(validCode => {
+      expect(() => validateMessageCode(validCode.code, validCode.level as IoMessageLevel)).not.toThrow();
     });
   });
 
   test('rejects invalid message codes', () => {
-    const invalidCodes = [
-      'sdk_0001', // lowercase
-      'SDK-0001', // invalid separator
-      'SDK_3000', // number too high
-      'SDK_00001', // too many digits
-      'SDK0001', // missing separator
-      '_SDK_0001', // leading underscore
-      'SDK_0001_', // trailing underscore
-      'SDK_ABCD', // non-numeric suffix
+    const invalidCases = [
+      {
+        code: 'CDK_sdk_E001',
+        level: 'error',
+        expectedError: 'Invalid message code format',
+      },
+      {
+        code: 'CDK-TOOLKIT_E001',
+        level: 'error',
+        expectedError: 'Invalid message code format',
+      },
+      {
+        code: 'CDK_SDK_X000',
+        level: 'info',
+        expectedError: 'Invalid message code format',
+      },
+      {
+        code: 'SDK_E001', // Missing CDK prefix
+        level: 'error',
+        expectedError: 'Invalid message code format',
+      },
+      {
+        code: 'CDK_TOOLKIT_W001',
+        level: 'error', // Mismatched level
+        expectedError: 'level indicator',
+      },
+      {
+        code: 'CDK_TOOLKIT_E001',
+        level: 'warn', // Mismatched level
+        expectedError: 'level indicator',
+      },
     ];
 
-    invalidCodes.forEach(code => {
-      expect(validateMessageCode(code)).toBe(false);
+    invalidCases.forEach(({ code, level, expectedError }) => {
+      expect(() => validateMessageCode(code, level as IoMessageLevel)).toThrow(expectedError);
     });
   });
 });

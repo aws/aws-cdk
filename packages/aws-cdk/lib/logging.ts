@@ -87,7 +87,7 @@ function log(options: LogOptions) {
   }
 
   validateMessageCode(options.code, options.level);
-  
+
   const ioMessage: IoMessage = {
     level: options.level,
     message: options.message,
@@ -140,8 +140,8 @@ function formatLogMessage(
 
 function getDefaultCode(level: IoMessageLevel, category: string = 'TOOLKIT'): string {
   const levelIndicator = level === 'error' ? 'E' :
-                        level === 'warn' ? 'W' :
-                        'I';
+    level === 'warn' ? 'W' :
+      'I';
   return `CDK_${category}_${levelIndicator}000`;
 }
 
