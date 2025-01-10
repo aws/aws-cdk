@@ -14,7 +14,7 @@ export interface CliArguments {
   /**
    * The CLI command name
    */
-  readonly _: Command;
+  readonly _?: Command;
 
   /**
    * Global options available to all CLI commands
