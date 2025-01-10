@@ -14,7 +14,7 @@ export interface UserInput {
   /**
    * The CLI command name
    */
-  readonly _: Command;
+  readonly command?: Command;
 
   /**
    * Global options available to all CLI commands
