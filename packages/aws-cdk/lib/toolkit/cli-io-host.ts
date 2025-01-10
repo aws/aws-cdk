@@ -23,8 +23,8 @@ export interface IoMessage {
   /**
    * A short message code uniquely identifying a message type of the format [CATEGORY]_[NUMBER_CODE].
    * All 'error' level message codes begin with 0.
-   * All warning level message codes begin with 1.
-   * All info level message codes begin with 2.
+   * All 'warning' level message codes begin with 1.
+   * All 'info' level message codes begin with 2.
    *
    * Codes ending in 000 are generic messages, while codes ending in 001-999 are specific to a particular message.
    * The following are examples of valid and invalid message codes:
