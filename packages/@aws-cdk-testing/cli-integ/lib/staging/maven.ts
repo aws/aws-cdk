@@ -42,7 +42,7 @@ export async function uploadJavaPackages(packages: string[], login: LoginInforma
       `-Dfile=${pkg.replace(/.pom$/, '.jar')}`,
       ...await pathExists(sourcesFile) ? [`-Dsources=${sourcesFile}`] : [],
       ...await pathExists(javadocFile) ? [`-Djavadoc=${javadocFile}`] : []], {
-      output,
+      outputs: [output],
       modEnv: {
         // Do not try to JIT the Maven binary
         MAVEN_OPTS: `${NO_JIT} ${process.env.MAVEN_OPTS ?? ''}`.trim(),

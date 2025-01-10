@@ -278,7 +278,7 @@ you can specify the region explicitly:
 
 ```ts
 const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
-  bucketName: 'my-bucket',
+  bucketName: 'amzn-s3-demo-bucket',
   region: 'ap-southeast-1',
 });
 ```

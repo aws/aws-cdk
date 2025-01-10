@@ -8,13 +8,13 @@ import { IGraphqlApi } from './graphqlapi-base';
   */
 export interface ISchemaConfig {
   /**
-    * The ID of the api the schema is bound to
-    */
+   * The ID of the api the schema is bound to
+   */
   apiId: string;
 
   /**
-    * The schema definition string
-    */
+   * The schema definition string
+   */
   definition: string;
 }
 
@@ -33,12 +33,12 @@ export interface SchemaBindOptions {}
   */
 export interface ISchema {
   /**
-    * Binds a schema string to a GraphQlApi
-    *
-    * @returns ISchemaConfig with apiId and schema definition string
-    * @param api the api to bind the schema to
-    * @param options configuration for bind behavior
-    */
+   * Binds a schema string to a GraphQlApi
+   *
+   * @returns ISchemaConfig with apiId and schema definition string
+   * @param api the api to bind the schema to
+   * @param options configuration for bind behavior
+   */
   bind(api: IGraphqlApi, options?: SchemaBindOptions): ISchemaConfig;
 }
 

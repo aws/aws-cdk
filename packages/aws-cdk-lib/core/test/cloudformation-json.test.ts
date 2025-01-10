@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { evaluateCFN } from './evaluate-cfn';
 import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
@@ -121,6 +122,24 @@ describe('tokens that return literals', () => {
         '}',
       ]],
     });
+  });
+
+  test("Intrinsic-resolving List Tokens generate the custom resource's logical ID from the Intrisic's stringified value", () => {
+    // GIVEN
+    const someList = Token.asList(new Intrinsic({ Ref: 'Thing' }));
+
+    // WHEN
+    new CfnResource(stack, 'Resource', {
+      type: 'AWS::Banana',
+      properties: {
+        someJson: stack.toJsonString({ someList }),
+      },
+    });
+
+    const asm = app.synth();
+    const template = asm.getStackByName(stack.stackName).template;
+    const stringifyLogicalId = Object.keys(template.Resources).filter(id => id.startsWith('CdkJsonStringify'))[0];
+    expect(stringifyLogicalId).toEqual('CdkJsonStringifyRefThing47B9E256');
   });
 
   test('tokens in strings survive additional TokenJSON.stringification()', () => {

@@ -172,7 +172,9 @@ export class AwsCdkCli implements IAwsCdkCli {
    * cdk bootstrap
    */
   public async bootstrap(options: BootstrapOptions = {}) {
+    const envs = options.environments ?? [];
     const bootstrapCommandArgs: string[] = [
+      ...envs,
       ...renderBooleanArg('force', options.force),
       ...renderBooleanArg('show-template', options.showTemplate),
       ...renderBooleanArg('terminationProtection', options.terminationProtection),

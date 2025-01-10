@@ -2,13 +2,22 @@ import * as path from 'path';
 import { Template } from '../../assertions';
 import * as cognito from '../../aws-cognito';
 import * as lambda from '../../aws-lambda';
+import { App } from '../../core';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
 
 // GIVEN
 let stack: cdk.Stack;
+let app: App;
 beforeEach(() => {
-  stack = new cdk.Stack();
+  app = new App(
+    {
+      context: {
+        '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission': true,
+      },
+    },
+  );
+  stack = new cdk.Stack(app);
 });
 
 describe('AppSync API Key Authorization', () => {
@@ -131,7 +140,7 @@ describe('AppSync API Key Authorization', () => {
     };
 
     // THEN
-    expect(when).toThrowError('API key expiration must be between 1 and 365 days.');
+    expect(when).toThrow('API key expiration must be between 1 and 365 days.');
   });
 
   test('apiKeyConfig fails if expire argument greater than 365 day', () => {
@@ -152,7 +161,7 @@ describe('AppSync API Key Authorization', () => {
     };
 
     // THEN
-    expect(when).toThrowError('API key expiration must be between 1 and 365 days.');
+    expect(when).toThrow('API key expiration must be between 1 and 365 days.');
   });
 
   test('appsync creates configured api key with additionalAuthorizationModes (not as first element)', () => {
@@ -193,7 +202,7 @@ describe('AppSync API Key Authorization', () => {
           }],
         },
       });
-    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('appsync fails when multiple API_KEY auth modes', () => {
@@ -209,7 +218,7 @@ describe('AppSync API Key Authorization', () => {
           }],
         },
       });
-    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('appsync fails when multiple API_KEY auth modes in additionalXxx', () => {
@@ -226,7 +235,7 @@ describe('AppSync API Key Authorization', () => {
           ],
         },
       });
-    }).toThrowError('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 });
 
@@ -274,7 +283,7 @@ describe('AppSync IAM Authorization', () => {
           additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }],
         },
       });
-    }).toThrowError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 
   test('appsync fails when multiple IAM auth modes in additionalXxx', () => {
@@ -290,7 +299,7 @@ describe('AppSync IAM Authorization', () => {
           ],
         },
       });
-    }).toThrowError('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
+    }).toThrow('You can\'t duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
   });
 });
 
@@ -924,5 +933,40 @@ describe('AppSync Lambda Authorization', () => {
         },
       },
     })).toThrow('Missing Lambda Configuration');
+  });
+
+  test('Lambda authorization properly scoped under feature flag', () => {
+    // WHEN
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.LAMBDA,
+          lambdaAuthorizerConfig: {
+            handler: fn,
+          },
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'authfunction96361832',
+          'Arn',
+        ],
+      },
+      Principal: 'appsync.amazonaws.com',
+      SourceArn: {
+        'Fn::GetAtt': [
+          'apiC8550315',
+          'Arn',
+        ],
+      },
+    });
+
   });
 });

@@ -1,4 +1,4 @@
-import { defaultOrigin, defaultOriginGroup } from './test-origin';
+import { defaultOrigin, defaultOriginGroup, defaultOriginWithOriginAccessControl } from './test-origin';
 import { Annotations, Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { App, Duration, Stack } from '../../core';
+import { App, Aws, Duration, Stack } from '../../core';
 import {
   CfnDistribution,
   Distribution,
@@ -36,7 +36,7 @@ beforeEach(() => {
 
 test('minimal example renders correctly', () => {
   const origin = defaultOrigin();
-  new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+  const dist = new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
@@ -58,6 +58,19 @@ test('minimal example renders correctly', () => {
       }],
     },
   });
+
+  expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/${dist.distributionId}`);
+});
+
+test('existing distributions can be imported', () => {
+  const dist = Distribution.fromDistributionAttributes(stack, 'ImportedDist', {
+    domainName: 'd111111abcdef8.cloudfront.net',
+    distributionId: '012345ABCDEF',
+  });
+
+  expect(dist.distributionDomainName).toEqual('d111111abcdef8.cloudfront.net');
+  expect(dist.distributionId).toEqual('012345ABCDEF');
+  expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/012345ABCDEF`);
 });
 
 test('exhaustive example of props renders correctly and SSL method sni-only', () => {
@@ -1282,6 +1295,36 @@ test('with publish additional metrics', () => {
   });
 });
 
+test('with origin access control id', () => {
+  const origin = defaultOriginWithOriginAccessControl();
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    publishAdditionalMetrics: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Enabled: true,
+      HttpVersion: 'http2',
+      IPV6Enabled: true,
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+        OriginAccessControlId: 'test-origin-access-control-id',
+      }],
+    },
+  });
+});
+
 describe('Distribution metrics tests', () => {
   const additionalMetrics = [
     { name: 'OriginLatency', method: 'metricOriginLatency', statistic: 'Average', additionalMetricsRequired: true, errorMetricName: 'Origin latency' },
@@ -1333,4 +1376,61 @@ describe('Distribution metrics tests', () => {
       dist[metric.method]();
     }).toThrow(new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
   });
+});
+
+describe('attachWebAclId', () => {
+  test('can attach WebAcl to the distribution by the method', () => {
+    const origin = defaultOrigin();
+
+    const distribution = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+    });
+
+    distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167a');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+      },
+    });
+  });
+
+  test('throws if a WebAcl is already attached to the distribution', () => {
+    const origin = defaultOrigin();
+
+    const distribution = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
+    });
+
+    expect(() => {
+      distribution.attachWebAclId('473e64fd-f30b-4765-81a0-62ad96dd167b');
+    }).toThrow(/A WebACL has already been attached to this distribution/);
+  });
+
+  describe('throws if the WebAcl is not in us-east-1 region', () => {
+    test('when try to attach WebACL using `attachWebAclId` method', () => {
+      const origin = defaultOrigin();
+
+      const distribution = new Distribution(stack, 'MyDist', {
+        defaultBehavior: { origin },
+      });
+
+      expect(() => {
+        distribution.attachWebAclId('arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a');
+      }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+    });
+
+    test('when try to attach WebACL by specifying value for props', () => {
+      const origin = defaultOrigin();
+
+      expect(() => {
+        new Distribution(stack, 'MyDist', {
+          defaultBehavior: { origin },
+          webAclId: 'arn:aws:wafv2:ap-northeast-1:123456789012:global/web-acl/MyWebAcl/473e64fd-f30b-4765-81a0-62ad96dd167a',
+        });
+      }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
+    });
+  });
+
 });

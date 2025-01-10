@@ -1,4 +1,4 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import * as fs from 'fs';
 import * as path from 'path';
 import { DescribeStackResourcesCommand, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
@@ -79,6 +79,43 @@ integTest('can and deploy if omitting execution policies', withoutBootstrap(asyn
 
   // Deploy stack that uses file assets
   await fixture.cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+  });
+}));
+
+integTest('can deploy with session tags on the deploy, lookup, file asset, and image asset publishing roles', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    toolkitStackName: bootstrapStackName,
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'session-tags.all-roles-deny-all.yaml'),
+  });
+
+  await fixture.cdkDeploy('session-tags', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+    modEnv: {
+      ENABLE_VPC_TESTING: 'IMPORT',
+    },
+  });
+}));
+
+integTest('can deploy without execution role and with session tags on deploy role', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    toolkitStackName: bootstrapStackName,
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'session-tags.deploy-role-deny-sqs.yaml'),
+  });
+
+  await fixture.cdkDeploy('session-tags-with-custom-synthesizer', {
     options: [
       '--toolkit-stack-name', bootstrapStackName,
       '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,

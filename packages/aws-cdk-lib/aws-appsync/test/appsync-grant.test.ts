@@ -30,7 +30,7 @@ describe('grant Permissions', () => {
     //THEN
     expect(() => {
       api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
-    }).toThrowError('At least 1 custom ARN must be provided.');
+    }).toThrow('At least 1 custom ARN must be provided.');
   });
 
   test('grant provides custom permissions when called with `custom` argument', () => {

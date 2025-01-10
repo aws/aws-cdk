@@ -156,6 +156,7 @@ export abstract class OriginBase implements IOrigin {
   private readonly originShieldRegion?: string;
   private readonly originShieldEnabled: boolean;
   private readonly originId?: string;
+  private readonly originAccessControlId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
@@ -170,6 +171,7 @@ export abstract class OriginBase implements IOrigin {
     this.originShieldRegion = props.originShieldRegion;
     this.originId = props.originId;
     this.originShieldEnabled = props.originShieldEnabled ?? true;
+    this.originAccessControlId = props.originAccessControlId;
   }
 
   /**
@@ -194,6 +196,7 @@ export abstract class OriginBase implements IOrigin {
         s3OriginConfig,
         customOriginConfig,
         originShield: this.renderOriginShield(this.originShieldEnabled, this.originShieldRegion),
+        originAccessControlId: this.originAccessControlId,
       },
     };
   }

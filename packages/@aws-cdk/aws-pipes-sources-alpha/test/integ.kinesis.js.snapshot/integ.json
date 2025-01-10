@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integtest-pipe-source-kinesis/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-sources-kinesis"
+      ],
+      "assertionStack": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipesourcekinesisDefaultTestDeployAssert6F0A38D7"
+    }
+  }
+}

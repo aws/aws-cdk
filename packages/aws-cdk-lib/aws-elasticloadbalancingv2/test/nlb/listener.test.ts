@@ -533,6 +533,111 @@ describe('tests', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 0);
     expect(listener.listenerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/network/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2');
   });
+
+  test('Create Listener with TCP idle timeout', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    new elbv2.NetworkListener(stack, 'Listener', {
+      loadBalancer: lb,
+      port: 443,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      tcpIdleTimeout: cdk.Duration.seconds(100),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TCP',
+      Port: 443,
+      ListenerAttributes: Match.arrayWith([
+        {
+          Key: 'tcp.idle_timeout.seconds',
+          Value: '100',
+        },
+      ]),
+    });
+  });
+
+  test('Add Listener with TCP idle timeout', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      tcpIdleTimeout: cdk.Duration.seconds(100),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TCP',
+      Port: 443,
+      ListenerAttributes: Match.arrayWith([
+        {
+          Key: 'tcp.idle_timeout.seconds',
+          Value: '100',
+        },
+      ]),
+    });
+  });
+
+  test('throws when tcpIdleTimeout is set with UDP.', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80, protocol: elbv2.Protocol.UDP });
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    expect(() => {
+      lb.addListener('Listener1', {
+        port: 80,
+        defaultAction: elbv2.NetworkListenerAction.forward([group]),
+        tcpIdleTimeout: cdk.Duration.seconds(100),
+        protocol: elbv2.Protocol.UDP,
+      });
+    }).toThrow('\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.');
+  });
+
+  test('throws when tcpIdleTimeout is smaller than 1 second.', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    expect(() => {
+      lb.addListener('Listener1', {
+        port: 80,
+        defaultAction: elbv2.NetworkListenerAction.forward([group]),
+        tcpIdleTimeout: cdk.Duration.millis(1),
+      });
+    }).toThrow('\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got 1 milliseconds.');
+  });
+
+  test.each([1, 10000])('throws when tcpIdleTimeout is invalid seconds, got: %d seconds', (tcpIdleTimeoutSeconds) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    expect(() => {
+      lb.addListener('Listener1', {
+        port: 80,
+        defaultAction: elbv2.NetworkListenerAction.forward([group]),
+        tcpIdleTimeout: cdk.Duration.seconds(tcpIdleTimeoutSeconds),
+      });
+    }).toThrow(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`);
+  });
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {

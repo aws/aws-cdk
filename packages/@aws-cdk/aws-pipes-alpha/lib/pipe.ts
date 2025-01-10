@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
-import { ISource } from './source';
+import { ISource, SourceWithDeadLetterTarget } from './source';
 import { ITarget } from './target';
 
 /**
@@ -115,25 +115,25 @@ export interface PipeProps {
   readonly logDestinations?: ILogDestination[];
 
   /**
-    * The level of logging detail to include.
-    *
-    * This applies to all log destinations for the pipe.
-    *
-    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html
-    * @default - LogLevel.ERROR
-    */
+   * The level of logging detail to include.
+   *
+   * This applies to all log destinations for the pipe.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html
+   * @default - LogLevel.ERROR
+   */
   readonly logLevel?: LogLevel;
 
   /**
-    * Whether the execution data (specifically, the `payload` , `awsRequest` , and `awsResponse` fields) is included in the log messages for this pipe.
-    *
-    * This applies to all log destinations for the pipe.
-    *
-    * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) and the [message schema](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs-schema.html) in the *Amazon EventBridge User Guide* .
-    *
-    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
-    * @default - none
-    */
+   * Whether the execution data (specifically, the `payload` , `awsRequest` , and `awsResponse` fields) is included in the log messages for this pipe.
+   *
+   * This applies to all log destinations for the pipe.
+   *
+   * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) and the [message schema](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs-schema.html) in the *Amazon EventBridge User Guide* .
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
+   * @default - none
+   */
   readonly logIncludeExecutionData?: IncludeExecutionData[];
 
   /**
@@ -233,6 +233,16 @@ export class Pipe extends PipeBase {
      */
     const source = props.source.bind(this);
     props.source.grantRead(this.pipeRole);
+
+    /**
+     * An optional dead-letter queue stores any events that are not successfully delivered to
+     * a target after all retry attempts are exhausted. The IAM role needs permission to write
+     * events to the dead-letter queue, either an SQS queue or SNS topic.
+     */
+    if (SourceWithDeadLetterTarget.isSourceWithDeadLetterTarget(props.source)) {
+      props.source.grantPush(this.pipeRole, props.source.deadLetterTarget);
+    }
+
     // Add the filter criteria to the source parameters
     const sourceParameters : CfnPipe.PipeSourceParametersProperty= {
       ...source.sourceParameters,

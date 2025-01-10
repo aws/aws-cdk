@@ -240,6 +240,10 @@ input DemoInput {
 type Mutation {
   callStepFunction(input: DemoInput!): job
 }
+
+type Query {
+  _placeholder: String
+}
 ```
 
 GraphQL request mapping template `request.vtl`:
@@ -911,4 +915,17 @@ rule.addTarget(new targets.AppSync(api, {
     message: 'hello world',
   }),
 }));
+```
+
+## Owner Contact
+
+You can set the owner contact information for an API resource.
+This field accepts any string input with a length of 0 - 256 characters.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'OwnerContact', {
+    name: 'OwnerContact',
+    definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    ownerContact: 'test-owner-contact',
+});
 ```

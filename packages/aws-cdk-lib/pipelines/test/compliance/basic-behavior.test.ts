@@ -81,6 +81,33 @@ test('overridden stack names are respected', () => {
   });
 });
 
+test('two stacks can have the same name', () => {
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', { useChangeSets: false });
+  pipeline.addStage(new TwoStacksApp(app, 'App'));
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([
+      {
+        Name: 'App',
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            Name: stringLike('MyFancyStack.Deploy'),
+            Configuration: Match.objectLike({
+              StackName: 'MyFancyStack',
+            }),
+          }),
+          Match.objectLike({
+            Name: stringLike('MyFancyStack.eu-west-2.Deploy'),
+            Configuration: Match.objectLike({
+              StackName: 'MyFancyStack',
+            }),
+          }),
+        ]),
+      },
+    ]),
+  });
+});
+
 test('changing CLI version leads to a different pipeline structure (restarting it)', () => {
 
   // GIVEN
@@ -150,6 +177,20 @@ class OneStackAppWithCustomName extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
     new BucketStack(this, 'Stack', {
+      stackName: 'MyFancyStack',
+    });
+  }
+}
+
+class TwoStacksApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    new BucketStack(this, 'Stack1', {
+      env: { region: 'eu-west-1' },
+      stackName: 'MyFancyStack',
+    });
+    new BucketStack(this, 'Stack2', {
+      env: { region: 'eu-west-2' },
       stackName: 'MyFancyStack',
     });
   }

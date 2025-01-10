@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "25f5843484c10a3b762cdda9cddcdbaf948c1d795dd2294a83ba77c6c1b732ef": {
+      "source": {
+        "path": "kinesis-resource-policy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "25f5843484c10a3b762cdda9cddcdbaf948c1d795dd2294a83ba77c6c1b732ef.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,9 +1,16 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import { ISDK } from './aws-auth';
+import type { SDK } from './aws-auth';
 import { debug } from '../logging';
-import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT, BOOTSTRAP_VARIANT_PARAMETER, DEFAULT_BOOTSTRAP_VARIANT } from './bootstrap/bootstrap-props';
-import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
+import {
+  BOOTSTRAP_VARIANT_PARAMETER,
+  BOOTSTRAP_VERSION_OUTPUT,
+  BUCKET_DOMAIN_NAME_OUTPUT,
+  BUCKET_NAME_OUTPUT,
+  DEFAULT_BOOTSTRAP_VARIANT,
+  REPOSITORY_NAME_OUTPUT,
+} from './bootstrap/bootstrap-props';
+import { CloudFormationStack, stabilizeStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -35,20 +42,32 @@ export abstract class ToolkitInfo {
     return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 
-  public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo> {
+  public static async lookup(
+    environment: cxapi.Environment,
+    sdk: SDK,
+    stackName: string | undefined,
+  ): Promise<ToolkitInfo> {
     const cfn = sdk.cloudFormation();
     stackName = ToolkitInfo.determineName(stackName);
     try {
       const stack = await stabilizeStack(cfn, stackName);
       if (!stack) {
-        debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
-          environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));
+        debug(
+          "The environment %s doesn't have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.",
+          environment.name,
+          stackName,
+          chalk.blue(`cdk bootstrap "${environment.name}"`),
+        );
         return ToolkitInfo.bootstrapStackNotFoundInfo(stackName);
       }
       if (stack.stackStatus.isCreationFailure) {
         // Treat a "failed to create" bootstrap stack as an absent one.
-        debug('The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
-          environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));
+        debug(
+          'The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
+          environment.name,
+          stackName,
+          chalk.blue(`cdk bootstrap "${environment.name}"`),
+        );
         return ToolkitInfo.bootstrapStackNotFoundInfo(stackName);
       }
 
@@ -63,23 +82,29 @@ export abstract class ToolkitInfo {
   }
 
   public static bootstrapStackNotFoundInfo(stackName: string): ToolkitInfo {
-    return new BootstrapStackNotFoundInfo(stackName, 'This deployment requires a bootstrap stack with a known name; pass \'--toolkit-stack-name\' or switch to using the \'DefaultStackSynthesizer\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)');
+    return new BootstrapStackNotFoundInfo(
+      stackName,
+      "This deployment requires a bootstrap stack with a known name; pass '--toolkit-stack-name' or switch to using the 'DefaultStackSynthesizer' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)",
+    );
   }
 
   public static bootstrapStackLookupError(stackName: string, e: Error): ToolkitInfo {
-    return new BootstrapStackNotFoundInfo(stackName, `This deployment requires a bootstrap stack with a known name, but during its lookup the following error occurred: ${e}; pass \'--toolkit-stack-name\' or switch to using the \'DefaultStackSynthesizer\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`);
+    return new BootstrapStackNotFoundInfo(
+      stackName,
+      `This deployment requires a bootstrap stack with a known name, but during its lookup the following error occurred: ${e}; pass \'--toolkit-stack-name\' or switch to using the \'DefaultStackSynthesizer\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`,
+    );
   }
 
   public abstract readonly found: boolean;
   public abstract readonly bucketUrl: string;
   public abstract readonly bucketName: string;
+  public abstract readonly repositoryName: string;
   public abstract readonly version: number;
   public abstract readonly variant: string;
   public abstract readonly bootstrapStack: CloudFormationStack;
   public abstract readonly stackName: string;
 
-  constructor() {
-  }
+  constructor() {}
 }
 
 /**
@@ -98,6 +123,10 @@ class ExistingToolkitInfo extends ToolkitInfo {
 
   public get bucketName() {
     return this.requireOutput(BUCKET_NAME_OUTPUT);
+  }
+
+  public get repositoryName() {
+    return this.requireOutput(REPOSITORY_NAME_OUTPUT);
   }
 
   public get version() {
@@ -126,7 +155,9 @@ class ExistingToolkitInfo extends ToolkitInfo {
    */
   private requireOutput(output: string): string {
     if (!(output in this.bootstrapStack.outputs)) {
-      throw new Error(`The CDK toolkit stack (${this.bootstrapStack.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
+      throw new Error(
+        `The CDK toolkit stack (${this.bootstrapStack.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`,
+      );
     }
     return this.bootstrapStack.outputs[output];
   }
@@ -145,7 +176,10 @@ class ExistingToolkitInfo extends ToolkitInfo {
 class BootstrapStackNotFoundInfo extends ToolkitInfo {
   public readonly found = false;
 
-  constructor(public readonly stackName: string, private readonly errorMessage: string) {
+  constructor(
+    public readonly stackName: string,
+    private readonly errorMessage: string,
+  ) {
     super();
   }
 
@@ -158,6 +192,10 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
   }
 
   public get bucketName(): string {
+    throw new Error(this.errorMessage);
+  }
+
+  public get repositoryName(): string {
     throw new Error(this.errorMessage);
   }
 

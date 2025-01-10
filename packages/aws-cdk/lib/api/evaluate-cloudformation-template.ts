@@ -1,52 +1,41 @@
-import * as AWS from 'aws-sdk';
-import { PromiseResult } from 'aws-sdk/lib/request';
-import { ISDK } from './aws-auth';
-import { NestedStackTemplates } from './nested-stack-helpers';
+import type { Export, ListExportsCommandOutput, StackResourceSummary } from '@aws-sdk/client-cloudformation';
+import type { SDK } from './aws-auth';
+import type { NestedStackTemplates } from './nested-stack-helpers';
 
 export interface ListStackResources {
-  listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;
+  listStackResources(): Promise<StackResourceSummary[]>;
 }
 
 export class LazyListStackResources implements ListStackResources {
-  private stackResources: Promise<AWS.CloudFormation.StackResourceSummary[]> | undefined;
+  private stackResources: Promise<StackResourceSummary[]> | undefined;
 
-  constructor(private readonly sdk: ISDK, private readonly stackName: string) {
-  }
+  constructor(
+    private readonly sdk: SDK,
+    private readonly stackName: string,
+  ) {}
 
-  public async listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
+  public async listStackResources(): Promise<StackResourceSummary[]> {
     if (this.stackResources === undefined) {
-      this.stackResources = this.getStackResources(undefined);
+      this.stackResources = this.sdk.cloudFormation().listStackResources({
+        StackName: this.stackName,
+      });
     }
     return this.stackResources;
-  }
-
-  private async getStackResources(nextToken: string | undefined): Promise<AWS.CloudFormation.StackResourceSummary[]> {
-    const ret = new Array<AWS.CloudFormation.StackResourceSummary>();
-    return this.sdk.cloudFormation().listStackResources({
-      StackName: this.stackName,
-      NextToken: nextToken,
-    }).promise().then(async stackResourcesResponse => {
-      ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
-      if (stackResourcesResponse.NextToken) {
-        ret.push(...await this.getStackResources(stackResourcesResponse.NextToken));
-      }
-      return ret;
-    });
   }
 }
 
 export interface LookupExport {
-  lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined>;
+  lookupExport(name: string): Promise<Export | undefined>;
 }
 
-export class LookupExportError extends Error { }
+export class LookupExportError extends Error {}
 
 export class LazyLookupExport implements LookupExport {
-  private cachedExports: { [name: string]: AWS.CloudFormation.Export } = {}
+  private cachedExports: { [name: string]: Export } = {};
 
-  constructor(private readonly sdk: ISDK) { }
+  constructor(private readonly sdk: SDK) {}
 
-  async lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined> {
+  async lookupExport(name: string): Promise<Export | undefined> {
     if (this.cachedExports[name]) {
       return this.cachedExports[name];
     }
@@ -60,19 +49,16 @@ export class LazyLookupExport implements LookupExport {
       if (cfnExport.Name === name) {
         return cfnExport;
       }
-
     }
 
     return undefined; // export not found
   }
 
-  private async * listExports() {
+  // TODO: Paginate
+  private async *listExports() {
     let nextToken: string | undefined = undefined;
     while (true) {
-      const response: PromiseResult<AWS.CloudFormation.ListExportsOutput, AWS.AWSError> = await this.sdk.cloudFormation().listExports({
-        NextToken: nextToken,
-      }).promise();
-
+      const response: ListExportsCommandOutput = await this.sdk.cloudFormation().listExports({ NextToken: nextToken });
       for (const cfnExport of response.Exports ?? []) {
         yield cfnExport;
       }
@@ -85,7 +71,7 @@ export class LazyLookupExport implements LookupExport {
   }
 }
 
-export class CfnEvaluationException extends Error { }
+export class CfnEvaluationException extends Error {}
 
 export interface ResourceDefinition {
   readonly LogicalId: string;
@@ -100,9 +86,10 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly account: string;
   readonly region: string;
   readonly partition: string;
-  readonly urlSuffix: (region: string) => string;
-  readonly sdk: ISDK;
-  readonly nestedStacks?: { [nestedStackLogicalId: string]: NestedStackTemplates };
+  readonly sdk: SDK;
+  readonly nestedStacks?: {
+    [nestedStackLogicalId: string]: NestedStackTemplates;
+  };
 }
 
 export class EvaluateCloudFormationTemplate {
@@ -112,9 +99,10 @@ export class EvaluateCloudFormationTemplate {
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
-  private readonly urlSuffix: (region: string) => string;
-  private readonly sdk: ISDK;
-  private readonly nestedStacks: { [nestedStackLogicalId: string]: NestedStackTemplates };
+  private readonly sdk: SDK;
+  private readonly nestedStacks: {
+    [nestedStackLogicalId: string]: NestedStackTemplates;
+  };
   private readonly stackResources: ListStackResources;
   private readonly lookupExport: LookupExport;
 
@@ -132,7 +120,6 @@ export class EvaluateCloudFormationTemplate {
     this.account = props.account;
     this.region = props.region;
     this.partition = props.partition;
-    this.urlSuffix = props.urlSuffix;
     this.sdk = props.sdk;
 
     // We need names of nested stack so we can evaluate cross stack references
@@ -161,13 +148,15 @@ export class EvaluateCloudFormationTemplate {
       account: this.account,
       region: this.region,
       partition: this.partition,
-      urlSuffix: this.urlSuffix,
       sdk: this.sdk,
       nestedStacks: this.nestedStacks,
     });
   }
 
-  public async establishResourcePhysicalName(logicalId: string, physicalNameInCfnTemplate: any): Promise<string | undefined> {
+  public async establishResourcePhysicalName(
+    logicalId: string,
+    physicalNameInCfnTemplate: any,
+  ): Promise<string | undefined> {
     if (physicalNameInCfnTemplate != null) {
       try {
         return await this.evaluateCfnExpression(physicalNameInCfnTemplate);
@@ -184,12 +173,12 @@ export class EvaluateCloudFormationTemplate {
 
   public async findPhysicalNameFor(logicalId: string): Promise<string | undefined> {
     const stackResources = await this.stackResources.listStackResources();
-    return stackResources.find(sr => sr.LogicalResourceId === logicalId)?.PhysicalResourceId;
+    return stackResources.find((sr) => sr.LogicalResourceId === logicalId)?.PhysicalResourceId;
   }
 
   public async findLogicalIdForPhysicalName(physicalName: string): Promise<string | undefined> {
     const stackResources = await this.stackResources.listStackResources();
-    return stackResources.find(sr => sr.PhysicalResourceId === physicalName)?.LogicalResourceId;
+    return stackResources.find((sr) => sr.PhysicalResourceId === physicalName)?.LogicalResourceId;
   }
 
   public findReferencesTo(logicalId: string): Array<ResourceDefinition> {
@@ -242,7 +231,7 @@ export class EvaluateCloudFormationTemplate {
         return evaluatedArgs[index];
       }
 
-      async 'Ref'(logicalId: string): Promise<string> {
+      async Ref(logicalId: string): Promise<string> {
         const refTarget = await self.findRefTarget(logicalId);
         if (refTarget) {
           return refTarget;
@@ -257,23 +246,21 @@ export class EvaluateCloudFormationTemplate {
         if (attrValue) {
           return attrValue;
         } else {
-          throw new CfnEvaluationException(`Attribute '${attributeName}' of resource '${logicalId}' could not be found for evaluation`);
+          throw new CfnEvaluationException(
+            `Attribute '${attributeName}' of resource '${logicalId}' could not be found for evaluation`,
+          );
         }
       }
 
       async 'Fn::Sub'(template: string, explicitPlaceholders?: { [variable: string]: string }): Promise<string> {
-        const placeholders = explicitPlaceholders
-          ? await self.evaluateCfnExpression(explicitPlaceholders)
-          : {};
+        const placeholders = explicitPlaceholders ? await self.evaluateCfnExpression(explicitPlaceholders) : {};
 
-        return asyncGlobalReplace(template, /\${([^}]*)}/g, key => {
+        return asyncGlobalReplace(template, /\${([^}]*)}/g, (key) => {
           if (key in placeholders) {
             return placeholders[key];
           } else {
             const splitKey = key.split('.');
-            return splitKey.length === 1
-              ? this.Ref(key)
-              : this['Fn::GetAtt'](splitKey[0], splitKey.slice(1).join('.'));
+            return splitKey.length === 1 ? this.Ref(key) : this['Fn::GetAtt'](splitKey[0], splitKey.slice(1).join('.'));
           }
         });
       }
@@ -295,7 +282,9 @@ export class EvaluateCloudFormationTemplate {
     }
 
     if (Array.isArray(cfnExpression)) {
-      return Promise.all(cfnExpression.map(expr => this.evaluateCfnExpression(expr)));
+      // Small arrays in practice
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+      return Promise.all(cfnExpression.map((expr) => this.evaluateCfnExpression(expr)));
     }
 
     if (typeof cfnExpression === 'object') {
@@ -328,11 +317,11 @@ export class EvaluateCloudFormationTemplate {
     }
 
     if (Array.isArray(templateElement)) {
-      return templateElement.some(el => this.references(logicalId, el));
+      return templateElement.some((el) => this.references(logicalId, el));
     }
 
     if (typeof templateElement === 'object') {
-      return Object.values(templateElement).some(el => this.references(logicalId, el));
+      return Object.values(templateElement).some((el) => this.references(logicalId, el));
     }
 
     return false;
@@ -353,7 +342,7 @@ export class EvaluateCloudFormationTemplate {
     // first, check to see if the Ref is a Parameter who's value we have
     if (logicalId === 'AWS::URLSuffix') {
       if (!this.cachedUrlSuffix) {
-        this.cachedUrlSuffix = this.urlSuffix(this.region);
+        this.cachedUrlSuffix = await this.sdk.getUrlSuffix(this.region);
       }
 
       return this.cachedUrlSuffix;
@@ -376,7 +365,6 @@ export class EvaluateCloudFormationTemplate {
   }
 
   private async findGetAttTarget(logicalId: string, attribute?: string): Promise<string | undefined> {
-
     // Handle case where the attribute is referencing a stack output (used in nested stacks to share parameters)
     // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-cloudformation.html#w2ab1c17c23c19b5
     if (logicalId === 'Outputs' && attribute) {
@@ -384,7 +372,7 @@ export class EvaluateCloudFormationTemplate {
     }
 
     const stackResources = await this.stackResources.listStackResources();
-    const foundResource = stackResources.find(sr => sr.LogicalResourceId === logicalId);
+    const foundResource = stackResources.find((sr) => sr.LogicalResourceId === logicalId);
     if (!foundResource) {
       return undefined;
     }
@@ -398,30 +386,39 @@ export class EvaluateCloudFormationTemplate {
       const evaluateCfnTemplate = await this.createNestedEvaluateCloudFormationTemplate(
         dependantStack.physicalName,
         dependantStack.generatedTemplate,
-        dependantStack.generatedTemplate.Parameters!);
+        dependantStack.generatedTemplate.Parameters!,
+      );
 
       // Split Outputs.<refName> into 'Outputs' and '<refName>' and recursively call evaluate
-      return evaluateCfnTemplate.evaluateCfnExpression({ 'Fn::GetAtt': attribute.split(/\.(.*)/s) });
+      return evaluateCfnTemplate.evaluateCfnExpression({
+        'Fn::GetAtt': attribute.split(/\.(.*)/s),
+      });
     }
     // now, we need to format the appropriate identifier depending on the resource type,
     // and the requested attribute name
     return this.formatResourceAttribute(foundResource, attribute);
   }
 
-  private findNestedStack(logicalId: string, nestedStacks: {
-    [nestedStackLogicalId: string]: NestedStackTemplates;
-  }): NestedStackTemplates | undefined {
+  private findNestedStack(
+    logicalId: string,
+    nestedStacks: {
+      [nestedStackLogicalId: string]: NestedStackTemplates;
+    },
+  ): NestedStackTemplates | undefined {
     for (const nestedStackLogicalId of Object.keys(nestedStacks)) {
       if (nestedStackLogicalId === logicalId) {
         return nestedStacks[nestedStackLogicalId];
       }
-      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedStacks[nestedStackLogicalId].nestedStackTemplates);
+      const checkInNestedChildStacks = this.findNestedStack(
+        logicalId,
+        nestedStacks[nestedStackLogicalId].nestedStackTemplates,
+      );
       if (checkInNestedChildStacks) return checkInNestedChildStacks;
     }
     return undefined;
   }
 
-  private formatResourceAttribute(resource: AWS.CloudFormation.StackResourceSummary, attribute: string | undefined): string | undefined {
+  private formatResourceAttribute(resource: StackResourceSummary, attribute: string | undefined): string | undefined {
     const physicalId = resource.PhysicalResourceId;
 
     // no attribute means Ref expression, for which we use the physical ID directly
@@ -429,15 +426,19 @@ export class EvaluateCloudFormationTemplate {
       return physicalId;
     }
 
-    const resourceTypeFormats = RESOURCE_TYPE_ATTRIBUTES_FORMATS[resource.ResourceType];
+    const resourceTypeFormats = RESOURCE_TYPE_ATTRIBUTES_FORMATS[resource.ResourceType!];
     if (!resourceTypeFormats) {
-      throw new CfnEvaluationException(`We don't support attributes of the '${resource.ResourceType}' resource. This is a CDK limitation. ` +
-        'Please report it at https://github.com/aws/aws-cdk/issues/new/choose');
+      throw new CfnEvaluationException(
+        `We don't support attributes of the '${resource.ResourceType}' resource. This is a CDK limitation. ` +
+          'Please report it at https://github.com/aws/aws-cdk/issues/new/choose',
+      );
     }
     const attributeFmtFunc = resourceTypeFormats[attribute];
     if (!attributeFmtFunc) {
-      throw new CfnEvaluationException(`We don't support the '${attribute}' attribute of the '${resource.ResourceType}' resource. This is a CDK limitation. ` +
-        'Please report it at https://github.com/aws/aws-cdk/issues/new/choose');
+      throw new CfnEvaluationException(
+        `We don't support the '${attribute}' attribute of the '${resource.ResourceType}' resource. This is a CDK limitation. ` +
+          'Please report it at https://github.com/aws/aws-cdk/issues/new/choose',
+      );
     }
     const service = this.getServiceOfResource(resource);
     const resourceTypeArnPart = this.getResourceTypeArnPartOfResource(resource);
@@ -451,17 +452,17 @@ export class EvaluateCloudFormationTemplate {
     });
   }
 
-  private getServiceOfResource(resource: AWS.CloudFormation.StackResourceSummary): string {
-    return resource.ResourceType.split('::')[1].toLowerCase();
+  private getServiceOfResource(resource: StackResourceSummary): string {
+    return resource.ResourceType!.split('::')[1].toLowerCase();
   }
 
-  private getResourceTypeArnPartOfResource(resource: AWS.CloudFormation.StackResourceSummary): string {
-    const resourceType = resource.ResourceType;
+  private getResourceTypeArnPartOfResource(resource: StackResourceSummary): string {
+    const resourceType = resource.ResourceType!;
     const specialCaseResourceType = RESOURCE_TYPE_SPECIAL_NAMES[resourceType]?.resourceType;
     return specialCaseResourceType
       ? specialCaseResourceType
-      // this is the default case
-      : resourceType.split('::')[2].toLowerCase();
+      : // this is the default case
+      resourceType.split('::')[2].toLowerCase();
   }
 }
 
@@ -483,13 +484,17 @@ interface ArnParts {
  * However, some resource types break this simple convention, and we need to special-case them.
  * This map is for storing those cases.
  */
-const RESOURCE_TYPE_SPECIAL_NAMES: { [type: string]: { resourceType: string } } = {
+const RESOURCE_TYPE_SPECIAL_NAMES: {
+  [type: string]: { resourceType: string };
+} = {
   'AWS::Events::EventBus': {
     resourceType: 'event-bus',
   },
 };
 
-const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]: (parts: ArnParts) => string } } = {
+const RESOURCE_TYPE_ATTRIBUTES_FORMATS: {
+  [type: string]: { [attribute: string]: (parts: ArnParts) => string };
+} = {
   'AWS::IAM::Role': { Arn: iamArnFmt },
   'AWS::IAM::User': { Arn: iamArnFmt },
   'AWS::IAM::Group': { Arn: iamArnFmt },
@@ -498,11 +503,13 @@ const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]:
   'AWS::Events::EventBus': {
     Arn: stdSlashResourceArnFmt,
     // the name attribute of the EventBus is the same as the Ref
-    Name: parts => parts.resourceName,
+    Name: (parts) => parts.resourceName,
   },
   'AWS::DynamoDB::Table': { Arn: stdSlashResourceArnFmt },
   'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
-  'AWS::AppSync::FunctionConfiguration': { FunctionId: appsyncGraphQlFunctionIDFmt },
+  'AWS::AppSync::FunctionConfiguration': {
+    FunctionId: appsyncGraphQlFunctionIDFmt,
+  },
   'AWS::AppSync::DataSource': { Name: appsyncGraphQlDataSourceNameFmt },
   'AWS::KMS::Key': { Arn: stdSlashResourceArnFmt },
 };
@@ -548,13 +555,17 @@ interface Intrinsic {
 }
 
 async function asyncGlobalReplace(str: string, regex: RegExp, cb: (x: string) => Promise<string>): Promise<string> {
-  if (!regex.global) { throw new Error('Regex must be created with /g flag'); }
+  if (!regex.global) {
+    throw new Error('Regex must be created with /g flag');
+  }
 
   const ret = new Array<string>();
   let start = 0;
   while (true) {
     const match = regex.exec(str);
-    if (!match) { break; }
+    if (!match) {
+      break;
+    }
 
     ret.push(str.substring(start, match.index));
     ret.push(await cb(match[1]));

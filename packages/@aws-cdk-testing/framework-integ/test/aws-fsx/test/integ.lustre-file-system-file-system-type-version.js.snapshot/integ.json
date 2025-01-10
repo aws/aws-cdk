@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "FsxLustreFileSystemTypeVersionTest/DefaultTest": {
+      "stacks": [
+        "FsxLustreFileSystemTypeVersionStack"
+      ],
+      "assertionStack": "FsxLustreFileSystemTypeVersionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxLustreFileSystemTypeVersionTestDefaultTestDeployAssert045329BD"
+    }
+  }
+}

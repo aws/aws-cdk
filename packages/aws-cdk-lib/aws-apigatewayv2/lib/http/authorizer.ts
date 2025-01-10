@@ -257,9 +257,14 @@ function undefinedIfNoKeys<A extends { [key: string]: unknown }>(obj: A): A | un
  * Explicitly configure no authorizers on specific HTTP API routes.
  */
 export class HttpNoneAuthorizer implements IHttpRouteAuthorizer {
+  /**
+   * The authorizationType used for IAM Authorizer
+   */
+  public readonly authorizationType = 'NONE';
   public bind(_options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
-      authorizationType: 'NONE',
+      authorizationType: this.authorizationType,
     };
   }
 }
+

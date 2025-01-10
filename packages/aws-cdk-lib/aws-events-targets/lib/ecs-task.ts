@@ -105,33 +105,33 @@ export interface EcsTaskProps extends TargetBaseProps {
   readonly assignPublicIp?: boolean;
 
   /**
-    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
-    *
-    * @default - Tags will not be propagated
-    */
+   * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
+   *
+   * @default - Tags will not be propagated
+   */
   readonly propagateTags?: ecs.PropagatedTagSource;
 
   /**
-     * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
-     *
-     * @default - No additional tags are applied to the task
-     */
+   * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
+   *
+   * @default - No additional tags are applied to the task
+   */
   readonly tags?: Tag[];
 
   /**
-    * Whether or not to enable the execute command functionality for the containers in this task.
-    * If true, this enables execute command functionality on all containers in the task.
-    *
-    * @default - false
-    */
+   * Whether or not to enable the execute command functionality for the containers in this task.
+   * If true, this enables execute command functionality on all containers in the task.
+   *
+   * @default - false
+   */
   readonly enableExecuteCommand?: boolean;
 
   /**
-    * Specifies the launch type on which your task is running. The launch type that you specify here
-    * must match one of the launch type (compatibilities) of the target task.
-    *
-    * @default - 'EC2' if `isEc2Compatible` for the `taskDefinition` is true, otherwise 'FARGATE'
-    */
+   * Specifies the launch type on which your task is running. The launch type that you specify here
+   * must match one of the launch type (compatibilities) of the target task.
+   *
+   * @default - 'EC2' if `isEc2Compatible` for the `taskDefinition` is true, otherwise 'FARGATE'
+   */
   readonly launchType?: ecs.LaunchType;
 }
 
@@ -277,10 +277,18 @@ export class EcsTask implements events.IRuleTarget {
   }
 
   private createEventRolePolicyStatements(): iam.PolicyStatement[] {
+    // check if there is a taskdefinition revision (arn will end with : followed by digits) included in the arn already
+    let needsRevisionWildcard = false;
+    if (!cdk.Token.isUnresolved(this.taskDefinition.taskDefinitionArn)) {
+      const revisionAtEndPattern = /:[0-9]+$/;
+      const hasRevision = revisionAtEndPattern.test(this.taskDefinition.taskDefinitionArn);
+      needsRevisionWildcard = !hasRevision;
+    }
+
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [this.taskDefinition.taskDefinitionArn],
+        resources: [`${this.taskDefinition.taskDefinitionArn}${needsRevisionWildcard ? ':*' : ''}`],
         conditions: {
           ArnEquals: { 'ecs:cluster': this.cluster.clusterArn },
         },

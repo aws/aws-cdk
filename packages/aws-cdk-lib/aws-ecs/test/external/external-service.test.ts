@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Template, Annotations } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -237,6 +237,39 @@ describe('external service', () => {
     });
   });
 
+  test('with enableExecuteCommand set to true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // WHEN
+    new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      enableExecuteCommand: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      TaskDefinition: {
+        Ref: 'TaskDef54694570',
+      },
+      Cluster: {
+        Ref: 'EcsCluster97242B84',
+      },
+      LaunchType: LaunchType.EXTERNAL,
+      EnableExecuteCommand: true,
+    });
+  });
+
   test('throws when task definition is not External compatible', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -301,30 +334,6 @@ describe('external service', () => {
         name: 'myApp',
       },
     })).toThrow('Cloud map options are not supported for External service');
-
-    // THEN
-
-  });
-
-  test('error if enableExecuteCommand options provided with external service', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
-    // THEN
-    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
-      enableExecuteCommand: true,
-    })).toThrow('Enable Execute Command options are not supported for External service');
 
     // THEN
 
@@ -572,6 +581,7 @@ describe('external service', () => {
         type: DeploymentControllerType.EXTERNAL,
       },
       circuitBreaker: { rollback: true },
+      minHealthyPercent: 100, // required to prevent test failure due to warning
     });
     app.synth();
 
@@ -581,4 +591,52 @@ describe('external service', () => {
       'Deployment circuit breaker requires the ECS deployment controller.',
     ]);
   });
+
+  test('warning if minHealthyPercent not set for an external service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
+    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+  });
+
+  test('no warning if minHealthyPercent set for an external service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      minHealthyPercent: 100,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
+    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+  });
+
 });

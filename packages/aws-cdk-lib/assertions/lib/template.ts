@@ -54,7 +54,7 @@ export class Template {
 
   private constructor(template: { [key: string]: any }, templateParsingOptions: TemplateParsingOptions = {}) {
     this.template = template as TemplateType;
-    if (!templateParsingOptions?.skipCyclicalDependenciesCheck ?? true) {
+    if (!templateParsingOptions.skipCyclicalDependenciesCheck) {
       checkTemplateForCyclicDependencies(this.template);
     }
   }

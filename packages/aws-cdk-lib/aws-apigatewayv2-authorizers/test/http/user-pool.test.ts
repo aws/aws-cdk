@@ -103,4 +103,44 @@ describe('HttpUserPoolAuthorizer', () => {
       },
     });
   });
+
+  test('should expose authorizer id after authorizer has been bound to route', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    const userPool = new UserPool(stack, 'UserPool');
+    const userPoolClient1 = userPool.addClient('UserPoolClient1');
+    const userPoolClient2 = userPool.addClient('UserPoolClient2');
+    const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool, {
+      userPoolClients: [userPoolClient1, userPoolClient2],
+    });
+
+    // WHEN
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/books',
+      authorizer,
+    });
+
+    // THEN
+    expect(authorizer.authorizerId).toBeDefined();
+  });
+
+  test('should throw error when acessing authorizer before it been bound to route', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPool = new UserPool(stack, 'UserPool');
+    const userPoolClient1 = userPool.addClient('UserPoolClient1');
+    const userPoolClient2 = userPool.addClient('UserPoolClient2');
+
+    const t = () => {
+      const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool, {
+        userPoolClients: [userPoolClient1, userPoolClient2],
+      });
+      const authorizerId = authorizer.authorizerId;
+    };
+
+    // THEN
+    expect(t).toThrow(Error);
+  });
 });

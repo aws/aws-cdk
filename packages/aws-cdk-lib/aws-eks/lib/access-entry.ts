@@ -206,7 +206,7 @@ export class AccessPolicy implements IAccessPolicy {
       public readonly accessScope: AccessScope = {
         type: options.accessScopeType,
         namespaces: options.namespaces,
-      }
+      };
     }
     return new Import();
   }
@@ -240,7 +240,7 @@ export enum AccessEntryType {
   /**
    * Represents a standard access entry.
    */
-  STANDARD = 'Standard',
+  STANDARD = 'STANDARD',
 
   /**
    * Represents a Fargate Linux access entry.

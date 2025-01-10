@@ -1,0 +1,151 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "IotAuditConfigurationTestStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IotAuditConfigurationTestStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IotAuditConfigurationTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IotAuditConfigurationTestStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c093a5b4a568daafc27fab102fea007eaf70c883b8e02171441d44e702e0cebc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IotAuditConfigurationTestStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IotAuditConfigurationTestStack.assets"
+      ],
+      "metadata": {
+        "/IotAuditConfigurationTestStack/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/AuditConfiguration/AuditRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuditConfigurationAuditRole0FFA1461"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/AuditConfiguration/NotificationRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuditConfigurationNotificationRole9774BAD4"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/AuditConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuditConfiguration8C793652"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/DailyAudit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DailyAudit1160906D"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/WeeklyAudit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WeeklyAudit5489D5FF"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/MonthlyAudit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MonthlyAudit11A7B28C"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IotAuditConfigurationTestStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IotAuditConfigurationTestStack"
+    },
+    "IotAuditConfigurationTestDefaultTestDeployAssert6A603D00.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IotAuditConfigurationTestDefaultTestDeployAssert6A603D00.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IotAuditConfigurationTestDefaultTestDeployAssert6A603D00": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IotAuditConfigurationTestDefaultTestDeployAssert6A603D00.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IotAuditConfigurationTestDefaultTestDeployAssert6A603D00.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IotAuditConfigurationTestDefaultTestDeployAssert6A603D00.assets"
+      ],
+      "metadata": {
+        "/IotAuditConfigurationTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IotAuditConfigurationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IotAuditConfigurationTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

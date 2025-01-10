@@ -4,10 +4,10 @@ import { NetworkListenerCertificate } from './network-listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Resource, Lazy } from '../../../core';
+import { Duration, Resource, Lazy, Token } from '../../../core';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, IpAddressType, Protocol, SslPolicy } from '../shared/enums';
+import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
@@ -76,6 +76,13 @@ export interface BaseNetworkListenerProps {
    * @default - None
    */
   readonly alpnPolicy?: AlpnPolicy;
+
+  /**
+   * The load balancer TCP idle timeout.
+   *
+   * @default Duration.seconds(350)
+   */
+  readonly tcpIdleTimeout?: Duration;
 }
 
 /**
@@ -188,13 +195,6 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       throw new Error('Protocol must be TLS when alpnPolicy have been specified');
     }
 
-    if (
-      props.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK &&
-      (props.protocol === Protocol.UDP || props.protocol === Protocol.TCP_UDP)
-    ) {
-      throw new Error('UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer.');
-    }
-
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: proto,
@@ -221,6 +221,24 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     if (props.defaultTargetGroups) {
       this.setDefaultAction(NetworkListenerAction.forward(props.defaultTargetGroups));
+    }
+
+    if (props.tcpIdleTimeout !== undefined && !Token.isUnresolved(props.tcpIdleTimeout)) {
+      if (props.tcpIdleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+        throw new Error(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${props.tcpIdleTimeout.toMilliseconds()} milliseconds.`);
+      }
+
+      const tcpIdleTimeoutSeconds = props.tcpIdleTimeout.toSeconds();
+
+      if (proto === Protocol.UDP) {
+        throw new Error('\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.');
+      }
+
+      if (tcpIdleTimeoutSeconds < 60 || tcpIdleTimeoutSeconds > 6000) {
+        throw new Error(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`);
+      }
+
+      this.setAttribute('tcp.idle_timeout.seconds', tcpIdleTimeoutSeconds.toString());
     }
   }
 

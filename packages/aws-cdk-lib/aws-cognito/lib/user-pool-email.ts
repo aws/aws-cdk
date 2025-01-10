@@ -66,7 +66,7 @@ export interface UserPoolSESOptions {
 /**
  * Result of binding email settings with a user pool
  */
-interface UserPoolEmailConfig {
+export interface UserPoolEmailConfig {
   /**
    * The name of the configuration set in SES.
    *
