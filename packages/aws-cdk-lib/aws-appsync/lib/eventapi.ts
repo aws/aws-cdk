@@ -227,7 +227,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublish(grantee: IGrantable): Grant {
-    return this.grant(grantee, AppSyncEventResource.all(), 'appsync:EventPublish');
+    return this.grant(grantee, AppSyncEventResource.allChannelNamespaces(), 'appsync:EventPublish');
   }
 
   /**
@@ -237,7 +237,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, AppSyncEventResource.all(), 'appsync:EventSubscribe');
+    return this.grant(grantee, AppSyncEventResource.allChannelNamespaces(), 'appsync:EventSubscribe');
   }
 
   /**
@@ -247,7 +247,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    * @param grantee The principal
    */
   public grantPublishAndSubscribe(grantee: IGrantable): Grant {
-    return this.grant(grantee, AppSyncEventResource.all(), 'appsync:EventPublish', 'appsync:EventSubscribe');
+    return this.grant(grantee, AppSyncEventResource.allChannelNamespaces(), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }
 
   /**

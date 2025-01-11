@@ -363,4 +363,124 @@ describe('Event API security grant tests', () => {
     // THEN
     expect(() => api.grantConnect(func)).toThrow('IAM Authorization mode is not configured on this API.');
   });
+
+  test('Appsync Event API - grant publish for all channel namespaces within an API', () => {
+    // WHEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'api',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+    api.grantPublish(func);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appsync:EventPublish',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/channelNamespace/*',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Appsync Event API - grant subscribe for all channel namespaces within an API', () => {
+    // WHEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'api',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+    api.grantSubscribe(func);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appsync:EventSubscribe',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/channelNamespace/*',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Appsync Event API - grant publish and subscribe for all channel namespaces within an API', () => {
+    // WHEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'api',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+    api.grantPublishAndSubscribe(func);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appsync:EventPublish',
+              'appsync:EventSubscribe',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/channelNamespace/*',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
 });

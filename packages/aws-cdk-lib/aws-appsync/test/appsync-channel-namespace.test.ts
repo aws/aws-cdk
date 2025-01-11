@@ -396,4 +396,47 @@ describe('Channel namespace security tests', () => {
       },
     });
   });
+
+  test('Appsync Event API channel namespace - grant publish and subscribe from channel', () => {
+    // WHEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'api',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+    const cn = api.addChannelNamespace('default');
+    cn.grantPublishAndSubscribe(func);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appsync:EventPublish',
+              'appsync:EventSubscribe',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                  '/channelNamespace/default',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
 });

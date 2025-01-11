@@ -16,7 +16,7 @@ export class AppSyncEventResource {
   }
 
   /**
-   * Generate the resource names given a channel namespace and channels
+   * Generate the resource names given a channel namespace
    *
    * @param channelNamespace The channel namespace that needs to be allowed
    *
@@ -32,6 +32,14 @@ export class AppSyncEventResource {
    */
   public static all(): AppSyncEventResource {
     return new AppSyncEventResource(['*']);
+  }
+
+  /**
+   * Generate the resource names that accepts all channel namespaces: `*`
+   */
+  public static allChannelNamespaces(): AppSyncEventResource {
+    const arns = ['channelNamespace/*'];
+    return new AppSyncEventResource(arns);
   }
 
   private arns: string[];
