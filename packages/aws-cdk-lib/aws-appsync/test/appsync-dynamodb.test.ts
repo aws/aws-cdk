@@ -20,6 +20,24 @@ beforeEach(() => {
   });
 });
 
+describe('AppSync Resolvers Deployment', () => {
+  test('should deploy resolvers for all fields in the schema', () => {
+    const expectedResolvers = [
+      { fieldName: 'getDemos', typeName: 'Query' },
+      { fieldName: 'getDemosConsistent', typeName: 'Query' },
+      { fieldName: 'addDemo', typeName: 'Mutation' }
+    ];
+
+    expectedResolvers.forEach(({ fieldName, typeName }) => {
+      Template.fromStack(stack).hasResource('AWS::AppSync::Resolver', {
+        ApiId: { Ref: 'baseApi' },
+        FieldName: fieldName,
+        TypeName: typeName,
+      });
+    });
+  });
+});
+
 describe('DynamoDb Data Source configuration', () => {
   // GIVEN
   let table: db.Table;
