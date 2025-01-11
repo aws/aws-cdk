@@ -1394,7 +1394,7 @@ new rds.DatabaseCluster(this, 'Database', {
   vpc: vpc,
   // If you enable the advanced mode of Database Insights,
   // Performance Insights is enabled and the retention period of Performance Insights data is set to 465(15 months).
-  databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
+  databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
   writer: rds.ClusterInstance.provisioned('Writer', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
   }),
