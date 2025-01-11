@@ -58,3 +58,5 @@ read*lock
 # Nx cache
 .nx/
 
+# A number of users have reported that this file causes issues when cloning the repository on Windows systems. Additionally, the file is empty. To address these issues, it has been added to .gitignore.
+packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.js.snapshot/cross-region-stack-123456789012*
