@@ -21,7 +21,6 @@ import {
   ClusterScailabilityType,
   DBClusterStorageType,
   DatabaseInsightsMode,
-  MysqlEngineVersion,
 } from '../lib';
 
 describe('cluster new api', () => {
