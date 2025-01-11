@@ -1439,22 +1439,6 @@ If the flag is set to false then a custom resource will be created when using `U
 | (not in v1) |  |  |
 | 2.174.0 | `false` | `true` |
 
-### @aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource
-
-*When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource.* (fix)
-
-When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
-creates a custom resource internally, but the new method doesn't need a custom resource.
-
-If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.174.0 | `false` | `true` |
-
-
 ### @aws-cdk/aws-ecs:disableEcsImdsBlocking
 
 *When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)*** (temporary)
