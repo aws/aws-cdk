@@ -347,7 +347,6 @@
     "./aws-internetmonitor": "./aws-internetmonitor/index.js",
     "./aws-invoicing": "./aws-invoicing/index.js",
     "./aws-iot": "./aws-iot/index.js",
-    "./aws-iot1click": "./aws-iot1click/index.js",
     "./aws-iotanalytics": "./aws-iotanalytics/index.js",
     "./aws-iotcoredeviceadvisor": "./aws-iotcoredeviceadvisor/index.js",
     "./aws-iotevents": "./aws-iotevents/index.js",
