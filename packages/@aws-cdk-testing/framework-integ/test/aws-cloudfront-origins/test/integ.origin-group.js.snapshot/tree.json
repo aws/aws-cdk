@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "cloudfront-origin-group": {
         "id": "cloudfront-origin-group",
         "path": "cloudfront-origin-group",
@@ -28,7 +20,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                   "version": "0.0.0"
                 }
               },
@@ -79,19 +71,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
               "version": "0.0.0"
             }
           },
@@ -119,28 +111,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-cloudfront.CfnCloudFrontOriginAccessIdentity",
+                          "fqn": "aws-cdk-lib.aws_cloudfront.CfnCloudFrontOriginAccessIdentity",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-cloudfront.OriginAccessIdentity",
+                      "fqn": "aws-cdk-lib.aws_cloudfront.OriginAccessIdentity",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
-                }
-              },
-              "OriginGroup1": {
-                "id": "OriginGroup1",
-                "path": "cloudfront-origin-group/Distribution/OriginGroup1",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.4.2"
                 }
               },
               "Origin2": {
@@ -148,7 +132,7 @@
                 "path": "cloudfront-origin-group/Distribution/Origin2",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
@@ -207,7 +191,7 @@
                                 "quantity": 4
                               }
                             },
-                            "id": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+                            "id": "CustomGroupId",
                             "members": {
                               "items": [
                                 {
@@ -225,7 +209,7 @@
                       },
                       "defaultCacheBehavior": {
                         "pathPattern": "*",
-                        "targetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+                        "targetOriginId": "CustomGroupId",
                         "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
                         "compress": true,
                         "viewerProtocolPolicy": "allow-all"
@@ -233,7 +217,7 @@
                       "cacheBehaviors": [
                         {
                           "pathPattern": "/api",
-                          "targetOriginId": "cloudfrontorigingroupDistributionOriginGroup10B57F1D1",
+                          "targetOriginId": "CustomGroupId",
                           "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
                           "compress": true,
                           "viewerProtocolPolicy": "allow-all"
@@ -245,26 +229,50 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cloudfront-origin-group/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cloudfront-origin-group/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
