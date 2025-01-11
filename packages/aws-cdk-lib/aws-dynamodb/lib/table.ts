@@ -9,6 +9,7 @@ import {
   Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
   Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
   LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput,
+  PointInTimeRecoverySpecification,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -286,9 +287,17 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * Whether point-in-time recovery is enabled.
-   * @default - point-in-time recovery is disabled
+   * @deprecated `pointInTimeRecoverySpecification` takes precedence over `pointInTimeRecovery`
    */
   readonly pointInTimeRecovery?: boolean;
+
+  /**
+   * Whether point-in-time recovery is enabled
+   * and recoveryPeriodInDays is set.
+   *
+   * @default false
+   */
+  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification | undefined;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
@@ -1180,6 +1189,12 @@ export class Table extends TableBase {
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 
+    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification | undefined =
+      props.pointInTimeRecoverySpecification ??
+      (props.pointInTimeRecovery !== undefined
+        ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
+        : undefined);
+
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
       if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
@@ -1209,7 +1224,7 @@ export class Table extends TableBase {
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-      pointInTimeRecoverySpecification: props.pointInTimeRecovery != null ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
+      pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,

@@ -2,7 +2,7 @@ import { Match, Template } from '../../assertions';
 import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import { App, CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
@@ -147,6 +147,35 @@ describe('table', () => {
           },
           PointInTimeRecoverySpecification: {
             PointInTimeRecoveryEnabled: true,
+          },
+        },
+      ],
+    });
+  });
+
+  test('with point-in-time-recovery-specification', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+        recoveryPeriodInDays: 4,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+            RecoveryPeriodInDays: 4,
           },
         },
       ],
