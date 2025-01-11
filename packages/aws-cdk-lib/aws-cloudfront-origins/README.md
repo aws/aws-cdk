@@ -593,6 +593,7 @@ new cloudfront.Distribution(this, 'myDist', {
       fallbackOrigin: new origins.HttpOrigin('www.example.com'),
       // optional, defaults to: 500, 502, 503 and 504
       fallbackStatusCodes: [404],
+      originId: 'myOriginGroup',
     }),
   },
 });
