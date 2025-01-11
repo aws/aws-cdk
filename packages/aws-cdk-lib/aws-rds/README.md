@@ -1377,6 +1377,36 @@ To see Amazon Aurora DB engines that support Performance Insights, see [Amazon A
 
 For more information about Performance Insights, see [Monitoring DB load with Performance Insights on Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html).
 
+## Database Insights
+
+The standard mode of Database Insights is enabled by default for Aurora databases.
+
+You can enhance the monitoring of your Aurora databases by enabling the advanced mode of Database Insights.
+
+See [AWS docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html) for more information about Database Insights.
+
+The following example shows enabling the advanced mode of Database Insights for a clustered database.
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  // If you enable the advanced mode of Database Insights,
+  // Performance Insights is enabled and the retention period of Performance Insights data is set to 465(15 months).
+  databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
+  writer: rds.ClusterInstance.provisioned('Writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  }),
+});
+```
+
+Note that settings regarding Database Insights are only possible at the cluster level.
+
+### Supported Engines
+
+Database Insights supports Amazon Aurora MySQL and Amazon Aurora PostgreSQL.
+
 ## Enhanced Monitoring
 
 With [Enhanced Monitoring](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.html#USER_Monitoring.OS.Enabling), you can monitor the operating system of your DB instance in real time.
