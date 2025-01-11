@@ -1,12 +1,12 @@
 {
-  "name": "@aws-cdk/cli-args-gen",
+  "name": "@aws-cdk/user-input-gen",
   "private": true,
   "version": "0.0.0",
-  "description": "Generate CLI arguments",
+  "description": "Generate User Inputs",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "tools/@aws-cdk/cli-args-gen"
+    "directory": "tools/@aws-cdk/user-input-gen"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
