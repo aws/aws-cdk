@@ -1355,7 +1355,7 @@ describe('User Pool Client', () => {
         applicationId: '123456789012',
         externalId: '123456789012',
         roleArn: 'arn:aws:iam::123456789012:role/TestRole',
-        userDataShared: true,
+        shareUserData: true,
       },
     });
 
@@ -1384,7 +1384,7 @@ describe('User Pool Client', () => {
         applicationId: '123456789012',
         externalId: '123456789012',
         roleArn: 'arn:aws:iam::123456789012:role/TestRole',
-        userDataShared: true,
+        shareUserData: true,
       },
     });
 
@@ -1405,7 +1405,7 @@ describe('User Pool Client', () => {
         applicationId: '123456789012',
         externalId: '123456789012',
         roleArn: 'invalid-arn',
-        userDataShared: true,
+        shareUserData: true,
       },
     });
 
