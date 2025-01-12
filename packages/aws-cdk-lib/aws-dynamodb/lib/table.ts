@@ -288,6 +288,7 @@ export interface TableOptions extends SchemaOptions {
   /**
    * Whether point-in-time recovery is enabled.
    * @deprecated `pointInTimeRecoverySpecification` takes precedence over `pointInTimeRecovery`
+   * @default false - point in time recovery is not enabled.
    */
   readonly pointInTimeRecovery?: boolean;
 
@@ -295,7 +296,7 @@ export interface TableOptions extends SchemaOptions {
    * Whether point-in-time recovery is enabled
    * and recoveryPeriodInDays is set.
    *
-   * @default false
+   * @default - point in time recovery is not enabled.
    */
   readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification | undefined;
 
