@@ -154,23 +154,25 @@ describe('When import an ECS Service', () => {
       ],
     });
 
-    expect(() => {
-      new ecs.FargateService(stack, 'Service', {
-        cluster,
-        taskDefinition,
-        serviceConnectConfiguration: {
-          services: [
-            {
-              tls: {
-                awsPcaAuthorityArn: 'invalid-arn',
-              },
-              portMappingName: 'api',
+    // WHEN
+    const createFargateService = () => new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      serviceConnectConfiguration: {
+        services: [
+          {
+            tls: {
+              awsPcaAuthorityArn: 'invalid-arn',
             },
-          ],
-          namespace: 'test namespace',
-        },
-      });
-    }).toThrow(/awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received invalid-arn/);
+            portMappingName: 'api',
+          },
+        ],
+        namespace: 'test namespace',
+      },
+    });
+
+    // THEN
+    expect(() => createFargateService()).toThrow(/awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received invalid-arn/);
   });
 });
 
