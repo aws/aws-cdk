@@ -1094,6 +1094,10 @@ User pool clients can be configured with Amazon Pinpoint analytics to collect us
 
 The following example shows how to configure analytics for a user pool client:
 
+#### When specifying an Application ARN
+
+If you specify the `applicationArn` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
+
 ```ts
 declare const userPool: cognito.UserPool;
 declare const pinpointApp: pinpoint.CfnApp;
@@ -1104,24 +1108,36 @@ new cognito.UserPoolClient(this, 'Client', {
   analytics: {
     // The ARN of your Pinpoint project
     applicationArn: pinpointApp.attrArn,
-    
-    // Your Pinpoint project ID
-    applicationId: pinpointApp.ref,
-    
-    // External ID for the IAM role
-    externalId: "sample-external-id",
-    
-    // IAM role that Cognito can assume to publish to Pinpoint
-    roleArn: pinpointRole.roleArn,
-    
+
     // Whether to include user data in analytics events
     userDataShared: true,
   },
 });
 ```
 
-When configuring analytics:
+#### When specifying an Application ID, External ID, and Role ARN
 
-- `applicationArn` must be a valid ARN of a Pinpoint project
-- `roleArn` must be a valid IAM role ARN with permissions to publish to Pinpoint
-- Setting `userDataShared` to `true` allows Cognito to include user data in the analytics events
+If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `applicationArn` property.
+
+```ts
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // Your Pinpoint project ID
+    applicationId: pinpointApp.ref,
+
+    // External ID for the IAM role
+    externalId: "sample-external-id",
+
+    // IAM role that Cognito can assume to publish to Pinpoint
+    roleArn: pinpointRole.roleArn,
+
+    // Whether to include user data in analytics events
+    userDataShared: true,
+  },
+});
+```
