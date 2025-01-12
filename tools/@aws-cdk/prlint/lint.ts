@@ -12,7 +12,7 @@ export type GitHubPr =
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 export const CODECOV_PREFIX = 'codecov/';
 
-const CODECOV_CHECKS = [
+export const CODECOV_CHECKS = [
   'patch',
   'patch/packages/aws-cdk',
   'patch/packages/aws-cdk-lib/core',
