@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "b32c3012475a245a564a73dfdc93e87c7a90ba7ef745b11acd62276b529c9cf2": {
+      "source": {
+        "path": "aws-cognito.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b32c3012475a245a564a73dfdc93e87c7a90ba7ef745b11acd62276b529c9cf2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

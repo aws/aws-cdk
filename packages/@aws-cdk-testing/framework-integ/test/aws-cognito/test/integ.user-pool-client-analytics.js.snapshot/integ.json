@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "aws-cognito-user-pool-client-analytics/DefaultTest": {
+      "stacks": [
+        "aws-cognito"
+      ],
+      "assertionStack": "aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert",
+      "assertionStackName": "awscognitouserpoolclientanalyticsDefaultTestDeployAssert4323F0ED"
+    }
+  }
+}
