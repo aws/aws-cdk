@@ -61,7 +61,7 @@ class TestStack2 extends Stack {
       analytics: {
         applicationId: pinpointApp.ref,
         externalId: role.roleId,
-        roleArn: role.roleArn,
+        role,
       },
     });
   }

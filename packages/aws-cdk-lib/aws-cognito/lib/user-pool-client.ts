@@ -5,6 +5,7 @@ import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
+import * as iam from '../../aws-iam';
 
 /**
  * Types of authentication flow
@@ -370,27 +371,27 @@ export interface AnalyticsConfiguration {
   /**
    * The Amazon Resource Name (ARN) of an Amazon Pinpoint project that you want to connect to your user pool app client.\
    * Amazon Cognito publishes events to the Amazon Pinpoint project that `ApplicationArn` declares. You can also configure your application to pass an endpoint ID in the `AnalyticsMetadata` parameter of sign-in operations. The endpoint ID is information about the destination for push notifications
-   * @default - no configuration, you need to specify either `applicationArn` or all of `applicationId`, `externalId`, and `roleArn`.
+   * @default - no configuration, you need to specify either `applicationArn` or all of `applicationId`, `externalId`, and `role`.
    */
   readonly applicationArn?: string;
 
   /**
    * Your Amazon Pinpoint project ID.
-   * @default - no configuration, you need to specify either this property along with `externalId` and `roleArn` or `applicationArn`.
+   * @default - no configuration, you need to specify either this property along with `externalId` and `role` or `applicationArn`.
    */
   readonly applicationId?: string;
 
   /**
    * The [external ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html) of the role that Amazon Cognito assumes to send analytics data to Amazon Pinpoint.
-   * @@default - no configuration, you need to specify either this property along with `applicationId` and `roleArn` or `applicationArn`.
+   * @@default - no configuration, you need to specify either this property along with `applicationId` and `role` or `applicationArn`.
    */
   readonly externalId?: string;
 
   /**
-   * The ARN of an AWS Identity and Access Management role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
+   * The IAM role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
    * @default - no configuration, you need to specify either this property along with `applicationId` and `externalId` or `applicationArn`.
    */
-  readonly roleArn?: string;
+  readonly role?: iam.Role;
 
   /**
    * If `UserDataShared` is `true` , Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
@@ -669,30 +670,27 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
     if (
       analytics.applicationArn &&
-        (analytics.applicationId || analytics.externalId || analytics.roleArn)
+        (analytics.applicationId || analytics.externalId || analytics.role)
     ) {
-      throw new Error('Either `applicationArn` or all of `applicationId`, `externalId` and `roleArn` must be specified.');
+      throw new Error('Either `applicationArn` or all of `applicationId`, `externalId` and `role` must be specified.');
     }
 
     if (
       !analytics.applicationArn &&
-        (!analytics.applicationId || !analytics.externalId || !analytics.roleArn)
+        (!analytics.applicationId || !analytics.externalId || !analytics.role)
     ) {
-      throw new Error('Either all of `applicationId`, `externalId` and `roleArn` must be specified or `applicationArn` must be specified.');
+      throw new Error('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
     }
 
     if (analytics.applicationArn && !Token.isUnresolved(analytics.applicationArn) && !analytics.applicationArn.startsWith('arn:')) {
       throw new Error(`applicationArn must be start with "arn:"; received ${analytics.applicationArn}`);
-    }
-    if (analytics.roleArn && !Token.isUnresolved(analytics.roleArn) && !analytics.roleArn.startsWith('arn:')) {
-      throw new Error(`roleArn must be start with "arn:"; received ${analytics.roleArn}`);
     }
 
     return {
       applicationArn: analytics.applicationArn,
       applicationId: analytics.applicationId,
       externalId: analytics.externalId,
-      roleArn: analytics.roleArn,
+      roleArn: analytics.role?.roleArn,
       userDataShared: analytics.shareUserData,
     };
 

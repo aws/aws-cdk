@@ -2,6 +2,7 @@ import { create } from 'lodash';
 import { Match, Template } from '../../assertions';
 import { Stack, Duration } from '../../core';
 import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes, AnalyticsConfiguration } from '../lib';
+import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -1367,10 +1368,14 @@ describe('User Pool Client', () => {
       });
     });
 
-    test('analytics configuration can be added to userPoolClients by specifying applicationId, externalId, and roleArn', () => {
+    test('analytics configuration can be added to userPoolClients by specifying applicationId, externalId, and role', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
+
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com'),
+      });
 
       // WHEN
       new UserPoolClient(stack, 'Client', {
@@ -1378,7 +1383,7 @@ describe('User Pool Client', () => {
         analytics: {
           applicationId: '12345678-1234-1234-1234-123456789012',
           externalId: 'sample-external-id',
-          roleArn: 'arn:aws:iam::123456789012:role/TestRole',
+          role,
           shareUserData: true,
         },
       });
@@ -1388,7 +1393,7 @@ describe('User Pool Client', () => {
         AnalyticsConfiguration: {
           ApplicationId: '12345678-1234-1234-1234-123456789012',
           ExternalId: 'sample-external-id',
-          RoleArn: 'arn:aws:iam::123456789012:role/TestRole',
+          RoleArn: stack.resolve(role.roleArn),
           UserDataShared: true,
         },
       });
@@ -1412,26 +1417,6 @@ describe('User Pool Client', () => {
       expect(() => createUserPoolClient()).toThrow('applicationArn must be start with "arn:"; received invalid-arn');
     });
 
-    test('throws an error when roleArn is not an ARN', () => {
-      // GIVEN
-      const stack = new Stack();
-      const pool = new UserPool(stack, 'Pool');
-
-      // WHEN
-      const createUserPoolClient = () => new UserPoolClient(stack, 'Client', {
-        userPool: pool,
-        analytics: {
-          applicationId: '12345678-1234-1234-1234-123456789012',
-          externalId: 'sample-external-id',
-          roleArn: 'invalid-arn',
-          shareUserData: true,
-        },
-      });
-
-      // THEN
-      expect(() => createUserPoolClient()).toThrow('roleArn must be start with "arn:"; received invalid-arn');
-    });
-
     test('throws an error when both applicationArn and applicationId are specified', () => {
       // GIVEN
       const stack = new Stack();
@@ -1447,13 +1432,17 @@ describe('User Pool Client', () => {
       });
 
       // THEN
-      expect(() => createUserPoolClient()).toThrow('Either `applicationArn` or all of `applicationId`, `externalId` and `roleArn` must be specified.');
+      expect(() => createUserPoolClient()).toThrow('Either `applicationArn` or all of `applicationId`, `externalId` and `role` must be specified.');
     });
 
-    test('throws an error when either applicationId, externalId or roleArn is not specified', () => {
+    test('throws an error when either applicationId, externalId or role is not specified', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
+
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com'),
+      });
 
       // WHEN
       const createUserPoolClient = (id: string, analytics: AnalyticsConfiguration) => new UserPoolClient(stack, id, {
@@ -1467,21 +1456,21 @@ describe('User Pool Client', () => {
           createUserPoolClient('PoolClient1', {
             applicationId: '12345678-1234-1234-1234-123456789012',
           }),
-      ).toThrow('Either all of `applicationId`, `externalId` and `roleArn` must be specified or `applicationArn` must be specified.');
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
 
       expect(
         () =>
           createUserPoolClient('PoolClient2', {
             externalId: 'sample-external-id',
           }),
-      ).toThrow('Either all of `applicationId`, `externalId` and `roleArn` must be specified or `applicationArn` must be specified.');
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
 
       expect(
         () =>
           createUserPoolClient('PoolClient3', {
-            roleArn: 'arn:aws:iam::123456789012:role/TestRole',
+            role,
           }),
-      ).toThrow('Either all of `applicationId`, `externalId` and `roleArn` must be specified or `applicationArn` must be specified.');
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
     });
   });
 });
