@@ -12,6 +12,14 @@ export type GitHubPr =
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 export const CODECOV_PREFIX = 'codecov/';
 
+const CODECOV_CHECKS = [
+  'patch',
+  'patch/packages/aws-cdk',
+  'patch/packages/aws-cdk-lib/core',
+  'project',
+  'project/packages/aws-cdk',
+  'project/packages/aws-cdk-lib/core'
+];
 const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
 /**
@@ -342,42 +350,6 @@ export class PullRequestLinter {
   }
 
   /**
-   * Whether or not the codecov/patch job for the given commit is successful
-   *
-   * @param sha the commit sha to evaluate
-   */
-  private async codecovPatchSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, `${CODECOV_PREFIX}patch`);
-  }
-
-  /**
-   * Whether or not the codecov/patch/packages/aws-cdk job for the given commit is successful
-   *
-   * @param sha the commit sha to evaluate
-   */
-  private async codecovPatchPackagesAwsCdkSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, `${CODECOV_PREFIX}patch/packages/aws-cdk`);
-  }
-
-  /**
-   * Whether or not the codecov/project job for the given commit is successful
-   *
-   * @param sha the commit sha to evaluate
-   */
-  private async codecovProjectSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, `${CODECOV_PREFIX}project`);
-  }
-
-  /**
-   * Whether or not the codecov/project/packages/aws-cdk job for the given commit is successful
-   *
-   * @param sha the commit sha to evaluate
-   */
-  private async codecovProjectPackagesAwsCdkSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, `${CODECOV_PREFIX}project/packages/aws-cdk`);
-  }
-
-  /**
    * Check a specific status check to see if it is successful for the given commit
    *
    * @param sha the commit sha to evaluate
@@ -622,37 +594,22 @@ export class PullRequestLinter {
       ],
     });
 
-    const codecovResults = {
-      patch: await this.codecovPatchSucceeded(sha),
-      patchPackages: await this.codecovPatchPackagesAwsCdkSucceeded(sha),
-      project: await this.codecovProjectSucceeded(sha),
-      projectPackages: await this.codecovProjectPackagesAwsCdkSucceeded(sha),
-    };
+    const codecovTests: Test[] = [];
+    for (const c of CODECOV_CHECKS) {
+      const checkName = `${CODECOV_PREFIX}${c}`;
+      const succeeded = await this.checkStatusSucceeded(sha, checkName);
+      codecovTests.push({
+        test: () => {
+          const result = new TestResult();
+          result.assessFailure(!succeeded, `${checkName} job is not succeeding`);
+          return result;
+        }
+      })
+    }
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptCodecov,
-      testRuleSet: [
-        { test: () => {
-          const result = new TestResult();
-          result.assessFailure(codecovResults.patch, 'codecov/patch job is not succeeding');
-          return result;
-        }},
-        { test: () => {
-          const result = new TestResult();
-          result.assessFailure(codecovResults.patchPackages, 'codecov/patch/packages/aws-cdk job is not succeeding');
-          return result;
-        }},
-        { test: () => {
-          const result = new TestResult();
-          result.assessFailure(codecovResults.project, 'codecov/project job is not succeeding');
-          return result;
-        }},
-        { test: () => {
-          const result = new TestResult();
-          result.assessFailure(codecovResults.projectPackages, 'codecov/project/packages/aws-cdk job is not succeeding');
-          return result;
-        }},
-      ],
+      testRuleSet: codecovTests,
     });
 
     console.log("Deleting PR Linter Comment now");
