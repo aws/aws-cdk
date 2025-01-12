@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cognito": {
-        "id": "aws-cognito",
-        "path": "aws-cognito",
+      "AwsCognito": {
+        "id": "AwsCognito",
+        "path": "AwsCognito",
         "children": {
           "Pool": {
             "id": "Pool",
-            "path": "aws-cognito/Pool",
+            "path": "AwsCognito/Pool",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cognito/Pool/Resource",
+                "path": "AwsCognito/Pool/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
                   "aws:cdk:cloudformation:props": {
@@ -57,7 +57,7 @@
           },
           "PinpointApp": {
             "id": "PinpointApp",
-            "path": "aws-cognito/PinpointApp",
+            "path": "AwsCognito/PinpointApp",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::Pinpoint::App",
               "aws:cdk:cloudformation:props": {
@@ -71,11 +71,11 @@
           },
           "PinpointRole": {
             "id": "PinpointRole",
-            "path": "aws-cognito/PinpointRole",
+            "path": "AwsCognito/PinpointRole",
             "children": {
               "ImportPinpointRole": {
                 "id": "ImportPinpointRole",
-                "path": "aws-cognito/PinpointRole/ImportPinpointRole",
+                "path": "AwsCognito/PinpointRole/ImportPinpointRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -83,7 +83,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cognito/PinpointRole/Resource",
+                "path": "AwsCognito/PinpointRole/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -108,11 +108,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "aws-cognito/PinpointRole/DefaultPolicy",
+                "path": "AwsCognito/PinpointRole/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cognito/PinpointRole/DefaultPolicy/Resource",
+                    "path": "AwsCognito/PinpointRole/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -161,11 +161,11 @@
           },
           "Client": {
             "id": "Client",
-            "path": "aws-cognito/Client",
+            "path": "AwsCognito/Client",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cognito/Client/Resource",
+                "path": "AwsCognito/Client/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
                   "aws:cdk:cloudformation:props": {
@@ -205,7 +205,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cognito/BootstrapVersion",
+            "path": "AwsCognito/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -213,7 +213,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cognito/CheckBootstrapVersion",
+            "path": "AwsCognito/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -225,17 +225,17 @@
           "version": "0.0.0"
         }
       },
-      "aws-cognito-user-pool-client-analytics": {
-        "id": "aws-cognito-user-pool-client-analytics",
-        "path": "aws-cognito-user-pool-client-analytics",
+      "AwsCognitoUserPoolClientAnalytics": {
+        "id": "AwsCognitoUserPoolClientAnalytics",
+        "path": "AwsCognitoUserPoolClientAnalytics",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "aws-cognito-user-pool-client-analytics/DefaultTest",
+            "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-cognito-user-pool-client-analytics/DefaultTest/Default",
+                "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -243,11 +243,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert",
+                "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -255,7 +255,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

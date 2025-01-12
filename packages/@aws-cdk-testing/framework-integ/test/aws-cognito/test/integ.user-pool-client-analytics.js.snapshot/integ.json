@@ -1,12 +1,12 @@
 {
   "version": "39.0.0",
   "testCases": {
-    "aws-cognito-user-pool-client-analytics/DefaultTest": {
+    "AwsCognitoUserPoolClientAnalytics/DefaultTest": {
       "stacks": [
-        "aws-cognito"
+        "AwsCognito"
       ],
-      "assertionStack": "aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert",
-      "assertionStackName": "awscognitouserpoolclientanalyticsDefaultTestDeployAssert4323F0ED"
+      "assertionStack": "AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCognitoUserPoolClientAnalyticsDefaultTestDeployAssert2BD286BF"
     }
   }
 }

@@ -3,7 +3,7 @@
   "files": {
     "b32c3012475a245a564a73dfdc93e87c7a90ba7ef745b11acd62276b529c9cf2": {
       "source": {
-        "path": "aws-cognito.template.json",
+        "path": "AwsCognito.template.json",
         "packaging": "file"
       },
       "destinations": {

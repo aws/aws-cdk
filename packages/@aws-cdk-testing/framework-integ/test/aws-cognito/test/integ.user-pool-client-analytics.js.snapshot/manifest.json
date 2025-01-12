@@ -1,19 +1,19 @@
 {
   "version": "39.0.0",
   "artifacts": {
-    "aws-cognito.assets": {
+    "AwsCognito.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cognito.assets.json",
+        "file": "AwsCognito.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cognito": {
+    "AwsCognito": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cognito.template.json",
+        "templateFile": "AwsCognito.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cognito.assets"
+          "AwsCognito.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,67 +31,67 @@
         }
       },
       "dependencies": [
-        "aws-cognito.assets"
+        "AwsCognito.assets"
       ],
       "metadata": {
-        "/aws-cognito/Pool/Resource": [
+        "/AwsCognito/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PoolD3F588B8"
           }
         ],
-        "/aws-cognito/PinpointApp": [
+        "/AwsCognito/PinpointApp": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PinpointApp"
           }
         ],
-        "/aws-cognito/PinpointRole/Resource": [
+        "/AwsCognito/PinpointRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PinpointRoleD648A459"
           }
         ],
-        "/aws-cognito/PinpointRole/DefaultPolicy/Resource": [
+        "/AwsCognito/PinpointRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PinpointRoleDefaultPolicyF89BD4DA"
           }
         ],
-        "/aws-cognito/Client/Resource": [
+        "/AwsCognito/Client/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Client4A7F64DF"
           }
         ],
-        "/aws-cognito/BootstrapVersion": [
+        "/AwsCognito/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cognito/CheckBootstrapVersion": [
+        "/AwsCognito/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cognito"
+      "displayName": "AwsCognito"
     },
-    "awscognitouserpoolclientanalyticsDefaultTestDeployAssert4323F0ED.assets": {
+    "AwsCognitoUserPoolClientAnalyticsDefaultTestDeployAssert2BD286BF.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awscognitouserpoolclientanalyticsDefaultTestDeployAssert4323F0ED.assets.json",
+        "file": "AwsCognitoUserPoolClientAnalyticsDefaultTestDeployAssert2BD286BF.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awscognitouserpoolclientanalyticsDefaultTestDeployAssert4323F0ED": {
+    "AwsCognitoUserPoolClientAnalyticsDefaultTestDeployAssert2BD286BF": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscognitouserpoolclientanalyticsDefaultTestDeployAssert4323F0ED.template.json",
+        "templateFile": "AwsCognitoUserPoolClientAnalyticsDefaultTestDeployAssert2BD286BF.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -100,7 +100,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscognitouserpoolclientanalyticsDefaultTestDeployAssert4323F0ED.assets"
+          "AwsCognitoUserPoolClientAnalyticsDefaultTestDeployAssert2BD286BF.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -109,23 +109,23 @@
         }
       },
       "dependencies": [
-        "awscognitouserpoolclientanalyticsDefaultTestDeployAssert4323F0ED.assets"
+        "AwsCognitoUserPoolClientAnalyticsDefaultTestDeployAssert2BD286BF.assets"
       ],
       "metadata": {
-        "/aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert"
+      "displayName": "AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
