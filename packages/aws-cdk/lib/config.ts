@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CliHelpers, type CliConfig } from '@aws-cdk/cli-args-gen';
+import { CliHelpers, type CliConfig } from '@aws-cdk/user-input-gen';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { MIGRATE_SUPPORTED_LANGUAGES } from './commands/migrate';
 import { RequireApproval } from './diff';
@@ -8,8 +8,11 @@ import { availableInitLanguages } from './init';
 export const YARGS_HELPERS = new CliHelpers('./util/yargs-helpers');
 
 /**
- * Source of truth for all CDK CLI commands. `cli-args-gen` translates this into the `yargs` definition
- * in `lib/parse-command-line-arguments.ts`.
+ * Source of truth for all CDK CLI commands. `user-input-gen` translates this into:
+ *
+ * - the `yargs` definition in `lib/parse-command-line-arguments.ts`.
+ * - the `UserInput` type in `lib/user-input.ts`.
+ * - the `convertXxxToUserInput` functions in `lib/convert-to-user-input.ts`.
  */
 export async function makeConfig(): Promise<CliConfig> {
   return {
@@ -53,12 +56,12 @@ export async function makeConfig(): Promise<CliConfig> {
           'show-dependencies': { type: 'boolean', default: false, alias: 'd', desc: 'Display stack dependency information for each stack' },
         },
       },
-      synthesize: {
+      synth: {
         arg: {
           name: 'STACKS',
           variadic: true,
         },
-        aliases: ['synth'],
+        aliases: ['synthesize'],
         description: 'Synthesizes and prints the CloudFormation template for this stack',
         options: {
           exclusively: { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' },

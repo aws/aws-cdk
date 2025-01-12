@@ -8,7 +8,7 @@ import { ListenerCondition } from './conditions';
 import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Lazy, Resource, Token } from '../../../core';
+import { Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -303,7 +303,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
-      if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK) {
+      if (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK ||
+        (this.loadBalancer.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
+          FeatureFlags.of(this).isEnabled(cxapi.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT))) {
         this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv6(), `Allow from anyone on port ${port}`);
       }
     }

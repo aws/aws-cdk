@@ -107,9 +107,10 @@ function computeSuffix(scope: string, allScopes: string[]): string | undefined {
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, ...options }: GenerateAllOptions,
+  { scopeMapPath, skippedServices, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {
-  const scopes = await getAllScopes('cloudFormationNamespace');
+  const allScopes = await getAllScopes('cloudFormationNamespace');
+  const scopes = skippedServices? allScopes.filter((scope) => !skippedServices.includes(scope)) : allScopes;
   const moduleMap = await readScopeMap(scopeMapPath);
 
   // Make sure all scopes have their own dedicated package/namespace.
