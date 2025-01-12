@@ -1085,3 +1085,41 @@ userPool.addGroup('AnotherUserPoolGroup', {
   groupName: 'another-group-name'
 });
 ```
+
+### Analytics Configuration
+
+User pool clients can be configured with Amazon Pinpoint analytics to collect user activity metrics. This integration enables you to track user engagement and campaign effectiveness.
+
+📝 Note: Amazon Pinpoint isn't available in all AWS Regions. For a list of available Regions, see [Amazon Cognito and Amazon Pinpoint Region availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings).
+
+The following example shows how to configure analytics for a user pool client:
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool: pool,
+  analytics: {
+    // The ARN of your Pinpoint project
+    applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:app/abc123',
+    
+    // Your Pinpoint project ID
+    applicationId: '123456789012',
+    
+    // External ID for the IAM role
+    externalId: 'my-external-id',
+    
+    // IAM role that Cognito can assume to publish to Pinpoint
+    roleArn: 'arn:aws:iam::123456789012:role/CognitoPinpointRole',
+    
+    // Whether to include user data in analytics events
+    userDataShared: true,
+  },
+});
+```
+
+When configuring analytics:
+
+- `applicationArn` must be a valid ARN of a Pinpoint project
+- `roleArn` must be a valid IAM role ARN with permissions to publish to Pinpoint
+- Setting `userDataShared` to `true` allows Cognito to include user data in the analytics events
