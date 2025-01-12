@@ -1963,14 +1963,15 @@ const service = new ecs.FargateService(this, 'FargateService', {
   serviceConnectConfiguration: {
     services: [
       {
-        // ...
         tls: {
           role,
           kmsKey,
           awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
         },
+        portMappingName: 'api',
       },
     ],
+    namespace: 'sample namespace',
   },
 });
 ```
