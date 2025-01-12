@@ -1377,8 +1377,7 @@ describe('User Pool Client', () => {
     const pool = new UserPool(stack, 'Pool');
 
     // WHEN
-    // THEN
-    expect(() => new UserPoolClient(stack, 'Client', {
+    const createUserPoolClient = () => new UserPoolClient(stack, 'Client', {
       userPool: pool,
       analytics: {
         applicationArn: 'invalid-arn',
@@ -1387,7 +1386,10 @@ describe('User Pool Client', () => {
         roleArn: 'arn:aws:iam::123456789012:role/TestRole',
         userDataShared: true,
       },
-    })).toThrow('applicationArn must be start with "arn:"; received invalid-arn');
+    });
+
+    // THEN
+    expect(() => createUserPoolClient()).toThrow('applicationArn must be start with "arn:"; received invalid-arn');
   });
 
   test('throws an error when roleArn is not an ARN', () => {
@@ -1396,8 +1398,7 @@ describe('User Pool Client', () => {
     const pool = new UserPool(stack, 'Pool');
 
     // WHEN
-    // THEN
-    expect(() => new UserPoolClient(stack, 'Client', {
+    const createUserPoolClient = () => new UserPoolClient(stack, 'Client', {
       userPool: pool,
       analytics: {
         applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
@@ -1406,6 +1407,9 @@ describe('User Pool Client', () => {
         roleArn: 'invalid-arn',
         userDataShared: true,
       },
-    })).toThrow('roleArn must be start with "arn:"; received invalid-arn');
+    });
+
+    // THEN
+    expect(() => createUserPoolClient()).toThrow('roleArn must be start with "arn:"; received invalid-arn');
   });
 });
