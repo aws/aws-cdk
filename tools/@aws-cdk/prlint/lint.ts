@@ -10,16 +10,7 @@ export type GitHubPr =
   Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
 
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
-export const CODECOV_PREFIX = 'codecov/';
 
-export const CODECOV_CHECKS = [
-  'patch',
-  'patch/packages/aws-cdk',
-  'patch/packages/aws-cdk-lib/core',
-  'project',
-  'project/packages/aws-cdk',
-  'project/packages/aws-cdk-lib/core'
-];
 const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
 /**
@@ -33,7 +24,6 @@ enum Exemption {
   CLI_INTEG_TESTED = 'pr-linter/cli-integ-tested',
   REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
   REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
-  CODECOV = "pr-linter/exempt-codecov",
 }
 
 export interface GithubStatusEvent {
@@ -346,23 +336,14 @@ export class PullRequestLinter {
    * @param sha the commit sha to evaluate
    */
   private async codeBuildJobSucceeded(sha: string): Promise<boolean> {
-    return this.checkStatusSucceeded(sha, CODE_BUILD_CONTEXT);
-  }
-
-  /**
-   * Check a specific status check to see if it is successful for the given commit
-   *
-   * @param sha the commit sha to evaluate
-   */
-  private async checkStatusSucceeded(sha: string, context: string): Promise<boolean> {
-    const statuses = await this.client.paginate(this.client.repos.listCommitStatusesForRef, {
+    const statuses = await this.client.repos.listCommitStatusesForRef({
       owner: this.prParams.owner,
       repo: this.prParams.repo,
       ref: sha,
     });
-    let status = statuses.filter(status => status.context === context).map(status => status.state);
-    console.log(`${context} statuses: ${status}`);
-    return statuses.some(status => status.context === context && status.state === 'success');
+    let status = statuses.data.filter(status => status.context === CODE_BUILD_CONTEXT).map(status => status.state);
+    console.log("CodeBuild Commit Statuses: ", status);
+    return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
   }
 
   public async validateStatusEvent(pr: GitHubPr, status: StatusEvent): Promise<void> {
@@ -594,24 +575,6 @@ export class PullRequestLinter {
       ],
     });
 
-    const codecovTests: Test[] = [];
-    for (const c of CODECOV_CHECKS) {
-      const checkName = `${CODECOV_PREFIX}${c}`;
-      const succeeded = await this.checkStatusSucceeded(sha, checkName);
-      codecovTests.push({
-        test: () => {
-          const result = new TestResult();
-          result.assessFailure(!succeeded, `${checkName} job is not succeeding`);
-          return result;
-        }
-      })
-    }
-
-    validationCollector.validateRuleSet({
-      exemption: shouldExemptCodecov,
-      testRuleSet: codecovTests,
-    });
-
     console.log("Deleting PR Linter Comment now");
     await this.deletePRLinterComment();
     try {
@@ -691,10 +654,6 @@ function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   result.assessFailure(isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
-}
-
-function shouldExemptCodecov(pr: GitHubPr): boolean {
-  return hasLabel(pr, Exemption.CODECOV);
 }
 
 function shouldExemptReadme(pr: GitHubPr): boolean {
