@@ -2,7 +2,7 @@
 *.js.map
 *.d.ts
 *.gz
-!lib/init-templates/**/javascript/**/*
+lib/init-templates/
 node_modules
 dist
 .jsii
