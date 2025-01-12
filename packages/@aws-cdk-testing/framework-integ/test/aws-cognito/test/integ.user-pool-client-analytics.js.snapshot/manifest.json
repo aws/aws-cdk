@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b32c3012475a245a564a73dfdc93e87c7a90ba7ef745b11acd62276b529c9cf2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ebdca2234c591817bc375258ba586949f960e2d167279b1e06b8178399f47669.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,24 +38,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PoolD3F588B8"
-          }
-        ],
-        "/UserPoolClientAnalytics/PinpointApp": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PinpointApp"
-          }
-        ],
-        "/UserPoolClientAnalytics/PinpointRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PinpointRoleD648A459"
-          }
-        ],
-        "/UserPoolClientAnalytics/PinpointRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PinpointRoleDefaultPolicyF89BD4DA"
           }
         ],
         "/UserPoolClientAnalytics/Client/Resource": [

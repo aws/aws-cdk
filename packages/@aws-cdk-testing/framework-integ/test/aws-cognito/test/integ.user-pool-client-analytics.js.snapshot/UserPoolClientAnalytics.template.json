@@ -31,58 +31,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "PinpointApp": {
-   "Type": "AWS::Pinpoint::App",
-   "Properties": {
-    "Name": "cognito-analytics-app"
-   }
-  },
-  "PinpointRoleD648A459": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "cognito-idp.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "PinpointRoleDefaultPolicyF89BD4DA": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "mobiletargeting:UpdateEndpoint",
-        "mobiletargeting:PutEvents"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PinpointApp",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "PinpointRoleDefaultPolicyF89BD4DA",
-    "Roles": [
-     {
-      "Ref": "PinpointRoleD648A459"
-     }
-    ]
-   }
-  },
   "Client4A7F64DF": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
