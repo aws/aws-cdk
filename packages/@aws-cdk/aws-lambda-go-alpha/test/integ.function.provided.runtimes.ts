@@ -13,8 +13,10 @@ class TestStack extends Stack {
       Runtime.PROVIDED_AL2, Runtime.PROVIDED_AL2023,
     ];
 
-    runtimes.forEach((runtime, index) => {
-      this.lambdaFunctions.push(new lambda.GoFunction(this, `go-handler-${runtime.name}-${index}`, {
+    const uniqueRuntimes: Runtime[] = runtimes.filter((value, index, array) => array.findIndex(value1 => value1.runtimeEquals(value)) === index);
+
+    uniqueRuntimes.forEach((runtime) => {
+      this.lambdaFunctions.push(new lambda.GoFunction(this, `go-handler-${runtime.name}`, {
         entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
         runtime: runtime,
         bundling: {
