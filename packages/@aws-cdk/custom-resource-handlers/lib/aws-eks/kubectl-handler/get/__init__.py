@@ -40,7 +40,7 @@ def get_handler(event, context):
     json_path           = props['JsonPath']
     timeout_seconds     = props['TimeoutSeconds']
 
-    # json path should be surrouded with '{}'
+    # json path should be surrounded with '{}'
     path = '{{{0}}}'.format(json_path)
     if request_type == 'Create' or request_type == 'Update':
         output = wait_for_output(['get', '-n', object_namespace, object_type, object_name, "-o=jsonpath='{{{0}}}'".format(json_path)], int(timeout_seconds))
