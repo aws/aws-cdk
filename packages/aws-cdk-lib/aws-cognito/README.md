@@ -1095,22 +1095,24 @@ User pool clients can be configured with Amazon Pinpoint analytics to collect us
 The following example shows how to configure analytics for a user pool client:
 
 ```ts
-const pool = new cognito.UserPool(this, 'Pool');
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
 
 new cognito.UserPoolClient(this, 'Client', {
-  userPool: pool,
+  userPool,
   analytics: {
     // The ARN of your Pinpoint project
-    applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:app/abc123',
+    applicationArn: pinpointApp.attrArn,
     
     // Your Pinpoint project ID
-    applicationId: '123456789012',
+    applicationId: pinpointApp.ref,
     
     // External ID for the IAM role
-    externalId: 'my-external-id',
+    externalId: "sample-external-id",
     
     // IAM role that Cognito can assume to publish to Pinpoint
-    roleArn: 'arn:aws:iam::123456789012:role/CognitoPinpointRole',
+    roleArn: pinpointRole.roleArn,
     
     // Whether to include user data in analytics events
     userDataShared: true,
