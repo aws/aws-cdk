@@ -292,6 +292,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             if (args.changeSetName) {
               throw new ToolkitError('--change-set-name cannot be used with method=direct');
             }
+            if (args.importExistingResources) {
+              throw new Error('--import-existing-resources cannot be enabled with method=direct');
+            }
             deploymentMethod = { method: 'direct' };
             break;
           case 'change-set':
@@ -299,6 +302,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: true,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
           case 'prepare-change-set':
@@ -306,6 +310,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: false,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
           case undefined:
@@ -313,6 +318,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               method: 'change-set',
               execute: args.execute ?? true,
               changeSetName: args.changeSetName,
+              importExistingResources: args.importExistingResources,
             };
             break;
         }

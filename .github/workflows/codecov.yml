@@ -21,16 +21,22 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build Library
+        run: npx lerna run build --scope=aws-cdk-lib
+
       - name: Build CLI
         run: npx lerna run build --scope=aws-cdk
 
-      - name: Run tests
+      - name: Run Core tests
+        run: cd packages/aws-cdk-lib && yarn test core
+
+      - name: Run CLI tests
         run: cd packages/aws-cdk && yarn test
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
         with:
-          directory: packages/aws-cdk/coverage
+          files: packages/aws-cdk/coverage/cobertura-coverage.xml,packages/aws-cdk-lib/coverage/cobertura-coverage.xml
           fail_ci_if_error: true
           flags: suite.unit
           token: ${{ secrets.CODECOV_TOKEN }}

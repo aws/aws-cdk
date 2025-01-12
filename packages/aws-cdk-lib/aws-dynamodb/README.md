@@ -585,7 +585,7 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  // applys to all replicas, i.e., us-west-2, us-east-1, us-east-2
+  // applies to all replicas, i.e., us-west-2, us-east-1, us-east-2
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   replicas: [
     { region: 'us-east-1' },
@@ -749,7 +749,7 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   ],
 });
 
-// grantReadData only applys to the table in us-west-2 and the tableKey
+// grantReadData only applies to the table in us-west-2 and the tableKey
 globalTable.grantReadData(user);
 ```
 
@@ -779,7 +779,7 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   ],
 });
 
-// grantReadData applys to the table in us-east-2 and the key arn for the key in us-east-2
+// grantReadData applies to the table in us-east-2 and the key arn for the key in us-east-2
 globalTable.replica('us-east-2').grantReadData(user);
 ```
 
@@ -815,7 +815,7 @@ new cloudwatch.Alarm(this, 'Alarm', {
 The `replica` method can be used to generate a metric for a specific replica table:
 
 ```ts
-import * as cdk form 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 class FooStack extends cdk.Stack {
@@ -824,7 +824,7 @@ class FooStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
-    this.globalTable = new dynamodb.Tablev2(this, 'GlobalTable', {
+    this.globalTable = new dynamodb.TableV2(this, 'GlobalTable', {
       partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -834,7 +834,7 @@ class FooStack extends cdk.Stack {
   }
 }
 
-interface BarStack extends cdk.StackProps {
+interface BarStackProps extends cdk.StackProps {
   readonly replicaTable: dynamodb.ITableV2;
 }
 
