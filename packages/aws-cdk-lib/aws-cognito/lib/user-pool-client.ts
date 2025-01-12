@@ -671,14 +671,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       analytics.applicationArn &&
         (analytics.applicationId || analytics.externalId || analytics.roleArn)
     ) {
-      throw new Error('Either `applicationArn` or all of `applicationId`, `externalId`, and `roleArn` must be specified.');
+      throw new Error('Either `applicationArn` or all of `applicationId`, `externalId` and `roleArn` must be specified.');
     }
 
     if (
       !analytics.applicationArn &&
-        !(analytics.applicationId && analytics.externalId && analytics.roleArn)
+        (!analytics.applicationId || !analytics.externalId || !analytics.roleArn)
     ) {
-      throw new Error('Either all of `applicationId`, `externalId`, and `roleArn` must be specified or `applicationArn` must be specified.');
+      throw new Error('Either all of `applicationId`, `externalId` and `roleArn` must be specified or `applicationArn` must be specified.');
     }
 
     if (analytics.applicationArn && !Token.isUnresolved(analytics.applicationArn) && !analytics.applicationArn.startsWith('arn:')) {
