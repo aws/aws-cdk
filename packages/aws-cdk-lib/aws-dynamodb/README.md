@@ -834,7 +834,7 @@ class FooStack extends cdk.Stack {
   }
 }
 
-interface BarStack extends cdk.StackProps {
+interface BarStackProps extends cdk.StackProps {
   readonly replicaTable: dynamodb.ITableV2;
 }
 
