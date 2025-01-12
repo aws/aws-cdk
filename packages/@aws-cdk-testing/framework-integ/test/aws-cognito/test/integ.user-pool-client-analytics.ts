@@ -5,7 +5,7 @@ import { Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws
 import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
 
 const app = new App();
-const stack = new Stack(app, 'AwsCognito');
+const stack = new Stack(app, 'UserPoolClientAnalytics');
 
 const userPool = new UserPool(stack, 'Pool', {
   removalPolicy: RemovalPolicy.DESTROY,
@@ -39,7 +39,7 @@ new UserPoolClient(stack, 'Client', {
   },
 });
 
-new IntegTest(app, 'AwsCognitoUserPoolClientAnalytics', {
+new IntegTest(app, 'integ-aws-cognito-user-pool-client-analytics', {
   testCases: [stack],
 });
 

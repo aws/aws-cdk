@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "AwsCognito": {
-        "id": "AwsCognito",
-        "path": "AwsCognito",
+      "UserPoolClientAnalytics": {
+        "id": "UserPoolClientAnalytics",
+        "path": "UserPoolClientAnalytics",
         "children": {
           "Pool": {
             "id": "Pool",
-            "path": "AwsCognito/Pool",
+            "path": "UserPoolClientAnalytics/Pool",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "AwsCognito/Pool/Resource",
+                "path": "UserPoolClientAnalytics/Pool/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
                   "aws:cdk:cloudformation:props": {
@@ -57,7 +57,7 @@
           },
           "PinpointApp": {
             "id": "PinpointApp",
-            "path": "AwsCognito/PinpointApp",
+            "path": "UserPoolClientAnalytics/PinpointApp",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::Pinpoint::App",
               "aws:cdk:cloudformation:props": {
@@ -71,11 +71,11 @@
           },
           "PinpointRole": {
             "id": "PinpointRole",
-            "path": "AwsCognito/PinpointRole",
+            "path": "UserPoolClientAnalytics/PinpointRole",
             "children": {
               "ImportPinpointRole": {
                 "id": "ImportPinpointRole",
-                "path": "AwsCognito/PinpointRole/ImportPinpointRole",
+                "path": "UserPoolClientAnalytics/PinpointRole/ImportPinpointRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -83,7 +83,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "AwsCognito/PinpointRole/Resource",
+                "path": "UserPoolClientAnalytics/PinpointRole/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -108,11 +108,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "AwsCognito/PinpointRole/DefaultPolicy",
+                "path": "UserPoolClientAnalytics/PinpointRole/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "AwsCognito/PinpointRole/DefaultPolicy/Resource",
+                    "path": "UserPoolClientAnalytics/PinpointRole/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -161,11 +161,11 @@
           },
           "Client": {
             "id": "Client",
-            "path": "AwsCognito/Client",
+            "path": "UserPoolClientAnalytics/Client",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "AwsCognito/Client/Resource",
+                "path": "UserPoolClientAnalytics/Client/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
                   "aws:cdk:cloudformation:props": {
@@ -205,7 +205,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "AwsCognito/BootstrapVersion",
+            "path": "UserPoolClientAnalytics/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -213,7 +213,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "AwsCognito/CheckBootstrapVersion",
+            "path": "UserPoolClientAnalytics/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -225,17 +225,17 @@
           "version": "0.0.0"
         }
       },
-      "AwsCognitoUserPoolClientAnalytics": {
-        "id": "AwsCognitoUserPoolClientAnalytics",
-        "path": "AwsCognitoUserPoolClientAnalytics",
+      "integ-aws-cognito-user-pool-client-analytics": {
+        "id": "integ-aws-cognito-user-pool-client-analytics",
+        "path": "integ-aws-cognito-user-pool-client-analytics",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest",
+            "path": "integ-aws-cognito-user-pool-client-analytics/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest/Default",
+                "path": "integ-aws-cognito-user-pool-client-analytics/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -243,11 +243,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert",
+                "path": "integ-aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "integ-aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -255,7 +255,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "AwsCognitoUserPoolClientAnalytics/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "integ-aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
