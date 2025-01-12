@@ -33,7 +33,7 @@ new UserPoolClient(stack, 'Client', {
   analytics: {
     applicationArn: pinpointApp.attrArn,
     applicationId: pinpointApp.ref,
-    externalId: stack.stackId,
+    externalId: 'test-external-id',
     roleArn: pinpointRole.roleArn,
     userDataShared: true,
   },
