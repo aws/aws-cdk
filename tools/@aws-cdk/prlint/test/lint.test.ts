@@ -1182,10 +1182,13 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
   const reposClient = {
     listCommitStatusesForRef() {
       return {
-        data: [{
-          context: linter.CODE_BUILD_CONTEXT,
-          state: 'success',
-        }],
+        data: [
+          {
+            context: linter.CODE_BUILD_CONTEXT,
+            state: 'success',
+          },
+          ...(linter.CODECOV_CHECKS.map(c => ({ context: `${linter.CODECOV_PREFIX}${c}`, state: 'success'})))
+        ],
       };
     },
   };
