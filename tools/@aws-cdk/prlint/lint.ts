@@ -10,6 +10,16 @@ export type GitHubPr =
   Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
 
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
+export const CODECOV_PREFIX = 'codecov/';
+
+export const CODECOV_CHECKS = [
+  'patch',
+  'patch/packages/aws-cdk',
+  'patch/packages/aws-cdk-lib/core',
+  'project',
+  'project/packages/aws-cdk',
+  'project/packages/aws-cdk-lib/core'
+];
 
 const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
@@ -24,6 +34,7 @@ enum Exemption {
   CLI_INTEG_TESTED = 'pr-linter/cli-integ-tested',
   REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
   REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
+  CODECOV = "pr-linter/exempt-codecov",
 }
 
 export interface GithubStatusEvent {
@@ -352,6 +363,24 @@ export class PullRequestLinter {
     }
   }
 
+  private async checkRunSucceeded(sha: string, checkName: string) {
+    const response = await this.client.paginate(this.client.checks.listForRef, {
+      owner: this.prParams.owner,
+      repo: this.prParams.repo,
+      ref: sha,
+    });
+
+    // grab the last check run that was started
+    const status = response
+      .filter(c => c.started_at !== undefined)
+      .sort((c1, c2) => c2.started_at!.localeCompare(c1.started_at!))
+      .filter(c => c.name === checkName)
+      .map(s => s.conclusion)[0];
+
+    console.log(`${checkName} status: ${status}`)
+    return status === 'success';
+  }
+
   /**
    * Assess whether or not a PR is ready for review.
    * This is needed because some things that we need to evaluate are not filterable on
@@ -575,6 +604,24 @@ export class PullRequestLinter {
       ],
     });
 
+    const codecovTests: Test[] = [];
+    for (const c of CODECOV_CHECKS) {
+      const checkName = `${CODECOV_PREFIX}${c}`;
+      const succeeded = await this.checkRunSucceeded(sha, checkName);
+      codecovTests.push({
+        test: () => {
+          const result = new TestResult();
+          result.assessFailure(!succeeded, `${checkName} job is not succeeding`);
+          return result;
+        }
+      })
+    }
+
+    validationCollector.validateRuleSet({
+      exemption: shouldExemptCodecov,
+      testRuleSet: codecovTests,
+    });
+
     console.log("Deleting PR Linter Comment now");
     await this.deletePRLinterComment();
     try {
@@ -654,6 +701,10 @@ function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   result.assessFailure(isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
+}
+
+function shouldExemptCodecov(pr: GitHubPr): boolean {
+  return hasLabel(pr, Exemption.CODECOV);
 }
 
 function shouldExemptReadme(pr: GitHubPr): boolean {
