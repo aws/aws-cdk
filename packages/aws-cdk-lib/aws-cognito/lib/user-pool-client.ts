@@ -353,6 +353,45 @@ export interface UserPoolClientProps extends UserPoolClientOptions {
    * The UserPool resource this client will have access to
    */
   readonly userPool: IUserPool;
+
+  /**
+   * The analytics configuration for this client.
+   */
+  readonly analyticsConfiguration?: AnalyticsConfiguration;
+}
+
+/**
+ * The settings for Amazon Pinpoint analytics configuration.
+ *
+ * With an analytics configuration, your application can collect user-activity metrics for user notifications with a Amazon Pinpoint campaign.
+ *
+ * Amazon Pinpoint isn't available in all AWS Regions. For a list of available Regions, see [Amazon Cognito and Amazon Pinpoint Region availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings).
+ */
+export interface AnalyticsConfiguration {
+  /**
+   * The Amazon Resource Name (ARN) of an Amazon Pinpoint project that you want to connect to your user pool app client.
+   */
+  readonly applicationArn?: string;
+
+  /**
+   * Your Amazon Pinpoint project ID.
+   */
+  readonly applicationId?: string;
+
+  /**
+   * The [external ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html) of the role that Amazon Cognito assumes to send analytics data to Amazon Pinpoint.
+   */
+  readonly externalId?: string;
+
+  /**
+   * The ARN of an AWS Identity and Access Management role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
+   */
+  readonly roleArn?: string;
+
+  /**
+   * If `UserDataShared` is `true` , Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
+   */
+  readonly userDataShared?: boolean;
 }
 
 /**
@@ -447,6 +486,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new Error('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
     }
 
+    if (props.analyticsConfiguration) {
+      this.validateAnalyticsConfiguration(props.analyticsConfiguration);
+    }
+
     this._generateSecret = props.generateSecret;
     this.userPool = props.userPool;
 
@@ -467,6 +510,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
+      analyticsConfiguration: props.analyticsConfiguration,
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
@@ -616,6 +660,15 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (value === undefined) { return; }
     if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
       throw new Error(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`);
+    }
+  }
+
+  private validateAnalyticsConfiguration(analyticsConfiguration: AnalyticsConfiguration) {
+    if (analyticsConfiguration.applicationArn && !Token.isUnresolved(analyticsConfiguration.applicationArn) && !analyticsConfiguration.applicationArn.startsWith('arn:')) {
+      throw new Error(`applicationArn must be start with "arn:"; received ${analyticsConfiguration.applicationArn}`);
+    }
+    if (analyticsConfiguration.roleArn && !Token.isUnresolved(analyticsConfiguration.roleArn) && !analyticsConfiguration.roleArn.startsWith('arn:')) {
+      throw new Error(`roleArn must be start with "arn:"; received ${analyticsConfiguration.roleArn}`);
     }
   }
 }
