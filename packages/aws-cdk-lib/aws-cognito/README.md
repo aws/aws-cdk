@@ -1099,6 +1099,8 @@ The following example shows how to configure analytics for a user pool client:
 If you specify the `applicationArn` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
 
 ```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
 declare const userPool: cognito.UserPool;
 declare const pinpointApp: pinpoint.CfnApp;
 declare const pinpointRole: iam.Role;
@@ -1121,6 +1123,8 @@ If you specify the `applicationId`, `externalId`, or `roleArn` properties, do no
 (In this case, the `applicationId`, `externalId`, and `roleArn` must all be specified.)
 
 ```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
 declare const userPool: cognito.UserPool;
 declare const pinpointApp: pinpoint.CfnApp;
 declare const pinpointRole: iam.Role;
