@@ -824,7 +824,7 @@ class FooStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
-    this.globalTable = new dynamodb.Tablev2(this, 'GlobalTable', {
+    this.globalTable = new dynamodb.TableV2(this, 'GlobalTable', {
       partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
