@@ -357,7 +357,7 @@ export interface UserPoolClientProps extends UserPoolClientOptions {
   /**
    * The analytics configuration for this client.
    */
-  readonly analyticsConfiguration?: AnalyticsConfiguration;
+  readonly analytics?: AnalyticsConfiguration;
 }
 
 /**
@@ -486,8 +486,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       throw new Error('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
     }
 
-    if (props.analyticsConfiguration) {
-      this.validateAnalyticsConfiguration(props.analyticsConfiguration);
+    if (props.analytics) {
+      this.validateAnalyticsConfiguration(props.analytics);
     }
 
     this._generateSecret = props.generateSecret;
@@ -510,7 +510,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
-      analyticsConfiguration: props.analyticsConfiguration,
+      analyticsConfiguration: props.analytics,
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
@@ -663,12 +663,12 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
   }
 
-  private validateAnalyticsConfiguration(analyticsConfiguration: AnalyticsConfiguration) {
-    if (analyticsConfiguration.applicationArn && !Token.isUnresolved(analyticsConfiguration.applicationArn) && !analyticsConfiguration.applicationArn.startsWith('arn:')) {
-      throw new Error(`applicationArn must be start with "arn:"; received ${analyticsConfiguration.applicationArn}`);
+  private validateAnalyticsConfiguration(analytics: AnalyticsConfiguration) {
+    if (analytics.applicationArn && !Token.isUnresolved(analytics.applicationArn) && !analytics.applicationArn.startsWith('arn:')) {
+      throw new Error(`applicationArn must be start with "arn:"; received ${analytics.applicationArn}`);
     }
-    if (analyticsConfiguration.roleArn && !Token.isUnresolved(analyticsConfiguration.roleArn) && !analyticsConfiguration.roleArn.startsWith('arn:')) {
-      throw new Error(`roleArn must be start with "arn:"; received ${analyticsConfiguration.roleArn}`);
+    if (analytics.roleArn && !Token.isUnresolved(analytics.roleArn) && !analytics.roleArn.startsWith('arn:')) {
+      throw new Error(`roleArn must be start with "arn:"; received ${analytics.roleArn}`);
     }
   }
 }
