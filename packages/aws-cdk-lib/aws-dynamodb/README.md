@@ -86,7 +86,7 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   contributorInsights: true,
   pointInTimeRecoverySpecification: {
       pointInTimeRecoveryEnabled: true,
-  }
+  },
   replicas: [
     {
       region: 'us-east-1',
