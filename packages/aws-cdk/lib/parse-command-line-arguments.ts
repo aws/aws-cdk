@@ -2,7 +2,6 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-// istanbul ignore file
 /* eslint-disable @stylistic/max-len */
 import { Argv } from 'yargs';
 import * as helpers from './util/yargs-helpers';
@@ -173,7 +172,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Display stack dependency information for each stack',
         }),
     )
-    .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
+    .command(['synth [STACKS..]', 'synthesize [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
       yargs
         .option('exclusively', {
           default: undefined,
