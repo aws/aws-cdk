@@ -343,6 +343,12 @@ export interface UserPoolClientOptions {
    * @default false for new user pool clients
    */
   readonly enablePropagateAdditionalUserContextData?: boolean;
+
+  /**
+   * The analytics configuration for this client.
+   * @default - no analytics configuration
+   */
+  readonly analytics?: AnalyticsConfiguration;
 }
 
 /**
@@ -353,12 +359,6 @@ export interface UserPoolClientProps extends UserPoolClientOptions {
    * The UserPool resource this client will have access to
    */
   readonly userPool: IUserPool;
-
-  /**
-   * The analytics configuration for this client.
-   * @default - no analytics configuration
-   */
-  readonly analytics?: AnalyticsConfiguration;
 }
 
 /**

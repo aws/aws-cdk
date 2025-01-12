@@ -1,12 +1,16 @@
 {
   "version": "39.0.0",
   "testCases": {
-    "integ-aws-cognito-user-pool-client-analytics/DefaultTest": {
+    "integ-user-pool-client-test/DefaultTest": {
       "stacks": [
-        "UserPoolClientAnalytics"
+        "IntegUserPoolClientAnalytics",
+        "IntegUserPoolClientAnalytics2"
       ],
-      "assertionStack": "integ-aws-cognito-user-pool-client-analytics/DefaultTest/DeployAssert",
-      "assertionStackName": "integawscognitouserpoolclientanalyticsDefaultTestDeployAssert977FF95B"
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "integ-user-pool-client-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolclienttestDefaultTestDeployAssertB83B7A3F"
     }
   }
 }

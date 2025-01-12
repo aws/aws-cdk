@@ -1,5 +1,13 @@
 {
  "Resources": {
+  "PinpointApp": {
+   "Type": "AWS::Pinpoint::App",
+   "Properties": {
+    "Name": "MyPinpointApp"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "PoolD3F588B8": {
    "Type": "AWS::Cognito::UserPool",
    "Properties": {
@@ -31,7 +39,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "Client4A7F64DF": {
+  "PoolClient8A3E5EB7": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
     "AllowedOAuthFlows": [
@@ -49,6 +57,7 @@
     "CallbackURLs": [
      "https://example.com"
     ],
+    "GenerateSecret": true,
     "SupportedIdentityProviders": [
      "COGNITO"
     ],
