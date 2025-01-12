@@ -173,7 +173,7 @@ export class AccessPoint extends AccessPointBase {
   public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     const arn = core.Arn.split(attrs.accessPointArn, core.ArnFormat.SLASH_RESOURCE_NAME);
     if (!arn.resourceName) {
-      throw new Error('Unable to parse acess point name');
+      throw new Error('Unable to parse access point name');
     }
     const name = arn.resourceName;
     class Import extends AccessPointBase {
