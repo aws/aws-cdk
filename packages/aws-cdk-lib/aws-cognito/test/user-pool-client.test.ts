@@ -1,8 +1,7 @@
-import { create } from 'lodash';
 import { Match, Template } from '../../assertions';
+import { Role, ServicePrincipal } from '../../aws-iam';
 import { Stack, Duration } from '../../core';
 import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes, AnalyticsConfiguration } from '../lib';
-import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 
 describe('User Pool Client', () => {
   test('default setup', () => {

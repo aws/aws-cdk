@@ -3,9 +3,9 @@ import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
+import { Role } from '../../aws-iam';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
-import * as iam from '../../aws-iam';
 
 /**
  * Types of authentication flow
@@ -391,7 +391,7 @@ export interface AnalyticsConfiguration {
    * The IAM role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
    * @default - no configuration, you need to specify either this property along with `applicationId` and `externalId` or `applicationArn`.
    */
-  readonly role?: iam.Role;
+  readonly role?: Role;
 
   /**
    * If `UserDataShared` is `true` , Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
