@@ -1110,7 +1110,7 @@ new cognito.UserPoolClient(this, 'Client', {
     applicationArn: pinpointApp.attrArn,
 
     // Whether to include user data in analytics events
-    userDataShared: true,
+    shareUserData: true,
   },
 });
 ```
@@ -1138,7 +1138,7 @@ new cognito.UserPoolClient(this, 'Client', {
     roleArn: pinpointRole.roleArn,
 
     // Whether to include user data in analytics events
-    userDataShared: true,
+    shareUserData: true,
   },
 });
 ```
