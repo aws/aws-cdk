@@ -487,7 +487,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
 
     if (props.analytics) {
-      this.validateAnalyticsConfiguration(props.analytics);
+      this.validateAnalytics(props.analytics);
     }
 
     this._generateSecret = props.generateSecret;
@@ -663,7 +663,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
   }
 
-  private validateAnalyticsConfiguration(analytics: AnalyticsConfiguration) {
+  private validateAnalytics(analytics: AnalyticsConfiguration) {
     if (analytics.applicationArn && !Token.isUnresolved(analytics.applicationArn) && !analytics.applicationArn.startsWith('arn:')) {
       throw new Error(`applicationArn must be start with "arn:"; received ${analytics.applicationArn}`);
     }
