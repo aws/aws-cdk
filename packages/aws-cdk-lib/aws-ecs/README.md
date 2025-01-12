@@ -341,6 +341,17 @@ cluster.addCapacity('ASGEncryptedSNS', {
 });
 ```
 
+### Container Insights
+
+On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html) 
+can be disabled, enabled, or enhanced.
+
+```ts
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  containerInsightsV2: ecs.ContainerInsights.ENHANCED
+});
+```
+
 ## Task definitions
 
 A task definition describes what a single copy of a **task** should look like.
