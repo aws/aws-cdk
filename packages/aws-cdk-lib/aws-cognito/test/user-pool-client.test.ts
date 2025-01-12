@@ -1342,4 +1342,70 @@ describe('User Pool Client', () => {
     ).toThrow(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${invalidUrl}`);
   });
 
+  test('should add analytics configuration to userPoolClients ', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      analytics: {
+        applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+        applicationId: '123456789012',
+        externalId: '123456789012',
+        roleArn: 'arn:aws:iam::123456789012:role/TestRole',
+        userDataShared: true,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      AnalyticsConfiguration: {
+        ApplicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+        ApplicationId: '123456789012',
+        ExternalId: '123456789012',
+        RoleArn: 'arn:aws:iam::123456789012:role/TestRole',
+        UserDataShared: true,
+      },
+    });
+  });
+
+  test('throws an error when applicationArn is not an ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    // THEN
+    expect(() => new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      analytics: {
+        applicationArn: 'invalid-arn',
+        applicationId: '123456789012',
+        externalId: '123456789012',
+        roleArn: 'arn:aws:iam::123456789012:role/TestRole',
+        userDataShared: true,
+      },
+    })).toThrow('applicationArn must be start with "arn:"; received invalid-arn');
+  });
+
+  test('throws an error when roleArn is not an ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    // THEN
+    expect(() => new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      analytics: {
+        applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+        applicationId: '123456789012',
+        externalId: '123456789012',
+        roleArn: 'invalid-arn',
+        userDataShared: true,
+      },
+    })).toThrow('roleArn must be start with "arn:"; received invalid-arn');
+  });
 });
