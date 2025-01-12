@@ -442,7 +442,7 @@ export interface TableProps extends TableOptions {
   readonly kinesisStream?: kinesis.IStream;
 
   /**
-   * Kinesis Data Stream approximate creation timestamp prescision
+   * Kinesis Data Stream approximate creation timestamp precision
    *
    * @default ApproximateCreationDateTimePrecision.MICROSECOND
    */

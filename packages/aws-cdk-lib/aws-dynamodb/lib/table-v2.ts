@@ -201,7 +201,7 @@ export interface ReplicaTableProps extends TableOptionsV2 {
   readonly readCapacity?: Capacity;
 
   /**
-   * The maxium read request units.
+   * The maximum read request units.
    *
    * Note: This can only be configured if the primary table billing is PAY_PER_REQUEST.
    *
