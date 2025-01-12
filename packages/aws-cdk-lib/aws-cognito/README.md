@@ -1117,7 +1117,8 @@ new cognito.UserPoolClient(this, 'Client', {
 
 #### When specifying an Application ID, External ID, and Role ARN
 
-If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `applicationArn` property.
+If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `applicationArn` property.  
+(In this case, the `applicationId`, `externalId`, and `roleArn` must all be specified.)
 
 ```ts
 declare const userPool: cognito.UserPool;
