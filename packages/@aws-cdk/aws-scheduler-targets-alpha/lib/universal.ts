@@ -58,36 +58,13 @@ export interface UniversalTargetProps extends ScheduleTargetBaseProps {
   readonly action: string;
 
   /**
-   * The resources for the IAM policy statement that will be added to the scheduler role's policy
-   * to allow the scheduler to make the API call.
-   */
-  readonly iamResources: string[];
-
-  /**
-   * The action for the IAM policy statement that will be added to the scheduler role's policy
-   * to allow the scheduler to make the API call.
+   * The IAM policy statements needed to invoke the target. These statements are attached to the Scheduler's role.
    *
-   * Use this in cases where the IAM action name does not match the
-   * API service/action name, e.g., `lambda:invoke` requires `lambda:InvokeFunction` permission.
+   * Note that the default may not be the correct actions as not all AWS services follows the same IAM action pattern, or there may be more actions needed to invoke the target.
    *
-   * @default - service:action
+   * @default - Policy with `service:action` action only.
    */
-  readonly iamAction?: string;
-
-  /**
-   * The conditions for the IAM policy statement that will be added to the scheduler role's policy
-   * to allow the scheduler to make the API call.
-   *
-   * @default - no conditions
-   */
-  readonly iamConditions?: { [key: string]: any };
-
-  /**
-   * Additional IAM policy statements that will be added to the scheduler role's policy.
-   *
-   * @default - no additional policy statements
-   */
-  readonly additionalPolicyStatements?: PolicyStatement[];
+  readonly policyStatements?: PolicyStatement[];
 }
 
 /**
@@ -117,14 +94,16 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
   }
 
   protected addTargetActionToRole(role: IRole): void {
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: [this.props.iamAction ?? awsSdkToIamAction(this.props.service, this.props.action)],
-      resources: this.props.iamResources,
-      conditions: this.props.iamConditions,
-    }));
+    if (!this.props.policyStatements?.length) {
+      role.addToPrincipalPolicy(new PolicyStatement({
+        actions: [awsSdkToIamAction(this.props.service, this.props.action)],
+        resources: ['*'],
+      }));
+      return;
+    }
 
-    for (const policyStatement of this.props.additionalPolicyStatements ?? []) {
-      role.addToPrincipalPolicy(policyStatement);
+    for (const statement of this.props.policyStatements) {
+      role.addToPrincipalPolicy(statement);
     }
   }
 }

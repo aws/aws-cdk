@@ -342,8 +342,7 @@ The `service` must be in lowercase and the `action` must be in camelCase.
 
 By default, an IAM policy for the Scheduler is extracted from the API call.
 
-You can provide additional IAM policy statements to the Scheduler when
-other permissions are required for the action.
+You can control the IAM policy for the Scheduler by specifying the `policyStatements` property.
 
 ```ts
 new Schedule(this, 'Schedule', {
@@ -351,28 +350,16 @@ new Schedule(this, 'Schedule', {
   target: new targets.Universal({
     service: 'sqs',
     action: 'sendMessage',
-    iamResources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
-    additionalPolicyStatements: [
+    policyStatements: [
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+      }),
       new iam.PolicyStatement({
         actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
         resources: ['arn:aws:kms:us-east-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
       }),
     ],
-  }),
-});
-```
-
-In cases where IAM action name differs from the API action name, you can provide the `iamAction` property
-to specify the IAM action name.
-
-```ts
-new Schedule(this, 'Schedule', {
-  schedule: ScheduleExpression.rate(Duration.minutes(60)),
-  target: new targets.Universal({
-    service: 'lambda',
-    action: 'invoke',
-    iamResources: ['arn:aws:lambda:us-east-1:123456789012:function:my-function'],
-    iamAction: 'lambda:InvokeFunction',
   }),
 });
 ```

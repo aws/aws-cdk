@@ -21,7 +21,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -116,7 +115,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -176,7 +174,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -250,7 +247,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -348,7 +344,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -403,7 +398,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -444,7 +438,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -480,7 +473,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -526,7 +518,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -544,7 +535,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -562,7 +552,6 @@ describe('Universal schedule target', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'createQueue',
-      iamResources: ['*'],
       input: scheduler.ScheduleTargetInput.fromObject({
         QueueName: 'my-queue',
       }),
@@ -581,7 +570,6 @@ describe('Universal schedule target', () => {
       new Universal({
         service: 'SQS',
         action: 'createQueue',
-        iamResources: ['*'],
         input: scheduler.ScheduleTargetInput.fromObject({
           QueueName: 'my-queue',
         }),
@@ -594,7 +582,6 @@ describe('Universal schedule target', () => {
       new Universal({
         service: 'sqs',
         action: 'CreateQueue',
-        iamResources: ['*'],
         input: scheduler.ScheduleTargetInput.fromObject({
           QueueName: 'my-queue',
         }),
@@ -607,7 +594,6 @@ describe('Universal schedule target', () => {
       new Universal({
         service: 'sqs',
         action: 'getQueueUrl',
-        iamResources: ['*'],
         input: scheduler.ScheduleTargetInput.fromObject({
           QueueName: 'my-queue',
         }),
@@ -615,72 +601,18 @@ describe('Universal schedule target', () => {
       })).toThrow(/Read-only API action is not supported by EventBridge Scheduler: sqs:getQueueUrl/);
   });
 
-  test('specify iamAction and iamConditions', () => {
-    const target = new Universal({
-      service: 'lambda',
-      action: 'invoke',
-      iamResources: ['arn:aws:lambda:us-east-1:123456789012:function:my-function'],
-      iamAction: 'lambda:InvokeFunction',
-      iamConditions: {
-        StringEquals: {
-          'aws:Test': 'Test',
-        },
-      },
-    });
-
-    new scheduler.Schedule(stack, 'Schedule', {
-      schedule: scheduleExpression,
-      target,
-    });
-
-    const template = Template.fromStack(stack);
-
-    template.hasResource('AWS::Scheduler::Schedule', {
-      Properties: {
-        Target: {
-          Arn: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':scheduler:::aws-sdk:lambda:invoke',
-              ],
-            ],
-          },
-        },
-      },
-    });
-
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'lambda:InvokeFunction',
-            Effect: 'Allow',
-            Resource: 'arn:aws:lambda:us-east-1:123456789012:function:my-function',
-            Condition: {
-              StringEquals: {
-                'aws:Test': 'Test',
-              },
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  test('specify additionalPolicyStatements', () => {
+  test('specify policyStatements', () => {
     const target = new Universal({
       service: 'sqs',
       action: 'sendMessage',
-      iamResources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
-      additionalPolicyStatements: [
+      policyStatements: [
+        new iam.PolicyStatement({
+          actions: ['sqs:SendMessage'],
+          resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+        }),
         new iam.PolicyStatement({
           actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
-          resources: ['arn:aws:kms:us-west-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
+          resources: ['arn:aws:kms:us-east-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
         }),
       ],
     });
@@ -722,7 +654,7 @@ describe('Universal schedule target', () => {
           {
             Action: ['kms:Decrypt', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
-            Resource: 'arn:aws:kms:us-west-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321',
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321',
           },
         ],
       },
