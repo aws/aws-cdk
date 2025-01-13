@@ -1,7 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib';
-import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
+import { AddressFamily, Ipam, IpamPool, IpamPoolPublicIpSource } from '../lib';
 
 describe('IPAM Test', () => {
   let stack: cdk.Stack;
@@ -158,4 +158,28 @@ describe('IPAM Test', () => {
     );
   });
 
+  test('Import IpamPool from attributes', () => {
+    const ipamPool = IpamPool.fromIpamPoolAttributes(stack, 'ImportedIpam', {
+      ipamPoolId: 'ipam-pool-0123456',
+      ipamScopeId: 'ipam-scope-0123456',
+      addressFamily: AddressFamily.IP_V4,
+    });
+
+    new vpc.VpcV2(stack, 'VpcV2', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4Ipam({
+        ipamPool,
+        netmaskLength: 24,
+        cidrBlockName: 'ipv4',
+      }),
+    });
+
+    Template.fromStack(stack).hasResource(
+      'AWS::EC2::VPC', {
+        Properties: {
+          Ipv4IpamPoolId: 'ipam-pool-0123456',
+          Ipv4NetmaskLength: 24,
+        },
+      },
+    );
+  });
 });// End Test

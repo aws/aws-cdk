@@ -511,11 +511,11 @@ export class IpamPool extends Resource implements IIpamPool {
 
   public addPool(id: string, option: PoolOptions): IIpamPool {
     return new IpamPool(this, id, {
+      ...option,
       awsService: this.awsService,
       sourceIpamPoolId: this.ipamPoolId,
       ipamScopeId: this.ipamScopeId,
       locale: this.locale,
-      ...option,
     });
   }
 
