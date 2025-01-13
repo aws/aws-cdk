@@ -6,5 +6,5 @@ export * from './actions/import';
 export * from './actions/synth';
 export * from './actions/watch';
 
-export * from './io-host';
+export * from './io/io-host';
 export * from './types';
