@@ -1,11 +1,15 @@
+/**
+ * The current action being performed by the CLI. 'none' represents the absence of an action.
+ */
 export type ToolkitAction =
-  | 'bootstrap'
-  | 'synth'
-  | 'list'
-  | 'deploy'
-  | 'destroy';
-
-export type MessageLevel = 'error' | 'warn' | 'info' | 'debug';
+| 'bootstrap'
+| 'synth'
+| 'list'
+| 'diff'
+| 'deploy'
+| 'rollback'
+| 'watch'
+| 'destroy';
 
 export enum StackSelectionStrategy {
   /**
@@ -14,15 +18,17 @@ export enum StackSelectionStrategy {
   NONE = 'none',
 
   /**
-   * If the app includes a single stack, returns it. Otherwise throws an exception.
-   * This behavior is used by "deploy".
+   * Return matched stacks. If no patterns are provided, return the single stack in the app.
+   * If the app has more than one stack, an error is thrown.
+   *
+   * This is the default strategy used by "deploy" and "destroy".
    */
-  ONLY_SINGLE = 'single',
+  MATCH_OR_SINGLE = 'match-or-single',
 
   /**
-   * Throws an exception if the app doesn't contain at least one stack.
+   * Throws an exception if the selector doesn't match at least one stack in the app.
    */
-  AT_LEAST_ONE = 'at-least-one',
+  MUST_MATCH_PATTERN = 'must-match-pattern',
 
   /**
    * Returns all stacks in the main (top level) assembly only.
@@ -63,7 +69,7 @@ export interface StackSelector {
   /**
    * A list of patterns to match the stack hierarchical ids
    */
-  patterns: string[];
+  patterns?: string[];
 
   /**
    * Extend the selection to upstream/downstream stacks

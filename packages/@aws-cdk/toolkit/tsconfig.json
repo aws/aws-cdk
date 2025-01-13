@@ -20,5 +20,9 @@
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "**/*.d.ts", "dist"],
-  "references": [{ "path": "../cx-api" }]
+  "references": [
+    { "path": "../cx-api" },
+    { "path": "../cloudformation-diff" },
+    { "path": "../../aws-cdk" }
+  ]
 }
