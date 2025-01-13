@@ -330,7 +330,6 @@ new Schedule(this, 'Schedule', {
   target: new targets.Universal({
     service: 'rds',
     action: 'stopDBCluster',
-    iamResources: ['arn:aws:rds:us-east-1:123456789012:cluster:my-cluster'],
     input: ScheduleTargetInput.fromObject({
       DbClusterIdentifier: 'my-db',
     }),
