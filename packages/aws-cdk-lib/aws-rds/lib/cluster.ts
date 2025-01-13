@@ -428,7 +428,9 @@ interface DatabaseClusterBaseProps {
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default - 7 days if `enablePerformanceInsights` is set. 465 days (15 months) if `databaseInsightsMode` is set to DatabaseInsightsMode.ADVANCED.
+   * If you set `databaseInsightsMode` to `DatabaseInsightsMode.ADVANCED`, you must set this property to `PerformanceInsightRetention.MONTHS_15`.
+   *
+   * @default - 7
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
@@ -864,10 +866,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
       throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to \'${DatabaseInsightsMode.ADVANCED}\'');
     }
-    if (props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED
-      && props.performanceInsightRetention
-      && props.performanceInsightRetention !== PerformanceInsightRetention.MONTHS_15
-    ) {
+    if (props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED && props.performanceInsightRetention !== PerformanceInsightRetention.MONTHS_15) {
       throw new Error('`performanceInsightRetention` must be set to \'${PerformanceInsightRetention.MONTHS_15}\' when `databaseInsightsMode` is set to \'${DatabaseInsightsMode.ADVANCED}\'');
     }
 
@@ -901,11 +900,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
 
     this.performanceInsightsEnabled = enablePerformanceInsights;
-    this.performanceInsightRetention = props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED
-      ? PerformanceInsightRetention.MONTHS_15
-      : enablePerformanceInsights
-        ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
-        : undefined;
+    this.performanceInsightRetention = enablePerformanceInsights
+      ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+      : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
     this.databaseInsightsMode = props.databaseInsightsMode;
 

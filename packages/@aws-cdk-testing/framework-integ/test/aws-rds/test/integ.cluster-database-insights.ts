@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { AuroraMysqlEngineVersion, ClusterInstance, DatabaseCluster, DatabaseClusterEngine, DatabaseInsightsMode } from 'aws-cdk-lib/aws-rds';
+import { AuroraMysqlEngineVersion, ClusterInstance, DatabaseCluster, DatabaseClusterEngine, DatabaseInsightsMode, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends cdk.Stack {
@@ -18,6 +18,7 @@ class TestStack extends cdk.Stack {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
       }),
       databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
+      performanceInsightRetention: PerformanceInsightRetention.MONTHS_15,
     });
   }
 }

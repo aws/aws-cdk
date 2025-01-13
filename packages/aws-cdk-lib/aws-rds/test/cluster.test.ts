@@ -2555,6 +2555,7 @@ describe('cluster', () => {
         vpc,
         writer: ClusterInstance.provisioned('writer'),
         databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
+        performanceInsightRetention: PerformanceInsightRetention.MONTHS_15,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
