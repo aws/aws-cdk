@@ -8,6 +8,8 @@ import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': true,
+    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new cdk.Stack(app, 'aws-ecs-integ-alb-ec2-cmd-entrypoint');
