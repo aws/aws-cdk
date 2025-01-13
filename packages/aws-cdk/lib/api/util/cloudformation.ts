@@ -15,6 +15,7 @@ import { makeBodyParameter, TemplateBodyParameter } from './template-body-parame
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
+import { formatErrorMessage } from '../../util/error';
 import type { ICloudFormationClient, SdkProvider } from '../aws-auth';
 import type { Deployments } from '../deployments';
 
@@ -50,7 +51,7 @@ export class CloudFormationStack {
       const response = await cfn.describeStacks({ StackName: stackName });
       return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0], retrieveProcessedTemplate);
     } catch (e: any) {
-      if (e.name === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
+      if (e.name === 'ValidationError' && formatErrorMessage(e) === `Stack with id ${stackName} does not exist`) {
         return new CloudFormationStack(cfn, stackName, undefined);
       }
       throw e;
