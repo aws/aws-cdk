@@ -1383,9 +1383,7 @@ The standard mode of Database Insights is enabled by default for Aurora database
 
 You can enhance the monitoring of your Aurora databases by enabling the advanced mode of Database Insights.
 
-See [AWS docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html) for more information about Database Insights.
-
-The following example shows enabling the advanced mode of Database Insights for a clustered database.
+To control Database Insights mode, use the `databaseInsightsMode` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1401,11 +1399,9 @@ new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
-Note that settings regarding Database Insights are only possible at the cluster level.
+Note: Database Insights are only supported for Amazon Aurora MySQL and Amazon Aurora PostgreSQL clusters.
 
-### Supported Engines
-
-Database Insights supports Amazon Aurora MySQL and Amazon Aurora PostgreSQL.
+> Visit [CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html) for more details.
 
 ## Enhanced Monitoring
 

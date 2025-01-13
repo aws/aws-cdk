@@ -428,8 +428,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default - 7(PerformanceInsightRetention.DEFAULT) if `enablePerformanceInsights` is set,
-   * 465(PerformanceInsightRetention.MONTHS_15) if DatabaseInsightsMode.ADVANCED is set for `databaseInsightsMode`.
+   * @default - 7 days if `enablePerformanceInsights` is set. 465 days (15 months) if `databaseInsightsMode` is set to DatabaseInsightsMode.ADVANCED.
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
@@ -443,7 +442,7 @@ interface DatabaseClusterBaseProps {
   /**
    * The database insights mode.
    *
-   * @default - DatabaseInsightsMode.STANDARD if Amazon Aurora engine is used, otherwise not set.
+   * @default - DatabaseInsightsMode.STANDARD when performance insights are enabled and Amazon Aurora engine is used, otherwise not set.
    */
   readonly databaseInsightsMode?: DatabaseInsightsMode;
 
@@ -556,8 +555,6 @@ export enum DatabaseInsightsMode {
 
   /**
    * Advanced mode.
-   *
-   * In advanced mode, Performance Insights must be enabled.
    */
   ADVANCED = 'advanced',
 }
@@ -865,13 +862,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       || props.performanceInsightEncryptionKey !== undefined
       || props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to `DatabaseInsightsMode.ADVANCED`');
+      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to \'${DatabaseInsightsMode.ADVANCED}\'');
     }
     if (props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED
       && props.performanceInsightRetention
       && props.performanceInsightRetention !== PerformanceInsightRetention.MONTHS_15
     ) {
-      throw new Error('`performanceInsightRetention` must be set to PerformanceInsightRetention.MONTHS_15 when `databaseInsightsMode` is set to DatabaseInsightsMode.ADVANCED');
+      throw new Error('`performanceInsightRetention` must be set to \'${PerformanceInsightRetention.MONTHS_15}\' when `databaseInsightsMode` is set to \'${DatabaseInsightsMode.ADVANCED}\'');
     }
 
     // Database Insights is not supported for non-Aurora engines

@@ -2598,7 +2598,7 @@ describe('cluster', () => {
           enablePerformanceInsights: false,
           databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
         });
-      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to `DatabaseInsightsMode.ADVANCED`/);
+      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to '\${DatabaseInsightsMode.ADVANCED}'/);
     });
 
     test('throw if the advanced mode of database insights is set and any retention other than MONTHS_15 is set for performanceInsightRetention', () => {
@@ -2614,7 +2614,7 @@ describe('cluster', () => {
           performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
           databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
         });
-      }).toThrow(/`performanceInsightRetention` must be set to PerformanceInsightRetention.MONTHS_15 when `databaseInsightsMode` is set to DatabaseInsightsMode.ADVANCED/);
+      }).toThrow(/`performanceInsightRetention` must be set to '\${PerformanceInsightRetention.MONTHS_15}' when `databaseInsightsMode` is set to '\${DatabaseInsightsMode.ADVANCED}'/);
     });
   });
 
