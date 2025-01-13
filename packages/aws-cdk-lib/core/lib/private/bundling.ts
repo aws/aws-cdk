@@ -1,6 +1,5 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as crypto from 'crypto';
-import * as os from 'os';
 import {
   DockerRunOptions,
   DockerVolume,
@@ -37,7 +36,6 @@ export interface DockerVolumes {
  */
 export class DockerVolumeHelper {
   readonly volumeCommands: string[];
-  readonly user?: string;
   readonly containerName?: string;
   readonly volumes: DockerVolumes;
 
@@ -57,16 +55,17 @@ export class DockerVolumeHelper {
       }
     }
     if (this.volumes.volumeCopyVolumes.length > 0) {
-      // TODO handle user properly
-      this.user = this.determineUser();
       this.containerName = `copyContainer${crypto.randomBytes(12).toString('hex')}`;
       const copyVolumeCommands = this.volumes.volumeCopyVolumes.flatMap(volume => [
         '-v',
         // leading ':' is required for anonymous volume with opts
         volume.opts ? `:${volume.containerPath}:${volume.opts.join(',')}` : `${volume.containerPath}`,
       ]);
-      const chownCommands = this.volumes.volumeCopyVolumes
-        .map(volume => `mkdir -p ${volume.containerPath} && chown -R ${this.user} ${volume.containerPath}`);
+      const directoryCommands: string[] = [];
+      for (let volume of this.volumes.volumeCopyVolumes) {
+        directoryCommands.push(`mkdir -p ${volume.containerPath}`);
+        if (options.user) directoryCommands.push(`chown -R ${options.user} ${volume.containerPath}`);
+      }
       dockerExec([
         'run',
         '--name',
@@ -75,7 +74,7 @@ export class DockerVolumeHelper {
         'public.ecr.aws/docker/library/alpine',
         'sh',
         '-c',
-        chownCommands.join(' && '),
+        directoryCommands.join(' && '),
       ]);
       try {
         this.copyInputVolumes();
@@ -84,8 +83,6 @@ export class DockerVolumeHelper {
         dockerExec(['rm', '-v', this.containerName]);
         throw e;
       }
-    } else {
-      this.user = this.options.user;
     }
     this.volumeCommands = this.buildVolumeCommands();
   };
@@ -122,24 +119,6 @@ export class DockerVolumeHelper {
       volumeCommands.push('--volumes-from', this.containerName);
     }
     return volumeCommands;
-  }
-
-  /**
-   * Determines a useful default user if not given otherwise
-   */
-  private determineUser(): string {
-    let user;
-    if (this.options.user) {
-      user = this.options.user;
-    } else {
-      // Default to current user
-      const userInfo = os.userInfo();
-      user =
-        userInfo.uid !== -1 // uid is -1 on Windows
-          ? `${userInfo.uid}:${userInfo.gid}`
-          : '1000:1000';
-    }
-    return user;
   }
 
   /**

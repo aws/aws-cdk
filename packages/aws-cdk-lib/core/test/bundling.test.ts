@@ -807,6 +807,59 @@ describe('bundling', () => {
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
+  test('can handle copy volume without user', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({
+      command: ['cool', 'command'],
+      volumes: [{
+        dockerVolumeType: DockerVolumeType.VOLUME_COPY,
+        containerPath: '/container/path/1',
+        hostInputPath: '/host/input/1',
+      }, {
+        dockerVolumeType: DockerVolumeType.VOLUME_COPY,
+        containerPath: '/container/path/2',
+        hostInputPath: '/host/input/2',
+        opts: ['opt1', 'opt2'],
+      }],
+      workingDirectory: '/working-directory',
+    });
+
+    // copy container volume opts are correct
+    expect(spawnSyncStub.calledWith(dockerCmd, sinon.match([
+      'run',
+      '--name', sinon.match(/copyContainer.*/g),
+      '-v', '/container/path/1',
+      '-v', ':/container/path/2:opt1,opt2',
+      'public.ecr.aws/docker/library/alpine',
+      'sh',
+      '-c',
+      [
+        'mkdir -p /container/path/1',
+        'mkdir -p /container/path/2',
+      ].join(' && '),
+    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+
+    // main image run volume commands are correct
+    expect(spawnSyncStub.calledWith(dockerCmd, sinon.match([
+      'run', '--rm',
+      '--volumes-from', sinon.match(/copyContainer.*/g),
+      '-w', '/working-directory',
+      'alpine', 'cool', 'command',
+    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
   test('cleans up volume helper', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('darwin');

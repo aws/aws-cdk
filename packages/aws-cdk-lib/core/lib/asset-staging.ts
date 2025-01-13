@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import * as os from 'os';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
@@ -451,7 +452,11 @@ export class AssetStaging extends Construct {
           sourcePath: this.sourcePath,
           bundleDir,
           ...options,
+          securityOpt: options.securityOpt ?? '',
+          user: options.user ?? this.determineUser(),
           volumes: [...(options.volumes ?? [])],
+          workingDirectory:
+            options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
         };
 
         // Add the asset input and output volumes based on BundlingFileAccess setting
@@ -483,12 +488,7 @@ export class AssetStaging extends Construct {
             break;
         }
 
-        assetStagingOptions.image.run({
-          workingDirectory:
-            assetStagingOptions.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
-          securityOpt: assetStagingOptions.securityOpt ?? '',
-          ...assetStagingOptions,
-        });
+        assetStagingOptions.image.run(assetStagingOptions);
       }
     } catch (err) {
       // When bundling fails, keep the bundle output for diagnosability, but
@@ -551,6 +551,17 @@ export class AssetStaging extends Construct {
       targetPath = targetPath + '_noext';
     }
     return targetPath;
+  }
+
+  /**
+   * Determines a useful default user if not given otherwise
+   */
+  private determineUser(): string {
+    // Default to current user
+    const userInfo = os.userInfo();
+    return userInfo.uid !== -1 // uid is -1 on Windows
+      ? `${userInfo.uid}:${userInfo.gid}`
+      : '1000:1000';
   }
 }
 

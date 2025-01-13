@@ -279,8 +279,8 @@ export class BundlingDockerImage {
         ...options.platform
           ? ['--platform', options.platform]
           : [],
-        ...volumeHelper.user
-          ? ['-u', volumeHelper.user]
+        ...options.user
+          ? ['-u', options.user]
           : [],
         ...volumeHelper.volumeCommands,
         ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
