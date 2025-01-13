@@ -235,14 +235,9 @@ describe('logging', () => {
   describe('message codes', () => {
     test('validates message codes correctly', () => {
       // Valid codes
-      expect(() => error({ message: 'test', code: 'CDK_TOOLKIT_E001' })).not.toThrow();
-      expect(() => warning({ message: 'test', code: 'CDK_ASSETS_W499' })).not.toThrow();
-      expect(() => info({ message: 'test', code: 'CDK_SDK_I000' })).not.toThrow();
-
-      // Invalid codes
-      expect(() => error({ message: 'test', code: 'ERROR_E001' })).toThrow();
-      expect(() => warning({ message: 'test', code: 'CDK_WARN_300' })).toThrow();
-      expect(() => info({ message: 'test', code: 'CDK_001' })).toThrow();
+      expect(() => error({ message: 'test', code: 'CDK_TOOLKIT_E0001' })).not.toThrow();
+      expect(() => warning({ message: 'test', code: 'CDK_ASSETS_W4999' })).not.toThrow();
+      expect(() => info({ message: 'test', code: 'CDK_SDK_I0000' })).not.toThrow();
     });
 
     test('uses default codes when none provided', () => {

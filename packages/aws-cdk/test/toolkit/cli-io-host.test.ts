@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import { CliIoHost, IoMessage, IoMessageLevel, validateMessageCode } from '../../lib/toolkit/cli-io-host';
+import { CliIoHost, IoMessage } from '../../lib/toolkit/cli-io-host';
 
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
@@ -19,7 +19,7 @@ describe('CliIoHost', () => {
       time: new Date('2024-01-01T12:00:00'),
       level: 'info',
       action: 'synth',
-      code: 'TEST_0001',
+      code: 'CDK_TOOLKIT_I0001',
       message: 'test message',
     };
 
@@ -49,7 +49,7 @@ describe('CliIoHost', () => {
         time: new Date(),
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_I0001',
         message: 'test message',
       });
 
@@ -63,7 +63,7 @@ describe('CliIoHost', () => {
         time: new Date(),
         level: 'error',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_E0001',
         message: 'error message',
       });
 
@@ -77,7 +77,7 @@ describe('CliIoHost', () => {
         time: new Date(),
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_I0001',
         message: 'forced message',
         forceStdout: true,
       });
@@ -166,7 +166,7 @@ describe('CliIoHost', () => {
         time: new Date(),
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_W0001',
         message: 'ci message',
       });
 
@@ -179,7 +179,7 @@ describe('CliIoHost', () => {
         time: new Date(),
         level: 'error',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_E0001',
         message: 'ci error message',
       });
 
@@ -199,7 +199,7 @@ describe('CliIoHost', () => {
         time: testDate,
         level: 'debug',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_I0001',
         message: 'debug message',
         forceStdout: true,
       });
@@ -213,7 +213,7 @@ describe('CliIoHost', () => {
         time: testDate,
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_I0001',
         message: 'info message',
         forceStdout: true,
       });
@@ -233,63 +233,10 @@ describe('CliIoHost', () => {
         time: new Date(),
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_I0001',
         message: 'test message',
         forceStdout: true,
       })).rejects.toThrow('Write failed');
-    });
-  });
-});
-
-describe('validateMessageCode', () => {
-  test('accepts valid message codes', () => {
-    const validCodes = [
-      { code: 'CDK_TOOLKIT_I000', level: 'info' },
-      { code: 'CDK_ASSETS_W999', level: 'warn' },
-      { code: 'CDK_SDK_E000', level: 'error' },
-    ];
-
-    validCodes.forEach(validCode => {
-      expect(() => validateMessageCode(validCode.code, validCode.level as IoMessageLevel)).not.toThrow();
-    });
-  });
-
-  test('rejects invalid message codes', () => {
-    const invalidCases = [
-      {
-        code: 'CDK_sdk_E001',
-        level: 'error',
-        expectedError: 'Invalid message code format',
-      },
-      {
-        code: 'CDK-TOOLKIT_E001',
-        level: 'error',
-        expectedError: 'Invalid message code format',
-      },
-      {
-        code: 'CDK_SDK_X000',
-        level: 'info',
-        expectedError: 'Invalid message code format',
-      },
-      {
-        code: 'SDK_E001', // Missing CDK prefix
-        level: 'error',
-        expectedError: 'Invalid message code format',
-      },
-      {
-        code: 'CDK_TOOLKIT_W001',
-        level: 'error', // Mismatched level
-        expectedError: 'level indicator',
-      },
-      {
-        code: 'CDK_TOOLKIT_E001',
-        level: 'warn', // Mismatched level
-        expectedError: 'level indicator',
-      },
-    ];
-
-    invalidCases.forEach(({ code, level, expectedError }) => {
-      expect(() => validateMessageCode(code, level as IoMessageLevel)).toThrow(expectedError);
     });
   });
 });
