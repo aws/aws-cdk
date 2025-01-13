@@ -15,6 +15,7 @@ import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
 import { replaceEnvPlaceholders } from '../api/util/placeholders';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
+import { formatErrorMessage } from '../util/error';
 
 export type ContextProviderFactory = ((sdk: SdkProvider) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ContextProviderFactory};
@@ -72,7 +73,7 @@ export async function provideContextValues(
     } catch (e: any) {
       // Set a specially formatted provider value which will be interpreted
       // as a lookup failure in the toolkit.
-      value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };
+      value = { [cxapi.PROVIDER_ERROR_KEY]: formatErrorMessage(e), [TRANSIENT_CONTEXT_KEY]: true };
     }
     context.set(key, value);
     debug(`Setting "${key}" context to ${JSON.stringify(value)}`);

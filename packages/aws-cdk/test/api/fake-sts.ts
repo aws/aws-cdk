@@ -2,6 +2,7 @@ import { AssumeRoleCommand, GetCallerIdentityCommand, Tag } from '@aws-sdk/clien
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
+import { formatErrorMessage } from '../../lib/util/error';
 import { mockSTSClient } from '../util/mock-sdk';
 
 interface RegisteredIdentity {
@@ -81,7 +82,7 @@ export class FakeSts {
                   Error: {
                     Type: 'Sender',
                     Code: e.name ?? 'Error',
-                    Message: e.message,
+                    Message: formatErrorMessage(e),
                   },
                   RequestId: '1',
                 },
