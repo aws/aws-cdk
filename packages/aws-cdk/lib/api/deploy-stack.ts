@@ -33,6 +33,7 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
 import { StringWithoutPlaceholders } from './util/placeholders';
+import { formatErrorMessage } from '../util/error';
 
 export type DeployStackResult =
   | SuccessfulDeployStackResult
@@ -388,7 +389,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       }
       info(
         'Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s',
-        e.message,
+        formatErrorMessage(e),
       );
     }
 
@@ -672,7 +673,7 @@ class FullCloudFormationDeployment {
       }
       finalState = successStack;
     } catch (e: any) {
-      throw new Error(suffixWithErrors(e.message, monitor?.errors));
+      throw new Error(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
     } finally {
       await monitor?.stop();
     }
@@ -750,7 +751,7 @@ export async function destroyStack(options: DestroyStackOptions) {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
   } catch (e: any) {
-    throw new Error(suffixWithErrors(e.message, monitor?.errors));
+    throw new Error(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
   } finally {
     if (monitor) {
       await monitor.stop();

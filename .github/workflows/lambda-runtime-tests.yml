@@ -8,6 +8,8 @@ jobs:
   update-lambda-tests:
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,3 +47,5 @@ jobs:
           git add .
           git commit -m "chore: update lambda runtime integration tests"
           git push origin ${{ github.event.pull_request.head.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

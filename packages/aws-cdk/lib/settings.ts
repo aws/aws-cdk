@@ -36,10 +36,12 @@ export enum Command {
   ROLLBACK = 'rollback',
   IMPORT = 'import',
   ACKNOWLEDGE = 'acknowledge',
+  ACK = 'ack',
   NOTICES = 'notices',
   MIGRATE = 'migrate',
   CONTEXT = 'context',
   DOCS = 'docs',
+  DOC = 'doc',
   DOCTOR = 'doctor',
 }
 

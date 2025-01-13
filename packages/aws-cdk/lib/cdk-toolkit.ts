@@ -50,6 +50,7 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { ToolkitError } from './toolkit/error';
 import { numberFromBool, partition } from './util';
+import { formatErrorMessage } from './util/error';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
@@ -201,7 +202,7 @@ export class CdkToolkit {
               tryLookupRole: true,
             });
           } catch (e: any) {
-            debug(e.message);
+            debug(formatErrorMessage(e));
             if (!quiet) {
               stream.write(
                 `Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`,
@@ -510,7 +511,7 @@ export class CdkToolkit {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
         throw new ToolkitError(
-          [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
+          [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), formatErrorMessage(e)].join(' '),
         );
       } finally {
         if (options.cloudWatchLogMonitor) {
@@ -601,7 +602,7 @@ export class CdkToolkit {
         const elapsedRollbackTime = new Date().getTime() - startRollbackTime;
         info(`\n✨  Rollback time: ${formatTime(elapsedRollbackTime).toString()}s\n`);
       } catch (e: any) {
-        error(`\n ❌  ${chalk.bold(stack.displayName)} failed: ${e.message}`);
+        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), formatErrorMessage(e));
         throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');
       }
     }
