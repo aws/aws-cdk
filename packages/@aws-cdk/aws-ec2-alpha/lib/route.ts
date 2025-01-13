@@ -329,7 +329,7 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
   private readonly _attachment: CfnVPCGatewayAttachment;
 
   /**
-   * The VPN Gateway Route Propogation
+   * The VPN Gateway Route Propagation
    */
   private readonly _routePropagation: CfnVPNGatewayRoutePropagation;
 
@@ -364,7 +364,7 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
     const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
-      Annotations.of(scope).addWarningV2('@aws-cdk:aws-ec2-elpha:enableVpnGatewayV2', `No subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(scope).addWarningV2('@aws-cdk:aws-ec2-alpha:enableVpnGatewayV2', `No subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     this._routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -696,7 +696,7 @@ export class Route extends Resource implements IRouteV2 {
   public readonly routeTable: IRouteTable;
 
   /**
-   * The type of router the route is targetting
+   * The type of router the route is targeting
    */
   public readonly targetRouterType: RouterType;
 
