@@ -1576,10 +1576,25 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    */
   readonly concurrency?: number;
 
+  /**
+   * Path where the CloudAssembly is located
+   *
+   * @default 'cdk.out'
+   */
   readonly output?: string;
 
+  /**
+   * Include these patterns in watch
+   *
+   * @default []
+   */
   readonly include?: string[];
 
+  /**
+   * Exclude these patterns from watch
+   *
+   * @default []
+   */
   readonly exclude?: string[];
 }
 

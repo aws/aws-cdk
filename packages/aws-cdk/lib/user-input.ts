@@ -735,14 +735,14 @@ export interface DeployOptions {
   readonly watch?: boolean;
 
   /**
-   * Include files with these patterns
+   * Watch files with these patterns
    *
    * @default - []
    */
   readonly include?: Array<string>;
 
   /**
-   * Exclude files with these patterns
+   * Do not watch files with these patterns
    *
    * @default - []
    */

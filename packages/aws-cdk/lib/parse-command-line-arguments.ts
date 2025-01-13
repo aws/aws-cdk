@@ -468,14 +468,14 @@ export function parseCommandLineArguments(args: Array<string>): any {
         .option('include', {
           default: [],
           type: 'array',
-          desc: 'Include files with these patterns',
+          desc: 'Watch files with these patterns',
           nargs: 1,
           requiresArg: true,
         })
         .option('exclude', {
           default: [],
           type: 'array',
-          desc: 'Exclude files with these patterns',
+          desc: 'Do not watch files with these patterns',
           nargs: 1,
           requiresArg: true,
         })

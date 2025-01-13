@@ -163,8 +163,8 @@ export async function makeConfig(): Promise<CliConfig> {
               'and deploy the given stack(s) automatically when changes are detected. ' +
               'Implies --hotswap by default',
           },
-          'include': { type: 'array', desc: 'Include files with these patterns', default: [] },
-          'exclude': { type: 'array', desc: 'Exclude files with these patterns', default: [] },
+          'include': { type: 'array', desc: 'Watch files with these patterns', default: [] },
+          'exclude': { type: 'array', desc: 'Do not watch files with these patterns', default: [] },
           'logs': {
             type: 'boolean',
             default: true,
