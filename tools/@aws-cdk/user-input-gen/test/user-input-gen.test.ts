@@ -1,7 +1,7 @@
-import { CliConfig, renderCliArgsType } from '../lib';
+import { CliConfig, renderUserInputType } from '../lib';
 
 describe('render', () => {
-  test('can generate CliArguments type', async () => {
+  test('can generate UserInput type', async () => {
     const config: CliConfig = {
       globalOptions: {
         app: {
@@ -43,7 +43,7 @@ describe('render', () => {
       },
     };
 
-    expect(await renderCliArgsType(config)).toMatchInlineSnapshot(`
+    expect(await renderUserInputType(config)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
@@ -52,15 +52,15 @@ describe('render', () => {
       import { Command } from './settings';
 
       /**
-       * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
+       * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts
        *
        * @struct
        */
-      export interface CliArguments {
+      export interface UserInput {
         /**
          * The CLI command name
          */
-        readonly _: Command;
+        readonly command?: Command;
 
         /**
          * Global options available to all CLI commands
@@ -152,7 +152,7 @@ describe('render', () => {
       globalOptions: {},
     };
 
-    expect(await renderCliArgsType(config)).toMatchInlineSnapshot(`
+    expect(await renderUserInputType(config)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
@@ -161,15 +161,15 @@ describe('render', () => {
       import { Command } from './settings';
 
       /**
-       * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
+       * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts
        *
        * @struct
        */
-      export interface CliArguments {
+      export interface UserInput {
         /**
          * The CLI command name
          */
-        readonly _: Command;
+        readonly command?: Command;
 
         /**
          * Global options available to all CLI commands
@@ -234,7 +234,7 @@ describe('render', () => {
       globalOptions: {},
     };
 
-    expect(await renderCliArgsType(config)).toMatchInlineSnapshot(`
+    expect(await renderUserInputType(config)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
       // GENERATED FROM packages/aws-cdk/lib/config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
@@ -243,15 +243,15 @@ describe('render', () => {
       import { Command } from './settings';
 
       /**
-       * The structure of the CLI configuration, generated from packages/aws-cdk/lib/config.ts
+       * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts
        *
        * @struct
        */
-      export interface CliArguments {
+      export interface UserInput {
         /**
          * The CLI command name
          */
-        readonly _: Command;
+        readonly command?: Command;
 
         /**
          * Global options available to all CLI commands

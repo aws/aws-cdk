@@ -1,6 +1,5 @@
 # Cloud Executable API
 
-
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## V2 Feature Flags
@@ -19,7 +18,7 @@ and error indicating that a bucket policy already exists.
 In cases where we know what the required policy is we can go ahead and create the policy so we can
 remain in control of it.
 
-https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3
+<https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3>
 
 _cdk.json_
 
@@ -122,7 +121,7 @@ enabled on the bucket.
 This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
 practices for S3.
 
-https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+<https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html>
 
 ```json
 {
@@ -172,7 +171,7 @@ Enable this feature flag to use the \`AmazonEMRServicePolicy_v2\` managed polici
 This is a feature flag as the old behavior will be deprecated, but some resources may require manual
 intervention since they might not have the appropriate tags propagated automatically.
 
-https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html
+<https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html>
 
 _cdk.json_
 
@@ -189,8 +188,9 @@ _cdk.json_
 Enable this feature flag to include the stack's prefixes to the name generation process.
 
 Not doing so can cause the name of stack to exceed 128 characters:
-- The name generation ensures it doesn't exceed 128 characters
-- Without this feature flag, the prefix is prepended to the generated name, which result can exceed 128 characters
+
+* The name generation ensures it doesn't exceed 128 characters
+* Without this feature flag, the prefix is prepended to the generated name, which result can exceed 128 characters
 
 This is a feature flag as it changes the name generated for stacks. Any CDK application deployed prior this fix will
 most likely be generated with a new name, causing the stack to be recreated with the new name, and then deleting the old one.
@@ -228,8 +228,8 @@ _cdk.json_
 
 Enable this feature flag to update the default branch for CodeCommit source actions to `main`.
 
-Previously, the default branch for CodeCommit source actions was set to `master`. 
-However, this convention is no longer supported, and repositories created after March 2021 now have `main` as 
+Previously, the default branch for CodeCommit source actions was set to `master`.
+However, this convention is no longer supported, and repositories created after March 2021 now have `main` as
 their default branch.
 
 _cdk.json_
@@ -364,7 +364,7 @@ _cdk.json_
 When enabled, IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
 
 When this feature flag is enabled, the IAM Policy created to run tasks won't include the task definition ARN, only the revision ARN.
-The revision ARN is more specific than the task definition ARN. See https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
+The revision ARN is more specific than the task definition ARN. See <https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html>
 for more details.
 
 _cdk.json_
@@ -412,8 +412,8 @@ _cdk.json_
 
 * `@aws-cdk/aws-ec2:ec2SumTImeoutEnabled`
 
-Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance, only the value from 'resourceSignalTimeout' will be used. 
-      
+Currently is both initOptions.timeout and resourceSignalTimeout are both specified in the options for creating an EC2 Instance, only the value from 'resourceSignalTimeout' will be used.
+
 When this feature flag is enabled, if both initOptions.timeout and resourceSignalTimeout are specified, the values will to be summed together.
 
 _cdk.json_
@@ -478,7 +478,7 @@ _cdk.json_
 
 * `@aws-cdk/aws-dynamodb:resourcePolicyPerReplica`
 
-If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica. 
+If this flag is not set, the default behavior for \`TableV2\` is to use a different \`resourcePolicy\` for each replica.
 
 If this flag is set to false, the behavior is that each replica shares the same \`resourcePolicy\` as the source table.
 This will prevent you from creating a new table which has an additional replica and a resource policy.
@@ -546,7 +546,6 @@ guarantee the correct execution of the feature in all platforms. See [Github dis
 
 **It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.**
 
-
 _cdk.json_
 
 ```json
@@ -554,5 +553,26 @@ _cdk.json_
   "context": {
     "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": false,
   },
+}
+```
+
+* `@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault`
+
+When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere,
+For internet facing ALBs with `dualstack-without-public-ipv4` IP address type, the default security group rules
+will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
+
+Using a feature flag to make sure existing customers who might be relying
+on the overly restrictive permissions are not broken.,
+
+If the flag is set to false then the default security group rules will only allow IPv4 ingress.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true
+  }
 }
 ```
