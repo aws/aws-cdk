@@ -1,8 +1,8 @@
 import * as util from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as chalk from 'chalk';
 import { info, error } from '../../logging';
 import { flatten } from '../../util/arrays';
-import * as chalk from '../../util/cdk-chalk';
 import type { SDK } from '../aws-auth';
 
 /**

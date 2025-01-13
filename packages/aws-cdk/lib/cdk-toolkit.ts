@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
@@ -49,7 +50,6 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { ToolkitError } from './toolkit/error';
 import { numberFromBool, partition } from './util';
-import * as chalk from './util/cdk-chalk';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';

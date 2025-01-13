@@ -1,6 +1,6 @@
 import * as util from 'util';
 import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageCode, IoMessageCodeCategory, IoCodeLevel } from './toolkit/cli-io-host';
-import * as chalk from './util/cdk-chalk';
+import * as chalk from 'chalk';
 
 // Corking mechanism
 let CORK_COUNTER = 0;
@@ -108,9 +108,9 @@ function log(options: LogOptions) {
  * Handles string interpolation, format strings, and object parameter styles.
  * Applies optional styling and prepares the final message for logging.
  */
-function formatLogMessage(
+function formatMessageAndLog(
   level: IoMessageLevel,
-  forceStdout = false,
+  forceStdout: boolean,
   input: LogInput<IoCodeLevel>,
   style?: (str: string) => string,
   ...args: unknown[]
@@ -164,14 +164,14 @@ type LogInput<L extends IoCodeLevel> = string | LogParams<L>;
  *
  * Can be used in multiple ways:
  * ```ts
- * error(`operation failed: ${e}`)                                        // infers default error code `CDK_TOOLKIT_E000`
- * error('operation failed: %s', e)                                       // infers default error code `CDK_TOOLKIT_E000`
- * error({ message: 'operation failed', code: 'CDK_SDK_E001' })          // specifies error code `CDK_SDK_E001`
- * error({ message: 'operation failed: %s', code: 'CDK_SDK_E001' }, e)   // specifies error code `CDK_SDK_E001`
+ * error(`operation failed: ${e}`) // infers default error code `CDK_TOOLKIT_E000`
+ * error('operation failed: %s', e) // infers default error code `CDK_TOOLKIT_E000`
+ * error({ message: 'operation failed', code: 'CDK_SDK_E001' }) // specifies error code `CDK_SDK_E001`
+ * error({ message: 'operation failed: %s', code: 'CDK_SDK_E001' }, e) // specifies error code `CDK_SDK_E001`
  * ```
  */
 export const error = (input: LogInput<'E'>, ...args: unknown[]) => {
-  return formatLogMessage('error', false, input, undefined, ...args);
+  return formatMessageAndLog('error', false, input, undefined, ...args);
 };
 
 /**
@@ -179,14 +179,14 @@ export const error = (input: LogInput<'E'>, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * warning(`deprected feature: ${message}`)                                        // infers default warning code `CDK_TOOLKIT_W000`
- * warning('deprected feature: %s', message)                                       // infers default warning code `CDK_TOOLKIT_W000`
- * warning({ message: 'deprected feature', code: 'CDK_SDK_W001' })                // specifies warning code `CDK_SDK_W001`
- * warning({ message: 'deprected feature: %s', code: 'CDK_SDK_W001' }, message)   // specifies warning code `CDK_SDK_W001`
+ * warning(`deprected feature: ${message}`) // infers default warning code `CDK_TOOLKIT_W000`
+ * warning('deprected feature: %s', message) // infers default warning code `CDK_TOOLKIT_W000`
+ * warning({ message: 'deprected feature', code: 'CDK_SDK_W001' }) // specifies warning code `CDK_SDK_W001`
+ * warning({ message: 'deprected feature: %s', code: 'CDK_SDK_W001' }, message) // specifies warning code `CDK_SDK_W001`
  * ```
  */
 export const warning = (input: LogInput<'W'>, ...args: unknown[]) => {
-  return formatLogMessage('warn', false, input, undefined, ...args);
+  return formatMessageAndLog('warn', false, input, undefined, ...args);
 };
 
 /**
@@ -194,14 +194,14 @@ export const warning = (input: LogInput<'W'>, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * info(`processing: ${message}`)                                        // infers default info code `CDK_TOOLKIT_I000`
- * info('processing: %s', message)                                       // infers default info code `CDK_TOOLKIT_I000`
- * info({ message: 'processing', code: 'CDK_TOOLKIT_I001' })                // specifies info code `CDK_TOOLKIT_I001`
- * info({ message: 'processing: %s', code: 'CDK_TOOLKIT_I001' }, message)   // specifies info code `CDK_TOOLKIT_I001`
+ * info(`processing: ${message}`) // infers default info code `CDK_TOOLKIT_I000`
+ * info('processing: %s', message) // infers default info code `CDK_TOOLKIT_I000`
+ * info({ message: 'processing', code: 'CDK_TOOLKIT_I001' }) // specifies info code `CDK_TOOLKIT_I001`
+ * info({ message: 'processing: %s', code: 'CDK_TOOLKIT_I001' }, message) // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
 export const info = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatLogMessage('info', false, input, undefined, ...args);
+  return formatMessageAndLog('info', false, input, undefined, ...args);
 };
 
 /**
@@ -209,14 +209,14 @@ export const info = (input: LogInput<'I'>, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * data(`${JSON.stringify(stats)}`)                                     // infers default info code `CDK_TOOLKIT_I000`
- * data('{"count": %d}', count)                                        // infers default info code `CDK_TOOLKIT_I000`
- * data({ message: 'stats: %j', code: 'CDK_DATA_I001' })              // specifies info code `CDK_DATA_I001`
- * data({ message: 'stats: %j', code: 'CDK_DATA_I001' }, stats)       // specifies info code `CDK_DATA_I001`
+ * data(`${JSON.stringify(stats)}`) // infers default info code `CDK_TOOLKIT_I000`
+ * data('{"count": %d}', count) // infers default info code `CDK_TOOLKIT_I000`
+ * data({ message: 'stats: %j', code: 'CDK_DATA_I001' }) // specifies info code `CDK_DATA_I001`
+ * data({ message: 'stats: %j', code: 'CDK_DATA_I001' }, stats) // specifies info code `CDK_DATA_I001`
  * ```
  */
 export const data = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatLogMessage('info', true, input, undefined, ...args);
+  return formatMessageAndLog('info', true, input, undefined, ...args);
 };
 
 /**
@@ -224,14 +224,14 @@ export const data = (input: LogInput<'I'>, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * debug(`state: ${JSON.stringify(state)}`)                           // infers default info code `CDK_TOOLKIT_I000`
- * debug('cache hit ratio: %d%%', ratio)                             // infers default info code `CDK_TOOLKIT_I000`
- * debug({ message: 'state update', code: 'CDK_TOOLKIT_I001' })        // specifies info code `CDK_TOOLKIT_I001`
- * debug({ message: 'ratio: %d%%', code: 'CDK_TOOLKIT_I001' }, ratio)  // specifies info code `CDK_TOOLKIT_I001`
+ * debug(`state: ${JSON.stringify(state)}`) // infers default info code `CDK_TOOLKIT_I000`
+ * debug('cache hit ratio: %d%%', ratio) // infers default info code `CDK_TOOLKIT_I000`
+ * debug({ message: 'state update', code: 'CDK_TOOLKIT_I001' }) // specifies info code `CDK_TOOLKIT_I001`
+ * debug({ message: 'ratio: %d%%', code: 'CDK_TOOLKIT_I001' }, ratio) // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
 export const debug = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatLogMessage('debug', false, input, undefined, ...args);
+  return formatMessageAndLog('debug', false, input, undefined, ...args);
 };
 
 /**
@@ -239,14 +239,14 @@ export const debug = (input: LogInput<'I'>, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * trace(`entered ${name} with ${args}`)                             // infers default info code `CDK_TOOLKIT_I000`
- * trace('method: %s, args: %j', name, args)                         // infers default info code `CDK_TOOLKIT_I000`
- * trace({ message: 'entered', code: 'CDK_TOOLKIT_I001' })            // specifies info code `CDK_TOOLKIT_I001`
- * trace({ message: 'method: %s', code: 'CDK_TOOLKIT_I001' }, name)   // specifies info code `CDK_TOOLKIT_I001`
+ * trace(`entered ${name} with ${args}`) // infers default info code `CDK_TOOLKIT_I000`
+ * trace('method: %s, args: %j', name, args) // infers default info code `CDK_TOOLKIT_I000`
+ * trace({ message: 'entered', code: 'CDK_TOOLKIT_I001' }) // specifies info code `CDK_TOOLKIT_I001`
+ * trace({ message: 'method: %s', code: 'CDK_TOOLKIT_I001' }, name) // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
 export const trace = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatLogMessage('trace', false, input, undefined, ...args);
+  return formatMessageAndLog('trace', false, input, undefined, ...args);
 };
 
 /**
@@ -254,14 +254,14 @@ export const trace = (input: LogInput<'I'>, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * success(`deployment completed: ${name}`)                          // infers default info code `CDK_TOOLKIT_I000`
- * success('processed %d items', count)                             // infers default info code `CDK_TOOLKIT_I000`
- * success({ message: 'completed', code: 'CDK_TOOLKIT_I001' })      // specifies info code `CDK_TOOLKIT_I001`
+ * success(`deployment completed: ${name}`) // infers default info code `CDK_TOOLKIT_I000`
+ * success('processed %d items', count) // infers default info code `CDK_TOOLKIT_I000`
+ * success({ message: 'completed', code: 'CDK_TOOLKIT_I001' }) // specifies info code `CDK_TOOLKIT_I001`
  * success({ message: 'items: %d', code: 'CDK_TOOLKIT_I001' }, count) // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
 export const success = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatLogMessage('info', false, input, chalk.green, ...args);
+  return formatMessageAndLog('info', false, input, chalk.green, ...args);
 };
 
 /**
@@ -269,12 +269,12 @@ export const success = (input: LogInput<'I'>, ...args: unknown[]) => {
  *
  * Can be used in multiple ways:
  * ```ts
- * highlight(`important: ${msg}`)                                   // infers default info code `CDK_TOOLKIT_I000`
- * highlight('attention required: %s', reason)                      // infers default info code `CDK_TOOLKIT_I000`
- * highlight({ message: 'notice', code: 'CDK_TOOLKIT_I001' })         // specifies info code `CDK_TOOLKIT_I001`
+ * highlight(`important: ${msg}`) // infers default info code `CDK_TOOLKIT_I000`
+ * highlight('attention required: %s', reason) // infers default info code `CDK_TOOLKIT_I000`
+ * highlight({ message: 'notice', code: 'CDK_TOOLKIT_I001' }) // specifies info code `CDK_TOOLKIT_I001`
  * highlight({ message: 'notice: %s', code: 'CDK_TOOLKIT_I001' }, msg) // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
 export const highlight = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatLogMessage('info', false, input, chalk.bold, ...args);
+  return formatMessageAndLog('info', false, input, chalk.bold, ...args);
 };

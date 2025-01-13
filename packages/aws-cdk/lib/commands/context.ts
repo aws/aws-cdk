@@ -1,9 +1,9 @@
+import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as version from '../../lib/version';
 import { error, warning, info, data } from '../logging';
 import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
 import { renderTable } from '../util';
-import * as chalk from '../util/cdk-chalk';
 
 /**
  * Options for the context command

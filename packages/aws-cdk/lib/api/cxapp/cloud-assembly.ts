@@ -1,10 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as semver from 'semver';
 import { error, info, warning } from '../../logging';
 import { ToolkitError } from '../../toolkit/error';
 import { flatten } from '../../util';
-import * as chalk from '../../util/cdk-chalk';
 
 export enum DefaultSelection {
   /**

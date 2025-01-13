@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import * as chalk from '../../lib/util/cdk-chalk';
+import * as chalk from 'chalk';
 import { stderr } from './console-listener';
 import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceStatus } from '@aws-sdk/client-cloudformation';

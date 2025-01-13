@@ -1,6 +1,6 @@
+import * as chalk from 'chalk';
 import { GcAsset as GCAsset } from './garbage-collector';
 import { info } from '../../logging';
-import * as chalk from '../../util/cdk-chalk';
 
 export class ProgressPrinter {
   private totalAssets: number;

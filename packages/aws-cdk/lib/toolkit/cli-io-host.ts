@@ -1,4 +1,4 @@
-import * as chalk from '../util/cdk-chalk';
+import * as chalk from 'chalk';
 
 export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS';
 export type IoCodeLevel = 'E' | 'W' | 'I';
@@ -109,7 +109,7 @@ export class CliIoHost {
   /**
    * Whether the CliIoHost is running in CI mode. In CI mode, all non-error output goes to stdout instead of stderr.
    *
-   * @default false
+   * Set to false in the CliIoHost constructor it will be overwritten if the CLI CI argument is passed
    */
   private ci: boolean;
 

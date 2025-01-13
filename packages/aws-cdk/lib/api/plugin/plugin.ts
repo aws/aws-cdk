@@ -1,10 +1,10 @@
 import { inspect } from 'util';
 import type { CredentialProviderSource, IPluginHost, Plugin } from '@aws-cdk/cli-plugin-contract';
 
+import * as chalk from 'chalk';
 import { type ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
 import { error } from '../../logging';
 import { ToolkitError } from '../../toolkit/error';
-import * as chalk from '../../util/cdk-chalk';
 
 export let TESTING = false;
 
