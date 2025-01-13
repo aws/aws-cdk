@@ -20,7 +20,7 @@ async function main() {
   const generated = (await generateAll(awsCdkLibDir, {
     coreImport: '../../core',
     cloudwatchImport: '../../aws-cloudwatch',
-    skippedServices: ['AWS::IoT1Click'],
+    skippedServices: [],
     scopeMapPath,
   }));
 
