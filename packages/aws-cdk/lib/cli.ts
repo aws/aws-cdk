@@ -1,12 +1,12 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
+import * as chalk from 'chalk';
 import { DeploymentMethod } from './api';
 import { HotswapMode } from './api/hotswap/common';
 import { ILock } from './api/util/rwlock';
 import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { checkForPlatformWarnings } from './platform-warnings';
 import { IoMessageLevel, CliIoHost } from './toolkit/cli-io-host';
-import * as chalk from './util/cdk-chalk';
 
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';

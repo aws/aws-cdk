@@ -1,4 +1,4 @@
-import * as chalk from '../util/cdk-chalk';
+import * as chalk from 'chalk';
 
 /**
  * Basic message structure for toolkit notifications.
@@ -18,7 +18,7 @@ export interface IoMessage {
   /**
    * The action that triggered the message.
    */
-  readonly action: IoAction;
+  readonly action: ToolkitAction;
 
   /**
    * A short message code uniquely identifying a message type using the format CDK_[CATEGORY]_[E/W/I][000-999].
@@ -57,7 +57,7 @@ export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
-export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy' | 'none';
+export type ToolkitAction = 'synth' | 'list' | 'deploy' | 'destroy' | 'none';
 
 /**
  * A simple IO host for the CLI that writes messages to the console.
@@ -104,25 +104,25 @@ export class CliIoHost {
   /**
    * Whether the CliIoHost is running in CI mode. In CI mode, all non-error output goes to stdout instead of stderr.
    *
-   * @default false
+   * Set to false in the CliIoHost constructor it will be overwritten if the CLI CI argument is passed
    */
   private ci: boolean;
 
   /**
-   * the current {@link IoAction} set by the CLI.
+   * the current {@link ToolkitAction} set by the CLI.
    */
-  private currentAction: IoAction | undefined;
+  private currentAction: ToolkitAction | undefined;
 
   private constructor() {
     this.isTTY = process.stdout.isTTY ?? false;
     this.ci = false;
   }
 
-  public static get currentAction(): IoAction | undefined {
+  public static get currentAction(): ToolkitAction | undefined {
     return CliIoHost.getIoHost().currentAction;
   }
 
-  public static set currentAction(action: IoAction) {
+  public static set currentAction(action: ToolkitAction) {
     CliIoHost.getIoHost().currentAction = action;
   }
 

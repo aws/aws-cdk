@@ -17,12 +17,12 @@ import type {
   ScannedResourceIdentifier,
 } from '@aws-sdk/client-cloudformation';
 import * as cdk_from_cfn from 'cdk-from-cfn';
+import * as chalk from 'chalk';
 import { cliInit } from '../../lib/init';
 import { info } from '../../lib/logging';
 import type { ICloudFormationClient, SdkProvider } from '../api/aws-auth';
 import { CloudFormationStack } from '../api/util/cloudformation';
 import { zipDirectory } from '../util/archive';
-import * as chalk from '../util/cdk-chalk';
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');
 /** The list of languages supported by the built-in noctilucent binary. */

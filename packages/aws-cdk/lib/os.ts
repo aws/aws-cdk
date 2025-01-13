@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
-import { debug, data } from './logging';
+import * as chalk from 'chalk';
+import { debug } from './logging';
 import { ToolkitError } from './toolkit/error';
-import * as chalk from './util/cdk-chalk';
 
 /**
  * OS helpers
@@ -23,7 +23,7 @@ export async function shell(command: string[]): Promise<string> {
 
     // Both write to stdout and collect
     child.stdout.on('data', chunk => {
-      data(chunk);
+      process.stdout.write(chunk);
       stdout.push(chunk);
     });
 

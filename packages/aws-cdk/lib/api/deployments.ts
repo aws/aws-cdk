@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
-import * as chalk from '../util/cdk-chalk';
+import * as chalk from 'chalk';
 import type { SdkProvider } from './aws-auth/sdk-provider';
 import { type DeploymentMethod, deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { type EnvironmentResources } from './environment-resources';
