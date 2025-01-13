@@ -1,6 +1,6 @@
 import * as util from 'util';
-import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageCode, IoMessageCodeCategory, IoCodeLevel } from './toolkit/cli-io-host';
 import * as chalk from 'chalk';
+import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageCode, IoMessageCodeCategory, IoCodeLevel } from './toolkit/cli-io-host';
 
 // Corking mechanism
 let CORK_COUNTER = 0;
@@ -48,7 +48,7 @@ export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> 
     if (CORK_COUNTER === 0) {
       // Process each buffered message through notify
       for (const ioMessage of logBuffer) {
-        await CliIoHost.getIoHost().notify(ioMessage);
+        void CliIoHost.getIoHost().notify(ioMessage);
       }
       logBuffer.splice(0);
     }
