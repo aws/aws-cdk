@@ -56,11 +56,11 @@ class TestStack2 extends Stack {
 
     userPool.addClient('client', {
       generateSecret: true,
-      // analytics: {
-      //   applicationId: pinpointApp.ref,
-      //   externalId: role.roleId,
-      //   role,
-      // },
+      analytics: {
+        applicationId: pinpointApp.ref,
+        externalId: role.roleId,
+        role,
+      },
     });
   }
 }

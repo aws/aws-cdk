@@ -1,7 +1,7 @@
 {
   "version": "39.0.0",
   "files": {
-    "cba7b3cdbd1dc83f97378df321d4fe320f9a89e340718a29649d17d30d508470": {
+    "045395f443cccf61c5ad419d44c4458399019cc58bf3be38ee49e62b2f44a30f": {
       "source": {
         "path": "IntegUserPoolClientAnalytics2.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cba7b3cdbd1dc83f97378df321d4fe320f9a89e340718a29649d17d30d508470.json",
+          "objectKey": "045395f443cccf61c5ad419d44c4458399019cc58bf3be38ee49e62b2f44a30f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
