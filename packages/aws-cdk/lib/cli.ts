@@ -89,18 +89,18 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   const notices = Notices.create({
     context: configuration.context,
-    output: settings.globalOptions?.output, //  configuration.settings.get(['output']),
-    shouldDisplay: settings.globalOptions?.notices, // configuration.settings.get(['notices']),
+    output: settings.globalOptions?.output,
+    shouldDisplay: settings.globalOptions?.notices,
     includeAcknowledged: cmd === 'notices' ? !settings.notices?.unacknowledged : false,
     httpOptions: {
-      proxyAddress: settings.globalOptions?.proxy, //  configuration.settings.get(['proxy']),
-      caBundlePath: settings.globalOptions?.caBundlePath, // configuration.settings.get(['caBundlePath']),
+      proxyAddress: settings.globalOptions?.proxy,
+      caBundlePath: settings.globalOptions?.caBundlePath,
     },
   });
   await notices.refresh();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
-    profile: settings.globalOptions?.profile, // configuration.settings.get(['profile']),
+    profile: settings.globalOptions?.profile,
     httpOptions: {
       proxyAddress: settings.globalOptions?.proxy,
       caBundlePath: settings.globalOptions?.caBundlePath,
@@ -331,23 +331,23 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           toolkitStackName,
           roleArn: globalOptions.roleArn,
           notificationArns: deployOptions.notificationArns,
-          requireApproval: deployOptions.requireApproval as any, // configuration.settings.get(['requireApproval']),
+          requireApproval: deployOptions.requireApproval as any,
           reuseAssets: deployOptions.buildExclude,
           tags: parseStringTagsListToObject(deployOptions.tags),
           deploymentMethod,
           force: deployOptions.force,
           parameters: parameterMap,
           usePreviousParameters: deployOptions.previousParameters,
-          outputsFile: deployOptions.outputsFile, // configuration.settings.get(['outputsFile']),
-          progress: deployOptions.progress as any, // configuration.settings.get(['progress']),
+          outputsFile: deployOptions.outputsFile,
+          progress: deployOptions.progress as any,
           ci: globalOptions.ci,
-          rollback: deployOptions.rollback, // configuration.settings.get(['rollback']),
+          rollback: deployOptions.rollback,
           hotswap: determineHotswapMode(deployOptions.hotswap, deployOptions.hotswapFallback),
           watch: deployOptions.watch,
           traceLogs: deployOptions.logs,
           concurrency: deployOptions.concurrency,
-          assetParallelism: deployOptions.assetParallelism, // configuration.settings.get(['assetParallelism']),
-          assetBuildTime: deployOptions.assetPrebuild // configuration.settings.get(['assetPrebuild'])
+          assetParallelism: deployOptions.assetParallelism,
+          assetBuildTime: deployOptions.assetPrebuild
             ? AssetBuildTime.ALL_BEFORE_DEPLOY
             : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: deployOptions.ignoreNoStacks,
@@ -376,7 +376,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             changeSetName: importOptions.changeSetName,
           },
           progress: configuration.settings.get(['progress']), // THIS DNE!!!
-          rollback: importOptions.rollback, // configuration.settings.get(['rollback']),
+          rollback: importOptions.rollback,
           recordResourceMapping: importOptions.recordResourceMapping,
           resourceMappingFile: importOptions.resourceMapping,
           force: importOptions.force,
@@ -395,8 +395,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             changeSetName: watchOptions.changeSetName,
           },
           force: watchOptions.force,
-          progress: watchOptions.progress as any, // configuration.settings.get(['progress']),
-          rollback: watchOptions.rollback, // configuration.settings.get(['rollback']),
+          progress: watchOptions.progress as any,
+          rollback: watchOptions.rollback,
           hotswap: determineHotswapMode(watchOptions.hotswap, watchOptions.hotswapFallback, true),
           traceLogs: watchOptions.logs,
           concurrency: watchOptions.concurrency,

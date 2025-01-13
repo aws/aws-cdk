@@ -41,7 +41,7 @@ export class CloudExecutable {
    * Return whether there is an app command from the configuration
    */
   public get hasApp() {
-    return !!this.props.configuration.settings.get(['app']);
+    return !!this.props.configuration.settings.get(['globalOptions', 'app']);
   }
 
   /**
@@ -106,7 +106,7 @@ export class CloudExecutable {
   }
 
   private get canLookup() {
-    return !!(this.props.configuration.settings.get(['lookups']) ?? true);
+    return !!(this.props.configuration.settings.get(['globalOptions', 'lookups']) ?? true);
   }
 }
 
