@@ -1,4 +1,4 @@
-const TOOLKIT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.TooklitError');
+const TOOLKIT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ToolkitError');
 const AUTHENTICATION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.AuthenticationError');
 
 /**
