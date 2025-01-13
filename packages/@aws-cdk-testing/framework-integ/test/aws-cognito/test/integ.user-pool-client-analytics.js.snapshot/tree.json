@@ -14,7 +14,7 @@
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::Pinpoint::App",
               "aws:cdk:cloudformation:props": {
-                "name": "MyPinpointApp"
+                "name": "SamplePinpointApp"
               }
             },
             "constructInfo": {

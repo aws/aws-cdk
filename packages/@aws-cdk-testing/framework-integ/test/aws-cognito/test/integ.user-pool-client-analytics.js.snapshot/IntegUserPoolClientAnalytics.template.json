@@ -3,7 +3,7 @@
   "PinpointApp": {
    "Type": "AWS::Pinpoint::App",
    "Properties": {
-    "Name": "MyPinpointApp"
+    "Name": "SamplePinpointApp"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

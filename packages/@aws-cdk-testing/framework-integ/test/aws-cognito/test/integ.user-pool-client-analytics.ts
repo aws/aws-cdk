@@ -13,7 +13,7 @@ class TestStack extends Stack {
     super(scope, id);
 
     const pinpointApp = new CfnApp(this, 'PinpointApp', {
-      name: 'MyPinpointApp',
+      name: 'SamplePinpointApp',
     });
     pinpointApp.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
