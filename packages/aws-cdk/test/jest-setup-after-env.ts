@@ -70,11 +70,7 @@ afterAll(async () => {
     });
   }
 
-  // eslint-disable-next-line no-console
-  process.stderr.write(`${process.cwd()}, ${tmpDir}\n`);
   if (process.cwd() === tmpDir) {
-    // eslint-disable-next-line no-console
-    process.stderr.write('chmod\n');
     process.chdir(oldDir);
   }
 });

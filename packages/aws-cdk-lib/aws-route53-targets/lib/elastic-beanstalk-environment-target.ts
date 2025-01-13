@@ -1,3 +1,4 @@
+import { IAliasRecordTargetProps } from './shared';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { RegionInfo } from '../../region-info';
@@ -10,8 +11,7 @@ import { RegionInfo } from '../../region-info';
  * Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
  */
 export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAliasRecordTarget {
-  constructor(private readonly environmentEndpoint: string) {
-  }
+  constructor( private readonly environmentEndpoint: string, private readonly props?: IAliasRecordTargetProps) {}
 
   public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     if (cdk.Token.isUnresolved(this.environmentEndpoint)) {
@@ -31,6 +31,7 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
     return {
       hostedZoneId,
       dnsName,
+      evaluateTargetHealth: this.props?.evaluateTargetHealth,
     };
   }
 }

@@ -7,6 +7,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { SecretValue } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
@@ -99,6 +100,79 @@ describe('tests', () => {
         {
           Description: 'Allow from anyone on port 80',
           CidrIpv6: '::/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    });
+  });
+
+  test('Listener default to open - IPv6 (dual stack without public IPv4) with feature flag enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: true },
+    });
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+    });
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIpv6: '::/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    });
+  });
+
+  test('Listener default to open - IPv6 (dual stack without public IPv4) with feature flag disabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: false },
+    });
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+    });
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIp: '0.0.0.0/0',
           FromPort: 80,
           IpProtocol: 'tcp',
           ToPort: 80,
@@ -1174,7 +1248,7 @@ describe('tests', () => {
       listener,
       priority: 0,
       conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
-    })).toThrowError('Priority must have value greater than or equal to 1');
+    })).toThrow('Priority must have value greater than or equal to 1');
   });
 
   test('Accepts unresolved priority', () => {
@@ -1196,7 +1270,7 @@ describe('tests', () => {
       fixedResponse: {
         statusCode: '500',
       },
-    })).not.toThrowError('Priority must have value greater than or equal to 1');
+    })).not.toThrow('Priority must have value greater than or equal to 1');
   });
 
   testDeprecated('Throws when specifying both target groups and redirect response', () => {
@@ -1381,7 +1455,7 @@ describe('tests', () => {
       priority: 10,
       pathPatterns: ['/test/path/1', '/test/path/2'],
       pathPattern: '/test/path/3',
-    })).toThrowError('Both `pathPatterns` and `pathPattern` are specified, specify only one');
+    })).toThrow('Both `pathPatterns` and `pathPattern` are specified, specify only one');
   });
 
   test('Add additional condition to listener rule', () => {

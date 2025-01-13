@@ -1126,23 +1126,69 @@ describe('disable rollback', () => {
   });
 });
 
+describe('import-existing-resources', () => {
+  test('is disabled by default', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      deploymentMethod: {
+        method: 'change-set',
+      },
+    });
+
+    // THEN
+    expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+      ...expect.anything,
+      ImportExistingResources: false,
+    } as CreateChangeSetCommandInput);
+  });
+
+  test('is added to the CreateChangeSetCommandInput', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      deploymentMethod: {
+        method: 'change-set',
+        importExistingResources: true,
+      },
+    });
+
+    // THEN
+    expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+      ...expect.anything,
+      ImportExistingResources: true,
+    } as CreateChangeSetCommandInput);
+  });
+});
+
 test.each([
-  [StackStatus.UPDATE_FAILED, 'failpaused-need-rollback-first'],
-  [StackStatus.CREATE_COMPLETE, 'replacement-requires-norollback'],
-])('no-rollback and replacement is disadvised: %p -> %p', async (stackStatus, expectedType) => {
+  // From a failed state, a --no-rollback is possible as long as there is not a replacement
+  [StackStatus.UPDATE_FAILED, 'no-rollback', 'no-replacement', 'did-deploy-stack'],
+  [StackStatus.UPDATE_FAILED, 'no-rollback', 'replacement', 'failpaused-need-rollback-first'],
+  // Any combination of UPDATE_FAILED & rollback always requires a rollback first
+  [StackStatus.UPDATE_FAILED, 'rollback', 'replacement', 'failpaused-need-rollback-first'],
+  [StackStatus.UPDATE_FAILED, 'rollback', 'no-replacement', 'failpaused-need-rollback-first'],
+  // From a stable state, any deployment containing a replacement requires a regular deployment (--rollback)
+  [StackStatus.UPDATE_COMPLETE, 'no-rollback', 'replacement', 'replacement-requires-rollback'],
+] satisfies Array<[StackStatus, 'rollback' | 'no-rollback', 'replacement' | 'no-replacement', string]>)
+('no-rollback and replacement is disadvised: %s %s %s -> %s', async (stackStatus, rollback, replacement, expectedType) => {
   // GIVEN
   givenTemplateIs(FAKE_STACK.template);
   givenStackExists({
-    NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
+    // First call
     StackStatus: stackStatus,
+  }, {
+    // Later calls
+    StackStatus: 'UPDATE_COMPLETE',
   });
-  givenChangeSetContainsReplacement();
+  givenChangeSetContainsReplacement(replacement === 'replacement');
 
   // WHEN
   const result = await deployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK,
-    rollback: false,
+    rollback: rollback === 'rollback',
+    force: true, // Bypass 'canSkipDeploy'
   });
 
   // THEN
@@ -1150,7 +1196,7 @@ test.each([
 });
 
 test('assertIsSuccessfulDeployStackResult does what it says', () => {
-  expect(() => assertIsSuccessfulDeployStackResult({ type: 'replacement-requires-norollback' })).toThrow();
+  expect(() => assertIsSuccessfulDeployStackResult({ type: 'replacement-requires-rollback' })).toThrow();
 });
 /**
  * Set up the mocks so that it looks like the stack exists to start with
@@ -1162,12 +1208,14 @@ function givenStackExists(...overrides: Array<Partial<Stack>>) {
     overrides = [{}];
   }
 
+  let handler = mockCloudFormationClient.on(DescribeStacksCommand);
+
   for (const override of overrides.slice(0, overrides.length - 1)) {
-    mockCloudFormationClient.on(DescribeStacksCommand).resolvesOnce({
+    handler = handler.resolvesOnce({
       Stacks: [{ ...baseResponse, ...override }],
     });
   }
-  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+  handler.resolves({
     Stacks: [{ ...baseResponse, ...overrides[overrides.length - 1] }],
   });
 }
@@ -1178,10 +1226,10 @@ function givenTemplateIs(template: any) {
   });
 }
 
-function givenChangeSetContainsReplacement() {
+function givenChangeSetContainsReplacement(replacement: boolean) {
   mockCloudFormationClient.on(DescribeChangeSetCommand).resolves({
     Status: 'CREATE_COMPLETE',
-    Changes: [
+    Changes: replacement ? [
       {
         Type: 'Resource',
         ResourceChange: {
@@ -1205,6 +1253,6 @@ function givenChangeSetContainsReplacement() {
           ],
         },
       },
-    ],
+    ] : [],
   });
 }

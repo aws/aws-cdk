@@ -2,11 +2,11 @@ import 'aws-sdk-client-mock';
 import { DescribeImagesCommand } from '@aws-sdk/client-ec2';
 import { SDK, SdkForEnvironment } from '../../lib';
 import { AmiContextProviderPlugin } from '../../lib/context-providers/ami';
-import { FAKE_CREDENTIALS, MockSdkProvider, mockEC2Client } from '../util/mock-sdk';
+import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockEC2Client } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {
   public forEnvironment(): Promise<SdkForEnvironment> {
-    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIALS, mockSDK.defaultRegion, {}), didAssumeRole: false });
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
   }
 })();
 

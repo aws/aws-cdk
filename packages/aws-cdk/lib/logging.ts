@@ -173,8 +173,17 @@ export const data = (fmt: string, ...args: unknown[]) => log({
   message: util.format(fmt, ...args),
   forceStdout: true,
 });
-export const debug = (fmt: string, ...args: unknown[]) => log(LogLevel.DEBUG, fmt, ...args);
-export const trace = (fmt: string, ...args: unknown[]) => log(LogLevel.TRACE, fmt, ...args);
+export const debug = (fmt: string, ...args: unknown[]) => log({
+  level: LogLevel.DEBUG,
+  message: util.format(fmt, ...args),
+  timestamp: true,
+});
+
+export const trace = (fmt: string, ...args: unknown[]) => log({
+  level: LogLevel.TRACE,
+  message: util.format(fmt, ...args),
+  timestamp: true,
+});
 
 export const success = (fmt: string, ...args: unknown[]) => log({
   level: LogLevel.INFO,

@@ -1,11 +1,11 @@
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import { SDK, SdkForEnvironment } from '../../lib';
 import { SSMContextProviderPlugin } from '../../lib/context-providers/ssm-parameters';
-import { FAKE_CREDENTIALS, MockSdkProvider, mockSSMClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
+import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockSSMClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {
   public forEnvironment(): Promise<SdkForEnvironment> {
-    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIALS, mockSDK.defaultRegion, {}), didAssumeRole: false });
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
   }
 })();
 

@@ -1,26 +1,19 @@
 /* eslint-disable import/order */
 
 import {
-  CloudFormationClient,
-  CloudFormationClientResolvedConfig,
   GetTemplateCommand,
   GetTemplateSummaryCommand,
   ListStacksCommand,
-  ServiceInputTypes as CfnServiceInputTypes,
-  ServiceOutputTypes,
   Stack,
 } from '@aws-sdk/client-cloudformation';
 import { ECR_ISOLATED_TAG, GarbageCollector, S3_ISOLATED_TAG, ToolkitInfo } from '../../lib/api';
-import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { mockBootstrapStack, mockCloudFormationClient, mockECRClient, mockS3Client, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 import {
   DeleteObjectsCommand,
   DeleteObjectTaggingCommand,
   GetObjectTaggingCommand,
   ListObjectsV2Command,
   PutObjectTaggingCommand,
-  S3Client, S3ClientResolvedConfig,
-  ServiceInputTypes as S3ServiceInputTypes,
 } from '@aws-sdk/client-s3';
 import {
   ActiveAssetCache,
@@ -31,26 +24,39 @@ import {
   BatchDeleteImageCommand,
   BatchGetImageCommand,
   DescribeImagesCommand,
-  ECRClient, ECRClientResolvedConfig,
   ListImagesCommand,
   PutImageCommand,
-  ServiceInputTypes as EcrServiceInputTypes,
-  ServiceOutputTypes as EcrServiceOutputTypes,
 } from '@aws-sdk/client-ecr';
 
 let garbageCollector: GarbageCollector;
 
 let stderrMock: jest.SpyInstance;
-let sdk: MockSdkProvider = new MockSdkProvider();
-
-let cfnClient: AwsStub<CfnServiceInputTypes, ServiceOutputTypes, CloudFormationClientResolvedConfig>;
-let s3Client: AwsStub<S3ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
-let ecrClient: AwsStub<EcrServiceInputTypes, EcrServiceOutputTypes, ECRClientResolvedConfig>;
+const cfnClient = mockCloudFormationClient;
+const s3Client = mockS3Client;
+const ecrClient = mockECRClient;
 
 const DAY = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
+beforeEach(() => {
+  // By default, we'll return a non-found toolkit info
+  jest.spyOn(ToolkitInfo, 'lookup').mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('GarbageStack'));
+
+  // Suppress stderr to not spam output during tests
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
+    return true;
+  });
+
+  prepareDefaultCfnMock();
+  prepareDefaultS3Mock();
+  prepareDefaultEcrMock();
+});
+
+afterEach(() => {
+  stderrMock.mockReset();
+});
+
 function mockTheToolkitInfo(stackProps: Partial<Stack>) {
-  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(stackProps)));
+  jest.spyOn(ToolkitInfo, 'lookup').mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(stackProps)));
 }
 
 function gc(props: {
@@ -60,7 +66,7 @@ function gc(props: {
   action: 'full' | 'print' | 'tag' | 'delete-tagged';
 }): GarbageCollector {
   return new GarbageCollector({
-    sdkProvider: sdk,
+    sdkProvider: new MockSdkProvider(),
     action: props.action,
     resolvedEnvironment: {
       account: '123456789012',
@@ -75,25 +81,7 @@ function gc(props: {
   });
 }
 
-beforeEach(() => {
-  // sdk = new MockSdkProvider({ realSdk: false });
-  // By default, we'll return a non-found toolkit info
-  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('GarbageStack'));
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
-    return true;
-  });
-});
-
-afterEach(() => {
-  stderrMock.mockRestore();
-});
-
 describe('S3 Garbage Collection', () => {
-  afterEach(() => {
-    cfnClient.reset();
-    s3Client.reset();
-  });
-
   test('rollbackBufferDays = 0 -- assets to be deleted', async () => {
     mockTheToolkitInfo({
       Outputs: [
@@ -103,9 +91,6 @@ describe('S3 Garbage Collection', () => {
         },
       ],
     });
-
-    s3Client = mockS3Client();
-    cfnClient = mockCfnClient();
 
     garbageCollector = gc({
       type: 's3',
@@ -145,9 +130,6 @@ describe('S3 Garbage Collection', () => {
       ],
     });
 
-    s3Client = mockS3Client();
-    cfnClient = mockCfnClient();
-
     garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
@@ -175,8 +157,6 @@ describe('S3 Garbage Collection', () => {
         },
       ],
     });
-
-    s3Client = mockS3Client();
 
     garbageCollector = gc({
       type: 's3',
@@ -209,10 +189,7 @@ describe('S3 Garbage Collection', () => {
       ],
     });
 
-    s3Client = mockS3Client();
-    cfnClient = mockCfnClient();
-
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
       action: 'print',
@@ -240,10 +217,7 @@ describe('S3 Garbage Collection', () => {
       ],
     });
 
-    s3Client = mockS3Client();
-    cfnClient = mockCfnClient();
-
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
       action: 'tag',
@@ -271,10 +245,7 @@ describe('S3 Garbage Collection', () => {
       ],
     });
 
-    s3Client = mockS3Client();
-    cfnClient = mockCfnClient();
-
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
       action: 'delete-tagged',
@@ -299,8 +270,6 @@ describe('S3 Garbage Collection', () => {
       ],
     });
 
-    s3Client = mockS3Client();
-
     s3Client.on(ListObjectsV2Command).resolves({
       Contents: [
         { Key: 'asset1', LastModified: new Date(0) },
@@ -310,7 +279,7 @@ describe('S3 Garbage Collection', () => {
       KeyCount: 3,
     });
 
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 0,
       action: 'full',
@@ -333,11 +302,6 @@ describe('S3 Garbage Collection', () => {
 });
 
 describe('ECR Garbage Collection', () => {
-  afterEach(() => {
-    cfnClient.reset();
-    s3Client.reset();
-  });
-
   test('rollbackBufferDays = 0 -- assets to be deleted', async () => {
     mockTheToolkitInfo({
       Outputs: [
@@ -347,9 +311,6 @@ describe('ECR Garbage Collection', () => {
         },
       ],
     });
-
-    ecrClient = mockEcrClient();
-    mockCfnClient();
 
     garbageCollector = gc({
       type: 'ecr',
@@ -384,9 +345,6 @@ describe('ECR Garbage Collection', () => {
       ],
     });
 
-    ecrClient = mockEcrClient();
-    mockCfnClient();
-
     garbageCollector = gc({
       type: 'ecr',
       rollbackBufferDays: 3,
@@ -410,9 +368,6 @@ describe('ECR Garbage Collection', () => {
         },
       ],
     });
-
-    ecrClient = mockEcrClient();
-    mockCfnClient();
 
     garbageCollector = gc({
       type: 'ecr',
@@ -441,10 +396,7 @@ describe('ECR Garbage Collection', () => {
       ],
     });
 
-    ecrClient = mockEcrClient();
-    cfnClient = mockCfnClient();
-
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 'ecr',
       rollbackBufferDays: 3,
       action: 'print',
@@ -470,10 +422,7 @@ describe('ECR Garbage Collection', () => {
       ],
     });
 
-    ecrClient = mockEcrClient();
-    cfnClient = mockCfnClient();
-
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 'ecr',
       rollbackBufferDays: 3,
       action: 'tag',
@@ -499,10 +448,7 @@ describe('ECR Garbage Collection', () => {
       ],
     });
 
-    ecrClient = mockEcrClient();
-    cfnClient = mockCfnClient();
-
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 'ecr',
       rollbackBufferDays: 3,
       action: 'delete-tagged',
@@ -525,7 +471,7 @@ describe('ECR Garbage Collection', () => {
       ],
     });
 
-    ecrClient = mockEcrClient();
+    prepareDefaultEcrMock();
     ecrClient.on(DescribeImagesCommand).resolves({
       imageDetails: [
         {
@@ -548,9 +494,9 @@ describe('ECR Garbage Collection', () => {
         },
       ],
     });
-    mockCfnClient();
+    prepareDefaultCfnMock();
 
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 'ecr',
       rollbackBufferDays: 0,
       action: 'full',
@@ -576,12 +522,12 @@ describe('ECR Garbage Collection', () => {
       ],
     });
 
-    ecrClient = mockEcrClient();
+    prepareDefaultEcrMock();
     ecrClient.on(ListImagesCommand).resolves({
       imageIds: [],
     });
 
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 'ecr',
       rollbackBufferDays: 0,
       action: 'full',
@@ -601,10 +547,7 @@ describe('ECR Garbage Collection', () => {
       ],
     });
 
-    ecrClient = mockEcrClient();
-    cfnClient = mockCfnClient();
-
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 'ecr',
       rollbackBufferDays: 3,
       action: 'tag',
@@ -628,14 +571,94 @@ describe('ECR Garbage Collection', () => {
       imageTag: expect.stringContaining(`1-${ECR_ISOLATED_TAG}`),
     });
   });
+
+  test('listImagesCommand returns nextToken', async () => {
+    // This test is to ensure that the garbage collector can handle paginated responses from the ECR API
+    // If not handled correctly, the garbage collector will continue to make requests to the ECR API
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    prepareDefaultEcrMock();
+    ecrClient.on(ListImagesCommand).resolves({ // default response
+      imageIds: [
+        {
+          imageDigest: 'digest1',
+          imageTag: 'abcde',
+        },
+        {
+          imageDigest: 'digest2',
+          imageTag: 'fghij',
+        },
+      ],
+      nextToken: 'nextToken',
+    }).on(ListImagesCommand, { // response when nextToken is provided
+      repositoryName: 'REPO_NAME',
+      nextToken: 'nextToken',
+    }).resolves({
+      imageIds: [
+        {
+          imageDigest: 'digest3',
+          imageTag: 'klmno',
+        },
+      ],
+    });
+    ecrClient.on(BatchGetImageCommand).resolvesOnce({
+      images: [
+        { imageId: { imageDigest: 'digest1' } },
+        { imageId: { imageDigest: 'digest2' } },
+      ],
+    }).resolvesOnce({
+      images: [
+        { imageId: { imageDigest: 'digest3' } },
+      ],
+    });
+    ecrClient.on(DescribeImagesCommand).resolvesOnce({
+      imageDetails: [
+        {
+          imageDigest: 'digest1',
+          imageTags: ['abcde'],
+          imagePushedAt: daysInThePast(100),
+          imageSizeInBytes: 1_000_000_000,
+        },
+        { imageDigest: 'digest2', imageTags: ['fghij'], imagePushedAt: daysInThePast(10), imageSizeInBytes: 300_000_000 },
+      ],
+    }).resolvesOnce({
+      imageDetails: [
+        { imageDigest: 'digest3', imageTags: ['klmno'], imagePushedAt: daysInThePast(2), imageSizeInBytes: 100 },
+      ],
+    });
+    prepareDefaultCfnMock();
+
+    garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 0,
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(ecrClient).toHaveReceivedCommandTimes(DescribeImagesCommand, 2);
+    expect(ecrClient).toHaveReceivedCommandTimes(ListImagesCommand, 4);
+
+    // no tagging
+    expect(ecrClient).toHaveReceivedCommandTimes(PutImageCommand, 0);
+
+    expect(ecrClient).toHaveReceivedCommandWith(BatchDeleteImageCommand, {
+      repositoryName: 'REPO_NAME',
+      imageIds: [
+        { imageDigest: 'digest2' },
+        { imageDigest: 'digest3' },
+      ],
+    });
+  });
 });
 
 describe('CloudFormation API calls', () => {
-  afterEach(() => {
-    cfnClient.reset();
-    s3Client.reset();
-  });
-
   test('bootstrap filters out other bootstrap versions', async () => {
     mockTheToolkitInfo({
       Parameters: [{
@@ -650,9 +673,7 @@ describe('CloudFormation API calls', () => {
       ],
     });
 
-    cfnClient = mockCfnClient();
-
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 3,
       action: 'full',
@@ -673,9 +694,6 @@ describe('CloudFormation API calls', () => {
       ],
     });
 
-    s3Client = mockS3Client();
-    cfnClient = mockCfnClient();
-
     cfnClient.on(GetTemplateSummaryCommand).resolves({
       Parameters: [{
         ParameterKey: 'AssetParametersasset1',
@@ -683,7 +701,7 @@ describe('CloudFormation API calls', () => {
       }],
     });
 
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 0,
       action: 'full',
@@ -712,8 +730,10 @@ describe('CloudFormation API calls', () => {
   });
 });
 
-function mockCfnClient() {
-  const client = mockClient(CloudFormationClient);
+function prepareDefaultCfnMock() {
+  const client = cfnClient;
+  client.reset();
+
   client.on(ListStacksCommand).resolves({
     StackSummaries: [
       { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE', CreationTime: new Date() },
@@ -735,8 +755,9 @@ function mockCfnClient() {
   return client;
 }
 
-function mockS3Client() {
-  const client = mockClient(S3Client);
+function prepareDefaultS3Mock() {
+  const client = s3Client;
+  client.reset();
 
   client.on(ListObjectsV2Command).resolves({
     Contents: [
@@ -754,8 +775,9 @@ function mockS3Client() {
   return client;
 }
 
-function mockEcrClient() {
-  const client: AwsStub<EcrServiceInputTypes, EcrServiceOutputTypes, ECRClientResolvedConfig> = mockClient(ECRClient);
+function prepareDefaultEcrMock() {
+  const client = ecrClient;
+  client.reset();
 
   client.on(BatchGetImageCommand).resolves({
     images: [
@@ -792,11 +814,6 @@ function mockEcrClient() {
 describe('Garbage Collection with large # of objects', () => {
   const keyCount = 10000;
 
-  afterEach(() => {
-    cfnClient.reset();
-    s3Client.reset();
-  });
-
   test('tag only', async () => {
     mockTheToolkitInfo({
       Outputs: [
@@ -809,7 +826,7 @@ describe('Garbage Collection with large # of objects', () => {
 
     mockClientsForLargeObjects();
 
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 1,
       action: 'tag',
@@ -837,7 +854,7 @@ describe('Garbage Collection with large # of objects', () => {
 
     mockClientsForLargeObjects();
 
-    garbageCollector = garbageCollector = gc({
+    garbageCollector = gc({
       type: 's3',
       rollbackBufferDays: 1,
       action: 'delete-tagged',
@@ -853,9 +870,6 @@ describe('Garbage Collection with large # of objects', () => {
   });
 
   function mockClientsForLargeObjects() {
-    cfnClient = mockClient(CloudFormationClient);
-    s3Client = mockClient(S3Client);
-
     cfnClient.on(ListStacksCommand).resolves({
       StackSummaries: [
         { StackName: 'Stack1', StackStatus: 'CREATE_COMPLETE', CreationTime: new Date() },
@@ -932,8 +946,6 @@ describe('BackgroundStackRefresh', () => {
   });
 
   test('should refresh stacks and schedule next refresh', async () => {
-    cfnClient = mockCfnClient();
-
     void backgroundRefresh.start();
 
     // Run the first timer (which should trigger the first refresh)
