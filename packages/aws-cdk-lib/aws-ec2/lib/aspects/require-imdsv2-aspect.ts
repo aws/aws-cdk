@@ -4,6 +4,7 @@ import * as cxapi from '../../../cx-api';
 import { CfnLaunchTemplate } from '../ec2.generated';
 import { Instance } from '../instance';
 import { LaunchTemplate } from '../launch-template';
+import { CfnResource } from '../../../core';
 
 /**
  * Properties for `RequireImdsv2Aspect`.
@@ -81,26 +82,24 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
       return;
     }
     if (node.instance.launchTemplate !== undefined) {
-      this.warn(node, 'Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.');
+      this.warn(node, 'Refusing to toggle IMDSv1 because this Instance is associated with an existing Launch Template. Change this setting from the Launch Template instead.');
       return;
     }
 
-    const launchTemplate = new CfnLaunchTemplate(node, 'LaunchTemplate', {
-      launchTemplateData: {
-        metadataOptions: {
-          httpTokens: 'required',
-        },
-      },
-    });
-    if (cdk.FeatureFlags.of(node).isEnabled(cxapi.EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME)) {
-      launchTemplate.launchTemplateName = cdk.Names.uniqueId(launchTemplate);
+    const cfnResource = node.instance as CfnResource;
+    if(!cfnResource.cfnOptions.metadata?.['Options']) {
+      node.instance.addMetadata('Options', { HttpTokens: 'required' });
     } else {
-      launchTemplate.launchTemplateName = `${node.node.id}LaunchTemplate`;
+      const existingOptions = cfnResource.cfnOptions.metadata!['Options'];
+      if(existingOptions.HttpTokens) {
+        this.warn(node, `HttpTokens Metadata Option already set: ${existingOptions.HttpTokens}. Overwriting to 'required'`);
+      }
+      cfnResource.cfnOptions.metadata!['Options'] =
+      {
+        ...existingOptions,
+        HttpTokens: 'required'
+      };
     }
-    node.instance.launchTemplate = {
-      launchTemplateName: launchTemplate.launchTemplateName,
-      version: launchTemplate.getAtt('LatestVersionNumber').toString(),
-    };
   }
 
   protected warn(node: IConstruct, message: string) {
