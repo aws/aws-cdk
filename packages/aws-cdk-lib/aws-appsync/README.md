@@ -23,7 +23,7 @@ type demo {
 }
 type Query {
   getDemos: [ demo! ]
-  getDemosConsistent: [Demo!]
+  getDemosConsistent: [demo!]
 }
 input DemoInput {
   version: String!
