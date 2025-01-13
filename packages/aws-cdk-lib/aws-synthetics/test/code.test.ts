@@ -26,7 +26,7 @@ describe(synthetics.Code.fromInline, () => {
 
   test('fails if empty', () => {
     expect(() => synthetics.Code.fromInline(''))
-      .toThrowError('Canary inline code cannot be empty');
+      .toThrow('Canary inline code cannot be empty');
   });
 
   test('fails if handler is not "index.handler"', () => {
@@ -35,7 +35,7 @@ describe(synthetics.Code.fromInline, () => {
 
     // THEN
     expect(() => synthetics.Code.fromInline('code').bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS))
-      .toThrowError('The handler for inline code must be "index.handler" (got "canary.handler")');
+      .toThrow('The handler for inline code must be "index.handler" (got "canary.handler")');
   });
 });
 
@@ -143,7 +143,7 @@ describe(synthetics.Code.fromAsset, () => {
   test('fails if path does not exist', () => {
     const assetPath = path.join(__dirname, 'does-not-exist');
     expect(() => synthetics.Code.fromAsset(assetPath))
-      .toThrowError(`${assetPath} is not a valid path`);
+      .toThrow(`${assetPath} is not a valid path`);
   });
 
   test('fails if non-zip asset is used', () => {
@@ -153,7 +153,7 @@ describe(synthetics.Code.fromAsset, () => {
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules', 'canary.js');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS))
-      .toThrowError(`Asset must be a .zip file or a directory (${assetPath})`);
+      .toThrow(`Asset must be a .zip file or a directory (${assetPath})`);
   });
 
   test('fails if node runtime and "nodejs/node_modules" folder structure not used', () => {
@@ -163,7 +163,7 @@ describe(synthetics.Code.fromAsset, () => {
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS))
-      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
+      .toThrow(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 
   test('fails if python runtime and "python" folder structure not used', () => {
@@ -173,7 +173,7 @@ describe(synthetics.Code.fromAsset, () => {
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'python');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.PYTHON))
-      .toThrowError(`The canary resource requires that the handler is present at "python/canary.py" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
+      .toThrow(`The canary resource requires that the handler is present at "python/canary.py" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
   });
 
   test('fails if handler is specified incorrectly', () => {
@@ -183,7 +183,7 @@ describe(synthetics.Code.fromAsset, () => {
     // THEN
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'incorrect.handler', synthetics.RuntimeFamily.NODEJS))
-      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
+      .toThrow(`The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 
   test('passes if bundling is specified', () => {
@@ -232,7 +232,7 @@ describe(synthetics.Code.fromAsset, () => {
 
     // THEN
     expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS))
-      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
+      .toThrow(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 });
 

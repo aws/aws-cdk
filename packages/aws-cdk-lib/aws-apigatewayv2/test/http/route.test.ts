@@ -151,7 +151,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('books', HttpMethod.GET),
-    })).toThrowError(/A route path must always start with a "\/" and not end with a "\/"/);
+    })).toThrow(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('throws when path ends with /', () => {
@@ -162,7 +162,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books/', HttpMethod.GET),
-    })).toThrowError(/A route path must always start with a "\/" and not end with a "\/"/);
+    })).toThrow(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('configures private integration correctly when all props are passed', () => {
@@ -490,7 +490,7 @@ describe('HttpRoute', () => {
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
       authorizer,
-    })).toThrowError('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
+    })).toThrow('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
   });
 
   test('granting invoke', () => {
@@ -681,7 +681,7 @@ describe('HttpRoute', () => {
       route.grantInvoke(role, {
         httpMethods: [HttpMethod.DELETE],
       }),
-    ).toThrowError(/This route does not support granting invoke for all requested http methods/i);
+    ).toThrow(/This route does not support granting invoke for all requested http methods/i);
   });
 
   test('throws when granting invoke with the wrong authorizer type', () => {
@@ -702,7 +702,7 @@ describe('HttpRoute', () => {
       route.grantInvoke(role, {
         httpMethods: [HttpMethod.DELETE],
       }),
-    ).toThrowError(/To use grantInvoke, you must use IAM authorization/i);
+    ).toThrow(/To use grantInvoke, you must use IAM authorization/i);
   });
 
   test('accessing an ANY route arn', () => {

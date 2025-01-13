@@ -359,9 +359,6 @@
   "aws-iot": [
     "AWS::IoT"
   ],
-  "aws-iot1click": [
-    "AWS::IoT1Click"
-  ],
   "aws-iotanalytics": [
     "AWS::IoTAnalytics"
   ],
@@ -546,6 +543,9 @@
   "aws-pcaconnectorscep": [
     "AWS::PCAConnectorSCEP"
   ],
+  "aws-pcs": [
+    "AWS::PCS"
+  ],
   "aws-personalize": [
     "AWS::Personalize"
   ],
@@ -635,6 +635,9 @@
   ],
   "aws-s3outposts": [
     "AWS::S3Outposts"
+  ],
+  "aws-s3tables": [
+    "AWS::S3Tables"
   ],
   "aws-sagemaker": [
     "AWS::SageMaker"

@@ -1,5 +1,7 @@
+import { CredentialProviderSource, SDKv3CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
 import { CredentialPlugins } from '../../../lib/api/aws-auth/credential-plugins';
-import { CredentialProviderSource, Mode, SDKv3CompatibleCredentials } from '../../../lib/api/plugin/credential-provider-source';
+import { credentialsAboutToExpire } from '../../../lib/api/aws-auth/provider-caching';
+import { Mode } from '../../../lib/api/plugin/mode';
 import { PluginHost, markTesting } from '../../../lib/api/plugin/plugin';
 
 markTesting();
@@ -104,6 +106,26 @@ test('plugin can return V2 compatible credential-provider', async () => {
   expect(getPromise).toHaveBeenCalled();
 });
 
+test('plugin can return V2 compatible credential-provider with initially empty keys', async () => {
+  // GIVEN
+  mockCredentialFunction(() => Promise.resolve({
+    accessKeyId: '',
+    secretAccessKey: '',
+    expired: false,
+    getPromise() {
+      this.accessKeyId = 'keyid';
+      return Promise.resolve({});
+    },
+  }));
+
+  // WHEN
+  const creds = await fetchNow();
+
+  await expect(creds).toEqual(expect.objectContaining({
+    accessKeyId: 'keyid',
+  }));
+});
+
 test('plugin must not return something that is not a credential', async () => {
   // GIVEN
   mockCredentialFunction(() => Promise.resolve({
@@ -112,6 +134,15 @@ test('plugin must not return something that is not a credential', async () => {
 
   // THEN
   await expect(fetchNow()).rejects.toThrow(/Plugin returned a value that/);
+});
+
+test('token expiration is allowed to be null', () => {
+  expect(credentialsAboutToExpire({
+    accessKeyId: 'key',
+    secretAccessKey: 'secret',
+    // This is not allowed according to the `.d.ts` contract, but it can happen in reality
+    expiration: null as any,
+  })).toEqual(false);
 });
 
 function mockCredentialFunction(p: CredentialProviderSource['getProvider']) {

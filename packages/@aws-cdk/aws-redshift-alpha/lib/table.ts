@@ -272,7 +272,7 @@ export class Table extends TableBase {
       properties: {
         tableName: {
           prefix: props.tableName ?? cdk.Names.uniqueId(this),
-          generateSuffix: !props.tableName ? 'true' : 'false',
+          generateSuffix: (props.tableName == null).toString(),
         },
         tableColumns: this.tableColumns,
         distStyle: props.distStyle,
@@ -282,7 +282,7 @@ export class Table extends TableBase {
       },
     });
 
-    this.tableName = this.resource.ref;
+    this.tableName = props.tableName ?? this.resource.ref;
   }
 
   /**

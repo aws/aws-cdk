@@ -6,10 +6,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
 const versions: KafkaVersion[] = [
-  KafkaVersion.V2_2_1,
-  KafkaVersion.V2_3_1,
-  KafkaVersion.V2_4_1_1,
-  KafkaVersion.V2_5_1,
   KafkaVersion.V2_6_0,
   KafkaVersion.V2_6_1,
   KafkaVersion.V2_6_2,
@@ -26,6 +22,9 @@ const versions: KafkaVersion[] = [
   KafkaVersion.V3_3_2,
   KafkaVersion.V3_4_0,
   KafkaVersion.V3_5_1,
+  KafkaVersion.V3_6_0,
+  KafkaVersion.V3_7_X,
+  KafkaVersion.V3_7_X_KRAFT,
 ];
 
 class KafkaVersionTest extends Stack {

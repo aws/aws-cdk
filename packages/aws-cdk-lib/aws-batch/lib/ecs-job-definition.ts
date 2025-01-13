@@ -75,7 +75,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     return resourceName.split(':')[0];
   }
 
-  readonly container: IEcsContainerDefinition
+  readonly container: IEcsContainerDefinition;
   public readonly propagateTags?: boolean;
 
   public readonly jobDefinitionArn: string;
