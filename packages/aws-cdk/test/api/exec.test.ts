@@ -261,7 +261,7 @@ test('cli releases the outdir lock when execProgram throws', async () => {
   // WHEN
   await expect(execProgram(sdkProvider, config)).rejects.toThrow();
 
-  const output = config.settings.get(['output']);
+  const output = config.settings.get(['globalOptions', 'output']);
   expect(output).toBeDefined();
 
   // check that the lock is released

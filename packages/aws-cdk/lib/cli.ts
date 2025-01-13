@@ -177,7 +177,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   async function main(command: string, settings: UserInput): Promise<number | void> {
-    const toolkitStackName: string = ToolkitInfo.determineName(settings.bootstrap?.toolkitStackName); // TODO, mroe than bootstrap has toolkitstackname
+    const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get([command, 'toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
     const globalOptions = settings.globalOptions ?? {};

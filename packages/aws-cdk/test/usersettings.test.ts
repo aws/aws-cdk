@@ -110,5 +110,5 @@ test('Can specify the `quiet` key in the user config', async () => {
   // THEN
   const config = await new Configuration().load();
 
-  expect(config.settings.get(['quiet'])).toBe(true);
+  expect(config.settings.get(['globalOptions', 'quiet'])).toBe(true);
 });
