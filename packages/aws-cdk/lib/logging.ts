@@ -1,5 +1,5 @@
 import * as util from 'util';
-import { IoMessageLevel, IoMessage, CliIoHost, validateMessageCode } from './toolkit/cli-io-host';
+import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageCode, IoMessageCodeCategory, IoCodeLevel } from './toolkit/cli-io-host';
 import * as chalk from './util/cdk-chalk';
 
 // Corking mechanism
@@ -48,7 +48,7 @@ export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> 
     if (CORK_COUNTER === 0) {
       // Process each buffered message through notify
       for (const ioMessage of logBuffer) {
-        void CliIoHost.getIoHost().notify(ioMessage);
+        await CliIoHost.getIoHost().notify(ioMessage);
       }
       logBuffer.splice(0);
     }
@@ -74,7 +74,7 @@ interface LogOptions {
    * @pattern [A-Z]+_[0-2][0-9]{3}
    * @default TOOLKIT_[0/1/2]000
    */
-  readonly code: string;
+  readonly code: IoMessageCode;
 }
 
 /**
@@ -85,8 +85,6 @@ function log(options: LogOptions) {
   if (levelPriority[options.level] > levelPriority[currentIoMessageThreshold]) {
     return;
   }
-
-  validateMessageCode(options.code, options.level);
 
   const ioMessage: IoMessage = {
     level: options.level,
@@ -113,7 +111,7 @@ function log(options: LogOptions) {
 function formatLogMessage(
   level: IoMessageLevel,
   forceStdout = false,
-  input: LogInput,
+  input: LogInput<IoCodeLevel>,
   style?: (str: string) => string,
   ...args: unknown[]
 ): void {
@@ -128,8 +126,6 @@ function formatLogMessage(
   // Apply style if provided
   const finalMessage = style ? style(formattedMessage) : formattedMessage;
 
-  validateMessageCode(code, level);
-
   log({
     level,
     message: finalMessage,
@@ -138,19 +134,19 @@ function formatLogMessage(
   });
 }
 
-function getDefaultCode(level: IoMessageLevel, category: string = 'TOOLKIT'): string {
+function getDefaultCode(level: IoMessageLevel, category: IoMessageCodeCategory = 'TOOLKIT'): IoMessageCode {
   const levelIndicator = level === 'error' ? 'E' :
     level === 'warn' ? 'W' :
       'I';
-  return `CDK_${category}_${levelIndicator}000`;
+  return `CDK_${category}_${levelIndicator}0000`;
 }
 
 // Type for the object parameter style
-interface LogParams {
+interface LogParams<L extends IoCodeLevel> {
   /**
    * @see {@link IoMessage.code}
    */
-  readonly code?: string;
+  readonly code?: IoMessageSpecificCode<L>;
   /**
    * @see {@link IoMessage.message}
    */
@@ -158,7 +154,7 @@ interface LogParams {
 }
 
 // Type for the exported log function arguments
-type LogInput = string | LogParams;
+type LogInput<L extends IoCodeLevel> = string | LogParams<L>;
 
 // Exported logging functions. If any additional logging functionality is required, it should be added as
 // a new logging function here.
@@ -174,7 +170,7 @@ type LogInput = string | LogParams;
  * error({ message: 'operation failed: %s', code: 'CDK_SDK_E001' }, e)   // specifies error code `CDK_SDK_E001`
  * ```
  */
-export const error = (input: LogInput, ...args: unknown[]) => {
+export const error = (input: LogInput<'E'>, ...args: unknown[]) => {
   return formatLogMessage('error', false, input, undefined, ...args);
 };
 
@@ -189,7 +185,7 @@ export const error = (input: LogInput, ...args: unknown[]) => {
  * warning({ message: 'deprected feature: %s', code: 'CDK_SDK_W001' }, message)   // specifies warning code `CDK_SDK_W001`
  * ```
  */
-export const warning = (input: LogInput, ...args: unknown[]) => {
+export const warning = (input: LogInput<'W'>, ...args: unknown[]) => {
   return formatLogMessage('warn', false, input, undefined, ...args);
 };
 
@@ -204,7 +200,7 @@ export const warning = (input: LogInput, ...args: unknown[]) => {
  * info({ message: 'processing: %s', code: 'CDK_TOOLKIT_I001' }, message)   // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
-export const info = (input: LogInput, ...args: unknown[]) => {
+export const info = (input: LogInput<'I'>, ...args: unknown[]) => {
   return formatLogMessage('info', false, input, undefined, ...args);
 };
 
@@ -219,7 +215,7 @@ export const info = (input: LogInput, ...args: unknown[]) => {
  * data({ message: 'stats: %j', code: 'CDK_DATA_I001' }, stats)       // specifies info code `CDK_DATA_I001`
  * ```
  */
-export const data = (input: LogInput, ...args: unknown[]) => {
+export const data = (input: LogInput<'I'>, ...args: unknown[]) => {
   return formatLogMessage('info', true, input, undefined, ...args);
 };
 
@@ -234,7 +230,7 @@ export const data = (input: LogInput, ...args: unknown[]) => {
  * debug({ message: 'ratio: %d%%', code: 'CDK_TOOLKIT_I001' }, ratio)  // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
-export const debug = (input: LogInput, ...args: unknown[]) => {
+export const debug = (input: LogInput<'I'>, ...args: unknown[]) => {
   return formatLogMessage('debug', false, input, undefined, ...args);
 };
 
@@ -249,7 +245,7 @@ export const debug = (input: LogInput, ...args: unknown[]) => {
  * trace({ message: 'method: %s', code: 'CDK_TOOLKIT_I001' }, name)   // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
-export const trace = (input: LogInput, ...args: unknown[]) => {
+export const trace = (input: LogInput<'I'>, ...args: unknown[]) => {
   return formatLogMessage('trace', false, input, undefined, ...args);
 };
 
@@ -264,7 +260,7 @@ export const trace = (input: LogInput, ...args: unknown[]) => {
  * success({ message: 'items: %d', code: 'CDK_TOOLKIT_I001' }, count) // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
-export const success = (input: LogInput, ...args: unknown[]) => {
+export const success = (input: LogInput<'I'>, ...args: unknown[]) => {
   return formatLogMessage('info', false, input, chalk.green, ...args);
 };
 
@@ -279,6 +275,6 @@ export const success = (input: LogInput, ...args: unknown[]) => {
  * highlight({ message: 'notice: %s', code: 'CDK_TOOLKIT_I001' }, msg) // specifies info code `CDK_TOOLKIT_I001`
  * ```
  */
-export const highlight = (input: LogInput, ...args: unknown[]) => {
+export const highlight = (input: LogInput<'I'>, ...args: unknown[]) => {
   return formatLogMessage('info', false, input, chalk.bold, ...args);
 };
