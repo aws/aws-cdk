@@ -192,7 +192,7 @@ exports.handler = async function(event) {
   const channel = event.channel;
 
   if (pubSubAction === 'publish') {
-    const res = await publish(channel, false);
+    const res = await publish(channel);
     console.log(res);
     return res;
   } else if (pubSubAction === 'subscribe') {
