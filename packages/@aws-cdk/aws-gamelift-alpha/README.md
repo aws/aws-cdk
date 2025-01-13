@@ -1,4 +1,5 @@
 # Amazon GameLift Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -22,24 +23,22 @@ while dynamically scaling your resource usage to meet worldwide player demand.
 
 GameLift is composed of three main components:
 
-* GameLift FlexMatch which is a customizable matchmaking service for
-multiplayer games. With FlexMatch, you can
-build a custom set of rules that defines what a multiplayer match looks like
-for your game, and determines how to
-evaluate and select compatible players for each match. You can also customize
-key aspects of the matchmaking
-process to fit your game, including fine-tuning the matching algorithm.
-  
-* GameLift hosting for custom or realtime servers which helps you deploy,
-operate, and scale dedicated game servers. It regulates the resources needed to
-host games, finds available game servers to host new game sessions, and puts
-players into games.
-  
-* GameLift FleetIQ to optimize the use of low-cost Amazon Elastic Compute Cloud
-(Amazon EC2) Spot Instances for cloud-based game hosting. With GameLift
-FleetIQ, you can work directly with your hosting resources in Amazon EC2 and
-Amazon EC2 Auto Scaling while taking advantage of GameLift optimizations to
-deliver inexpensive, resilient game hosting for your players
+- GameLift FlexMatch which is a customizable matchmaking service for
+  multiplayer games. With FlexMatch, you can
+  build a custom set of rules that defines what a multiplayer match looks like
+  for your game, and determines how to
+  evaluate and select compatible players for each match. You can also customize
+  key aspects of the matchmaking
+  process to fit your game, including fine-tuning the matching algorithm.
+- GameLift hosting for custom or realtime servers which helps you deploy,
+  operate, and scale dedicated game servers. It regulates the resources needed to
+  host games, finds available game servers to host new game sessions, and puts
+  players into games.
+- GameLift FleetIQ to optimize the use of low-cost Amazon Elastic Compute Cloud
+  (Amazon EC2) Spot Instances for cloud-based game hosting. With GameLift
+  FleetIQ, you can work directly with your hosting resources in Amazon EC2 and
+  Amazon EC2 Auto Scaling while taking advantage of GameLift optimizations to
+  deliver inexpensive, resilient game hosting for your players
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project. It allows you to define components for your matchmaking
 configuration or game server fleet management system.
@@ -63,11 +62,15 @@ Through a game session queue system to let FlexMatch forms matches and uses the 
 declare const queue: gamelift.GameSessionQueue;
 declare const ruleSet: gamelift.MatchmakingRuleSet;
 
-new gamelift.QueuedMatchmakingConfiguration(this, 'QueuedMatchmakingConfiguration', {
-  matchmakingConfigurationName: 'test-queued-config-name',
-  gameSessionQueues: [queue],
-  ruleSet: ruleSet,
-});
+new gamelift.QueuedMatchmakingConfiguration(
+  this,
+  "QueuedMatchmakingConfiguration",
+  {
+    matchmakingConfigurationName: "test-queued-config-name",
+    gameSessionQueues: [queue],
+    ruleSet: ruleSet,
+  }
+);
 ```
 
 Or through a standalone version to let FlexMatch forms matches and returns match information in an event.
@@ -75,12 +78,11 @@ Or through a standalone version to let FlexMatch forms matches and returns match
 ```ts
 declare const ruleSet: gamelift.MatchmakingRuleSet;
 
-new gamelift.StandaloneMatchmakingConfiguration(this, 'StandaloneMatchmaking', {
-  matchmakingConfigurationName: 'test-standalone-config-name',
+new gamelift.StandaloneMatchmakingConfiguration(this, "StandaloneMatchmaking", {
+  matchmakingConfigurationName: "test-standalone-config-name",
   ruleSet: ruleSet,
 });
 ```
-
 
 More details about Game session queue are covered [below](#game-session-queue).
 
@@ -97,9 +99,11 @@ average skill of the two teams must be within 10 points of each other. If no
 match is made after 30 seconds, gradually relax the skill requirements.
 
 ```ts
-new gamelift.MatchmakingRuleSet(this, 'RuleSet', {
-  matchmakingRuleSetName: 'my-test-ruleset',
-  content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset', 'ruleset.json')),
+new gamelift.MatchmakingRuleSet(this, "RuleSet", {
+  matchmakingRuleSetName: "my-test-ruleset",
+  content: gamelift.RuleSetContent.fromJsonFile(
+    path.join(__dirname, "my-ruleset", "ruleset.json")
+  ),
 });
 ```
 
@@ -113,11 +117,11 @@ a historical perspective on how your Gamelift FlexMatch solution is performing.
 
 GameLift FlexMatch sends metrics to CloudWatch so that you can collect and
 analyze the activity of your matchmaking solution, including match acceptance
-workflow, ticket consumtion.
+workflow, ticket consumption.
 
 You can then use CloudWatch alarms to alert you, for example, when matches has
 been rejected (potential matches that were rejected by at least one player
-since the last report) exceed a certain thresold which could means that you may
+since the last report) exceed a certain threshold which could means that you may
 have an issue in your matchmaking rules.
 
 CDK provides methods for accessing GameLift FlexMatch metrics with default configuration,
@@ -132,13 +136,15 @@ matchmaking configuration.
 declare const matchmakingRuleSet: gamelift.MatchmakingRuleSet;
 // Alarm that triggers when the per-second average of not placed matches exceed 10%
 const ruleEvaluationRatio = new cloudwatch.MathExpression({
-  expression: '1 - (ruleEvaluationsPassed / ruleEvaluationsFailed)',
+  expression: "1 - (ruleEvaluationsPassed / ruleEvaluationsFailed)",
   usingMetrics: {
-    ruleEvaluationsPassed: matchmakingRuleSet.metricRuleEvaluationsPassed({ statistic: cloudwatch.Statistic.SUM }),
-    ruleEvaluationsFailed: matchmakingRuleSet.metric('ruleEvaluationsFailed'),
+    ruleEvaluationsPassed: matchmakingRuleSet.metricRuleEvaluationsPassed({
+      statistic: cloudwatch.Statistic.SUM,
+    }),
+    ruleEvaluationsFailed: matchmakingRuleSet.metric("ruleEvaluationsFailed"),
   },
 });
-new cloudwatch.Alarm(this, 'Alarm', {
+new cloudwatch.Alarm(this, "Alarm", {
   metric: ruleEvaluationRatio,
   threshold: 0.1,
   evaluationPeriods: 3,
@@ -146,8 +152,7 @@ new cloudwatch.Alarm(this, 'Alarm', {
 ```
 
 See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/gamelift/latest/developerguide/monitoring-cloudwatch.html)
-in the *Amazon GameLift Developer Guide*.
-
+in the _Amazon GameLift Developer Guide_.
 
 ## GameLift Hosting
 
@@ -165,26 +170,26 @@ To troubleshoot fleet activation problems related to the server script, see [Deb
 Before uploading your configured game server to GameLift for hosting, package the game build files into a build directory.
 This directory must include all components required to run your game servers and host game sessions, including the following:
 
-* Game server binaries – The binary files required to run the game server. A build can include binaries for multiple game
-servers built to run on the same platform. For a list of supported platforms, see [Download Amazon GameLift SDKs](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-supported.html).
+- Game server binaries – The binary files required to run the game server. A build can include binaries for multiple game
+  servers built to run on the same platform. For a list of supported platforms, see [Download Amazon GameLift SDKs](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-supported.html).
 
-* Dependencies – Any dependent files that your game server executables require to run. Examples include assets, configuration
-files, and dependent libraries.
+- Dependencies – Any dependent files that your game server executables require to run. Examples include assets, configuration
+  files, and dependent libraries.
 
-* Install script – A script file to handle tasks that are required to fully install your game build on GameLift hosting
-servers. Place this file at the root of the build directory. GameLift runs the install script as part of fleet creation.
+- Install script – A script file to handle tasks that are required to fully install your game build on GameLift hosting
+  servers. Place this file at the root of the build directory. GameLift runs the install script as part of fleet creation.
 
 You can set up any application in your build, including your install script, to access your resources securely on other AWS
 services.
 
 ```ts
 declare const bucket: s3.Bucket;
-const build = new gamelift.Build(this, 'Build', {
-  content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
+const build = new gamelift.Build(this, "Build", {
+  content: gamelift.Content.fromBucket(bucket, "sample-asset-key"),
 });
 
-new CfnOutput(this, 'BuildArn', { value: build.buildArn });
-new CfnOutput(this, 'BuildId', { value: build.buildId });
+new CfnOutput(this, "BuildArn", { value: build.buildArn });
+new CfnOutput(this, "BuildId", { value: build.buildId });
 ```
 
 To specify a server SDK version you used when integrating your game server build with Amazon GameLift use the `serverSdkVersion` parameter:
@@ -193,9 +198,9 @@ To specify a server SDK version you used when integrating your game server build
 
 ```ts
 declare const bucket: s3.Bucket;
-const build = new gamelift.Build(this, 'Build', {
+const build = new gamelift.Build(this, "Build", {
   content: gamelift.Content.fromBucket(bucket, "sample-asset-key"),
-  serverSdkVersion: '5.0.0',
+  serverSdkVersion: "5.0.0",
 });
 ```
 
@@ -212,8 +217,8 @@ server script onto each instance in the fleet, placing the script files in `/loc
 
 ```ts
 declare const bucket: s3.Bucket;
-new gamelift.Script(this, 'Script', {
-  content: gamelift.Content.fromBucket(bucket, "sample-asset-key")
+new gamelift.Script(this, "Script", {
+  content: gamelift.Content.fromBucket(bucket, "sample-asset-key"),
 });
 ```
 
@@ -227,14 +232,23 @@ instances and deploying them to run your game servers. You can design a fleet
 to fit your game's needs.
 
 ```ts
-new gamelift.BuildFleet(this, 'Game server fleet', {
-  fleetName: 'test-fleet',
-  content: gamelift.Build.fromAsset(this, 'Build', path.join(__dirname, 'CustomerGameServer')),
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+new gamelift.BuildFleet(this, "Game server fleet", {
+  fleetName: "test-fleet",
+  content: gamelift.Build.fromAsset(
+    this,
+    "Build",
+    path.join(__dirname, "CustomerGameServer")
+  ),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.C4,
+    ec2.InstanceSize.LARGE
+  ),
   runtimeConfiguration: {
-    serverProcesses: [{
-      launchPath: 'test-launch-path',
-    }],
+    serverProcesses: [
+      {
+        launchPath: "test-launch-path",
+      },
+    ],
   },
 });
 ```
@@ -248,33 +262,38 @@ game server executable. You can also define additional server process
 configurations to run other types of processes related to your game. Each
 server process configuration contains the following information:
 
-* The file name and path of an executable in your game build.
+- The file name and path of an executable in your game build.
 
-* Optionally Parameters to pass to the process on launch.
+- Optionally Parameters to pass to the process on launch.
 
-* The number of processes to run concurrently.
+- The number of processes to run concurrently.
 
 A GameLift instance is limited to 50 processes running concurrently.
 
 ```ts
 declare const build: gamelift.Build;
-// Server processes can be delcared in a declarative way through the constructor
-const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
-  fleetName: 'test-fleet',
+// Server processes can be declared in a declarative way through the constructor
+const fleet = new gamelift.BuildFleet(this, "Game server fleet", {
+  fleetName: "test-fleet",
   content: build,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.C4,
+    ec2.InstanceSize.LARGE
+  ),
   runtimeConfiguration: {
-    serverProcesses: [{
-      launchPath: '/local/game/GameLiftExampleServer.x86_64',
-      parameters: '-logFile /local/game/logs/myserver1935.log -port 1935',
-      concurrentExecutions: 100,
-    }]
-  }
+    serverProcesses: [
+      {
+        launchPath: "/local/game/GameLiftExampleServer.x86_64",
+        parameters: "-logFile /local/game/logs/myserver1935.log -port 1935",
+        concurrentExecutions: 100,
+      },
+    ],
+  },
 });
 ```
 
 See [Managing how game servers are launched for hosting](https://docs.aws.amazon.com/gamelift/latest/developerguide/fleets-multiprocess.html)
-in the *Amazon GameLift Developer Guide*.
+in the _Amazon GameLift Developer Guide_.
 
 ### Defining an instance type
 
@@ -287,15 +306,20 @@ properties, but the type of resources cannot be changed.
 
 ```ts
 declare const build: gamelift.Build;
-new gamelift.BuildFleet(this, 'Game server fleet', {
-  fleetName: 'test-fleet',
+new gamelift.BuildFleet(this, "Game server fleet", {
+  fleetName: "test-fleet",
   content: build,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.C5,
+    ec2.InstanceSize.LARGE
+  ),
   runtimeConfiguration: {
-    serverProcesses: [{
-      launchPath: '/local/game/GameLiftExampleServer.x86_64',
-    }]
-  }
+    serverProcesses: [
+      {
+        launchPath: "/local/game/GameLiftExampleServer.x86_64",
+      },
+    ],
+  },
 });
 ```
 
@@ -308,16 +332,21 @@ By default, fleet are using on demand capacity.
 
 ```ts
 declare const build: gamelift.Build;
-new gamelift.BuildFleet(this, 'Game server fleet', {
-  fleetName: 'test-fleet',
+new gamelift.BuildFleet(this, "Game server fleet", {
+  fleetName: "test-fleet",
   content: build,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.C4,
+    ec2.InstanceSize.LARGE
+  ),
   runtimeConfiguration: {
-    serverProcesses: [{
-      launchPath: '/local/game/GameLiftExampleServer.x86_64',
-    }]
+    serverProcesses: [
+      {
+        launchPath: "/local/game/GameLiftExampleServer.x86_64",
+      },
+    ],
   },
-  useSpot: true
+  useSpot: true,
 });
 ```
 
@@ -334,22 +363,29 @@ automatically opens two port ranges, one for TCP messaging and one for UDP.
 ```ts
 declare const build: gamelift.Build;
 
-const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
-  fleetName: 'test-fleet',
+const fleet = new gamelift.BuildFleet(this, "Game server fleet", {
+  fleetName: "test-fleet",
   content: build,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.C4,
+    ec2.InstanceSize.LARGE
+  ),
   runtimeConfiguration: {
-    serverProcesses: [{
-      launchPath: '/local/game/GameLiftExampleServer.x86_64',
-    }]
+    serverProcesses: [
+      {
+        launchPath: "/local/game/GameLiftExampleServer.x86_64",
+      },
+    ],
   },
-  ingressRules: [{
-    source: gamelift.Peer.anyIpv4(),
-    port: gamelift.Port.tcpRange(100, 200),
-  }]
+  ingressRules: [
+    {
+      source: gamelift.Peer.anyIpv4(),
+      port: gamelift.Port.tcpRange(100, 200),
+    },
+  ],
 });
 // Allowing a specific CIDR for port 1111 on UDP Protocol
-fleet.addIngressRule(gamelift.Peer.ipv4('1.2.3.4/32'), gamelift.Port.udp(1111));
+fleet.addIngressRule(gamelift.Peer.ipv4("1.2.3.4/32"), gamelift.Port.udp(1111));
 ```
 
 ### Managing locations
@@ -365,34 +401,42 @@ By default, home region is used as default location but we can add new locations
 declare const build: gamelift.Build;
 
 // Locations can be added directly through constructor
-const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
-  fleetName: 'test-fleet',
+const fleet = new gamelift.BuildFleet(this, "Game server fleet", {
+  fleetName: "test-fleet",
   content: build,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.C4,
+    ec2.InstanceSize.LARGE
+  ),
   runtimeConfiguration: {
-    serverProcesses: [{
-      launchPath: '/local/game/GameLiftExampleServer.x86_64',
-    }]
+    serverProcesses: [
+      {
+        launchPath: "/local/game/GameLiftExampleServer.x86_64",
+      },
+    ],
   },
-  locations: [ {
-    region: 'eu-west-1',
-    capacity: {
-      desiredCapacity: 5,
-      minSize: 2,
-      maxSize: 10
-    }
-  }, {
-    region: 'us-east-1',
-    capacity: {
-      desiredCapacity: 5,
-      minSize: 2,
-      maxSize: 10
-    }
-  }]
+  locations: [
+    {
+      region: "eu-west-1",
+      capacity: {
+        desiredCapacity: 5,
+        minSize: 2,
+        maxSize: 10,
+      },
+    },
+    {
+      region: "us-east-1",
+      capacity: {
+        desiredCapacity: 5,
+        minSize: 2,
+        maxSize: 10,
+      },
+    },
+  ],
 });
 
 // Or through dedicated methods
-fleet.addLocation('ap-southeast-1', 5, 2, 10);
+fleet.addLocation("ap-southeast-1", 5, 2, 10);
 ```
 
 ### Specifying an IAM role for a Fleet
@@ -405,25 +449,34 @@ specify your own IAM role.
 
 ```ts
 declare const build: gamelift.Build;
-const role = new iam.Role(this, 'Role', {
-  assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('gamelift.amazonaws.com'))
+const role = new iam.Role(this, "Role", {
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal("gamelift.amazonaws.com")
+  ),
 });
-role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'));
+role.addManagedPolicy(
+  iam.ManagedPolicy.fromAwsManagedPolicyName("CloudWatchAgentServerPolicy")
+);
 
-const fleet = new gamelift.BuildFleet(this, 'Game server fleet', {
-  fleetName: 'test-fleet',
+const fleet = new gamelift.BuildFleet(this, "Game server fleet", {
+  fleetName: "test-fleet",
   content: build,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.C5,
+    ec2.InstanceSize.LARGE
+  ),
   runtimeConfiguration: {
-    serverProcesses: [{
-      launchPath: '/local/game/GameLiftExampleServer.x86_64',
-    }]
+    serverProcesses: [
+      {
+        launchPath: "/local/game/GameLiftExampleServer.x86_64",
+      },
+    ],
   },
-  role: role
+  role: role,
 });
 
-// Actions can also be grantted through dedicated method
-fleet.grant(role, 'gamelift:ListFleets');
+// Actions can also be granted through dedicated method
+fleet.grant(role, "gamelift:ListFleets");
 ```
 
 ### Alias
@@ -438,17 +491,17 @@ by changing the alias's target location.
 declare const fleet: gamelift.BuildFleet;
 
 // Add an alias to an existing fleet using a dedicated fleet method
-const liveAlias = fleet.addAlias('live');
+const liveAlias = fleet.addAlias("live");
 
 // You can also create a standalone alias
-new gamelift.Alias(this, 'TerminalAlias', {
-  aliasName: 'terminal-alias',
-  terminalMessage: 'A terminal message',
+new gamelift.Alias(this, "TerminalAlias", {
+  aliasName: "terminal-alias",
+  terminalMessage: "A terminal message",
 });
 ```
 
 See [Add an alias to a GameLift fleet](https://docs.aws.amazon.com/gamelift/latest/developerguide/aliases-creating.html)
-in the *Amazon GameLift Developer Guide*.
+in the _Amazon GameLift Developer Guide_.
 
 ### Monitoring your Fleet
 
@@ -458,7 +511,7 @@ your game servers via logs and metrics.
 #### Fleet Metrics
 
 GameLift Fleet sends metrics to CloudWatch so that you can collect and analyze
-the activity of your Fleet, including game  and player sessions and server
+the activity of your Fleet, including game and player sessions and server
 processes.
 
 You can then use CloudWatch alarms to alert you, for example, when matches has
@@ -477,13 +530,15 @@ the correct dimensions for the matchmaking configuration.
 declare const fleet: gamelift.BuildFleet;
 // Alarm that triggers when the per-second average of not used instances exceed 10%
 const instancesUsedRatio = new cloudwatch.MathExpression({
-  expression: '1 - (activeInstances / idleInstances)',
+  expression: "1 - (activeInstances / idleInstances)",
   usingMetrics: {
-    activeInstances: fleet.metric('ActiveInstances', { statistic: cloudwatch.Statistic.SUM }),
+    activeInstances: fleet.metric("ActiveInstances", {
+      statistic: cloudwatch.Statistic.SUM,
+    }),
     idleInstances: fleet.metricIdleInstances(),
   },
 });
-new cloudwatch.Alarm(this, 'Alarm', {
+new cloudwatch.Alarm(this, "Alarm", {
   metric: instancesUsedRatio,
   threshold: 0.1,
   evaluationPeriods: 3,
@@ -491,7 +546,7 @@ new cloudwatch.Alarm(this, 'Alarm', {
 ```
 
 See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/gamelift/latest/developerguide/monitoring-cloudwatch.html)
-in the *Amazon GameLift Developer Guide*.
+in the _Amazon GameLift Developer Guide_.
 
 ## Game session queue
 
@@ -510,47 +565,46 @@ with varied fleet type (Spot and On-Demand), instance type, and AWS Region.
 declare const fleet: gamelift.BuildFleet;
 declare const alias: gamelift.Alias;
 
-const queue = new gamelift.GameSessionQueue(this, 'GameSessionQueue', {
-  gameSessionQueueName: 'my-queue-name',
-  destinations: [fleet]
+const queue = new gamelift.GameSessionQueue(this, "GameSessionQueue", {
+  gameSessionQueueName: "my-queue-name",
+  destinations: [fleet],
 });
 queue.addDestination(alias);
 ```
 
-A more complex configuration can also be definied to override how FleetIQ algorithms prioritize game session placement in order to favour a destination based on `Cost`, `Latency`, `Destination order`or `Location`.
+A more complex configuration can also be defined to override how FleetIQ algorithms prioritize game session placement in order to favour a destination based on `Cost`, `Latency`, `Destination order`or `Location`.
 
 ```ts
 declare const fleet: gamelift.BuildFleet;
 declare const topic: sns.Topic;
 
-new gamelift.GameSessionQueue(this, 'MyGameSessionQueue', {
-      gameSessionQueueName: 'test-gameSessionQueue',
-      customEventData: 'test-event-data',
-      allowedLocations: ['eu-west-1', 'eu-west-2'],
-      destinations: [fleet],
-      notificationTarget: topic,
-      playerLatencyPolicies: [{
-        maximumIndividualPlayerLatency: Duration.millis(100),
-        policyDuration: Duration.seconds(300),
-      }],
-      priorityConfiguration: {
-        locationOrder: [
-          'eu-west-1',
-          'eu-west-2',
-        ],
-        priorityOrder: [
-          gamelift.PriorityType.LATENCY,
-          gamelift.PriorityType.COST,
-          gamelift.PriorityType.DESTINATION,
-          gamelift.PriorityType.LOCATION,
-        ],
-      },
-      timeout: Duration.seconds(300),
-    });
+new gamelift.GameSessionQueue(this, "MyGameSessionQueue", {
+  gameSessionQueueName: "test-gameSessionQueue",
+  customEventData: "test-event-data",
+  allowedLocations: ["eu-west-1", "eu-west-2"],
+  destinations: [fleet],
+  notificationTarget: topic,
+  playerLatencyPolicies: [
+    {
+      maximumIndividualPlayerLatency: Duration.millis(100),
+      policyDuration: Duration.seconds(300),
+    },
+  ],
+  priorityConfiguration: {
+    locationOrder: ["eu-west-1", "eu-west-2"],
+    priorityOrder: [
+      gamelift.PriorityType.LATENCY,
+      gamelift.PriorityType.COST,
+      gamelift.PriorityType.DESTINATION,
+      gamelift.PriorityType.LOCATION,
+    ],
+  },
+  timeout: Duration.seconds(300),
+});
 ```
 
 See [Setting up GameLift queues for game session placement](https://docs.aws.amazon.com/gamelift/latest/developerguide/realtime-script-uploading.html)
-in the *Amazon GameLift Developer Guide*.
+in the _Amazon GameLift Developer Guide_.
 
 ## GameLift FleetIQ
 
@@ -580,21 +634,29 @@ dedicated Api.
 declare const launchTemplate: ec2.ILaunchTemplate;
 declare const vpc: ec2.IVpc;
 
-new gamelift.GameServerGroup(this, 'Game server group', {
-  gameServerGroupName: 'sample-gameservergroup-name',
-  instanceDefinitions: [{
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-  },
-  {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-  }],
+new gamelift.GameServerGroup(this, "Game server group", {
+  gameServerGroupName: "sample-gameservergroup-name",
+  instanceDefinitions: [
+    {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.C5,
+        ec2.InstanceSize.LARGE
+      ),
+    },
+    {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.C4,
+        ec2.InstanceSize.LARGE
+      ),
+    },
+  ],
   launchTemplate: launchTemplate,
-  vpc: vpc
+  vpc: vpc,
 });
 ```
 
 See [Manage game server groups](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-integrate-gameservergroup.html)
-in the *Amazon GameLift FleetIQ Developer Guide*.
+in the _Amazon GameLift FleetIQ Developer Guide_.
 
 ### Scaling Policy
 
@@ -606,25 +668,33 @@ players.
 declare const launchTemplate: ec2.ILaunchTemplate;
 declare const vpc: ec2.IVpc;
 
-new gamelift.GameServerGroup(this, 'Game server group', {
-  gameServerGroupName: 'sample-gameservergroup-name',
-  instanceDefinitions: [{
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-  },
-  {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-  }],
+new gamelift.GameServerGroup(this, "Game server group", {
+  gameServerGroupName: "sample-gameservergroup-name",
+  instanceDefinitions: [
+    {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.C5,
+        ec2.InstanceSize.LARGE
+      ),
+    },
+    {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.C4,
+        ec2.InstanceSize.LARGE
+      ),
+    },
+  ],
   launchTemplate: launchTemplate,
   vpc: vpc,
   autoScalingPolicy: {
     estimatedInstanceWarmup: Duration.minutes(5),
-    targetTrackingConfiguration: 5
-  }
+    targetTrackingConfiguration: 5,
+  },
 });
 ```
 
 See [Manage game server groups](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-integrate-gameservergroup.html)
-in the *Amazon GameLift FleetIQ Developer Guide*.
+in the _Amazon GameLift FleetIQ Developer Guide_.
 
 ### Specifying an IAM role for GameLift
 
@@ -636,28 +706,40 @@ specify your own IAM role. It must have the correct permissions, or FleetIQ crea
 declare const launchTemplate: ec2.ILaunchTemplate;
 declare const vpc: ec2.IVpc;
 
-const role = new iam.Role(this, 'Role', {
-  assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('gamelift.amazonaws.com'),
-  new iam.ServicePrincipal('autoscaling.amazonaws.com'))
+const role = new iam.Role(this, "Role", {
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal("gamelift.amazonaws.com"),
+    new iam.ServicePrincipal("autoscaling.amazonaws.com")
+  ),
 });
-role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('GameLiftGameServerGroupPolicy'));
+role.addManagedPolicy(
+  iam.ManagedPolicy.fromAwsManagedPolicyName("GameLiftGameServerGroupPolicy")
+);
 
-new gamelift.GameServerGroup(this, 'Game server group', {
-  gameServerGroupName: 'sample-gameservergroup-name',
-  instanceDefinitions: [{
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-  },
-  {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-  }],
+new gamelift.GameServerGroup(this, "Game server group", {
+  gameServerGroupName: "sample-gameservergroup-name",
+  instanceDefinitions: [
+    {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.C5,
+        ec2.InstanceSize.LARGE
+      ),
+    },
+    {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.C4,
+        ec2.InstanceSize.LARGE
+      ),
+    },
+  ],
   launchTemplate: launchTemplate,
   vpc: vpc,
-  role: role
+  role: role,
 });
 ```
 
 See [Controlling Access](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-iam-permissions-roles.html)
-in the *Amazon GameLift FleetIQ Developer Guide*.
+in the _Amazon GameLift FleetIQ Developer Guide_.
 
 ### Specifying VPC Subnets
 
@@ -673,17 +755,25 @@ with this request, even if the Auto Scaling group is updated directly.
 declare const launchTemplate: ec2.ILaunchTemplate;
 declare const vpc: ec2.IVpc;
 
-new gamelift.GameServerGroup(this, 'GameServerGroup', {
-  gameServerGroupName: 'sample-gameservergroup-name',
-  instanceDefinitions: [{
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-  },
-  {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-  }],
+new gamelift.GameServerGroup(this, "GameServerGroup", {
+  gameServerGroupName: "sample-gameservergroup-name",
+  instanceDefinitions: [
+    {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.C5,
+        ec2.InstanceSize.LARGE
+      ),
+    },
+    {
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.C4,
+        ec2.InstanceSize.LARGE
+      ),
+    },
+  ],
   launchTemplate: launchTemplate,
   vpc: vpc,
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
 });
 ```
 
@@ -707,12 +797,12 @@ matchmaking configuration.
 ```ts
 declare const gameServerGroup: gamelift.IGameServerGroup;
 // Alarm that triggers when the percent of utilized game servers exceed 90%
-new cloudwatch.Alarm(this, 'Alarm', {
-  metric: gameServerGroup.metric('UtilizedGameServers'),
+new cloudwatch.Alarm(this, "Alarm", {
+  metric: gameServerGroup.metric("UtilizedGameServers"),
   threshold: 0.9,
   evaluationPeriods: 2,
 });
 ```
 
 See: [Monitoring with CloudWatch](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-metrics.html)
-in the *Amazon GameLift FleetIQ Developer Guide*.
+in the _Amazon GameLift FleetIQ Developer Guide_.

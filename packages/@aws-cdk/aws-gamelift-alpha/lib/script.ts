@@ -178,7 +178,7 @@ export class Script extends ScriptBase {
   public readonly scriptArn: string;
 
   /**
-   * The IAM role GameLift assumes to acccess server script content.
+   * The IAM role GameLift assumes to access server script content.
    */
   public readonly role: iam.IRole;
 

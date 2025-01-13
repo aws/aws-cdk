@@ -255,7 +255,7 @@ export interface FleetProps {
    *
    * You can't change this property after you create the fleet.
    *
-   * Additionnal info:
+   * Additional info:
    * AWS Certificate Manager (ACM) certificates expire after 13 months.
    * Certificate expiration can cause fleets to fail, preventing players from connecting to instances in the fleet.
    * We recommend you replace fleets before 13 months, consider using fleet aliases for a smooth transition.
@@ -265,7 +265,7 @@ export interface FleetProps {
   readonly useCertificate?: boolean;
 
   /**
-   * The IAM role assumed by GameLift fleet instances to access AWS ressources.
+   * The IAM role assumed by GameLift fleet instances to access AWS resources.
    * With a role set, any application that runs on an instance in this fleet can assume the role, including install scripts, server processes, and daemons (background processes).
    * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com).
    * No permission is required by default.
@@ -396,7 +396,7 @@ export interface FleetAttributes {
   readonly fleetId?: string;
 
   /**
-   * The IAM role assumed by GameLift fleet instances to access AWS ressources.
+   * The IAM role assumed by GameLift fleet instances to access AWS resources.
    *
    * @default the imported fleet cannot be granted access to other resources as an `iam.IGrantable`.
    */
@@ -644,7 +644,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
   }
 
   protected warnVpcPeeringAuthorizations(scope: Construct): void {
-    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-gamelift:fleetAutorizeVpcPeering', [
+    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-gamelift:fleetAuthorizeVpcPeering', [
       'To authorize the VPC peering, call the GameLift service API CreateVpcPeeringAuthorization() or use the AWS CLI command create-vpc-peering-authorization.',
       'Make this call using the account that manages your non-GameLift resources.',
       'See: https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html',
