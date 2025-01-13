@@ -427,7 +427,7 @@ export interface SparkUILoggingLocation {
  */
 export interface ContinuousLoggingProps {
   /**
-   * Enable continouous logging.
+   * Enable continuous logging.
    */
   readonly enabled: boolean;
 
