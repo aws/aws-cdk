@@ -123,8 +123,18 @@ function buildCommandOptions(options: CliAction, argName: string, prefix?: strin
   const commandOptions: string[] = [];
   for (const optionName of Object.keys(options.options ?? {})) {
     const name = kebabToCamelCase(optionName);
+
     if (prefix) {
-      commandOptions.push(`'${name}': ${argName}.${prefix}?.${name},`);
+      const rhs = `${argName}.${prefix}?.${name}`;
+
+      // For legacy reasons, `watch.include` and `watch.exclude` are special cases where strings
+      // are allowed in place of string arrays. We therefore need to do the conversion only on
+      // the config function to be backwards compatible.
+      if (argName == CONFIG_ARG_NAME && (name == 'include' || name == 'exclude')) {
+        commandOptions.push(`'${name}': Array.isArray(${rhs}) ? ${rhs} : [${rhs}],`);
+      } else {
+        commandOptions.push(`'${name}': ${rhs},`);
+      }
     } else {
       commandOptions.push(`'${name}': ${argName}.${name},`);
     }

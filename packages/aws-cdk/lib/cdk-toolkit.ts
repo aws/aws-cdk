@@ -617,9 +617,7 @@ export class CdkToolkit {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
 
-    const watchSettings: { include?: string | string[]; exclude: string | string[] } | undefined =
-      this.props.configuration.settings.get(['watch']);
-    if (!watchSettings) {
+    if (options.include === undefined && options.exclude === undefined) {
       throw new ToolkitError(
         "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
           'Make sure to add a "watch" key to your cdk.json',
@@ -631,7 +629,7 @@ export class CdkToolkit {
     // 2. "watch" setting without an "include" key? We default to observing "./**".
     // 3. "watch" setting with an empty "include" key? We default to observing "./**".
     // 4. Non-empty "include" key? Just use the "include" key.
-    const watchIncludes = this.patternsArrayForWatch(watchSettings.include, {
+    const watchIncludes = this.patternsArrayForWatch(options.include, {
       rootDir,
       returnRootDirIfEmpty: true,
     });
@@ -643,11 +641,11 @@ export class CdkToolkit {
     // 2. Any file whose name starts with a dot.
     // 3. Any directory's content whose name starts with a dot.
     // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
-    const outputDir = this.props.configuration.settings.get(['globalOptions', 'output']);
-    const watchExcludes = this.patternsArrayForWatch(watchSettings.exclude, {
+    const output = options.output ?? 'cdk.out';
+    const watchExcludes = this.patternsArrayForWatch(options.exclude, {
       rootDir,
       returnRootDirIfEmpty: false,
-    }).concat(`${outputDir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
+    }).concat(`${output}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
     debug("'exclude' patterns for 'watch': %s", watchExcludes);
 
     // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
@@ -1577,6 +1575,8 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * @default 1
    */
   readonly concurrency?: number;
+
+  readonly output?: string;
 
   readonly include?: string[];
 

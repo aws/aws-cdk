@@ -92,6 +92,7 @@ import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { flatten } from '../lib/util';
+import { convertConfigToUserInput } from '../lib/convert-to-user-input';
 
 markTesting();
 
@@ -1035,12 +1036,12 @@ describe('watch', () => {
   });
 
   test('observes only the root directory by default', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      include: [],
     });
 
     const includeArgs = fakeChokidarWatch.includeArgs;
@@ -1048,55 +1049,59 @@ describe('watch', () => {
   });
 
   test("allows providing a single string in 'watch.include'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
-      include: 'my-dir',
+    const userInput = convertConfigToUserInput({
+      watch: {
+        include: 'my-dir',
+      },
     });
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      include: userInput.watch?.include,
     });
 
     expect(fakeChokidarWatch.includeArgs).toStrictEqual(['my-dir']);
   });
 
   test("allows providing an array of strings in 'watch.include'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
-      include: ['my-dir1', '**/my-dir2/*'],
-    });
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      include: ['my-dir1', '**/my-dir2/*'],
     });
 
     expect(fakeChokidarWatch.includeArgs).toStrictEqual(['my-dir1', '**/my-dir2/*']);
   });
 
   test('ignores the output dir, dot files, dot directories, and node_modules by default', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
-    cloudExecutable.configuration.settings.set(['output'], 'cdk.out');
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      include: [],
+      output: 'cdk.out',
     });
 
     expect(fakeChokidarWatch.excludeArgs).toStrictEqual(['cdk.out/**', '**/.*', '**/.*/**', '**/node_modules/**']);
   });
 
   test("allows providing a single string in 'watch.exclude'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
-      exclude: 'my-dir',
+    const userInput = convertConfigToUserInput({
+      watch: {
+        exclude: 'my-dir',
+      },
     });
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      exclude: userInput.watch?.exclude,
     });
 
     const excludeArgs = fakeChokidarWatch.excludeArgs;
@@ -1105,14 +1110,12 @@ describe('watch', () => {
   });
 
   test("allows providing an array of strings in 'watch.exclude'", async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {
-      exclude: ['my-dir1', '**/my-dir2'],
-    });
     const toolkit = defaultToolkitSetup();
 
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      exclude: ['my-dir1', '**/my-dir2'],
     });
 
     const excludeArgs = fakeChokidarWatch.excludeArgs;
@@ -1122,7 +1125,6 @@ describe('watch', () => {
   });
 
   test('allows watching with deploy concurrency', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
     const cdkDeployMock = jest.fn();
     toolkit.deploy = cdkDeployMock;
@@ -1131,6 +1133,7 @@ describe('watch', () => {
       selector: { patterns: [] },
       concurrency: 3,
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      include: [],
     });
     fakeChokidarWatcherOn.readyCallback();
 
@@ -1139,7 +1142,6 @@ describe('watch', () => {
 
   describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
     test('passes through the correct hotswap mode to deployStack()', async () => {
-      cloudExecutable.configuration.settings.set(['watch'], {});
       const toolkit = defaultToolkitSetup();
       const cdkDeployMock = jest.fn();
       toolkit.deploy = cdkDeployMock;
@@ -1147,6 +1149,7 @@ describe('watch', () => {
       await toolkit.watch({
         selector: { patterns: [] },
         hotswap: hotswapMode,
+        include: [],
       });
       fakeChokidarWatcherOn.readyCallback();
 
@@ -1155,7 +1158,6 @@ describe('watch', () => {
   });
 
   test('respects HotswapMode.HOTSWAP_ONLY', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
     const cdkDeployMock = jest.fn();
     toolkit.deploy = cdkDeployMock;
@@ -1163,6 +1165,7 @@ describe('watch', () => {
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.HOTSWAP_ONLY,
+      include: [],
     });
     fakeChokidarWatcherOn.readyCallback();
 
@@ -1170,7 +1173,6 @@ describe('watch', () => {
   });
 
   test('respects HotswapMode.FALL_BACK', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
     const cdkDeployMock = jest.fn();
     toolkit.deploy = cdkDeployMock;
@@ -1178,6 +1180,7 @@ describe('watch', () => {
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.FALL_BACK,
+      include: [],
     });
     fakeChokidarWatcherOn.readyCallback();
 
@@ -1185,7 +1188,6 @@ describe('watch', () => {
   });
 
   test('respects HotswapMode.FULL_DEPLOYMENT', async () => {
-    cloudExecutable.configuration.settings.set(['watch'], {});
     const toolkit = defaultToolkitSetup();
     const cdkDeployMock = jest.fn();
     toolkit.deploy = cdkDeployMock;
@@ -1193,6 +1195,7 @@ describe('watch', () => {
     await toolkit.watch({
       selector: { patterns: [] },
       hotswap: HotswapMode.FULL_DEPLOYMENT,
+      include: [],
     });
     fakeChokidarWatcherOn.readyCallback();
 
@@ -1204,13 +1207,13 @@ describe('watch', () => {
     let cdkDeployMock: jest.Mock;
 
     beforeEach(async () => {
-      cloudExecutable.configuration.settings.set(['watch'], {});
       toolkit = defaultToolkitSetup();
       cdkDeployMock = jest.fn();
       toolkit.deploy = cdkDeployMock;
       await toolkit.watch({
         selector: { patterns: [] },
         hotswap: HotswapMode.HOTSWAP_ONLY,
+        include: [],
       });
     });
 
