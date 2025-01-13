@@ -1139,7 +1139,7 @@ new cognito.UserPoolClient(this, 'Client', {
     externalId: "sample-external-id",
 
     // IAM role that Cognito can assume to publish to Pinpoint
-    roleArn: pinpointRole.roleArn,
+    role: pinpointRole,
 
     // Whether to include user data in analytics events
     shareUserData: true,
