@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "cli-args-gen": "ts-node --preferTsExts scripts/cli-args-gen.ts",
+    "user-input-gen": "ts-node --preferTsExts scripts/user-input-gen.ts",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
@@ -29,7 +29,7 @@
   },
   "cdk-build": {
     "pre": [
-      "yarn cli-args-gen"
+      "yarn user-input-gen"
     ],
     "post": [
       "cp ../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/",
@@ -70,7 +70,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cli-plugin-contract": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/cli-args-gen": "0.0.0",
+    "@aws-cdk/user-input-gen": "0.0.0",
     "@octokit/rest": "^18.12.0",
     "@types/archiver": "^5.3.4",
     "@types/fs-extra": "^9.0.13",

@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.175.1](https://github.com/aws/aws-cdk/compare/v2.175.0...v2.175.1) (2025-01-10)
+
+### Bug Fixes
+
+* **cli:** "no stack found in the main cloud assembly" ([#32839](https://github.com/aws/aws-cdk/issues/32839)) ([7b68908](https://github.com/aws/aws-cdk/commit/7b68908dbebde02037d8b7650f4bb10d4c5db89d)), closes [aws/aws-cdk#32636](https://github.com/aws/aws-cdk/issues/32636) [#32836](https://github.com/aws/aws-cdk/issues/32836) [#32836](https://github.com/aws/aws-cdk/issues/32836)
+
+## [2.175.0](https://github.com/aws/aws-cdk/compare/v2.174.1...v2.175.0) (2025-01-09)
+
+
+### Features
+
+* **ecs:** enable fault injection flag ([#32598](https://github.com/aws/aws-cdk/issues/32598)) ([ed366ce](https://github.com/aws/aws-cdk/commit/ed366ce812a94066de04e9862d6cbd1083bf5d9c))
+* **ecs:** warning when creating a service with the default minHealthyPercent ([#31738](https://github.com/aws/aws-cdk/issues/31738)) ([3606deb](https://github.com/aws/aws-cdk/commit/3606deb5b519365d846e6e66406c835889827055)), closes [#31705](https://github.com/aws/aws-cdk/issues/31705)
+* update L1 CloudFormation resource definitions ([#32768](https://github.com/aws/aws-cdk/issues/32768)) ([107eed3](https://github.com/aws/aws-cdk/commit/107eed3b50e86246da03d6b59197452e2af0bfaf))
+* **cli:** warn of non-existent stacks in `cdk destroy` ([#32636](https://github.com/aws/aws-cdk/issues/32636)) ([c199378](https://github.com/aws/aws-cdk/commit/c199378667cb63ffe8636dda6b6316dcc6eb47e9)), closes [#32545](https://github.com/aws/aws-cdk/issues/32545) [#27179](https://github.com/aws/aws-cdk/issues/27179) [40aws-cdk-testing/cli-integ/tests/cli-integ-tests/cli.integtest.ts#L190](https://github.com/40aws-cdk-testing/cli-integ/tests/cli-integ-tests/cli.integtest.ts/issues/L190) [aws-cdk-testing/cli-integ/tests/cli-integ-tests/cli.integtest.ts#L286-L291](https://github.com/aws-cdk-testing/cli-integ/tests/cli-integ-tests/cli.integtest.ts/issues/L286-L291)
+* **eks:** update nodegroup gpu check ([#32715](https://github.com/aws/aws-cdk/issues/32715)) ([693afea](https://github.com/aws/aws-cdk/commit/693afea86310fd444d237b9f70204fbf4bb5a68d)), closes [#31347](https://github.com/aws/aws-cdk/issues/31347)
+* update L1 CloudFormation resource definitions ([#32755](https://github.com/aws/aws-cdk/issues/32755)) ([8f97112](https://github.com/aws/aws-cdk/commit/8f97112c89c6b39e299b0cd437336bab11cfdaf8))
+* **kms:** add sign and verify related grant methods ([#32681](https://github.com/aws/aws-cdk/issues/32681)) ([86d2853](https://github.com/aws/aws-cdk/commit/86d2853a9a919669694a2448805a092839a7f4db)), closes [#23185](https://github.com/aws/aws-cdk/issues/23185)
+
+
+### Bug Fixes
+
+* **cli:** cannot set environment variable `CI=false` ([#32749](https://github.com/aws/aws-cdk/issues/32749)) ([26b361d](https://github.com/aws/aws-cdk/commit/26b361de357a3b83c59dc4931d4797328d220534))
+* **cli:** requiresRefresh function does not respect null ([#32666](https://github.com/aws/aws-cdk/issues/32666)) ([2abc23c](https://github.com/aws/aws-cdk/commit/2abc23c4cfdf27e8623fea3d3fbb71ad7e25dbbe)), closes [#32653](https://github.com/aws/aws-cdk/issues/32653) [/github.com/smithy-lang/smithy-typescript/blob/main/packages/property-provider/src/memoize.ts#L27](https://github.com/aws//github.com/smithy-lang/smithy-typescript/blob/main/packages/property-provider/src/memoize.ts/issues/L27)
+* **cloudwatch:** render region and accountId when directly set on metrics ([#32325](https://github.com/aws/aws-cdk/issues/32325)) ([c393481](https://github.com/aws/aws-cdk/commit/c3934817ea15bb3187f67112a1d56c13aa555524)), closes [#28731](https://github.com/aws/aws-cdk/issues/28731)
+* **ecs:** outdated linux commands for `canContainersAccessInstanceRole=false` and also deprecate property ([#32763](https://github.com/aws/aws-cdk/issues/32763)) ([bbdd42c](https://github.com/aws/aws-cdk/commit/bbdd42c8f45916d5c6945f3429916f6199d2ec66)), closes [#28518](https://github.com/aws/aws-cdk/issues/28518)
+
 ## [2.174.1](https://github.com/aws/aws-cdk/compare/v2.174.0...v2.174.1) (2025-01-07)
 
 
