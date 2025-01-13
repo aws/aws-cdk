@@ -1,5 +1,13 @@
 {
  "Resources": {
+  "PinpointApp": {
+   "Type": "AWS::Pinpoint::App",
+   "Properties": {
+    "Name": "MyPinpointApp"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "PoolD3F588B8": {
    "Type": "AWS::Cognito::UserPool",
    "Properties": {
@@ -46,6 +54,14 @@
      "openid",
      "aws.cognito.signin.user.admin"
     ],
+    "AnalyticsConfiguration": {
+     "ApplicationArn": {
+      "Fn::GetAtt": [
+       "PinpointApp",
+       "Arn"
+      ]
+     }
+    },
     "CallbackURLs": [
      "https://example.com"
     ],

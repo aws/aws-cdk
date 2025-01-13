@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b5d4a87d1fa553f9590f01d9c1e9e5a5fb6ef1b65642f9e6769023b3003beaa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06837b5f56905cadd45bee07587d7e3fa41897bcbbf0b7bf3c3ddcfef3431f9d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "IntegUserPoolClientAnalytics.assets"
       ],
       "metadata": {
+        "/IntegUserPoolClientAnalytics/PinpointApp": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PinpointApp"
+          }
+        ],
         "/IntegUserPoolClientAnalytics/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",

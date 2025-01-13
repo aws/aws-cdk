@@ -8,6 +8,20 @@
         "id": "IntegUserPoolClientAnalytics",
         "path": "IntegUserPoolClientAnalytics",
         "children": {
+          "PinpointApp": {
+            "id": "PinpointApp",
+            "path": "IntegUserPoolClientAnalytics/PinpointApp",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Pinpoint::App",
+              "aws:cdk:cloudformation:props": {
+                "name": "MyPinpointApp"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_pinpoint.CfnApp",
+              "version": "0.0.0"
+            }
+          },
           "Pool": {
             "id": "Pool",
             "path": "IntegUserPoolClientAnalytics/Pool",
@@ -71,6 +85,14 @@
                           "openid",
                           "aws.cognito.signin.user.admin"
                         ],
+                        "analyticsConfiguration": {
+                          "applicationArn": {
+                            "Fn::GetAtt": [
+                              "PinpointApp",
+                              "Arn"
+                            ]
+                          }
+                        },
                         "callbackUrLs": [
                           "https://example.com"
                         ],

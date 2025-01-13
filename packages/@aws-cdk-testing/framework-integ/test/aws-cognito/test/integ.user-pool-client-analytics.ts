@@ -2,7 +2,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 // import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-// import { CfnApp } from 'aws-cdk-lib/aws-pinpoint';
+import { CfnApp } from 'aws-cdk-lib/aws-pinpoint';
 import { Construct } from 'constructs';
 
 /**
@@ -12,10 +12,10 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    // const pinpointApp = new CfnApp(this, 'PinpointApp', {
-    //   name: 'MyPinpointApp',
-    // });
-    // pinpointApp.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    const pinpointApp = new CfnApp(this, 'PinpointApp', {
+      name: 'MyPinpointApp',
+    });
+    pinpointApp.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     const userPool = new UserPool(this, 'Pool', {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -23,9 +23,9 @@ class TestStack extends Stack {
 
     userPool.addClient('Client', {
       generateSecret: true,
-      // analytics: {
-      //   applicationArn: pinpointApp.attrArn,
-      // },
+      analytics: {
+        applicationArn: pinpointApp.attrArn,
+      },
     });
   }
 }
