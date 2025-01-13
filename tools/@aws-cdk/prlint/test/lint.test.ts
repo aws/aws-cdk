@@ -1212,6 +1212,7 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
       issues: issuesClient as any,
       search: searchClient as any,
       repos: reposClient as any,
+      checks: checksClient as any,
       paginate: (method: any, args: any) => { return method(args).data; },
     } as any,
   });
