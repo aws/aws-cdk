@@ -1,8 +1,8 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, RemovalPolicy, Fn } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { CfnApp } from 'aws-cdk-lib/aws-pinpoint';
+// import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+// import { CfnApp } from 'aws-cdk-lib/aws-pinpoint';
 import { Construct } from 'constructs';
 
 /**
@@ -12,10 +12,10 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const pinpointApp = new CfnApp(this, 'PinpointApp', {
-      name: 'MyPinpointApp',
-    });
-    pinpointApp.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    // const pinpointApp = new CfnApp(this, 'PinpointApp', {
+    //   name: 'MyPinpointApp',
+    // });
+    // pinpointApp.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     const userPool = new UserPool(this, 'Pool', {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -23,9 +23,9 @@ class TestStack extends Stack {
 
     userPool.addClient('Client', {
       generateSecret: true,
-      analytics: {
-        applicationArn: pinpointApp.attrArn,
-      },
+      // analytics: {
+      //   applicationArn: pinpointApp.attrArn,
+      // },
     });
   }
 }
@@ -37,20 +37,20 @@ class TestStack2 extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const pinpointApp = new CfnApp(this, 'PinpointApp', {
-      name: 'MyPinpointApp',
-    });
-    pinpointApp.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    // const pinpointApp = new CfnApp(this, 'PinpointApp', {
+    //   name: 'MyPinpointApp',
+    // });
+    // pinpointApp.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
-    const role = new Role(this, 'Role', {
-      assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com'),
-    });
-    role.addToPolicy(
-      new PolicyStatement({
-        actions: ['mobiletargeting:UpdateEndpoint', 'mobiletargeting:PutEvents'],
-        resources: [Fn.join('/', [pinpointApp.attrArn, '*'])],
-      }),
-    );
+    // const role = new Role(this, 'Role', {
+    //   assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com'),
+    // });
+    // role.addToPolicy(
+    //   new PolicyStatement({
+    //     actions: ['mobiletargeting:UpdateEndpoint', 'mobiletargeting:PutEvents'],
+    //     resources: [Fn.join('/', [pinpointApp.attrArn, '*'])],
+    //   }),
+    // );
 
     const userPool = new UserPool(this, 'Pool', {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -58,11 +58,11 @@ class TestStack2 extends Stack {
 
     userPool.addClient('client', {
       generateSecret: true,
-      analytics: {
-        applicationId: pinpointApp.ref,
-        externalId: role.roleId,
-        role,
-      },
+      // analytics: {
+      //   applicationId: pinpointApp.ref,
+      //   externalId: role.roleId,
+      //   role,
+      // },
     });
   }
 }

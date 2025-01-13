@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b5cbd5cb73507b65d57aa3b6dd88e98147d6b755b786e8280a595fb2657034bb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b5d4a87d1fa553f9590f01d9c1e9e5a5fb6ef1b65642f9e6769023b3003beaa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,12 +34,6 @@
         "IntegUserPoolClientAnalytics.assets"
       ],
       "metadata": {
-        "/IntegUserPoolClientAnalytics/PinpointApp": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PinpointApp"
-          }
-        ],
         "/IntegUserPoolClientAnalytics/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -84,7 +78,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9639a4e3e506bca99a4d14e8a64a520f730a95da388b8cbc550fcd63d4d023d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/95b6413d22df76af18d54bbdd39c0de4705bbd9208f850be4e67d1b709c56265.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,24 +94,6 @@
         "IntegUserPoolClientAnalytics2.assets"
       ],
       "metadata": {
-        "/IntegUserPoolClientAnalytics2/PinpointApp": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PinpointApp"
-          }
-        ],
-        "/IntegUserPoolClientAnalytics2/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0"
-          }
-        ],
-        "/IntegUserPoolClientAnalytics2/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RoleDefaultPolicy5FFB7DAB"
-          }
-        ],
         "/IntegUserPoolClientAnalytics2/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
