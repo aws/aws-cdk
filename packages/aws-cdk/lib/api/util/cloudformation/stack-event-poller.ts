@@ -1,4 +1,5 @@
 import type { StackEvent } from '@aws-sdk/client-cloudformation';
+import { formatErrorMessage } from '../../../util/error';
 import type { ICloudFormationClient } from '../../aws-auth';
 
 export interface StackEventPollerProps {
@@ -141,7 +142,7 @@ export class StackEventPoller {
 
       }
     } catch (e: any) {
-      if (!(e.name === 'ValidationError' && e.message === `Stack [${this.props.stackName}] does not exist`)) {
+      if (!(e.name === 'ValidationError' && formatErrorMessage(e) === `Stack [${this.props.stackName}] does not exist`)) {
         throw e;
       }
     }

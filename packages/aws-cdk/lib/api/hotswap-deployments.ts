@@ -29,6 +29,7 @@ import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-
 import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
 import { Mode } from './plugin/mode';
 import { CloudFormationStack } from './util/cloudformation';
+import { formatErrorMessage } from '../util/error';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -423,7 +424,7 @@ async function applyHotswappableChange(sdk: SDK, hotswapOperation: HotswappableC
     await hotswapOperation.apply(sdk);
   } catch (e: any) {
     if (e.name === 'TimeoutError' || e.name === 'AbortError') {
-      const result: WaiterResult = JSON.parse(e.message);
+      const result: WaiterResult = JSON.parse(formatErrorMessage(e));
       const error = new Error([
         `Resource is not in the expected state due to waiter status: ${result.state}`,
         result.reason ? `${result.reason}.` : '',

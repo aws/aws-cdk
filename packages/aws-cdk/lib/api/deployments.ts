@@ -38,6 +38,7 @@ import {
   type PublishAssetsOptions,
   PublishingAws,
 } from '../util/asset-publishing';
+import { formatErrorMessage } from '../util/error';
 
 const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
 
@@ -588,7 +589,7 @@ export class Deployments {
           stackErrorMessage = errors;
         }
       } catch (e: any) {
-        stackErrorMessage = suffixWithErrors(e.message, monitor?.errors);
+        stackErrorMessage = suffixWithErrors(formatErrorMessage(e), monitor?.errors);
       } finally {
         await monitor?.stop();
       }
@@ -756,7 +757,7 @@ export class Deployments {
     try {
       await envResources.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
     } catch (e: any) {
-      throw new Error(`${stackName}: ${e.message}`);
+      throw new Error(`${stackName}: ${formatErrorMessage(e)}`);
     }
   }
 
