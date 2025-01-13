@@ -1,6 +1,7 @@
 import 'aws-sdk-client-mock-jest';
 import { Environment } from '@aws-cdk/cx-api';
 import { AppSyncClient } from '@aws-sdk/client-appsync';
+import { CloudControlClient } from '@aws-sdk/client-cloudcontrol';
 import { CloudFormationClient, Stack, StackStatus } from '@aws-sdk/client-cloudformation';
 import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
 import { CodeBuildClient } from '@aws-sdk/client-codebuild';
@@ -34,6 +35,7 @@ export const FAKE_CREDENTIAL_CHAIN = createCredentialChain(() => Promise.resolve
 
 // Default implementations
 export const mockAppSyncClient = mockClient(AppSyncClient);
+export const mockCloudControlClient = mockClient(CloudControlClient);
 export const mockCloudFormationClient = mockClient(CloudFormationClient);
 export const mockCloudWatchClient = mockClient(CloudWatchLogsClient);
 export const mockCodeBuildClient = mockClient(CodeBuildClient);
@@ -58,6 +60,8 @@ export const mockSTSClient = mockClient(STSClient);
 export const restoreSdkMocksToDefault = () => {
   mockAppSyncClient.reset();
   mockAppSyncClient.onAnyCommand().resolves({});
+  mockCloudControlClient.reset();
+  mockCloudControlClient.onAnyCommand().resolves({});
   mockCloudFormationClient.reset();
   mockCloudFormationClient.onAnyCommand().resolves({});
   mockCloudWatchClient.reset();
