@@ -465,6 +465,20 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'boolean',
           desc: 'Continuously observe the project files, and deploy the given stack(s) automatically when changes are detected. Implies --hotswap by default',
         })
+        .option('include', {
+          default: [],
+          type: 'array',
+          desc: 'Include files with these patterns',
+          nargs: 1,
+          requiresArg: true,
+        })
+        .option('exclude', {
+          default: [],
+          type: 'array',
+          desc: 'Exclude files with these patterns',
+          nargs: 1,
+          requiresArg: true,
+        })
         .option('logs', {
           default: true,
           type: 'boolean',
@@ -570,6 +584,20 @@ export function parseCommandLineArguments(args: Array<string>): any {
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", (yargs: Argv) =>
       yargs
+        .option('include', {
+          default: [],
+          type: 'array',
+          desc: 'Include files with these patterns',
+          nargs: 1,
+          requiresArg: true,
+        })
+        .option('exclude', {
+          default: [],
+          type: 'array',
+          desc: 'Exclude files with these patterns',
+          nargs: 1,
+          requiresArg: true,
+        })
         .option('build-exclude', {
           default: [],
           type: 'array',

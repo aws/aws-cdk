@@ -163,6 +163,8 @@ export async function makeConfig(): Promise<CliConfig> {
               'and deploy the given stack(s) automatically when changes are detected. ' +
               'Implies --hotswap by default',
           },
+          'include': { type: 'array', desc: 'Include files with these patterns', default: [] },
+          'exclude': { type: 'array', desc: 'Exclude files with these patterns', default: [] },
           'logs': {
             type: 'boolean',
             default: true,
@@ -249,6 +251,8 @@ export async function makeConfig(): Promise<CliConfig> {
           variadic: true,
         },
         options: {
+          'include': { type: 'array', desc: 'Include files with these patterns', default: [] },
+          'exclude': { type: 'array', desc: 'Exclude files with these patterns', default: [] },
           'build-exclude': { type: 'array', alias: 'E', desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] },
           'exclusively': { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' },
           'change-set-name': { type: 'string', desc: 'Name of the CloudFormation change set to create' },

@@ -735,6 +735,20 @@ export interface DeployOptions {
   readonly watch?: boolean;
 
   /**
+   * Include files with these patterns
+   *
+   * @default - []
+   */
+  readonly include?: Array<string>;
+
+  /**
+   * Exclude files with these patterns
+   *
+   * @default - []
+   */
+  readonly exclude?: Array<string>;
+
+  /**
    * Show CloudWatch log events from all resources in the selected Stacks in the terminal. 'true' by default, use --no-logs to turn off. Only in effect if specified alongside the '--watch' option
    *
    * @default - true
@@ -897,6 +911,20 @@ export interface ImportOptions {
  * @struct
  */
 export interface WatchOptions {
+  /**
+   * Include files with these patterns
+   *
+   * @default - []
+   */
+  readonly include?: Array<string>;
+
+  /**
+   * Exclude files with these patterns
+   *
+   * @default - []
+   */
+  readonly exclude?: Array<string>;
+
   /**
    * Do not rebuild asset with the given ID. Can be specified multiple times
    *

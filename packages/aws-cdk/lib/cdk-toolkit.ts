@@ -1577,6 +1577,10 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * @default 1
    */
   readonly concurrency?: number;
+
+  readonly include?: string[];
+
+  readonly exclude?: string[];
 }
 
 export interface DeployOptions extends CfnDeployOptions, WatchOptions {
