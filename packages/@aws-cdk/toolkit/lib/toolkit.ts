@@ -30,7 +30,7 @@ import { ICloudAssemblySource } from './api/cloud-assembly/types';
 import { ToolkitError } from './api/errors';
 import { IIoHost } from './io/io-host';
 import { asSdkLogger, withAction } from './io/logger';
-import { error, highlight, info, success, warning } from './io/messages';
+import { data, error, highlight, info, success, warning } from './io/messages';
 import { Timer } from './io/timer';
 import { StackSelectionStrategy, ToolkitAction } from './types';
 
@@ -217,9 +217,9 @@ export class Toolkit {
       if (Object.keys(stack.template.Resources || {}).length === 0) {
         // The generated stack has no resources
         if (!(await deployments.stackExists({ stack }))) {
-          warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
+          await ioHost.notify(warning(`${chalk.bold(stack.displayName)}: stack has no resources, skipping deployment.`));
         } else {
-          warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
+          await ioHost.notify(warning(`${chalk.bold(stack.displayName)}: stack has no resources, deleting existing stack.`));
           await this._destroy(assembly, 'deploy', {
             selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
@@ -260,7 +260,7 @@ export class Toolkit {
 
       const stackIndex = stacks.indexOf(stack) + 1;
       await ioHost.notify(
-        info('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount),
+        info(`${chalk.bold(stack.displayName)}: deploying... [${stackIndex}/${stackCollection.stackCount}]`),
       );
       const startDeployTime = new Date().getTime();
 
@@ -362,22 +362,22 @@ export class Toolkit {
 
         await ioHost.notify(success('\n' + message));
         elapsedDeployTime = new Date().getTime() - startDeployTime;
-        print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
+        await ioHost.notify(info(`\n✨  Deployment time: ${formatTime(elapsedDeployTime)}s\n`));
 
         if (Object.keys(deployResult.outputs).length > 0) {
-          print('Outputs:');
+          await ioHost.notify(info('Outputs:'));
 
           stackOutputs[stack.stackName] = deployResult.outputs;
         }
 
         for (const name of Object.keys(deployResult.outputs).sort()) {
           const value = deployResult.outputs[name];
-          print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
+          await ioHost.notify(info(`${chalk.cyan(stack.id)}.${chalk.cyan(name)} = ${chalk.underline(chalk.cyan(value))}`));
         }
 
-        print('Stack ARN:');
+        await ioHost.notify(info('Stack ARN:'));
 
-        data(deployResult.stackArn);
+        await ioHost.notify(data(deployResult.stackArn));
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -404,7 +404,7 @@ export class Toolkit {
           });
         }
       }
-      print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
+      await ioHost.notify(info(`\n✨  Total time: ${formatTime(synthTime.asSec + elapsedDeployTime)}s\n`));
     };
 
     const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
