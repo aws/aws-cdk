@@ -1300,6 +1300,26 @@ integTest(
   }),
 );
 
+integTest(
+  'cdk diff shows resource metadata changes with --mode=local',
+  withDefaultFixture(async (fixture) => {
+
+    // GIVEN - small initial stack with default resource metadata
+    await fixture.cdkDeploy('metadata');
+
+    // WHEN - changing resource metadata value
+    const diff = await fixture.cdk(['diff --mode=local', fixture.fullStackName('metadata')], {
+      verbose: true,
+      modEnv: {
+        INTEG_METADATA_VALUE: 'custom',
+      },
+    });
+
+    // Assert there are changes
+    expect(diff).not.toContain('There were no differences');
+  }),
+);
+
 integTest('cdk diff with large changeset and custom toolkit stack name and qualifier does not fail', withoutBootstrap(async (fixture) => {
   // Bootstrapping with custom toolkit stack name and qualifier
   const qualifier = 'abc1111';
@@ -2933,15 +2953,15 @@ function actions(requests: CompletedRequest[]): string[] {
 }
 
 integTest(
-  'cdk diff noFallback',
-  withSpecificFixture('diff-no-fallback-app', async (fixture) => {
+  'cdk diff returns change-set creation errors when using --mode=change-set',
+  withSpecificFixture('failing-changeset-app', async (fixture) => {
     // Should succeed
-    await fixture.cdkDeploy('test-diff-no-fallback', {
+    await fixture.cdkDeploy('test-failing-changeset', {
       verbose: false,
     });
     try {
       // Should surface the missing transform error from cloudformation in the output
-      const diffOutput = await fixture.cdk(['diff', '--no-fallback', fixture.fullStackName('test-diff-no-fallback')], {
+      const diffOutput = await fixture.cdk(['diff', '--mode=change-set', fixture.fullStackName('test-failing-changeset')], {
         modEnv: { DIFF_PHASE: 'on' },
         allowErrExit: true,
         captureStderr: true,
@@ -2949,13 +2969,13 @@ integTest(
       expect(diffOutput).toContain('No transform named');
 
       // Should throw
-      await expect(fixture.cdk(['diff', '--no-fallback', fixture.fullStackName('test-diff-no-fallback')], {
+      await expect(fixture.cdk(['diff', '--mode=change-set', fixture.fullStackName('test-failing-changeset')], {
         modEnv: { DIFF_PHASE: 'on' },
         captureStderr: true,
       })).rejects.toThrow();
 
       // Should fallback to template-only diff as normal
-      const diffOutputWithFallback = await fixture.cdk(['diff', fixture.fullStackName('test-diff-no-fallback')], {
+      const diffOutputWithFallback = await fixture.cdk(['diff', fixture.fullStackName('test-failing-changeset')], {
         modEnv: { DIFF_PHASE: 'on' },
         captureStderr: true,
         allowErrExit: true,
@@ -2964,7 +2984,7 @@ integTest(
       expect(diffOutputWithFallback).toContain('will base the diff on template differences');
 
     } finally {
-      await fixture.cdkDestroy('test-diff-no-fallback', { verbose: false });
+      await fixture.cdkDestroy('test-failing-changeset', { verbose: false });
     }
   }),
 );

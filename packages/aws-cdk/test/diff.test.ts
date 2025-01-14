@@ -88,7 +88,6 @@ describe('fixed template', () => {
     const exitCode = await toolkit.diff({
       stackNames: ['A'],
       stream: buffer,
-      changeSet: undefined,
       templatePath,
     });
 
@@ -204,7 +203,7 @@ describe('imports', () => {
     const exitCode = await toolkit.diff({
       stackNames: ['A'],
       stream: buffer,
-      changeSet: true,
+      mode: 'auto',
     });
 
     // THEN
@@ -231,7 +230,7 @@ Resources
     const exitCode = await toolkit.diff({
       stackNames: ['A'],
       stream: buffer,
-      changeSet: true,
+      mode: 'auto',
     });
 
     // THEN
@@ -472,7 +471,7 @@ describe('non-nested stacks', () => {
     expect(exitCode).toBe(0);
   });
 
-  test('when changeset creation fails but fallback to template only diff is disabled, the error is surfaced', async () => {
+  test('when changeset creation fails and mode=change-set, the error is surfaced', async () => {
 
     cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
     const createDiffChangeSet = jest.spyOn(cfn, 'createDiffChangeSet');
@@ -487,8 +486,7 @@ describe('non-nested stacks', () => {
     const exitCode = await toolkit.diff({
       stackNames: ['A'],
       stream: buffer,
-      changeSet: true,
-      fallback: false,
+      mode: 'change-set',
     });
 
     // THEN
@@ -586,6 +584,24 @@ describe('stack exists checks', () => {
     expect(cloudFormation.stackExists).not.toHaveBeenCalled();
   });
 
+  test('diff does not check for stack existence when --mode=local is passed', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+      mode: 'local',
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(cloudFormation.stackExists).not.toHaveBeenCalled();
+  });
+
   test('diff falls back to classic diff when stack does not exist', async () => {
     // GIVEN
     const buffer = new StringWritable();
@@ -598,7 +614,7 @@ describe('stack exists checks', () => {
       stream: buffer,
       fail: false,
       quiet: true,
-      changeSet: true,
+      mode: 'auto',
     });
 
     // THEN
@@ -623,7 +639,7 @@ describe('stack exists checks', () => {
       stream: buffer,
       fail: false,
       quiet: true,
-      changeSet: true,
+      mode: 'auto',
     });
 
     // THEN
@@ -904,7 +920,7 @@ describe('nested stacks', () => {
     const exitCode = await toolkit.diff({
       stackNames: ['Parent'],
       stream: buffer,
-      changeSet: false,
+      mode: 'local',
     });
 
     // THEN
@@ -961,18 +977,20 @@ Stack UnChangedChild
   test('diff falls back to non-changeset diff for nested stacks', async () => {
     // GIVEN
     const changeSetSpy = jest.spyOn(cfn, 'waitForChangeSet');
+    jest.spyOn(cloudFormation, 'stackExists').mockResolvedValue(true);
     const buffer = new StringWritable();
 
     // WHEN
     const exitCode = await toolkit.diff({
       stackNames: ['Parent'],
       stream: buffer,
-      changeSet: true,
+      mode: 'auto',
     });
 
     // THEN
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/gm, '');
-    expect(plainTextOutput.trim()).toEqual(`Stack Parent
+    expect(plainTextOutput.trim()).toEqual(`Could not create a change set, will base the diff on template differences (run again with -v to see the reason)
+Stack Parent
 Resources
 [~] AWS::CloudFormation::Stack AdditionChild
  └─ [~] TemplateURL
@@ -1019,6 +1037,28 @@ Stack UnChangedChild
 ✨  Number of stacks with differences: 6`);
 
     expect(exitCode).toBe(0);
+    expect(changeSetSpy).not.toHaveBeenCalled();
+  });
+
+  test('diff falls back to non-changeset diff for nested stacks and mode=change-set', async () => {
+    // GIVEN
+    const changeSetSpy = jest.spyOn(cfn, 'waitForChangeSet');
+    jest.spyOn(cloudFormation, 'stackExists').mockResolvedValue(true);
+
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['Parent'],
+      stream: buffer,
+      mode: 'change-set',
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '').replace(/[ \t]+$/gm, '');
+    expect(plainTextOutput.trim()).toContain('Cannot create change-set diff when using nested stacks');
+
+    expect(exitCode).toBe(1);
     expect(changeSetSpy).not.toHaveBeenCalled();
   });
 

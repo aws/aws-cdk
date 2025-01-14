@@ -706,15 +706,20 @@ export function parseCommandLineArguments(args: Array<string>): any {
             desc: 'Do not print stack name and default message when there is no diff to stdout',
           })
           .option('change-set', {
-            default: true,
+            default: undefined,
             type: 'boolean',
             alias: 'changeset',
-            desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.',
+            desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role',
+            conflicts: 'mode',
+            deprecated: 'Use mode=auto or mode=local instead',
           })
-          .option('fallback', {
-            default: true,
-            type: 'boolean',
-            desc: 'If the changeset option is turned on, whether to enable falling back to template-only diff in case creating the changeset results in an error.',
+          .option('mode', {
+            default: 'auto',
+            type: 'string',
+            choices: ['auto', 'change-set', 'local'],
+            conflicts: 'change-set',
+            requiresArg: true,
+            desc: 'How to perform the the diff operation. Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to local mode. Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role. Unhandled errors in change-set creation will return a non-zero exit code Local mode compares the current local template with template applied on the stack',
           }),
     )
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')

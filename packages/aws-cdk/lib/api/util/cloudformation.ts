@@ -353,10 +353,7 @@ export async function createDiffChangeSet(
   // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
   for (const resource of Object.values(options.stack.template.Resources ?? {})) {
     if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
-      // eslint-disable-next-line no-console
-      debug('This stack contains one or more nested stacks, falling back to template-only diff...');
-
-      return undefined;
+      throw new Error('Cannot create change-set diff when using nested stacks');
     }
   }
 

@@ -310,8 +310,18 @@ export async function makeConfig(): Promise<CliConfig> {
           'fail': { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' },
           'processed': { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false },
           'quiet': { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false },
-          'change-set': { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true },
-          'fallback': { type: 'boolean', desc: 'If the changeset option is turned on, whether to enable falling back to template-only diff in case creating the changeset results in an error.', default: true },
+          'change-set': { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role', conflicts: 'mode', deprecated: 'Use mode=auto or mode=local instead' },
+          'mode': {
+            type: 'string',
+            choices: ['auto', 'change-set', 'local'],
+            default: 'auto',
+            conflicts: 'change-set',
+            requiresArg: true,
+            desc: 'How to perform the the diff operation. ' +
+              'Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to local mode. ' +
+              'Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role. Unhandled errors in change-set creation will return a non-zero exit code ' +
+              'Local mode compares the current local template with template applied on the stack',
+          },
         },
       },
       metadata: {

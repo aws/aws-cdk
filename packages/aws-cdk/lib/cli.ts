@@ -239,7 +239,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           compareAgainstProcessedTemplate: args.processed,
           quiet: args.quiet,
           changeSet: args['change-set'],
-          fallback: args.fallback,
+          mode: args.mode,
           toolkitStackName: toolkitStackName,
         });
 

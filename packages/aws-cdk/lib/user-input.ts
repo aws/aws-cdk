@@ -1090,20 +1090,21 @@ export interface DiffOptions {
   readonly quiet?: boolean;
 
   /**
-   * Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.
+   * Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role
    *
    * aliases: changeset
    *
-   * @default - true
+   * @deprecated Use mode=auto or mode=local instead
+   * @default - undefined
    */
   readonly changeSet?: boolean;
 
   /**
-   * If the changeset option is turned on, whether to enable falling back to template-only diff in case creating the changeset results in an error.
+   * How to perform the the diff operation. Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to local mode. Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role. Unhandled errors in change-set creation will return a non-zero exit code Local mode compares the current local template with template applied on the stack
    *
-   * @default - true
+   * @default - "auto"
    */
-  readonly fallback?: boolean;
+  readonly mode?: string;
 
   /**
    * Positional argument for diff

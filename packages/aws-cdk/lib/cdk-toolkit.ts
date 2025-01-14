@@ -193,7 +193,7 @@ export class CdkToolkit {
 
         let changeSet = undefined;
 
-        if (options.changeSet) {
+        if (options.changeSet || options.mode === 'auto' || options.mode === 'change-set') {
           let stackExists = false;
           try {
             stackExists = await this.props.deployments.stackExists({
@@ -224,7 +224,7 @@ export class CdkToolkit {
                 stream,
               });
             } catch (e: any) {
-              if (options.fallback ?? true) {
+              if (options.mode === 'auto') {
                 debug(e);
                 stream.write(
                   'Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n',
@@ -1427,16 +1427,19 @@ export interface DiffOptions {
   /**
    * Whether or not to create, analyze, and subsequently delete a changeset
    *
+   * @deprecated - use `mode` option instead
    * @default true
    */
   changeSet?: boolean;
 
   /**
-   * If the changeset option is turned on, whether to enable falling back to template-only diff in case creating the changeset results in an error
+   * Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to local mode.
+   * Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.
+   * Local mode compares the current local template with template applied on the stack
    *
-   * @default true
+   * @default 'auto'
    */
-  fallback?: boolean;
+  mode?: 'auto' | 'change-set' | 'local';
 }
 
 interface CfnDeployOptions {

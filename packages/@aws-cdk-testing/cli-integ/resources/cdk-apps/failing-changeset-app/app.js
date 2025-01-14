@@ -14,7 +14,7 @@ const sns = require('aws-cdk-lib/aws-sns');
  * # This will surface an error to the user about the missing macro
  * ```
  */
-class DiffNoFallbackTestStack extends cdk.Stack {
+class FailingChangesetStack extends cdk.Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
@@ -33,6 +33,6 @@ class DiffNoFallbackTestStack extends cdk.Stack {
 const stackPrefix = process.env.STACK_NAME_PREFIX;
 const app = new cdk.App();
 
-new DiffNoFallbackTestStack(app, `${stackPrefix}-test-diff-no-fallback`);
+new FailingChangesetStack(app, `${stackPrefix}-test-failing-changeset`);
 
 app.synth();
