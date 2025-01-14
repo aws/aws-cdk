@@ -384,14 +384,15 @@ export class Toolkit {
           [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
         );
       } finally {
-        if (options.cloudWatchLogMonitor) {
-          const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
-          options.cloudWatchLogMonitor.addLogGroups(
-            foundLogGroupsResult.env,
-            foundLogGroupsResult.sdk,
-            foundLogGroupsResult.logGroupNames,
-          );
-        }
+        // @TODO
+        // if (options.cloudWatchLogMonitor) {
+        //   const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
+        //   options.cloudWatchLogMonitor.addLogGroups(
+        //     foundLogGroupsResult.env,
+        //     foundLogGroupsResult.sdk,
+        //     foundLogGroupsResult.logGroupNames,
+        //   );
+        // }
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,
         // all of the outputs from successfully deployed stacks before the failure will still be written.

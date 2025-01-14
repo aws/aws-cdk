@@ -3,6 +3,9 @@ import { formatSdkLoggerContent } from 'aws-cdk/lib/api/aws-auth/sdk-logger';
 import { ToolkitAction } from '../types';
 import { IIoHost, IoMessage, IoRequest } from './io-host';
 import { trace } from './messages';
+import { withCorkedLogging } from 'aws-cdk/lib/logging';
+import { ToolkitError } from '../api/errors';
+import chalk from 'chalk';
 
 export function withAction(ioHost: IIoHost, action: ToolkitAction) {
   return {
@@ -108,4 +111,38 @@ export function asSdkLogger(ioHost: IIoHost, action: ToolkitAction): Logger {
       });
     }
   };
+}
+
+let TESTING = false;
+
+export function markTesting() {
+  TESTING = true;
+}
+
+/**
+ * Ask the user for a yes/no confirmation
+ *
+ * Automatically fail the confirmation in case we're in a situation where the confirmation
+ * cannot be interactively obtained from a human at the keyboard.
+ */
+export async function askUserConfirmation(
+  ioHost: IIoHost,
+  concurrency: number,
+  motivation: string,
+  question: string,
+) {
+  await withCorkedLogging(async () => {
+    // only talk to user if STDIN is a terminal (otherwise, fail)
+    if (!TESTING && !process.stdin.isTTY) {
+      throw new ToolkitError(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
+    }
+
+    // only talk to user if concurrency is 1 (otherwise, fail)
+    if (concurrency > 1) {
+      throw new ToolkitError(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
+    }
+
+    const confirmed = await ioHost.requestResponse<any, boolean>(prompt(`${chalk.cyan(question)} (y/n)?`));
+    if (!confirmed) { throw new ToolkitError('Aborted by user'); }
+  });
 }
