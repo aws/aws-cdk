@@ -1094,7 +1094,7 @@ export interface DiffOptions {
    *
    * aliases: changeset
    *
-   * @deprecated Use mode=auto or mode=local instead
+   * @deprecated Use mode=auto or mode=template-only instead
    * @default - true
    */
   readonly changeSet?: boolean;

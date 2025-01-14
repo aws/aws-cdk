@@ -711,7 +711,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
             alias: 'changeset',
             desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role',
             conflicts: 'mode',
-            deprecated: 'Use mode=auto or mode=local instead',
+            deprecated: 'Use mode=auto or mode=template-only instead',
           })
           .option('mode', {
             default: 'auto',

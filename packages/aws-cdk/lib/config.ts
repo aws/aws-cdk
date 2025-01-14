@@ -310,7 +310,7 @@ export async function makeConfig(): Promise<CliConfig> {
           'fail': { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' },
           'processed': { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false },
           'quiet': { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false },
-          'change-set': { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role', conflicts: 'mode', deprecated: 'Use mode=auto or mode=local instead', default: true },
+          'change-set': { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role', conflicts: 'mode', deprecated: 'Use mode=auto or mode=template-only instead', default: true },
           'mode': {
             type: 'string',
             choices: ['auto', 'change-set', 'template-only'],
