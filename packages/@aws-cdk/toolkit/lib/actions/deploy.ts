@@ -1,6 +1,7 @@
 import { Deployments } from 'aws-cdk/lib/api/deployments';
 import { WorkGraph } from 'aws-cdk/lib/util/work-graph';
 import { StackSelector } from '../types';
+import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 
 export type DeploymentMethod = DirectDeploymentMethod | ChangeSetDeploymentMethod;
 
@@ -234,6 +235,13 @@ export interface DeployOptions extends BaseDeployOptions {
    * @deprecated Implement in IoHost instead
    */
   readonly ci?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @deprecated Implement in IoHost instead
+   */
+  readonly progress?: StackActivityProgress;
 }
 
 export function buildParameterMap(parameters?: Map<string, string | undefined>): { [name: string]: { [name: string]: string | undefined } } {

@@ -230,16 +230,17 @@ export class Toolkit {
         return;
       }
 
-      if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
-        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
-          await askUserConfirmation(
-            concurrency,
-            '"--require-approval" is enabled and stack includes security-sensitive updates',
-            'Do you wish to deploy these changes',
-          );
-        }
-      }
+      // @TODO
+      // if (requireApproval !== RequireApproval.NEVER) {
+      //   const currentTemplate = await deployments.readCurrentTemplate(stack);
+      //   if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
+      //     await askUserConfirmation(
+      //       concurrency,
+      //       '"--require-approval" is enabled and stack includes security-sensitive updates',
+      //       'Do you wish to deploy these changes',
+      //     );
+      //   }
+      // }
 
       // Following are the same semantics we apply with respect to Notification ARNs (dictated by the SDK)
       //
@@ -384,7 +385,7 @@ export class Toolkit {
         );
       } finally {
         if (options.cloudWatchLogMonitor) {
-          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
+          const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
           options.cloudWatchLogMonitor.addLogGroups(
             foundLogGroupsResult.env,
             foundLogGroupsResult.sdk,
@@ -457,6 +458,7 @@ export class Toolkit {
     const ioHost = withAction(this.ioHost, 'rollback');
     throw new Error('Not implemented yet');
   }
+
   /**
    * Destroy Action
    *
@@ -484,7 +486,7 @@ export class Toolkit {
     }
 
     for (const [index, stack] of stacks.stackArtifacts.entries()) {
-      await ioHost.notify(success('%s: destroying... [%s/%s]', chalk.blue(stack.displayName), index + 1, stacks.stackCount));
+      await ioHost.notify(success(`${chalk.blue(stack.displayName)}: destroying... [${index + 1}/${stacks.stackCount}]`));
       try {
         const deployments = await this.deploymentsForAction(action);
         await deployments.destroyStack({
@@ -493,9 +495,9 @@ export class Toolkit {
           roleArn: options.roleArn,
           ci: options.ci,
         });
-        await ioHost.notify(success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName)));
+        await ioHost.notify(success(`\n ✅  ${chalk.blue(stack.displayName)}: ${action}ed`));
       } catch (e) {
-        await ioHost.notify(error(`\n ❌  %s: ${action} failed`, chalk.blue(stack.displayName), e));
+        await ioHost.notify(error(`\n ❌  ${chalk.blue(stack.displayName)}: ${action} failed ${e}`));
         throw e;
       }
     }
