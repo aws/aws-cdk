@@ -12,6 +12,7 @@ import { makeCachingProvider } from './provider-caching';
 import { SDK } from './sdk';
 import { debug, warning } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
 import { traceMethods } from '../../util/tracing';
 import { Mode } from '../plugin/mode';
 
@@ -281,7 +282,7 @@ export class SdkProvider {
           return undefined;
         }
 
-        debug(`Unable to determine the default AWS account (${e.name}): ${e.message}`);
+        debug(`Unable to determine the default AWS account (${e.name}): ${formatErrorMessage(e)}`);
         return undefined;
       }
     });

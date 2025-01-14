@@ -516,7 +516,7 @@ export enum ResourceImpact {
  * of property-level impacts.
  * @param one the current worst impact so far.
  * @param two the new impact being considered (can be undefined, as we may not always be
- *      able to determine some peroperty's impact).
+ *      able to determine some properties impact).
  */
 function worstImpact(one: ResourceImpact, two?: ResourceImpact): ResourceImpact {
   if (!two) { return one; }
