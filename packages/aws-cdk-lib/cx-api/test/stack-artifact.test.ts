@@ -21,6 +21,24 @@ afterEach(() => {
   rimraf(builder.outdir);
 });
 
+test('read notification arns from artifact properties', () => {
+// GIVEN
+  const NOTIFICATION_ARNS = ['arn:aws:sns:bermuda-triangle-1337:123456789012:MyTopic'];
+  builder.addArtifact('Stack', {
+    ...stackBase,
+    properties: {
+      ...stackBase.properties,
+      notificationArns: NOTIFICATION_ARNS,
+    },
+  });
+
+  // WHEN
+  const assembly = builder.buildAssembly();
+
+  // THEN
+  expect(assembly.getStackByName('Stack').notificationArns).toEqual(NOTIFICATION_ARNS);
+});
+
 test('read tags from artifact properties', () => {
   // GIVEN
   builder.addArtifact('Stack', {

@@ -1,10 +1,9 @@
-import { Duration, IResource, Resource } from 'aws-cdk-lib';
+import { Duration, IResource, Resource, Token } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { ScheduleTargetInput } from './input';
 import { ScheduleExpression } from './schedule-expression';
 import { IScheduleTarget } from './target';
 
@@ -26,37 +25,6 @@ export interface ISchedule extends IResource {
    * The arn of the schedule.
    */
   readonly scheduleArn: string;
-
-  /**
-   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
-   */
-  readonly key?: kms.IKey;
-}
-
-export interface ScheduleTargetProps {
-  /**
-   * The text, or well-formed JSON, passed to the target.
-   *
-   * If you are configuring a templated Lambda, AWS Step Functions, or Amazon EventBridge target,
-   * the input must be a well-formed JSON. For all other target types, a JSON is not required.
-   *
-   * @default - The target's input is used.
-   */
-  readonly input?: ScheduleTargetInput;
-
-  /**
-   * The maximum amount of time, in seconds, to continue to make retry attempts.
-   *
-   * @default - The target's maximumEventAgeInSeconds is used.
-   */
-  readonly maxEventAge?: Duration;
-
-  /**
-   * The maximum number of retry attempts to make before the request fails.
-   *
-   * @default - The target's maximumRetryAttempts is used.
-   */
-  readonly retryAttempts?: number;
 }
 
 /**
@@ -114,11 +82,6 @@ export interface ScheduleProps {
    * The schedule's target details.
    */
   readonly target: IScheduleTarget;
-
-  /**
-   * Allows to override target properties when creating a new schedule.
-   */
-  readonly targetOverrides?: ScheduleTargetProps;
 
   /**
    * The name of the schedule.
@@ -316,7 +279,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.key = props.key;
     if (this.key) {
-      this.key.grantEncryptDecrypt(targetConfig.role);
+      this.key.grantDecrypt(targetConfig.role);
     }
 
     this.retryPolicy = targetConfig.retryPolicy;
@@ -324,6 +287,9 @@ export class Schedule extends Resource implements ISchedule {
     const flexibleTimeWindow = props.timeWindow ?? TimeWindow.off();
 
     this.validateTimeFrame(props.start, props.end);
+    if (props.scheduleName && !Token.isUnresolved(props.scheduleName) && props.scheduleName.length > 64) {
+      throw new Error(`scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`);
+    }
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
@@ -339,11 +305,9 @@ export class Schedule extends Resource implements ISchedule {
       target: {
         arn: targetConfig.arn,
         roleArn: targetConfig.role.roleArn,
-        input: props.targetOverrides?.input ?
-          props.targetOverrides?.input?.bind(this) :
-          targetConfig.input?.bind(this),
+        input: targetConfig.input?.bind(this),
         deadLetterConfig: targetConfig.deadLetterConfig,
-        retryPolicy: this.renderRetryPolicy(props.targetOverrides?.maxEventAge?.toSeconds(), props.targetOverrides?.retryAttempts),
+        retryPolicy: this.renderRetryPolicy(),
         ecsParameters: targetConfig.ecsParameters,
         kinesisParameters: targetConfig.kinesisParameters,
         eventBridgeParameters: targetConfig.eventBridgeParameters,
@@ -352,6 +316,7 @@ export class Schedule extends Resource implements ISchedule {
       },
       startDate: props.start?.toISOString(),
       endDate: props.end?.toISOString(),
+      description: props.description,
     });
 
     this.scheduleName = this.getResourceNameAttribute(resource.ref);
@@ -362,14 +327,9 @@ export class Schedule extends Resource implements ISchedule {
     });
   }
 
-  private renderRetryPolicy(
-    maximumEventAgeInSeconds?: number,
-    maximumRetryAttempts?: number,
-  ): CfnSchedule.RetryPolicyProperty | undefined {
+  private renderRetryPolicy(): CfnSchedule.RetryPolicyProperty | undefined {
     const policy = {
       ...this.retryPolicy,
-      maximumEventAgeInSeconds: maximumEventAgeInSeconds ?? this.retryPolicy?.maximumEventAgeInSeconds,
-      maximumRetryAttempts: maximumRetryAttempts ?? this.retryPolicy?.maximumRetryAttempts,
     };
 
     if (policy.maximumEventAgeInSeconds && (policy.maximumEventAgeInSeconds < 60 || policy.maximumEventAgeInSeconds > 86400)) {

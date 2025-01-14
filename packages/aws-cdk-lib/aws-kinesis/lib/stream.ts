@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
+import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '../../core';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -45,6 +46,15 @@ export interface IStream extends IResource {
    * Optional KMS encryption key associated with this stream.
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Adds a statement to the IAM resource policy associated with this stream.
+   *
+   * If this stream was created in this stack (`new Stream`), a resource policy
+   * will be automatically created upon the first call to `addToResourcePolicy`. If
+   * the stream is imported (`Stream.import`), then this is a no-op.
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant read permissions for this stream and its contents to an IAM
@@ -327,6 +337,41 @@ abstract class StreamBase extends Resource implements IStream {
    * Optional KMS encryption key associated with this stream.
    */
   public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Indicates if a stream resource policy should automatically be created upon
+   * the first call to `addToResourcePolicy`.
+   *
+   * Set by subclasses.
+   */
+  protected abstract readonly autoCreatePolicy: boolean;
+
+  private resourcePolicy?: ResourcePolicy;
+
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.resourcePolicy?.document.validateForResourcePolicy() ?? [] });
+  }
+
+  /**
+   * Adds a statement to the IAM resource policy associated with this stream.
+   *
+   * If this stream was created in this stack (`new Strem`), a resource policy
+   * will be automatically created upon the first call to `addToResourcePolicy`. If
+   * the stream is imported (`Stream.import`), then this is a no-op.
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (!this.resourcePolicy && this.autoCreatePolicy) {
+      this.resourcePolicy = new ResourcePolicy(this, 'Policy', { stream: this });
+    }
+
+    if (this.resourcePolicy) {
+      this.resourcePolicy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.resourcePolicy };
+    }
+    return { statementAdded: false };
+  }
 
   /**
    * Grant read permissions for this stream and its contents to an IAM
@@ -747,6 +792,8 @@ export class Stream extends StreamBase {
       public readonly streamArn = attrs.streamArn;
       public readonly streamName = Stack.of(scope).splitArn(attrs.streamArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public readonly encryptionKey = attrs.encryptionKey;
+
+      protected readonly autoCreatePolicy = false;
     }
 
     return new Import(scope, id, {
@@ -760,6 +807,8 @@ export class Stream extends StreamBase {
 
   private readonly stream: CfnStream;
 
+  protected readonly autoCreatePolicy = true;
+
   constructor(scope: Construct, id: string, props: StreamProps = {}) {
     super(scope, id, {
       physicalName: props.streamName,
@@ -771,7 +820,7 @@ export class Stream extends StreamBase {
     if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
       throw new Error(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`);
     }
-    if ( (streamMode === StreamMode.PROVISIONED || streamMode === undefined) && shardCount === undefined) {
+    if ((streamMode === StreamMode.PROVISIONED || streamMode === undefined) && shardCount === undefined) {
       shardCount = 1;
     }
 
@@ -849,7 +898,7 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
-      return { };
+      return {};
     }
 
     if (encryptionType === StreamEncryption.MANAGED) {

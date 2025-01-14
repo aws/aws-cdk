@@ -134,7 +134,12 @@ export class PipelineGraph {
     const stackGraphs = new Map<StackDeployment, AGraph>();
 
     for (const stack of stage.stacks) {
-      const stackGraph: AGraph = Graph.of(this.simpleStackName(stack.stackName, stage.stageName), { type: 'stack-group', stack });
+      const stackGraphName = findUniqueName(retGraph, [
+        this.simpleStackName(stack.stackName, stage.stageName),
+        ...stack.account ? [stack.account] : [],
+        ...stack.region ? [stack.region] : [],
+      ]);
+      const stackGraph: AGraph = Graph.of(stackGraphName, { type: 'stack-group', stack });
       const prepareNode: AGraphNode | undefined = this.prepareStep ? aGraphNode('Prepare', { type: 'prepare', stack }) : undefined;
       const deployNode: AGraphNode = aGraphNode('Deploy', {
         type: 'execute',
@@ -412,4 +417,14 @@ function aGraphNode(id: string, x: GraphAnnotation): AGraphNode {
 
 function stripPrefix(s: string, prefix: string) {
   return s.startsWith(prefix) ? s.slice(prefix.length) : s;
+}
+
+function findUniqueName(parent: Graph<any>, parts: string[]): string {
+  for (let i = 1; i <= parts.length; i++) {
+    const candidate = parts.slice(0, i).join('.');
+    if (!parent.containsId(candidate)) {
+      return candidate;
+    }
+  }
+  return parts.join('.');
 }

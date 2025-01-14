@@ -86,6 +86,10 @@ export abstract class LambdaInsightsVersion {
   public static readonly VERSION_1_0_317_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.317.0');
 
   /**
+   * Version 1.0.333.0
+   */
+  public static readonly VERSION_1_0_333_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.333.0');
+  /**
    * Use the insights extension associated with the provided ARN. Make sure the ARN is associated
    * with same region as your function
    *
@@ -101,7 +105,7 @@ export abstract class LambdaInsightsVersion {
     return new InsightsArn();
   }
 
-  // Use the verison to build the object. Not meant to be called by the user -- user should use e.g. VERSION_1_0_54_0
+  // Use the version to build the object. Not meant to be called by the user -- user should use e.g. VERSION_1_0_54_0
   private static fromInsightsVersion(insightsVersion: string): LambdaInsightsVersion {
     class InsightsVersion extends LambdaInsightsVersion {
       public readonly layerVersionArn = Lazy.uncachedString({

@@ -50,8 +50,10 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
 
   /**
    *  Describes the various datasets (e.g. train, validation, test) and the Amazon S3 location where stored.
+   *
+   * @default - No inputDataConfig
    */
-  readonly inputDataConfig: Channel[];
+  readonly inputDataConfig?: Channel[];
 
   /**
    * Tags to be applied to the train job.
@@ -120,7 +122,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   /**
    * The Input Data Config.
    */
-  private readonly inputDataConfig: Channel[];
+  private readonly inputDataConfig?: Channel[];
 
   /**
    * The resource config for the task.
@@ -177,7 +179,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       : { ...props.algorithmSpecification, trainingInputMode: InputMode.FILE };
 
     // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
-    this.inputDataConfig = props.inputDataConfig.map((config) => {
+    this.inputDataConfig = props.inputDataConfig?.map((config) => {
       if (!config.dataSource.s3DataSource.s3DataType) {
         return {
           ...config,
@@ -266,7 +268,10 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     };
   }
 
-  private renderInputDataConfig(config: Channel[]): { [key: string]: any } {
+  private renderInputDataConfig(config?: Channel[]): { [key: string]: any } {
+    if (!config) {
+      return {};
+    }
     return {
       InputDataConfig: config.map((channel) => ({
         ChannelName: channel.channelName,

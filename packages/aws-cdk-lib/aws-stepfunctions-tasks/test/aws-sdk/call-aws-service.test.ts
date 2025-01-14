@@ -345,3 +345,68 @@ test('IAM policy for mwaa', () => {
     },
   });
 });
+
+test('IAM policy for efs', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'TagEfsAccessPoint', {
+    service: 'efs',
+    action: 'tagResource',
+    iamResources: ['*'],
+    parameters: {
+      ResourceId: sfn.JsonPath.stringAt('$.pathToArn'),
+      Tags: [
+        {
+          Key: 'MYTAGNAME',
+          Value: sfn.JsonPath.stringAt('$.pathToId'),
+        },
+      ],
+    },
+    resultPath: sfn.JsonPath.DISCARD,
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticfilesystem:tagResource',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('IAM policy for elasticloadbalancingv2', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'DescribeELBV2TargetGroups', {
+    service: 'elasticloadbalancingv2',
+    action: 'describeTargetGroups',
+    iamResources: ['*'],
+    resultPath: sfn.JsonPath.DISCARD,
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticloadbalancing:describeTargetGroups',
+          Resource: '*',
+          Effect: 'Allow',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});

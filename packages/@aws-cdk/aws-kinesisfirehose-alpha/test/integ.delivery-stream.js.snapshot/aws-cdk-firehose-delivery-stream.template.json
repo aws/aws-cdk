@@ -252,6 +252,9 @@
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
    },
+   "ca-west-1": {
+    "FirehoseCidrBlock": "40.176.98.192/27"
+   },
    "cn-north-1": {
     "FirehoseCidrBlock": "52.81.151.32/27"
    },

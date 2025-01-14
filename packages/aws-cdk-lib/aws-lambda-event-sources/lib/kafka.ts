@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Stack, Names } from '../../core';
@@ -23,7 +24,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly secret?: secretsmanager.ISecret;
   /**
-   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a length between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
    *
    * @default - none
@@ -37,6 +38,16 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - none
    */
   readonly filters?: Array<{[key: string]: any}>;
+
+  /**
+   * Add Customer managed KMS key to encrypt Filter Criteria.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   * By default, Lambda will encrypt Filter Criteria using AWS managed keys
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk
+   *
+   * @default - none
+   */
+  readonly filterEncryption?: IKey;
 
   /**
    * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
@@ -146,12 +157,14 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       this.enrichMappingOptions({
         eventSourceArn: this.innerProps.clusterArn,
         filters: this.innerProps.filters,
+        filterEncryption: this.innerProps.filterEncryption,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
+        provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
       }),
     );
 
@@ -228,6 +241,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new Error('secret must be set if Kafka brokers accessed over Internet');
     }
     this.innerProps = props;
+
   }
 
   public bind(target: lambda.IFunction) {
@@ -236,6 +250,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       this.mappingId(target),
       this.enrichMappingOptions({
         filters: this.innerProps.filters,
+        filterEncryption: this.innerProps.filterEncryption,
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
@@ -243,6 +258,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
+        provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
       }),
     );
 

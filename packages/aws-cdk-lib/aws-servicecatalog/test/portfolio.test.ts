@@ -60,7 +60,7 @@ describe('Portfolio', () => {
     test('fails portfolio from arn without resource name in arn', () => {
       expect(() => {
         servicecatalog.Portfolio.fromPortfolioArn(stack, 'MyPortfolio', 'arn:aws:catalog:region:account-id:portfolio');
-      }).toThrowError(/Missing required Portfolio ID from Portfolio ARN/);
+      }).toThrow(/Missing required Portfolio ID from Portfolio ARN/);
     }),
 
     test('portfolio arn formatting', () => {
@@ -77,7 +77,7 @@ describe('Portfolio', () => {
           displayName: '',
           providerName: 'testProvider',
         });
-      }).toThrowError(/Invalid portfolio display name for resource Default\/MyPortfolio/);
+      }).toThrow(/Invalid portfolio display name for resource Default\/MyPortfolio/);
     }),
 
     test('fails portfolio creation with long name', () => {
@@ -86,7 +86,7 @@ describe('Portfolio', () => {
           displayName: 'DisplayName'.repeat(1000),
           providerName: 'testProvider',
         });
-      }).toThrowError(/Invalid portfolio display name for resource Default\/MyPortfolio/);
+      }).toThrow(/Invalid portfolio display name for resource Default\/MyPortfolio/);
     }),
 
     test('fails portfolio creation with invalid provider name', () => {
@@ -95,7 +95,7 @@ describe('Portfolio', () => {
           displayName: 'testPortfolio',
           providerName: '',
         });
-      }).toThrowError(/Invalid portfolio provider name for resource Default\/MyPortfolio/);
+      }).toThrow(/Invalid portfolio provider name for resource Default\/MyPortfolio/);
     }),
 
     test('fails portfolio creation with invalid description length', () => {
@@ -107,7 +107,7 @@ describe('Portfolio', () => {
           providerName: 'testProvider',
           description: description,
         });
-      }).toThrowError(/Invalid portfolio description for resource Default\/MyPortfolio/);
+      }).toThrow(/Invalid portfolio description for resource Default\/MyPortfolio/);
     }),
 
     test('portfolio creation with token description does not throw validation error and creates', () => {
@@ -450,7 +450,7 @@ describe('portfolio associations and product constraints', () => {
         allow: false,
         description: 'another test constraint description',
       });
-    }).toThrowError(/Cannot have multiple tag update constraints for association/);
+    }).toThrow(/Cannot have multiple tag update constraints for association/);
   }),
 
   test('add event notification constraint', () => {
@@ -498,7 +498,7 @@ describe('portfolio associations and product constraints', () => {
 
     expect(() => {
       portfolio.notifyOnStackEvents(product, topic);
-    }).toThrowError(`Topic ${topic} is already subscribed to association`);
+    }).toThrow(`Topic ${topic} is already subscribed to association`);
   }),
 
   test('creates a CloudFormation parameters constraint', () => {
@@ -595,7 +595,7 @@ describe('portfolio associations and product constraints', () => {
           }],
         },
       });
-    }).toThrowError(/Provisioning rule Rule01 already configured on association/);
+    }).toThrow(/Provisioning rule Rule01 already configured on association/);
   }),
 
   describe('portfolio constraints that have roles', () => {
@@ -762,7 +762,7 @@ describe('portfolio associations and product constraints', () => {
 
       expect(() => {
         portfolio.setLaunchRole(product, launchRole);
-      }).toThrowError(/Cannot set launch role when a StackSet rule is already defined for association/);
+      }).toThrow(/Cannot set launch role when a StackSet rule is already defined for association/);
     }),
 
     test('deploy with stacksets constraint', () => {
@@ -822,7 +822,7 @@ describe('portfolio associations and product constraints', () => {
           adminRole: adminRole,
           executionRoleName: 'StackSetExecutionRole',
         });
-      }).toThrowError(/Cannot configure multiple StackSet deployment constraints for association/);
+      }).toThrow(/Cannot configure multiple StackSet deployment constraints for association/);
     }),
 
     test('fails to configure deployment with stacksets if a launch role has been set', () => {
@@ -836,7 +836,7 @@ describe('portfolio associations and product constraints', () => {
           executionRoleName: 'StackSetExecutionRole',
           allowStackSetInstanceOperations: true,
         });
-      }).toThrowError(/Cannot configure StackSet deployment when a launch role is already defined for association/);
+      }).toThrow(/Cannot configure StackSet deployment when a launch role is already defined for association/);
     });
   });
 });

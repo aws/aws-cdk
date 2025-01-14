@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
+import { Template, Annotations } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
@@ -353,6 +353,87 @@ test('StringParameter.fromStringParameterName', () => {
   });
 });
 
+test('fromStringParameterArn StringParameter.fromStringParameterArn', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const sharingParameterArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sharingParameterArn);
+
+  // THEN
+  expect(stack.resolve(param.parameterArn)).toEqual(sharingParameterArn);
+  expect(stack.resolve(param.parameterName)).toEqual('dummyName');
+  expect(stack.resolve(param.parameterType)).toEqual('String');
+  expect(stack.resolve(param.stringValue)).toEqual({ Ref: 'MyParamNameParameter' });
+  Template.fromStack(stack).templateMatches({
+    Parameters: {
+      MyParamNameParameter: {
+        Type: 'AWS::SSM::Parameter::Value<String>',
+        Default: sharingParameterArn,
+      },
+    },
+  });
+});
+
+test('fromStringParameterArn throws when StringParameter.fromStringParameterArn is called with a token ARN', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const tokenizedParam = new cdk.CfnParameter(stack, 'TokenParam', {
+    type: 'String',
+  }).valueAsString;
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', tokenizedParam);
+  }).toThrow(/stringParameterArn cannot be an unresolved token/);
+});
+
+test('fromStringParameterArn throws error when StringParameterArn has unexpected format', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const invalidArn = 'invalid:arn:format';
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', invalidArn);
+  }).toThrow('unexpected StringParameterArn format');
+});
+
+test('fromStringParameterArn throws error when StringParameterArn is in a different region than the stack', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'TestStack', { env: { region: 'us-west-2' } });
+  const differentRegionArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', differentRegionArn);
+  }).toThrow('stringParameterArn must be in the same region as the stack');
+});
+
+test('fromStringParameterArn does not throw error when StringParameterArn is in the same region as the stack', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'TestStack', { env: { region: 'us-east-1' } });
+  const sameRegionArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // THEN
+  expect(() => {
+    ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sameRegionArn);
+  }).not.toThrow();
+});
+
+test('fromStringParameterArn emits an annotation when stack region is unresolved', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'Stack');
+  const sameRegionArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // WHEN
+  ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sameRegionArn);
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning('/Stack', 'Cross-account references will only work within the same region [ack: aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion]');
+});
+
 test('StringParameter.fromStringParameterAttributes', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -644,6 +725,33 @@ test('fromLookup will use the SSM context provider to read value during synthesi
       key: 'ssm:account=12344:parameterName=my-param-name:region=us-east-1',
       props: {
         account: '12344',
+        ignoreErrorOnMissingContext: false,
+        dummyValue: 'dummy-value-for-my-param-name',
+        region: 'us-east-1',
+        parameterName: 'my-param-name',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
+test('fromLookup will return defaultValue when it is provided', () => {
+  // GIVEN
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+
+  // WHEN
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', 'some-default-value');
+
+  // THEN
+  expect(value).toEqual('some-default-value');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=12344:parameterName=my-param-name:region=us-east-1',
+      props: {
+        account: '12344',
+        ignoreErrorOnMissingContext: true,
+        dummyValue: 'some-default-value',
         region: 'us-east-1',
         parameterName: 'my-param-name',
       },

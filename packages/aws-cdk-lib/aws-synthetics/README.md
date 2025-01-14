@@ -87,6 +87,62 @@ const schedule = synthetics.Schedule.cron({
 
 If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
 
+### Active Tracing
+
+You can choose to enable active AWS X-Ray tracing on canaries that use the `syn-nodejs-2.0` or later runtime by setting `activeTracing` to `true`.
+
+With tracing enabled, traces are sent for all calls made by the canary that use the browser, the AWS SDK, or HTTP or HTTPS modules.
+
+For more information, see [Canaries and X-Ray tracing](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_tracing.html).
+
+```ts
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  activeTracing: true, // active tracing enabled
+});
+```
+
+### Memory
+
+You can set the maximum amount of memory the canary can use while running with the `memory` property.
+
+```ts
+import * as cdk from "aws-cdk-lib";
+
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  memory: cdk.Size.mebibytes(1024), // 1024 MiB
+});
+```
+
+### Timeout
+
+You can set how long the canary is allowed to run before it must stop with the `timeout` property.
+
+```ts
+import * as cdk from "aws-cdk-lib";
+
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  timeout: cdk.Duration.seconds(60), // 60 seconds
+});
+```
+
 ### Deleting underlying resources on canary deletion
 
 When you delete a lambda, the following underlying resources are isolated in your AWS account:
@@ -114,7 +170,7 @@ const canary = new synthetics.Canary(this, 'Canary', {
 });
 ```
 
-> Note: To properly clean up your canary on deletion, you still have to manually delete other resources 
+> Note: To properly clean up your canary on deletion, you still have to manually delete other resources
 > like S3 buckets and CloudWatch logs.
 
 ### Configuring the Canary Script
@@ -246,5 +302,31 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   artifactsBucketLifecycleRules: [{
     expiration: Duration.days(30),
   }],
+});
+```
+
+Canary artifacts are encrypted at rest using an AWS-managed key by default.
+
+You can choose the encryption options SSE-S3 or SSE-KMS by setting the `artifactS3EncryptionMode` property.
+
+When you use SSE-KMS, you can also supply your own external KMS key by specifying the `kmsKey` property. If you don't, a KMS key will be automatically created and associated with the canary.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const key = new kms.Key(this, 'myKey');
+
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+  artifactsBucketLifecycleRules: [{
+    expiration: Duration.days(30),
+  }],
+  artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
+  artifactS3KmsKey: key,
 });
 ```

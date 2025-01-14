@@ -10,11 +10,11 @@ export type AwsContext = { readonly aws: AwsClients };
  *
  * Allocate the next region from the REGION pool and dispose it afterwards.
  */
-export function withAws(
-  block: (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void>,
+export function withAws<A extends TestContext>(
+  block: (context: A & AwsContext & DisableBootstrapContext) => Promise<void>,
   disableBootstrap: boolean = false,
-): (context: TestContext) => Promise<void> {
-  return (context: TestContext) => regionPool().using(async (region) => {
+): (context: A) => Promise<void> {
+  return (context: A) => regionPool().using(async (region) => {
     const aws = await AwsClients.forRegion(region, context.output);
     await sanityCheck(aws);
 

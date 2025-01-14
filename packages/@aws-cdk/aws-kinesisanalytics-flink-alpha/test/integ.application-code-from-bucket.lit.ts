@@ -15,7 +15,7 @@ const fileKey = asset.s3ObjectKey;
 ///! show
 new flink.Application(stack, 'App', {
   code: flink.ApplicationCode.fromBucket(bucket, fileKey),
-  runtime: flink.Runtime.FLINK_1_18,
+  runtime: flink.Runtime.FLINK_1_19,
 });
 ///! hide
 

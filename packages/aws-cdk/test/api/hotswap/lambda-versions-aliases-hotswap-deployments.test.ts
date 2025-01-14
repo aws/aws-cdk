@@ -1,28 +1,26 @@
-/* eslint-disable import/order */
-import { Lambda } from 'aws-sdk';
+import { PublishVersionCommand, UpdateAliasCommand } from '@aws-sdk/client-lambda';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { mockLambdaClient } from '../../util/mock-sdk';
+import { silentTest } from '../../util/silent';
 
-let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
-let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVersionRequest[]>;
-let mockUpdateAlias: (params: Lambda.UpdateAliasRequest) => Lambda.AliasConfiguration;
+jest.mock('@aws-sdk/client-lambda', () => {
+  const original = jest.requireActual('@aws-sdk/client-lambda');
+
+  return {
+    ...original,
+    waitUntilFunctionUpdated: jest.fn(),
+  };
+});
+
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
-  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
-  mockPublishVersion = jest.fn();
-  mockUpdateAlias = jest.fn();
-  hotswapMockSdkProvider.stubLambda({
-    updateFunctionCode: mockUpdateLambdaCode,
-    publishVersion: mockPublishVersion,
-    updateAlias: mockUpdateAlias,
-    waitFor: jest.fn(),
-  });
 });
 
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
-  test('hotswaps a Version if it points to a changed Function, even if it itself is unchanged', async () => {
+  silentTest('hotswaps a Version if it points to a changed Function, even if it itself is unchanged', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -72,12 +70,12 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
-    expect(mockPublishVersion).toHaveBeenCalledWith({
+    expect(mockLambdaClient).toHaveReceivedCommandWith(PublishVersionCommand, {
       FunctionName: 'my-function',
     });
   });
 
-  test('hotswaps a Version if it points to a changed Function, even if it itself is replaced', async () => {
+  silentTest('hotswaps a Version if it points to a changed Function, even if it itself is replaced', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -127,13 +125,16 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
-    expect(mockPublishVersion).toHaveBeenCalledWith({
+    expect(mockLambdaClient).toHaveReceivedCommandWith(PublishVersionCommand, {
       FunctionName: 'my-function',
     });
   });
 
-  test('hotswaps a Version and an Alias if the Function they point to changed', async () => {
+  silentTest('hotswaps a Version and an Alias if the Function they point to changed', async () => {
     // GIVEN
+    mockLambdaClient.on(PublishVersionCommand).resolves({
+      Version: 'v2',
+    });
     setup.setCurrentCfnStackTemplate({
       Resources: {
         Func: {
@@ -192,16 +193,13 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
         },
       },
     });
-    mockPublishVersion.mockReturnValue({
-      Version: 'v2',
-    });
 
     // WHEN
     const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
-    expect(mockUpdateAlias).toHaveBeenCalledWith({
+    expect(mockLambdaClient).toHaveReceivedCommandWith(UpdateAliasCommand, {
       FunctionName: 'my-function',
       FunctionVersion: 'v2',
       Name: 'dev',

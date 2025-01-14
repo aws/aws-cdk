@@ -13,6 +13,7 @@ new apigw.WebSocketStage(stack, 'WebSocketStage', {
     rateLimit: 1000,
     burstLimit: 1000,
   },
+  description: 'My Stage',
 });
 
 app.synth();

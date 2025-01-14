@@ -251,6 +251,8 @@ export abstract class CustomResourceProviderBase extends Construct {
 
       this._codeHash = staging.assetHash;
 
+      fs.rmSync(stagingDirectory, { recursive: true, force: true });
+
       return {
         code: {
           S3Bucket: asset.bucketName,

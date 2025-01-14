@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class GraphQLApiLambdaAuthStack extends cdk.Stack {
@@ -49,8 +50,11 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
     });
   }
 }
+const myFeatureFlag = { [cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: false };
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: myFeatureFlag,
+});
 const testCase = new GraphQLApiLambdaAuthStack(app);
 new IntegTest(app, 'GraphQlApiLambdaAuth', {
   testCases: [testCase],

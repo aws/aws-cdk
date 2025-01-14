@@ -4,8 +4,10 @@ import { Match, Template } from '../../../assertions';
 import * as acm from '../../../aws-certificatemanager';
 import { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { SecretValue } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
@@ -98,6 +100,79 @@ describe('tests', () => {
         {
           Description: 'Allow from anyone on port 80',
           CidrIpv6: '::/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    });
+  });
+
+  test('Listener default to open - IPv6 (dual stack without public IPv4) with feature flag enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: true },
+    });
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+    });
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIp: '0.0.0.0/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIpv6: '::/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    });
+  });
+
+  test('Listener default to open - IPv6 (dual stack without public IPv4) with feature flag disabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: false },
+    });
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+    });
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIp: '0.0.0.0/0',
           FromPort: 80,
           IpProtocol: 'tcp',
           ToPort: 80,
@@ -1173,7 +1248,7 @@ describe('tests', () => {
       listener,
       priority: 0,
       conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
-    })).toThrowError('Priority must have value greater than or equal to 1');
+    })).toThrow('Priority must have value greater than or equal to 1');
   });
 
   test('Accepts unresolved priority', () => {
@@ -1195,7 +1270,7 @@ describe('tests', () => {
       fixedResponse: {
         statusCode: '500',
       },
-    })).not.toThrowError('Priority must have value greater than or equal to 1');
+    })).not.toThrow('Priority must have value greater than or equal to 1');
   });
 
   testDeprecated('Throws when specifying both target groups and redirect response', () => {
@@ -1380,7 +1455,7 @@ describe('tests', () => {
       priority: 10,
       pathPatterns: ['/test/path/1', '/test/path/2'],
       pathPattern: '/test/path/3',
-    })).toThrowError('Both `pathPatterns` and `pathPattern` are specified, specify only one');
+    })).toThrow('Both `pathPatterns` and `pathPattern` are specified, specify only one');
   });
 
   test('Add additional condition to listener rule', () => {
@@ -1733,7 +1808,7 @@ describe('tests', () => {
       });
 
       // THEN
-      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
+      const applicationListenerRule = listener.node.children.find((v) => v.hasOwnProperty('conditions'));
       expect(applicationListenerRule).toBeDefined();
       expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
     });
@@ -1824,6 +1899,273 @@ describe('tests', () => {
       });
     });
   });
+
+  describe('weighted_random algorithm test', () => {
+    test('Can add targets with weight_random algorithm and anomaly mitigation enabled', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const listener = lb.addListener('Listener', { port: 80 });
+
+      // WHEN
+      listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        enableAnomalyMitigation: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.algorithm.type',
+            Value: 'weighted_random',
+          },
+          {
+            Key: 'load_balancing.algorithm.anomaly_mitigation',
+            Value: 'on',
+          },
+        ],
+      });
+    });
+
+    test('Can add targets with weight_random algorithm and anomaly mitigation disabled', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const listener = lb.addListener('Listener', { port: 80 });
+
+      // WHEN
+      listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        enableAnomalyMitigation: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.algorithm.type',
+            Value: 'weighted_random',
+          },
+          {
+            Key: 'load_balancing.algorithm.anomaly_mitigation',
+            Value: 'off',
+          },
+        ],
+      });
+    });
+
+    test('Throws an error when adding targets with weight_random algorithm and slow start setting enabled.', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const listener = lb.addListener('Listener', { port: 80 });
+
+      // WHEN
+      expect(() => listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        slowStart: cdk.Duration.seconds(60),
+      }),
+      ).toThrow('The weighted random routing algorithm can not be used with slow start mode.');
+    });
+
+    test('Throws an error when adding targets with anomaly mitigation enabled and an algorithm other than weight_random.', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const listener = lb.addListener('Listener', { port: 80 });
+
+      // WHEN
+      expect(() => listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN,
+        enableAnomalyMitigation: true,
+      }),
+      ).toThrow('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
+    });
+
+  });
+
+  describe('Mutual Authentication', () => {
+    test('Mutual Authentication settings with all properties when mutualAuthenticationMode is verify', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      const trustStore = new elbv2.TrustStore(stack, 'TrustStore', {
+        bucket,
+        key: 'dummy.pem',
+      });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+          ignoreClientCertificateExpiry: true,
+          mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+          trustStore,
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          IgnoreClientCertificateExpiry: true,
+          Mode: 'verify',
+          TrustStoreArn: stack.resolve(trustStore.trustStoreArn),
+        },
+      });
+    });
+
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Mutual Authentication settings with all properties when mutualAuthenticationMode is %s', (mutualAuthenticationMode) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+          mutualAuthenticationMode,
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          Mode: mutualAuthenticationMode,
+        },
+      });
+    });
+
+    test('Mutual Authentication settings without all properties', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          IgnoreClientCertificateExpiry: Match.absent(),
+          Mode: Match.absent(),
+          TrustStoreArn: Match.absent(),
+        },
+      });
+    });
+
+    test('Throw an error when mode is verify without TrustStore', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      expect(() => {
+        lb.addListener('Listener', {
+          protocol: elbv2.ApplicationProtocol.HTTPS,
+          certificates: [importedCertificate(stack)],
+          mutualAuthentication: {
+            ignoreClientCertificateExpiry: true,
+            mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
+          },
+          defaultAction: elbv2.ListenerAction.fixedResponse(200,
+            { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+        });
+      }).toThrow('You must set \'trustStore\' when \'mode\' is \'verify\'');
+    });
+
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Throw an error when mode is %s with trustStore', (mutualAuthenticationMode) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      const trustStore = new elbv2.TrustStore(stack, 'TrustStore', {
+        bucket,
+        key: 'dummy.pem',
+      });
+
+      // WHEN
+      expect(() => {
+        lb.addListener('Listener', {
+          protocol: elbv2.ApplicationProtocol.HTTPS,
+          certificates: [importedCertificate(stack)],
+          mutualAuthentication: {
+            mutualAuthenticationMode,
+            trustStore,
+          },
+          defaultAction: elbv2.ListenerAction.fixedResponse(200,
+            { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+        });
+      }).toThrow('You cannot set \'trustStore\' when \'mode\' is \'off\' or \'passthrough\'');
+    });
+
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Throw an error when mode is %s with ignoreClientCertificateExpiry', (mutualAuthenticationMode) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      expect(() => {
+        lb.addListener('Listener', {
+          protocol: elbv2.ApplicationProtocol.HTTPS,
+          certificates: [importedCertificate(stack)],
+          mutualAuthentication: {
+            mutualAuthenticationMode,
+            ignoreClientCertificateExpiry: true,
+          },
+          defaultAction: elbv2.ListenerAction.fixedResponse(200,
+            { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+        });
+      }).toThrow('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'off\' or \'passthrough\'');
+    });
+  });
+
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {

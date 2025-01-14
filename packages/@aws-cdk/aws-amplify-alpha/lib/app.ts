@@ -167,6 +167,13 @@ export interface AppProps {
    * @default Platform.WEB
    */
   readonly platform?: Platform;
+
+  /**
+   * The type of cache configuration to use for an Amplify app.
+   *
+   * @default CacheConfigType.AMPLIFY_MANAGED
+   */
+  readonly cacheConfigType?: CacheConfigType;
 }
 
 /**
@@ -239,7 +246,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild ?? true,
-        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables ) }, { omitEmptyArray: true }), // eslint-disable-line max-len
+        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables) }, { omitEmptyArray: true }), // eslint-disable-line max-len
         enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview ?? true,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,
@@ -249,6 +256,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         ? props.basicAuth.bind(this, 'AppBasicAuth')
         : { enableBasicAuth: false },
       buildSpec: props.buildSpec && props.buildSpec.toBuildSpec(),
+      cacheConfig: props.cacheConfigType ? { type: props.cacheConfigType } : undefined,
       customRules: Lazy.any({ produce: () => this.customRules }, { omitEmptyArray: true }),
       description: props.description,
       environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
@@ -553,4 +561,21 @@ export enum Platform {
    * server side rendered and static assets.
    */
   WEB_COMPUTE = 'WEB_COMPUTE',
+}
+
+/**
+ * The type of cache configuration to use for an Amplify app.
+ */
+export enum CacheConfigType {
+  /**
+   * AMPLIFY_MANAGED - Automatically applies an optimized cache configuration
+   * for your app based on its platform, routing rules, and rewrite rules.
+   */
+  AMPLIFY_MANAGED = 'AMPLIFY_MANAGED',
+
+  /**
+   * AMPLIFY_MANAGED_NO_COOKIES - The same as AMPLIFY_MANAGED,
+   * except that it excludes all cookies from the cache key.
+   */
+  AMPLIFY_MANAGED_NO_COOKIES = 'AMPLIFY_MANAGED_NO_COOKIES',
 }

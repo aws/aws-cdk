@@ -428,7 +428,7 @@
                       },
                       "roleArn": {
                         "Fn::GetAtt": [
-                          "SchedulerRoleForTarget1441a743A31888",
+                          "SchedulerRoleForTarget91703d0D95FCAD",
                           "Arn"
                         ]
                       },
@@ -454,17 +454,17 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
-          "SchedulerRoleForTarget-1441a7": {
-            "id": "SchedulerRoleForTarget-1441a7",
-            "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-1441a7",
+          "SchedulerRoleForTarget-91703d": {
+            "id": "SchedulerRoleForTarget-91703d",
+            "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d",
             "children": {
-              "ImportSchedulerRoleForTarget-1441a7": {
-                "id": "ImportSchedulerRoleForTarget-1441a7",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-1441a7/ImportSchedulerRoleForTarget-1441a7",
+              "ImportSchedulerRoleForTarget-91703d": {
+                "id": "ImportSchedulerRoleForTarget-91703d",
+                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d/ImportSchedulerRoleForTarget-91703d",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -472,7 +472,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-1441a7/Resource",
+                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -484,6 +484,26 @@
                             "StringEquals": {
                               "aws:SourceAccount": {
                                 "Ref": "AWS::AccountId"
+                              },
+                              "aws:SourceArn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":scheduler:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":schedule-group/default"
+                                  ]
+                                ]
                               }
                             }
                           },
@@ -504,11 +524,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-1441a7/DefaultPolicy",
+                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-91703d/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -541,10 +561,10 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "policyName": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD",
+                        "policyName": "SchedulerRoleForTarget91703dDefaultPolicy618A0CAC",
                         "roles": [
                           {
-                            "Ref": "SchedulerRoleForTarget1441a743A31888"
+                            "Ref": "SchedulerRoleForTarget91703d0D95FCAD"
                           }
                         ]
                       }

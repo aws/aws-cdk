@@ -70,7 +70,9 @@ const stack = new cdk.Stack(app, 'integ-servicecatalog-product', {
 
 class TestProductStack extends servicecatalog.ProductStack {
   constructor(scope: any, id: string) {
-    super(scope, id);
+    super(scope, id, {
+      description: 'foo bar',
+    });
 
     new sns.Topic(this, 'TopicProduct');
   }

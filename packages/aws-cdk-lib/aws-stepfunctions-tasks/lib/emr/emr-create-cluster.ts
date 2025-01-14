@@ -154,6 +154,15 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
    * @default true
    */
   readonly visibleToAllUsers?: boolean;
+
+  /**
+   * The amount of idle time after which the cluster automatically terminates.
+   *
+   * You can specify a minimum of 60 seconds and a maximum of 604800 seconds (seven days).
+   *
+   * @default - No timeout
+   */
+  readonly autoTerminationPolicyIdleTimeout?: cdk.Duration;
 }
 
 /**
@@ -227,6 +236,14 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         }
       }
     }
+
+    if (this.props.autoTerminationPolicyIdleTimeout !== undefined && !cdk.Token.isUnresolved(this.props.autoTerminationPolicyIdleTimeout)) {
+      const idletimeOutSeconds = this.props.autoTerminationPolicyIdleTimeout.toSeconds();
+
+      if (idletimeOutSeconds < 60 || idletimeOutSeconds > 604800) {
+        throw new Error(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
+      }
+    }
   }
 
   /**
@@ -291,6 +308,9 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         StepConcurrencyLevel: cdk.numberToCloudFormation(this.props.stepConcurrencyLevel),
         ...(this.props.tags ? this.renderTags({ ...this.props.tags, ...this._baseTags }) : this.renderTags(this._baseTags)),
         VisibleToAllUsers: cdk.booleanToCloudFormation(this.visibleToAllUsers),
+        AutoTerminationPolicy: this.props.autoTerminationPolicyIdleTimeout
+          ? { IdleTimeout: this.props.autoTerminationPolicyIdleTimeout.toSeconds() }
+          : undefined,
       }),
     };
   }

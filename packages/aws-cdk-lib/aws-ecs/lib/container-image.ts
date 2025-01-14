@@ -18,6 +18,8 @@ export abstract class ContainerImage {
 
   /**
    * Reference an image in an ECR repository
+   *
+   * @param tag If you don't specify this parameter, `latest` is used as default.
    */
   public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest') {
     return new EcrImage(repository, tag);

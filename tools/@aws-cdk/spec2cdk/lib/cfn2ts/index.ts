@@ -1,6 +1,7 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { Service } from '@aws-cdk/service-spec-types';
 import * as fs from 'fs-extra';
+import * as pLimit from 'p-limit';
 import * as pkglint from './pkglint';
 import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap } from './types';
 import { generate as generateModules } from '../generate';
@@ -106,9 +107,10 @@ function computeSuffix(scope: string, allScopes: string[]): string | undefined {
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, ...options }: GenerateAllOptions,
+  { scopeMapPath, skippedServices, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {
-  const scopes = await getAllScopes('cloudFormationNamespace');
+  const allScopes = await getAllScopes('cloudFormationNamespace');
+  const scopes = skippedServices? allScopes.filter((scope) => !skippedServices.includes(scope)) : allScopes;
   const moduleMap = await readScopeMap(scopeMapPath);
 
   // Make sure all scopes have their own dedicated package/namespace.
@@ -162,11 +164,13 @@ export async function generateAll(
     },
   );
 
-  await Promise.all(Object.keys(moduleMap).map(async (moduleName) => {
+  const limit = pLimit(20);
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+  await Promise.all(Object.keys(moduleMap).map((moduleName) => limit(async () => {
     // Add generated resources and files to module in map
     moduleMap[moduleName].resources = generated.modules[moduleName].map((m) => m.resources).reduce(mergeObjects, {});
     moduleMap[moduleName].files = generated.modules[moduleName].flatMap((m) => m.outputFiles);
-  }));
+  })));
 
   return moduleMap;
 }

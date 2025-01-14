@@ -2,7 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
-import { Duration, SecretValue, Tokenization } from '../../../core';
+import { Duration, SecretValue, Token, Tokenization } from '../../../core';
 import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
@@ -114,6 +114,9 @@ export class ListenerAction implements IListenerAction {
   public static redirect(options: RedirectOptions): ListenerAction {
     if ([options.host, options.path, options.port, options.protocol, options.query].findIndex(x => x !== undefined) === -1) {
       throw new Error('To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
+    }
+    if (options.path && !Token.isUnresolved(options.path) && !options.path.startsWith('/')) {
+      throw new Error(`Redirect path must start with a \'/\', got: ${options.path}`);
     }
 
     return new ListenerAction({

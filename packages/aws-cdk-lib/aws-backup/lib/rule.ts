@@ -200,7 +200,7 @@ export class BackupPlanRule {
   /**
    * Properties of BackupPlanRule
    */
-  public readonly props: BackupPlanRuleProps
+  public readonly props: BackupPlanRuleProps;
 
   /** @param props Rule properties */
   constructor(props: BackupPlanRuleProps) {

@@ -1,9 +1,0 @@
-# This package is copied from aws-cdk-lib/cloud-assembly-schema, ignore everything
-# except package.json
-*
-!package.json
-!.npmignore
-!jest.config.js
-!LICENSE
-!NOTICE
-!CONTRIBUTING.md

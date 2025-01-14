@@ -124,9 +124,11 @@ export class RegionInfo {
   /**
    * The name of the service principal for a given service in this region.
    * @param service the service name (e.g: s3.amazonaws.com)
+   *
+   * @deprecated - Use `iam.ServicePrincipal.servicePrincipalName()` instead.
    */
   public servicePrincipal(service: string): string | undefined {
-    return Fact.find(this.name, FactName.servicePrincipal(service));
+    return `${service.replace(/\.amazonaws\.com(\.cn)?$/, '')}.amazonaws.com`;
   }
 
   /**

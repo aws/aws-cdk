@@ -3,6 +3,7 @@ import { Lazy, Names } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnChannel } from 'aws-cdk-lib/aws-ivs';
 import { StreamKey } from './stream-key';
+import { IRecordingConfiguration } from './recording-configuration';
 
 /**
  * Represents an IVS Channel
@@ -118,6 +119,13 @@ export interface ChannelProps {
   readonly authorized?: boolean;
 
   /**
+   * Whether the channel allows insecure RTMP ingest.
+   *
+   * @default false
+   */
+  readonly insecureIngest?: boolean;
+
+  /**
    * Channel latency mode.
    *
    * @default LatencyMode.LOW
@@ -146,6 +154,13 @@ export interface ChannelProps {
    * @default - Preset.HIGHER_BANDWIDTH_DELIVERY if channelType is ADVANCED_SD or ADVANCED_HD, none otherwise
    */
   readonly preset?: Preset;
+
+  /**
+   * A recording configuration for the channel.
+   *
+   * @default - recording is disabled
+   */
+  readonly recordingConfiguration?: IRecordingConfiguration;
 }
 
 /**
@@ -211,10 +226,12 @@ export class Channel extends ChannelBase {
 
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
+      insecureIngest: props.insecureIngest,
       latencyMode: props.latencyMode,
       name: this.physicalName,
       type: props.type,
       preset,
+      recordingConfigurationArn: props.recordingConfiguration?.recordingConfigurationArn,
     });
 
     this.channelArn = resource.attrArn;

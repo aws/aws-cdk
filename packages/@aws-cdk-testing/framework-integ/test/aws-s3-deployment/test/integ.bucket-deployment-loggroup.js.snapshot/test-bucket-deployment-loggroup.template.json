@@ -198,7 +198,8 @@
      "Ref": "Destination920A3C57"
     },
     "RetainOnDelete": false,
-    "Prune": true
+    "Prune": true,
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -335,7 +336,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2d56e153cac88d3e0c2f842e8e6f6783b8725bf91f95e0673b4725448a56e96d.zip"
+     "S3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
     },
     "Environment": {
      "Variables": {
@@ -359,7 +360,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9",
+    "Runtime": "python3.11",
     "Timeout": 900
    },
    "DependsOn": [

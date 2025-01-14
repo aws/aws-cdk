@@ -75,6 +75,21 @@ export interface IKey extends IResource {
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
 
   /**
+   * Grant sign permissions using this key to the given principal
+   */
+  grantSign(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant verify permissions using this key to the given principal
+   */
+  grantVerify(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   */
+  grantSignVerify(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Grant permissions to generating MACs to the given principal
    */
   grantGenerateMac(grantee: iam.IGrantable): iam.Grant;
@@ -214,6 +229,27 @@ abstract class KeyBase extends Resource implements IKey {
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
+  }
+
+  /**
+   * Grant sign permissions using this key to the given principal
+   */
+  public grantSign(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.SIGN_ACTIONS);
+  }
+
+  /**
+   * Grant verify permissions using this key to the given principal
+   */
+  public grantVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+  }
+
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   */
+  public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
   }
 
   /**
@@ -404,6 +440,11 @@ export enum KeyUsage {
    * Generating and verifying MACs
    */
   GENERATE_VERIFY_MAC = 'GENERATE_VERIFY_MAC',
+
+  /**
+   * Deriving shared secrets
+   */
+  KEY_AGREEMENT = 'KEY_AGREEMENT',
 }
 
 /**
@@ -467,6 +508,20 @@ export interface KeyProps {
    * @default KeyUsage.ENCRYPT_DECRYPT
    */
   readonly keyUsage?: KeyUsage;
+
+  /**
+   * Creates a multi-Region primary key that you can replicate in other AWS Regions.
+   *
+   * You can't change the `multiRegion` value after the KMS key is created.
+   *
+   * IMPORTANT: If you change the value of the `multiRegion` property on an existing KMS key, the update request fails,
+   * regardless of the value of the UpdateReplacePolicy attribute.
+   * This prevents you from accidentally deleting a KMS key by changing an immutable property value.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html
+   */
+  readonly multiRegion?: boolean;
 
   /**
    * Custom policy document to attach to the KMS key.
@@ -540,6 +595,14 @@ export interface KeyProps {
  * @resource AWS::KMS::Key
  */
 export class Key extends KeyBase {
+  /**
+   * The default key id of the dummy key.
+   *
+   * This value is used as a dummy key id if the key was not found
+   * by the `Key.fromLookup()` method.
+   */
+  public static readonly DEFAULT_DUMMY_KEY_ID = '1234abcd-12ab-34cd-56ef-1234567890ab';
+
   /**
    * Import an externally defined KMS Key using its ARN.
    *
@@ -637,6 +700,12 @@ export class Key extends KeyBase {
    * You can therefore not use any values that will only be available at
    * CloudFormation execution time (i.e., Tokens).
    *
+   * If you set `returnDummyKeyOnMissing` to `true` in `options` and the key was not found,
+   * this method will return a dummy key with a key id '1234abcd-12ab-34cd-56ef-1234567890ab'.
+   * The value of the dummy key id can also be referenced using the `Key.DEFAULT_DUMMY_KEY_ID`
+   * variable, and you can check if the key is a dummy key by using the `Key.isLookupDummy()`
+   * method.
+   *
    * The Key information will be cached in `cdk.context.json` and the same Key
    * will be used on future runs. To refresh the lookup, you will have to
    * evict the value from the cache using the `cdk context` command. See
@@ -669,12 +738,24 @@ export class Key extends KeyBase {
         aliasName: options.aliasName,
       } as cxschema.KeyContextQuery,
       dummyValue: {
-        keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+        keyId: Key.DEFAULT_DUMMY_KEY_ID,
       },
+      ignoreErrorOnMissingContext: options.returnDummyKeyOnMissing,
     }).value;
 
     return new Import(attributes.keyId,
       Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)));
+  }
+
+  /**
+   * Checks if the key returned by the `Key.fromLookup()` method is a dummy key,
+   * i.e., a key that was not found.
+   *
+   * This method can only be used if the `returnDummyKeyOnMissing` option
+   * is set to `true` in the `options` for the `Key.fromLookup()` method.
+   */
+  public static isLookupDummy(key: IKey): boolean {
+    return key.keyId === Key.DEFAULT_DUMMY_KEY_ID;
   }
 
   public readonly keyArn: string;
@@ -714,6 +795,17 @@ export class Key extends KeyBase {
         KeySpec.ECC_SECG_P256K1,
         KeySpec.SYMMETRIC_DEFAULT,
         KeySpec.SM2,
+      ],
+      [KeyUsage.KEY_AGREEMENT]: [
+        KeySpec.SYMMETRIC_DEFAULT,
+        KeySpec.RSA_2048,
+        KeySpec.RSA_3072,
+        KeySpec.RSA_4096,
+        KeySpec.ECC_SECG_P256K1,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
@@ -783,6 +875,7 @@ export class Key extends KeyBase {
       keySpec: props.keySpec,
       keyUsage: props.keyUsage,
       keyPolicy: this.policy,
+      multiRegion: props.multiRegion,
       pendingWindowInDays: pendingWindowInDays,
     });
 

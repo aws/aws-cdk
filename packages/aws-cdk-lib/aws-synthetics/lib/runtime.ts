@@ -190,7 +190,7 @@ export class Runtime {
    * - **Ephemeral storage monitoring**: This runtime adds ephemeral storage monitoring in customer accounts.
    * - **Bug fixes**
    *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-6.1
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-6.2
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_6_2 = new Runtime('syn-nodejs-puppeteer-6.2', RuntimeFamily.NODEJS);
 
@@ -206,6 +206,46 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-7.0
    */
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_7_0 = new Runtime('syn-nodejs-puppeteer-7.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-8.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 22.10.0
+   * - Chromium version 125.0.6422.112
+   *
+   * New Features:
+   * - **Support for two-factor authentication**
+   * - **Bug fixes** for situations where some service clients were losing data in Node.js SDK V3 responses.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-8.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_8_0 = new Runtime('syn-nodejs-puppeteer-8.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-9.0` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 22.12.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Bug fixes** Bug fix to enable visual monitoring capabilities.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_0 = new Runtime('syn-nodejs-puppeteer-9.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-9.1` includes the following:
+   * - Lambda runtime Node.js 20.x
+   * - Puppeteer-core version 22.12.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Bug fixes** Bug fix related to date ranges and pending requests in HAR files.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_1 = new Runtime('syn-nodejs-puppeteer-9.1', RuntimeFamily.NODEJS);
 
   /**
    * `syn-python-selenium-1.0` includes the following:
@@ -309,9 +349,22 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_3_0 = new Runtime('syn-python-selenium-3.0', RuntimeFamily.PYTHON);
 
   /**
-    * @param name The name of the runtime version
-    * @param family The Lambda runtime family
-    */
+   * `syn-python-selenium-4.0` includes the following:
+   * - Lambda runtime Python 3.9
+   * - Selenium version 4.15.1
+   * - Chromium version 126.0.6478.126
+   *
+   * New Features:
+   * - **Bug fixes** for errors in HAR parser logging.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-4.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime('syn-python-selenium-4.0', RuntimeFamily.PYTHON);
+
+  /**
+   * @param name The name of the runtime version
+   * @param family The Lambda runtime family
+   */
   public constructor(public readonly name: string, public readonly family: RuntimeFamily) {
   }
 }

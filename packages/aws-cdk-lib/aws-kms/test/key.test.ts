@@ -253,6 +253,123 @@ describe('key policies', () => {
     });
   });
 
+  test('sign', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    key.grantSign(user);
+
+    // THEN
+    // Key policy should be unmodified by the grant.
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Sign',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('verify', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    key.grantVerify(user);
+
+    // THEN
+    // Key policy should be unmodified by the grant.
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:Verify',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('signverify', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    key.grantSignVerify(user);
+
+    // THEN
+    // Key policy should be unmodified by the grant.
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['kms:Sign', 'kms:Verify'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('grant for a principal in a dependent stack works correctly', () => {
     const app = new cdk.App();
     const principalStack = new cdk.Stack(app, 'PrincipalStack');
@@ -644,6 +761,17 @@ test('fails if key policy has no IAM principals', () => {
   }));
 
   expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+});
+
+test('multi-region primary key', () => {
+  const stack = new cdk.Stack();
+  new kms.Key(stack, 'MyKey', {
+    multiRegion: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    MultiRegion: true,
+  });
 });
 
 describe('imported keys', () => {
@@ -1320,6 +1448,17 @@ function generateInvalidKeySpecKeyUsageCombinations() {
       KeySpec.ECC_SECG_P256K1,
       KeySpec.SYMMETRIC_DEFAULT,
       KeySpec.SM2,
+    ],
+    [KeyUsage.KEY_AGREEMENT]: [
+      KeySpec.SYMMETRIC_DEFAULT,
+      KeySpec.RSA_2048,
+      KeySpec.RSA_3072,
+      KeySpec.RSA_4096,
+      KeySpec.ECC_SECG_P256K1,
+      KeySpec.HMAC_224,
+      KeySpec.HMAC_256,
+      KeySpec.HMAC_384,
+      KeySpec.HMAC_512,
     ],
   };
   const testCases: { keySpec: KeySpec; keyUsage: KeyUsage; toString: () => string }[] = [];

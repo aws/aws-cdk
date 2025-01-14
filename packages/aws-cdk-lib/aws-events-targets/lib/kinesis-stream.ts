@@ -1,12 +1,11 @@
-import { singletonEventRole } from './util';
+import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 
 /**
  * Customize the Kinesis Stream Event Target
  */
-export interface KinesisStreamProps {
+export interface KinesisStreamProps extends TargetBaseProps {
   /**
    * Partition Key Path for records sent to this stream
    *
@@ -46,12 +45,10 @@ export class KinesisStream implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.stream);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['kinesis:PutRecord', 'kinesis:PutRecords'],
-      resources: [this.stream.streamArn],
-    }));
+    this.stream.grantWrite(role);
 
     return {
+      ...bindBaseTargetConfig(this.props),
       arn: this.stream.streamArn,
       role,
       input: this.props.message,

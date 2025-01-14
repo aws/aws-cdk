@@ -206,6 +206,17 @@ export interface ModelProps {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Whether to enable network isolation for the model container.
+   *
+   * When enabled, no inbound or outbound network calls can be made to or from the model container.
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html
+   *
+   * @default false
+   */
+  readonly networkIsolation?: boolean;
 }
 
 /**
@@ -312,6 +323,7 @@ export class Model extends ModelBase {
       primaryContainer: cdk.Lazy.any({ produce: () => this.renderPrimaryContainer() }),
       vpcConfig: cdk.Lazy.any({ produce: () => this.renderVpcConfig() }),
       containers: cdk.Lazy.any({ produce: () => this.renderContainers() }),
+      enableNetworkIsolation: props.networkIsolation,
     });
     this.modelName = this.getResourceNameAttribute(model.attrModelName);
     this.modelArn = this.getResourceArnAttribute(model.ref, {

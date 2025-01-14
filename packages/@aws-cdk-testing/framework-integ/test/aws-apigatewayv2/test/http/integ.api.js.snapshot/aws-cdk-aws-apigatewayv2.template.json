@@ -4,7 +4,8 @@
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
     "Name": "HttpApi",
-    "ProtocolType": "HTTP"
+    "ProtocolType": "HTTP",
+    "RouteSelectionExpression": "${request.method} ${request.path}"
    }
   },
   "HttpApiDefaultStage3EEB07D6": {

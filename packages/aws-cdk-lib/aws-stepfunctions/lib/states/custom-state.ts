@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { State } from './state';
 import { Chain } from '..';
+import { State } from './state';
 import { Annotations } from '../../../core/';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 

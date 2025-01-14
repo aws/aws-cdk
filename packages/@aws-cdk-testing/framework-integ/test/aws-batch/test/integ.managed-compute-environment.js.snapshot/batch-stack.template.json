@@ -1118,6 +1118,108 @@
     "Type": "managed",
     "UpdatePolicy": {}
    }
+  },
+  "ECSAL2023SecurityGroup7AE4A1D4": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "batch-stack/ECS_AL2023/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "ECSAL2023InstanceProfileRoleEBA7FF23": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ECSAL2023InstanceProfile14B35A51": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "ECSAL2023InstanceProfileRoleEBA7FF23"
+     }
+    ]
+   }
+  },
+  "ECSAL20239DA0188B": {
+   "Type": "AWS::Batch::ComputeEnvironment",
+   "Properties": {
+    "ComputeResources": {
+     "AllocationStrategy": "BEST_FIT_PROGRESSIVE",
+     "Ec2Configuration": [
+      {
+       "ImageType": "ECS_AL2023"
+      }
+     ],
+     "InstanceRole": {
+      "Fn::GetAtt": [
+       "ECSAL2023InstanceProfile14B35A51",
+       "Arn"
+      ]
+     },
+     "InstanceTypes": [
+      "optimal"
+     ],
+     "MaxvCpus": 256,
+     "MinvCpus": 0,
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "ECSAL2023SecurityGroup7AE4A1D4",
+        "GroupId"
+       ]
+      }
+     ],
+     "Subnets": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "Type": "EC2"
+    },
+    "ReplaceComputeEnvironment": false,
+    "State": "ENABLED",
+    "Type": "managed",
+    "UpdatePolicy": {}
+   }
   }
  },
  "Parameters": {

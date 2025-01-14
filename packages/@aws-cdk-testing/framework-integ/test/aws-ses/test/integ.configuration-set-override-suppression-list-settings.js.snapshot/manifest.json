@@ -1,0 +1,133 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "cdk-ses-configuration-set-overriding-suppression-list-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-ses-configuration-set-overriding-suppression-list-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-ses-configuration-set-overriding-suppression-list-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-ses-configuration-set-overriding-suppression-list-integ.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8ec6cbdebdfee0a751851a84216f1643a9c332798775433963d315cf02401a1.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-ses-configuration-set-overriding-suppression-list-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-ses-configuration-set-overriding-suppression-list-integ.assets"
+      ],
+      "metadata": {
+        "/cdk-ses-configuration-set-overriding-suppression-list-integ/DisableSuppressionList/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DisableSuppressionList6B7ABFBF"
+          }
+        ],
+        "/cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToBouncesOnly/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OverrideSuppressionReasonsToBouncesOnly1280FADA"
+          }
+        ],
+        "/cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToComplaintsOnly/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OverrideSuppressionReasonsToComplaintsOnly8F770ED6"
+          }
+        ],
+        "/cdk-ses-configuration-set-overriding-suppression-list-integ/OverrideSuppressionReasonsToBouncesAndComplaints/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OverrideSuppressionReasonsToBouncesAndComplaints27254E32"
+          }
+        ],
+        "/cdk-ses-configuration-set-overriding-suppression-list-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-ses-configuration-set-overriding-suppression-list-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-ses-configuration-set-overriding-suppression-list-integ"
+    },
+    "ConfigurationSetOverridingSuppressionListSettingsIntegDefaultTestDeployAssert41D23FD8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ConfigurationSetOverridingSuppressionListSettingsIntegDefaultTestDeployAssert41D23FD8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ConfigurationSetOverridingSuppressionListSettingsIntegDefaultTestDeployAssert41D23FD8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ConfigurationSetOverridingSuppressionListSettingsIntegDefaultTestDeployAssert41D23FD8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ConfigurationSetOverridingSuppressionListSettingsIntegDefaultTestDeployAssert41D23FD8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ConfigurationSetOverridingSuppressionListSettingsIntegDefaultTestDeployAssert41D23FD8.assets"
+      ],
+      "metadata": {
+        "/ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ConfigurationSetOverridingSuppressionListSettingsInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

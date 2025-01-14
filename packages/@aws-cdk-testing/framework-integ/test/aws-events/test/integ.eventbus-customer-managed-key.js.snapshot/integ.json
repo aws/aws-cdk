@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "eventbue-customer-managed-key-test/DefaultTest": {
+      "stacks": [
+        "eventbue-customer-managed-key"
+      ],
+      "assertionStack": "eventbue-customer-managed-key-test/DefaultTest/DeployAssert",
+      "assertionStackName": "eventbuecustomermanagedkeytestDefaultTestDeployAssertBCCA03C5"
+    }
+  }
+}

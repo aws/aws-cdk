@@ -1,0 +1,193 @@
+{
+ "Resources": {
+  "Namespace": {
+   "Type": "AWS::RedshiftServerless::Namespace",
+   "Properties": {
+    "NamespaceName": "namespace"
+   }
+  },
+  "WorkGroup": {
+   "Type": "AWS::RedshiftServerless::Workgroup",
+   "Properties": {
+    "NamespaceName": "namespace",
+    "SecurityGroupIds": [
+     "sg-0f3ee03c20cc6056c"
+    ],
+    "SubnetIds": [
+     "subnet-06c91b5d4c16df0ff",
+     "subnet-04b90752f12ed5174",
+     "subnet-0d42bcb68396ffd19"
+    ],
+    "WorkgroupName": "workgroup"
+   },
+   "DependsOn": [
+    "Namespace"
+   ]
+  },
+  "dlq09C78ACC": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SecretA720EF05": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Timer30894E3BB": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "WorkGroup",
+        "Workgroup.WorkgroupArn"
+       ]
+      },
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "dlq09C78ACC",
+         "Arn"
+        ]
+       }
+      },
+      "Id": "Target0",
+      "RedshiftDataParameters": {
+       "Database": "dev",
+       "SecretManagerArn": {
+        "Ref": "SecretA720EF05"
+       },
+       "Sql": "SELECT * FROM baz"
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "Timer3EventsRole909B99A1",
+        "Arn"
+       ]
+      }
+     },
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "WorkGroup",
+        "Workgroup.WorkgroupArn"
+       ]
+      },
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "dlq09C78ACC",
+         "Arn"
+        ]
+       }
+      },
+      "Id": "Target1",
+      "RedshiftDataParameters": {
+       "Database": "dev",
+       "SecretManagerArn": {
+        "Ref": "SecretA720EF05"
+       },
+       "Sqls": [
+        "SELECT * FROM foo",
+        "SELECT * FROM bar"
+       ]
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "Timer3EventsRole909B99A1",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "Timer3EventsRole909B99A1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Timer3EventsRoleDefaultPolicy3A2ECE32": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "redshift-data:BatchExecuteStatement",
+        "redshift-data:ExecuteStatement"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "WorkGroup",
+         "Workgroup.WorkgroupArn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Timer3EventsRoleDefaultPolicy3A2ECE32",
+    "Roles": [
+     {
+      "Ref": "Timer3EventsRole909B99A1"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

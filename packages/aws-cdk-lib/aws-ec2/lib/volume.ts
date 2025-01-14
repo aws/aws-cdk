@@ -70,6 +70,20 @@ export interface EbsDeviceOptionsBase {
    * `@aws-cdk/aws-ec2:ebsDefaultGp3Volume` is enabled.
    */
   readonly volumeType?: EbsDeviceVolumeType;
+
+  /**
+   * The throughput to provision for a `gp3` volume.
+   *
+   * Valid Range: Minimum value of 125. Maximum value of 1000.
+   *
+   * `gp3` volumes deliver a consistent baseline throughput performance of 125 MiB/s.
+   * You can provision additional throughput for an additional cost at a ratio of 0.25 MiB/s per provisioned IOPS.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html#gp3-performance
+   *
+   * @default - 125 MiB/s.
+   */
+  readonly throughput?: number;
 }
 
 /**

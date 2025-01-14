@@ -1,7 +1,6 @@
 import * as path from 'node:path';
 import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
-import awsEventsTargets from './aws-events-targets';
 import cloudformationInclude from './cloudformation-include';
 import { ModuleMap, ModuleMapEntry } from '../codegen';
 
@@ -16,7 +15,6 @@ export default async function submodulesGen(modules: ModuleMap, outPath: string)
   }
 
   // Do specific code gen for certain submodules
-  await awsEventsTargets(modules, outPath);
   await cloudformationInclude(modules, outPath);
 }
 

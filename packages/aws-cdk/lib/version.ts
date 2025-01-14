@@ -4,7 +4,8 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { cdkCacheDir, rootDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
-import { debug, print } from '../lib/logging';
+import { debug, info } from '../lib/logging';
+import { ToolkitError } from './toolkit/error';
 import { formatAsBanner } from '../lib/util/console-formatters';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
@@ -14,6 +15,10 @@ const UPGRADE_DOCUMENTATION_LINKS: Record<number, string> = {
 };
 
 export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
+
+export function isDeveloperBuild(): boolean {
+  return versionNumber() === '0.0.0';
+}
 
 export function versionNumber(): string {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -42,7 +47,7 @@ export class VersionCheckTTL {
       fs.mkdirsSync(path.dirname(this.file));
       fs.accessSync(path.dirname(this.file), fs.constants.W_OK);
     } catch {
-      throw new Error(`Directory (${path.dirname(this.file)}) is not writable.`);
+      throw new ToolkitError(`Directory (${path.dirname(this.file)}) is not writable.`);
     }
     this.ttlSecs = ttlSecs || ONE_DAY_IN_SECONDS;
   }
@@ -115,7 +120,7 @@ export async function displayVersionMessage(currentVersion = versionNumber(), ve
     const laterVersion = await latestVersionIfHigher(currentVersion, versionCheckCache ?? new VersionCheckTTL());
     if (laterVersion) {
       const bannerMsg = formatAsBanner(getVersionMessage(currentVersion, laterVersion));
-      bannerMsg.forEach((e) => print(e));
+      bannerMsg.forEach((e) => info(e));
     }
   } catch (err: any) {
     debug(`Could not run version check - ${err.message}`);

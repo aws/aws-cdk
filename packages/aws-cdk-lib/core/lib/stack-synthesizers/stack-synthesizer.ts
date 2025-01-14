@@ -107,8 +107,11 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    * the credentials will be the same identity that is doing the `UpdateStack`
    * call, which may not have the right permissions to write to S3.
    */
-  protected synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): FileAssetSource {
-    this.boundStack._synthesizeTemplate(session, lookupRoleArn);
+  protected synthesizeTemplate(session: ISynthesisSession,
+    lookupRoleArn?: string,
+    lookupRoleExternalId?: string,
+    lookupRoleAdditionalOptions?: { [key: string]: any }): FileAssetSource {
+    this.boundStack._synthesizeTemplate(session, lookupRoleArn, lookupRoleExternalId, lookupRoleAdditionalOptions);
     return stackTemplateFileAsset(this.boundStack, session);
   }
 
@@ -239,6 +242,18 @@ export interface SynthesizeStackArtifactOptions {
    * @default - No externalID is used
    */
   readonly assumeRoleExternalId?: string;
+
+  /**
+   * Additional options to pass to STS when assuming the role for cloudformation deployments.
+   *
+   * - `RoleArn` should not be used. Use the dedicated `assumeRoleArn` property instead.
+   * - `ExternalId` should not be used. Use the dedicated `assumeRoleExternalId` instead.
+   * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transitive by default.
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+   * @default - No additional options.
+   */
+  readonly assumeRoleAdditionalOptions?: { [key: string]: any };
 
   /**
    * The role that is passed to CloudFormation to execute the change set

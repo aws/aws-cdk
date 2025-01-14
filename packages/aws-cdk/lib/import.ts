@@ -6,11 +6,13 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { DeploymentMethod } from './api';
+import { assertIsSuccessfulDeployStackResult } from './api/deploy-stack';
 import { Deployments } from './api/deployments';
 import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { Tag } from './cdk-toolkit';
-import { error, print, success, warning } from './logging';
+import { error, info, success, warning } from './logging';
+import { ToolkitError } from './toolkit/error';
 
 export interface ImportDeploymentOptions extends DeployOptions {
   deploymentMethod?: DeploymentMethod;
@@ -97,13 +99,13 @@ export class ResourceImporter {
       const descr = this.describeResource(resource.logicalId);
       const idProps = contents[resource.logicalId];
       if (idProps) {
-        print('%s: importing using %s', chalk.blue(descr), chalk.blue(fmtdict(idProps)));
+        info('%s: importing using %s', chalk.blue(descr), chalk.blue(fmtdict(idProps)));
 
         ret.importResources.push(resource);
         ret.resourceMap[resource.logicalId] = idProps;
         delete contents[resource.logicalId];
       } else {
-        print('%s: skipping', chalk.blue(descr));
+        info('%s: skipping', chalk.blue(descr));
       }
     }
 
@@ -153,6 +155,8 @@ export class ResourceImporter {
         resourcesToImport,
       });
 
+      assertIsSuccessfulDeployStackResult(result);
+
       const message = result.noOp
         ? ' ✅  %s (no changes)'
         : ' ✅  %s';
@@ -190,7 +194,7 @@ export class ResourceImporter {
       if (allowNonAdditions) {
         warning(`Ignoring updated/deleted resources (--force): ${offendingResources.join(', ')}`);
       } else {
-        throw new Error('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
+        throw new ToolkitError('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
           `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')} (--force to override)`);
       }
     }
@@ -302,7 +306,7 @@ export class ResourceImporter {
 
     // If we got here and the user rejected any available identifiers, then apparently they don't want the resource at all
     if (satisfiedPropSets.length > 0) {
-      print(chalk.grey(`Skipping import of ${resourceName}`));
+      info(chalk.grey(`Skipping import of ${resourceName}`));
       return undefined;
     }
 
@@ -320,7 +324,7 @@ export class ResourceImporter {
 
     // Do the input loop here
     if (preamble) {
-      print(preamble);
+      info(preamble);
     }
     for (const idProps of idPropSets) {
       const input: Record<string, string> = {};
@@ -355,7 +359,7 @@ export class ResourceImporter {
       }
     }
 
-    print(chalk.grey(`Skipping import of ${resourceName}`));
+    info(chalk.grey(`Skipping import of ${resourceName}`));
     return undefined;
   }
 

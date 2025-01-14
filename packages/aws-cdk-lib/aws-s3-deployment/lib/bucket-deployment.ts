@@ -32,9 +32,12 @@ export interface BucketDeploymentProps {
   readonly destinationBucket: s3.IBucket;
 
   /**
-   * Key prefix in the destination bucket.
+   * Key prefix in the destination bucket. Must be <=104 characters
    *
-   * Must be <=104 characters
+   * If it's set with prune: true, it will only prune files with the prefix.
+   *
+   * We recommend to always configure the `destinationKeyPrefix` property. This will prevent the deployment
+   * from accidentally deleting data that wasn't uploaded by it.
    *
    * @default "/" (unzip to root of the destination bucket)
    */
@@ -71,6 +74,9 @@ export interface BucketDeploymentProps {
   readonly include?: string[];
 
   /**
+   * By default, files in the destination bucket that don't exist in the source will be deleted
+   * when the BucketDeployment resource is created or updated.
+   *
    * If this is set to false, files in the destination bucket that
    * do not exist in the asset, will NOT be deleted during deployment (create/update).
    *
@@ -265,6 +271,16 @@ export interface BucketDeploymentProps {
    * @default - `x-amz-content-sha256` will not be computed
    */
   readonly signContent?: boolean;
+
+  /**
+   * If set to false, the custom resource will not send back the SourceObjectKeys.
+   * This is useful when you are facing the error `Response object is too long`
+   *
+   * See https://github.com/aws/aws-cdk/issues/28579
+   *
+   * @default true
+   */
+  readonly outputObjectKeys?: boolean;
 }
 
 /**
@@ -422,6 +438,7 @@ export class BucketDeployment extends Construct {
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
         SignContent: props.signContent,
+        OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
       },

@@ -1,0 +1,305 @@
+{
+  "version": "36.0.5",
+  "artifacts": {
+    "MyStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MyStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MyStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MyStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/739f80859474f29a40ee9eb5a9618dafbbf814541d36330fed86fe8d00445fd3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MyStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MyStack.assets"
+      ],
+      "metadata": {
+        "/MyStack/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableCD117FA1"
+          }
+        ],
+        "/MyStack/Table/SourceTableAttachedManagedPolicy-MyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD5938648/Resource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableSourceTableAttachedManagedPolicyMyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD593864897023A5A"
+          }
+        ],
+        "/MyStack/Table/SourceTableAttachedManagedPolicy-MyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole16B7E1B4/Resource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableSourceTableAttachedManagedPolicyMyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole16B7E1B480CD9B37"
+          }
+        ],
+        "/MyStack/Table/Replicaus-east-2/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableReplicauseast28A15C236"
+          }
+        ],
+        "/MyStack/Table/StackRegionNotEqualsus-east-2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableStackRegionNotEqualsuseast2D20A1E77"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerServiceRole15A26729"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandler42BEBAE0"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 0
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsCompleteHandlerServiceRole5810CC58"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsCompleteHandler7073F4DA"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonEventServiceRole9FF04296"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonEvent83C1D0A7"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkisCompleteServiceRoleB1087139"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkisComplete26D7B0CB"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonTimeoutServiceRole28643D26"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderframeworkonTimeout0B47CA38"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderwaiterstatemachineRole0C7159F9"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderwaiterstatemachineLogGroupDD693A98"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerwaiterstatemachine5D4A9DF0"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/MyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole4467C87ARef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole4467C87ARef"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/MyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE7639AB2Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleE7639AB2Ref"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/MyStackawscdkawsdynamodbReplicaProviderframeworkonEvent53643CD7Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStackawscdkawsdynamodbReplicaProviderframeworkonEvent53643CD7Arn"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-MyStackTableA7B7AF97Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoMyStackTableA7B7AF97Ref"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D"
+          }
+        ],
+        "/MyStack/nonCrLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nonCrLambdaServiceRole10AF9D14"
+          }
+        ],
+        "/MyStack/nonCrLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "nonCrLambda31AAECAA"
+          }
+        ],
+        "/MyStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MyStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MyStack"
+    },
+    "integtestcustomresourceconfiglambdanoderuntimeDefaultTestDeployAssertF01B3E2D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestcustomresourceconfiglambdanoderuntimeDefaultTestDeployAssertF01B3E2D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestcustomresourceconfiglambdanoderuntimeDefaultTestDeployAssertF01B3E2D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestcustomresourceconfiglambdanoderuntimeDefaultTestDeployAssertF01B3E2D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestcustomresourceconfiglambdanoderuntimeDefaultTestDeployAssertF01B3E2D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtestcustomresourceconfiglambdanoderuntimeDefaultTestDeployAssertF01B3E2D.assets"
+      ],
+      "metadata": {
+        "/integ-test-custom-resource-config-lambda-node-runtime/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-test-custom-resource-config-lambda-node-runtime/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-test-custom-resource-config-lambda-node-runtime/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

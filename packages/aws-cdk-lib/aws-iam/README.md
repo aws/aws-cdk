@@ -238,6 +238,72 @@ iam.Role.customizeRoles(this, {
 For more information on configuring permissions see the [Security And Safety Dev
 Guide](https://github.com/aws/aws-cdk/wiki/Security-And-Safety-Dev-Guide)
 
+#### Policy report generation
+
+When `customizeRoles` is used, the `iam-policy-report.txt` report will contain a list
+of IAM roles and associated permissions that would have been created. This report is
+generated in an attempt to resolve and replace any references with a more user-friendly
+value.
+
+The following are some examples of the value that will appear in the report:
+
+```json
+"Resource": {
+  "Fn::Join": [
+    "",
+    [
+      "arn:",
+      {
+        "Ref": "AWS::Partition"
+      },
+      ":iam::",
+      {
+        "Ref": "AWS::AccountId"
+      },
+      ":role/Role"
+    ]
+  ]
+}
+```
+
+The policy report will instead get:
+
+```json
+"Resource": "arn:(PARTITION):iam::(ACCOUNT):role/Role"
+```
+
+If IAM policy is referencing a resource attribute:
+
+```json
+"Resource": [
+  {
+    "Fn::GetAtt": [
+      "SomeResource",
+      "Arn"
+    ]
+  },
+  {
+    "Ref": "AWS::NoValue",
+  }
+]
+```
+
+The policy report will instead get:
+
+```json
+"Resource": [
+  "(Path/To/SomeResource.Arn)"
+  "(NOVALUE)"
+]
+```
+
+The following pseudo parameters will be converted:
+
+1. `{ 'Ref': 'AWS::AccountId' }` -> `(ACCOUNT)
+2. `{ 'Ref': 'AWS::Partition' }` -> `(PARTITION)
+3. `{ 'Ref': 'AWS::Region' }` -> `(REGION)
+4. `{ 'Ref': 'AWS::NoValue' }` -> `(NOVALUE)
+
 #### Generating a permissions report
 
 It is also possible to generate the report _without_ preventing the role/policy creation.
@@ -400,6 +466,24 @@ role.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
     new iam.ServicePrincipal('beep-boop.amazonaws.com')
     ],
 }));
+```
+
+### Fixing the synthesized service principle for services that do not follow the IAM Pattern
+
+In some cases, certain AWS services may not use the standard `<service>.amazonaws.com` pattern for their service principals. For these services, you can define the ServicePrincipal as following where the provided service principle name will be used as is without any changing.
+
+```ts
+    const sp = iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn');
+```
+
+This principle can use as normal in defining any role, for example:
+```ts
+const emrServiceRole = new iam.Role(this, 'EMRServiceRole', {
+    assumedBy: iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn'),
+    managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole'),
+    ],
+});
 ```
 
 

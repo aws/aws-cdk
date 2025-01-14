@@ -17,6 +17,13 @@ export interface DatabaseSecretProps {
    * @default default master key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Characters to not include in the generated password.
+   *
+   * @default '"@/\\\ \''
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -32,7 +39,7 @@ export class DatabaseSecret extends secretsmanager.Secret {
         passwordLength: 30, // Redshift password could be up to 64 characters
         secretStringTemplate: JSON.stringify({ username: props.username }),
         generateStringKey: 'password',
-        excludeCharacters: '"@/\\\ \'',
+        excludeCharacters: props.excludeCharacters ?? '"@/\\\ \'',
       },
     });
   }

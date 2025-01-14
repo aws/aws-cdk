@@ -381,6 +381,43 @@
     "Protocol": "TCP"
    }
   },
+  "SecurityGroupDD263621": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-globalaccelerator/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "SecurityGroupfromGlobalAcceleratorGroup44382272BC7": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from GlobalAcceleratorGroup:443",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "GroupPeerCustomResourceB3A15D36",
+      "SecurityGroups.0.GroupId"
+     ]
+    },
+    "ToPort": 443
+   }
+  },
   "ALBAEE750D2": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -394,7 +431,7 @@
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
-       "ALBSecurityGroup8B8624F8",
+       "SecurityGroupDD263621",
        "GroupId"
       ]
      }
@@ -416,45 +453,6 @@
     "VPCPublicSubnet2RouteTableAssociation5A808732"
    ]
   },
-  "ALBSecurityGroup8B8624F8": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB integglobalacceleratorALBEE1DE7F7",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    }
-   }
-  },
-  "ALBSecurityGroupfromGlobalAcceleratorGroup4435D2AC398": {
-   "Type": "AWS::EC2::SecurityGroupIngress",
-   "Properties": {
-    "Description": "from GlobalAcceleratorGroup:443",
-    "FromPort": 443,
-    "GroupId": {
-     "Fn::GetAtt": [
-      "ALBSecurityGroup8B8624F8",
-      "GroupId"
-     ]
-    },
-    "IpProtocol": "tcp",
-    "SourceSecurityGroupId": {
-     "Fn::GetAtt": [
-      "GroupPeerCustomResourceB3A15D36",
-      "SecurityGroups.0.GroupId"
-     ]
-    },
-    "ToPort": 443
-   }
-  },
   "NLB55158F82": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -465,6 +463,14 @@
      }
     ],
     "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "SecurityGroupDD263621",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VPCPublicSubnet1SubnetB4246D30"
@@ -841,7 +847,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+     "S3Key": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip"
     },
     "Handler": "index.handler",
     "Role": {

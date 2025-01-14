@@ -63,6 +63,223 @@ describe('ec2 service', () => {
 
     });
 
+    [false, undefined].forEach((value) => {
+      test('set cloudwatch permissions based on falsy feature flag when no cloudwatch log configured', () => {
+        // GIVEN
+        const app = new App(
+          {
+            context: {
+              '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': value,
+            },
+          },
+        );
+        const stack = new cdk.Stack(app);
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        addDefaultCapacityProvider(cluster, stack, vpc);
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          enableExecuteCommand: true,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  'ssmmessages:CreateControlChannel',
+                  'ssmmessages:CreateDataChannel',
+                  'ssmmessages:OpenControlChannel',
+                  'ssmmessages:OpenDataChannel',
+                ],
+                Effect: 'Allow',
+                Resource: '*',
+              },
+              {
+                Action: 'logs:DescribeLogGroups',
+                Effect: 'Allow',
+                Resource: '*',
+              },
+              {
+                Action: [
+                  'logs:CreateLogStream',
+                  'logs:DescribeLogStreams',
+                  'logs:PutLogEvents',
+                ],
+                Effect: 'Allow',
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+          PolicyName: 'Ec2TaskDefTaskRoleDefaultPolicyA24FB970',
+          Roles: [
+            {
+              Ref: 'Ec2TaskDefTaskRole400FA349',
+            },
+          ],
+        });
+      });
+    });
+
+    test('set cloudwatch permissions based on true feature flag when no cloudwatch log configured', () => {
+      // GIVEN
+      const app = new App(
+        {
+          context: {
+            '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
+          },
+        },
+      );
+      const stack = new cdk.Stack(app);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ssmmessages:CreateControlChannel',
+                'ssmmessages:CreateDataChannel',
+                'ssmmessages:OpenControlChannel',
+                'ssmmessages:OpenDataChannel',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'Ec2TaskDefTaskRoleDefaultPolicyA24FB970',
+        Roles: [
+          {
+            Ref: 'Ec2TaskDefTaskRole400FA349',
+          },
+        ],
+      });
+    });
+
+    test('set cloudwatch permissions based on true feature flag when cloudwatch log is configured', () => {
+      // GIVEN
+      const app = new App(
+        {
+          context: {
+            '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
+          },
+        },
+      );
+      const stack = new cdk.Stack(app);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        executeCommandConfiguration: {
+          logConfiguration: {
+            cloudWatchLogGroup: new logs.LogGroup(stack, 'LogGroup'),
+          },
+          logging: ecs.ExecuteCommandLogging.OVERRIDE,
+        },
+      });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ssmmessages:CreateControlChannel',
+                'ssmmessages:CreateDataChannel',
+                'ssmmessages:OpenControlChannel',
+                'ssmmessages:OpenDataChannel',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 'logs:DescribeLogGroups',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'logs:CreateLogStream',
+                'logs:DescribeLogStreams',
+                'logs:PutLogEvents',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:',
+                    {
+                      Ref: 'LogGroupF5B46931',
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'Ec2TaskDefTaskRoleDefaultPolicyA24FB970',
+        Roles: [
+          {
+            Ref: 'Ec2TaskDefTaskRole400FA349',
+          },
+        ],
+      });
+    });
+
     test('allows setting enable execute command', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1411,6 +1628,100 @@ describe('ec2 service', () => {
         },
       });
 
+    });
+
+    test('warning if minHealthyPercent not set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
+
+    test('no warning if minHealthyPercent set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        minHealthyPercent: 50,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
+
+    test('warning if minHealthyPercent not set for a daemon service', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentDaemon]');
+      Annotations.fromStack(stack).hasNoWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
+
+    test('no warning if minHealthyPercent set for a daemon service', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        minHealthyPercent: 50,
+        daemon: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentDaemon]');
+      Annotations.fromStack(stack).hasNoWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
     });
 
     describe('with a TaskDefinition with Bridge network mode', () => {

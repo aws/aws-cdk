@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -8,9 +8,9 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import * as cdk from '../../core';
-import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
+import { CfnCluster, MachineImageType } from '../lib';
 
 describe('cluster', () => {
   describe('isCluster() returns', () => {
@@ -1744,6 +1744,90 @@ describe('cluster', () => {
 
   });
 
+  test('disabled container insights', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.DISABLED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'disabled',
+        },
+      ],
+    });
+  });
+
+  test('enabled container insights', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.ENABLED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'enabled',
+        },
+      ],
+    });
+  });
+
+  test('enhanced container insights', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsightsV2: ecs.ContainerInsights.ENHANCED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'enhanced',
+        },
+      ],
+    });
+  });
+
+  test('should throw an error if containerInsights and containerInsightsLevel are both set', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster',
+        {
+          containerInsights: true,
+          containerInsightsV2: ecs.ContainerInsights.ENHANCED,
+        });
+    }).toThrow('You cannot set both containerInsights and containerInsightsV2');
+  });
+
+  test('should throw an error if containerInsights and containerInsightsLevel are both set, even if containerInsights is false', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    expect(() => {
+      new ecs.Cluster(stack, 'EcsCluster',
+        {
+          containerInsights: true,
+          containerInsightsV2: ecs.ContainerInsights.ENHANCED,
+        });
+    }).toThrow('You cannot set both containerInsights and containerInsightsV2');
+  });
+
   test('default container insights is undefined', () => {
     // GIVEN
     const app = new cdk.App();
@@ -1761,6 +1845,110 @@ describe('cluster', () => {
       template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
     ).toEqual(true);
 
+  });
+
+  test('enable fargate ephemeral storage encryption on cluster with random name', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
+    new ecs.Cluster(stack, 'EcsCluster', { managedStorageConfiguration: { fargateEphemeralStorageKmsKey: key } });
+
+    // THEN
+    const output = Template.fromStack(stack);
+    output.hasResourceProperties('AWS::ECS::Cluster', {
+      Configuration: {
+        ManagedStorageConfiguration: {
+          FargateEphemeralStorageKmsKeyId: {
+            Ref: 'keyFEDD6EC0',
+          },
+        },
+      },
+    });
+    output.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Resource: '*',
+            Effect: 'Allow',
+            Action: 'kms:GenerateDataKeyWithoutPlaintext',
+            Principal: { Service: 'fargate.amazonaws.com' },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+            },
+          },
+          {
+            Resource: '*',
+            Effect: 'Allow',
+            Action: 'kms:CreateGrant',
+            Principal: { Service: 'fargate.amazonaws.com' },
+            Condition: {
+              'StringEquals': {
+                'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              'ForAllValues:StringEquals': {
+                'kms:GrantOperations': ['Decrypt'],
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('enable fargate ephemeral storage encryption on cluster with defined name', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
+    new ecs.Cluster(stack, 'EcsCluster', { clusterName: 'cluster-name', managedStorageConfiguration: { fargateEphemeralStorageKmsKey: key } });
+
+    // THEN
+    const output = Template.fromStack(stack);
+    output.hasResourceProperties('AWS::ECS::Cluster', {
+      Configuration: {
+        ManagedStorageConfiguration: {
+          FargateEphemeralStorageKmsKeyId: {
+            Ref: 'keyFEDD6EC0',
+          },
+        },
+      },
+    });
+    output.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Resource: '*',
+            Effect: 'Allow',
+            Action: 'kms:GenerateDataKeyWithoutPlaintext',
+            Principal: { Service: 'fargate.amazonaws.com' },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
+                'kms:EncryptionContext:aws:ecs:clusterName': ['cluster-name'],
+              },
+            },
+          },
+          {
+            Resource: '*',
+            Effect: 'Allow',
+            Action: 'kms:CreateGrant',
+            Principal: { Service: 'fargate.amazonaws.com' },
+            Condition: {
+              'StringEquals': {
+                'kms:EncryptionContext:aws:ecs:clusterAccount': [{ Ref: 'AWS::AccountId' }],
+                'kms:EncryptionContext:aws:ecs:clusterName': ['cluster-name'],
+              },
+              'ForAllValues:StringEquals': {
+                'kms:GrantOperations': ['Decrypt'],
+              },
+            },
+          },
+        ],
+      },
+    });
   });
 
   test('BottleRocketImage() returns correct AMI', () => {
@@ -2412,7 +2600,7 @@ describe('cluster', () => {
         autoScalingGroup,
         enableManagedScaling: false,
       });
-    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('throws error, when Managed Scaling is disabled and Managed Termination Protection is enabled.', () => {
@@ -2433,7 +2621,7 @@ describe('cluster', () => {
         enableManagedScaling: false,
         enableManagedTerminationProtection: true,
       });
-    }).toThrowError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+    }).toThrow('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
   });
 
   test('capacity provider enables ASG new instance scale-in protection by default', () => {
@@ -2880,7 +3068,7 @@ describe('cluster', () => {
     // THEN
     expect(() => {
       ecs.Cluster.fromClusterArn(stack, 'Cluster', 'arn:aws:ecs:service-region:service-account:cluster');
-    }).toThrowError(/Missing required Cluster Name from Cluster ARN: /);
+    }).toThrow(/Missing required Cluster Name from Cluster ARN: /);
   });
 });
 
@@ -3247,5 +3435,941 @@ describe('Accessing container instance role', function () {
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+  });
+});
+
+describe('canContainersAccessInstanceRole behaviour', () => {
+  const ECS_CLUSTER_LOGICAL_ID = 'EcsCluster';
+
+  const retrieveUserData = (template: Template) => {
+    const launchTemplate = template.findResources('AWS::AutoScaling::LaunchConfiguration');
+    expect(Object.keys(launchTemplate).length).toBe(1);
+    return Object.values(launchTemplate)[0].Properties.UserData['Fn::Base64'];
+  };
+
+  describe('when using Linux as OS', () => {
+    const assertUserDataHasLinuxOldIptableCommands = (userData: object) => {
+      expect(userData).toMatchObject({
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\necho ECS_CLUSTER=',
+            {
+              Ref: ECS_CLUSTER_LOGICAL_ID,
+            },
+            ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+          ],
+        ],
+      });
+    };
+
+    const assertUserDataHasLinuxUpdatedIptableCommands = (userData: object) => {
+      expect(userData).toMatchObject({
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\necho ECS_CLUSTER=',
+            {
+              Ref: ECS_CLUSTER_LOGICAL_ID,
+            },
+            ' >> /etc/ecs/ecs.config\nsudo yum install -y iptables-services; sudo iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+          ],
+        ],
+      });
+    };
+
+    const assertUserDataDoesNotHaveNetworkingCommands = (userData: object) => {
+      expect(userData).toMatchObject({
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\necho ECS_CLUSTER=',
+            {
+              Ref: ECS_CLUSTER_LOGICAL_ID,
+            },
+            ' >> /etc/ecs/ecs.config',
+          ],
+        ],
+      });
+    };
+
+    const createClusterUsingAddAutoScalingGroup = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const vpc = new ec2.Vpc(options.stack, 'Vpc');
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(options.stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+      });
+      cluster.addAutoScalingGroup(autoScalingGroup, { canContainersAccessInstanceRole: options.canContainersAccessInstanceRole });
+
+      return cluster;
+    };
+
+    const createClusterUsingAddAsgCapacityProvider = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const vpc = new ec2.Vpc(options.stack, 'Vpc');
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(options.stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+      });
+      const capacityProvider = new ecs.AsgCapacityProvider(options.stack, 'provider', {
+        autoScalingGroup,
+        canContainersAccessInstanceRole: options.canContainersAccessInstanceRole,
+      });
+      cluster.addAsgCapacityProvider(capacityProvider);
+
+      return cluster;
+    };
+
+    const createClusterUsingAddCapacity = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+        canContainersAccessInstanceRole: options.canContainersAccessInstanceRole,
+      });
+
+      return cluster;
+    };
+
+    const waysToCreateCluster = [
+      createClusterUsingAddAutoScalingGroup,
+      createClusterUsingAddAsgCapacityProvider,
+      createClusterUsingAddCapacity,
+    ];
+
+    [
+      // canContainersAccessInstanceRole=undefined
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveNetworkingCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveNetworkingCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasLinuxUpdatedIptableCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flag'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasLinuxOldIptableCommands(userData);
+        },
+      },
+      // canContainersAccessInstanceRole=false
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: 'The canContainersAccessInstanceRole option is not supported.',
+        assertion: (_: cdk.Stack) => { /* no-op */ },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: 'The canContainersAccessInstanceRole option is not supported.',
+        assertion: (_: cdk.Stack) => { /* no-op */ },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasLinuxUpdatedIptableCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flag'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasLinuxOldIptableCommands(userData);
+        },
+      },
+      // canContainersAccessInstanceRole=true
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveNetworkingCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveNetworkingCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveNetworkingCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveNetworkingCommands(userData);
+        },
+      },
+    ].forEach(cdkConfigurations => {
+      waysToCreateCluster.forEach(wayToCreateCluster => {
+        test(`${wayToCreateCluster.name} with canContainersAccessInstanceRole=${cdkConfigurations.canContainersAccessInstanceRole}` +
+            ` and feature flags: ${JSON.stringify(cdkConfigurations.featureFlags)}`, () => {
+          const app = new cdk.App({
+            postCliContext: cdkConfigurations.featureFlags,
+          });
+          const stack = new cdk.Stack(app, 'test');
+
+          if (cdkConfigurations.expectedSynthError !== undefined) {
+            expect(() => {
+              wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            }).toThrow(cdkConfigurations.expectedSynthError);
+          } else {
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            cdkConfigurations.assertion(stack);
+          }
+        });
+      });
+    });
+  });
+
+  describe('when using BottleRocket as OS', () => {
+    const assertUserDataHasBottleRocketCommands = (userData: object) => {
+      expect(userData).toMatchObject({
+        'Fn::Join': [
+          '',
+          [
+            '\n[settings.ecs]\ncluster = "',
+            {
+              Ref: 'EcsCluster',
+            },
+            '"',
+          ],
+        ],
+      });
+    };
+
+    const createClusterUsingAddAutoScalingGroup = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const vpc = new ec2.Vpc(options.stack, 'Vpc');
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(options.stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: new ecs.BottleRocketImage(),
+      });
+      cluster.addAutoScalingGroup(autoScalingGroup, {
+        canContainersAccessInstanceRole: options.canContainersAccessInstanceRole,
+        machineImageType: MachineImageType.BOTTLEROCKET,
+      });
+
+      return cluster;
+    };
+
+    const createClusterUsingAddAsgCapacityProvider = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const vpc = new ec2.Vpc(options.stack, 'Vpc');
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(options.stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: new ecs.BottleRocketImage(),
+      });
+      const capacityProvider = new ecs.AsgCapacityProvider(options.stack, 'provider', {
+        autoScalingGroup,
+        canContainersAccessInstanceRole: options.canContainersAccessInstanceRole,
+        machineImageType: MachineImageType.BOTTLEROCKET,
+      });
+      cluster.addAsgCapacityProvider(capacityProvider);
+
+      return cluster;
+    };
+
+    const createClusterUsingAddCapacity = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: new ecs.BottleRocketImage(),
+        canContainersAccessInstanceRole: options.canContainersAccessInstanceRole,
+      });
+
+      return cluster;
+    };
+
+    const waysToCreateCluster = [
+      createClusterUsingAddAutoScalingGroup,
+      createClusterUsingAddAsgCapacityProvider,
+      createClusterUsingAddCapacity,
+    ];
+
+    [
+      // canContainersAccessInstanceRole=undefined
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container accessing instance role is not supported.'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container accessing instance role is not supported.'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      // canContainersAccessInstanceRole=false
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: 'The canContainersAccessInstanceRole option is not supported.',
+        assertion: (_: cdk.Stack) => { /* no-op */ },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: 'The canContainersAccessInstanceRole option is not supported.',
+        assertion: (_: cdk.Stack) => { /* no-op */ },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container accessing instance role is not supported.'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container accessing instance role is not supported.'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      // canContainersAccessInstanceRole=true
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasBottleRocketCommands(userData);
+        },
+      },
+    ].forEach(cdkConfigurations => {
+      waysToCreateCluster.forEach(wayToCreateCluster => {
+        test(`${wayToCreateCluster.name} with canContainersAccessInstanceRole=${cdkConfigurations.canContainersAccessInstanceRole}` +
+          ` and feature flags: ${JSON.stringify(cdkConfigurations.featureFlags)}`, () => {
+          const app = new cdk.App({
+            postCliContext: cdkConfigurations.featureFlags,
+          });
+          const stack = new cdk.Stack(app, 'test');
+
+          if (cdkConfigurations.expectedSynthError !== undefined) {
+            expect(() => {
+              wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            }).toThrow(cdkConfigurations.expectedSynthError);
+          } else {
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            cdkConfigurations.assertion(stack);
+          }
+        });
+      });
+    });
+  });
+
+  describe('when using Windows as OS', () => {
+    const assertUserDataDoesNotHaveTaskRoleCommands = (userData: object) => {
+      expect(userData).toMatchObject({
+        'Fn::Join': [
+          '',
+          [
+            '<powershell>Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache\nImport-Module ECSTools\n[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "',
+            {
+              Ref: 'EcsCluster',
+            },
+            "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\nInitialize-ECSAgent -Cluster '",
+            {
+              Ref: 'EcsCluster',
+            },
+            "'</powershell>",
+          ],
+        ],
+      });
+    };
+
+    const assertUserDataHasTaskRoleCommands = (userData: object) => {
+      expect(userData).toMatchObject({
+        'Fn::Join': [
+          '',
+          [
+            '<powershell>Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache\nImport-Module ECSTools\n[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "',
+            {
+              Ref: 'EcsCluster',
+            },
+            "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
+            {
+              Ref: 'EcsCluster',
+            },
+            "' -EnableTaskIAMRole</powershell>",
+          ],
+        ],
+      });
+    };
+
+    const createClusterUsingAddAutoScalingGroup = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const vpc = new ec2.Vpc(options.stack, 'Vpc');
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(options.stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2022),
+      });
+      cluster.addAutoScalingGroup(autoScalingGroup, {
+        canContainersAccessInstanceRole: options.canContainersAccessInstanceRole,
+      });
+
+      return cluster;
+    };
+
+    const createClusterUsingAddAsgCapacityProvider = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const vpc = new ec2.Vpc(options.stack, 'Vpc');
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(options.stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2022),
+      });
+      const capacityProvider = new ecs.AsgCapacityProvider(options.stack, 'provider', {
+        autoScalingGroup,
+        canContainersAccessInstanceRole: options.canContainersAccessInstanceRole,
+      });
+      cluster.addAsgCapacityProvider(capacityProvider);
+
+      return cluster;
+    };
+
+    const createClusterUsingAddCapacity = (options: {
+      stack: cdk.Stack;
+      canContainersAccessInstanceRole: boolean;
+    }) => {
+      const cluster = new ecs.Cluster(options.stack, 'EcsCluster');
+      (cluster.node.defaultChild as CfnCluster).overrideLogicalId(ECS_CLUSTER_LOGICAL_ID);
+      cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
+        instanceType: new ec2.InstanceType('fake'),
+        machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2022),
+        canContainersAccessInstanceRole: options.canContainersAccessInstanceRole,
+      });
+
+      return cluster;
+    };
+
+    const waysToCreateCluster = [
+      createClusterUsingAddAutoScalingGroup,
+      createClusterUsingAddAsgCapacityProvider,
+      createClusterUsingAddCapacity,
+    ];
+
+    [
+      // canContainersAccessInstanceRole=undefined
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveTaskRoleCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveTaskRoleCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container accessing instance role is not supported.'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasTaskRoleCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: undefined,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container accessing instance role is not supported.'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasTaskRoleCommands(userData);
+        },
+      },
+      // canContainersAccessInstanceRole=false
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: 'The canContainersAccessInstanceRole option is not supported.',
+        assertion: (_: cdk.Stack) => { /* no-op */ },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: 'The canContainersAccessInstanceRole option is not supported.',
+        assertion: (_: cdk.Stack) => { /* no-op */ },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container accessing instance role is not supported.'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasTaskRoleCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: false,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasWarning(
+            '*',
+            Match.stringLikeRegexp('Blocking container accessing instance role is not supported.'),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataHasTaskRoleCommands(userData);
+        },
+      },
+      // canContainersAccessInstanceRole=true
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveTaskRoleCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': true,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveTaskRoleCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': true,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveTaskRoleCommands(userData);
+        },
+      },
+      {
+        featureFlags: {
+          '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+          '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+        },
+        canContainersAccessInstanceRole: true,
+        expectedSynthError: undefined,
+        assertion: (stack: cdk.Stack) => {
+          Annotations.fromStack(stack).hasNoWarning(
+            '*',
+            Match.anyValue(),
+          );
+          const template = Template.fromStack(stack);
+          const userData = retrieveUserData(template);
+          assertUserDataDoesNotHaveTaskRoleCommands(userData);
+        },
+      },
+    ].forEach(cdkConfigurations => {
+      waysToCreateCluster.forEach(wayToCreateCluster => {
+        test(`${wayToCreateCluster.name} with canContainersAccessInstanceRole=${cdkConfigurations.canContainersAccessInstanceRole}` +
+          ` and feature flags: ${JSON.stringify(cdkConfigurations.featureFlags)}`, () => {
+          const app = new cdk.App({
+            postCliContext: cdkConfigurations.featureFlags,
+          });
+          const stack = new cdk.Stack(app, 'test');
+
+          if (cdkConfigurations.expectedSynthError !== undefined) {
+            expect(() => {
+              wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            }).toThrow(cdkConfigurations.expectedSynthError);
+          } else {
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            cdkConfigurations.assertion(stack);
+          }
+        });
+      });
+    });
   });
 });

@@ -1,24 +1,8 @@
-import {
-  UserPool,
-  UserPoolIdentityProviderGoogle,
-  UserPoolIdentityProviderAmazon,
-  ProviderAttribute,
-} from 'aws-cdk-lib/aws-cognito';
-import {
-  Effect,
-  PolicyStatement,
-} from 'aws-cdk-lib/aws-iam';
-import {
-  App,
-  Stack,
-} from 'aws-cdk-lib';
-import {
-  IdentityPool,
-  IdentityPoolProviderUrl,
-} from '../lib/identitypool';
-import {
-  UserPoolAuthenticationProvider,
-} from '../lib/identitypool-user-pool-authentication-provider';
+import { UserPool, UserPoolIdentityProviderGoogle, UserPoolIdentityProviderAmazon, ProviderAttribute, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { App, SecretValue, Stack } from 'aws-cdk-lib';
+import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
+import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
 const app = new App();
 const stack = new Stack(app, 'integ-identitypool');
@@ -27,7 +11,7 @@ const userPool = new UserPool(stack, 'Pool');
 new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
   userPool,
   clientId: 'google-client-id',
-  clientSecret: 'google-client-secret',
+  clientSecretValue: new SecretValue('google-client-secret-value'),
   attributeMapping: {
     givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
     familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
@@ -52,10 +36,15 @@ new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
   },
 });
 const client = userPool.addClient('testClient');
+const userPoolToImport = new UserPool(stack, 'UserPoolToImport');
+const clientToImport = userPoolToImport.addClient('clientToImport');
+const importedUserPool = UserPool.fromUserPoolArn(stack, 'ImportedUserPool', userPoolToImport.userPoolArn);
+const importedUserPoolClient = UserPoolClient.fromUserPoolClientId(stack, 'ImportedUserPoolClient', clientToImport.userPoolClientId);
 const provider = new UserPoolAuthenticationProvider({ userPool, userPoolClient: client });
+const importedProvider = new UserPoolAuthenticationProvider({ userPool: importedUserPool, userPoolClient: importedUserPoolClient });
 const idPool = new IdentityPool(stack, 'identitypool', {
   authenticationProviders: {
-    userPools: [provider],
+    userPools: [provider, importedProvider],
     amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
     google: { clientId: '12345678012.apps.googleusercontent.com' },
   },
@@ -63,6 +52,11 @@ const idPool = new IdentityPool(stack, 'identitypool', {
     {
       mappingKey: 'theKey',
       providerUrl: IdentityPoolProviderUrl.userPool(userPool, client),
+      useToken: true,
+    },
+    {
+      mappingKey: 'importedUserPool',
+      providerUrl: IdentityPoolProviderUrl.userPool(importedUserPool, importedUserPoolClient),
       useToken: true,
     },
   ],

@@ -1,11 +1,12 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Duration, Stack, RemovalPolicy, Fn, SecretValue } from 'aws-cdk-lib';
+import { App, Duration, Stack, RemovalPolicy, Fn, SecretValue, ArnFormat } from 'aws-cdk-lib';
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { S3DeployAction, S3SourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as s3Deployment from 'aws-cdk-lib/aws-s3-deployment';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { CfnDocument, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import {
@@ -145,6 +146,7 @@ const bucketEnv = appConfigApp.addEnvironment('BucketEnv');
 const bucket = new Bucket(stack, 'MyBucket', {
   versioned: true,
   removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
 });
 bucket.applyRemovalPolicy(RemovalPolicy.DESTROY);
 const deployment = new s3Deployment.BucketDeployment(stack, 'DeployConfigInBucket', {
@@ -158,6 +160,21 @@ new SourcedConfiguration(stack, 'MyConfigFromBucket', {
   description: `Sourced from ${Fn.select(0, deployment.objectKeys)}`,
   deployTo: [bucketEnv],
 });
+
+// create a dummyRole
+const dummyRole = generateDummyRole();
+
+// yet another SourcedConfiguration with defined retrievalRole
+const sc = new SourcedConfiguration(stack, 'MyConfigFromBucketWithRole', {
+  application: appConfigApp,
+  location: ConfigurationSource.fromBucket(bucket, 'hello/world/file.txt'),
+  description: `Sourced from ${Fn.select(0, deployment.objectKeys)} with defined role`,
+  deployTo: [bucketEnv],
+  retrievalRole: dummyRole,
+});
+
+// ensure the dependency on the dummy role as well as its default policy
+sc.node.addDependency(dummyRole, dummyRole.node.tryFindChild('DefaultPolicy') as iam.CfnPolicy);
 
 // secrets manager as configuration source (without key)
 const secretEnv = appConfigApp.addEnvironment('SecretEnv');
@@ -230,3 +247,44 @@ new IntegTest(app, 'appconfig-configuration', {
     },
   },
 });
+
+function generateDummyRole(): iam.Role {
+  const role = new iam.Role(stack, 'DummyRole', {
+    assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
+  });
+  role.addToPrincipalPolicy(new iam.PolicyStatement({
+    actions: [
+      's3:GetObject',
+      's3:GetObjectMetadata',
+      's3:GetObjectVersion',
+    ],
+    resources: [stack.formatArn({
+      region: '',
+      account: '',
+      service: 's3',
+      arnFormat: ArnFormat.NO_RESOURCE_NAME,
+      resource: `${bucket.bucketName}/*`,
+    })],
+  }));
+  role.addToPrincipalPolicy(new iam.PolicyStatement({
+    actions: [
+      's3:GetBucketLocation',
+      's3:GetBucketVersioning',
+      's3:ListBucket',
+      's3:ListBucketVersions',
+    ],
+    resources: [stack.formatArn({
+      region: '',
+      account: '',
+      service: 's3',
+      arnFormat: ArnFormat.NO_RESOURCE_NAME,
+      resource: bucket.bucketName,
+    })],
+  }));
+  role.addToPrincipalPolicy(new iam.PolicyStatement({
+    actions: ['s3:ListAllMyBuckets'],
+    resources: ['*'],
+  }));
+
+  return role;
+}

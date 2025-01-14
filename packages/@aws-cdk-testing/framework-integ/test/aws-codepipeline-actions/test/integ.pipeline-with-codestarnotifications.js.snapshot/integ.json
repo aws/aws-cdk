@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "pipeline-with-codestarnotifications-test/DefaultTest": {
+      "stacks": [
+        "pipeline-with-codestarnotifications"
+      ],
+      "diffAssets": true,
+      "assertionStack": "pipeline-with-codestarnotifications-test/DefaultTest/DeployAssert",
+      "assertionStackName": "pipelinewithcodestarnotificationstestDefaultTestDeployAssertDA0A4181"
+    }
+  }
+}

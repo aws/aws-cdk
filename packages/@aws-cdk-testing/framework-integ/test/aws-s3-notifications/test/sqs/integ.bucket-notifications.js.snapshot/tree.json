@@ -623,6 +623,141 @@
               "version": "0.0.0"
             }
           },
+          "Bucket3WithSkipDestinationValidation": {
+            "id": "Bucket3WithSkipDestinationValidation",
+            "path": "sqs-bucket-notifications/Bucket3WithSkipDestinationValidation",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "sqs-bucket-notifications/Bucket3WithSkipDestinationValidation/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Notifications": {
+                "id": "Notifications",
+                "path": "sqs-bucket-notifications/Bucket3WithSkipDestinationValidation/Notifications",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "sqs-bucket-notifications/Bucket3WithSkipDestinationValidation/Notifications/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "MyQueueWithIncorrectS3Permissions": {
+            "id": "MyQueueWithIncorrectS3Permissions",
+            "path": "sqs-bucket-notifications/MyQueueWithIncorrectS3Permissions",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "sqs-bucket-notifications/MyQueueWithIncorrectS3Permissions/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "sqs-bucket-notifications/MyQueueWithIncorrectS3Permissions/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "sqs-bucket-notifications/MyQueueWithIncorrectS3Permissions/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Effect": "Deny",
+                              "Principal": {
+                                "Service": "s3.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "MyQueueWithIncorrectS3PermissionsBE3BD1C7",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": [
+                                "sqs:GetQueueAttributes",
+                                "sqs:GetQueueUrl",
+                                "sqs:SendMessage"
+                              ],
+                              "Condition": {
+                                "ArnLike": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "Bucket3WithSkipDestinationValidation4A19337A",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "s3.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "MyQueueWithIncorrectS3PermissionsBE3BD1C7",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "MyQueueWithIncorrectS3PermissionsBE3BD1C7"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
           "Exports": {
             "id": "Exports",
             "path": "sqs-bucket-notifications/Exports",

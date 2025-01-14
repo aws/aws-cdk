@@ -448,6 +448,18 @@ describe('Job', () => {
           })).toThrow('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
         });
 
+        test('with job run queuing enabled should throw', () => {
+          expect(() => new glue.Job(stack, 'Job', {
+            executable: glue.JobExecutable.pythonEtl({
+              glueVersion: glue.GlueVersion.V4_0,
+              pythonVersion: glue.PythonVersion.THREE,
+              script,
+            }),
+            executionClass: glue.ExecutionClass.FLEX,
+            jobRunQueuingEnabled: true,
+          })).toThrow('FLEX ExecutionClass is only available if job run queuing is disabled');
+        });
+
         test('with G_4X as worker type that is neither G_1X nor G_2X should throw', () => {
           expect(() => new glue.Job(stack, 'Job', {
             executable: glue.JobExecutable.pythonEtl({
@@ -796,6 +808,16 @@ describe('Job', () => {
       });
     });
 
+    test('enabling job run queuing', () => {
+      job = new glue.Job(stack, 'Job', {
+        ...defaultProps,
+        jobRunQueuingEnabled: true,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        JobRunQueuingEnabled: true,
+      });
+    });
+
     test('with reserved args should throw', () => {
       ['--debug', '--mode', '--JOB_NAME'].forEach((arg, index) => {
         const defaultArguments: {[key: string]: string} = {};
@@ -874,6 +896,38 @@ describe('Job', () => {
           workerCount: 2,
         })).toThrow('Runtime is required for Ray jobs');
       });
+
+      test.each([
+        glue.WorkerType.G_025X,
+        glue.WorkerType.G_1X,
+        glue.WorkerType.G_2X,
+        glue.WorkerType.G_4X,
+        glue.WorkerType.G_8X,
+      ])('throw error for unsupported worker type', (workerType) => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
+            script,
+          }),
+          workerType,
+          workerCount: 2,
+        })).toThrow(`WorkerType must be Z_2X for Ray jobs, got: ${workerType}`);
+      });
+    });
+
+    test('throw error for specifying timeout', () => {
+      expect(() => new glue.Job(stack, 'Job', {
+        executable: glue.JobExecutable.pythonRay({
+          glueVersion: glue.GlueVersion.V4_0,
+          pythonVersion: glue.PythonVersion.THREE_NINE,
+          runtime: glue.Runtime.RAY_TWO_FOUR,
+          script,
+        }),
+        workerType: glue.WorkerType.Z_2X,
+        timeout: cdk.Duration.minutes(5),
+      })).toThrow('Timeout cannot be set for Ray jobs');
     });
 
     test('etl job with all props should synthesize correctly', () => {
@@ -1175,6 +1229,18 @@ describe('Job', () => {
           workerCount: 10,
         })).toThrow('Both workerType and workerCount must be set');
       });
+    });
+
+    test('validation for jobRunQueuingEnabled and maxRetries', () => {
+      expect(() => new glue.Job(stack, 'Job', {
+        executable: glue.JobExecutable.pythonEtl({
+          glueVersion: glue.GlueVersion.V4_0,
+          pythonVersion: glue.PythonVersion.THREE,
+          script,
+        }),
+        jobRunQueuingEnabled: true,
+        maxRetries: 2,
+      })).toThrow('Maximum retries was set to 2, must be set to 0 with job run queuing enabled');
     });
   });
 });

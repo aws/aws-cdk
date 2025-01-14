@@ -1,9 +1,9 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
+import { ILoggingConfig } from './logging-config';
 
 /**
  * Possible compression options Kinesis Data Firehose can use to compress data on delivery.
@@ -62,20 +62,12 @@ export enum BackupMode {
  */
 interface DestinationLoggingProps {
   /**
-   * If true, log errors when data transformation or data delivery fails.
+   * Configuration that determines whether to log errors during data transformation or delivery failures,
+   * and specifies the CloudWatch log group for storing error logs.
    *
-   * If `logGroup` is provided, this will be implicitly set to `true`.
-   *
-   * @default true - errors are logged.
+   * @default - errors will be logged and a log group will be created for you.
    */
-  readonly logging?: boolean;
-
-  /**
-   * The CloudWatch log group where log streams will be created to hold error logs.
-   *
-   * @default - if `logging` is set to `true`, a log group will be created for you.
-   */
-  readonly logGroup?: logs.ILogGroup;
+  readonly loggingConfig?: ILoggingConfig;
 }
 
 /**

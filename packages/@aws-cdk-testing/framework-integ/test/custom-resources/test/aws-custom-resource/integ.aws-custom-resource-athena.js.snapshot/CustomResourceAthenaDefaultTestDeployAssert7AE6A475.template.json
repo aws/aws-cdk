@@ -13,7 +13,7 @@
     "api": "listWorkGroups",
     "expected": "{\"$ObjectLike\":{\"WorkGroups\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"TestWG\"}}]}}}",
     "flattenResponse": "false",
-    "salt": "1720181458735"
+    "salt": "1724989843406"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -112,7 +112,7 @@
      "WorkGroup": "\"TestWG\""
     },
     "flattenResponse": "false",
-    "salt": "1720181458736"
+    "salt": "1724989843406"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

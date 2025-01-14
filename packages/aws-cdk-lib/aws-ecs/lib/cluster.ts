@@ -7,11 +7,27 @@ import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { IKey } from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names } from '../../core';
+import {
+  Aws,
+  Duration,
+  IResource,
+  Resource,
+  Stack,
+  Aspects,
+  ArnFormat,
+  IAspect,
+  Token,
+  Names,
+  AspectPriority,
+  FeatureFlags, Annotations,
+} from '../../core';
+import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -67,8 +83,15 @@ export interface ClusterProps {
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
    * @default - Container Insights will be disabled for this cluster.
+   * @deprecated See {@link containerInsightsV2}
    */
   readonly containerInsights?: boolean;
+
+  /**
+   * The CloudWatch Container Insights configuration for the cluster
+   *  @default {@link ContainerInsights.DISABLED} This may be overridden by ECS account level settings.
+   */
+  readonly containerInsightsV2?: ContainerInsights;
 
   /**
    * The execute command configuration for the cluster
@@ -76,6 +99,13 @@ export interface ClusterProps {
    * @default - no configuration will be provided.
    */
   readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
+   * Encryption configuration for ECS Managed storage
+   *
+   * @default - no encryption will be applied.
+   */
+  readonly managedStorageConfiguration?: ManagedStorageConfiguration;
 }
 
 /**
@@ -93,12 +123,29 @@ export enum MachineImageType {
 }
 
 /**
+ * Determine the value for the canContainersAccessInstanceRole option if it is undefined.
+ * The value is determined based on the @aws-cdk/aws-ecs:disableEcsImdsBlocking feature flag.
+ */
+const getCanContainersAccessInstanceRoleDefault = (canContainersAccessInstanceRole: boolean | undefined,
+  disableEcsImdsBlockingFlag: boolean | undefined): boolean => {
+  if (canContainersAccessInstanceRole !== undefined) {
+    return canContainersAccessInstanceRole;
+  }
+
+  if (disableEcsImdsBlockingFlag === true) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+/**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
 
   /**
-    * Return whether the given object is a Cluster
+   * Return whether the given object is a Cluster
    */
   public static isCluster(x: any) : x is Cluster {
     return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
@@ -197,6 +244,12 @@ export class Cluster extends Resource implements ICluster {
   private _executeCommandConfiguration?: ExecuteCommandConfiguration;
 
   /**
+   * The configuration for ECS managed Storage
+   * @private
+   */
+  private _managedStorageConfiguration?: ManagedStorageConfiguration;
+
+  /**
    * CfnCluster instance
    */
   private _cfnCluster: CfnCluster;
@@ -209,14 +262,26 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
+    if ((props.containerInsights !== undefined) && props.containerInsightsV2) {
+      throw new Error('You cannot set both containerInsights and containerInsightsV2');
+    }
+
     /**
      * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any
      * containerInsights settings on the account to apply.  See:
      * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html#cfn-ecs-cluster-clustersettings-value
-    */
-    let clusterSettings = undefined;
+     */
+    let clusterSettings: CfnCluster.ClusterSettingsProperty[] | undefined;
     if (props.containerInsights !== undefined) {
-      clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
+      clusterSettings = [{
+        name: 'containerInsights',
+        value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
+      }];
+    } else if (props.containerInsightsV2 !== undefined) {
+      clusterSettings = [{
+        name: 'containerInsights',
+        value: props.containerInsightsV2,
+      }];
     }
 
     this._capacityProviderNames = props.capacityProviders ?? [];
@@ -232,10 +297,12 @@ export class Cluster extends Resource implements ICluster {
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
 
+    this._managedStorageConfiguration = props.managedStorageConfiguration;
+
     this._cfnCluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      configuration: this._executeCommandConfiguration && this.renderExecuteCommandConfiguration(),
+      configuration: this.renderClusterConfiguration(),
     });
 
     this.clusterArn = this.getResourceArnAttribute(this._cfnCluster.attrArn, {
@@ -255,12 +322,50 @@ export class Cluster extends Resource implements ICluster {
       ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
 
+    this.updateKeyPolicyForEphemeralStorageConfiguration(props.clusterName);
+
     // Only create cluster capacity provider associations if there are any EC2
     // capacity providers. Ordinarily we'd just add the construct to the tree
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id));
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id), { priority: AspectPriority.MUTATING });
+  }
+
+  /**
+   * Applies policy to the target key for encryption.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-create-storage-key.html
+   */
+  private updateKeyPolicyForEphemeralStorageConfiguration(clusterName?: string) {
+    const key = this._managedStorageConfiguration?.fargateEphemeralStorageKmsKey;
+    if (!key) return;
+    const clusterConditions = {
+      StringEquals: {
+        'kms:EncryptionContext:aws:ecs:clusterAccount': [Aws.ACCOUNT_ID],
+        ...(clusterName && { 'kms:EncryptionContext:aws:ecs:clusterName': [clusterName] }),
+      },
+    };
+
+    key.addToResourcePolicy(new PolicyStatement({
+      sid: 'Allow generate data key access for Fargate tasks.',
+      principals: [new ServicePrincipal('fargate.amazonaws.com')],
+      resources: ['*'],
+      actions: ['kms:GenerateDataKeyWithoutPlaintext'],
+      conditions: clusterConditions,
+    }));
+    key.addToResourcePolicy(new PolicyStatement({
+      sid: 'Allow grant creation permission for Fargate tasks.',
+      principals: [new ServicePrincipal('fargate.amazonaws.com')],
+      resources: ['*'],
+      actions: ['kms:CreateGrant'],
+      conditions: {
+        ...clusterConditions,
+        'ForAllValues:StringEquals': {
+          'kms:GrantOperations': ['Decrypt'],
+        },
+      },
+    }));
   }
 
   /**
@@ -310,12 +415,16 @@ export class Cluster extends Resource implements ICluster {
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
 
-  private renderExecuteCommandConfiguration(): CfnCluster.ClusterConfigurationProperty {
+  private renderClusterConfiguration(): CfnCluster.ClusterConfigurationProperty | undefined {
+    if (!this._executeCommandConfiguration && !this._managedStorageConfiguration) return undefined;
     return {
-      executeCommandConfiguration: {
-        kmsKeyId: this._executeCommandConfiguration?.kmsKey?.keyArn,
-        logConfiguration: this._executeCommandConfiguration?.logConfiguration && this.renderExecuteCommandLogConfiguration(),
-        logging: this._executeCommandConfiguration?.logging,
+      executeCommandConfiguration: this._executeCommandConfiguration && {
+        kmsKeyId: this._executeCommandConfiguration.kmsKey?.keyArn,
+        logConfiguration: this._executeCommandConfiguration.logConfiguration && this.renderExecuteCommandLogConfiguration(),
+        logging: this._executeCommandConfiguration.logging,
+      },
+      managedStorageConfiguration: this._managedStorageConfiguration && {
+        fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
       },
     };
   }
@@ -452,8 +561,10 @@ export class Cluster extends Resource implements ICluster {
       ...options,
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection or managed draining is enabled
-      taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining)? Duration.seconds(0) : options.taskDrainTime,
-      canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
+      taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining) ? Duration.seconds(0) : options.taskDrainTime,
+      canContainersAccessInstanceRole: getCanContainersAccessInstanceRoleDefault(
+        options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
+        FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)),
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
@@ -474,14 +585,24 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    // mutating the original options may cause unexpected behavioral change, hence, creating a clone here to avoid mutation
+    const optionsClone: AddAutoScalingGroupCapacityOptions = {
+      ...options,
+      machineImageType: options.machineImageType ?? MachineImageType.AMAZON_LINUX_2,
+      canContainersAccessInstanceRole: getCanContainersAccessInstanceRoleDefault(
+        options.canContainersAccessInstanceRole,
+        FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)),
+    };
+
     if (!(autoScalingGroup instanceof autoscaling.AutoScalingGroup)) {
       throw new Error('Cannot configure the AutoScalingGroup because it is an imported resource.');
     }
+
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
-      this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
+      this.configureWindowsAutoScalingGroup(autoScalingGroup, optionsClone);
     } else {
       // Tie instances to cluster
-      switch (options.machineImageType) {
+      switch (optionsClone.machineImageType) {
         // Bottlerocket AMI
         case MachineImageType.BOTTLEROCKET: {
           autoScalingGroup.addUserData(
@@ -495,23 +616,26 @@ export class Cluster extends Resource implements ICluster {
           autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
           // required managed policy
           autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'));
+
+          this.handleCanContainersAccessInstanceRoleForBottleRocket(optionsClone);
           break;
         }
-        default:
-          // Amazon ECS-optimized AMI for Amazon Linux 2
+        case MachineImageType.AMAZON_LINUX_2: {
           autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
-          if (!options.canContainersAccessInstanceRole) {
-            // Deny containers access to instance metadata service
-            // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-            autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-            autoScalingGroup.addUserData('sudo service iptables save');
-            // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
-            autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
-          }
-
-          if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+          this.handleCanContainersAccessInstanceRoleForAL2(autoScalingGroup, optionsClone);
+          if (autoScalingGroup.spotPrice && optionsClone.spotInstanceDraining) {
             autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
           }
+          break;
+        }
+        default: {
+          Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:unknownImageType',
+            `Unknown ECS Image type: ${optionsClone.machineImageType}.`);
+          if (optionsClone.canContainersAccessInstanceRole === false) {
+            throw new Error('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+          }
+          break;
+        }
       }
     }
 
@@ -569,6 +693,48 @@ export class Cluster extends Resource implements ICluster {
     }
   }
 
+  private handleCanContainersAccessInstanceRoleForBottleRocket(options: AddAutoScalingGroupCapacityOptions): void {
+    if ((options.canContainersAccessInstanceRole === false || options.canContainersAccessInstanceRole === undefined) &&
+      !FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:deprecatedImdsBlocking',
+        'Blocking container accessing instance role is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+    }
+
+    if (options.canContainersAccessInstanceRole === false &&
+      FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)) {
+      throw new Error('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+    }
+  }
+
+  private handleCanContainersAccessInstanceRoleForAL2(autoScalingGroup: autoscaling.AutoScalingGroup,
+    options: AddAutoScalingGroupCapacityOptions): void {
+    if (options.canContainersAccessInstanceRole === false &&
+      FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)) {
+      throw new Error('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+    }
+
+    if (options.canContainersAccessInstanceRole === false ||
+      options.canContainersAccessInstanceRole === undefined) {
+
+      if (!FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking) &&
+        FeatureFlags.of(this).isEnabled(Enable_IMDS_Blocking_Deprecated_Feature)) {
+        // new commands from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html#task-iam-role-considerations
+        autoScalingGroup.addUserData('sudo yum install -y iptables-services; sudo iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+        autoScalingGroup.addUserData('sudo iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables');
+      } else if (!FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking) &&
+        !FeatureFlags.of(this).isEnabled(Enable_IMDS_Blocking_Deprecated_Feature)) {
+        // old commands
+        autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+        autoScalingGroup.addUserData('sudo service iptables save');
+
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:deprecatedImdsBlocking',
+          'Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flag' +
+          'to keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609');
+      }
+      // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+      autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+    }
+  }
   /**
    * This method enables the Fargate or Fargate Spot capacity providers on the cluster.
    *
@@ -602,12 +768,12 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-  * Grants an ECS Task Protection API permission to the specified grantee.
-  * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
-  * permission, enabling the grantee to manage task protection in the ECS cluster.
-  *
-  * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
-  */
+   * Grants an ECS Task Protection API permission to the specified grantee.
+   * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
+   * permission, enabling the grantee to manage task protection in the ECS cluster.
+   *
+   * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
+   */
   public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -617,6 +783,17 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    if ((options.canContainersAccessInstanceRole === false || options.canContainersAccessInstanceRole === undefined) &&
+      !FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:deprecatedImdsBlocking',
+        'Blocking container accessing instance role is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+    }
+
+    if (options.canContainersAccessInstanceRole === false &&
+      FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking)) {
+      throw new Error('The canContainersAccessInstanceRole option is not supported. See https://github.com/aws/aws-cdk/discussions/32609');
+    }
+
     // clear the cache of the agent
     autoScalingGroup.addUserData('Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache');
 
@@ -915,7 +1092,9 @@ export interface AddAutoScalingGroupCapacityOptions {
   /**
    * Specifies whether the containers can access the container instance role.
    *
-   * @default false
+   * @deprecated See https://github.com/aws/aws-cdk/discussions/32609
+   * @default true if @aws-cdk/aws-ecs:disableEcsImdsBlocking feature flag is set to true.
+   *   false if @aws-cdk/aws-ecs:disableEcsImdsBlocking is set to false.
    */
   readonly canContainersAccessInstanceRole?: boolean;
 
@@ -1034,17 +1213,26 @@ export interface CloudMapNamespaceOptions {
 
 }
 
-enum ContainerInsights {
+/**
+ * The CloudWatch Container Insights setting
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html
+ */
+export enum ContainerInsights {
   /**
    * Enable CloudWatch Container Insights for the cluster
    */
-
   ENABLED = 'enabled',
 
   /**
    * Disable CloudWatch Container Insights for the cluster
    */
   DISABLED = 'disabled',
+
+  /**
+   * Enable CloudWatch Container Insights with enhanced observability for the cluster
+   */
+  ENHANCED = 'enhanced',
 }
 
 /**
@@ -1068,7 +1256,7 @@ export interface CapacityProviderStrategy {
   /**
    * The weight value designates the relative percentage of the total number of tasks launched that should use the
    * specified
-capacity provider. The weight value is taken into consideration after the base value, if defined, is satisfied.
+   capacity provider. The weight value is taken into consideration after the base value, if defined, is satisfied.
    *
    * @default - 0
    */
@@ -1255,6 +1443,22 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
 }
 
 /**
+ * Kms Keys for encryption ECS managed storage
+ */
+export interface ManagedStorageConfiguration {
+
+  /**
+   * KMS Key used to encrypt ECS Fargate ephemeral Storage.
+   * The configured KMS Key's policy will be modified to allow ECS to use the Key to encrypt the ephemeral Storage for this cluster.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-storage-encryption.html
+   *
+   * @default No encryption will be applied
+   */
+  readonly fargateEphemeralStorageKmsKey?: IKey;
+}
+
+/**
  * An Auto Scaling Group Capacity Provider. This allows an ECS cluster to target
  * a specific EC2 Auto Scaling Group for the placement of tasks. Optionally (and
  * recommended), ECS can manage the number of instances in the ASG to fit the
@@ -1291,7 +1495,9 @@ export class AsgCapacityProvider extends Construct {
   /**
    * Specifies whether the containers can access the container instance role.
    *
-   * @default false
+   * @deprecated See https://github.com/aws/aws-cdk/discussions/32609
+   * @default true if @aws-cdk/aws-ecs:disableEcsImdsBlocking feature flag is set to true.
+   *   false if @aws-cdk/aws-ecs:disableEcsImdsBlocking is set to false.
    */
   readonly canContainersAccessInstanceRole?: boolean;
 
@@ -1300,7 +1506,8 @@ export class AsgCapacityProvider extends Construct {
     let capacityProviderName = props.capacityProviderName;
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
-    this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
+    this.canContainersAccessInstanceRole = getCanContainersAccessInstanceRoleDefault(
+      props.canContainersAccessInstanceRole, FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking));
     this.enableManagedTerminationProtection = props.enableManagedTerminationProtection ?? true;
     this.enableManagedDraining = props.enableManagedDraining;
 

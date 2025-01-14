@@ -94,15 +94,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
           Principal: {
-            Service: {
-              'Fn::FindInMap': [
-                'ServiceprincipalMap',
-                {
-                  Ref: 'AWS::Region',
-                },
-                'codedeploy',
-              ],
-            },
+            Service: 'codedeploy.amazonaws.com',
           },
         }],
         Version: '2012-10-17',

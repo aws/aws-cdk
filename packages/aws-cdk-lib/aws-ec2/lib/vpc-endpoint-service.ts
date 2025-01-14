@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token } from '../../core';
-import { Default, RegionInfo } from '../../region-info';
+import { RegionInfo } from '../../region-info';
 
 /**
  * A load balancer that can host a VPC Endpoint Service
@@ -45,6 +45,13 @@ export interface IVpcEndpointService extends IResource {
  *
  */
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
+
+  /**
+   * The default value for a VPC Endpoint Service name prefix, useful if you do
+   * not have a synthesize-time region literal available (all you have is
+   * `{ "Ref": "AWS::Region" }`)
+   */
+  public static readonly DEFAULT_PREFIX = 'com.amazonaws.vpce';
 
   /**
    * One or more network load balancers to host the service.
@@ -119,8 +126,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     const { region } = Stack.of(this);
     const serviceNamePrefix = !Token.isUnresolved(region) ?
-      (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX) :
-      Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX;
+      (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? VpcEndpointService.DEFAULT_PREFIX) :
+      VpcEndpointService.DEFAULT_PREFIX;
 
     this.vpcEndpointServiceName = Fn.join('.', [serviceNamePrefix, Aws.REGION, this.vpcEndpointServiceId]);
     if (this.allowedPrincipals.length > 0) {

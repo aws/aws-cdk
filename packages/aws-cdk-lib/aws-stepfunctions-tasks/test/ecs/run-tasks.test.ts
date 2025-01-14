@@ -4,7 +4,6 @@ import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
-import { ECS_REDUCE_RUN_TASK_PERMISSIONS } from '../../../cx-api';
 import * as tasks from '../../lib';
 
 let stack: Stack;
@@ -16,7 +15,6 @@ let cluster: ecs.Cluster;
 beforeEach(() => {
   // GIVEN
   stack = new Stack();
-  stack.node.setContext(ECS_REDUCE_RUN_TASK_PERMISSIONS, true);
   vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Capacity', {
@@ -41,7 +39,7 @@ test('Cannot create a Fargate task with a fargate-incompatible task definition',
 
   expect(() =>
     new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
-  ).toThrowError(/Supplied TaskDefinition is not compatible with Fargate/);
+  ).toThrow(/Supplied TaskDefinition is not compatible with Fargate/);
 });
 
 test('Cannot create a Fargate task without a default container', () => {
@@ -52,7 +50,7 @@ test('Cannot create a Fargate task without a default container', () => {
   });
   expect(() =>
     new tasks.EcsRunTask(stack, 'task', { cluster, taskDefinition, launchTarget: new tasks.EcsFargateLaunchTarget() }).toStateJson(),
-  ).toThrowError(/must have at least one essential container/);
+  ).toThrow(/must have at least one essential container/);
 });
 
 test('Cannot override container definitions when container is not in task definition', () => {
@@ -88,7 +86,7 @@ test('Cannot override container definitions when container is not in task defini
       ],
       launchTarget: new tasks.EcsFargateLaunchTarget(),
     }).toStateJson(),
-  ).toThrowError(/no such container in task definition/);
+  ).toThrow(/no such container in task definition/);
 });
 
 test('Running a task with container override and container has explicitly set a container name', () => {
@@ -209,6 +207,60 @@ test('Running a task with NONE as propagated tag source', () => {
       launchTarget: new tasks.EcsFargateLaunchTarget(),
       propagatedTagSource: ecs.PropagatedTagSource.NONE,
     }).toStateJson())).toHaveProperty('Parameters.PropagateTags', 'NONE');
+});
+
+test('Running a task with cpu parameter', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '1024',
+    cpu: '512',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      cpu: '1024',
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson())).toHaveProperty('Parameters.Overrides.Cpu', '1024');
+});
+
+test('Running a task with memory parameter', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '1024',
+    cpu: '512',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    containerName: 'ExplicitContainerName',
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(stack.resolve(
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition,
+      memoryMiB: '2048',
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
+        },
+      ],
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson())).toHaveProperty('Parameters.Overrides.Memory', '2048');
 });
 
 test('Running a Fargate Task', () => {
@@ -604,7 +656,7 @@ test('Cannot create a task with WAIT_FOR_TASK_TOKEN if no TaskToken provided', (
       launchTarget: new tasks.EcsEc2LaunchTarget(),
       taskDefinition,
     }),
-  ).toThrowError(/Task Token is required in at least one `containerOverrides.environment`/);
+  ).toThrow(/Task Token is required in at least one `containerOverrides.environment`/);
 });
 
 test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', () => {

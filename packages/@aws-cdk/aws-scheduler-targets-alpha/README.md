@@ -3,45 +3,45 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
 <!--END STABILITY BANNER-->
 
 [Amazon EventBridge Scheduler](https://aws.amazon.com/blogs/compute/introducing-amazon-eventbridge-scheduler/) is a feature from Amazon EventBridge
-that allows you to create, run, and manage scheduled tasks at scale. With EventBridge Scheduler, you can schedule one-time or recurrently tens 
-of millions of tasks across many AWS services without provisioning or managing underlying infrastructure.
+that allows you to create, run, and manage scheduled tasks at scale. With EventBridge Scheduler, you can schedule millions of one-time or recurring tasks across various AWS services without provisioning or managing underlying infrastructure.
 
 This library contains integration classes for Amazon EventBridge Scheduler to call any
-number of supported AWS Services. 
+number of supported AWS Services.
 
 The following targets are supported:
 
-1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function))
+1. `targets.LambdaInvoke`: [Invoke an AWS Lambda function](#invoke-a-lambda-function)
 2. `targets.StepFunctionsStartExecution`: [Start an AWS Step Function](#start-an-aws-step-function)
 3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
-4. `targets.SqsSendMessage`: [Send a Message to an Amazon SQS Queue](#send-a-message-to-sqs-queue)
+4. `targets.SqsSendMessage`: [Send a Message to an Amazon SQS Queue](#send-a-message-to-an-sqs-queue)
 5. `targets.SnsPublish`: [Publish messages to an Amazon SNS topic](#publish-messages-to-an-amazon-sns-topic)
 6. `targets.EventBridgePutEvents`: [Put Events on EventBridge](#send-events-to-an-eventbridge-event-bus)
 7. `targets.InspectorStartAssessmentRun`: [Start an Amazon Inspector assessment run](#start-an-amazon-inspector-assessment-run)
-8. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Streams](#put-a-record-to-an-amazon-kinesis-data-streams)
+8. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Stream](#put-a-record-to-an-amazon-kinesis-data-stream)
 9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
 10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
+12. `targets.Universal`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
 
 ## Invoke a Lambda function
 
 Use the `LambdaInvoke` target to invoke a lambda function.
 
 The code snippet below creates an event rule with a Lambda function as a target
-called every hour by Event Bridge Scheduler with custom payload. You can optionally attach a
+called every hour by EventBridge Scheduler with a custom payload. You can optionally attach a
 [dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html).
 
 ```ts
@@ -77,7 +77,7 @@ const schedule = new Schedule(this, 'Schedule', {
 Use the `StepFunctionsStartExecution` target to start a new execution on a StepFunction.
 
 The code snippet below creates an event rule with a Step Function as a target
-called every hour by Event Bridge Scheduler with a custom payload.
+called every hour by EventBridge Scheduler with a custom payload.
 
 ```ts
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
@@ -117,7 +117,7 @@ new Schedule(this, 'Schedule', {
 Use the `CodeBuildStartBuild` target to start a new build run on a CodeBuild project.
 
 The code snippet below creates an event rule with a CodeBuild project as target which is
-called every hour by Event Bridge Scheduler.
+called every hour by EventBridge Scheduler.
 
 ```ts
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
@@ -130,12 +130,12 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-## Send A Message To SQS Queue
+## Send a Message To an SQS Queue
 
-Use the `SqsSendMessage` target to send a message to SQS Queue.
+Use the `SqsSendMessage` target to send a message to an SQS Queue.
 
-The code snippet below creates an event rule with a SQS Queue as a target
-called every hour by Event Bridge Scheduler with a custom payload.
+The code snippet below creates an event rule with an SQS Queue as a target
+called every hour by EventBridge Scheduler with a custom payload.
 
 Contains the `messageGroupId` to use when the target is a FIFO queue. If you specify
 a FIFO queue as a target, the queue must have content-based deduplication enabled.
@@ -164,7 +164,7 @@ new Schedule(this, 'Schedule', {
 Use the `SnsPublish` target to publish messages to an Amazon SNS topic.
 
 The code snippets below create an event rule with a Amazon SNS topic as a target.
-It's called every hour by Amazon Event Bridge Scheduler with custom payload.
+It's called every hour by Amazon EventBridge Scheduler with a custom payload.
 
 ```ts
 import * as sns from 'aws-cdk-lib/aws-sns';
@@ -190,7 +190,7 @@ new Schedule(this, 'Schedule', {
 Use the `EventBridgePutEvents` target to send events to an EventBridge event bus.
 
 The code snippet below creates an event rule with an EventBridge event bus as a target
-called every hour by Event Bridge Scheduler with a custom event payload.
+called every hour by EventBridge Scheduler with a custom event payload.
 
 ```ts
 import * as events from 'aws-cdk-lib/aws-events';
@@ -208,7 +208,7 @@ const eventEntry: targets.EventBridgePutEventsEntry = {
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.hours(1)),
-  target: new targets.EventBridgePutEvents(eventEntry, {}),
+  target: new targets.EventBridgePutEvents(eventEntry),
 });
 ```
 
@@ -216,8 +216,8 @@ new Schedule(this, 'Schedule', {
 
 Use the `InspectorStartAssessmentRun` target to start an Inspector assessment run.
 
-The code snippet below creates an event rule with an assessment template as target which is
-called every hour by Event Bridge Scheduler.
+The code snippet below creates an event rule with an assessment template as the target which is
+called every hour by EventBridge Scheduler.
 
 ```ts
 import * as inspector from 'aws-cdk-lib/aws-inspector';
@@ -230,12 +230,12 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-## Put a record to an Amazon Kinesis Data Streams
+## Put a record to an Amazon Kinesis Data Stream
 
-Use the `KinesisStreamPutRecord` target to put a record to an Amazon Kinesis Data Streams.
+Use the `KinesisStreamPutRecord` target to put a record to an Amazon Kinesis Data Stream.
 
-The code snippet below creates an event rule with a stream as target which is
-called every hour by Event Bridge Scheduler.
+The code snippet below creates an event rule with a stream as the target which is
+called every hour by EventBridge Scheduler.
 
 ```ts
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
@@ -255,11 +255,11 @@ new Schedule(this, 'Schedule', {
 Use the `KinesisDataFirehosePutRecord` target to put a record to a Kinesis Data Firehose delivery stream.
 
 The code snippet below creates an event rule with a delivery stream as a target
-called every hour by Event Bridge Scheduler with a custom payload.
+called every hour by EventBridge Scheduler with a custom payload.
 
 ```ts
-import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
-declare const deliveryStream: firehose.CfnDeliveryStream;
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+declare const deliveryStream: firehose.IDeliveryStream;
 
 const payload = {
   Data: "record",
@@ -277,8 +277,8 @@ new Schedule(this, 'Schedule', {
 
 Use the `CodePipelineStartPipelineExecution` target to start a new execution for a CodePipeline pipeline.
 
-The code snippet below creates an event rule with a CodePipeline pipeline as target which is
-called every hour by Event Bridge Scheduler.
+The code snippet below creates an event rule with a CodePipeline pipeline as the target which is
+called every hour by EventBridge Scheduler.
 
 ```ts
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
@@ -295,8 +295,8 @@ new Schedule(this, 'Schedule', {
 
 Use the `SageMakerStartPipelineExecution` target to start a new execution for a SageMaker pipeline.
 
-The code snippet below creates an event rule with a SageMaker pipeline as target which is
-called every hour by Event Bridge Scheduler.
+The code snippet below creates an event rule with a SageMaker pipeline as the target which is
+called every hour by EventBridge Scheduler.
 
 ```ts
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
@@ -310,6 +310,55 @@ new Schedule(this, 'Schedule', {
       name: 'parameter-name',
       value: 'parameter-value',
     }],
+  }),
+});
+```
+
+## Invoke a wider set of AWS API
+
+Use the `Universal` target to invoke AWS API.
+
+The code snippet below creates an event rule with AWS API as the target which is
+called at midnight every day by EventBridge Scheduler.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.cron({
+    minute: '0',
+    hour: '0',
+  }),
+  target: new targets.Universal({
+    service: 'rds',
+    action: 'stopDBCluster',
+    input: ScheduleTargetInput.fromObject({
+      DbClusterIdentifier: 'my-db',
+    }),
+  }),
+});
+```
+
+The `service` must be in lowercase and the `action` must be in camelCase.
+
+By default, an IAM policy for the Scheduler is extracted from the API call.
+
+You can control the IAM policy for the Scheduler by specifying the `policyStatements` property.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.Universal({
+    service: 'sqs',
+    action: 'sendMessage',
+    policyStatements: [
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+      }),
+      new iam.PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+        resources: ['arn:aws:kms:us-east-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
+      }),
+    ],
   }),
 });
 ```

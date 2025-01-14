@@ -136,7 +136,7 @@ class BarStack extends cdk.Stack {
 const app = new cdk.App();
 
 const fooStack = new FooStack(app, 'FooStack', { env: { region: 'us-west-2' } });
-const barStack = new BarStack(app, 'BarStack', { 
+const barStack = new BarStack(app, 'BarStack', {
   replicaTable: fooStack.globalTable.replica('us-east-1'),
   env: { region: 'us-east-1' },
 });
@@ -148,6 +148,7 @@ Note: You can create an instance of the `TableV2` construct with as many `replic
 
 The `TableV2` construct can be configured with on-demand or provisioned billing:
 * On-demand - The default option. This is a flexible billing option capable of serving requests without capacity planning. The billing mode will be `PAY_PER_REQUEST`.
+* You can optionally specify the `maxReadRequestUnits` or `maxWriteRequestUnits` on individual tables and associated global secondary indexes (GSIs). When you configure maximum throughput for an on-demand table, throughput requests that exceed the maximum amount specified will be throttled.
 * Provisioned - Specify the `readCapacity` and `writeCapacity` that you need for your application. The billing mode will be `PROVISIONED`. Capacity can be configured using one of the following modes:
   * Fixed - provisioned throughput capacity is configured with a fixed number of I/O operations per second.
   * Autoscaled - provisioned throughput capacity is dynamically adjusted on your behalf in response to actual traffic patterns.
@@ -160,6 +161,18 @@ The following example shows how to configure `TableV2` with on-demand billing:
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   billing: dynamodb.Billing.onDemand(),
+})
+```
+
+The following example shows how to configure `TableV2` with on-demand billing with optional maximum throughput configured:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.onDemand({
+    maxReadRequestUnits: 100,
+    maxWriteRequestUnits: 115,
+  }),
 })
 ```
 
@@ -215,6 +228,25 @@ const globalTable = new dynamodb.TableV2(this, 'Table', {
 
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html
+
+## Warm Throughput
+Warm throughput refers to the number of read and write operations your DynamoDB table can instantaneously support.
+
+This optional configuration allows you to pre-warm your table or index to handle anticipated throughput, ensuring optimal performance under expected load.
+
+The Warm Throughput configuration settings are automatically replicated across all Global Table replicas.
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  warmThroughput: {
+      readUnitsPerSecond: 15000,
+      writeUnitsPerSecond: 20000,
+    },
+});
+```
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/warm-throughput.html
 
 ## Encryption
 
@@ -514,6 +546,21 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
+When you use `Table`, you can enable contributor insights for a table or specific global secondary index by setting `contributorInsightsEnabled` to `true`.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  contributorInsightsEnabled: true, // for a table
+});
+
+table.addGlobalSecondaryIndex({
+  contributorInsightsEnabled: true, // for a specific global secondary index
+  indexName: 'gsi',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+```
+
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/contributorinsights_HowItWorks.html
 
@@ -538,7 +585,7 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  // applys to all replicas, i.e., us-west-2, us-east-1, us-east-2
+  // applies to all replicas, i.e., us-west-2, us-east-1, us-east-2
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   replicas: [
     { region: 'us-east-1' },
@@ -602,7 +649,7 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Tabl
 
 ## Tags
 
-You can add tags to a `TableV2` in several ways. By adding the tags to the construct itself it will apply the tags to the 
+You can add tags to a `TableV2` in several ways. By adding the tags to the construct itself it will apply the tags to the
 primary table.
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -702,7 +749,7 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   ],
 });
 
-// grantReadData only applys to the table in us-west-2 and the tableKey
+// grantReadData only applies to the table in us-west-2 and the tableKey
 globalTable.grantReadData(user);
 ```
 
@@ -732,7 +779,7 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   ],
 });
 
-// grantReadData applys to the table in us-east-2 and the key arn for the key in us-east-2
+// grantReadData applies to the table in us-east-2 and the key arn for the key in us-east-2
 globalTable.replica('us-east-2').grantReadData(user);
 ```
 
@@ -768,7 +815,7 @@ new cloudwatch.Alarm(this, 'Alarm', {
 The `replica` method can be used to generate a metric for a specific replica table:
 
 ```ts
-import * as cdk form 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 class FooStack extends cdk.Stack {
@@ -777,7 +824,7 @@ class FooStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
-    this.globalTable = new dynamodb.Tablev2(this, 'GlobalTable', {
+    this.globalTable = new dynamodb.TableV2(this, 'GlobalTable', {
       partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -787,7 +834,7 @@ class FooStack extends cdk.Stack {
   }
 }
 
-interface BarStack extends cdk.StackProps {
+interface BarStackProps extends cdk.StackProps {
   readonly replicaTable: dynamodb.ITableV2;
 }
 
