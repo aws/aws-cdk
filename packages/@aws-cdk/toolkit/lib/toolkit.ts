@@ -28,7 +28,7 @@ import { StackAssembly } from './api/cloud-assembly/stack-assembly';
 import { ICloudAssemblySource } from './api/cloud-assembly/types';
 import { ToolkitError } from './api/errors';
 import { IIoHost } from './io/io-host';
-import { asSdkLogger, withAction } from './io/logger';
+import { askUserConfirmation, asSdkLogger, withAction } from './io/logger';
 import { data, error, highlight, info, success, warning } from './io/messages';
 import { Timer } from './io/timer';
 import { StackSelectionStrategy, ToolkitAction } from './types';
@@ -235,6 +235,7 @@ export class Toolkit {
       //   const currentTemplate = await deployments.readCurrentTemplate(stack);
       //   if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
       //     await askUserConfirmation(
+      //       ioHost,
       //       concurrency,
       //       '"--require-approval" is enabled and stack includes security-sensitive updates',
       //       'Do you wish to deploy these changes',
@@ -314,6 +315,7 @@ export class Toolkit {
                 await ioHost.notify(warning(`${motivation}. Rolling back first (--force).`));
               } else {
                 await askUserConfirmation(
+                  ioHost,
                   concurrency,
                   motivation,
                   `${motivation}. Roll back first and then proceed with deployment`,
@@ -339,6 +341,7 @@ export class Toolkit {
                 await ioHost.notify(warning(`${motivation}. Proceeding with regular deployment (--force).`));
               } else {
                 await askUserConfirmation(
+                  ioHost,
                   concurrency,
                   motivation,
                   `${motivation}. Perform a regular deployment`,
