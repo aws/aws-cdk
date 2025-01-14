@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { cdkCacheDir, rootDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
-import { debug, print } from '../lib/logging';
+import { debug, info } from '../lib/logging';
 import { ToolkitError } from './toolkit/error';
 import { formatAsBanner } from '../lib/util/console-formatters';
 
@@ -120,7 +120,7 @@ export async function displayVersionMessage(currentVersion = versionNumber(), ve
     const laterVersion = await latestVersionIfHigher(currentVersion, versionCheckCache ?? new VersionCheckTTL());
     if (laterVersion) {
       const bannerMsg = formatAsBanner(getVersionMessage(currentVersion, laterVersion));
-      bannerMsg.forEach((e) => print(e));
+      bannerMsg.forEach((e) => info(e));
     }
   } catch (err: any) {
     debug(`Could not run version check - ${err.message}`);
