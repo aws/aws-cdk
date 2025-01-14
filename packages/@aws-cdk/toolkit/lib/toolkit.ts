@@ -6,7 +6,6 @@ import { StackCollection } from 'aws-cdk/lib/api/cxapp/cloud-assembly';
 import { Deployments } from 'aws-cdk/lib/api/deployments';
 import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
 import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
-import { formatTime } from 'aws-cdk/lib/api/util/string-manipulation';
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
 import { serializeStructure } from 'aws-cdk/lib/serialize';
 import { tagsForStack } from 'aws-cdk/lib/tags';
@@ -30,7 +29,7 @@ import { ICloudAssemblySource } from './api/cloud-assembly/types';
 import { ToolkitError } from './api/errors';
 import { IIoHost } from './io/io-host';
 import { asSdkLogger, withAction } from './io/logger';
-import { error, highlight, info, success, warning } from './io/messages';
+import { data, error, highlight, info, success, warning } from './io/messages';
 import { Timer } from './io/timer';
 import { StackSelectionStrategy, ToolkitAction } from './types';
 
@@ -159,10 +158,10 @@ export class Toolkit {
     const parameterMap = buildParameterMap(options.parameters?.parameters);
 
     if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
-      warning(
+      await ioHost.notify(warning(
         '⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments',
-      );
-      warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
+      ));
+      await ioHost.notify(warning('⚠️ They should only be used for development - never use them for your production Stacks!\n'));
     }
 
     // @TODO
@@ -203,8 +202,7 @@ export class Toolkit {
     const deployStack = async (stackNode: StackNode) => {
       const stack = stackNode.stack;
       if (stackCollection.stackCount !== 1) {
-
-        highlight(stack.displayName);
+        await ioHost.notify(highlight(stack.displayName));
       }
 
       if (!stack.environment) {
@@ -217,9 +215,9 @@ export class Toolkit {
       if (Object.keys(stack.template.Resources || {}).length === 0) {
         // The generated stack has no resources
         if (!(await deployments.stackExists({ stack }))) {
-          warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
+          await ioHost.notify(warning(`${chalk.bold(stack.displayName)}: stack has no resources, skipping deployment.`));
         } else {
-          warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
+          await ioHost.notify(warning(`${chalk.bold(stack.displayName)}: stack has no resources, deleting existing stack.`));
           await this._destroy(assembly, 'deploy', {
             selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
@@ -260,16 +258,16 @@ export class Toolkit {
 
       const stackIndex = stacks.indexOf(stack) + 1;
       await ioHost.notify(
-        info('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount),
+        info(`${chalk.bold(stack.displayName)}: deploying... [${stackIndex}/${stackCollection.stackCount}]`),
       );
-      const startDeployTime = new Date().getTime();
+      const startDeployTime = Timer.start();
 
       let tags = options.tags;
       if (!tags || tags.length === 0) {
         tags = tagsForStack(stack);
       }
 
-      let elapsedDeployTime = 0;
+      let elapsedDeployTime;
       try {
         let deployResult: SuccessfulDeployStackResult | undefined;
 
@@ -337,7 +335,7 @@ export class Toolkit {
               const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
 
               if (options.force) {
-                warning(`${motivation}. Proceeding with regular deployment (--force).`);
+                await ioHost.notify(warning(`${motivation}. Proceeding with regular deployment (--force).`));
               } else {
                 await askUserConfirmation(
                   concurrency,
@@ -361,23 +359,23 @@ export class Toolkit {
           : ` ✅  ${stack.displayName}`;
 
         await ioHost.notify(success('\n' + message));
-        elapsedDeployTime = new Date().getTime() - startDeployTime;
-        print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
+        elapsedDeployTime = startDeployTime.end();
+        await ioHost.notify(info(`\n✨  Deployment time: ${elapsedDeployTime.asSec}s\n`));
 
         if (Object.keys(deployResult.outputs).length > 0) {
-          print('Outputs:');
+          await ioHost.notify(info('Outputs:'));
 
           stackOutputs[stack.stackName] = deployResult.outputs;
         }
 
         for (const name of Object.keys(deployResult.outputs).sort()) {
           const value = deployResult.outputs[name];
-          print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
+          await ioHost.notify(info(`${chalk.cyan(stack.id)}.${chalk.cyan(name)} = ${chalk.underline(chalk.cyan(value))}`));
         }
 
-        print('Stack ARN:');
+        await ioHost.notify(info('Stack ARN:'));
 
-        data(deployResult.stackArn);
+        await ioHost.notify(data(deployResult.stackArn));
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -404,7 +402,7 @@ export class Toolkit {
           });
         }
       }
-      print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
+      await ioHost.notify(info(`\n✨  Total time: ${synthTime.asSec + elapsedDeployTime.asSec}s\n`));
     };
 
     const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
@@ -412,7 +410,7 @@ export class Toolkit {
     const concurrency = options.concurrency || 1;
     const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
     if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
-      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+      await ioHost.notify(warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".'));
     }
 
     const stacksAndTheirAssetManifests = stacks.flatMap((stack) => [
