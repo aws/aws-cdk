@@ -1,0 +1,2 @@
+aws-cdk-lib==%cdk-version%
+constructs%constructs-version%

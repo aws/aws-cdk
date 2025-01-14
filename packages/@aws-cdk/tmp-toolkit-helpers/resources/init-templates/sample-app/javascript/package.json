@@ -1,0 +1,20 @@
+{
+  "name": "%name%",
+  "version": "0.1.0",
+  "bin": {
+    "%name%": "bin/%name%.js"
+  },
+  "scripts": {
+    "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
+    "cdk": "cdk",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "aws-cdk": "%cdk-version%",
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "%cdk-version%",
+    "constructs": "%constructs-version%"
+  }
+}

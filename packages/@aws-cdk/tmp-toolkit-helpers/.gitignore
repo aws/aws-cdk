@@ -1,0 +1,33 @@
+*.js
+*.js.map
+*.d.ts
+*.d.ts.map
+*.gz
+node_modules
+dist
+.jsii
+
+.LAST_BUILD
+.nyc_output
+coverage
+nyc.config.js
+.LAST_PACKAGE
+*.snk
+junit.xml
+
+assets.json
+npm-shrinkwrap.json
+!.eslintrc.js
+!jest.config.js
+
+# Wasm
+lib/**/*.wasm
+
+# Resources
+resources/build-info.json
+!resources/init-templates/**/javascript/**/*
+resources/init-templates/.init-version.json
+resources/init-templates/.recommended-feature-flags.json
+resources/init-templates/**/*.hook.js
+resources/init-templates/**/*.hook.d.ts
+resources/init-templates/.*.json

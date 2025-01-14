@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": false,
+    "module": "NodeNext",
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSourceMap": true,
+    "lib": ["es2022"],
+    "composite": true,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
+  },
+  "include": ["**/*.ts", "resources/init-templates/**/*.hook.ts"],
+  "exclude": [
+    "node_modules",
+    "**/*.d.ts",
+    "resources/init-templates/**/typescript/*/*.ts"
+  ],
+  "references": [{ "path": "../cx-api" }, { "path": "../cloudformation-diff" }]
+}
