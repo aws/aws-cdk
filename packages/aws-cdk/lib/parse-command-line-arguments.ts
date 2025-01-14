@@ -706,7 +706,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
             desc: 'Do not print stack name and default message when there is no diff to stdout',
           })
           .option('change-set', {
-            default: undefined,
+            default: true,
             type: 'boolean',
             alias: 'changeset',
             desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role',
