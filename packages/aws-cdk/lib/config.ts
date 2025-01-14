@@ -313,14 +313,14 @@ export async function makeConfig(): Promise<CliConfig> {
           'change-set': { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role', conflicts: 'mode', deprecated: 'Use mode=auto or mode=local instead' },
           'mode': {
             type: 'string',
-            choices: ['auto', 'change-set', 'local'],
+            choices: ['auto', 'change-set', 'template-only'],
             default: 'auto',
             conflicts: 'change-set',
             requiresArg: true,
             desc: 'How to perform the the diff operation. ' +
-              'Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to local mode. ' +
+              'Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to template-only mode. ' +
               'Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role. Unhandled errors in change-set creation will return a non-zero exit code ' +
-              'Local mode compares the current local template with template applied on the stack',
+              'Template-only mode compares the current local template with template applied on the stack',
           },
         },
       },

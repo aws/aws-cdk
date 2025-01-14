@@ -716,10 +716,10 @@ export function parseCommandLineArguments(args: Array<string>): any {
           .option('mode', {
             default: 'auto',
             type: 'string',
-            choices: ['auto', 'change-set', 'local'],
+            choices: ['auto', 'change-set', 'template-only'],
             conflicts: 'change-set',
             requiresArg: true,
-            desc: 'How to perform the the diff operation. Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to local mode. Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role. Unhandled errors in change-set creation will return a non-zero exit code Local mode compares the current local template with template applied on the stack',
+            desc: 'How to perform the the diff operation. Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to template-only mode. Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role. Unhandled errors in change-set creation will return a non-zero exit code Template-only mode compares the current local template with template applied on the stack',
           }),
     )
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')

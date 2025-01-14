@@ -1433,13 +1433,13 @@ export interface DiffOptions {
   changeSet?: boolean;
 
   /**
-   * Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to local mode.
+   * Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to template-only mode.
    * Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.
-   * Local mode compares the current local template with template applied on the stack
+   * Template-only mode compares the current local template with template applied on the stack
    *
    * @default 'auto'
    */
-  mode?: 'auto' | 'change-set' | 'local';
+  mode?: 'auto' | 'change-set' | 'template-only';
 }
 
 interface CfnDeployOptions {

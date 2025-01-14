@@ -584,7 +584,7 @@ describe('stack exists checks', () => {
     expect(cloudFormation.stackExists).not.toHaveBeenCalled();
   });
 
-  test('diff does not check for stack existence when --mode=local is passed', async () => {
+  test('diff does not check for stack existence when --mode=template-only is passed', async () => {
     // GIVEN
     const buffer = new StringWritable();
 
@@ -594,7 +594,7 @@ describe('stack exists checks', () => {
       stream: buffer,
       fail: false,
       quiet: true,
-      mode: 'local',
+      mode: 'template-only',
     });
 
     // THEN
@@ -920,7 +920,7 @@ describe('nested stacks', () => {
     const exitCode = await toolkit.diff({
       stackNames: ['Parent'],
       stream: buffer,
-      mode: 'local',
+      mode: 'template-only',
     });
 
     // THEN
