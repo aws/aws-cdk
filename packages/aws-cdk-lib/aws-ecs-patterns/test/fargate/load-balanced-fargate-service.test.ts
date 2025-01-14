@@ -1436,6 +1436,57 @@ describe('ApplicationLoadBalancedFargateService', () => {
 });
 
 describe('NetworkLoadBalancedFargateService', () => {
+  test('setting healthCheckGracePeriod works', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      healthCheckGracePeriod: cdk.Duration.seconds(600),
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      HealthCheckGracePeriodSeconds: 600,
+    });
+  });
+
+  test('setting healthCheck works', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      healthCheck: {
+        command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
+        interval: cdk.Duration.minutes(1),
+        retries: 5,
+        startPeriod: cdk.Duration.minutes(1),
+        timeout: cdk.Duration.minutes(1),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: Match.arrayWith([
+        Match.objectLike({
+          HealthCheck: {
+            Command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
+            Interval: 60,
+            Retries: 5,
+            StartPeriod: 60,
+            Timeout: 60,
+          },
+        }),
+      ]),
+    });
+  });
+
   test('setting loadBalancerType to Network creates an NLB Public', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1711,6 +1762,50 @@ describe('NetworkLoadBalancedFargateService', () => {
       DeploymentController: {
         Type: 'CODE_DEPLOY',
       },
+    });
+  });
+
+  test('setting a command for taskImageOption', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        command: ['./app/bin/start.sh', '--foo'],
+      },
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Image: '/aws/aws-example-app',
+          Command: ['./app/bin/start.sh', '--foo'],
+        }),
+      ],
+    });
+  });
+
+  test('setting an entryPoint for taskImageOptions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        entryPoint: ['echo', 'foo'],
+      },
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Image: '/aws/aws-example-app',
+          EntryPoint: ['echo', 'foo'],
+        }),
+      ],
     });
   });
 
