@@ -458,6 +458,9 @@ export class VpcV2 extends VpcV2Base {
       ipv4NetmaskLength: vpcOptions.ipv4NetmaskLength, // for Ipv4 ipam option
       instanceTenancy: instanceTenancy,
     });
+    if (vpcOptions.ipv4IpamPool != null) {
+      vpcOptions.ipv4IpamPool.node.children.forEach(child => this.node.addDependency(child));
+    }
 
     this.node.defaultChild = this.resource;
     this.vpcCidrBlock = this.resource.attrCidrBlock;
@@ -507,7 +510,7 @@ export class VpcV2 extends VpcV2Base {
         });
         [secondaryVpcOptions.ipv4IpamPool, secondaryVpcOptions.ipv6IpamPool]
           .filter(x => x != null)
-          .forEach(x => vpcCidrBlock.node.addDependency(x));
+          .forEach(pool => pool.node?.children.forEach(child => vpcCidrBlock.node.addDependency(child)));
 
         //Create secondary blocks for Ipv4 and Ipv6
         this.secondaryCidrBlock?.push(vpcCidrBlock);
