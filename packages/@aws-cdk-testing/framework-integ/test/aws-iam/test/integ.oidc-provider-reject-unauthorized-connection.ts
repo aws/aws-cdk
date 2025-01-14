@@ -5,7 +5,7 @@ import * as cxapi from 'aws-cdk-lib/cx-api';
 
 const app = new App({
   postCliContext: {
-    [cxapi.IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    [cxapi.IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: true,
   },
 });
 const stack = new Stack(app, 'oidc-provider-integ-test');
