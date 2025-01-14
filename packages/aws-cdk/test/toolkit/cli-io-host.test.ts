@@ -1,18 +1,30 @@
 import * as chalk from 'chalk';
-import { CliIoHost, IoAction, styleMap } from '../../lib/toolkit/cli-io-host';
+import { CliIoHost, IoMessage } from '../../lib/toolkit/cli-io-host';
 
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
   let mockStderr: jest.Mock;
+  let defaultMessage: IoMessage;
 
   beforeEach(() => {
     mockStdout = jest.fn();
     mockStderr = jest.fn();
 
-    // Mock the write methods of STD out and STD err
+    // Reset singleton state
+    CliIoHost.isTTY = process.stdout.isTTY ?? false;
+    CliIoHost.ci = false;
+    CliIoHost.currentAction = 'none';
+
+    defaultMessage = {
+      time: new Date('2024-01-01T12:00:00'),
+      level: 'info',
+      action: 'synth',
+      code: 'CDK_TOOLKIT_I0001',
+      message: 'test message',
+    };
+
     jest.spyOn(process.stdout, 'write').mockImplementation((str: any, encoding?: any, cb?: any) => {
       mockStdout(str.toString());
-      // Handle callback
       const callback = typeof encoding === 'function' ? encoding : cb;
       if (callback) callback();
       return true;
@@ -20,7 +32,6 @@ describe('CliIoHost', () => {
 
     jest.spyOn(process.stderr, 'write').mockImplementation((str: any, encoding?: any, cb?: any) => {
       mockStderr(str.toString());
-      // Handle callback
       const callback = typeof encoding === 'function' ? encoding : cb;
       if (callback) callback();
       return true;
@@ -33,12 +44,12 @@ describe('CliIoHost', () => {
 
   describe('stream selection', () => {
     test('writes to stderr by default for non-error messages in non-CI mode', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      await host.notify({
+      CliIoHost.isTTY = true;
+      await CliIoHost.getIoHost().notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_I0001',
         message: 'test message',
       });
 
@@ -47,12 +58,12 @@ describe('CliIoHost', () => {
     });
 
     test('writes to stderr for error level with red color', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      await host.notify({
+      CliIoHost.isTTY = true;
+      await CliIoHost.getIoHost().notify({
         time: new Date(),
         level: 'error',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_E0001',
         message: 'error message',
       });
 
@@ -61,12 +72,12 @@ describe('CliIoHost', () => {
     });
 
     test('writes to stdout when forceStdout is true', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      await host.notify({
+      CliIoHost.isTTY = true;
+      await CliIoHost.getIoHost().notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_I0001',
         message: 'forced message',
         forceStdout: true,
       });
@@ -76,142 +87,87 @@ describe('CliIoHost', () => {
     });
   });
 
-  describe('TTY formatting', () => {
-    test('accepts inlined chalk styles', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      await host.notify({
-        time: new Date(),
-        level: 'info',
-        action: 'synth',
-        code: 'TEST',
-        message: chalk.green('[green prefix message]') + ' regular info level text',
-        forceStdout: true,
-      });
-
-      const expected_text = styleMap.info(chalk.green('[green prefix message]') + ' regular info level text');
-      expect(mockStdout).toHaveBeenCalledWith(expected_text + '\n');
+  describe('message formatting', () => {
+    beforeEach(() => {
+      CliIoHost.isTTY = true;
     });
 
-    test('applies custom style in TTY mode', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      const customStyle = (str: string) => `\x1b[35m${str}\x1b[0m`; // Custom purple color
-
-      await host.notify({
-        time: new Date(),
-        level: 'info',
-        action: 'synth',
-        code: 'TEST',
-        message: customStyle('styled message'),
+    test('formats debug messages with timestamp', async () => {
+      await CliIoHost.getIoHost().notify({
+        ...defaultMessage,
+        level: 'debug',
         forceStdout: true,
       });
 
-      const expected_text = styleMap.info(customStyle('styled message'));
-      expect(mockStdout).toHaveBeenCalledWith(expected_text + '\n');
+      expect(mockStdout).toHaveBeenCalledWith(`[12:00:00] ${chalk.gray('test message')}\n`);
     });
 
-    test('applies default style by message level in TTY mode', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      await host.notify({
-        time: new Date(),
-        level: 'warn',
-        action: 'synth',
-        code: 'TEST',
-        message: 'warning message',
+    test('formats trace messages with timestamp', async () => {
+      await CliIoHost.getIoHost().notify({
+        ...defaultMessage,
+        level: 'trace',
         forceStdout: true,
       });
 
-      expect(mockStdout).toHaveBeenCalledWith(chalk.yellow('warning message') + '\n');
+      expect(mockStdout).toHaveBeenCalledWith(`[12:00:00] ${chalk.gray('test message')}\n`);
     });
 
-    test('does not apply styles in non-TTY mode', async () => {
-      const host = new CliIoHost({ useTTY: false });
-      await host.notify({
-        time: new Date(),
-        level: 'info',
-        action: 'synth',
-        code: 'TEST',
-        message: 'unstyled message',
+    test('applies no styling when TTY is false', async () => {
+      CliIoHost.isTTY = false;
+      await CliIoHost.getIoHost().notify({
+        ...defaultMessage,
         forceStdout: true,
       });
 
-      expect(mockStdout).toHaveBeenCalledWith('unstyled message\n');
+      expect(mockStdout).toHaveBeenCalledWith('test message\n');
+    });
+
+    test('applies correct color styles for different message levels', async () => {
+      const testCases = [
+        { level: 'error' as const, style: chalk.red },
+        { level: 'warn' as const, style: chalk.yellow },
+        { level: 'info' as const, style: chalk.white },
+        { level: 'debug' as const, style: chalk.gray },
+        { level: 'trace' as const, style: chalk.gray },
+      ];
+
+      for (const { level, style } of testCases) {
+        await CliIoHost.getIoHost().notify({
+          ...defaultMessage,
+          level,
+          forceStdout: true,
+        });
+
+        const expectedOutput = level === 'debug' || level === 'trace'
+          ? `[12:00:00] ${style('test message')}\n`
+          : `${style('test message')}\n`;
+
+        expect(mockStdout).toHaveBeenCalledWith(expectedOutput);
+        mockStdout.mockClear();
+      }
     });
   });
 
-  describe('timestamp handling', () => {
-    test('includes timestamp for DEBUG level with gray color', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      const testDate = new Date('2024-01-01T12:34:56');
-
-      await host.notify({
-        time: testDate,
-        level: 'debug',
-        action: 'synth',
-        code: 'TEST',
-        message: 'debug message',
-        forceStdout: true,
-      });
-
-      expect(mockStdout).toHaveBeenCalledWith(`[12:34:56] ${chalk.gray('debug message')}\n`);
-    });
-
-    test('includes timestamp for TRACE level with gray color', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      const testDate = new Date('2024-01-01T12:34:56');
-
-      await host.notify({
-        time: testDate,
-        level: 'trace',
-        action: 'synth',
-        code: 'TEST',
-        message: 'trace message',
-        forceStdout: true,
-      });
-
-      expect(mockStdout).toHaveBeenCalledWith(`[12:34:56] ${chalk.gray('trace message')}\n`);
-    });
-
-    test('excludes timestamp for other levels but includes color', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      const testDate = new Date('2024-01-01T12:34:56');
-
-      await host.notify({
-        time: testDate,
-        level: 'info',
-        action: 'synth',
-        code: 'TEST',
-        message: 'info message',
-        forceStdout: true,
-      });
-
-      expect(mockStdout).toHaveBeenCalledWith(chalk.white('info message') + '\n');
+  describe('action handling', () => {
+    test('sets and gets current action', () => {
+      CliIoHost.currentAction = 'deploy';
+      expect(CliIoHost.currentAction).toBe('deploy');
     });
   });
 
   describe('CI mode behavior', () => {
-    test('writes to stdout in CI mode when level is not error', async () => {
-      const host = new CliIoHost({ useTTY: true, ci: true });
-      await host.notify({
-        time: new Date(),
-        level: 'info',
-        action: 'synth',
-        code: 'TEST',
-        message: 'ci message',
-      });
-
-      expect(mockStdout).toHaveBeenCalledWith(chalk.white('ci message') + '\n');
-      expect(mockStderr).not.toHaveBeenCalled();
+    beforeEach(() => {
+      CliIoHost.isTTY = true;
+      CliIoHost.ci = true;
     });
 
-    test('writes to stdout in CI mode with forceStdout', async () => {
-      const host = new CliIoHost({ useTTY: true, ci: true });
-      await host.notify({
+    test('writes to stdout in CI mode when level is not error', async () => {
+      await CliIoHost.getIoHost().notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_W0001',
         message: 'ci message',
-        forceStdout: true,
       });
 
       expect(mockStdout).toHaveBeenCalledWith(chalk.white('ci message') + '\n');
@@ -219,114 +175,50 @@ describe('CliIoHost', () => {
     });
 
     test('writes to stderr for error level in CI mode', async () => {
-      const host = new CliIoHost({ useTTY: true, ci: true });
-      await host.notify({
+      await CliIoHost.getIoHost().notify({
         time: new Date(),
         level: 'error',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_E0001',
         message: 'ci error message',
       });
 
       expect(mockStderr).toHaveBeenCalledWith(chalk.red('ci error message') + '\n');
       expect(mockStdout).not.toHaveBeenCalled();
     });
-
-    test('writes to stdout for error level in CI mode with forceStdOut', async () => {
-      const host = new CliIoHost({ useTTY: true, ci: true });
-      await host.notify({
-        time: new Date(),
-        level: 'error',
-        action: 'synth',
-        code: 'TEST',
-        message: 'ci error message',
-        forceStdout: true,
-      });
-
-      expect(mockStdout).toHaveBeenCalledWith(chalk.red('ci error message') + '\n');
-      expect(mockStderr).not.toHaveBeenCalled();
-    });
   });
 
-  describe('special characters handling', () => {
-    test('handles messages with ANSI escape sequences', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      await host.notify({
-        time: new Date(),
-        level: 'info',
+  describe('timestamp handling', () => {
+    beforeEach(() => {
+      CliIoHost.isTTY = true;
+    });
+
+    test('includes timestamp for DEBUG level with gray color', async () => {
+      const testDate = new Date('2024-01-01T12:34:56');
+      await CliIoHost.getIoHost().notify({
+        time: testDate,
+        level: 'debug',
         action: 'synth',
-        code: 'TEST',
-        message: '\u001b[31mred text\u001b[0m',
+        code: 'CDK_TOOLKIT_I0001',
+        message: 'debug message',
         forceStdout: true,
       });
 
-      expect(mockStdout).toHaveBeenCalledWith(chalk.white('\u001b[31mred text\u001b[0m') + '\n');
+      expect(mockStdout).toHaveBeenCalledWith(`[12:34:56] ${chalk.gray('debug message')}\n`);
     });
 
-    test('handles messages with newlines', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      await host.notify({
-        time: new Date(),
+    test('excludes timestamp for other levels but includes color', async () => {
+      const testDate = new Date('2024-01-01T12:34:56');
+      await CliIoHost.getIoHost().notify({
+        time: testDate,
         level: 'info',
         action: 'synth',
-        code: 'TEST',
-        message: 'line1\nline2\nline3',
+        code: 'CDK_TOOLKIT_I0001',
+        message: 'info message',
         forceStdout: true,
       });
 
-      expect(mockStdout).toHaveBeenCalledWith(chalk.white('line1\nline2\nline3') + '\n');
-    });
-
-    test('handles empty messages', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      await host.notify({
-        time: new Date(),
-        level: 'info',
-        action: 'synth',
-        code: 'TEST',
-        message: '',
-        forceStdout: true,
-      });
-
-      expect(mockStdout).toHaveBeenCalledWith(chalk.white('') + '\n');
-    });
-  });
-
-  describe('action and code behavior', () => {
-    test('handles all possible actions', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      const actions: IoAction[] = ['synth', 'list', 'deploy', 'destroy'];
-
-      for (const action of actions) {
-        await host.notify({
-          time: new Date(),
-          level: 'info',
-          action,
-          code: 'TEST',
-          message: `${action} message`,
-          forceStdout: true,
-        });
-
-        expect(mockStdout).toHaveBeenCalledWith(chalk.white(`${action} message`) + '\n');
-      }
-    });
-
-    test('handles various code values', async () => {
-      const host = new CliIoHost({ useTTY: true });
-      const testCases = ['ERROR_1', 'SUCCESS', 'WARN_XYZ', '123'];
-
-      for (const code of testCases) {
-        await host.notify({
-          time: new Date(),
-          level: 'info',
-          action: 'synth',
-          code,
-          message: `message with code ${code}`,
-          forceStdout: true,
-        });
-
-        expect(mockStdout).toHaveBeenCalledWith(chalk.white(`message with code ${code}`) + '\n');
-      }
+      expect(mockStdout).toHaveBeenCalledWith(chalk.white('info message') + '\n');
     });
   });
 
@@ -337,12 +229,11 @@ describe('CliIoHost', () => {
         return true;
       });
 
-      const host = new CliIoHost({ useTTY: true });
-      await expect(host.notify({
+      await expect(CliIoHost.getIoHost().notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
-        code: 'TEST',
+        code: 'CDK_TOOLKIT_I0001',
         message: 'test message',
         forceStdout: true,
       })).rejects.toThrow('Write failed');

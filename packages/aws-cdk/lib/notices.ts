@@ -7,7 +7,7 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { SdkHttpOptions } from './api';
 import { AwsCliCompatible } from './api/aws-auth/awscli-compatible';
-import { debug, print, warning, error } from './logging';
+import { debug, info, warning, error } from './logging';
 import { Context } from './settings';
 import { ToolkitError } from './toolkit/error';
 import { loadTreeFromDir, some } from './tree';
@@ -300,9 +300,9 @@ export class Notices {
     });
 
     if (filteredNotices.length > 0) {
-      print('');
-      print('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
-      print('');
+      info('');
+      info('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
+      info('');
       for (const filtered of filteredNotices) {
         const formatted = filtered.format();
         switch (filtered.notice.severity) {
@@ -313,16 +313,16 @@ export class Notices {
             error(formatted);
             break;
           default:
-            print(formatted);
+            info(formatted);
         }
-        print('');
+        info('');
       }
-      print(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${filteredNotices[0].notice.issueNumber}".`);
+      info(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${filteredNotices[0].notice.issueNumber}".`);
     }
 
     if (options.showTotal ?? false) {
-      print('');
-      print(`There are ${filteredNotices.length} unacknowledged notice(s).`);
+      info('');
+      info(`There are ${filteredNotices.length} unacknowledged notice(s).`);
     }
   }
 }

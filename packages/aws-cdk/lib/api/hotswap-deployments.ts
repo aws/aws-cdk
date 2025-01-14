@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import type { SDK, SdkProvider } from './aws-auth';
 import type { SuccessfulDeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
-import { print } from '../logging';
+import { info } from '../logging';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
 import {
@@ -400,7 +400,7 @@ function isCandidateForHotswapping(
 
 async function applyAllHotswappableChanges(sdk: SDK, hotswappableChanges: HotswappableChange[]): Promise<void[]> {
   if (hotswappableChanges.length > 0) {
-    print(`\n${ICON} hotswapping resources:`);
+    info(`\n${ICON} hotswapping resources:`);
   }
   const limit = pLimit(10);
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
@@ -415,7 +415,7 @@ async function applyHotswappableChange(sdk: SDK, hotswapOperation: HotswappableC
   sdk.appendCustomUserAgent(customUserAgent);
 
   for (const name of hotswapOperation.resourceNames) {
-    print(`   ${ICON} %s`, chalk.bold(name));
+    info(`   ${ICON} %s`, chalk.bold(name));
   }
 
   // if the SDK call fails, an error will be thrown by the SDK
@@ -436,7 +436,7 @@ async function applyHotswappableChange(sdk: SDK, hotswapOperation: HotswappableC
   }
 
   for (const name of hotswapOperation.resourceNames) {
-    print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
+    info(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
   }
 
   sdk.removeCustomUserAgent(customUserAgent);
@@ -461,7 +461,7 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
     }
   }
   if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
-    print(
+    info(
       '\n%s %s',
       chalk.red('⚠️'),
       chalk.red(
@@ -469,19 +469,19 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
       ),
     );
   } else {
-    print('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found:'));
+    info('\n%s %s', chalk.red('⚠️'), chalk.red('The following non-hotswappable changes were found:'));
   }
 
   for (const change of nonHotswappableChanges) {
     change.rejectedChanges.length > 0
-      ? print(
+      ? info(
         '    logicalID: %s, type: %s, rejected changes: %s, reason: %s',
         chalk.bold(change.logicalId),
         chalk.bold(change.resourceType),
         chalk.bold(change.rejectedChanges),
         chalk.red(change.reason),
       )
-      : print(
+      : info(
         '    logicalID: %s, type: %s, reason: %s',
         chalk.bold(change.logicalId),
         chalk.bold(change.resourceType),
@@ -489,5 +489,5 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
       );
   }
 
-  print(''); // newline
+  info(''); // newline
 }

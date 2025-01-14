@@ -10,7 +10,7 @@ import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { defaultCliUserAgent } from '../../lib/api/aws-auth/user-agent';
 import { PluginHost } from '../../lib/api/plugin';
 import { Mode } from '../../lib/api/plugin/mode';
-import * as logging from '../../lib/logging';
+import { setIoMessageThreshold } from '../../lib/logging';
 import { withMocked } from '../util';
 import { mockSTSClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
@@ -40,7 +40,7 @@ beforeEach(() => {
   uid = `(${uuid.v4()})`;
   pluginQueried = false;
 
-  logging.setLogLevel(logging.LogLevel.TRACE);
+  setIoMessageThreshold('trace');
 
   PluginHost.instance.credentialProviderSources.splice(0);
   PluginHost.instance.credentialProviderSources.push({
