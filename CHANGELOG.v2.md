@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.175.1](https://github.com/aws/aws-cdk/compare/v2.175.0...v2.175.1) (2025-01-10)
+
+### Bug Fixes
+
+* **cli:** "no stack found in the main cloud assembly" ([#32839](https://github.com/aws/aws-cdk/issues/32839)) ([7b68908](https://github.com/aws/aws-cdk/commit/7b68908dbebde02037d8b7650f4bb10d4c5db89d)), closes [aws/aws-cdk#32636](https://github.com/aws/aws-cdk/issues/32636) [#32836](https://github.com/aws/aws-cdk/issues/32836) [#32836](https://github.com/aws/aws-cdk/issues/32836)
+
 ## [2.175.0](https://github.com/aws/aws-cdk/compare/v2.174.1...v2.175.0) (2025-01-09)
 
 
