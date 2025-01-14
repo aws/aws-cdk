@@ -7,6 +7,7 @@ import { debug, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 import { UserInput } from './user-input';
 import * as util from './util';
+import { Tag } from './cdk-toolkit';
 
 export type SettingsMap = {[key: string]: any};
 
@@ -237,25 +238,6 @@ export class Context {
   }
 }
 
-// cdk.json is gonna look like this:
-// {
-//   'someGlobalOption': true,
-//   'deploy': {
-//     'someDeployOption': true,
-//   }
-// }
-// for backwards compat we will allow existing options to be specified at the base rather than within command
-// this will translate to
-// UserInput: {
-//   command: Command.ALL,
-//   globalOptions: {
-//     someGlobalOption: true,
-//   }
-//   deploy: {
-//     someDeployOption: true,
-//   }
-// }
-
 /**
  * A single bag of settings
  */
@@ -366,6 +348,9 @@ export class Settings {
  * A specific bag of settings related to Arguments specified via CLI or cdk.json
  */
 export class ArgumentSettings extends Settings {
+  public static fromConfigFileArguments(argv: UserInput): ArgumentSettings {
+    return new ArgumentSettings(argv);
+  }
   /**
    * Parse Settings out of CLI arguments.
    *
@@ -380,11 +365,71 @@ export class ArgumentSettings extends Settings {
    * @returns a new Settings object.
    */
   public static fromCommandLineArguments(argv: UserInput): ArgumentSettings {
-    return new ArgumentSettings(argv);
+    const globalOptions = {
+      ...argv.globalOptions,
+      context: ArgumentSettings.parseStringContextListToObject(argv),
+    };
+    const bootstrap = {
+      ...argv.bootstrap,
+      tags: ArgumentSettings.parseStringTagsListToObject(argv.bootstrap?.tags),
+    };
+    const deploy = {
+      ...argv.deploy,
+      tags: ArgumentSettings.parseStringTagsListToObject(argv.deploy?.tags),
+    };
+    return new ArgumentSettings({
+      ...argv,
+      globalOptions,
+      ...(bootstrap ? bootstrap : {}),
+      ...(deploy ? deploy : {}),
+    });
   }
 
-  public static fromConfigFileArguments(argv: UserInput): ArgumentSettings {
-    return new ArgumentSettings(argv);
+  private static parseStringContextListToObject(argv: UserInput): any {
+    const context: any = {};
+
+    for (const assignment of (argv.globalOptions?.context ?? [])) {
+      const parts = assignment.split(/=(.*)/, 2);
+      if (parts.length === 2) {
+        debug('CLI argument context: %s=%s', parts[0], parts[1]);
+        if (parts[0].match(/^aws:.+/)) {
+          throw new ToolkitError(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
+        }
+        context[parts[0]] = parts[1];
+      } else {
+        warning('Context argument is not an assignment (key=value): %s', assignment);
+      }
+    }
+    return context;
+  }
+
+  /**
+   * Parse tags out of arguments
+   *
+   * Return undefined if no tags were provided, return an empty array if only empty
+   * strings were provided
+   */
+  private static parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | undefined {
+    if (argTags === undefined) { return undefined; }
+    if (argTags.length === 0) { return undefined; }
+    const nonEmptyTags = argTags.filter(t => t !== '');
+    if (nonEmptyTags.length === 0) { return []; }
+
+    const tags: Tag[] = [];
+
+    for (const assignment of nonEmptyTags) {
+      const parts = assignment.split(/=(.*)/, 2);
+      if (parts.length === 2) {
+        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+        tags.push({
+          Key: parts[0],
+          Value: parts[1],
+        });
+      } else {
+        warning('Tags argument is not an assignment (key=value): %s', assignment);
+      }
+    }
+    return tags.length > 0 ? tags : undefined;
   }
 
   public constructor(args: UserInput = {}) {

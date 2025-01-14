@@ -608,7 +608,7 @@ function parseStringTagsListToObject(argTags: string[] | undefined): Tag[] | und
         Value: parts[1],
       });
     } else {
-      warning('Tags argument is not an assignment (key=value): %s', assignment);
+      debug('Tags argument is not an assignment (key=value): %s', assignment);
     }
   }
   return tags.length > 0 ? tags : undefined;
