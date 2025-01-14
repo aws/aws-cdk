@@ -6,7 +6,6 @@ import { StackCollection } from 'aws-cdk/lib/api/cxapp/cloud-assembly';
 import { Deployments } from 'aws-cdk/lib/api/deployments';
 import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
 import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
-import { formatTime } from 'aws-cdk/lib/api/util/string-manipulation';
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
 import { serializeStructure } from 'aws-cdk/lib/serialize';
 import { tagsForStack } from 'aws-cdk/lib/tags';
@@ -268,6 +267,7 @@ export class Toolkit {
         tags = tagsForStack(stack);
       }
 
+      let elapsedDeployTime;
       try {
         let deployResult: SuccessfulDeployStackResult | undefined;
 
@@ -359,7 +359,7 @@ export class Toolkit {
           : ` ✅  ${stack.displayName}`;
 
         await ioHost.notify(success('\n' + message));
-        const elapsedDeployTime = startDeployTime.end();
+        elapsedDeployTime = startDeployTime.end();
         await ioHost.notify(info(`\n✨  Deployment time: ${elapsedDeployTime.asSec}s\n`));
 
         if (Object.keys(deployResult.outputs).length > 0) {
@@ -402,7 +402,7 @@ export class Toolkit {
           });
         }
       }
-      await ioHost.notify(info(`\n✨  Total time: ${formatTime(synthTime.asSec + elapsedDeployTime)}s\n`));
+      await ioHost.notify(info(`\n✨  Total time: ${synthTime.asSec + elapsedDeployTime.asSec}s\n`));
     };
 
     const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
