@@ -3,9 +3,8 @@
   "description": "Temporary AWS CDK Programmatic Toolkit Library",
   "private": true,
   "version": "0.0.0",
-  "main": "./lib/index.js",
-  "exports": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "./lib/api/index.js",
+  "types": "./lib/api/index.d.ts",
   "type": "commonjs",
   "scripts": {
     "build": "cdk-build",

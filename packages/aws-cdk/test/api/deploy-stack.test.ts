@@ -1,3 +1,8 @@
+import { assertIsSuccessfulDeployStackResult, deployStack, DeployStackOptions } from '@aws-cdk/tmp-toolkit-helpers/lib/api';
+import { NoBootstrapStackEnvironmentResources } from '@aws-cdk/tmp-toolkit-helpers/lib/api/environment-resources';
+import { HotswapMode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
+import { tryHotswapDeployment } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap-deployments';
+import { setCI } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
 import {
   ChangeSetStatus,
   ChangeSetType,
@@ -16,11 +21,6 @@ import {
   UpdateStackCommand,
   UpdateTerminationProtectionCommand,
 } from '@aws-sdk/client-cloudformation';
-import { assertIsSuccessfulDeployStackResult, deployStack, DeployStackOptions } from '../../lib/api';
-import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
-import { HotswapMode } from '../../lib/api/hotswap/common';
-import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
-import { setCI } from '../../lib/logging';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import {
   mockCloudFormationClient,

@@ -1,7 +1,7 @@
 import type { PluginProviderResult, SDKv2CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
-import { CredentialPlugins } from '../../lib/api/aws-auth/credential-plugins';
-import { PluginHost } from '../../lib/api/plugin';
-import { Mode } from '../../lib/api/plugin/mode';
+import { CredentialPlugins } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth/credential-plugins';
+import { PluginHost } from '@aws-cdk/tmp-toolkit-helpers/lib/api/plugin';
+import { Mode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/plugin/mode';
 
 test('returns credential from plugin', async () => {
   // GIVEN

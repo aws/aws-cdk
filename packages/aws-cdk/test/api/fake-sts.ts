@@ -1,8 +1,8 @@
+import { formatErrorMessage } from '@aws-cdk/tmp-toolkit-helpers/lib/util/error';
 import { AssumeRoleCommand, GetCallerIdentityCommand, Tag } from '@aws-sdk/client-sts';
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
-import { formatErrorMessage } from '../../lib/util/error';
 import { mockSTSClient } from '../util/mock-sdk';
 
 interface RegisteredIdentity {

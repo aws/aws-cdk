@@ -5,11 +5,11 @@ import { Writable } from 'stream';
 import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { Deployments } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deployments';
+import { NestedStackTemplates } from '@aws-cdk/tmp-toolkit-helpers/lib/api/nested-stack-helpers';
+import * as cfn from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation';
 import { DescribeChangeSetCommandOutput } from '@aws-sdk/client-cloudformation';
 import { instanceMockFrom, MockCloudExecutable } from './util';
-import { Deployments } from '../lib/api/deployments';
-import { NestedStackTemplates } from '../lib/api/nested-stack-helpers';
-import * as cfn from '../lib/api/util/cloudformation';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 
 let cloudExecutable: MockCloudExecutable;

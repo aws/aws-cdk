@@ -1,5 +1,5 @@
+import { KeyContextProviderPlugin } from '@aws-cdk/tmp-toolkit-helpers/lib/context-providers/keys';
 import { ListAliasesCommand } from '@aws-sdk/client-kms';
-import { KeyContextProviderPlugin } from '../../lib/context-providers/keys';
 import { mockKMSClient, MockSdkProvider, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 let provider: KeyContextProviderPlugin;

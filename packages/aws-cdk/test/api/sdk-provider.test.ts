@@ -1,16 +1,16 @@
 import * as os from 'os';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
+import { ConfigurationOptions, CredentialsOptions, SDK, SdkProvider } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth';
+import { AwsCliCompatible } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth/awscli-compatible';
+import { defaultCliUserAgent } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth/user-agent';
+import { setIoMessageThreshold } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
+import { PluginHost } from '@aws-cdk/tmp-toolkit-helpers/lib/api/plugin';
+import { Mode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/plugin/mode';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
-import { ConfigurationOptions, CredentialsOptions, SDK, SdkProvider } from '../../lib/api/aws-auth';
-import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
-import { defaultCliUserAgent } from '../../lib/api/aws-auth/user-agent';
-import { PluginHost } from '../../lib/api/plugin';
-import { Mode } from '../../lib/api/plugin/mode';
-import { setIoMessageThreshold } from '../../lib/logging';
 import { withMocked } from '../util';
 import { mockSTSClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 

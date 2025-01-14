@@ -6,6 +6,8 @@ jest.mock('promptly', () => {
   };
 });
 
+import { Deployments } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deployments';
+import { ResourceImporter, ImportMap } from '@aws-cdk/tmp-toolkit-helpers/lib/api/import';
 import {
   CreateChangeSetCommand,
   DescribeChangeSetCommand,
@@ -17,8 +19,6 @@ import {
 import * as promptly from 'promptly';
 import { testStack } from './util';
 import { MockSdkProvider, mockCloudFormationClient, restoreSdkMocksToDefault } from './util/mock-sdk';
-import { Deployments } from '../lib/api/deployments';
-import { ResourceImporter, ImportMap } from '../lib/import';
 
 const promptlyConfirm = promptly.confirm as jest.Mock;
 const promptlyPrompt = promptly.prompt as jest.Mock;

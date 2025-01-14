@@ -1,4 +1,4 @@
-import { parallelPromises } from '../../lib/util/parallel';
+import { parallelPromises } from '@aws-cdk/tmp-toolkit-helpers/lib/util/parallel';
 import { sleep } from '../util';
 
 test('parallelPromises', async () => {

@@ -1,5 +1,5 @@
+import { StackEventPoller } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation/stack-event-poller';
 import { DescribeStackEventsCommand, DescribeStackEventsCommandInput, StackEvent } from '@aws-sdk/client-cloudformation';
-import { StackEventPoller } from '../../../../lib/api/util/cloudformation/stack-event-poller';
 import { MockSdk, mockCloudFormationClient } from '../../../util/mock-sdk';
 
 beforeEach(() => {

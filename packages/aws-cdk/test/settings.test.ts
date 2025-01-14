@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
-import { Command, Context, Settings } from '../lib/settings';
-import { Tag } from '../lib/cdk-toolkit';
+import { Tag } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deployments';
+import { Command, Context, Settings } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
 
 test('can delete values from Context object', () => {
   // GIVEN

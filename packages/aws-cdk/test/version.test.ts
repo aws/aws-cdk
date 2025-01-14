@@ -5,8 +5,8 @@ import { promisify } from 'util';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as sinon from 'sinon';
-import * as logging from '../lib/logging';
-import * as npm from '../lib/util/npm';
+import * as logging from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
+import * as npm from '@aws-cdk/tmp-toolkit-helpers/lib/util/npm';
 import { latestVersionIfHigher, VersionCheckTTL, displayVersionMessage, isDeveloperBuild } from '../lib/version';
 
 jest.setTimeout(10_000);

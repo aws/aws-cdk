@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { availableInitLanguages, availableInitTemplates, cliInit, currentlyRecommendedAwsCdkLibFlags, printAvailableTemplates } from '../lib/init';
+import { availableInitLanguages, availableInitTemplates, cliInit, currentlyRecommendedAwsCdkLibFlags, printAvailableTemplates } from '../lib/commands/init';
 
 describe('constructs version', () => {
   cliTest('create a TypeScript library project', async (workDir) => {

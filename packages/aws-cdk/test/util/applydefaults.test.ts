@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { applyDefaults } from '../../lib/util';
+import { applyDefaults } from '@aws-cdk/tmp-toolkit-helpers/lib/util';
 
 test('applyDefaults() works', () => {
   const given = { a: 1 };

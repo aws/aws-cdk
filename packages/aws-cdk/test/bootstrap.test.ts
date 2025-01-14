@@ -1,4 +1,4 @@
-import { Bootstrapper } from '../lib/api/bootstrap/bootstrap-environment';
+import { Bootstrapper } from '@aws-cdk/tmp-toolkit-helpers/lib/api/bootstrap/bootstrap-environment';
 import { exec } from '../lib/cli';
 
 beforeEach(() => {

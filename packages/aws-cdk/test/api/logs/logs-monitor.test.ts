@@ -1,5 +1,5 @@
+import { CloudWatchLogEventMonitor } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logs/logs-monitor';
 import { FilterLogEventsCommand, type FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs';
-import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
 import { sleep } from '../../util';
 import { MockSdk, mockCloudWatchClient } from '../../util/mock-sdk';
 

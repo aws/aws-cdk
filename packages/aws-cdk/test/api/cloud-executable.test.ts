@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';
-import { registerContextProvider } from '../../lib/context-providers';
+import { DefaultSelection } from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/cloud-assembly';
+import { registerContextProvider } from '@aws-cdk/tmp-toolkit-helpers/lib/context-providers';
 import { MockCloudExecutable } from '../util';
 
 describe('AWS::CDK::Metadata', () => {

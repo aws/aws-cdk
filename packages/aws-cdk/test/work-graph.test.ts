@@ -1,5 +1,5 @@
-import { WorkGraph } from '../lib/util/work-graph';
-import { AssetBuildNode, AssetPublishNode, DeploymentState, StackNode } from '../lib/util/work-graph-types';
+import { WorkGraph } from '@aws-cdk/tmp-toolkit-helpers/lib/util/work-graph';
+import { AssetBuildNode, AssetPublishNode, DeploymentState, StackNode } from '@aws-cdk/tmp-toolkit-helpers/lib/util/work-graph-types';
 
 const DUMMY: any = 'DUMMY';
 

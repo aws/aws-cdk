@@ -1,5 +1,7 @@
 import 'aws-sdk-client-mock-jest';
 import { Environment } from '@aws-cdk/cx-api';
+import { SDK, SdkProvider } from '@aws-cdk/tmp-toolkit-helpers/lib/api';
+import { CloudFormationStack } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation';
 import { AppSyncClient } from '@aws-sdk/client-appsync';
 import { CloudFormationClient, Stack, StackStatus } from '@aws-sdk/client-cloudformation';
 import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
@@ -21,8 +23,6 @@ import { createCredentialChain } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentity } from '@smithy/types';
 import { mockClient } from 'aws-sdk-client-mock';
 import { Account } from 'cdk-assets';
-import { SDK, SdkProvider } from '../../lib';
-import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
 export const FAKE_CREDENTIALS: AwsCredentialIdentity = {
   accessKeyId: 'ACCESS',

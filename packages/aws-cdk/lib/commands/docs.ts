@@ -1,6 +1,6 @@
 import * as childProcess from 'child_process';
+import { debug, info, warning } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
 import * as chalk from 'chalk';
-import { debug, info, warning } from '../../lib/logging';
 
 export const command = 'docs';
 export const describe = 'Opens the reference documentation in a browser';

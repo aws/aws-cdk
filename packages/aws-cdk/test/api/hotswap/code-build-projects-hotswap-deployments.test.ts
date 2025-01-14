@@ -1,6 +1,6 @@
+import { HotswapMode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
 import { UpdateProjectCommand } from '@aws-sdk/client-codebuild';
 import * as setup from './hotswap-test-setup';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { mockCodeBuildClient } from '../../util/mock-sdk';
 import { silentTest } from '../../util/silent';
 

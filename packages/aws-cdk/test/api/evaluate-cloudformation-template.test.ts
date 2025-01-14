@@ -1,9 +1,9 @@
-import { ListExportsCommand } from '@aws-sdk/client-cloudformation';
 import {
   CfnEvaluationException,
   EvaluateCloudFormationTemplate,
   Template,
-} from '../../lib/api/evaluate-cloudformation-template';
+} from '@aws-cdk/tmp-toolkit-helpers/lib/api/evaluate-cloudformation-template';
+import { ListExportsCommand } from '@aws-sdk/client-cloudformation';
 import { MockSdk, mockCloudFormationClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 const sdk = new MockSdk();

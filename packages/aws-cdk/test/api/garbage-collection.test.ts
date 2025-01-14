@@ -6,7 +6,7 @@ import {
   ListStacksCommand,
   Stack,
 } from '@aws-sdk/client-cloudformation';
-import { ECR_ISOLATED_TAG, GarbageCollector, S3_ISOLATED_TAG, ToolkitInfo } from '../../lib/api';
+import { ECR_ISOLATED_TAG, GarbageCollector, S3_ISOLATED_TAG, ToolkitInfo } from '@aws-cdk/tmp-toolkit-helpers/lib/api';
 import { mockBootstrapStack, mockCloudFormationClient, mockECRClient, mockS3Client, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 import {
   DeleteObjectsCommand,
@@ -19,7 +19,7 @@ import {
   ActiveAssetCache,
   BackgroundStackRefresh,
   BackgroundStackRefreshProps,
-} from '../../lib/api/garbage-collection/stack-refresh';
+} from '@aws-cdk/tmp-toolkit-helpers/lib/api/garbage-collection/stack-refresh';
 import {
   BatchDeleteImageCommand,
   BatchGetImageCommand,

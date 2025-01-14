@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
-import * as logging from '../lib/logging';
+import * as logging from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
 import {
   CachedDataSource,
   Notice,
@@ -13,12 +13,12 @@ import {
   FilteredNotice,
   WebsiteNoticeDataSource,
   BootstrappedEnvironment,
-} from '../lib/notices';
+} from '@aws-cdk/tmp-toolkit-helpers/lib/api/notices';
 import * as version from '../lib/version';
-import { Context, Settings } from '../lib/settings';
+import { Context, Settings } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
 
 const BASIC_BOOTSTRAP_NOTICE = {
-  title: 'Exccessive permissions on file asset publishing role',
+  title: 'Excessive permissions on file asset publishing role',
   issueNumber: 16600,
   overview: 'FilePublishingRoleDefaultPolicy has too many permissions',
   components: [{
@@ -510,7 +510,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V10).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V11).format());
     });
@@ -520,13 +520,10 @@ describe(Notices, () => {
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
       notices.addBootstrappedEnvironment({ bootstrapStackVersion: 10, environment: { account: 'account', region: 'region', name: 'env' } });
 
-      // mock cli version number
-      jest.spyOn(version, 'versionNumber').mockImplementation(() => '1.0.0');
-
-      notices.display();
+      notices.display('1.0.0');
 
       const filter = jest.spyOn(NoticesFilter, 'filter');
-      notices.display();
+      notices.display('1.0.0');
 
       expect(filter).toHaveBeenCalledTimes(1);
       expect(filter).toHaveBeenCalledWith({
@@ -557,7 +554,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
     });
 
@@ -572,7 +569,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display({ showTotal: true });
+      notices.display('2.0.0', { showTotal: true });
       expect(print).toHaveBeenNthCalledWith(1, '');
       expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
       expect(print).toHaveBeenCalledTimes(2);
@@ -617,7 +614,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
     });
@@ -635,7 +632,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenCalledWith(new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format());
     });
@@ -653,7 +650,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenNthCalledWith(2, 'NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
     });
@@ -669,7 +666,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, 'If you don’t want to see a notice anymore, use \"cdk acknowledge <id>\". For example, \"cdk acknowledge 16603\".');
     });
@@ -680,21 +677,21 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenCalledTimes(0);
     });
 
     test('nothing when there are no notices', async () => {
       const print = jest.spyOn(logging, 'info');
 
-      Notices.create({ context: new Context() }).display();
+      Notices.create({ context: new Context() }).display('2.0.0');
       expect(print).toHaveBeenCalledTimes(0);
     });
 
     test('total count when show total is true', async () => {
       const print = jest.spyOn(logging, 'info');
 
-      Notices.create({ context: new Context() }).display({ showTotal: true });
+      Notices.create({ context: new Context() }).display('2.0.0', { showTotal: true });
       expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
     });
 
@@ -709,7 +706,7 @@ describe(Notices, () => {
 
       const warning = jest.spyOn(logging, 'warning');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(warning).toHaveBeenNthCalledWith(1, new FilteredNotice(BASIC_NOTICE).format());
       expect(warning).toHaveBeenCalledTimes(1);
     });
@@ -725,7 +722,7 @@ describe(Notices, () => {
 
       const error = jest.spyOn(logging, 'error');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(error).toHaveBeenNthCalledWith(1, new FilteredNotice(BASIC_NOTICE).format());
       expect(error).toHaveBeenCalledTimes(1);
     });
@@ -741,7 +738,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
     });
 
@@ -758,7 +755,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
     });
 
@@ -774,7 +771,7 @@ describe(Notices, () => {
 
       const print = jest.spyOn(logging, 'info');
 
-      notices.display();
+      notices.display('2.0.0');
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
       expect(print).toHaveBeenNthCalledWith(6, new FilteredNotice(MULTIPLE_AFFECTED_VERSIONS_NOTICE).format());
     });

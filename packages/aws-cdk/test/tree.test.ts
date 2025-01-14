@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import * as path from 'path';
-import { ConstructTreeNode, loadTreeFromDir, some } from '../lib/tree';
+import { ConstructTreeNode, loadTreeFromDir, some } from '@aws-cdk/tmp-toolkit-helpers/lib/util/tree';
 
 describe('some', () => {
   const tree: ConstructTreeNode = {

@@ -1,4 +1,4 @@
-import { formatErrorMessage } from '../../../lib/util/error';
+import { formatErrorMessage } from '@aws-cdk/tmp-toolkit-helpers/lib/util/error';
 
 describe('formatErrorMessage', () => {
   test('should return the formatted message for a regular Error object', () => {

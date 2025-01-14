@@ -1,6 +1,6 @@
+import { SDK, SdkForEnvironment } from '@aws-cdk/tmp-toolkit-helpers/lib/api';
+import { SSMContextProviderPlugin } from '@aws-cdk/tmp-toolkit-helpers/lib/context-providers/ssm-parameters';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
-import { SDK, SdkForEnvironment } from '../../lib';
-import { SSMContextProviderPlugin } from '../../lib/context-providers/ssm-parameters';
 import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockSSMClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {

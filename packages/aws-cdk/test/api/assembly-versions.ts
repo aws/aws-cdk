@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudAssembly } from '../../lib/api/cxapp/cloud-assembly';
+import { CloudAssembly } from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/cloud-assembly';
 
 /**
  * The cloud-assembly-schema in the new monorepo will use its own package version as the schema version, which is always `0.0.0` when tests are running.

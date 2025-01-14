@@ -1,7 +1,7 @@
 import 'aws-sdk-client-mock-jest';
 
+import { LazyListStackResources } from '@aws-cdk/tmp-toolkit-helpers/lib/api/evaluate-cloudformation-template';
 import { ListStackResourcesCommand } from '@aws-sdk/client-cloudformation';
-import { LazyListStackResources } from '../../lib/api/evaluate-cloudformation-template';
 import { MockSdk, mockCloudFormationClient } from '../util/mock-sdk';
 
 describe('Lazy ListStackResources', () => {

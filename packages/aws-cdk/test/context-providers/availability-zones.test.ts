@@ -1,6 +1,6 @@
+import { SDK, SdkForEnvironment } from '@aws-cdk/tmp-toolkit-helpers/lib/api';
+import { AZContextProviderPlugin } from '@aws-cdk/tmp-toolkit-helpers/lib/context-providers/availability-zones';
 import { DescribeAvailabilityZonesCommand } from '@aws-sdk/client-ec2';
-import { SDK, SdkForEnvironment } from '../../lib';
-import { AZContextProviderPlugin } from '../../lib/context-providers/availability-zones';
 import { FAKE_CREDENTIAL_CHAIN, mockEC2Client, MockSdkProvider } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {

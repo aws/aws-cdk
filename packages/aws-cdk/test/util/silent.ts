@@ -1,5 +1,5 @@
 /* eslint-disable jest/no-export */
-import * as logging from '../../lib/logging';
+import * as logging from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
 
 export function silentTest(name: string, callback: () => void | Promise<void>, timeout?: number): void {
   const spy = jest.spyOn(logging, 'info');

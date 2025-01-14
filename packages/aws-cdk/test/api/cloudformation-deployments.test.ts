@@ -1,6 +1,11 @@
 jest.mock('../../lib/api/deploy-stack');
 jest.mock('../../lib/util/asset-publishing');
 
+import { deployStack } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deploy-stack';
+import { Deployments } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deployments';
+import { HotswapMode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
+import { ToolkitInfo } from '@aws-cdk/tmp-toolkit-helpers/lib/api/toolkit-info';
+import { CloudFormationStack } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation';
 import {
   DescribeStacksCommand,
   ListStackResourcesCommand,
@@ -12,11 +17,6 @@ import {
 } from '@aws-sdk/client-cloudformation';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
-import { deployStack } from '../../lib/api/deploy-stack';
-import { Deployments } from '../../lib/api/deployments';
-import { HotswapMode } from '../../lib/api/hotswap/common';
-import { ToolkitInfo } from '../../lib/api/toolkit-info';
-import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 import { testStack } from '../util';
 import {
   mockBootstrapStack,

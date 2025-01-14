@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
+import { AwsCliCompatible } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth/awscli-compatible';
 import * as fs from 'fs-extra';
-import { AwsCliCompatible } from '../../../lib/api/aws-auth/awscli-compatible';
 
 describe('AwsCliCompatible.region', () => {
 

@@ -1074,6 +1074,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/asset-node-proxy-agent-v6',
       '@aws-cdk/asset-awscli-v1',
       '@aws-cdk/cdk-cli-wrapper',
+      '@aws-cdk/tmp-toolkit-helpers',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {

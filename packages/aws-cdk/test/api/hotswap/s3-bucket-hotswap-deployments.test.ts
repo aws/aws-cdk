@@ -1,7 +1,7 @@
+import { HotswapMode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
+import { REQUIRED_BY_CFN } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/s3-bucket-deployments';
 import { InvokeCommand } from '@aws-sdk/client-lambda';
 import * as setup from './hotswap-test-setup';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
-import { REQUIRED_BY_CFN } from '../../../lib/api/hotswap/s3-bucket-deployments';
 import { mockLambdaClient } from '../../util/mock-sdk';
 import { silentTest } from '../../util/silent';
 

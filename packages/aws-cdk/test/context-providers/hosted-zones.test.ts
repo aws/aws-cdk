@@ -1,6 +1,6 @@
+import { HostedZoneContextProviderPlugin } from '@aws-cdk/tmp-toolkit-helpers/lib/context-providers/hosted-zones';
 import { GetHostedZoneCommand, ListHostedZonesByNameCommand } from '@aws-sdk/client-route-53';
 import { SDK, SdkForEnvironment } from '../../lib';
-import { HostedZoneContextProviderPlugin } from '../../lib/context-providers/hosted-zones';
 import { FAKE_CREDENTIAL_CHAIN, mockRoute53Client, MockSdkProvider } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {

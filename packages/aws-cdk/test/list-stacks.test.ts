@@ -1,9 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';;
+import { Bootstrapper } from '@aws-cdk/tmp-toolkit-helpers/lib/api/bootstrap';
+import { Deployments } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deployments';
+import { listStacks } from '@aws-cdk/tmp-toolkit-helpers/lib/api/list-stacks';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
-import { Bootstrapper } from '../lib/api/bootstrap';
-import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { listStacks } from '../lib/list-stacks';
 
 describe('list', () => {
   let cloudFormation: jest.Mocked<Deployments>;
@@ -43,7 +43,7 @@ describe('list', () => {
     });
 
     // WHEN
-    const workflow = await listStacks(toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
+    const workflow = await listStacks(await toolkit.assembly(), { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
 
     // THEN
     expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
@@ -97,7 +97,7 @@ describe('list', () => {
     });
 
     // WHEN
-    const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
+    const workflow = await listStacks(await toolkit.assembly(), { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
 
     // THEN
     expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
@@ -157,7 +157,7 @@ describe('list', () => {
     });
 
     // WHEN
-    const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-A/Test-Stack-B'] });
+    const workflow = await listStacks(await toolkit.assembly(), { selectors: ['Test-Stack-A', 'Test-Stack-A/Test-Stack-B'] });
 
     // THEN
     expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
@@ -229,7 +229,7 @@ describe('list', () => {
     });
 
     // WHEN
-    const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-A/Test-Stack-B', 'Test-Stack-A/Test-Stack-B/Test-Stack-C'] });
+    const workflow = await listStacks(await toolkit.assembly(), { selectors: ['Test-Stack-A', 'Test-Stack-A/Test-Stack-B', 'Test-Stack-A/Test-Stack-B/Test-Stack-C'] });
 
     // THEN
     expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
@@ -315,7 +315,7 @@ describe('list', () => {
     });
 
     // WHEN
-    const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B', 'Test-Stack-C'] });
+    const workflow = await listStacks(await toolkit.assembly(), { selectors: ['Test-Stack-A', 'Test-Stack-B', 'Test-Stack-C'] });
 
     // THEN
     expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
@@ -405,7 +405,7 @@ describe('list', () => {
     });
 
     // WHEN
-    const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-C'] });
+    const workflow = await listStacks(await toolkit.assembly(), { selectors: ['Test-Stack-A', 'Test-Stack-C'] });
 
     // THEN
     expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
@@ -474,8 +474,8 @@ describe('list', () => {
     });
 
     // WHEN
-    await expect(() =>
-      listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] }),
+    await expect(async () =>
+      listStacks(await toolkit.assembly(), { selectors: ['Test-Stack-A', 'Test-Stack-B'] }),
     ).rejects.toThrow('Could not determine ordering');
   });
 });

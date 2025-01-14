@@ -21,7 +21,7 @@ export async function renderUserInputType(config: CliConfig): Promise<string> {
   });
 
   // add required command
-  scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
+  scope.addImport(new SelectiveModuleImport(scope, '@aws-cdk/tmp-toolkit-helpers/lib/api/settings', ['Command']));
   const commandEnum = Type.fromName(scope, 'Command');
 
   userInputType.addProperty({

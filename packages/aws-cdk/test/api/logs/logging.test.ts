@@ -1,4 +1,4 @@
-import { setIoMessageThreshold, setCI, data, success, highlight, error, warning, info, debug, trace, withCorkedLogging } from '../../../lib/logging';
+import { setIoMessageThreshold, setCI, data, success, highlight, error, warning, info, debug, trace, withCorkedLogging } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
 
 describe('logging', () => {
   let mockStdout: jest.Mock;

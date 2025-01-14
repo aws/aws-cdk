@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';
+import { DefaultSelection } from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/cloud-assembly';
 import { MockCloudExecutable } from '../util';
 import { cliAssemblyWithForcedVersion } from './assembly-versions';
 

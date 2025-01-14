@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import { HotswapMode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
 import {
   GetSchemaCreationStatusCommand,
   ListFunctionsCommand,
@@ -10,7 +11,6 @@ import {
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import * as setup from './hotswap-test-setup';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { mockAppSyncClient, mockS3Client } from '../../util/mock-sdk';
 import { silentTest } from '../../util/silent';
 

@@ -1,8 +1,8 @@
-import { DescribeVpcEndpointServicesCommand } from '@aws-sdk/client-ec2';
-import { SDK, SdkForEnvironment } from '../../lib';
 import {
   EndpointServiceAZContextProviderPlugin,
-} from '../../lib/context-providers/endpoint-service-availability-zones';
+} from '@aws-cdk/tmp-toolkit-helpers/lib/context-providers/endpoint-service-availability-zones';
+import { DescribeVpcEndpointServicesCommand } from '@aws-sdk/client-ec2';
+import { SDK, SdkForEnvironment } from '../../lib';
 import { FAKE_CREDENTIAL_CHAIN, mockEC2Client, MockSdkProvider } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {

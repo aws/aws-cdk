@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { toYAML } from '../lib/serialize';
+import { toYAML } from '@aws-cdk/tmp-toolkit-helpers/lib/util/serialize';
 
 describe(toYAML, () => {
   test('does not wrap lines', () => {

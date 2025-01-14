@@ -1,5 +1,5 @@
-import { formatSdkLoggerContent, SdkToCliLogger } from '../../../lib/api/aws-auth/sdk-logger';
-import * as logging from '../../../lib/logging';
+import { formatSdkLoggerContent, SdkToCliLogger } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth/sdk-logger';
+import * as logging from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
 
 describe(SdkToCliLogger, () => {
   const logger = new SdkToCliLogger();

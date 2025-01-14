@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import * as os from 'os';
 import * as path from 'path';
-import { RWLock } from '../lib/api/util/rwlock';
+import { RWLock } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/rwlock';
 
 function testDir() {
   return path.join(os.tmpdir(), 'rwlock-tests');

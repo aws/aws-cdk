@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import { contextHandler } from '../../lib/commands/context';
-import { Configuration, Settings, Context } from '../../lib/settings';
+import { Configuration, Settings, Context } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
 
 describe('context --list', () => {
   test('runs', async() => {

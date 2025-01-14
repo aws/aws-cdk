@@ -3,7 +3,7 @@
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
 /* eslint-disable @stylistic/max-len */
-import { Command } from './settings';
+import { Command } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
 
 /**
  * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts

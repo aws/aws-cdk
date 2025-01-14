@@ -1,11 +1,11 @@
+import { RequireApproval } from '@aws-cdk/tmp-toolkit-helpers/lib/api/diff';
+import { StackActivityProgress } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation/stack-activity-monitor';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CliHelpers, type CliConfig } from '@aws-cdk/user-input-gen';
-import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { availableInitLanguages } from './commands/init';
 import { MIGRATE_SUPPORTED_LANGUAGES } from './commands/migrate';
-import { RequireApproval } from './diff';
-import { availableInitLanguages } from './init';
 
-export const YARGS_HELPERS = new CliHelpers('./util/yargs-helpers');
+export const YARGS_HELPERS = new CliHelpers('./cli/yargs-helpers');
 
 /**
  * Source of truth for all CDK CLI commands. `user-input-gen` translates this into:

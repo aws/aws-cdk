@@ -1,10 +1,10 @@
+import { VpcNetworkContextProviderPlugin } from '@aws-cdk/tmp-toolkit-helpers/lib/context-providers/vpcs';
 import {
   DescribeRouteTablesCommand,
   DescribeSubnetsCommand,
   DescribeVpcsCommand,
   DescribeVpnGatewaysCommand,
 } from '@aws-sdk/client-ec2';
-import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
 import { MockSdkProvider, mockEC2Client, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 const mockSDK = new MockSdkProvider();

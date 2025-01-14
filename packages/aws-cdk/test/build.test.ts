@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
-import { buildAllStackAssets } from '../lib/build';
+import { buildAllStackAssets } from './helpers/build';
 
 type Stack = cxapi.CloudFormationStackArtifact;
 

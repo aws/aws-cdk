@@ -1,15 +1,15 @@
 import {
+  StackActivityMonitor,
+  type IActivityPrinter,
+  type StackActivity,
+} from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation/stack-activity-monitor';
+import {
   DescribeStackEventsCommand,
   ResourceStatus,
   type StackEvent,
   StackStatus,
 } from '@aws-sdk/client-cloudformation';
 import { MockSdk, mockCloudFormationClient, restoreSdkMocksToDefault } from './mock-sdk';
-import {
-  StackActivityMonitor,
-  type IActivityPrinter,
-  type StackActivity,
-} from '../../lib/api/util/cloudformation/stack-activity-monitor';
 
 let sdk: MockSdk;
 let printer: FakePrinter;

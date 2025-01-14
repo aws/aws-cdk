@@ -1,5 +1,5 @@
+import { LazyLookupExport } from '@aws-cdk/tmp-toolkit-helpers/lib/api/evaluate-cloudformation-template';
 import { ListExportsCommand } from '@aws-sdk/client-cloudformation';
-import { LazyLookupExport } from '../../lib/api/evaluate-cloudformation-template';
 import { MockSdk, mockCloudFormationClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 describe('LazyLookupExport', () => {

@@ -1,3 +1,6 @@
+import { Bootstrapper } from '@aws-cdk/tmp-toolkit-helpers/lib/api/bootstrap';
+import { legacyBootstrapTemplate } from '@aws-cdk/tmp-toolkit-helpers/lib/api/bootstrap/legacy-template';
+import { deserializeStructure, serializeStructure, toYAML } from '@aws-cdk/tmp-toolkit-helpers/lib/util/serialize';
 import {
   CreateChangeSetCommand,
   CreateStackCommand,
@@ -10,9 +13,6 @@ import {
   UpdateTerminationProtectionCommand,
 } from '@aws-sdk/client-cloudformation';
 import { parse } from 'yaml';
-import { Bootstrapper } from '../../lib/api/bootstrap';
-import { legacyBootstrapTemplate } from '../../lib/api/bootstrap/legacy-template';
-import { deserializeStructure, serializeStructure, toYAML } from '../../lib/serialize';
 import { MockSdkProvider, mockCloudFormationClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 const env = {

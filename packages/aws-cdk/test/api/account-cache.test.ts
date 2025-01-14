@@ -1,5 +1,5 @@
 import { bockfs } from '@aws-cdk/cdk-build-tools';
-import { AccountAccessKeyCache } from '../../lib/api/aws-auth/account-cache';
+import { AccountAccessKeyCache } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth/account-cache';
 
 afterAll(() => {
   bockfs.restore();

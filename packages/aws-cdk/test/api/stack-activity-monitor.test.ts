@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import * as chalk from 'chalk';
 import { stderr } from './console-listener';
-import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
+import { HistoryActivityPrinter } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceStatus } from '@aws-sdk/client-cloudformation';
 
 let TIMESTAMP: number;

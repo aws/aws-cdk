@@ -1,7 +1,7 @@
 import * as path from 'path';
+import { AccountAccessKeyCache } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth/account-cache';
 import * as fs from 'fs-extra';
 import { withMocked } from './util';
-import { AccountAccessKeyCache } from '../lib/api/aws-auth/account-cache';
 
 async function makeCache() {
   const dir = await fs.mkdtemp('/tmp/account-cache-test');

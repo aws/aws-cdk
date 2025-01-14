@@ -1,4 +1,4 @@
-import { AuthenticationError, ToolkitError } from '../lib/toolkit/error';
+import { AuthenticationError, ToolkitError } from '@aws-cdk/tmp-toolkit-helpers/lib/toolkit/error';
 
 describe('toolkit error', () => {
   let toolkitError = new ToolkitError('Test toolkit error');

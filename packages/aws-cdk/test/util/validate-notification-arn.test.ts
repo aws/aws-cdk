@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { validateSnsTopicArn } from '../../lib/util/validate-notification-arn';
+import { validateSnsTopicArn } from '@aws-cdk/tmp-toolkit-helpers/lib/util/validate-notification-arn';
 
 describe('validate sns arns', () => {
   test('empty string', () => {

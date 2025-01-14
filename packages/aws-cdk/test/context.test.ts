@@ -2,7 +2,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { Configuration, Context, PROJECT_CONFIG, PROJECT_CONTEXT, Settings, TRANSIENT_CONTEXT_KEY } from '../lib/settings';
+import { Configuration, Context, PROJECT_CONFIG, PROJECT_CONTEXT, Settings, TRANSIENT_CONTEXT_KEY } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
 
 const state: {
   previousWorkingDir?: string;

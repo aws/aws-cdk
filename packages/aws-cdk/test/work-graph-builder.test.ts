@@ -3,11 +3,11 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
+import { WorkGraph } from '@aws-cdk/tmp-toolkit-helpers/lib/util/work-graph';
+import { WorkGraphBuilder } from '@aws-cdk/tmp-toolkit-helpers/lib/util/work-graph-builder';
+import { AssetBuildNode, AssetPublishNode, StackNode, WorkNode } from '@aws-cdk/tmp-toolkit-helpers/lib/util/work-graph-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { expect } from '@jest/globals';
-import { WorkGraph } from '../lib/util/work-graph';
-import { WorkGraphBuilder } from '../lib/util/work-graph-builder';
-import { AssetBuildNode, AssetPublishNode, StackNode, WorkNode } from '../lib/util/work-graph-types';
 
 let rootBuilder: CloudAssemblyBuilder;
 beforeEach(() => {

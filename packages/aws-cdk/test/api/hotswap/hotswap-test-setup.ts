@@ -1,10 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { ICloudFormationClient, SuccessfulDeployStackResult } from '@aws-cdk/tmp-toolkit-helpers/lib/api';
+import { HotswapMode, HotswapPropertyOverrides } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
+import * as deployments from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap-deployments';
+import { CloudFormationStack, Template } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation';
 import { ListStackResourcesCommand, StackResourceSummary, StackStatus } from '@aws-sdk/client-cloudformation';
 import { GetFunctionCommand } from '@aws-sdk/client-lambda';
-import { ICloudFormationClient, SuccessfulDeployStackResult } from '../../../lib/api';
-import { HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
-import * as deployments from '../../../lib/api/hotswap-deployments';
-import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
 import {
   mockCloudFormationClient,

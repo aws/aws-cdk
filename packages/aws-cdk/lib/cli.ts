@@ -1,34 +1,34 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
-import * as chalk from 'chalk';
-import { DeploymentMethod } from './api';
-import { HotswapMode } from './api/hotswap/common';
-import { ILock } from './api/util/rwlock';
-import { parseCommandLineArguments } from './parse-command-line-arguments';
-import { checkForPlatformWarnings } from './platform-warnings';
-import { IoMessageLevel, CliIoHost } from './toolkit/cli-io-host';
+import { DeploymentMethod } from '@aws-cdk/tmp-toolkit-helpers/lib/api';
+import { SdkProvider } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth';
+import { SdkToCliLogger } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth/sdk-logger';
+import { BootstrapSource, Bootstrapper } from '@aws-cdk/tmp-toolkit-helpers/lib/api/bootstrap';
 
-import { enableTracing } from './util/tracing';
-import { SdkProvider } from '../lib/api/aws-auth';
-import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
-import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
-import { CloudExecutable, Synthesizer } from '../lib/api/cxapp/cloud-executable';
-import { execProgram } from '../lib/api/cxapp/exec';
-import { Deployments } from '../lib/api/deployments';
-import { PluginHost } from '../lib/api/plugin';
-import { ToolkitInfo } from '../lib/api/toolkit-info';
+import { StackSelector } from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/cloud-assembly';
+import { CloudExecutable, Synthesizer } from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/cloud-executable';
+import { execProgram } from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/exec';
+import { Deployments } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deployments';
+import { HotswapMode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
+import { data, debug, error, info, setCI, setIoMessageThreshold } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
+import { Notices } from '@aws-cdk/tmp-toolkit-helpers/lib/api/notices';
+import { PluginHost } from '@aws-cdk/tmp-toolkit-helpers/lib/api/plugin';
+import { Command, Configuration, Settings } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
+import { ToolkitInfo } from '@aws-cdk/tmp-toolkit-helpers/lib/api/toolkit-info';
+import { ILock } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/rwlock';
+import { IoMessageLevel, CliIoHost } from '@aws-cdk/tmp-toolkit-helpers/lib/toolkit/cli-io-host';
+import { ToolkitError } from '@aws-cdk/tmp-toolkit-helpers/lib/toolkit/error';
+import { enableTracing } from '@aws-cdk/tmp-toolkit-helpers/lib/util/tracing';
+import * as chalk from 'chalk';
+import { checkForPlatformWarnings } from './cli/platform-warnings';
+import { cliInit, printAvailableTemplates } from './commands/init';
+import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { contextHandler as context } from '../lib/commands/context';
 import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
-import { cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, info, setCI, setIoMessageThreshold } from '../lib/logging';
-import { Notices } from '../lib/notices';
-import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
-import { ToolkitError } from './toolkit/error';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -117,7 +117,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         // variable here. It will be released when the CLI exits. Locks are not re-entrant
         // so release it if we have to synthesize more than once (because of context lookups).
         await outDirLock?.release();
-        const { assembly, lock } = await execProgram(aws, config);
+        const { assembly, lock } = await execProgram(aws, config, version.versionNumber());
         outDirLock = lock;
         return assembly;
       }),
@@ -166,11 +166,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     if (cmd === 'notices') {
       await notices.refresh({ force: true });
-      notices.display({ showTotal: argv.unacknowledged });
+      notices.display(version.versionNumber(), { showTotal: argv.unacknowledged });
 
     } else if (cmd !== 'version') {
       await notices.refresh();
-      notices.display();
+      notices.display(version.versionNumber());
     }
   }
 

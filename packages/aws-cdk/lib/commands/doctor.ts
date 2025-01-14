@@ -1,7 +1,7 @@
 import * as process from 'process';
 import * as cxapi from '@aws-cdk/cx-api';
+import { info } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
 import * as chalk from 'chalk';
-import { info } from '../../lib/logging';
 import * as version from '../../lib/version';
 
 export async function doctor(): Promise<number> {

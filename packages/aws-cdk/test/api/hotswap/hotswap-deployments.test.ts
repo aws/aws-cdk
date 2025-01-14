@@ -1,9 +1,9 @@
+import { CfnEvaluationException } from '@aws-cdk/tmp-toolkit-helpers/lib/api/evaluate-cloudformation-template';
+import { HotswapMode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
 import { ListExportsCommand } from '@aws-sdk/client-cloudformation';
 import { UpdateFunctionCodeCommand } from '@aws-sdk/client-lambda';
 import { UpdateStateMachineCommand } from '@aws-sdk/client-sfn';
 import * as setup from './hotswap-test-setup';
-import { CfnEvaluationException } from '../../../lib/api/evaluate-cloudformation-template';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { MockSdk, mockCloudFormationClient, mockLambdaClient, mockStepFunctionsClient } from '../../util/mock-sdk';
 import { silentTest } from '../../util/silent';
 

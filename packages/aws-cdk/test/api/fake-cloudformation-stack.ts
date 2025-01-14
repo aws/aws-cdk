@@ -1,6 +1,6 @@
-import { ICloudFormationClient } from '../../lib';
-import { CloudFormationStack, Template } from '../../lib/api/util/cloudformation';
-import { StackStatus } from '../../lib/api/util/cloudformation/stack-status';
+import { ICloudFormationClient } from '@aws-cdk/tmp-toolkit-helpers';
+import { CloudFormationStack, Template } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation';
+import { StackStatus } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation/stack-status';
 import { MockSdk } from '../util/mock-sdk';
 
 export interface FakeCloudFormationStackProps {

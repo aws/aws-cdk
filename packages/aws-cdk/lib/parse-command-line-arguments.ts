@@ -4,7 +4,7 @@
 // -------------------------------------------------------------------------------------------
 /* eslint-disable @stylistic/max-len */
 import { Argv } from 'yargs';
-import * as helpers from './util/yargs-helpers';
+import * as helpers from './cli/yargs-helpers';
 
 // @ts-ignore TS6133
 export function parseCommandLineArguments(args: Array<string>): any {
@@ -729,7 +729,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'string',
           alias: 'l',
           desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)',
-          choices: ['csharp', 'fsharp', 'go', 'java', 'javascript', 'python', 'typescript'],
+          choices: [],
         })
         .option('list', {
           default: undefined,

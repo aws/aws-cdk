@@ -1,29 +1,43 @@
 import * as path from 'path';
 import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as chalk from 'chalk';
-import * as chokidar from 'chokidar';
-import * as fs from 'fs-extra';
-import * as promptly from 'promptly';
-import * as uuid from 'uuid';
-import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
-import { SdkProvider } from './api/aws-auth';
-import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
+import { DeploymentMethod, SuccessfulDeployStackResult } from '@aws-cdk/tmp-toolkit-helpers/lib/api';
+import { SdkProvider } from '@aws-cdk/tmp-toolkit-helpers/lib/api/aws-auth';
+import { Bootstrapper, BootstrapEnvironmentOptions } from '@aws-cdk/tmp-toolkit-helpers/lib/api/bootstrap';
 import {
   CloudAssembly,
   DefaultSelection,
   ExtendedStackSelection,
   StackCollection,
   StackSelector,
-} from './api/cxapp/cloud-assembly';
-import { CloudExecutable } from './api/cxapp/cloud-executable';
-import { Deployments } from './api/deployments';
-import { GarbageCollector } from './api/garbage-collection/garbage-collector';
-import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
-import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
-import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
-import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+} from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/cloud-assembly';
+import { CloudExecutable } from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/cloud-executable';
+import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '@aws-cdk/tmp-toolkit-helpers/lib/api/cxapp/environments';
+import { Deployments, Tag } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deployments';
+import { printSecurityDiff, printStackDiff, RequireApproval } from '@aws-cdk/tmp-toolkit-helpers/lib/api/diff';
+import { GarbageCollector } from '@aws-cdk/tmp-toolkit-helpers/lib/api/garbage-collection/garbage-collector';
+import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
+import { ResourceImporter, removeNonImportResources } from '@aws-cdk/tmp-toolkit-helpers/lib/api/import';
+import { listStacks } from '@aws-cdk/tmp-toolkit-helpers/lib/api/list-stacks';
+import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
+import { findCloudWatchLogGroups } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logs/find-cloudwatch-logs';
+import { CloudWatchLogEventMonitor } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logs/logs-monitor';
+import { Configuration, PROJECT_CONFIG } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
+import { createDiffChangeSet, ResourcesToImport } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation';
+import { StackActivityProgress } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation/stack-activity-monitor';
+import { ToolkitError } from '@aws-cdk/tmp-toolkit-helpers/lib/toolkit/error';
+import { numberFromBool, partition } from '@aws-cdk/tmp-toolkit-helpers/lib/util';
+import { formatErrorMessage } from '@aws-cdk/tmp-toolkit-helpers/lib/util/error';
+import { deserializeStructure, serializeStructure } from '@aws-cdk/tmp-toolkit-helpers/lib/util/serialize';
+import { validateSnsTopicArn } from '@aws-cdk/tmp-toolkit-helpers/lib/util/validate-notification-arn';
+import { Concurrency, WorkGraph } from '@aws-cdk/tmp-toolkit-helpers/lib/util/work-graph';
+import { WorkGraphBuilder } from '@aws-cdk/tmp-toolkit-helpers/lib/util/work-graph-builder';
+import { AssetBuildNode, AssetPublishNode, StackNode } from '@aws-cdk/tmp-toolkit-helpers/lib/util/work-graph-types';
+import * as chalk from 'chalk';
+import * as chokidar from 'chokidar';
+import * as fs from 'fs-extra';
+import * as promptly from 'promptly';
+import * as uuid from 'uuid';
 import {
   generateCdkApp,
   generateStack,
@@ -42,20 +56,6 @@ import {
   isThereAWarning,
   buildCfnClient,
 } from './commands/migrate';
-import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { ResourceImporter, removeNonImportResources } from './import';
-import { listStacks } from './list-stacks';
-import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from './logging';
-import { deserializeStructure, serializeStructure } from './serialize';
-import { Configuration, PROJECT_CONFIG } from './settings';
-import { ToolkitError } from './toolkit/error';
-import { numberFromBool, partition } from './util';
-import { formatErrorMessage } from './util/error';
-import { validateSnsTopicArn } from './util/validate-notification-arn';
-import { Concurrency, WorkGraph } from './util/work-graph';
-import { WorkGraphBuilder } from './util/work-graph-builder';
-import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
-import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -833,7 +833,8 @@ export class CdkToolkit {
     selectors: string[],
     options: { long?: boolean; json?: boolean; showDeps?: boolean } = {},
   ): Promise<number> {
-    const stacks = await listStacks(this, {
+    const assembly = await this.assembly();
+    const stacks = await listStacks(assembly, {
       selectors: selectors,
     });
 
@@ -1849,11 +1850,6 @@ export interface MigrateOptions {
  */
 function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
   return Object.entries(stack.tags).map(([Key, Value]) => ({ Key, Value }));
-}
-
-export interface Tag {
-  readonly Key: string;
-  readonly Value: string;
 }
 
 /**

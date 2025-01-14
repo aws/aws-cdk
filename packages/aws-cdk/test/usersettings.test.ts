@@ -2,7 +2,7 @@
 import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
-import { Configuration, PROJECT_CONFIG, PROJECT_CONTEXT } from '../lib/settings';
+import { Configuration, PROJECT_CONFIG, PROJECT_CONTEXT } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
 
 // mock fs deeply
 jest.mock('fs-extra');

@@ -1,5 +1,5 @@
+import { determineAllowCrossAccountAssetPublishing, getBootstrapStackInfo } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/checks';
 import { DescribeStacksCommand, StackStatus } from '@aws-sdk/client-cloudformation';
-import { determineAllowCrossAccountAssetPublishing, getBootstrapStackInfo } from '../../../lib/api/util/checks';
 import { mockCloudFormationClient, MockSdk } from '../../util/mock-sdk';
 
 describe('determineAllowCrossAccountAssetPublishing', () => {

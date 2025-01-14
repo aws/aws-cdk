@@ -63,6 +63,22 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Bootstrapper, type BootstrapSource } from '@aws-cdk/tmp-toolkit-helpers/lib/api/bootstrap';
+import { DeployStackResult, SuccessfulDeployStackResult } from '@aws-cdk/tmp-toolkit-helpers/lib/api/deploy-stack';
+import {
+  Deployments,
+  DeployStackOptions,
+  DestroyStackOptions,
+  RollbackStackOptions,
+  RollbackStackResult,
+  Tag,
+} from '@aws-cdk/tmp-toolkit-helpers/lib/api/deployments';
+import { RequireApproval } from '@aws-cdk/tmp-toolkit-helpers/lib/api/diff';
+import { HotswapMode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
+import { Mode } from '@aws-cdk/tmp-toolkit-helpers/lib/api/plugin/mode';
+import { Configuration } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
+import { Template } from '@aws-cdk/tmp-toolkit-helpers/lib/api/util/cloudformation';
+import { flatten } from '@aws-cdk/tmp-toolkit-helpers/lib/util';
 import { DescribeStacksCommand, GetTemplateCommand, StackStatus } from '@aws-sdk/client-cloudformation';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import * as fs from 'fs-extra';
@@ -76,22 +92,7 @@ import {
   mockSSMClient,
   restoreSdkMocksToDefault,
 } from './util/mock-sdk';
-import { Bootstrapper, type BootstrapSource } from '../lib/api/bootstrap';
-import { DeployStackResult, SuccessfulDeployStackResult } from '../lib/api/deploy-stack';
-import {
-  Deployments,
-  DeployStackOptions,
-  DestroyStackOptions,
-  RollbackStackOptions,
-  RollbackStackResult,
-} from '../lib/api/deployments';
-import { HotswapMode } from '../lib/api/hotswap/common';
-import { Mode } from '../lib/api/plugin/mode';
-import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
-import { RequireApproval } from '../lib/diff';
-import { Configuration } from '../lib/settings';
-import { flatten } from '../lib/util';
+import { CdkToolkit, markTesting } from '../lib/cdk-toolkit';
 
 markTesting();
 

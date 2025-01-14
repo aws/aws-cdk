@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { flatMap, flatten, partition } from '../../lib/util';
+import { flatMap, flatten, partition } from '@aws-cdk/tmp-toolkit-helpers/lib/util';
 
 test('flatten combines arrays', () => {
   const output = flatten([

@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import * as fc from 'fast-check';
-import { deepClone, deepGet, deepMerge, deepSet, splitBySize } from '../../lib/util';
+import { deepClone, deepGet, deepMerge, deepSet, splitBySize } from '@aws-cdk/tmp-toolkit-helpers/lib/util';
 
 test('deepSet can set deeply', () => {
   const obj = {};

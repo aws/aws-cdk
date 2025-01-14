@@ -1,5 +1,5 @@
+import { setIoMessageThreshold } from '@aws-cdk/tmp-toolkit-helpers/lib/api/logging';
 import { exec } from '../lib/cli';
-import { setIoMessageThreshold } from '../lib/logging';
 
 // Store original version module exports so we don't conflict with other tests
 const originalVersion = jest.requireActual('../lib/version');

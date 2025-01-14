@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { rangeFromSemver } from '../../lib/util/version-range';
+import { rangeFromSemver } from '@aws-cdk/tmp-toolkit-helpers/lib/util/version-range';
 
 describe('rangeFromSemver', () => {
   describe('bracket', () => {

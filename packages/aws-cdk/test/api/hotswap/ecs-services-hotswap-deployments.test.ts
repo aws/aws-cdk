@@ -1,7 +1,7 @@
+import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '@aws-cdk/tmp-toolkit-helpers/lib/api/hotswap/common';
+import { Configuration } from '@aws-cdk/tmp-toolkit-helpers/lib/api/settings';
 import { DescribeServicesCommand, RegisterTaskDefinitionCommand, UpdateServiceCommand } from '@aws-sdk/client-ecs';
 import * as setup from './hotswap-test-setup';
-import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
-import { Configuration } from '../../../lib/settings';
 import { mockECSClient } from '../../util/mock-sdk';
 import { silentTest } from '../../util/silent';
 

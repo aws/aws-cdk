@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { deserializeStructure, toYAML } from '../lib/serialize';
+import { deserializeStructure, toYAML } from '@aws-cdk/tmp-toolkit-helpers/lib/util/serialize';
 
 // Preferred quote of the YAML library
 const q = '"';
