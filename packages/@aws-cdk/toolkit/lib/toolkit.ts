@@ -159,10 +159,10 @@ export class Toolkit {
     const parameterMap = buildParameterMap(options.parameters?.parameters);
 
     if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
-      warning(
+      await ioHost.notify(warning(
         '⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments',
-      );
-      warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
+      ));
+      await ioHost.notify(warning('⚠️ They should only be used for development - never use them for your production Stacks!\n'));
     }
 
     // @TODO
@@ -203,8 +203,7 @@ export class Toolkit {
     const deployStack = async (stackNode: StackNode) => {
       const stack = stackNode.stack;
       if (stackCollection.stackCount !== 1) {
-
-        highlight(stack.displayName);
+        await ioHost.notify(highlight(stack.displayName));
       }
 
       if (!stack.environment) {
@@ -262,14 +261,13 @@ export class Toolkit {
       await ioHost.notify(
         info(`${chalk.bold(stack.displayName)}: deploying... [${stackIndex}/${stackCollection.stackCount}]`),
       );
-      const startDeployTime = new Date().getTime();
+      const startDeployTime = Timer.start();
 
       let tags = options.tags;
       if (!tags || tags.length === 0) {
         tags = tagsForStack(stack);
       }
 
-      let elapsedDeployTime = 0;
       try {
         let deployResult: SuccessfulDeployStackResult | undefined;
 
@@ -337,7 +335,7 @@ export class Toolkit {
               const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
 
               if (options.force) {
-                warning(`${motivation}. Proceeding with regular deployment (--force).`);
+                await ioHost.notify(warning(`${motivation}. Proceeding with regular deployment (--force).`));
               } else {
                 await askUserConfirmation(
                   concurrency,
@@ -361,8 +359,8 @@ export class Toolkit {
           : ` ✅  ${stack.displayName}`;
 
         await ioHost.notify(success('\n' + message));
-        elapsedDeployTime = new Date().getTime() - startDeployTime;
-        await ioHost.notify(info(`\n✨  Deployment time: ${formatTime(elapsedDeployTime)}s\n`));
+        const elapsedDeployTime = startDeployTime.end();
+        await ioHost.notify(info(`\n✨  Deployment time: ${elapsedDeployTime.asSec}s\n`));
 
         if (Object.keys(deployResult.outputs).length > 0) {
           await ioHost.notify(info('Outputs:'));
@@ -412,7 +410,7 @@ export class Toolkit {
     const concurrency = options.concurrency || 1;
     const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
     if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
-      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+      await ioHost.notify(warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".'));
     }
 
     const stacksAndTheirAssetManifests = stacks.flatMap((stack) => [
