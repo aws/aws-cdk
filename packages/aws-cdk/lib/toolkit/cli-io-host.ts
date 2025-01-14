@@ -1,10 +1,15 @@
 import * as chalk from 'chalk';
 
+export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS';
+export type IoCodeLevel = 'E' | 'W' | 'I';
+export type IoMessageSpecificCode<L extends IoCodeLevel> = `CDK_${IoMessageCodeCategory}_${L}${number}${number}${number}${number}`;
+export type IoMessageCode = IoMessageSpecificCode<IoCodeLevel>;
+
 /**
  * Basic message structure for toolkit notifications.
  * Messages are emitted by the toolkit and handled by the IoHost.
  */
-interface IoMessage {
+export interface IoMessage {
   /**
    * The time the message was emitted.
    */
@@ -18,12 +23,25 @@ interface IoMessage {
   /**
    * The action that triggered the message.
    */
-  readonly action: IoAction;
+  readonly action: ToolkitAction;
 
   /**
-   * A short code uniquely identifying message type.
+   * A short message code uniquely identifying a message type using the format CDK_[CATEGORY]_[E/W/I][000-999].
+   *
+   * The level indicator follows these rules:
+   * - 'E' for error level messages
+   * - 'W' for warning level messages
+   * - 'I' for info/debug/trace level messages
+   *
+   * Codes ending in 000 are generic messages, while codes ending in 001-999 are specific to a particular message.
+   * The following are examples of valid and invalid message codes:
+   * ```ts
+   * 'CDK_ASSETS_I000'       // valid: generic assets info message
+   * 'CDK_TOOLKIT_E002'      // valid: specific toolkit error message
+   * 'CDK_SDK_W023'          // valid: specific sdk warning message
+   * ```
    */
-  readonly code: string;
+  readonly code: IoMessageCode;
 
   /**
    * The message text.
@@ -41,62 +59,34 @@ interface IoMessage {
 
 export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
-export type IoAction = 'synth' | 'list' | 'deploy' | 'destroy';
-
 /**
- * Options for the CLI IO host.
+ * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
-interface CliIoHostOptions {
-  /**
-   * If true, the host will use TTY features like color.
-   */
-  useTTY?: boolean;
-
-  /**
-   * Flag representing whether the current process is running in a CI environment.
-   * If true, the host will write all messages to stdout, unless log level is 'error'.
-   *
-   * @default false
-   */
-  ci?: boolean;
-}
+export type ToolkitAction = 'synth' | 'list' | 'deploy' | 'destroy' | 'none';
 
 /**
  * A simple IO host for the CLI that writes messages to the console.
  */
 export class CliIoHost {
-  private readonly pretty_messages: boolean;
-  private readonly ci: boolean;
-
-  constructor(options: CliIoHostOptions) {
-    this.pretty_messages = options.useTTY ?? process.stdout.isTTY ?? false;
-    this.ci = options.ci ?? false;
+  /**
+   * Returns the singleton instance
+   */
+  static getIoHost(): CliIoHost {
+    if (!CliIoHost.instance) {
+      CliIoHost.instance = new CliIoHost();
+    }
+    return CliIoHost.instance;
   }
 
   /**
-   * Notifies the host of a message.
-   * The caller waits until the notification completes.
+   * Singleton instance of the CliIoHost
    */
-  async notify(msg: IoMessage): Promise<void> {
-    const output = this.formatMessage(msg);
-
-    const stream = this.getStream(msg.level, msg.forceStdout ?? false);
-
-    return new Promise((resolve, reject) => {
-      stream.write(output, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
+  private static instance: CliIoHost | undefined;
 
   /**
    * Determines which output stream to use based on log level and configuration.
    */
-  private getStream(level: IoMessageLevel, forceStdout: boolean) {
+  private static getStream(level: IoMessageLevel, forceStdout: boolean) {
     // For legacy purposes all log streams are written to stderr by default, unless
     // specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
     // if the CDK is running in a CI environment. This is because some CI environments will immediately
@@ -110,11 +100,79 @@ export class CliIoHost {
   }
 
   /**
+   * Whether the host should apply chalk styles to messages. Defaults to false if the host is not running in a TTY.
+   *
+   * @default false
+   */
+  private isTTY: boolean;
+
+  /**
+   * Whether the CliIoHost is running in CI mode. In CI mode, all non-error output goes to stdout instead of stderr.
+   *
+   * Set to false in the CliIoHost constructor it will be overwritten if the CLI CI argument is passed
+   */
+  private ci: boolean;
+
+  /**
+   * the current {@link ToolkitAction} set by the CLI.
+   */
+  private currentAction: ToolkitAction | undefined;
+
+  private constructor() {
+    this.isTTY = process.stdout.isTTY ?? false;
+    this.ci = false;
+  }
+
+  public static get currentAction(): ToolkitAction | undefined {
+    return CliIoHost.getIoHost().currentAction;
+  }
+
+  public static set currentAction(action: ToolkitAction) {
+    CliIoHost.getIoHost().currentAction = action;
+  }
+
+  public static get ci(): boolean {
+    return CliIoHost.getIoHost().ci;
+  }
+
+  public static set ci(value: boolean) {
+    CliIoHost.getIoHost().ci = value;
+  }
+
+  public static get isTTY(): boolean {
+    return CliIoHost.getIoHost().isTTY;
+  }
+
+  public static set isTTY(value: boolean) {
+    CliIoHost.getIoHost().isTTY = value;
+  }
+
+  /**
+   * Notifies the host of a message.
+   * The caller waits until the notification completes.
+   */
+  async notify(msg: IoMessage): Promise<void> {
+    const output = this.formatMessage(msg);
+
+    const stream = CliIoHost.getStream(msg.level, msg.forceStdout ?? false);
+
+    return new Promise((resolve, reject) => {
+      stream.write(output, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  /**
    * Formats a message for console output with optional color support
    */
   private formatMessage(msg: IoMessage): string {
     // apply provided style or a default style if we're in TTY mode
-    let message_text = this.pretty_messages
+    let message_text = this.isTTY
       ? styleMap[msg.level](msg.message)
       : msg.message;
 

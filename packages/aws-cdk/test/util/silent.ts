@@ -2,7 +2,7 @@
 import * as logging from '../../lib/logging';
 
 export function silentTest(name: string, callback: () => void | Promise<void>, timeout?: number): void {
-  const spy = jest.spyOn(logging, 'print');
+  const spy = jest.spyOn(logging, 'info');
   if (process.env.CLI_TEST_VERBOSE) {
     spy.mockRestore();
   }
