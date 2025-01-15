@@ -2,7 +2,8 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from '../lib';
 import { AddressFamily } from '../lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { Template } from 'aws-cdk-lib/assertions';
+// import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -28,10 +29,10 @@ const vpc = new ec2.VpcV2(stack, 'Vpc', {
   }),
 });
 
-new ec2.SubnetV2(stack, 'Subnet', {
+new ec2.SubnetV2(stack, 'Subnet1', {
   vpc,
   ipv4Cidr: {
-    ipamPool: ipv4IpamPool.addPool('subnetPool', {
+    ipamPool: ipv4IpamPool.addPool('subnetPool1', {
       addressFamily: AddressFamily.IP_V4,
       sourceResource: vpc,
     }),
@@ -41,6 +42,22 @@ new ec2.SubnetV2(stack, 'Subnet', {
   availabilityZone: stack.region + 'a',
 });
 
-new IntegTest(app, 'aws-cdk-subnetv2-ipam', {
-  testCases: [stack],
+new ec2.SubnetV2(stack, 'Subnet2', {
+  vpc,
+  ipv4Cidr: {
+    ipamPool: ipv4IpamPool.addPool('subnetPool2', {
+      addressFamily: AddressFamily.IP_V4,
+      sourceResource: vpc,
+    }),
+    netmaskLength: 24,
+  },
+  subnetType: SubnetType.PRIVATE_ISOLATED,
+  availabilityZone: stack.region + 'a',
 });
+
+// eslint-disable-next-line no-console
+console.log('##########:', Template.fromStack(stack));
+
+// new IntegTest(app, 'aws-cdk-subnetv2-ipam', {
+//   testCases: [stack],
+// });
