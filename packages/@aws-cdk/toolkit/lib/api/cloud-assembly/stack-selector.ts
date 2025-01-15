@@ -1,16 +1,6 @@
 /**
- * The current action being performed by the CLI. 'none' represents the absence of an action.
+ * Which stacks should be selected from a cloud assembly
  */
-export type ToolkitAction =
-| 'bootstrap'
-| 'synth'
-| 'list'
-| 'diff'
-| 'deploy'
-| 'rollback'
-| 'watch'
-| 'destroy';
-
 export enum StackSelectionStrategy {
   /**
    * Returns all stacks in the app regardless of patterns,

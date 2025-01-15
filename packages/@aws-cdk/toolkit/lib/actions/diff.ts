@@ -1,4 +1,4 @@
-import { StackSelector } from '../types';
+import { StackSelector } from '../api/cloud-assembly/stack-selector';
 
 export interface CloudFormationDiffOptions {
   /**
@@ -28,19 +28,46 @@ export interface ChangeSetDiffOptions extends CloudFormationDiffOptions {
   readonly parameters?: { [name: string]: string | undefined };
 }
 
-export class DiffMode {
+export class DiffMethod {
   /**
    * Use a changeset to compute the diff.
    *
    * This will create, analyze, and subsequently delete a changeset against the CloudFormation stack.
    */
-  public static ChangeSet(options: ChangeSetDiffOptions = {}) {}
-  public static TemplateOnly(options: CloudFormationDiffOptions = {}) {}
-  public static LocalTemplate(path: string) {}
-
-  private constructor(public readonly mode: string) {
-
+  public static ChangeSet(options: ChangeSetDiffOptions = {}) {
+    return new class extends DiffMethod {
+      public override readonly options: ChangeSetDiffOptions;
+      public constructor(opts: ChangeSetDiffOptions) {
+        super('change-set', opts);
+        this.options = opts;
+      }
+    }(options);
   }
+
+  public static TemplateOnly(options: CloudFormationDiffOptions = {}) {
+    return new class extends DiffMethod {
+      public override readonly options: CloudFormationDiffOptions;
+      public constructor(opts: CloudFormationDiffOptions) {
+        super('template-only', opts);
+        this.options = opts;
+      }
+    }(options);
+  }
+
+  public static LocalFile(path: string) {
+    return new class extends DiffMethod {
+      public override readonly options: { path: string };
+      public constructor(opts: { path: string }) {
+        super('local-file', opts);
+        this.options = opts;
+      }
+    }({ path });
+  };
+
+  private constructor(
+    public readonly method: 'change-set' | 'template-only' | 'local-file',
+    public readonly options: ChangeSetDiffOptions | CloudFormationDiffOptions | { path: string },
+  ) {}
 }
 
 export interface DiffOptions {
@@ -63,7 +90,7 @@ export interface DiffOptions {
    *
    * @default DiffMode.ChangeSet
    */
-  readonly mode: DiffMode;
+  readonly method: DiffMethod;
 
   /**
    * Strict diff mode
