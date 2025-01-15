@@ -28,7 +28,7 @@ import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, 
 import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
 import { ToolkitError } from './api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
-import { asSdkLogger, withAction, ActionAwareIoHost, Timer, confirm, data, error, highlight, info, success, warn } from './api/io/private';
+import { asSdkLogger, withAction, ActionAwareIoHost, Timer, confirm, data, error, highlight, info, success, warn, debug } from './api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -462,9 +462,106 @@ export class Toolkit {
    * Continuously observe project files and deploy the selected stacks automatically when changes are detected.
    * Implies hotswap deployments.
    */
-  public async watch(_cx: ICloudAssemblySource, _options: WatchOptions): Promise<void> {
+  public async watch(cx: ICloudAssemblySource, options: WatchOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, 'watch');
-    throw new Error('Not implemented yet');
+    const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
+    await ioHost.notify(debug(`root directory used for 'watch' is: ${rootDir}`));
+
+    const watchSettings: { include?: string | string[]; exclude: string | string[] } | undefined =
+      this.props.configuration.settings.get(['watch']);
+    if (!watchSettings) {
+      throw new ToolkitError(
+        "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
+          'Make sure to add a "watch" key to your cdk.json',
+      );
+    }
+
+    // For the "include" subkey under the "watch" key, the behavior is:
+    // 1. No "watch" setting? We error out.
+    // 2. "watch" setting without an "include" key? We default to observing "./**".
+    // 3. "watch" setting with an empty "include" key? We default to observing "./**".
+    // 4. Non-empty "include" key? Just use the "include" key.
+    const watchIncludes = this.patternsArrayForWatch(watchSettings.include, {
+      rootDir,
+      returnRootDirIfEmpty: true,
+    });
+    await ioHost.notify(debug(`'include' patterns for 'watch': ${watchIncludes}`));
+
+    // For the "exclude" subkey under the "watch" key,
+    // the behavior is to add some default excludes in addition to the ones specified by the user:
+    // 1. The CDK output directory.
+    // 2. Any file whose name starts with a dot.
+    // 3. Any directory's content whose name starts with a dot.
+    // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
+    const outputDir = this.props.configuration.settings.get(['output']);
+    const watchExcludes = this.patternsArrayForWatch(watchSettings.exclude, {
+      rootDir,
+      returnRootDirIfEmpty: false,
+    }).concat(`${outputDir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
+    debug("'exclude' patterns for 'watch': %s", watchExcludes);
+
+    // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
+    // introduce a concurrency latch that tracks the state.
+    // This way, if file change events arrive when a 'cdk deploy' is still executing,
+    // we will batch them, and trigger another 'cdk deploy' after the current one finishes,
+    // making sure 'cdk deploy's  always execute one at a time.
+    // Here's a diagram showing the state transitions:
+    // --------------                --------    file changed     --------------    file changed     --------------  file changed
+    // |            |  ready event   |      | ------------------> |            | ------------------> |            | --------------|
+    // | pre-ready  | -------------> | open |                     | deploying  |                     |   queued   |               |
+    // |            |                |      | <------------------ |            | <------------------ |            | <-------------|
+    // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
+    let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
+
+    const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
+    const deployAndWatch = async () => {
+      latch = 'deploying';
+      cloudWatchLogMonitor?.deactivate();
+
+      await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
+
+      // If latch is still 'deploying' after the 'await', that's fine,
+      // but if it's 'queued', that means we need to deploy again
+      while ((latch as 'deploying' | 'queued') === 'queued') {
+        // TypeScript doesn't realize latch can change between 'awaits',
+        // and thinks the above 'while' condition is always 'false' without the cast
+        latch = 'deploying';
+        info("Detected file changes during deployment. Invoking 'cdk deploy' again");
+        await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
+      }
+      latch = 'open';
+      cloudWatchLogMonitor?.activate();
+    };
+
+    chokidar
+      .watch(watchIncludes, {
+        ignored: watchExcludes,
+        cwd: rootDir,
+        // ignoreInitial: true,
+      })
+      .on('ready', async () => {
+        latch = 'open';
+        debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
+        info("Triggering initial 'cdk deploy'");
+        await deployAndWatch();
+      })
+      .on('all', async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
+        if (latch === 'pre-ready') {
+          info(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
+        } else if (latch === 'open') {
+          info("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
+          await deployAndWatch();
+        } else {
+          // this means latch is either 'deploying' or 'queued'
+          latch = 'queued';
+          info(
+            "Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
+              'Will queue for another deployment after this one finishes',
+            filePath,
+            event,
+          );
+        }
+      });
   }
 
   /**
