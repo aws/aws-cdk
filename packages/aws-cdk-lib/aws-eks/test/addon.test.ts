@@ -1,5 +1,6 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
-import { App, CfnOutput, Stack } from '../../core';
+import { App, Stack } from '../../core';
 import { Addon, KubernetesVersion, Cluster } from '../lib';
 
 describe('Addon', () => {
@@ -12,6 +13,7 @@ describe('Addon', () => {
     stack = new Stack(app, 'Stack');
     cluster = new Cluster(stack, 'Cluster', {
       version: KubernetesVersion.V1_30,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
   });
 
