@@ -10,6 +10,8 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "module": "NodeNext",
     "declaration": true,
     "declarationMap": true,
