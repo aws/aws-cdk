@@ -13,33 +13,41 @@ export type ToolkitAction =
 
 export enum StackSelectionStrategy {
   /**
-   * Returns an empty selection in case there are no stacks.
+   * Returns all stacks in the app regardless of patterns,
+   * including stacks inside nested assemblies.
    */
-  NONE = 'none',
-
-  /**
-   * Return matched stacks. If no patterns are provided, return the single stack in the app.
-   * If the app has more than one stack, an error is thrown.
-   *
-   * This is the default strategy used by "deploy" and "destroy".
-   */
-  MATCH_OR_SINGLE = 'match-or-single',
-
-  /**
-   * Throws an exception if the selector doesn't match at least one stack in the app.
-   */
-  MUST_MATCH_PATTERN = 'must-match-pattern',
+  ALL_STACKS = 'ALL_STACKS',
 
   /**
    * Returns all stacks in the main (top level) assembly only.
    */
-  MAIN_ASSEMBLY = 'main',
+  MAIN_ASSEMBLY = 'MAIN_ASSEMBLY',
 
   /**
-   * If no selectors are provided, returns all stacks in the app,
-   * including stacks inside nested assemblies.
+   * If the assembly includes a single stack, returns it.
+   * Otherwise throws an exception.
    */
-  ALL_STACKS = 'all',
+  ONLY_SINGLE = 'ONLY_SINGLE',
+
+  /**
+   * @todo not currently publicly exposed
+   * Return stacks matched by patterns.
+   * If no stacks are found, execution is halted successfully.
+   * Most likely you don't want to use this but `StackSelectionStrategy.MUST_MATCH_PATTERN`
+   */
+  PATTERN_MATCH = 'PATTERN_MATCH',
+
+  /**
+   * Return stacks matched by patterns.
+   * Throws an exception if the patterns don't match at least one stack in the assembly.
+   */
+  PATTERN_MUST_MATCH = 'PATTERN_MUST_MATCH',
+
+  /**
+   * Returns if exactly one stack is matched by the pattern(s).
+   * Throws an exception if no stack, or more than exactly one stack are matched.
+   */
+  PATTERN_MUST_MATCH_SINGLE = 'PATTERN_MUST_MATCH_SINGLE',
 }
 
 /**
@@ -60,6 +68,13 @@ export enum ExtendedStackSelection {
    * Include stacks that depend on this stack
    */
   DOWNSTREAM = 'downstream',
+
+  /**
+   * @TODO
+   * Include both directions.
+   * I.e. stacks that this stack depends on, and stacks that depend on this stack.
+   */
+  // FULL = 'full',
 }
 
 /**
@@ -67,18 +82,30 @@ export enum ExtendedStackSelection {
  */
 export interface StackSelector {
   /**
+   * The behavior if if no selectors are provided.
+   */
+  strategy: StackSelectionStrategy;
+
+  /**
    * A list of patterns to match the stack hierarchical ids
+   * Only used with `PATTERN_*` selection strategies.
    */
   patterns?: string[];
 
   /**
-   * Extend the selection to upstream/downstream stacks
-   * @default ExtendedStackSelection.None only select the specified stacks.
+   * Extend the selection to upstream/downstream stacks.
+   * @default ExtendedStackSelection.None only select the specified/matched stacks
    */
   extend?: ExtendedStackSelection;
 
   /**
-   * The behavior if if no selectors are provided.
+   * By default, we throw an exception if the assembly contains no stacks.
+   * Set to `false`, to halt execution for empty assemblies without error.
+   *
+   * Note that actions can still throw if a stack selection result is empty,
+   * but the assembly contains stacks in principle.
+   *
+   * @default true
    */
-  strategy: StackSelectionStrategy;
+  failOnEmpty?: boolean;
 }

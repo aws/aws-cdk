@@ -83,9 +83,9 @@ export class Toolkit {
   public async synth(cx: ICloudAssemblySource, options: SynthOptions): Promise<ICloudAssemblySource> {
     const ioHost = withAction(this.ioHost, 'synth');
     const assembly = await this.assemblyFromSource(cx);
-    const stacks = await assembly.selectStacks(options.stacks, false);
-    const autoValidateStacks = options.validateStacks ? await this.selectStacksForValidation(assembly) : new StackCollection(assembly, []);
-    this.processStackMessages(stacks.concat(autoValidateStacks));
+    const stacks = assembly.selectStacksV2(options.stacks);
+    const autoValidateStacks = options.validateStacks ? [assembly.selectStacksForValidation()] : [];
+    this.processStackMessages(stacks.concat(...autoValidateStacks));
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
@@ -123,7 +123,7 @@ export class Toolkit {
   public async diff(cx: ICloudAssemblySource, options: DiffOptions): Promise<boolean> {
     const ioHost = withAction(this.ioHost, 'diff');
     const assembly = await this.assemblyFromSource(cx);
-    const stacks = await assembly.selectStacks(options.stacks, {});
+    const stacks = await assembly.selectStacksV2(options.stacks);
     throw new Error('Not implemented yet');
   }
 
@@ -134,7 +134,7 @@ export class Toolkit {
     const ioHost = withAction(this.ioHost, 'deploy');
     const timer = Timer.start();
     const assembly = await this.assemblyFromSource(cx);
-    const stackCollection = await assembly.selectStacks(options.stacks, {});
+    const stackCollection = assembly.selectStacksV2(options.stacks);
 
     const synthTime = timer.end();
     await ioHost.notify(info(`\n✨  Synthesis time: ${synthTime.asSec}s\n`, 'CDK_TOOLKIT_I5001', {
@@ -219,11 +219,8 @@ export class Toolkit {
         } else {
           await ioHost.notify(warning(`${chalk.bold(stack.displayName)}: stack has no resources, deleting existing stack.`));
           await this._destroy(assembly, 'deploy', {
-            selector: { patterns: [stack.hierarchicalId] },
-            exclusively: true,
-            force: true,
+            stacks: { patterns: [stack.hierarchicalId], strategy: StackSelectionStrategy.PATTERN_MUST_MATCH_SINGLE },
             roleArn: options.roleArn,
-            fromDeploy: true,
             ci: options.ci,
           });
         }
@@ -321,7 +318,7 @@ export class Toolkit {
               }
 
               // Perform a rollback
-              await this.rollback({
+              await this.rollback(cx, {
                 selector: { patterns: [stack.hierarchicalId] },
                 toolkitStackName: options.toolkitStackName,
                 force: options.force,
@@ -454,7 +451,7 @@ export class Toolkit {
    *
    * Rolls back the selected stacks.
    */
-  public async rollback(_cx: ICloudAssemblySource, _options: WatchOptions): Promise<void> {
+  public async rollback(_cx: ICloudAssemblySource, _options: any): Promise<void> {
     const ioHost = withAction(this.ioHost, 'rollback');
     throw new Error('Not implemented yet');
   }
@@ -474,7 +471,7 @@ export class Toolkit {
    */
   private async _destroy(assembly: StackAssembly, action: 'deploy' | 'destroy', options: DestroyOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, action);
-    let stacks = await assembly.selectStacks(options.stacks, false);
+    let stacks = await assembly.selectStacksV2(options.stacks);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks = stacks.reversed();
@@ -523,25 +520,12 @@ export class Toolkit {
 
   /**
    * Create a deployments class
-   * @param action C
-   * @returns
    */
   private async deploymentsForAction(action: ToolkitAction): Promise<Deployments> {
     return new Deployments({
       sdkProvider: await this.sdkProvider(action),
       toolkitStackName: this.toolkitStackName,
     });
-  }
-
-  /**
-   * Select all stacks that have the validateOnSynth flag et.
-   *
-   * @param assembly
-   * @returns a `StackCollection` of all stacks that needs to be validated
-   */
-  private async selectStacksForValidation(assembly: StackAssembly) {
-    const allStacks = await assembly.selectStacks({ strategy: StackSelectionStrategy.ALL_STACKS }, false);
-    return allStacks.filter((art) => art.validateOnSynth ?? false);
   }
 
   /**

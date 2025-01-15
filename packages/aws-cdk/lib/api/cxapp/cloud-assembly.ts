@@ -134,7 +134,7 @@ export class CloudAssembly {
     }
   }
 
-  private selectMatchingStacks(
+  protected selectMatchingStacks(
     stacks: cxapi.CloudFormationStackArtifact[],
     patterns: string[],
     extend: ExtendedStackSelection = ExtendedStackSelection.None,
@@ -170,7 +170,7 @@ export class CloudAssembly {
     }
   }
 
-  private extendStacks(
+  protected extendStacks(
     matched: cxapi.CloudFormationStackArtifact[],
     all: cxapi.CloudFormationStackArtifact[],
     extend: ExtendedStackSelection = ExtendedStackSelection.None,
@@ -241,8 +241,8 @@ export class StackCollection {
     return new StackCollection(this.assembly, this.stackArtifacts.filter(predicate));
   }
 
-  public concat(other: StackCollection): StackCollection {
-    return new StackCollection(this.assembly, this.stackArtifacts.concat(other.stackArtifacts));
+  public concat(...others: StackCollection[]): StackCollection {
+    return new StackCollection(this.assembly, this.stackArtifacts.concat(...others.map(o => o.stackArtifacts)));
   }
 
   /**
@@ -380,7 +380,7 @@ function includeUpstreamStacks(
   }
 }
 
-function sanitizePatterns(patterns: string[]): string[] {
+export function sanitizePatterns(patterns: string[]): string[] {
   let sanitized = patterns.filter(s => s != null); // filter null/undefined
   sanitized = [...new Set(sanitized)]; // make them unique
   return sanitized;
