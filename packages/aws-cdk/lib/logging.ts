@@ -4,7 +4,7 @@ import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageC
 
 // Corking mechanism
 let CORK_COUNTER = 0;
-const logBuffer: IoMessage[] = [];
+const logBuffer: IoMessage<any>[] = [];
 
 const levelPriority: Record<IoMessageLevel, number> = {
   error: 0,
@@ -86,12 +86,12 @@ function log(options: LogOptions) {
     return;
   }
 
-  const ioMessage: IoMessage = {
+  const ioMessage: IoMessage<undefined> = {
     level: options.level,
     message: options.message,
     forceStdout: options.forceStdout,
     time: new Date(),
-    action: CliIoHost.currentAction ?? 'none',
+    action: CliIoHost.currentAction,
     code: options.code,
   };
 
