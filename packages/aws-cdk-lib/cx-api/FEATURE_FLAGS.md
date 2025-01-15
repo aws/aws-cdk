@@ -1646,28 +1646,10 @@ on the overly restrictive permissions are not broken.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.176.0 | `false` | `true` |
-
-**Compatibility with old behavior:** Disable the feature flag to only allow IPv4 ingress in the default security group rules.
-
-
-### @aws-cdk/aws-iam:oidcRejectUnauthorizedConnections
-
-*When enabled, the default behaviour of OIDC provider will reject unauthorized connections* (fix)
-
-When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
-default to reject unauthorized connections when downloading CA Certificates.
-
-When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
-thumbprints from unsecure connections.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to allow unsecure OIDC connection.
+
 
 
 <!-- END details -->
