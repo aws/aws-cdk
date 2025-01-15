@@ -9,6 +9,7 @@ import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
 import { serializeStructure } from 'aws-cdk/lib/serialize';
 import { tagsForStack } from 'aws-cdk/lib/tags';
+import { CliIoHost } from 'aws-cdk/lib/toolkit/cli-io-host';
 import { validateSnsTopicArn } from 'aws-cdk/lib/util/validate-notification-arn';
 import { Concurrency } from 'aws-cdk/lib/util/work-graph';
 import { WorkGraphBuilder } from 'aws-cdk/lib/util/work-graph-builder';
@@ -37,7 +38,7 @@ export interface ToolkitOptions {
   /**
    * The IoHost implementation, handling the inline interactions between the Toolkit and an integration.
    */
-  ioHost: IIoHost;
+  // ioHost: IIoHost;
 
   /**
    * Configuration options for the SDK.
@@ -61,7 +62,9 @@ export class Toolkit {
   private toolkitStackName: string;
 
   public constructor(private readonly options: ToolkitOptions) {
-    this.ioHost = options.ioHost;
+    this.ioHost = CliIoHost.getIoHost();
+    // this.ioHost = options.ioHost;
+    // @todo open this up
     this.toolkitStackName = options.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 
