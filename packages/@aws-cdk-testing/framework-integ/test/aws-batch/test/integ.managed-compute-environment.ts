@@ -9,6 +9,10 @@ const app = new App();
 const stack = new Stack(app, 'batch-stack');
 const vpc = new ec2.Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 
+const spotFleetRole = new Role(stack, 'SpotFleetRole', {
+  assumedBy: new ServicePrincipal('batch.amazonaws.com'),
+});
+
 new FargateComputeEnvironment(stack, 'minimalPropsFargate', {
   vpc,
   maxvCpus: 512,
@@ -54,9 +58,7 @@ new ManagedEc2EcsComputeEnvironment(stack, 'SpotEc2', {
   }],
   spot: true,
   spotBidPercentage: 95,
-  spotFleetRole: new Role(stack, 'SpotFleetRole', {
-    assumedBy: new ServicePrincipal('batch.amazonaws.com'),
-  }),
+  spotFleetRole: spotFleetRole,
 });
 
 new ManagedEc2EcsComputeEnvironment(stack, 'AllocationStrategySPOT_CAPACITY', {
@@ -94,11 +96,12 @@ new ManagedEc2EcsComputeEnvironment(stack, 'ParamertizedManagedCE', {
   minvCpus: new CfnParameter(stack, 'MinVCpuParameter', {
     default: 512,
     minValue: 0,
-    type: 'Number'
+    type: 'Number',
   }).valueAsNumber,
   maxvCpus: new CfnParameter(stack, 'MaxVCpuParameter', {
     default: 512,
     minValue: 1,
+    type: 'Number',
   }).valueAsNumber,
   spot: true,
   spotBidPercentage: new CfnParameter(stack, 'SpotBidPercentageParameter', {
@@ -106,9 +109,7 @@ new ManagedEc2EcsComputeEnvironment(stack, 'ParamertizedManagedCE', {
     minValue: 1,
     type: 'Number',
   }).valueAsNumber,
-  spotFleetRole: new Role(stack, 'SpotFleetRole', {
-    assumedBy: new ServicePrincipal('batch.amazonaws.com'),
-  }),
+  spotFleetRole: spotFleetRole,
 });
 
 new integ.IntegTest(app, 'BatchManagedComputeEnvironmentTest', {
