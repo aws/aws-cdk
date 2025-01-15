@@ -4,6 +4,7 @@ import { IApplication } from './application';
 import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
+import { DeletionProtectionCheck } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names } from '../../core';
@@ -113,6 +114,10 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     this.extensible.onDeploymentRolledBack(eventDestination, options);
   }
 
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.extensible.atDeploymentTick(eventDestination, options);
+  }
+
   public addExtension(extension: IExtension) {
     this.extensible.addExtension(extension);
   }
@@ -161,6 +166,13 @@ export interface EnvironmentOptions {
    * @default - No monitors.
    */
   readonly monitors?: Monitor[];
+
+  /**
+   * A property to prevent accidental deletion of active environments.
+   *
+   * @default undefined - AppConfig default is ACCOUNT_DEFAULT
+   */
+  readonly deletionProtectionCheck?: DeletionProtectionCheck;
 }
 
 /**
@@ -305,6 +317,7 @@ export class Environment extends EnvironmentBase {
       applicationId: this.applicationId,
       name: this.name,
       description: this.description,
+      deletionProtectionCheck: props.deletionProtectionCheck,
       monitors: this.monitors?.map((monitor) => {
         return {
           alarmArn: monitor.alarmArn,
@@ -555,6 +568,15 @@ export interface IEnvironment extends IResource {
    * @param options Options for the extension
    */
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds an extension association to the environment.

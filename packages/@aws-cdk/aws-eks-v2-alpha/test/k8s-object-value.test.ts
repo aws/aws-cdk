@@ -29,12 +29,12 @@ describe('k8s object value', () => {
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+            'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+            'Arn',
           ],
         },
-        ClusterName: { Ref: 'MyCluster8AD82BF8' },
-        RoleArn: { 'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'] },
+        ClusterName: { Ref: 'MyCluster4C1BA579' },
+        RoleArn: { 'Fn::GetAtt': ['MyClusterkubectlRole29979636', 'Arn'] },
         ObjectType: 'deployment',
         ObjectName: 'mydeployment',
         ObjectNamespace: 'mynamespace',
@@ -70,12 +70,12 @@ describe('k8s object value', () => {
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+            'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+            'Arn',
           ],
         },
-        ClusterName: { Ref: 'MyCluster8AD82BF8' },
-        RoleArn: { 'Fn::GetAtt': ['MyClusterCreationRoleB5FA4FF3', 'Arn'] },
+        ClusterName: { Ref: 'MyCluster4C1BA579' },
+        RoleArn: { 'Fn::GetAtt': ['MyClusterkubectlRole29979636', 'Arn'] },
         ObjectType: 'deployment',
         ObjectName: 'mydeployment',
         ObjectNamespace: 'default',

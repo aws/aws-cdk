@@ -15,10 +15,12 @@ export function makeCachingProvider(provider: AwsCredentialIdentityProvider): Aw
   return memoize(
     provider,
     credentialsAboutToExpire,
-    (token) => token.expiration !== undefined);
+    (token) => !!token.expiration,
+  );
 }
 
 export function credentialsAboutToExpire(token: AwsCredentialIdentity) {
   const expiryMarginSecs = 5;
-  return token.expiration !== undefined && token.expiration.getTime() - Date.now() < expiryMarginSecs * 1000;
+  // token.expiration is sometimes null
+  return !!token.expiration && token.expiration.getTime() - Date.now() < expiryMarginSecs * 1000;
 }

@@ -969,6 +969,164 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     },
   );
 
+  silentTest(
+    'updateFunction() API recovers from failed update attempt through retry logic',
+    async () => {
+
+      // GIVEN
+      mockAppSyncClient
+        .on(ListFunctionsCommand)
+        .resolvesOnce({
+          functions: [{ name: 'my-function', functionId: 'functionId' }],
+        });
+
+      const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
+      ConcurrentModError.name = 'ConcurrentModificationException';
+      mockAppSyncClient
+        .on(UpdateFunctionCommand)
+        .rejectsOnce(ConcurrentModError)
+        .resolvesOnce({ functionConfiguration: { name: 'my-function', dataSourceName: 'my-datasource', functionId: 'functionId' } });
+
+      setup.setCurrentCfnStackTemplate({
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              RequestMappingTemplate: '## original request template',
+              ResponseMappingTemplate: '## original response template',
+            },
+            Metadata: {
+              'aws:asset:path': 'old-path',
+            },
+          },
+        },
+      });
+      const cdkStackArtifact = setup.cdkStackArtifactOf({
+        template: {
+          Resources: {
+            AppSyncFunction: {
+              Type: 'AWS::AppSync::FunctionConfiguration',
+              Properties: {
+                Name: 'my-function',
+                ApiId: 'apiId',
+                DataSourceName: 'my-datasource',
+                FunctionVersion: '2018-05-29',
+                RequestMappingTemplate: '## original request template',
+                ResponseMappingTemplate: '## new response template',
+              },
+              Metadata: {
+                'aws:asset:path': 'new-path',
+              },
+            },
+          },
+        },
+      });
+
+      // WHEN
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+
+      // THEN
+      expect(deployStackResult).not.toBeUndefined();
+      expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 2); // 1st failure then success on retry
+      expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
+        apiId: 'apiId',
+        dataSourceName: 'my-datasource',
+        functionId: 'functionId',
+        functionVersion: '2018-05-29',
+        name: 'my-function',
+        requestMappingTemplate: '## original request template',
+        responseMappingTemplate: '## new response template',
+      });
+    },
+  );
+
+  silentTest(
+    'updateFunction() API fails if it recieves 7 failed attempts in a row - this is a long running test',
+    async () => {
+
+      // GIVEN
+      mockAppSyncClient
+        .on(ListFunctionsCommand)
+        .resolvesOnce({
+          functions: [{ name: 'my-function', functionId: 'functionId' }],
+        });
+
+      const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
+      ConcurrentModError.name = 'ConcurrentModificationException';
+      mockAppSyncClient
+        .on(UpdateFunctionCommand)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .resolvesOnce({ functionConfiguration: { name: 'my-function', dataSourceName: 'my-datasource', functionId: 'functionId' } });
+
+      setup.setCurrentCfnStackTemplate({
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              RequestMappingTemplate: '## original request template',
+              ResponseMappingTemplate: '## original response template',
+            },
+            Metadata: {
+              'aws:asset:path': 'old-path',
+            },
+          },
+        },
+      });
+      const cdkStackArtifact = setup.cdkStackArtifactOf({
+        template: {
+          Resources: {
+            AppSyncFunction: {
+              Type: 'AWS::AppSync::FunctionConfiguration',
+              Properties: {
+                Name: 'my-function',
+                ApiId: 'apiId',
+                DataSourceName: 'my-datasource',
+                FunctionVersion: '2018-05-29',
+                RequestMappingTemplate: '## original request template',
+                ResponseMappingTemplate: '## new response template',
+              },
+              Metadata: {
+                'aws:asset:path': 'new-path',
+              },
+            },
+          },
+        },
+      });
+
+      // WHEN
+      await expect(() => hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact)).rejects.toThrow(
+        'ConcurrentModificationException',
+      );
+
+      // THEN
+      expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 7); // 1st attempt and then 6 retries before bailing
+      expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
+        apiId: 'apiId',
+        dataSourceName: 'my-datasource',
+        functionId: 'functionId',
+        functionVersion: '2018-05-29',
+        name: 'my-function',
+        requestMappingTemplate: '## original request template',
+        responseMappingTemplate: '## new response template',
+      });
+    },
+    320000,
+  );
+
   silentTest('calls the updateFunction() API with functionId when function is listed on second page', async () => {
     // GIVEN
     mockAppSyncClient

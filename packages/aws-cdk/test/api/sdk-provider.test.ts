@@ -8,8 +8,9 @@ import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
 import { ConfigurationOptions, CredentialsOptions, SDK, SdkProvider } from '../../lib/api/aws-auth';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { defaultCliUserAgent } from '../../lib/api/aws-auth/user-agent';
-import { Mode, PluginHost } from '../../lib/api/plugin';
-import * as logging from '../../lib/logging';
+import { PluginHost } from '../../lib/api/plugin';
+import { Mode } from '../../lib/api/plugin/mode';
+import { setIoMessageThreshold } from '../../lib/logging';
 import { withMocked } from '../util';
 import { mockSTSClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
@@ -39,7 +40,7 @@ beforeEach(() => {
   uid = `(${uuid.v4()})`;
   pluginQueried = false;
 
-  logging.setLogLevel(logging.LogLevel.TRACE);
+  setIoMessageThreshold('trace');
 
   PluginHost.instance.credentialProviderSources.splice(0);
   PluginHost.instance.credentialProviderSources.push({
@@ -300,7 +301,19 @@ describe('with intercepted network calls', () => {
       expect((await provider.defaultAccount())?.accountId).toEqual(uniq('22222'));
     });
 
-    test('mfa_serial in profile will ask user for token', async () => {
+    const providersForMfa = [
+      (() => providerFromProfile('mfa-role')),
+      (async () => {
+        // The profile is not passed explicitly. Should be picked from the environment variable
+        process.env.AWS_PROFILE = 'mfa-role';
+        // Awaiting to make sure the environment variable is only deleted after it's used
+        const provider = await SdkProvider.withAwsCliCompatibleDefaults({ logger: console });
+        delete process.env.AWS_PROFILE;
+        return Promise.resolve(provider);
+      }),
+    ];
+
+    test.each(providersForMfa)('mfa_serial in profile will ask user for token', async (metaProvider: () => Promise<SdkProvider>) => {
       // GIVEN
       const mockPrompt = jest.spyOn(promptly, 'prompt').mockResolvedValue('1234');
 
@@ -320,7 +333,8 @@ describe('with intercepted network calls', () => {
           },
         },
       });
-      const provider = await providerFromProfile('mfa-role');
+
+      const provider = await metaProvider();
 
       // THEN
       const sdk = (await provider.forEnvironment(env(uniq('66666')), Mode.ForReading)).sdk;

@@ -18,8 +18,8 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+            'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+            'Arn',
           ],
         },
         Manifest: {
@@ -83,8 +83,8 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+            'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+            'Arn',
           ],
         },
         Manifest: {
@@ -141,8 +141,8 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+            'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+            'Arn',
           ],
         },
         Manifest: {
@@ -190,8 +190,8 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
-            'StackClusterF0EB02FAKubectlProviderNestedStackStackClusterF0EB02FAKubectlProviderNestedStackResource739D12C4',
-            'Outputs.StackStackClusterF0EB02FAKubectlProviderframeworkonEvent8377F076Arn',
+            'StackClusterF0EB02FAKubectlProviderframeworkonEvent0A3AB271',
+            'Arn',
           ],
         },
         PruneLabel: 'aws.cdk.eks/prune-c8d8e1722a4f3ed332f8ac74cb3d962f01fbb62291',
@@ -249,7 +249,7 @@ describe('service account', () => {
         name: 'XXX',
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('throw error if ends with dot', () => {
@@ -261,7 +261,7 @@ describe('service account', () => {
         name: 'test.',
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('dot in the name is allowed', () => {
@@ -287,7 +287,7 @@ describe('service account', () => {
         name: 'x'.repeat(255),
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
   });
 
@@ -301,7 +301,7 @@ describe('service account', () => {
         namespace: 'XXX',
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('throw error if ends with dot', () => {
@@ -313,7 +313,7 @@ describe('service account', () => {
         namespace: 'test.',
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('throw error if dot is in the name', () => {
@@ -326,7 +326,7 @@ describe('service account', () => {
         namespace: valueWithDot,
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
 
     test('throw error if name is too long', () => {
@@ -338,7 +338,7 @@ describe('service account', () => {
         namespace: 'x'.repeat(65),
       }))
       // THEN
-        .toThrowError(RangeError);
+        .toThrow(RangeError);
     });
   });
 
@@ -367,11 +367,11 @@ describe('service account', () => {
       // should have a eks pod identity agent addon
       t.hasResourceProperties('AWS::EKS::Addon', {
         AddonName: 'eks-pod-identity-agent',
-        ClusterName: { Ref: 'Cluster9EE0221C' },
+        ClusterName: { Ref: 'ClusterEB0386A7' },
       });
       // should have pod identity association
       t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
-        ClusterName: { Ref: 'Cluster9EE0221C' },
+        ClusterName: { Ref: 'ClusterEB0386A7' },
         Namespace: 'default',
         RoleArn: { 'Fn::GetAtt': ['MyServiceAccountRoleB41709FF', 'Arn'] },
         ServiceAccount: 'stackmyserviceaccount58b9529e',

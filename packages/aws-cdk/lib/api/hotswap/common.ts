@@ -1,4 +1,5 @@
 import type { PropertyDifference, Resource } from '@aws-cdk/cloudformation-diff';
+import { ToolkitError } from '../../toolkit/error';
 import type { SDK } from '../aws-auth';
 
 export const ICON = '✨';
@@ -121,10 +122,10 @@ export class EcsHotswapProperties {
 
   public constructor (minimumHealthyPercent?: number, maximumHealthyPercent?: number) {
     if (minimumHealthyPercent !== undefined && minimumHealthyPercent < 0 ) {
-      throw new Error('hotswap-ecs-minimum-healthy-percent can\'t be a negative number');
+      throw new ToolkitError('hotswap-ecs-minimum-healthy-percent can\'t be a negative number');
     }
     if (maximumHealthyPercent !== undefined && maximumHealthyPercent < 0 ) {
-      throw new Error('hotswap-ecs-maximum-healthy-percent can\'t be a negative number');
+      throw new ToolkitError('hotswap-ecs-maximum-healthy-percent can\'t be a negative number');
     }
     // In order to preserve the current behaviour, when minimumHealthyPercent is not defined, it will be set to the currently default value of 0
     if (minimumHealthyPercent == undefined) {
