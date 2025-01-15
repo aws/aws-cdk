@@ -1,8 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudAssembly, sanitizePatterns, StackCollection, ExtendedStackSelection as CliExtendedStackSelection } from 'aws-cdk/lib/api/cxapp/cloud-assembly';
 import { major } from 'semver';
-import { ICloudAssemblySource } from './types';
 import { ExtendedStackSelection, StackSelectionStrategy, StackSelector } from './stack-selector';
+import { ICloudAssemblySource } from './types';
 import { ToolkitError } from '../errors';
 
 /**
