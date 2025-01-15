@@ -1,7 +1,7 @@
 import type { AmiContextQuery } from '@aws-cdk/cloud-assembly-schema';
 import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
-import { debug, print } from '../logging';
+import { debug, info } from '../logging';
 
 /**
  * Plugin to search AMIs for the current account
@@ -15,7 +15,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
 
     // Normally we'd do this only as 'debug', but searching AMIs typically takes dozens
     // of seconds, so be little more verbose about it so users know what is going on.
-    print(`Searching for AMI in ${account}:${region}`);
+    info(`Searching for AMI in ${account}:${region}`);
     debug(`AMI search parameters: ${JSON.stringify(args)}`);
 
     const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();

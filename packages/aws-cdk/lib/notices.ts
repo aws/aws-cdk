@@ -7,12 +7,13 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { SdkHttpOptions } from './api';
 import { AwsCliCompatible } from './api/aws-auth/awscli-compatible';
-import { debug, print, warning, error } from './logging';
+import { debug, info, warning, error } from './logging';
 import { Context } from './settings';
 import { ToolkitError } from './toolkit/error';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
+import { formatErrorMessage } from './util/error';
 import { versionNumber } from './version';
 
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
@@ -299,9 +300,9 @@ export class Notices {
     });
 
     if (filteredNotices.length > 0) {
-      print('');
-      print('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
-      print('');
+      info('');
+      info('NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
+      info('');
       for (const filtered of filteredNotices) {
         const formatted = filtered.format();
         switch (filtered.notice.severity) {
@@ -312,16 +313,16 @@ export class Notices {
             error(formatted);
             break;
           default:
-            print(formatted);
+            info(formatted);
         }
-        print('');
+        info('');
       }
-      print(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${filteredNotices[0].notice.issueNumber}".`);
+      info(`If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${filteredNotices[0].notice.issueNumber}".`);
     }
 
     if (options.showTotal ?? false) {
-      print('');
-      print(`There are ${filteredNotices.length} unacknowledged notice(s).`);
+      info('');
+      info(`There are ${filteredNotices.length} unacknowledged notice(s).`);
     }
   }
 }
@@ -429,11 +430,11 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
                   debug('Notices refreshed');
                   resolve(data ?? []);
                 } catch (e: any) {
-                  reject(new ToolkitError(`Failed to parse notices: ${e.message}`));
+                  reject(new ToolkitError(`Failed to parse notices: ${formatErrorMessage(e)}`));
                 }
               });
               res.on('error', e => {
-                reject(new ToolkitError(`Failed to fetch notices: ${e.message}`));
+                reject(new ToolkitError(`Failed to fetch notices: ${formatErrorMessage(e)}`));
               });
             } else {
               reject(new ToolkitError(`Failed to fetch notices. Status code: ${res.statusCode}`));
@@ -441,7 +442,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
           });
         req.on('error', reject);
       } catch (e: any) {
-        reject(new ToolkitError(`HTTPS 'get' call threw an error: ${e.message}`));
+        reject(new ToolkitError(`HTTPS 'get' call threw an error: ${formatErrorMessage(e)}`));
       }
     });
   }

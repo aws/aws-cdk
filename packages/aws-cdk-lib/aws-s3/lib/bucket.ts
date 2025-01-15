@@ -1694,7 +1694,7 @@ export interface BucketProps {
   readonly notificationsSkipDestinationValidation?: boolean;
 
   /**
-   * Inteligent Tiering Configurations
+   * Intelligent Tiering Configurations
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
    *

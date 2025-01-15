@@ -329,7 +329,7 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
   private readonly _attachment: CfnVPCGatewayAttachment;
 
   /**
-   * The VPN Gateway Route Propogation
+   * The VPN Gateway Route Propagation
    */
   private readonly _routePropagation: CfnVPNGatewayRoutePropagation;
 
@@ -696,7 +696,7 @@ export class Route extends Resource implements IRouteV2 {
   public readonly routeTable: IRouteTable;
 
   /**
-   * The type of router the route is targetting
+   * The type of router the route is targeting
    */
   public readonly targetRouterType: RouterType;
 
