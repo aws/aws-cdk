@@ -835,7 +835,7 @@ describe('DatabaseCluster', () => {
           maxCapacity: 200,
         },
       });
-    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived 200/);
+    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received 200/);
 
     expect(() => {
       new DatabaseCluster(stack, 'Database3', {
