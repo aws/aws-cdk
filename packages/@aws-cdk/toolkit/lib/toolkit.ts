@@ -28,7 +28,7 @@ import { IdentityCloudAssemblySource } from './api/cloud-assembly/identity-sourc
 import { StackAssembly } from './api/cloud-assembly/stack-assembly';
 import { ICloudAssemblySource } from './api/cloud-assembly/types';
 import { ToolkitError } from './api/errors';
-import { IIoHost, IoMessageCode } from './io/io-host';
+import { IIoHost, IoMessageCode, IoMessageLevel } from './io/io-host';
 import { ActionlessIoHost } from './io/private';
 import { asSdkLogger, withAction } from './io/private/logger';
 import { confirm, data, error, highlight, info, success, warning } from './io/private/messages';
@@ -518,7 +518,7 @@ export class Toolkit {
    */
   private async validateStacksMetadata(stacks: StackCollection, ioHost: ActionlessIoHost) {
     // @TODO define these somewhere central
-    const code = (level): IoMessageCode => {
+    const code = (level: IoMessageLevel): IoMessageCode => {
       switch (level) {
         case 'error': return 'CDK_ASSEMBLY_E9999';
         case 'warn': return 'CDK_ASSEMBLY_W9999';
