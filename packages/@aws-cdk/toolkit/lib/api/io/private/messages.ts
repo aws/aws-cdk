@@ -7,11 +7,11 @@ import type { ActionLessMessage, ActionLessRequest, Optional, SimplifiedMessage 
  * Handles string interpolation, format strings, and object parameter styles.
  * Applies optional styling and prepares the final message for logging.
  */
-function formatMessage<T>(msg: Optional<SimplifiedMessage<T>, 'code'>): ActionLessMessage<T> {
+export function formatMessage<T>(msg: Optional<SimplifiedMessage<T>, 'code'>, category: IoMessageCodeCategory = 'TOOLKIT'): ActionLessMessage<T> {
   return {
     time: new Date(),
     level: msg.level,
-    code: msg.code ?? messageCode(msg.level),
+    code: msg.code ?? messageCode(msg.level, category),
     message: msg.message,
     data: msg.data,
   };
@@ -20,7 +20,7 @@ function formatMessage<T>(msg: Optional<SimplifiedMessage<T>, 'code'>): ActionLe
 /**
  * Build a message code from level and category
  */
-function messageCode(level: IoMessageLevel, category: IoMessageCodeCategory = 'TOOLKIT', number?: `${number}${number}${number}${number}`): IoMessageCode {
+export function messageCode(level: IoMessageLevel, category: IoMessageCodeCategory = 'TOOLKIT', number?: `${number}${number}${number}${number}`): IoMessageCode {
   const levelIndicator = level === 'error' ? 'E' :
     level === 'warn' ? 'W' :
       'I';
