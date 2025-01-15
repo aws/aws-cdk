@@ -1,7 +1,7 @@
 import { Deployments } from 'aws-cdk/lib/api/deployments';
+import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 import { WorkGraph } from 'aws-cdk/lib/util/work-graph';
 import { StackSelector } from '../types';
-import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 
 export type DeploymentMethod = DirectDeploymentMethod | ChangeSetDeploymentMethod;
 
@@ -133,6 +133,7 @@ export interface BaseDeployOptions {
    * Always deploy, even if templates are identical.
    *
    * @default false
+   * @deprecated
    */
   readonly force?: boolean;
 

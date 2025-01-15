@@ -30,7 +30,7 @@ import { ICloudAssemblySource } from './api/cloud-assembly/types';
 import { ToolkitError } from './api/errors';
 import { IIoHost } from './io/io-host';
 import { asSdkLogger, withAction } from './io/logger';
-import { data, error, highlight, info, success, warning } from './io/messages';
+import { confirm, data, error, highlight, info, success, warning } from './io/messages';
 import { Timer } from './io/timer';
 import { StackSelectionStrategy, ToolkitAction } from './types';
 
@@ -309,15 +309,14 @@ export class Toolkit {
               const motivation = r.reason === 'replacement'
                 ? `Stack is in a paused fail state (${r.status}) and change includes a replacement which cannot be deployed with "--no-rollback"`
                 : `Stack is in a paused fail state (${r.status}) and command line arguments do not include "--no-rollback"`;
+              const question = `${motivation}. Perform a regular deployment`;
 
               if (options.force) {
                 await ioHost.notify(warning(`${motivation}. Rolling back first (--force).`));
               } else {
-                await askUserConfirmation(
-                  concurrency,
-                  motivation,
-                  `${motivation}. Roll back first and then proceed with deployment`,
-                );
+                // @todo reintroduce concurrency and corked logging in CliHost
+                const confirmed = await ioHost.requestResponse(confirm('CDK_TOOLKIT_I5050', question, motivation, true, concurrency));
+                if (!confirmed) { throw new ToolkitError('Aborted by user'); }
               }
 
               // Perform a rollback
@@ -334,15 +333,15 @@ export class Toolkit {
 
             case 'replacement-requires-rollback': {
               const motivation = 'Change includes a replacement which cannot be deployed with "--no-rollback"';
+              const question = `${motivation}. Perform a regular deployment`;
 
+              // @todo no force here
               if (options.force) {
                 await ioHost.notify(warning(`${motivation}. Proceeding with regular deployment (--force).`));
               } else {
-                await askUserConfirmation(
-                  concurrency,
-                  motivation,
-                  `${motivation}. Perform a regular deployment`,
-                );
+                // @todo reintroduce concurrency and corked logging in CliHost
+                const confirmed = await ioHost.requestResponse(confirm('CDK_TOOLKIT_I5050', question, motivation, true, concurrency));
+                if (!confirmed) { throw new ToolkitError('Aborted by user'); }
               }
 
               // Go around through the 'while' loop again but switch rollback to false.
@@ -384,14 +383,16 @@ export class Toolkit {
           [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
         );
       } finally {
-        if (options.cloudWatchLogMonitor) {
-          const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
-          options.cloudWatchLogMonitor.addLogGroups(
-            foundLogGroupsResult.env,
-            foundLogGroupsResult.sdk,
-            foundLogGroupsResult.logGroupNames,
-          );
-        }
+        // @todo
+        // if (options.cloudWatchLogMonitor) {
+        //   const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
+        //   options.cloudWatchLogMonitor.addLogGroups(
+        //     foundLogGroupsResult.env,
+        //     foundLogGroupsResult.sdk,
+        //     foundLogGroupsResult.logGroupNames,
+        //   );
+        // }
+
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,
         // all of the outputs from successfully deployed stacks before the failure will still be written.
@@ -474,15 +475,14 @@ export class Toolkit {
    */
   private async _destroy(assembly: StackAssembly, action: 'deploy' | 'destroy', options: DestroyOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, action);
-    let stacks = await assembly.selectStacksV2(options.stacks);
-
     // The stacks will have been ordered for deployment, so reverse them for deletion.
-    stacks = stacks.reversed();
+    const stacks = await assembly.selectStacksV2(options.stacks).reversed();
 
-    const msg = `Are you sure you want to delete: ${chalk.blue(stacks.stackArtifacts.map((s) => s.hierarchicalId).join(', '))} (y/n)?`;
-    const confirmed = await this.ioHost.requestResponse<any, boolean>(prompt(msg, true));
+    const motivation = 'Destroying stacks is an irreversible action';
+    const question = `Are you sure you want to delete: ${chalk.red(stacks.hierarchicalIds.join(', '))}`;
+    const confirmed = await ioHost.requestResponse(confirm('CDK_TOOLKIT_I7010', question, motivation, true));
     if (!confirmed) {
-      return;
+      return ioHost.notify(error('Aborted by user'));
     }
 
     for (const [index, stack] of stacks.stackArtifacts.entries()) {
