@@ -7,7 +7,7 @@ import { Deployments } from 'aws-cdk/lib/api/deployments';
 import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
 import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
-import { serializeStructure } from 'aws-cdk/lib/serialize';
+import { obscureTemplate, serializeStructure } from 'aws-cdk/lib/serialize';
 import { tagsForStack } from 'aws-cdk/lib/tags';
 import { CliIoHost } from 'aws-cdk/lib/toolkit/cli-io-host';
 import { validateSnsTopicArn } from 'aws-cdk/lib/util/validate-notification-arn';
@@ -20,7 +20,7 @@ import { AssetBuildTime, buildParameterMap, DeployOptions, removePublishedAssets
 import { DestroyOptions } from './actions/destroy';
 import { DiffOptions } from './actions/diff';
 import { ListOptions } from './actions/list';
-import { obscureTemplate, SynthOptions } from './actions/synth';
+import { SynthOptions } from './actions/synth';
 import { WatchOptions } from './actions/watch';
 import { SdkOptions } from './api/aws-auth/sdk';
 import { CachedCloudAssemblySource } from './api/cloud-assembly/cached-source';
@@ -28,10 +28,11 @@ import { IdentityCloudAssemblySource } from './api/cloud-assembly/identity-sourc
 import { StackAssembly } from './api/cloud-assembly/stack-assembly';
 import { ICloudAssemblySource } from './api/cloud-assembly/types';
 import { ToolkitError } from './api/errors';
-import { IIoHost } from './io/io-host';
-import { asSdkLogger, withAction } from './io/logger';
-import { confirm, data, error, highlight, info, success, warning } from './io/messages';
-import { Timer } from './io/timer';
+import { IIoHost, IoMessageCode } from './io/io-host';
+import { ActionlessIoHost } from './io/private';
+import { asSdkLogger, withAction } from './io/private/logger';
+import { confirm, data, error, highlight, info, success, warning } from './io/private/messages';
+import { Timer } from './io/private/timer';
 import { StackSelectionStrategy, ToolkitAction } from './types';
 
 export interface ToolkitOptions {
@@ -51,6 +52,13 @@ export interface ToolkitOptions {
    * @default "CDKToolkit"
    */
   toolkitStackName?: string;
+
+  /**
+   * Fail Cloud Assemblies
+   *
+   * @default "error"
+   */
+  assemblyFailureAt?: 'error' | 'warn' | 'none';
 }
 
 /**
@@ -61,18 +69,18 @@ export class Toolkit {
   private _sdkProvider?: SdkProvider;
   private toolkitStackName: string;
 
-  public constructor(private readonly options: ToolkitOptions) {
+  public constructor(private readonly props: ToolkitOptions) {
     this.ioHost = CliIoHost.getIoHost();
     // this.ioHost = options.ioHost;
     // @todo open this up
-    this.toolkitStackName = options.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
+    this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 
   private async sdkProvider(action: ToolkitAction): Promise<SdkProvider> {
     // @todo this needs to be different per action
     if (!this._sdkProvider) {
       this._sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
-        ...this.options.sdkOptions,
+        ...this.props.sdkOptions,
         logger: asSdkLogger(this.ioHost, action),
       });
     }
@@ -88,7 +96,8 @@ export class Toolkit {
     const assembly = await this.assemblyFromSource(cx);
     const stacks = assembly.selectStacksV2(options.stacks);
     const autoValidateStacks = options.validateStacks ? [assembly.selectStacksForValidation()] : [];
-    this.processStackMessages(stacks.concat(...autoValidateStacks));
+    await this.validateStacksMetadata(stacks, ioHost);
+    stacks.concat(...autoValidateStacks).validateMetadata();
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
@@ -127,6 +136,7 @@ export class Toolkit {
     const ioHost = withAction(this.ioHost, 'diff');
     const assembly = await this.assemblyFromSource(cx);
     const stacks = await assembly.selectStacksV2(options.stacks);
+    await this.validateStacksMetadata(stacks, ioHost);
     throw new Error('Not implemented yet');
   }
 
@@ -504,6 +514,27 @@ export class Toolkit {
   }
 
   /**
+   * Validate the stacks for errors and warnings according to the CLI's current settings
+   */
+  private async validateStacksMetadata(stacks: StackCollection, ioHost: ActionlessIoHost) {
+    // @TODO define these somewhere central
+    const code = (level): IoMessageCode => {
+      switch (level) {
+        case 'error': return 'CDK_ASSEMBLY_E9999';
+        case 'warn': return 'CDK_ASSEMBLY_W9999';
+        default: return 'CDK_ASSEMBLY_I9999';
+      }
+    };
+    await stacks.validateMetadata(this.props.assemblyFailureAt, async (level, msg) => ioHost.notify({
+      time: new Date(),
+      level,
+      code: code(level),
+      message: `[${level} at ${msg.id}] ${msg.entry.data}`,
+      data: msg,
+    }));
+  }
+
+  /**
    * Creates a Toolkit internal CloudAssembly from a CloudAssemblySource.
    * @param assemblySource the source for the cloud assembly
    * @param cache if the assembly should be cached, default: `true`
@@ -528,18 +559,6 @@ export class Toolkit {
     return new Deployments({
       sdkProvider: await this.sdkProvider(action),
       toolkitStackName: this.toolkitStackName,
-    });
-  }
-
-  /**
-   * Validate the stacks for errors and warnings according to the CLI's current settings
-   * @deprecated remove and use directly in synth
-   */
-  private processStackMessages(stacks: StackCollection) {
-    stacks.processMetadataMessages({
-      ignoreErrors: this.props.ignoreErrors,
-      strict: this.props.strict,
-      verbose: this.props.verbose,
     });
   }
 }

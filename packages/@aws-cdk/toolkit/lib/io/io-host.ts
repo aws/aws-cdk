@@ -6,7 +6,7 @@ import { ToolkitAction } from '../types';
  */
 export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
-export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS';
+export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS' | 'ASSEMBLY';
 export type IoCodeLevel = 'E' | 'W' | 'I';
 export type IoMessageSpecificCode<L extends IoCodeLevel> = `CDK_${IoMessageCodeCategory}_${L}${number}${number}${number}${number}`;
 export type IoMessageCode = IoMessageSpecificCode<IoCodeLevel>;

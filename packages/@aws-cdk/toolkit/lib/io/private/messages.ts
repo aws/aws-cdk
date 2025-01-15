@@ -1,11 +1,6 @@
 import * as chalk from 'chalk';
-import { IoMessage, IoMessageCode, IoMessageCodeCategory, IoMessageLevel, IoRequest } from './io-host';
-
-type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
-
-type SimplifiedMessage<T> = Pick<IoMessage<T>, 'level' | 'code' | 'message' | 'data'>;
-type ActionLessMessage<T> = Omit<IoMessage<T>, 'action'>;
-type ActionLessRequest<T, U> = Omit<IoRequest<T, U>, 'action'>;
+import type { IoMessageCode, IoMessageCodeCategory, IoMessageLevel } from '../io-host';
+import type { ActionLessMessage, ActionLessRequest, Optional, SimplifiedMessage } from './types';
 
 /**
  * Internal helper that processes log inputs into a consistent format.

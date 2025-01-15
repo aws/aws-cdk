@@ -1,7 +1,7 @@
 import type { Logger } from '@smithy/types';
 import { formatSdkLoggerContent } from 'aws-cdk/lib/api/aws-auth/sdk-logger';
-import { ToolkitAction } from '../types';
-import { IIoHost, IoMessage, IoRequest } from './io-host';
+import { ToolkitAction } from '../../types';
+import { IIoHost, IoMessage, IoRequest } from '../io-host';
 import { trace } from './messages';
 
 export function withAction(ioHost: IIoHost, action: ToolkitAction) {

@@ -345,6 +345,7 @@ function includeDownstreamStacks(
   } while (madeProgress);
 
   if (added.length > 0) {
+    // @todo remove here or use iohost
     info('Including depending stacks: %s', chalk.bold(added.join(', ')));
   }
 }
@@ -375,6 +376,7 @@ function includeUpstreamStacks(
   }
 
   if (added.length > 0) {
+    // @todo remove here or use iohost
     info('Including dependency stacks: %s', chalk.bold(added.join(', ')));
   }
 }
