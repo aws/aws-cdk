@@ -1,6 +1,6 @@
-import { ToolkitError } from '../errors';
-import { ContextAwareCloudAssembly } from './context-aware-source';
-import { ICloudAssemblySource } from './types';
+import { ToolkitError } from '../../errors';
+import { ContextAwareCloudAssembly } from '../context-aware-source';
+import { ICloudAssemblySource } from '../types';
 
 /**
  * Configuration for creating a CLI from an AWS CDK App directory

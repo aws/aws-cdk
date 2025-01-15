@@ -1,4 +1,4 @@
-import type { ToolkitAction } from '../types';
+import type { ToolkitAction } from '../../toolkit';
 
 /**
  * The reporting level of the message.

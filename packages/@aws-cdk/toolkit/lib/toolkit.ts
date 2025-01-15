@@ -22,18 +22,25 @@ import { DiffOptions } from './actions/diff';
 import { ListOptions } from './actions/list';
 import { SynthOptions } from './actions/synth';
 import { WatchOptions } from './actions/watch';
-import { SdkOptions } from './api/aws-auth/sdk';
-import { CachedCloudAssemblySource } from './api/cloud-assembly/cached-source';
-import { IdentityCloudAssemblySource } from './api/cloud-assembly/identity-source';
-import { StackAssembly } from './api/cloud-assembly/stack-assembly';
-import { ICloudAssemblySource } from './api/cloud-assembly/types';
+import { SdkOptions } from './api/aws-auth';
+import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource } from './api/cloud-assembly';
+import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
 import { ToolkitError } from './api/errors';
-import { IIoHost, IoMessageCode, IoMessageLevel } from './io/io-host';
-import { ActionlessIoHost } from './io/private';
-import { asSdkLogger, withAction } from './io/private/logger';
-import { confirm, data, error, highlight, info, success, warning } from './io/private/messages';
-import { Timer } from './io/private/timer';
-import { StackSelectionStrategy, ToolkitAction } from './types';
+import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
+import { asSdkLogger, withAction, ActionlessIoHost, Timer, confirm, data, error, highlight, info, success, warning } from './api/io/private';
+
+/**
+ * The current action being performed by the CLI. 'none' represents the absence of an action.
+ */
+export type ToolkitAction =
+| 'bootstrap'
+| 'synth'
+| 'list'
+| 'diff'
+| 'deploy'
+| 'rollback'
+| 'watch'
+| 'destroy';
 
 export interface ToolkitOptions {
   /**

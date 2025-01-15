@@ -1,5 +1,5 @@
 import { CloudAssembly } from '@aws-cdk/cx-api';
-import { ICloudAssemblySource } from './cloud-assembly-source/types';
+import { ICloudAssemblySource } from './api/cloud-assembly';
 /**
  * Configuration for creating a CLI from an AWS CDK App directory
  */
