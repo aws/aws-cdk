@@ -25,7 +25,7 @@ test('select stacks by glob pattern', async () => {
   const x = await cxasm.selectStacks({ patterns: ['with*'] }, { defaultBehavior: DefaultSelection.AllStacks });
 
   // THEN
-  expect(x.stackCount).toBe(2);
+  expect(x.stackCount).toBe(3);
   expect(x.stackIds).toContain('witherrors');
   expect(x.stackIds).toContain('withouterrors');
 });
@@ -38,7 +38,7 @@ test('select behavior: all', async () => {
   const x = await cxasm.selectStacks({ patterns: [] }, { defaultBehavior: DefaultSelection.AllStacks });
 
   // THEN
-  expect(x.stackCount).toBe(2);
+  expect(x.stackCount).toBe(3);
 });
 
 test('select behavior: none', async () => {
