@@ -31,6 +31,13 @@ export interface WatchOptions extends BaseDeployOptions {
   readonly exclude?: string[];
 
   /**
+   * The root directory used for watch.
+   *
+   * @default - the directory of 'cdk.json'
+   */
+  readonly rootDir?: string;
+
+  /**
    * The output to write CloudFormation template to
    *
    * @deprecated this should be grabbed from the cloud assembly itself
