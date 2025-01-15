@@ -150,7 +150,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
         ClientIDList: props.clientIds,
         ThumbprintList: props.thumbprints,
         Url: props.url,
-        RejectUnauthoried: rejectUnauthorized,
+        RejectUnauthorized: rejectUnauthorized,
 
         // code changes can cause thumbprint changes in case they weren't explicitly provided.
         // add the code hash as a property so that CFN invokes the UPDATE handler in these cases,

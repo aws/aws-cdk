@@ -1366,7 +1366,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       default to reject unauthorized connections when downloading CA Certificates.
       
       When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
-      thumbprints from unsecure connnections.`,
+      thumbprints from unsecure connections.`,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
