@@ -493,7 +493,7 @@ describe('cluster new api', () => {
           vpc,
           writer: ClusterInstance.serverlessV2('writer'),
           iamAuthentication: true,
-          secondsUntilAutoPause: cdk.Duration.minutes(10),
+          secondsUntilAutoPause: 600,
         });
 
         // THEN

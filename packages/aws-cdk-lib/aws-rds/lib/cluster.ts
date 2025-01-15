@@ -98,7 +98,7 @@ interface DatabaseClusterBaseProps {
    * @default 300
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
    */
-  readonly secondsUntilAutoPause?: Duration;
+  readonly secondsUntilAutoPause?: number;
 
   /**
    * What subnets to run the RDS instances in.
@@ -462,17 +462,7 @@ interface DatabaseClusterBaseProps {
    *
    * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
    *
-   * @default ClusterScalabilityType.STANDARD
-   */
-  readonly clusterScalabilityType?: ClusterScalabilityType;
-
-  /**
-   * [Misspelled] Specifies the scalability mode of the Aurora DB cluster.
-   *
-   * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
-   *
    * @default ClusterScailabilityType.STANDARD
-   * @deprecated Use clusterScalabilityType instead. This will be removed in the next major version.
    */
   readonly clusterScailabilityType?: ClusterScailabilityType;
 }
@@ -513,25 +503,6 @@ export enum InstanceUpdateBehaviour {
 
 /**
  * The scalability mode of the Aurora DB cluster.
- */
-export enum ClusterScalabilityType {
-  /**
-   * The cluster uses normal DB instance creation.
-   */
-  STANDARD = 'standard',
-
-  /**
-   * The cluster operates as an Aurora Limitless Database,
-   * allowing you to create a DB shard group for horizontal scaling (sharding) capabilities.
-   *
-   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
-   */
-  LIMITLESS = 'limitless',
-}
-
-/**
- * The scalability mode of the Aurora DB cluster.
- * @deprecated Use ClusterScalabilityType instead. This will be removed in the next major version.
  */
 export enum ClusterScailabilityType {
   /**
@@ -738,7 +709,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   /**
    * The number of seconds until a serverless cluster is paused.
    */
-  protected readonly secondsUntilAutoPause: Duration;
+  protected readonly secondsUntilAutoPause: number;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -766,7 +737,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
-    this.secondsUntilAutoPause = props.secondsUntilAutoPause ?? Duration.minutes(5);
+    this.secondsUntilAutoPause = props.secondsUntilAutoPause ?? 300;
 
     this.validateServerlessScalingConfig();
 
@@ -853,7 +824,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
     }
 
-    if (props.clusterScalabilityType === ClusterScalabilityType.LIMITLESS || props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
+    if (props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
       if (!props.enablePerformanceInsights) {
         throw new ValidationError('Performance Insights must be enabled for Aurora Limitless Database.', this);
       }
@@ -929,7 +900,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
       storageType: props.storageType?.toString(),
       enableLocalWriteForwarding: props.enableLocalWriteForwarding,
-      clusterScalabilityType: props.clusterScalabilityType ?? props.clusterScailabilityType,
+      clusterScalabilityType: props.clusterScailabilityType,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -1144,7 +1115,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       `min: ${this.serverlessV2MaxCapacity}, max: ${this.serverlessV2MaxCapacity}`, this);
     }
 
-    const autoPauseSeconds = this.secondsUntilAutoPause.toSeconds();
+    const autoPauseSeconds = this.secondsUntilAutoPause;
     if (autoPauseSeconds < 300 || autoPauseSeconds > 86400) {
       throw new Error(`secondsUntilAutoPause must be >= 300 & <= 86400, received ${autoPauseSeconds}`);
     }
@@ -1344,7 +1315,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
     setLogRetention(this, props);
 
     // create the instances for only standard aurora clusters
-    if (props.clusterScalabilityType !== ClusterScalabilityType.LIMITLESS && props.clusterScailabilityType !== ClusterScailabilityType.LIMITLESS) {
+    if (props.clusterScailabilityType !== ClusterScailabilityType.LIMITLESS) {
       if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
         throw new ValidationError('Cannot provide writer or readers if instances or instanceProps are provided', this);
       }
