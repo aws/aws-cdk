@@ -8,7 +8,6 @@ import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
 import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
 import { obscureTemplate, serializeStructure } from 'aws-cdk/lib/serialize';
-import { PROJECT_CONFIG } from 'aws-cdk/lib/settings';
 import { tagsForStack } from 'aws-cdk/lib/tags';
 import { CliIoHost } from 'aws-cdk/lib/toolkit/cli-io-host';
 import { validateSnsTopicArn } from 'aws-cdk/lib/util/validate-notification-arn';
