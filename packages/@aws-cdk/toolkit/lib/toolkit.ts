@@ -8,7 +8,6 @@ import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
 import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
 import { obscureTemplate, serializeStructure } from 'aws-cdk/lib/serialize';
-import { PROJECT_CONFIG } from 'aws-cdk/lib/settings';
 import { tagsForStack } from 'aws-cdk/lib/tags';
 import { CliIoHost } from 'aws-cdk/lib/toolkit/cli-io-host';
 import { validateSnsTopicArn } from 'aws-cdk/lib/util/validate-notification-arn';
@@ -31,6 +30,7 @@ import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
 import { ToolkitError } from './api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
 import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost, debug } from './api/io/private';
+import { PROJECT_CONFIG } from 'aws-cdk/lib/settings';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -466,7 +466,7 @@ export class Toolkit {
    */
   public async watch(cx: ICloudAssemblySource, options: WatchOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, 'watch');
-    const rootDir = options.rootDir ?? path.dirname(path.resolve(PROJECT_CONFIG));
+    const rootDir = options.watchDir ?? path.dirname(path.resolve(PROJECT_CONFIG));
     await ioHost.notify(debug(`root directory used for 'watch' is: ${rootDir}`));
 
     if (options.include === undefined && options.exclude === undefined) {

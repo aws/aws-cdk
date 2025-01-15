@@ -35,7 +35,7 @@ export interface WatchOptions extends BaseDeployOptions {
    *
    * @default - the directory of 'cdk.json'
    */
-  readonly rootDir?: string;
+  readonly watchDir?: string;
 
   /**
    * The output to write CloudFormation template to
