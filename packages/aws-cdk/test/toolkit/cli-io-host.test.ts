@@ -4,7 +4,7 @@ import { CliIoHost, IoMessage } from '../../lib/toolkit/cli-io-host';
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
   let mockStderr: jest.Mock;
-  let defaultMessage: IoMessage;
+  let defaultMessage: IoMessage<unknown>;
 
   beforeEach(() => {
     mockStdout = jest.fn();
@@ -13,7 +13,7 @@ describe('CliIoHost', () => {
     // Reset singleton state
     CliIoHost.isTTY = process.stdout.isTTY ?? false;
     CliIoHost.ci = false;
-    CliIoHost.currentAction = 'none';
+    CliIoHost.currentAction = 'synth';
 
     defaultMessage = {
       time: new Date('2024-01-01T12:00:00'),

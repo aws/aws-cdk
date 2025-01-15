@@ -31,7 +31,6 @@ const config = {
     // fail because they rely on shared mutable state left by other tests
     // (files on disk, global mocks, etc).
     randomize: true,
-    testEnvironment: './test/jest-bufferedconsole.ts',
 };
 
 // Disable coverage running in the VSCode debug terminal: we never want coverage
