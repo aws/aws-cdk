@@ -1,12 +1,13 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
-
 import { DeploymentMethod } from './api';
 import { HotswapMode } from './api/hotswap/common';
 import { ILock } from './api/util/rwlock';
 import { parseCommandLineArguments } from './parse-command-line-arguments';
 import { checkForPlatformWarnings } from './platform-warnings';
+import { IoMessageLevel, CliIoHost } from './toolkit/cli-io-host';
+
 import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
@@ -22,7 +23,7 @@ import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
 import { cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, print, setCI, setLogLevel, LogLevel } from '../lib/logging';
+import { data, debug, error, info, setCI, setIoMessageThreshold } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -43,17 +44,17 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level
   if (argv.verbose) {
-    let logLevel: LogLevel;
+    let ioMessageLevel: IoMessageLevel;
     switch (argv.verbose) {
       case 1:
-        logLevel = LogLevel.DEBUG;
+        ioMessageLevel = 'debug';
         break;
       case 2:
       default:
-        logLevel = LogLevel.TRACE;
+        ioMessageLevel = 'trace';
         break;
     }
-    setLogLevel(logLevel);
+    setIoMessageThreshold(ioMessageLevel);
   }
 
   // Debug should always imply tracing
@@ -219,6 +220,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
+        CliIoHost.currentAction = 'list';
         return cli.list(args.STACKS, {
           long: args.long,
           json: argv.json,
@@ -274,6 +276,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'deploy':
+        CliIoHost.currentAction = 'deploy';
         const parameterMap: { [name: string]: string | undefined } = {};
         for (const parameter of args.parameters) {
           if (typeof parameter === 'string') {
@@ -398,6 +401,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'destroy':
+        CliIoHost.currentAction = 'destroy';
         return cli.destroy({
           selector,
           exclusively: args.exclusively,
@@ -421,6 +425,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
+        CliIoHost.currentAction = 'synth';
         const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
           return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
@@ -479,10 +484,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 function determineBootstrapVersion(args: { template?: string }): BootstrapSource {
   let source: BootstrapSource;
   if (args.template) {
-    print(`Using bootstrapping template from ${args.template}`);
+    info(`Using bootstrapping template from ${args.template}`);
     source = { source: 'custom', templateFile: args.template };
   } else if (process.env.CDK_LEGACY_BOOTSTRAP) {
-    print('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
+    info('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
     source = { source: 'legacy' };
   } else {
     // in V2, the "new" bootstrapping is the default

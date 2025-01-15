@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as semver from 'semver';
-import { error, print, warning } from '../../logging';
+import { error, info, warning } from '../../logging';
 import { ToolkitError } from '../../toolkit/error';
 import { flatten } from '../../util';
 
@@ -264,7 +264,7 @@ export class StackCollection {
             printMessage(error, 'Error', message.id, message.entry);
             break;
           case cxapi.SynthesisMessageLevel.INFO:
-            printMessage(print, 'Info', message.id, message.entry);
+            printMessage(info, 'Info', message.id, message.entry);
             break;
         }
       }
@@ -346,7 +346,7 @@ function includeDownstreamStacks(
   } while (madeProgress);
 
   if (added.length > 0) {
-    print('Including depending stacks: %s', chalk.bold(added.join(', ')));
+    info('Including depending stacks: %s', chalk.bold(added.join(', ')));
   }
 }
 
@@ -376,7 +376,7 @@ function includeUpstreamStacks(
   }
 
   if (added.length > 0) {
-    print('Including dependency stacks: %s', chalk.bold(added.join(', ')));
+    info('Including dependency stacks: %s', chalk.bold(added.join(', ')));
   }
 }
 
