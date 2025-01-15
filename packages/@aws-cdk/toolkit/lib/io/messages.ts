@@ -1,25 +1,23 @@
 import * as chalk from 'chalk';
-import { IoMessage, IoMessageCode, IoMessageCodeCategory, IoMessageLevel } from './io-host';
+import { IoMessage, IoMessageCode, IoMessageCodeCategory, IoMessageLevel, IoRequest } from './io-host';
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+
+type SimplifiedMessage<T> = Pick<IoMessage<T>, 'level' | 'code' | 'message' | 'data'>;
+type ActionLessMessage<T> = Omit<IoMessage<T>, 'action'>;
+type ActionLessRequest<T, U> = Omit<IoRequest<T, U>, 'action'>;
 
 /**
  * Internal helper that processes log inputs into a consistent format.
  * Handles string interpolation, format strings, and object parameter styles.
  * Applies optional styling and prepares the final message for logging.
  */
-function formatMessage<T>(
-  msg: Pick<Optional<IoMessage<T>, 'code'>, 'level' | 'code' | 'message' | 'data'>,
-  style?: (str: string) => string,
-): Omit<IoMessage<T>, 'action'> {
-  // Apply style if provided
-  const formattedMessage = style ? style(msg.message) : msg.message;
-
+function formatMessage<T>(msg: Optional<SimplifiedMessage<T>, 'code'>): ActionLessMessage<T> {
   return {
     time: new Date(),
     level: msg.level,
     code: msg.code ?? messageCode(msg.level),
-    message: formattedMessage,
+    message: msg.message,
     data: msg.data,
   };
 }
@@ -33,6 +31,40 @@ function messageCode(level: IoMessageLevel, category: IoMessageCodeCategory = 'T
       'I';
   return `CDK_${category}_${levelIndicator}${number ?? '0000'}`;
 }
+
+/**
+ * Requests a yes/no confirmation from the IoHost.
+ */
+export const confirm = (
+  code: IoMessageCode,
+  question: string,
+  motivation: string,
+  defaultResponse: boolean,
+  concurrency?: number,
+): ActionLessRequest<{
+  motivation: string;
+  concurrency?: number;
+}, boolean> => {
+  return prompt(code, `${chalk.cyan(question)} (y/n)?`, defaultResponse, {
+    motivation,
+    concurrency,
+  });
+};
+
+/**
+ * Prompt for a a response from the IoHost.
+ */
+export const prompt = <T, U>(code: IoMessageCode, message: string, defaultResponse: U, payload?: T): ActionLessRequest<T, U> => {
+  return {
+    defaultResponse,
+    ...formatMessage({
+      level: 'info',
+      code,
+      message,
+      data: payload,
+    }),
+  };
+};
 
 /**
  * Logs an error level message.
@@ -115,9 +147,9 @@ export const success = <T>(message: string, code?: IoMessageCode, payload?: T) =
   return formatMessage({
     level: 'info',
     code,
-    message,
+    message: chalk.green(message),
     data: payload,
-  }, chalk.green);
+  });
 };
 
 /**
@@ -128,7 +160,7 @@ export const highlight = <T>(message: string, code?: IoMessageCode, payload?: T)
   return formatMessage({
     level: 'info',
     code,
-    message,
+    message: chalk.bold(message),
     data: payload,
-  }, chalk.bold);
+  });
 };

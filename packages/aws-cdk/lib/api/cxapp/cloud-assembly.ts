@@ -231,6 +231,10 @@ export class StackCollection {
     return this.stackArtifacts.map(s => s.id);
   }
 
+  public get hierarchicalIds(): string[] {
+    return this.stackArtifacts.map(s => s.hierarchicalId);
+  }
+
   public reversed() {
     const arts = [...this.stackArtifacts];
     arts.reverse();
