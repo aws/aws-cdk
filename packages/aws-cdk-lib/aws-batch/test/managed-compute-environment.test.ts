@@ -5,7 +5,6 @@ import * as eks from '../../aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from '../../aws-iam';
 import { Stack, Duration, Tags, CfnParameter } from '../../core';
 import { AllocationStrategy, CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType } from '../lib';
-import { Type } from '@aws-sdk/client-cloudwatch-logs';
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
   type: 'managed',

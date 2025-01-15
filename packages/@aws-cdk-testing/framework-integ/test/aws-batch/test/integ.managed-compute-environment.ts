@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { LaunchTemplate } from 'aws-cdk-lib/aws-ec2';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { App, Duration, Stack, Tags } from 'aws-cdk-lib';
+import { App, CfnParameter, Duration, Stack, Tags } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvironment, EcsMachineImageType } from 'aws-cdk-lib/aws-batch';
 
@@ -84,6 +84,31 @@ new ManagedEc2EcsComputeEnvironment(stack, 'ECS_AL2023', {
   images: [{
     imageType: EcsMachineImageType.ECS_AL2023,
   }],
+});
+
+new ManagedEc2EcsComputeEnvironment(stack, 'ParamertizedManagedCE', {
+  vpc,
+  images: [{
+    image: new ec2.AmazonLinuxImage(),
+  }],
+  minvCpus: new CfnParameter(stack, 'MinVCpuParameter', {
+    default: 512,
+    minValue: 0,
+    type: 'Number'
+  }).valueAsNumber,
+  maxvCpus: new CfnParameter(stack, 'MaxVCpuParameter', {
+    default: 512,
+    minValue: 1,
+  }).valueAsNumber,
+  spot: true,
+  spotBidPercentage: new CfnParameter(stack, 'SpotBidPercentageParameter', {
+    default: 100,
+    minValue: 1,
+    type: 'Number',
+  }).valueAsNumber,
+  spotFleetRole: new Role(stack, 'SpotFleetRole', {
+    assumedBy: new ServicePrincipal('batch.amazonaws.com'),
+  }),
 });
 
 new integ.IntegTest(app, 'BatchManagedComputeEnvironmentTest', {
