@@ -8,7 +8,7 @@ export type ActionLessRequest<T, U> = Omit<IoRequest<T, U>, 'action'>;
 /**
  * Helper type for IoHosts that are action aware
  */
-export interface ActionlessIoHost extends IIoHost {
+export interface ActionAwareIoHost extends IIoHost {
   notify<T>(msg: ActionLessMessage<T>): Promise<void>;
   requestResponse<T, U>(msg: ActionLessRequest<T, U>): Promise<U>;
 }
