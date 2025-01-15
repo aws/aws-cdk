@@ -48,15 +48,36 @@
                           ]
                         },
                         "locale": "us-west-2",
-                        "provisionedCidrs": [
+                        "tags": [
                           {
-                            "cidr": "10.2.0.0/16"
+                            "key": "Name",
+                            "value": "PrivatePool0"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPool",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CidrIPv40": {
+                    "id": "CidrIPv40",
+                    "path": "aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PrivatePool0/CidrIPv40",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPoolCidr",
+                      "aws:cdk:cloudformation:props": {
+                        "cidr": "10.2.0.0/16",
+                        "ipamPoolId": {
+                          "Fn::GetAtt": [
+                            "IpamTestPrivatePool039C763DC",
+                            "IpamPoolId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnIPAMPoolCidr",
                       "version": "0.0.0"
                     }
                   }
@@ -85,7 +106,13 @@
                           ]
                         },
                         "locale": "us-west-2",
-                        "publicIpSource": "amazon"
+                        "publicIpSource": "amazon",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "PublicPool0"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -93,9 +120,9 @@
                       "version": "0.0.0"
                     }
                   },
-                  "PublicPool0Cidr": {
-                    "id": "PublicPool0Cidr",
-                    "path": "aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0/PublicPool0Cidr",
+                  "CidrIPv60": {
+                    "id": "CidrIPv60",
+                    "path": "aws-cdk-vpcv2-alpha-integ-ipam/IpamTest/PublicPool0/CidrIPv60",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::IPAMPoolCidr",
                       "aws:cdk:cloudformation:props": {

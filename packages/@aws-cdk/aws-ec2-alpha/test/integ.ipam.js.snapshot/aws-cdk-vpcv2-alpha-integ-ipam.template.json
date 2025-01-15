@@ -21,12 +21,28 @@
      ]
     },
     "Locale": "us-west-2",
-    "ProvisionedCidrs": [
+    "Tags": [
      {
-      "Cidr": "10.2.0.0/16"
+      "Key": "Name",
+      "Value": "PrivatePool0"
      }
     ]
    }
+  },
+  "IpamTestPrivatePool0CidrIPv4023FDE8B6": {
+   "Type": "AWS::EC2::IPAMPoolCidr",
+   "Properties": {
+    "Cidr": "10.2.0.0/16",
+    "IpamPoolId": {
+     "Fn::GetAtt": [
+      "IpamTestPrivatePool039C763DC",
+      "IpamPoolId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpamTestPrivatePool039C763DC"
+   ]
   },
   "IpamTestPublicPool0C44B7C49": {
    "Type": "AWS::EC2::IPAMPool",
@@ -40,10 +56,16 @@
      ]
     },
     "Locale": "us-west-2",
-    "PublicIpSource": "amazon"
+    "PublicIpSource": "amazon",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PublicPool0"
+     }
+    ]
    }
   },
-  "IpamTestPublicPool0PublicPool0CidrC57CE00C": {
+  "IpamTestPublicPool0CidrIPv6056F78423": {
    "Type": "AWS::EC2::IPAMPoolCidr",
    "Properties": {
     "IpamPoolId": {
@@ -53,7 +75,10 @@
      ]
     },
     "NetmaskLength": 52
-   }
+   },
+   "DependsOn": [
+    "IpamTestPublicPool0C44B7C49"
+   ]
   },
   "VPCintegtest1EBA1CB75": {
    "Type": "AWS::EC2::VPC",
@@ -86,7 +111,11 @@
       "VpcId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "IpamTestPrivatePool0CidrIPv4023FDE8B6",
+    "IpamTestPrivatePool039C763DC"
+   ]
   },
   "VPCintegtest1Ipv6IpamCidr2E5BBFED": {
    "Type": "AWS::EC2::VPCCidrBlock",
@@ -106,7 +135,8 @@
     }
    },
    "DependsOn": [
-    "IpamTestPublicPool0PublicPool0CidrC57CE00C"
+    "IpamTestPublicPool0CidrIPv6056F78423",
+    "IpamTestPublicPool0C44B7C49"
    ]
   },
   "testsbubnetSubnet77337845": {

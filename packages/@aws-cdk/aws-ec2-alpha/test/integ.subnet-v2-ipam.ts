@@ -2,8 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from '../lib';
 import { AddressFamily } from '../lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { Template } from 'aws-cdk-lib/assertions';
-// import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -55,9 +54,6 @@ new ec2.SubnetV2(stack, 'Subnet2', {
   availabilityZone: stack.region + 'a',
 });
 
-// eslint-disable-next-line no-console
-console.log('##########:', Template.fromStack(stack));
-
-// new IntegTest(app, 'aws-cdk-subnetv2-ipam', {
-//   testCases: [stack],
-// });
+new IntegTest(app, 'aws-cdk-subnetv2-ipam', {
+  testCases: [stack],
+});

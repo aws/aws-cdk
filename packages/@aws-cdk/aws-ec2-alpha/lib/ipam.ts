@@ -527,13 +527,17 @@ export class IpamPool extends Resource implements IIpamPool {
   }
 
   public addPool(id: string, option: PoolOptions): IIpamPool {
-    return new IpamPool(this, id, {
+    const pool = new IpamPool(this, id, {
       ...option,
       awsService: this.awsService,
       sourceIpamPoolId: this.ipamPoolId,
       ipamScopeId: this.ipamScopeId,
       locale: this.locale,
     });
+    if (option.sourceResource != null) {
+      pool.node.addDependency(option.sourceResource);
+    }
+    return pool;
   }
 
   /**
