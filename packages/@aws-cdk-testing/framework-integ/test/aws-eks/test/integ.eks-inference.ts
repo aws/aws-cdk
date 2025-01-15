@@ -36,8 +36,8 @@ class EksClusterInferenceStack extends Stack {
 
 const app = new App({
   postCliContext: {
-    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false
-  }
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
 });
 const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence-integ', {

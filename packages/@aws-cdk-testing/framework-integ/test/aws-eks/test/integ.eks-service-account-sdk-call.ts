@@ -13,8 +13,8 @@ import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
   postCliContext: {
-    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false
-  }
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
 });
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
 

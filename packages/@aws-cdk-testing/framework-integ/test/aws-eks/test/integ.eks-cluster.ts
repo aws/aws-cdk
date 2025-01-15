@@ -352,8 +352,8 @@ const supportedRegions = [
 
 const app = new App({
   postCliContext: {
-    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false
-  }
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
 });
 
 // since the EKS optimized AMI is hard-coded here based on the region,
