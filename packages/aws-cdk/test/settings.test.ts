@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import { Command, Context, Settings } from '../lib/settings';
-import { Tag } from '../lib/cdk-toolkit';
+import { Tag } from '../lib/tags';
 
 test('can delete values from Context object', () => {
   // GIVEN

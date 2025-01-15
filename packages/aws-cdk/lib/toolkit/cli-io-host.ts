@@ -9,7 +9,7 @@ export type IoMessageCode = IoMessageSpecificCode<IoCodeLevel>;
  * Basic message structure for toolkit notifications.
  * Messages are emitted by the toolkit and handled by the IoHost.
  */
-export interface IoMessage {
+export interface IoMessage<T> {
   /**
    * The time the message was emitted.
    */
@@ -55,6 +55,18 @@ export interface IoMessage {
    * @default false
    */
   readonly forceStdout?: boolean;
+
+  /**
+   * The data attached to the message.
+   */
+  readonly data?: T;
+}
+
+export interface IoRequest<T, U> extends IoMessage<T> {
+  /**
+   * The default response that will be used if no data is returned.
+   */
+  readonly defaultResponse: U;
 }
 
 export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
@@ -62,7 +74,15 @@ export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
-export type ToolkitAction = 'synth' | 'list' | 'deploy' | 'destroy' | 'none';
+export type ToolkitAction =
+| 'bootstrap'
+| 'synth'
+| 'list'
+| 'diff'
+| 'deploy'
+| 'rollback'
+| 'watch'
+| 'destroy';
 
 /**
  * A simple IO host for the CLI that writes messages to the console.
@@ -116,14 +136,14 @@ export class CliIoHost {
   /**
    * the current {@link ToolkitAction} set by the CLI.
    */
-  private currentAction: ToolkitAction | undefined;
+  private currentAction: ToolkitAction = 'synth';
 
   private constructor() {
     this.isTTY = process.stdout.isTTY ?? false;
     this.ci = false;
   }
 
-  public static get currentAction(): ToolkitAction | undefined {
+  public static get currentAction(): ToolkitAction {
     return CliIoHost.getIoHost().currentAction;
   }
 
@@ -151,7 +171,7 @@ export class CliIoHost {
    * Notifies the host of a message.
    * The caller waits until the notification completes.
    */
-  async notify(msg: IoMessage): Promise<void> {
+  async notify<T>(msg: IoMessage<T>): Promise<void> {
     const output = this.formatMessage(msg);
 
     const stream = CliIoHost.getStream(msg.level, msg.forceStdout ?? false);
@@ -168,9 +188,20 @@ export class CliIoHost {
   }
 
   /**
+   * Notifies the host of a message that requires a response.
+   *
+   * If the host does not return a response the suggested
+   * default response from the input message will be used.
+   */
+  async requestResponse<T, U>(msg: IoRequest<T, U>): Promise<U> {
+    await this.notify(msg);
+    return msg.defaultResponse;
+  }
+
+  /**
    * Formats a message for console output with optional color support
    */
-  private formatMessage(msg: IoMessage): string {
+  private formatMessage(msg: IoMessage<any>): string {
     // apply provided style or a default style if we're in TTY mode
     let message_text = this.isTTY
       ? styleMap[msg.level](msg.message)
