@@ -42,6 +42,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "aws-cdk": "0.0.0",
     "chalk": "^4",
+    "chokidar": "^3.6.0",
     "fs-extra": "^11.2.0",
     "minimatch": "^9.0.5",
     "semver": "^7.6.3",
