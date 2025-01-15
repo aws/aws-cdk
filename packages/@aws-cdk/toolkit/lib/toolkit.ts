@@ -20,6 +20,7 @@ import { AssetBuildTime, buildParameterMap, DeployOptions, removePublishedAssets
 import { DestroyOptions } from './actions/destroy';
 import { DiffOptions } from './actions/diff';
 import { ListOptions } from './actions/list';
+import { RollbackOptions } from './actions/rollback';
 import { SynthOptions } from './actions/synth';
 import { WatchOptions } from './actions/watch';
 import { SdkOptions } from './api/aws-auth';
@@ -27,7 +28,7 @@ import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, 
 import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
 import { ToolkitError } from './api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
-import { asSdkLogger, withAction, ActionlessIoHost, Timer, confirm, data, error, highlight, info, success, warning } from './api/io/private';
+import { asSdkLogger, withAction, ActionAwareIoHost, Timer, confirm, data, error, highlight, info, success, warn } from './api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -103,8 +104,7 @@ export class Toolkit {
     const assembly = await this.assemblyFromSource(cx);
     const stacks = assembly.selectStacksV2(options.stacks);
     const autoValidateStacks = options.validateStacks ? [assembly.selectStacksForValidation()] : [];
-    await this.validateStacksMetadata(stacks, ioHost);
-    stacks.concat(...autoValidateStacks).validateMetadata();
+    await this.validateStacksMetadata(stacks.concat(...autoValidateStacks), ioHost);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
@@ -155,6 +155,7 @@ export class Toolkit {
     const timer = Timer.start();
     const assembly = await this.assemblyFromSource(cx);
     const stackCollection = assembly.selectStacksV2(options.stacks);
+    await this.validateStacksMetadata(stackCollection, ioHost);
 
     const synthTime = timer.end();
     await ioHost.notify(info(`\n✨  Synthesis time: ${synthTime.asSec}s\n`, 'CDK_TOOLKIT_I5001', {
@@ -178,10 +179,10 @@ export class Toolkit {
     const parameterMap = buildParameterMap(options.parameters?.parameters);
 
     if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
-      await ioHost.notify(warning(
+      await ioHost.notify(warn(
         '⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments',
       ));
-      await ioHost.notify(warning('⚠️ They should only be used for development - never use them for your production Stacks!\n'));
+      await ioHost.notify(warn('⚠️ They should only be used for development - never use them for your production Stacks!\n'));
     }
 
     // @TODO
@@ -235,9 +236,9 @@ export class Toolkit {
       if (Object.keys(stack.template.Resources || {}).length === 0) {
         // The generated stack has no resources
         if (!(await deployments.stackExists({ stack }))) {
-          await ioHost.notify(warning(`${chalk.bold(stack.displayName)}: stack has no resources, skipping deployment.`));
+          await ioHost.notify(warn(`${chalk.bold(stack.displayName)}: stack has no resources, skipping deployment.`));
         } else {
-          await ioHost.notify(warning(`${chalk.bold(stack.displayName)}: stack has no resources, deleting existing stack.`));
+          await ioHost.notify(warn(`${chalk.bold(stack.displayName)}: stack has no resources, deleting existing stack.`));
           await this._destroy(assembly, 'deploy', {
             stacks: { patterns: [stack.hierarchicalId], strategy: StackSelectionStrategy.PATTERN_MUST_MATCH_SINGLE },
             roleArn: options.roleArn,
@@ -329,7 +330,7 @@ export class Toolkit {
               const question = `${motivation}. Perform a regular deployment`;
 
               if (options.force) {
-                await ioHost.notify(warning(`${motivation}. Rolling back first (--force).`));
+                await ioHost.notify(warn(`${motivation}. Rolling back first (--force).`));
               } else {
                 // @todo reintroduce concurrency and corked logging in CliHost
                 const confirmed = await ioHost.requestResponse(confirm('CDK_TOOLKIT_I5050', question, motivation, true, concurrency));
@@ -338,9 +339,8 @@ export class Toolkit {
 
               // Perform a rollback
               await this.rollback(cx, {
-                selector: { patterns: [stack.hierarchicalId] },
-                toolkitStackName: options.toolkitStackName,
-                force: options.force,
+                stacks: { patterns: [stack.hierarchicalId], strategy: StackSelectionStrategy.PATTERN_MUST_MATCH_SINGLE },
+                orphanFailedResources: options.force,
               });
 
               // Go around through the 'while' loop again but switch rollback to true.
@@ -354,7 +354,7 @@ export class Toolkit {
 
               // @todo no force here
               if (options.force) {
-                await ioHost.notify(warning(`${motivation}. Proceeding with regular deployment (--force).`));
+                await ioHost.notify(warn(`${motivation}. Proceeding with regular deployment (--force).`));
               } else {
                 // @todo reintroduce concurrency and corked logging in CliHost
                 const confirmed = await ioHost.requestResponse(confirm('CDK_TOOLKIT_I5050', question, motivation, true, concurrency));
@@ -429,7 +429,7 @@ export class Toolkit {
     const concurrency = options.concurrency || 1;
     const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
     if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
-      await ioHost.notify(warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".'));
+      await ioHost.notify(warn('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".'));
     }
 
     const stacksAndTheirAssetManifests = stacks.flatMap((stack) => [
@@ -472,8 +472,17 @@ export class Toolkit {
    *
    * Rolls back the selected stacks.
    */
-  public async rollback(_cx: ICloudAssemblySource, _options: any): Promise<void> {
+  public async rollback(cx: ICloudAssemblySource, options: RollbackOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, 'rollback');
+    const timer = Timer.start();
+    const assembly = await this.assemblyFromSource(cx);
+    const stacks = await assembly.selectStacksV2(options.stacks);
+    await this.validateStacksMetadata(stacks, ioHost);
+    const synthTime = timer.end();
+    await ioHost.notify(info(`\n✨  Synthesis time: ${synthTime.asSec}s\n`, 'CDK_TOOLKIT_I5001', {
+      time: synthTime.asMs,
+    }));
+
     throw new Error('Not implemented yet');
   }
 
@@ -523,7 +532,7 @@ export class Toolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private async validateStacksMetadata(stacks: StackCollection, ioHost: ActionlessIoHost) {
+  private async validateStacksMetadata(stacks: StackCollection, ioHost: ActionAwareIoHost) {
     // @TODO define these somewhere central
     const code = (level: IoMessageLevel): IoMessageCode => {
       switch (level) {
