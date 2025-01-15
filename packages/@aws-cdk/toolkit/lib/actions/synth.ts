@@ -12,21 +12,3 @@ export interface SynthOptions {
    */
   readonly validateStacks?: boolean;
 }
-
-/**
- * Remove any template elements that we don't want to show users.
- */
-export function obscureTemplate(template: any = {}) {
-  if (template.Rules) {
-    // see https://github.com/aws/aws-cdk/issues/17942
-    if (template.Rules.CheckBootstrapVersion) {
-      if (Object.keys(template.Rules).length > 1) {
-        delete template.Rules.CheckBootstrapVersion;
-      } else {
-        delete template.Rules;
-      }
-    }
-  }
-
-  return template;
-}

@@ -48,7 +48,7 @@ import { ResourceImporter, removeNonImportResources } from './import';
 import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from './logging';
 import { ResourceMigrator } from './migrator';
-import { deserializeStructure, serializeStructure } from './serialize';
+import { deserializeStructure, obscureTemplate, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { Tag, tagsForStack } from './tags';
 import { ToolkitError } from './toolkit/error';
@@ -1127,7 +1127,7 @@ export class CdkToolkit {
     });
 
     this.validateStacksSelected(stacks, selector.patterns);
-    this.validateStacks(stacks);
+    await this.validateStacks(stacks);
 
     return stacks;
   }
@@ -1153,7 +1153,7 @@ export class CdkToolkit {
       : new StackCollection(assembly, []);
 
     this.validateStacksSelected(selectedForDiff.concat(autoValidateStacks), stackNames);
-    this.validateStacks(selectedForDiff.concat(autoValidateStacks));
+    await this.validateStacks(selectedForDiff.concat(autoValidateStacks));
 
     return selectedForDiff;
   }
@@ -1173,12 +1173,12 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private validateStacks(stacks: StackCollection) {
-    stacks.processMetadataMessages({
-      ignoreErrors: this.props.ignoreErrors,
-      strict: this.props.strict,
-      verbose: this.props.verbose,
-    });
+  private async validateStacks(stacks: StackCollection) {
+    let failAt: 'warn' | 'error' | 'none' = 'error';
+    if (this.props.ignoreErrors) { failAt = 'none'; }
+    if (this.props.strict) { failAt = 'warn'; }
+
+    await stacks.validateMetadata(failAt, stackMetadataLogger(this.props.verbose));
   }
 
   /**
@@ -1815,24 +1815,6 @@ function buildParameterMap(
 }
 
 /**
- * Remove any template elements that we don't want to show users.
- */
-function obscureTemplate(template: any = {}) {
-  if (template.Rules) {
-    // see https://github.com/aws/aws-cdk/issues/17942
-    if (template.Rules.CheckBootstrapVersion) {
-      if (Object.keys(template.Rules).length > 1) {
-        delete template.Rules.CheckBootstrapVersion;
-      } else {
-        delete template.Rules;
-      }
-    }
-  }
-
-  return template;
-}
-
-/**
  * Ask the user for a yes/no confirmation
  *
  * Automatically fail the confirmation in case we're in a situation where the confirmation
@@ -1857,4 +1839,29 @@ async function askUserConfirmation(
     const confirmed = await promptly.confirm(`${chalk.cyan(question)} (y/n)?`);
     if (!confirmed) { throw new ToolkitError('Aborted by user'); }
   });
+}
+
+/**
+ * Logger for processing stack metadata
+ */
+function stackMetadataLogger(verbose?: boolean): (level: 'info' | 'error' | 'warn', msg: cxapi.SynthesisMessage) => Promise<void> {
+  const makeLogger = (level: string): [logger: (m: string) => void, prefix: string] => {
+    switch (level) {
+      case 'error':
+        return [error, 'Error'];
+      case 'warn':
+        return [warning, 'Warning'];
+      default:
+        return [info, 'Info'];
+    }
+  };
+
+  return async (level, msg) => {
+    const [logFn, prefix] = makeLogger(level);
+    logFn(`[${prefix} at ${msg.id}] ${msg.entry.data}`);
+
+    if (verbose && msg.entry.trace) {
+      logFn(`  ${msg.entry.trace.join('\n  ')}`);
+    }
+  };
 }

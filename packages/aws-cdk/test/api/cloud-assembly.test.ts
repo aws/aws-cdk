@@ -12,7 +12,7 @@ test('do not throw when selecting stack without errors', async () => {
   const selected = await cxasm.selectStacks( { patterns: ['withouterrorsNODEPATH'] }, {
     defaultBehavior: DefaultSelection.AllStacks,
   });
-  selected.processMetadataMessages();
+  await selected.validateMetadata();
 
   // THEN
   expect(selected.firstStack.template.resource).toBe('noerrorresource');
@@ -28,7 +28,7 @@ test('do throw when selecting stack with errors', async () => {
   });
 
   // THEN
-  expect(() => selected.processMetadataMessages()).toThrow(/Found errors/);
+  await expect(async () => selected.validateMetadata()).rejects.toThrow(/Found errors/);
 });
 
 test('select all top level stacks in the presence of nested assemblies', async () => {

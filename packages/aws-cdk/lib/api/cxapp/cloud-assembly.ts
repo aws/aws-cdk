@@ -2,8 +2,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as semver from 'semver';
-import { error, info, warning } from '../../logging';
-import { ToolkitError } from '../../toolkit/error';
+import { info } from '../../logging';
+import { AssemblyError, ToolkitError } from '../../toolkit/error';
 import { flatten } from '../../util';
 
 export enum DefaultSelection {
@@ -252,7 +252,10 @@ export class StackCollection {
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
-  public processMetadataMessages(options: MetadataMessageOptions = {}) {
+  public async validateMetadata(
+    failAt: 'warn' | 'error' | 'none' = 'error',
+    logger: (level: 'info' | 'error' | 'warn', msg: cxapi.SynthesisMessage) => Promise<void> = async () => {},
+  ) {
     let warnings = false;
     let errors = false;
 
@@ -261,33 +264,25 @@ export class StackCollection {
         switch (message.level) {
           case cxapi.SynthesisMessageLevel.WARNING:
             warnings = true;
-            printMessage(warning, 'Warning', message.id, message.entry);
+            await logger('warn', message);
             break;
           case cxapi.SynthesisMessageLevel.ERROR:
             errors = true;
-            printMessage(error, 'Error', message.id, message.entry);
+            await logger('error', message);
             break;
           case cxapi.SynthesisMessageLevel.INFO:
-            printMessage(info, 'Info', message.id, message.entry);
+            await logger('info', message);
             break;
         }
       }
     }
 
-    if (errors && !options.ignoreErrors) {
-      throw new ToolkitError('Found errors');
+    if (errors && failAt != 'none') {
+      throw new AssemblyError('Found errors');
     }
 
-    if (options.strict && warnings) {
-      throw new ToolkitError('Found warnings (--strict mode)');
-    }
-
-    function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
-      logFn(`[${prefix} at ${id}] ${entry.data}`);
-
-      if (options.verbose && entry.trace) {
-        logFn(`  ${entry.trace.join('\n  ')}`);
-      }
+    if (warnings && failAt === 'warn') {
+      throw new AssemblyError('Found warnings (--strict mode)');
     }
   }
 }
@@ -350,6 +345,7 @@ function includeDownstreamStacks(
   } while (madeProgress);
 
   if (added.length > 0) {
+    // @todo remove here or use iohost
     info('Including depending stacks: %s', chalk.bold(added.join(', ')));
   }
 }
@@ -380,6 +376,7 @@ function includeUpstreamStacks(
   }
 
   if (added.length > 0) {
+    // @todo remove here or use iohost
     info('Including dependency stacks: %s', chalk.bold(added.join(', ')));
   }
 }
