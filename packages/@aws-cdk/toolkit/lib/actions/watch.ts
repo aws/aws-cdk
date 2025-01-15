@@ -33,7 +33,7 @@ export interface WatchOptions extends BaseDeployOptions {
   /**
    * The root directory used for watch.
    *
-   * @default - the directory of 'cdk.json'
+   * @default process.cwd()
    */
   readonly watchDir?: string;
 
