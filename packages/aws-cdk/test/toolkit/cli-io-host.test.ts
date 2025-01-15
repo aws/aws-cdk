@@ -239,4 +239,21 @@ describe('CliIoHost', () => {
       })).rejects.toThrow('Write failed');
     });
   });
+
+  describe('requestResponse', () => {
+    test('logs messages and returns default', async () => {
+      CliIoHost.isTTY = true;
+      const response = await CliIoHost.getIoHost().requestResponse({
+        time: new Date(),
+        level: 'info',
+        action: 'synth',
+        code: 'CDK_TOOLKIT_I0001',
+        message: 'test message',
+        defaultResponse: 'default response',
+      });
+
+      expect(mockStderr).toHaveBeenCalledWith(chalk.white('test message') + '\n');
+      expect(response).toBe('default response');
+    });
+  });
 });
