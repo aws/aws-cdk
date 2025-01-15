@@ -47,23 +47,12 @@ export interface TransitGatewayAttachmentProps {
   /**
    * A list of one or more subnets to place the attachment in.
    * It is recommended to specify more subnets for better availability.
+   *
+   * To add/remove subnetIds, use the addSubnets and removeSubnets methods.
+   * Directly modifying this property will cause the attachment to be replaced.
    */
   readonly subnets: ISubnet[];
 
-  // WIP - probably will not expose these properties but will need to set them for the L1 behind the scenes
-  // /**
-  //  * A list of one or more subnets to add.
-  //  * You can specify at most one subnet per Availability Zone.
-  //  * It is recommended to specify more subnets for better availability.
-  //  */
-  // readonly addSubnets?: ISubnet[];
-
-  // /**
-  //  * A list of one or more subnets to place the attachment in.
-  //  * It is recommended to specify more subnets for better availability.
-  //  */
-
-  // readonly removeSubnets?: ISubnet[];
   /**
    * The transit gateway this attachment gets assigned to.
    */
@@ -82,18 +71,11 @@ export interface TransitGatewayAttachmentProps {
 
 abstract class TransitGatewayAttachmentBase extends Resource implements ITransitGatewayAttachment {
   public abstract readonly transitGatewayAttachmentId: string;
-
-  // addSubnets(subnets: ISubnet[]): void {
-  //   return;
-  // }
-
-  // removeSubnets(subnets: ISubnet[]): void {
-  //   return;
-  // }
 }
 
 export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
   public readonly transitGatewayAttachmentId: string;
+  private transitGatewayAttachment: CfnTransitGatewayVpcAttachment;
 
   constructor(scope: Construct, id: string, props: TransitGatewayAttachmentProps) {
     super(scope, id);
@@ -114,6 +96,7 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
       } : undefined,
     });
 
+    this.transitGatewayAttachment = resource;
     this.transitGatewayAttachmentId = resource.ref;
 
     if (props.transitGateway.defaultRouteTableAssociation) {
@@ -129,5 +112,13 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
         transitGatewayRouteTable: props.transitGateway.defaultRouteTable,
       });
     }
+  }
+
+  addSubnets(subnets: ISubnet[]): void {
+    this.transitGatewayAttachment.addSubnetIds = this.transitGatewayAttachment.addSubnetIds?.concat(subnets.map((subnet) => subnet.subnetId));
+  }
+
+  removeSubnets(subnets: ISubnet[]): void {
+    this.transitGatewayAttachment.removeSubnetIds = this.transitGatewayAttachment.removeSubnetIds?.concat(subnets.map((subnet) => subnet.subnetId));
   }
 }
