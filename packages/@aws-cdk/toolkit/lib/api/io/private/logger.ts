@@ -1,7 +1,9 @@
+import * as util from 'node:util';
 import type { Logger } from '@smithy/types';
 import { formatSdkLoggerContent } from 'aws-cdk/lib/api/aws-auth/sdk-logger';
-import type { IIoHost, IoMessage, IoRequest } from '../io-host';
-import { trace } from './messages';
+import type { IIoHost, IoMessage, IoMessageCodeCategory, IoMessageLevel, IoRequest } from '../io-host';
+import { debug, error, info, messageCode, trace, warn } from './messages';
+import { ActionAwareIoHost } from './types';
 import type { ToolkitAction } from '../../../toolkit';
 
 export function withAction(ioHost: IIoHost, action: ToolkitAction) {
@@ -21,6 +23,7 @@ export function withAction(ioHost: IIoHost, action: ToolkitAction) {
   };
 }
 
+// @todo these cannot be awaited WTF
 export function asSdkLogger(ioHost: IIoHost, action: ToolkitAction): Logger {
   return new class implements Logger {
     // This is too much detail for our logs
@@ -107,5 +110,30 @@ export function asSdkLogger(ioHost: IIoHost, action: ToolkitAction): Logger {
         },
       });
     }
+  };
+}
+
+/**
+ * Turn an ActionAwareIoHost into a logger that is compatible with older code, but doesn't support data
+ */
+export function asLogger(ioHost: ActionAwareIoHost, category?: IoMessageCodeCategory) {
+  const code = (level: IoMessageLevel) => messageCode(level, category);
+
+  return {
+    trace: async (msg: string, ...args: any[]) => {
+      await ioHost.notify(trace(util.format(msg, args), code('trace')));
+    },
+    debug: async (msg: string, ...args: any[]) => {
+      await ioHost.notify(debug(util.format(msg, args), code('debug')));
+    },
+    info: async (msg: string, ...args: any[]) => {
+      await ioHost.notify(info(util.format(msg, args), code('info')));
+    },
+    warn: async (msg: string, ...args: any[]) => {
+      await ioHost.notify(warn(util.format(msg, args), code('warn')));
+    },
+    error: async (msg: string, ...args: any[]) => {
+      await ioHost.notify(error(util.format(msg, args), code('error')));
+    },
   };
 }

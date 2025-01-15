@@ -126,6 +126,7 @@ export class Configuration {
     this._projectConfig = await loadAndLog(PROJECT_CONFIG);
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
+    // @todo cannot currently be disabled by cli users
     const readUserContext = this.props.readUserContext ?? true;
 
     if (userConfig.get(['build'])) {
