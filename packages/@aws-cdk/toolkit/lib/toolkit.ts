@@ -8,6 +8,7 @@ import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
 import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
 import { obscureTemplate, serializeStructure } from 'aws-cdk/lib/serialize';
+import { PROJECT_CONFIG } from 'aws-cdk/lib/settings';
 import { tagsForStack } from 'aws-cdk/lib/tags';
 import { CliIoHost } from 'aws-cdk/lib/toolkit/cli-io-host';
 import { validateSnsTopicArn } from 'aws-cdk/lib/util/validate-notification-arn';
@@ -30,7 +31,6 @@ import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
 import { ToolkitError } from './api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
 import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost, debug } from './api/io/private';
-import { PROJECT_CONFIG } from 'aws-cdk/lib/settings';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -466,6 +466,8 @@ export class Toolkit {
    */
   public async watch(cx: ICloudAssemblySource, options: WatchOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, 'watch');
+    const rootDir = options.watchDir ?? process.cwd();
+    await ioHost.notify(debug(`root directory used for 'watch' is: ${rootDir}`));
 
     if (options.include === undefined && options.exclude === undefined) {
       throw new ToolkitError(
@@ -480,7 +482,8 @@ export class Toolkit {
     // 3. "watch" setting with an empty "include" key? We default to observing "./**".
     // 4. Non-empty "include" key? Just use the "include" key.
     const watchIncludes = patternsArrayForWatch(options.include, {
-      returnCwdIfEmpty: true,
+      rootDir,
+      returnRootDirIfEmpty: true,
     });
     await ioHost.notify(debug(`'include' patterns for 'watch': ${watchIncludes}`));
 
@@ -491,7 +494,8 @@ export class Toolkit {
     // 3. Any directory's content whose name starts with a dot.
     // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
     const watchExcludes = patternsArrayForWatch(options.exclude, {
-      returnCwdIfEmpty: false,
+      rootDir,
+      returnRootDirIfEmpty: false,
     }).concat(`${options.output}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
     await ioHost.notify(debug(`'exclude' patterns for 'watch': ${watchExcludes}`));
 

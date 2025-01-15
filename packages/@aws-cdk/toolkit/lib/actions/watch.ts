@@ -31,6 +31,13 @@ export interface WatchOptions extends BaseDeployOptions {
   readonly exclude?: string[];
 
   /**
+   * The root directory used for watch.
+   *
+   * @default - the directory of 'cdk.json'
+   */
+  readonly watchDir?: string;
+
+  /**
    * The output to write CloudFormation template to
    *
    * @deprecated this should be grabbed from the cloud assembly itself
@@ -40,8 +47,8 @@ export interface WatchOptions extends BaseDeployOptions {
 
 export function patternsArrayForWatch(
   patterns: string | string[] | undefined,
-  options: { returnCwdIfEmpty: boolean },
+  options: { rootDir: string; returnRootDirIfEmpty: boolean },
 ): string[] {
   const patternsArray: string[] = patterns !== undefined ? (Array.isArray(patterns) ? patterns : [patterns]) : [];
-  return patternsArray.length > 0 ? patternsArray : options.returnCwdIfEmpty ? [process.cwd()] : [];
+  return patternsArray.length > 0 ? patternsArray : options.returnRootDirIfEmpty ? [options.rootDir] : [];
 }
