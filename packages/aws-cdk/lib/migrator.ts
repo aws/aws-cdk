@@ -13,6 +13,8 @@ export interface ResourceMigratorProps {
   deployments: Deployments;
 }
 
+type ResourceMigratorOptions = Pick<DeployOptions, 'roleArn' | 'toolkitStackName' | 'deploymentMethod' | 'progress' | 'rollback'>
+
 export class ResourceMigrator {
   public constructor(private readonly props: ResourceMigratorProps) {}
 
@@ -22,7 +24,7 @@ export class ResourceMigrator {
    * migrated to the stack using an IMPORT changeset. The normal deployment will resume after this is complete
    * to add back in any outputs and the CDKMetadata.
    */
-  public async tryMigrateResources(stacks: StackCollection, options: DeployOptions): Promise<void> {
+  public async tryMigrateResources(stacks: StackCollection, options: ResourceMigratorOptions): Promise<void> {
     const stack = stacks.stackArtifacts[0];
     const migrateDeployment = new ResourceImporter(stack, this.props.deployments);
     const resourcesToImport = await this.tryGetResources(await migrateDeployment.resolveEnvironment());
@@ -44,7 +46,7 @@ export class ResourceMigrator {
   private async performResourceMigration(
     migrateDeployment: ResourceImporter,
     resourcesToImport: ResourcesToImport,
-    options: DeployOptions,
+    options: ResourceMigratorOptions,
   ) {
     const startDeployTime = new Date().getTime();
     let elapsedDeployTime = 0;

@@ -1,4 +1,4 @@
-import { ToolkitAction } from '../types';
+import type { ToolkitAction } from '../types';
 
 /**
  * The reporting level of the message.
@@ -6,9 +6,24 @@ import { ToolkitAction } from '../types';
  */
 export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
+/**
+ * Valid reporting categories for messages.
+ */
 export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS' | 'ASSEMBLY';
+
+/**
+ * Code level matching the reporting level.
+ */
 export type IoCodeLevel = 'E' | 'W' | 'I';
+
+/**
+ * A message code at a specific level
+ */
 export type IoMessageSpecificCode<L extends IoCodeLevel> = `CDK_${IoMessageCodeCategory}_${L}${number}${number}${number}${number}`;
+
+/**
+ * A valid message code
+ */
 export type IoMessageCode = IoMessageSpecificCode<IoCodeLevel>;
 
 export interface IoMessage<T> {

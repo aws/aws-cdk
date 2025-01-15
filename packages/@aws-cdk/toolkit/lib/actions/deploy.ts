@@ -116,6 +116,7 @@ export interface BaseDeployOptions {
   readonly stacks: StackSelector;
 
   /**
+   * @deprecated set on toolkit
    * Name of the toolkit stack to use/deploy
    *
    * @default CDKToolkit
