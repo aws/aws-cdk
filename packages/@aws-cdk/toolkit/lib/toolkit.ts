@@ -8,7 +8,6 @@ import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
 import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
 import { obscureTemplate, serializeStructure } from 'aws-cdk/lib/serialize';
-import { Configuration } from 'aws-cdk/lib/settings';
 import { tagsForStack } from 'aws-cdk/lib/tags';
 import { CliIoHost } from 'aws-cdk/lib/toolkit/cli-io-host';
 import { validateSnsTopicArn } from 'aws-cdk/lib/util/validate-notification-arn';
@@ -160,6 +159,8 @@ export class Toolkit extends CloudAssemblySourceBuilder {
   public async list(cx: ICloudAssemblySource, _options: ListOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, 'list');
     const assembly = await this.assemblyFromSource(cx);
+    ioHost;
+    assembly;
     throw new Error('Not implemented yet');
   }
 
@@ -201,7 +202,7 @@ export class Toolkit extends CloudAssemblySourceBuilder {
     });
     await migrator.tryMigrateResources(stackCollection, options);
 
-    const requireApproval = options.requireApproval ?? RequireApproval.BROADENING;
+    // const requireApproval = options.requireApproval ?? RequireApproval.BROADENING;
 
     const parameterMap = buildParameterMap(options.parameters?.parameters);
 

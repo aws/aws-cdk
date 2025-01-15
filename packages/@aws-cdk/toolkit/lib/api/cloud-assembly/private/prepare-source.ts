@@ -11,7 +11,7 @@ import * as fs from 'fs-extra';
 import { lte } from 'semver';
 import type { AppSynthOptions } from './source-builder';
 import { ToolkitError } from '../../errors';
-import { ActionAwareIoHost, asLogger, error, warn } from '../../io/private';
+import { ActionAwareIoHost, asLogger, error } from '../../io/private';
 import { ToolkitServices } from '../../toolkit/private';
 
 export { guessExecutable } from 'aws-cdk/lib/api/cxapp/exec';

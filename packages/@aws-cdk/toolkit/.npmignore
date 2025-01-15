@@ -15,6 +15,7 @@ coverage
 tsconfig.json
 *.tsbuildinfo
 junit.xml
+jest.config.js
 
 # Include .jsii
 !.jsii
