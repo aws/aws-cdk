@@ -1,4 +1,5 @@
-import { SdkProvider } from 'aws-cdk/lib';
+
+import { SdkProvider } from '../../aws-cdk';
 import { ActionAwareIoHost } from '../../io/private';
 
 /**

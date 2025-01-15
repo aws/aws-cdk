@@ -1,19 +1,6 @@
 
 import * as path from 'node:path';
 import * as cxapi from '@aws-cdk/cx-api';
-import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult } from 'aws-cdk/lib/api';
-import { StackCollection } from 'aws-cdk/lib/api/cxapp/cloud-assembly';
-import { Deployments } from 'aws-cdk/lib/api/deployments';
-import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
-import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
-import { ResourceMigrator } from 'aws-cdk/lib/migrator';
-import { obscureTemplate, serializeStructure } from 'aws-cdk/lib/serialize';
-import { tagsForStack } from 'aws-cdk/lib/tags';
-import { CliIoHost } from 'aws-cdk/lib/toolkit/cli-io-host';
-import { validateSnsTopicArn } from 'aws-cdk/lib/util/validate-notification-arn';
-import { Concurrency } from 'aws-cdk/lib/util/work-graph';
-import { WorkGraphBuilder } from 'aws-cdk/lib/util/work-graph-builder';
-import { AssetBuildNode, AssetPublishNode, StackNode } from 'aws-cdk/lib/util/work-graph-types';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
@@ -25,6 +12,7 @@ import { RollbackOptions } from './actions/rollback';
 import { SynthOptions } from './actions/synth';
 import { patternsArrayForWatch, WatchOptions } from './actions/watch';
 import { SdkOptions } from './api/aws-auth';
+import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode } from './api/aws-cdk';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource } from './api/cloud-assembly';
 import { CloudAssemblySourceBuilder } from './api/cloud-assembly/private/source-builder';
 import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
@@ -76,7 +64,7 @@ export interface ToolkitOptions {
 /**
  * The AWS CDK Programmatic Toolkit
  */
-export class Toolkit extends CloudAssemblySourceBuilder {
+export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposable {
   /**
    * The toolkit stack name used for bootstrapping resources.
    */
@@ -88,7 +76,7 @@ export class Toolkit extends CloudAssemblySourceBuilder {
   private readonly ioHost: IIoHost;
   private _sdkProvider?: SdkProvider;
 
-  public constructor(private readonly props: ToolkitOptions) {
+  public constructor(private readonly props: ToolkitOptions = {}) {
     super();
 
     // @todo open ioHost up
@@ -97,6 +85,15 @@ export class Toolkit extends CloudAssemblySourceBuilder {
 
     this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
+
+  public async dispose(): Promise<void> {
+    // nothing to do yet
+  }
+
+  public async [Symbol.asyncDispose](): Promise<void> {
+    await this.dispose();
+  }
+
   /**
    * Access to the AWS SDK
    */

@@ -1,11 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { ILock, RWLock } from 'aws-cdk/lib/api/util/rwlock';
-import { Context } from 'aws-cdk/lib/settings';
+
 import * as fs from 'fs-extra';
 import type { ICloudAssemblySource } from '../';
 import { ContextAwareCloudAssembly, ContextAwareCloudAssemblyProps } from './context-aware-source';
 import { execInChildProcess } from './exec';
 import { assemblyFromDirectory, changeDir, guessExecutable, prepareDefaultEnvironment, withContext, withEnv } from './prepare-source';
+import { Context, ILock, RWLock } from '../../aws-cdk';
 import { ToolkitError } from '../../errors';
 import { debug } from '../../io/private';
 import { ToolkitServices } from '../../toolkit/private';

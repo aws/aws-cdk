@@ -1,4 +1,4 @@
-import { formatTime } from 'aws-cdk/lib/api/util/string-manipulation';
+import { formatTime } from '../../aws-cdk';
 
 /**
  * Helper class to measure the time of code.

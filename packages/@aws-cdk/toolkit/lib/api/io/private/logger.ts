@@ -1,10 +1,10 @@
 import * as util from 'node:util';
 import type { Logger } from '@smithy/types';
-import { formatSdkLoggerContent } from 'aws-cdk/lib/api/aws-auth/sdk-logger';
 import type { IIoHost, IoMessage, IoMessageCodeCategory, IoMessageLevel, IoRequest } from '../io-host';
 import { debug, error, info, messageCode, trace, warn } from './messages';
 import { ActionAwareIoHost } from './types';
 import type { ToolkitAction } from '../../../toolkit';
+import { formatSdkLoggerContent } from '../../aws-cdk';
 
 export function withAction(ioHost: IIoHost, action: ToolkitAction) {
   return {

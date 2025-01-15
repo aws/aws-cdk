@@ -2,19 +2,15 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { prepareDefaultEnvironment as oldPrepare, prepareContext, spaceAvailableForContext } from 'aws-cdk/lib/api/cxapp/exec';
-import { Settings } from 'aws-cdk/lib/settings';
-import { loadTree, some } from 'aws-cdk/lib/tree';
-import { splitBySize } from 'aws-cdk/lib/util';
-import { versionNumber } from 'aws-cdk/lib/version';
 import * as fs from 'fs-extra';
 import { lte } from 'semver';
 import type { AppSynthOptions } from './source-builder';
+import { prepareDefaultEnvironment as oldPrepare, prepareContext, spaceAvailableForContext, Settings, loadTree, some, splitBySize, versionNumber } from '../../../api/aws-cdk';
 import { ToolkitError } from '../../errors';
 import { ActionAwareIoHost, asLogger, error } from '../../io/private';
 import { ToolkitServices } from '../../toolkit/private';
 
-export { guessExecutable } from 'aws-cdk/lib/api/cxapp/exec';
+export { guessExecutable } from '../../../api/aws-cdk';
 
 type Env = { [key: string]: string };
 type Context = { [key: string]: any };
