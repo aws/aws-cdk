@@ -28,7 +28,7 @@ import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, 
 import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
 import { ToolkitError } from './api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
-import { asSdkLogger, withAction, ActionAwareIoHost, Timer, confirm, data, error, highlight, info, success, warn } from './api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost } from './api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.

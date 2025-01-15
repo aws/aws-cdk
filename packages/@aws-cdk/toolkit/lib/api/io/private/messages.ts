@@ -76,7 +76,7 @@ export const error = <T>(message: string, code?: IoMessageCode, payload?: T) => 
 /**
  * Logs an warning level message.
  */
-export const warning = <T>(message: string, code?: IoMessageCode, payload?: T) => {
+export const warn = <T>(message: string, code?: IoMessageCode, payload?: T) => {
   return formatMessage({
     level: 'warn',
     code,
