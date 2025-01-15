@@ -42,7 +42,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@smithy/types": "3.5.0",
-    "@types/fs-extra": "^11.0.4",
+    "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.14",
     "@types/node": "^18.18.14",
     "aws-cdk": "0.0.0",
