@@ -15,6 +15,7 @@ import { Concurrency } from 'aws-cdk/lib/util/work-graph';
 import { WorkGraphBuilder } from 'aws-cdk/lib/util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from 'aws-cdk/lib/util/work-graph-types';
 import * as chalk from 'chalk';
+import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { AssetBuildTime, buildParameterMap, DeployOptions, removePublishedAssets, RequireApproval } from './actions/deploy';
 import { DestroyOptions } from './actions/destroy';
@@ -22,13 +23,13 @@ import { DiffOptions } from './actions/diff';
 import { ListOptions } from './actions/list';
 import { RollbackOptions } from './actions/rollback';
 import { SynthOptions } from './actions/synth';
-import { WatchOptions } from './actions/watch';
+import { patternsArrayForWatch, WatchOptions } from './actions/watch';
 import { SdkOptions } from './api/aws-auth';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource } from './api/cloud-assembly';
 import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
 import { ToolkitError } from './api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
-import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost } from './api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost, debug } from './api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -462,9 +463,101 @@ export class Toolkit {
    * Continuously observe project files and deploy the selected stacks automatically when changes are detected.
    * Implies hotswap deployments.
    */
-  public async watch(_cx: ICloudAssemblySource, _options: WatchOptions): Promise<void> {
+  public async watch(cx: ICloudAssemblySource, options: WatchOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, 'watch');
-    throw new Error('Not implemented yet');
+    const rootDir = options.watchDir ?? process.cwd();
+    await ioHost.notify(debug(`root directory used for 'watch' is: ${rootDir}`));
+
+    if (options.include === undefined && options.exclude === undefined) {
+      throw new ToolkitError(
+        "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
+          'Make sure to add a "watch" key to your cdk.json',
+      );
+    }
+
+    // For the "include" subkey under the "watch" key, the behavior is:
+    // 1. No "watch" setting? We error out.
+    // 2. "watch" setting without an "include" key? We default to observing "./**".
+    // 3. "watch" setting with an empty "include" key? We default to observing "./**".
+    // 4. Non-empty "include" key? Just use the "include" key.
+    const watchIncludes = patternsArrayForWatch(options.include, {
+      rootDir,
+      returnRootDirIfEmpty: true,
+    });
+    await ioHost.notify(debug(`'include' patterns for 'watch': ${watchIncludes}`));
+
+    // For the "exclude" subkey under the "watch" key,
+    // the behavior is to add some default excludes in addition to the ones specified by the user:
+    // 1. The CDK output directory.
+    // 2. Any file whose name starts with a dot.
+    // 3. Any directory's content whose name starts with a dot.
+    // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
+    const watchExcludes = patternsArrayForWatch(options.exclude, {
+      rootDir,
+      returnRootDirIfEmpty: false,
+    }).concat(`${options.output}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
+    await ioHost.notify(debug(`'exclude' patterns for 'watch': ${watchExcludes}`));
+
+    // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
+    // introduce a concurrency latch that tracks the state.
+    // This way, if file change events arrive when a 'cdk deploy' is still executing,
+    // we will batch them, and trigger another 'cdk deploy' after the current one finishes,
+    // making sure 'cdk deploy's  always execute one at a time.
+    // Here's a diagram showing the state transitions:
+    // --------------                --------    file changed     --------------    file changed     --------------  file changed
+    // |            |  ready event   |      | ------------------> |            | ------------------> |            | --------------|
+    // | pre-ready  | -------------> | open |                     | deploying  |                     |   queued   |               |
+    // |            |                |      | <------------------ |            | <------------------ |            | <-------------|
+    // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
+    let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
+
+    // @todo
+    // const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
+    const deployAndWatch = async () => {
+      latch = 'deploying';
+      // cloudWatchLogMonitor?.deactivate();
+
+      await this.invokeDeployFromWatch(cx, options);
+
+      // If latch is still 'deploying' after the 'await', that's fine,
+      // but if it's 'queued', that means we need to deploy again
+      while ((latch as 'deploying' | 'queued') === 'queued') {
+        // TypeScript doesn't realize latch can change between 'awaits',
+        // and thinks the above 'while' condition is always 'false' without the cast
+        latch = 'deploying';
+        await ioHost.notify(info("Detected file changes during deployment. Invoking 'cdk deploy' again"));
+        await this.invokeDeployFromWatch(cx, options);
+      }
+      latch = 'open';
+      // cloudWatchLogMonitor?.activate();
+    };
+
+    chokidar
+      .watch(watchIncludes, {
+        ignored: watchExcludes,
+        cwd: rootDir,
+        // ignoreInitial: true,
+      })
+      .on('ready', async () => {
+        latch = 'open';
+        await ioHost.notify(debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment"));
+        await ioHost.notify(info("Triggering initial 'cdk deploy'"));
+        await deployAndWatch();
+      })
+      .on('all', async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
+        if (latch === 'pre-ready') {
+          await ioHost.notify(info(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '${filePath}' for changes`));
+        } else if (latch === 'open') {
+          await ioHost.notify(info(`Detected change to '${filePath}' (type: ${event}). Triggering 'cdk deploy'`));
+          await deployAndWatch();
+        } else {
+          // this means latch is either 'deploying' or 'queued'
+          latch = 'queued';
+          await ioHost.notify(info(
+            `Detected change to '${filePath}' (type: ${event}) while 'cdk deploy' is still running. Will queue for another deployment after this one finishes'`,
+          ));
+        }
+      });
   }
 
   /**
@@ -576,5 +669,30 @@ export class Toolkit {
       sdkProvider: await this.sdkProvider(action),
       toolkitStackName: this.toolkitStackName,
     });
+  }
+
+  private async invokeDeployFromWatch(
+    cx: ICloudAssemblySource,
+    options: WatchOptions,
+  ): Promise<void> {
+    const deployOptions: DeployOptions = {
+      ...options,
+      requireApproval: RequireApproval.NEVER,
+      // if 'watch' is called by invoking 'cdk deploy --watch',
+      // we need to make sure to not call 'deploy' with 'watch' again,
+      // as that would lead to a cycle
+      // watch: false,
+      // cloudWatchLogMonitor,
+      // cacheCloudAssembly: false,
+      hotswap: options.hotswap,
+      // extraUserAgent: `cdk-watch/hotswap-${options.hotswap !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
+      concurrency: options.concurrency,
+    };
+
+    try {
+      await this.deploy(cx, deployOptions);
+    } catch {
+      // just continue - deploy will show the error
+    }
   }
 }
