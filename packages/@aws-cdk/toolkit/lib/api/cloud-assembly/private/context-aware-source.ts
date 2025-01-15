@@ -1,17 +1,18 @@
 import type { MissingContext } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { SdkProvider } from 'aws-cdk/lib/api/aws-auth';
 import * as contextproviders from 'aws-cdk/lib/context-providers';
-import { debug } from 'aws-cdk/lib/logging';
 import { Context, PROJECT_CONTEXT } from 'aws-cdk/lib/settings';
-import { ICloudAssemblySource } from './types';
-import { ToolkitError } from '../errors';
+import { ToolkitError } from '../../errors';
+import { ActionAwareIoHost, debug } from '../../io/private';
+import { ToolkitServices } from '../../toolkit/private';
+import { ICloudAssemblySource } from '../types';
 
-export interface CloudExecutableProps {
+export interface ContextAwareCloudAssemblyProps {
   /**
    * AWS object (used by contextprovider)
+   * @deprecated context should be moved to the toolkit itself
    */
-  readonly sdkProvider: SdkProvider;
+  readonly services: ToolkitServices;
 
   /**
    * Application context
@@ -42,11 +43,13 @@ export class ContextAwareCloudAssembly implements ICloudAssemblySource {
   private canLookup: boolean;
   private context: Context;
   private contextFile: string;
+  private ioHost: ActionAwareIoHost;
 
-  constructor(private readonly source: ICloudAssemblySource, private readonly props: CloudExecutableProps) {
+  constructor(private readonly source: ICloudAssemblySource, private readonly props: ContextAwareCloudAssemblyProps) {
     this.canLookup = props.lookups ?? true;
     this.context = props.context;
     this.contextFile = props.contextFile ?? PROJECT_CONTEXT; // @todo new feature not needed right now
+    this.ioHost = props.services.ioHost;
   }
 
   /**
@@ -73,19 +76,18 @@ export class ContextAwareCloudAssembly implements ICloudAssemblySource {
 
         let tryLookup = true;
         if (previouslyMissingKeys && equalSets(missingKeys, previouslyMissingKeys)) {
-          debug('Not making progress trying to resolve environmental context. Giving up.');
+          await this.ioHost.notify(debug('Not making progress trying to resolve environmental context. Giving up.'));
           tryLookup = false;
         }
 
         previouslyMissingKeys = missingKeys;
 
         if (tryLookup) {
-          debug('Some context information is missing. Fetching...');
-
+          await this.ioHost.notify(debug('Some context information is missing. Fetching...'));
           await contextproviders.provideContextValues(
             assembly.manifest.missing,
             this.context,
-            this.props.sdkProvider,
+            this.props.services.sdkProvider,
           );
 
           // Cache the new context to disk

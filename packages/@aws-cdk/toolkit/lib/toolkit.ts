@@ -8,6 +8,7 @@ import { HotswapMode } from 'aws-cdk/lib/api/hotswap/common';
 import { StackActivityProgress } from 'aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceMigrator } from 'aws-cdk/lib/migrator';
 import { obscureTemplate, serializeStructure } from 'aws-cdk/lib/serialize';
+import { Configuration } from 'aws-cdk/lib/settings';
 import { tagsForStack } from 'aws-cdk/lib/tags';
 import { CliIoHost } from 'aws-cdk/lib/toolkit/cli-io-host';
 import { validateSnsTopicArn } from 'aws-cdk/lib/util/validate-notification-arn';
@@ -25,15 +26,18 @@ import { SynthOptions } from './actions/synth';
 import { WatchOptions } from './actions/watch';
 import { SdkOptions } from './api/aws-auth';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource } from './api/cloud-assembly';
+import { CloudAssemblySourceBuilder } from './api/cloud-assembly/private/source-builder';
 import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
 import { ToolkitError } from './api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
-import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost } from './api/io/private';
+import { asSdkLogger, withAction, ActionAwareIoHost, Timer, confirm, data, error, highlight, info, success, warn } from './api/io/private';
+import { ToolkitServices } from './api/toolkit/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
 export type ToolkitAction =
+| 'assembly'
 | 'bootstrap'
 | 'synth'
 | 'list'
@@ -72,20 +76,32 @@ export interface ToolkitOptions {
 /**
  * The AWS CDK Programmatic Toolkit
  */
-export class Toolkit {
+export class Toolkit extends CloudAssemblySourceBuilder {
+  /**
+   * The toolkit stack name used for bootstrapping resources.
+   */
+  public readonly toolkitStackName: string;
+
+  /**
+   * @todo should probably be public in one way or the other.
+   */
   private readonly ioHost: IIoHost;
   private _sdkProvider?: SdkProvider;
-  private toolkitStackName: string;
 
   public constructor(private readonly props: ToolkitOptions) {
+    super();
+
+    // @todo open ioHost up
     this.ioHost = CliIoHost.getIoHost();
     // this.ioHost = options.ioHost;
-    // @todo open this up
+
     this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
-
+  /**
+   * Access to the AWS SDK
+   */
   private async sdkProvider(action: ToolkitAction): Promise<SdkProvider> {
-    // @todo this needs to be different per action
+    // @todo this needs to be different instance per action
     if (!this._sdkProvider) {
       this._sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
         ...this.props.sdkOptions,
@@ -94,6 +110,16 @@ export class Toolkit {
     }
 
     return this._sdkProvider;
+  }
+
+  /**
+   * Helper to provide the CloudAssemblySourceBuilder with required toolkit services
+   */
+  protected override async toolkitServices(): Promise<ToolkitServices> {
+    return {
+      ioHost: this.ioHost,
+      sdkProvider: await this.sdkProvider('assembly'),
+    };
   }
 
   /**
