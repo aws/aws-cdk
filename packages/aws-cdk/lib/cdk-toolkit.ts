@@ -22,8 +22,9 @@ import { GarbageCollector } from './api/garbage-collection/garbage-collector';
 import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
+import { createDiffChangeSet } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { formatTime } from './api/util/string-manipulation';
 import {
   generateCdkApp,
   generateStack,
@@ -46,8 +47,10 @@ import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter, removeNonImportResources } from './import';
 import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from './logging';
-import { deserializeStructure, serializeStructure } from './serialize';
+import { ResourceMigrator } from './migrator';
+import { deserializeStructure, obscureTemplate, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
+import { Tag, tagsForStack } from './tags';
 import { ToolkitError } from './toolkit/error';
 import { numberFromBool, partition } from './util';
 import { formatErrorMessage } from './util/error';
@@ -186,7 +189,10 @@ export class CdkToolkit {
         const currentTemplate = templateWithNestedStacks.deployedRootTemplate;
         const nestedStacks = templateWithNestedStacks.nestedStacks;
 
-        const resourcesToImport = await this.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
+        const migrator = new ResourceMigrator({
+          deployments: this.props.deployments,
+        });
+        const resourcesToImport = await migrator.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
         if (resourcesToImport) {
           removeNonImportResources(stack);
         }
@@ -296,7 +302,10 @@ export class CdkToolkit {
       return;
     }
 
-    await this.tryMigrateResources(stackCollection, options);
+    const migrator = new ResourceMigrator({
+      deployments: this.props.deployments,
+    });
+    await migrator.tryMigrateResources(stackCollection, options);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -1132,7 +1141,7 @@ export class CdkToolkit {
     });
 
     this.validateStacksSelected(stacks, selector.patterns);
-    this.validateStacks(stacks);
+    await this.validateStacks(stacks);
 
     return stacks;
   }
@@ -1158,7 +1167,7 @@ export class CdkToolkit {
       : new StackCollection(assembly, []);
 
     this.validateStacksSelected(selectedForDiff.concat(autoValidateStacks), stackNames);
-    this.validateStacks(selectedForDiff.concat(autoValidateStacks));
+    await this.validateStacks(selectedForDiff.concat(autoValidateStacks));
 
     return selectedForDiff;
   }
@@ -1178,12 +1187,12 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private validateStacks(stacks: StackCollection) {
-    stacks.processMetadataMessages({
-      ignoreErrors: this.props.ignoreErrors,
-      strict: this.props.strict,
-      verbose: this.props.verbose,
-    });
+  private async validateStacks(stacks: StackCollection) {
+    let failAt: 'warn' | 'error' | 'none' = 'error';
+    if (this.props.ignoreErrors) { failAt = 'none'; }
+    if (this.props.strict) { failAt = 'warn'; }
+
+    await stacks.validateMetadata(failAt, stackMetadataLogger(this.props.verbose));
   }
 
   /**
@@ -1263,72 +1272,6 @@ export class CdkToolkit {
       roleArn: options.roleArn,
       stackName: assetNode.parentStack.stackName,
     }));
-  }
-
-  /**
-   * Checks to see if a migrate.json file exists. If it does and the source is either `filepath` or
-   * is in the same environment as the stack deployment, a new stack is created and the resources are
-   * migrated to the stack using an IMPORT changeset. The normal deployment will resume after this is complete
-   * to add back in any outputs and the CDKMetadata.
-   */
-  private async tryMigrateResources(stacks: StackCollection, options: DeployOptions): Promise<void> {
-    const stack = stacks.stackArtifacts[0];
-    const migrateDeployment = new ResourceImporter(stack, this.props.deployments);
-    const resourcesToImport = await this.tryGetResources(await migrateDeployment.resolveEnvironment());
-
-    if (resourcesToImport) {
-      info('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
-      info('%s: importing resources into stack...', chalk.bold(stack.displayName));
-
-      await this.performResourceMigration(migrateDeployment, resourcesToImport, options);
-
-      fs.rmSync('migrate.json');
-      info('%s: applying CDKMetadata and Outputs to stack (if applicable)...', chalk.bold(stack.displayName));
-    }
-  }
-
-  /**
-   * Creates a new stack with just the resources to be migrated
-   */
-  private async performResourceMigration(
-    migrateDeployment: ResourceImporter,
-    resourcesToImport: ResourcesToImport,
-    options: DeployOptions,
-  ) {
-    const startDeployTime = new Date().getTime();
-    let elapsedDeployTime = 0;
-
-    // Initial Deployment
-    await migrateDeployment.importResourcesFromMigrate(resourcesToImport, {
-      roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
-      deploymentMethod: options.deploymentMethod,
-      usePreviousParameters: true,
-      progress: options.progress,
-      rollback: options.rollback,
-    });
-
-    elapsedDeployTime = new Date().getTime() - startDeployTime;
-    info('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
-  }
-
-  private async tryGetResources(environment: cxapi.Environment): Promise<ResourcesToImport | undefined> {
-    try {
-      const migrateFile = fs.readJsonSync('migrate.json', {
-        encoding: 'utf-8',
-      });
-      const sourceEnv = (migrateFile.Source as string).split(':');
-      if (
-        sourceEnv[0] === 'localfile' ||
-        (sourceEnv[4] === environment.account && sourceEnv[3] === environment.region)
-      ) {
-        return migrateFile.Resources;
-      }
-    } catch (e) {
-      // Nothing to do
-    }
-
-    return undefined;
   }
 }
 
@@ -1868,42 +1811,6 @@ export interface MigrateOptions {
   readonly compress?: boolean;
 }
 
-/**
- * @returns an array with the tags available in the stack metadata.
- */
-function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-  return Object.entries(stack.tags).map(([Key, Value]) => ({ Key, Value }));
-}
-
-export interface Tag {
-  readonly Key: string;
-  readonly Value: string;
-}
-
-/**
- * Formats time in milliseconds (which we get from 'Date.getTime()')
- * to a human-readable time; returns time in seconds rounded to 2
- * decimal places.
- */
-function formatTime(num: number): number {
-  return roundPercentage(millisecondsToSeconds(num));
-}
-
-/**
- * Rounds a decimal number to two decimal points.
- * The function is useful for fractions that need to be outputted as percentages.
- */
-function roundPercentage(num: number): number {
-  return Math.round(100 * num) / 100;
-}
-
-/**
- * Given a time in milliseconds, return an equivalent amount in seconds.
- */
-function millisecondsToSeconds(num: number): number {
-  return num / 1000;
-}
-
 function buildParameterMap(
   parameters:
   | {
@@ -1932,24 +1839,6 @@ function buildParameterMap(
 }
 
 /**
- * Remove any template elements that we don't want to show users.
- */
-function obscureTemplate(template: any = {}) {
-  if (template.Rules) {
-    // see https://github.com/aws/aws-cdk/issues/17942
-    if (template.Rules.CheckBootstrapVersion) {
-      if (Object.keys(template.Rules).length > 1) {
-        delete template.Rules.CheckBootstrapVersion;
-      } else {
-        delete template.Rules;
-      }
-    }
-  }
-
-  return template;
-}
-
-/**
  * Ask the user for a yes/no confirmation
  *
  * Automatically fail the confirmation in case we're in a situation where the confirmation
@@ -1974,4 +1863,29 @@ async function askUserConfirmation(
     const confirmed = await promptly.confirm(`${chalk.cyan(question)} (y/n)?`);
     if (!confirmed) { throw new ToolkitError('Aborted by user'); }
   });
+}
+
+/**
+ * Logger for processing stack metadata
+ */
+function stackMetadataLogger(verbose?: boolean): (level: 'info' | 'error' | 'warn', msg: cxapi.SynthesisMessage) => Promise<void> {
+  const makeLogger = (level: string): [logger: (m: string) => void, prefix: string] => {
+    switch (level) {
+      case 'error':
+        return [error, 'Error'];
+      case 'warn':
+        return [warning, 'Warning'];
+      default:
+        return [info, 'Info'];
+    }
+  };
+
+  return async (level, msg) => {
+    const [logFn, prefix] = makeLogger(level);
+    logFn(`[${prefix} at ${msg.id}] ${msg.entry.data}`);
+
+    if (verbose && msg.entry.trace) {
+      logFn(`  ${msg.entry.trace.join('\n  ')}`);
+    }
+  };
 }
