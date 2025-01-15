@@ -466,8 +466,6 @@ export class Toolkit {
    */
   public async watch(cx: ICloudAssemblySource, options: WatchOptions): Promise<void> {
     const ioHost = withAction(this.ioHost, 'watch');
-    const rootDir = options.watchDir ?? path.dirname(path.resolve(PROJECT_CONFIG));
-    await ioHost.notify(debug(`root directory used for 'watch' is: ${rootDir}`));
 
     if (options.include === undefined && options.exclude === undefined) {
       throw new ToolkitError(
@@ -482,8 +480,7 @@ export class Toolkit {
     // 3. "watch" setting with an empty "include" key? We default to observing "./**".
     // 4. Non-empty "include" key? Just use the "include" key.
     const watchIncludes = patternsArrayForWatch(options.include, {
-      rootDir,
-      returnRootDirIfEmpty: true,
+      returnCwdIfEmpty: true,
     });
     await ioHost.notify(debug(`'include' patterns for 'watch': ${watchIncludes}`));
 
@@ -494,8 +491,7 @@ export class Toolkit {
     // 3. Any directory's content whose name starts with a dot.
     // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
     const watchExcludes = patternsArrayForWatch(options.exclude, {
-      rootDir,
-      returnRootDirIfEmpty: false,
+      returnCwdIfEmpty: false,
     }).concat(`${options.output}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
     await ioHost.notify(debug(`'exclude' patterns for 'watch': ${watchExcludes}`));
 
