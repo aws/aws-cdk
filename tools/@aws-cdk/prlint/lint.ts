@@ -373,11 +373,10 @@ export class PullRequestLinter {
       ref: sha,
     });
 
-    // grab the last check run that was started
-    const conclusion = response.check_runs
-      .filter(c => c.name === checkName)
-      .filter(c => c.started_at != null)
-      .sort((c1, c2) => c2.started_at!.localeCompare(c1.started_at!))
+    // grab the last check run that was completed
+    const conclusion = response
+      .filter(c => c.name === checkName && c.completed_at != null)
+      .sort((c1, c2) => c2.completed_at!.localeCompare(c1.completed_at!))
       .map(s => s.conclusion)[0];
 
     console.log(`${checkName} conclusion: ${conclusion}`)
@@ -555,6 +554,7 @@ export class PullRequestLinter {
 
     console.log(`⌛  Fetching PR number ${number}`);
     const pr = (await this.client.pulls.get(this.prParams)).data as GitHubPr;
+    console.log(`PR base ref is: ${pr.base.ref}`)
 
     console.log(`⌛  Fetching files for PR number ${number}`);
     const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
@@ -607,24 +607,27 @@ export class PullRequestLinter {
       ],
     });
 
-    const codecovTests: Test[] = [];
-    for (const c of CODECOV_CHECKS) {
-      const checkName = `${CODECOV_PREFIX}${c}`;
-      const status = await this.checkRunConclusion(sha, checkName);
-      codecovTests.push({
-        test: () => {
-          const result = new TestResult();
-          const message = status == null ? `${checkName} has not started yet` : `${checkName} job is in status: ${status}`;
-          result.assessFailure(status !== 'success', message);
-          return result;
-        }
-      })
+    if (pr.base.ref === 'main') {
+      // we don't enforce codecov on release branches
+      const codecovTests: Test[] = [];
+      for (const c of CODECOV_CHECKS) {
+        const checkName = `${CODECOV_PREFIX}${c}`;
+        const conclusion = await this.checkRunConclusion(sha, checkName);
+        codecovTests.push({
+          test: () => {
+            const result = new TestResult();
+            const message = conclusion == null ? `${checkName} has not reported a status yet` : `${checkName} job is in status: ${conclusion}`;
+            result.assessFailure(conclusion !== 'success', message);
+            return result;
+          }
+        })
+      }
+  
+      validationCollector.validateRuleSet({
+        exemption: shouldExemptCodecov,
+        testRuleSet: codecovTests,
+      });  
     }
-
-    validationCollector.validateRuleSet({
-      exemption: shouldExemptCodecov,
-      testRuleSet: codecovTests,
-    });
 
     console.log("Deleting PR Linter Comment now");
     await this.deletePRLinterComment();

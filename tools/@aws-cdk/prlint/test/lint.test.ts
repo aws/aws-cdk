@@ -1142,7 +1142,7 @@ describe('integration tests required on features', () => {
 function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[], existingComments?: string[]): linter.PullRequestLinter {
   const pullsClient = {
     get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {
-      return { data: pr };
+      return { data: { ...pr, base: { ref: 'main'}} };
     },
 
     listFiles(_props: { _owner: string, _repo: string, _pull_number: number }) {
@@ -1193,11 +1193,11 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
   const checksClient = {
     listForRef() {
       return {
-        data: { check_runs: linter.CODECOV_CHECKS.map(c => ({ 
+        data: linter.CODECOV_CHECKS.map(c => ({ 
           name: `${linter.CODECOV_PREFIX}${c}`, 
           conclusion: 'success',
-          started_at: '1'
-        }))},
+          completed_at: '1'
+        })),
       }
     }
   }
