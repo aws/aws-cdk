@@ -175,6 +175,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   async function main(command: string, args: any): Promise<number | void> {
+    CliIoHost.currentAction = command as any;
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 

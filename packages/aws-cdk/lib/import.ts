@@ -10,8 +10,8 @@ import { assertIsSuccessfulDeployStackResult } from './api/deploy-stack';
 import { Deployments } from './api/deployments';
 import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { Tag } from './cdk-toolkit';
 import { error, info, success, warning } from './logging';
+import { Tag } from './tags';
 import { ToolkitError } from './toolkit/error';
 
 export interface ImportDeploymentOptions extends DeployOptions {
