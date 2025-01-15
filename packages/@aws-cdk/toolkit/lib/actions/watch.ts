@@ -8,4 +8,25 @@ export interface WatchOptions extends BaseDeployOptions {
    * @default - false
    */
   readonly traceLogs?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
+
+  /**
+   * Watch the files in this list
+   *
+   * @default - []
+   */
+  readonly include?: string[];
+
+  /**
+   * Ignore watching the files in this list
+   *
+   * @default - []
+   */
+  readonly exclude?: string[];
 }
