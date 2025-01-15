@@ -15,7 +15,7 @@ import {
 import type { SDK } from '../api';
 import type { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { Mode } from '../api/plugin/mode';
-import { debug, error, print } from '../logging';
+import { debug, error, info } from '../logging';
 
 export interface PublishAssetsOptions {
   /**
@@ -227,8 +227,8 @@ export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
   debug,
   fail: error,
   found: debug,
-  start: print,
-  success: print,
+  start: info,
+  success: info,
   upload: debug,
 };
 

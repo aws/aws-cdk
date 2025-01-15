@@ -316,7 +316,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   protected _invocationGrants: Record<string, iam.Grant> = {};
 
   /**
-   * Mapping of fucntion URL invocation principals to grants. Used to de-dupe `grantInvokeUrl()` calls.
+   * Mapping of function URL invocation principals to grants. Used to de-dupe `grantInvokeUrl()` calls.
    * @internal
    */
   protected _functionUrlInvocationGrants: Record<string, iam.Grant> = {};
