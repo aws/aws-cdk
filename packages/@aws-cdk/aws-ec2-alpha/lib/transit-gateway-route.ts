@@ -1,5 +1,4 @@
-import { IResource, Resource, Tag, TagManager } from 'aws-cdk-lib/core';
-import { ITransitGateway } from './transit-gateway';
+import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnTransitGatewayRoute } from 'aws-cdk-lib/aws-ec2';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
@@ -14,17 +13,27 @@ export interface ITransitGatewayRoute extends IResource {
   /**
      * The transit gateway route table this route belongs to.
      */
+  readonly routeTable: ITransitGatewayRouteTable;
+}
+
+export interface TransitGatewayActiveRouteProps {
+  /**
+    * The transit gateway attachment to route the traffic to.
+    */
+  readonly transitGatewayAttachment: ITransitGatewayAttachment;
+
+  /**
+    * The CIDR block used for destination matches.
+    */
+  readonly destinationCidrBlock: string;
+
+  /**
+    * The transit gateway route table you want to install this route into.
+    */
   readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
 }
 
-export interface TransitGatewayRouteProps {
-  /**
-     * The transit gateway attachment to route the traffic to.
-     *
-     * @default - if no attachment is specified, the traffic matching the destination CIDR will be dropped (blackhole).
-     */
-  readonly transitGatewayAttachment?: ITransitGatewayAttachment;
-
+export interface TransitGatewayBlackholeRouteProps {
   /**
      * The CIDR block used for destination matches.
      */
@@ -37,26 +46,43 @@ export interface TransitGatewayRouteProps {
 }
 
 abstract class TransitGatewayRouteBase extends Resource implements ITransitGatewayRoute {
+  public abstract routeTable: ITransitGatewayRouteTable;
   public abstract destinationCidrBlock: string;
-  public abstract transitGatewayRouteTable: ITransitGatewayRouteTable;
 }
 
-export class TransitGatewayRoute extends TransitGatewayRouteBase {
-  public transitGatewayRouteTable: ITransitGatewayRouteTable;
+export class TransitGatewayActiveRoute extends TransitGatewayRouteBase {
+  public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;
-  public readonly routeTableId: string;
 
-  constructor(scope: Construct, id: string, props: TransitGatewayRouteProps) {
+  constructor(scope: Construct, id: string, props: TransitGatewayActiveRouteProps) {
     super(scope, id);
 
     const resource = new CfnTransitGatewayRoute(this, 'TransitGatewayRoute', {
+      blackhole: false,
       destinationCidrBlock: props.destinationCidrBlock,
-      transitGatewayRouteTableId: props.transitGatewayRouteTable.transitGatewayRouteTableId,
-      blackhole: props.transitGatewayAttachment?.transitGatewayAttachmentId ? false : true,
+      transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
       transitGatewayAttachmentId: props.transitGatewayAttachment?.transitGatewayAttachmentId,
     });
 
     this.destinationCidrBlock = resource.destinationCidrBlock;
-    this.routeTableId = resource.transitGatewayRouteTableId;
+    this.routeTable = props.transitGatewayRouteTable;
+  }
+}
+
+export class TransitGatewayBlackholeRoute extends TransitGatewayRouteBase {
+  public readonly routeTable: ITransitGatewayRouteTable;
+  public readonly destinationCidrBlock: string;
+
+  constructor(scope: Construct, id: string, props: TransitGatewayBlackholeRouteProps) {
+    super(scope, id);
+
+    const resource = new CfnTransitGatewayRoute(this, 'TransitGatewayRoute', {
+      blackhole: true,
+      destinationCidrBlock: props.destinationCidrBlock,
+      transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
+    });
+
+    this.destinationCidrBlock = resource.destinationCidrBlock;
+    this.routeTable = props.transitGatewayRouteTable;
   }
 }

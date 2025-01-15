@@ -1,7 +1,9 @@
-import { IResource, Resource, Tag } from 'aws-cdk-lib/core';
+import { IResource, Resource } from 'aws-cdk-lib/core';
 import { ITransitGateway, TransitGatewayFeatureStatus } from './transit-gateway';
-import { CfnTransitGatewayAttachment, IVpc, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { CfnTransitGatewayVpcAttachment, ISubnet, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
+import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
+import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 
 export interface ITransitGatewayAttachment extends IResource {
   /**
@@ -11,7 +13,7 @@ export interface ITransitGatewayAttachment extends IResource {
   readonly transitGatewayAttachmentId: string;
 }
 
-interface ITransitGatewayAttachmentOptions {
+export interface ITransitGatewayAttachmentOptions {
   /**
    * Enable or disable appliance mode support.
    *
@@ -46,9 +48,22 @@ export interface TransitGatewayAttachmentProps {
    * A list of one or more subnets to place the attachment in.
    * It is recommended to specify more subnets for better availability.
    */
-  readonly subnets: SubnetSelection;
-  // Note: SubnetSelection[] is same as Subnet[] but allows for optional filtering
+  readonly subnets: ISubnet[];
 
+  // WIP - probably will not expose these properties but will need to set them for the L1 behind the scenes
+  // /**
+  //  * A list of one or more subnets to add.
+  //  * You can specify at most one subnet per Availability Zone.
+  //  * It is recommended to specify more subnets for better availability.
+  //  */
+  // readonly addSubnets?: ISubnet[];
+
+  // /**
+  //  * A list of one or more subnets to place the attachment in.
+  //  * It is recommended to specify more subnets for better availability.
+  //  */
+
+  // readonly removeSubnets?: ISubnet[];
   /**
    * The transit gateway this attachment gets assigned to.
    */
@@ -63,30 +78,31 @@ export interface TransitGatewayAttachmentProps {
    * The VPC attachment options.
    */
   readonly transitGatewayAttachmentOptions?: ITransitGatewayAttachmentOptions;
-
-  /**
-   * The tags for the transit gateway attachment.
-   *
-   * @default - none
-   */
-  readonly tags?: Tag[];
 }
 
 abstract class TransitGatewayAttachmentBase extends Resource implements ITransitGatewayAttachment {
   public abstract readonly transitGatewayAttachmentId: string;
+
+  // addSubnets(subnets: ISubnet[]): void {
+  //   return;
+  // }
+
+  // removeSubnets(subnets: ISubnet[]): void {
+  //   return;
+  // }
 }
 
-export class TransitGatewayAttachment extends TransitGatewayAttachmentBase {
+export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
   public readonly transitGatewayAttachmentId: string;
 
   constructor(scope: Construct, id: string, props: TransitGatewayAttachmentProps) {
     super(scope, id);
 
-    const resource = new CfnTransitGatewayAttachment(this, 'TransitGatewayAttachment', {
-      subnetIds: props.vpc.selectSubnets(props.subnets).subnetIds,
+    const resource = new CfnTransitGatewayVpcAttachment(this, 'TransitGatewayAttachment', {
+      subnetIds: props.subnets.map((subnet) => subnet.subnetId),
       transitGatewayId: props.transitGateway.transitGatewayId,
       vpcId: props.vpc.vpcId,
-      options: {
+      options: props.transitGatewayAttachmentOptions ? {
         applianceModeSupport: (props.transitGatewayAttachmentOptions?.applianceModeSupport ?? false)
           ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
         dnsSupport: (props.transitGatewayAttachmentOptions?.dnsSupport ?? false)
@@ -95,10 +111,23 @@ export class TransitGatewayAttachment extends TransitGatewayAttachmentBase {
           ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
         securityGroupReferencingSupport: (props.transitGatewayAttachmentOptions?.securityGroupReferencingSupport ?? false)
           ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-      },
-      tags: props.tags,
+      } : undefined,
     });
 
     this.transitGatewayAttachmentId = resource.ref;
+
+    if (props.transitGateway.defaultRouteTableAssociation) {
+      new TransitGatewayRouteTableAssociation(this, id, {
+        transitGatewayAttachment: this,
+        transitGatewayRouteTable: props.transitGateway.defaultRouteTable,
+      });
+    }
+
+    if (props.transitGateway.defaultRouteTablePropagation) {
+      new TransitGatewayRouteTablePropagation(this, id + 'Propagation', {
+        transitGatewayAttachment: this,
+        transitGatewayRouteTable: props.transitGateway.defaultRouteTable,
+      });
+    }
   }
 }

@@ -41,7 +41,7 @@ export class TransitGatewayRouteTableAssociation extends TransitGatewayRouteTabl
 
     const resource = new CfnTransitGatewayRouteTableAssociation(this, 'TransitGatewayRouteTableAssociation', {
       transitGatewayAttachmentId: props.transitGatewayAttachment.transitGatewayAttachmentId,
-      transitGatewayRouteTableId: props.transitGatewayRouteTable.transitGatewayRouteTableId,
+      transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
     });
 
     this.transitGatewayRouteTableAssociationId = resource.ref;
