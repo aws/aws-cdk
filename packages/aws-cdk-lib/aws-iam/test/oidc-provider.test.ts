@@ -35,7 +35,7 @@ describe('OpenIdConnectProvider resource', () => {
   });
 
   it.each(
-    [true, false, undefined]
+    [true, false, undefined],
   )('Check the status of RejectUnauthorized when IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS is set to different values', (flag) => {
     // GIVEN
     const app = new App({
