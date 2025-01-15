@@ -86,7 +86,7 @@ test('No Version specified for storage in the TTL file', async () => {
 test('Skip version check if environment variable is set', async () => {
   sinon.stub(process, 'stdout').value({ ...process.stdout, isTTY: true });
   sinon.stub(process, 'env').value({ ...process.env, CDK_DISABLE_VERSION_CHECK: '1' });
-  const printStub = sinon.stub(logging, 'print');
+  const printStub = sinon.stub(logging, 'info');
   await displayVersionMessage();
   expect(printStub.called).toEqual(false);
 });
@@ -105,7 +105,7 @@ describe('version message', () => {
     // Given the current version is 1.0.0 and the latest version is 1.1.0
     const currentVersion = '1.0.0';
     jest.spyOn(npm, 'getLatestVersionFromNpm').mockResolvedValue('1.1.0');
-    const printSpy = jest.spyOn(logging, 'print');
+    const printSpy = jest.spyOn(logging, 'info');
 
     // When displayVersionMessage is called
     await displayVersionMessage(currentVersion, new VersionCheckTTL(tmpfile(), 0));
@@ -118,7 +118,7 @@ describe('version message', () => {
     // Given the current version is 1.0.0 and the latest version is 2.0.0
     const currentVersion = '1.0.0';
     jest.spyOn(npm, 'getLatestVersionFromNpm').mockResolvedValue('2.0.0');
-    const printSpy = jest.spyOn(logging, 'print');
+    const printSpy = jest.spyOn(logging, 'info');
 
     // When displayVersionMessage is called
     await displayVersionMessage(currentVersion, new VersionCheckTTL(tmpfile(), 0));
@@ -131,7 +131,7 @@ describe('version message', () => {
     // Given current version is 99.0.0 and the latest version is 100.0.0
     const currentVersion = '99.0.0';
     jest.spyOn(npm, 'getLatestVersionFromNpm').mockResolvedValue('100.0.0');
-    const printSpy = jest.spyOn(logging, 'print');
+    const printSpy = jest.spyOn(logging, 'info');
 
     // When displayVersionMessage is called
     await displayVersionMessage(currentVersion, new VersionCheckTTL(tmpfile(), 0));

@@ -31,7 +31,7 @@
         "name": "aws-custom-resource-sdk-adapter",
         "rootPath": "packages/@aws-cdk/aws-custom-resource-sdk-adapter"
       },
-      { "name": "cli-args-gen", "rootPath": "tools/@aws-cdk/cli-args-gen" }
+      { "name": "user-input-gen", "rootPath": "tools/@aws-cdk/user-input-gen" }
     ]
   },
   "extensions": {

@@ -508,7 +508,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BOOTSTRAP_NOTICE_V10, BOOTSTRAP_NOTICE_V11] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BOOTSTRAP_NOTICE_V10).format());
@@ -555,7 +555,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
@@ -570,7 +570,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display({ showTotal: true });
       expect(print).toHaveBeenNthCalledWith(1, '');
@@ -615,7 +615,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
@@ -633,7 +633,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenCalledWith(new FilteredNotice(BASIC_NOTICE).format());
@@ -651,7 +651,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenNthCalledWith(2, 'NOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)');
@@ -667,7 +667,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BASIC_NOTICE, BASIC_NOTICE] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
@@ -678,21 +678,21 @@ describe(Notices, () => {
       const notices = Notices.create({ context: new Context(), shouldDisplay: false });
       await notices.refresh({ dataSource: { fetch: async () => [BASIC_NOTICE] } });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenCalledTimes(0);
     });
 
     test('nothing when there are no notices', async () => {
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       Notices.create({ context: new Context() }).display();
       expect(print).toHaveBeenCalledTimes(0);
     });
 
     test('total count when show total is true', async () => {
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       Notices.create({ context: new Context() }).display({ showTotal: true });
       expect(print).toHaveBeenNthCalledWith(2, 'There are 0 unacknowledged notice(s).');
@@ -739,7 +739,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BASIC_NOTICE] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
@@ -756,7 +756,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());
@@ -772,7 +772,7 @@ describe(Notices, () => {
         dataSource: { fetch: async () => [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE] },
       });
 
-      const print = jest.spyOn(logging, 'print');
+      const print = jest.spyOn(logging, 'info');
 
       notices.display();
       expect(print).toHaveBeenNthCalledWith(4, new FilteredNotice(BASIC_NOTICE).format());

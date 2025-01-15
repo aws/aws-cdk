@@ -486,17 +486,6 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      !core.Token.isUnresolved(props.clusterName) &&
-      !/^[a-zA-Z0-9]+$/.test(props.clusterName) &&
-      props.clusterName.length > 64
-    ) {
-      throw Error(
-        'The cluster name must only contain alphanumeric characters and have a maximum length of 64 characters.' +
-          `got: '${props.clusterName}. length: ${props.clusterName.length}'`,
-      );
-    }
-
-    if (
       props.clientAuthentication?.saslProps?.iam &&
       props.clientAuthentication?.saslProps?.scram
     ) {

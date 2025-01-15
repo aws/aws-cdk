@@ -80,7 +80,7 @@ export interface IApplication extends cdk.IResource {
   associateStack(stack: cdk.Stack): void;
 
   /**
-   * Associate a Cloudformation statck with the application in the given stack.
+   * Associate a Cloudformation stack with the application in the given stack.
    *
    * @param stack a CFN stack
    */

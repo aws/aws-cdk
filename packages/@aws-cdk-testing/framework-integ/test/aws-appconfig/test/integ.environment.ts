@@ -2,7 +2,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, PhysicalName, Stack } from 'aws-cdk-lib';
 import { Alarm, ComparisonOperator, CompositeAlarm, Metric, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { Role, ServicePrincipal, Effect, PolicyStatement, PolicyDocument } from 'aws-cdk-lib/aws-iam';
-import { Application, ConfigurationContent, DeploymentStrategy, Environment, HostedConfiguration, Monitor, RolloutStrategy } from 'aws-cdk-lib/aws-appconfig';
+import { Application, ConfigurationContent, DeletionProtectionCheck, DeploymentStrategy, Environment, HostedConfiguration, Monitor, RolloutStrategy } from 'aws-cdk-lib/aws-appconfig';
 
 const app = new App();
 
@@ -54,6 +54,7 @@ const compositeAlarm = new CompositeAlarm(stack, 'MyCompositeAlarm', {
 const env = new Environment(stack, 'MyEnvironment', {
   application: appForEnv,
   description: 'This is the environment for integ testing',
+  deletionProtectionCheck: DeletionProtectionCheck.ACCOUNT_DEFAULT,
   monitors: [
     Monitor.fromCloudWatchAlarm(alarm),
     Monitor.fromCfnMonitorsProperty({

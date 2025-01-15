@@ -3,6 +3,7 @@ import type { SDK } from './aws-auth';
 import { type EcrRepositoryInfo, ToolkitInfo } from './toolkit-info';
 import { debug, warning } from '../logging';
 import { Notices } from '../notices';
+import { formatErrorMessage } from '../util/error';
 
 /**
  * Registry class for `EnvironmentResources`.
@@ -94,7 +95,7 @@ export class EnvironmentResources {
         const bootstrapStack = await this.lookupToolkit();
         if (bootstrapStack.found && bootstrapStack.version < BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
           warning(
-            `Could not read SSM parameter ${ssmParameterName}: ${e.message}, falling back to version from ${bootstrapStack}`,
+            `Could not read SSM parameter ${ssmParameterName}: ${formatErrorMessage(e)}, falling back to version from ${bootstrapStack}`,
           );
           doValidate(bootstrapStack.version, this.environment);
           return;

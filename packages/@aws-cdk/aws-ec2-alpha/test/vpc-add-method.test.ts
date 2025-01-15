@@ -365,7 +365,7 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  test('Check vpngateway has routePropogation for input subnets', () => {
+  test('Check vpngateway has route Propagation for input subnets', () => {
     myVpc.enableVpnGatewayV2({
       type: VpnConnectionType.IPSEC_1,
       vpnRoutePropagation: [{ subnetType: SubnetType.PUBLIC }],
@@ -382,7 +382,7 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  test('Throws error when no subnet identified for route propogation', () => {
+  test('Throws error when no subnet identified for route propagation', () => {
     expect(() => {
       myVpc.enableVpnGatewayV2({
         type: VpnConnectionType.IPSEC_1,

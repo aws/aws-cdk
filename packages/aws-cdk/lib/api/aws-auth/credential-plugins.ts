@@ -1,9 +1,10 @@
-import { inspect } from 'util';
+import { inspect, format } from 'util';
 import type { CredentialProviderSource, ForReading, ForWriting, PluginProviderResult, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
 import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
-import { debug, warning } from '../../logging';
+import { debug, warning, info } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
 import { Mode } from '../plugin/mode';
 import { PluginHost } from '../plugin/plugin';
 
@@ -48,7 +49,7 @@ export class CredentialPlugins {
         available = await source.isAvailable();
       } catch (e: any) {
         // This shouldn't happen, but let's guard against it anyway
-        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        warning(`Uncaught exception in ${source.name}: ${formatErrorMessage(e)}`);
         available = false;
       }
 
@@ -62,7 +63,7 @@ export class CredentialPlugins {
         canProvide = await source.canProvideCredentials(awsAccountId);
       } catch (e: any) {
         // This shouldn't happen, but let's guard against it anyway
-        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        warning(`Uncaught exception in ${source.name}: ${formatErrorMessage(e)}`);
         canProvide = false;
       }
       if (!canProvide) {
@@ -150,8 +151,7 @@ function v3ProviderFromV2Credentials(x: SDKv2CompatibleCredentials): AwsCredenti
 
 function refreshFromPluginProvider(current: AwsCredentialIdentity, producer: () => Promise<PluginProviderResult>): AwsCredentialIdentityProvider {
   return async () => {
-    // eslint-disable-next-line no-console
-    console.error(current, Date.now());
+    info(format(current), Date.now());
     if (credentialsAboutToExpire(current)) {
       const newCreds = await producer();
       if (!isV3Credentials(newCreds)) {

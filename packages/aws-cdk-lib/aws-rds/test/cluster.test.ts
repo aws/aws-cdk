@@ -17,12 +17,34 @@ import {
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
   IClusterEngine,
+  ClusterScalabilityType,
   ClusterScailabilityType,
   DBClusterStorageType,
 } from '../lib';
 
 describe('cluster new api', () => {
   describe('errors are thrown', () => {
+    test('when both clusterScalabilityType and clusterScailabilityType (deprecated) props are provided', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          instanceProps: {
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+            vpc,
+          },
+          clusterScalabilityType: ClusterScalabilityType.STANDARD,
+          clusterScailabilityType: ClusterScailabilityType.STANDARD,
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow('You cannot specify both clusterScalabilityType and clusterScailabilityType (deprecated). Use clusterScalabilityType.');
+    });
+
     test('when old and new props are provided', () => {
       // GIVEN
       const stack = testStack();
@@ -165,7 +187,10 @@ describe('cluster new api', () => {
       });
     });
 
-    test('cluster scalability option', () => {
+    test.each([
+      ['clusterScalabilityType', 'clusterScalabilityType', ClusterScalabilityType.STANDARD],
+      ['clusterScailabilityType (deprecated)', 'clusterScailabilityType', ClusterScailabilityType.STANDARD],
+    ])('cluster scalability option with %s', (_, propName, propValue) => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -174,8 +199,8 @@ describe('cluster new api', () => {
       new DatabaseCluster(stack, 'Cluster', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
-        clusterScailabilityType: ClusterScailabilityType.STANDARD,
         writer: ClusterInstance.serverlessV2('writer'),
+        [propName]: propValue,
       });
 
       // THEN
@@ -186,7 +211,10 @@ describe('cluster new api', () => {
     });
 
     describe('limitless database', () => {
-      test('with default options', () => {
+      test.each([
+        ['clusterScalabilityType', 'clusterScalabilityType', ClusterScalabilityType.LIMITLESS],
+        ['clusterScailabilityType (deprecated)', 'clusterScailabilityType', ClusterScailabilityType.LIMITLESS],
+      ])('with default options using %s', (_, propName, propValue) => {
         // GIVEN
         const stack = testStack();
         const vpc = new ec2.Vpc(stack, 'VPC');
@@ -197,7 +225,7 @@ describe('cluster new api', () => {
             version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
           }),
           vpc,
-          clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+          [propName]: propValue,
           enablePerformanceInsights: true,
           performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
           monitoringInterval: cdk.Duration.minutes(1),

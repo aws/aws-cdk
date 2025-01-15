@@ -474,7 +474,7 @@ export interface JobExecutableConfig {
   readonly script: Code;
 
   /**
-   * The Scala class that serves as the entry point for the job. This applies only if your the job langauage is Scala.
+   * The Scala class that serves as the entry point for the job. This applies only if your the job language is Scala.
    * Equivalent to a job parameter `--class`.
    *
    * @default - no scala className specified

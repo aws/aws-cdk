@@ -10,3 +10,4 @@ export * from './sns-publish';
 export * from './sqs-send-message';
 export * from './stepfunctions-start-execution';
 export * from './target';
+export * from './universal';

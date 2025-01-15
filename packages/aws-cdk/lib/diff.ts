@@ -12,7 +12,7 @@ import {
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { NestedStackTemplates } from './api/nested-stack-helpers';
-import { print, warning } from './logging';
+import { info, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 
 /**
@@ -73,10 +73,10 @@ export function printStackDiff(
       ...buildLogicalToPathMap(newTemplate),
     }, context);
   } else if (!quiet) {
-    print(chalk.green('There were no differences'));
+    info(chalk.green('There were no differences'));
   }
   if (filteredChangesCount > 0) {
-    print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
+    info(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
   }
 
   for (const nestedStackLogicalId of Object.keys(nestedStackTemplates ?? {})) {

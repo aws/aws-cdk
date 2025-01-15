@@ -24,7 +24,7 @@ export enum FirehoseRecordSeparator {
   WINDOWS_NEWLINE = '\r\n',
 
   /**
-   * Separate by a commma
+   * Separate by a comma
    */
   COMMA = ',',
 }

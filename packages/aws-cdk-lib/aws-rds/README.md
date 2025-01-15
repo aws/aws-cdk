@@ -1436,7 +1436,7 @@ new rds.DatabaseCluster(this, 'LimitlessDatabaseCluster', {
     version: rds.AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
   }),
   vpc,
-  clusterScailabilityType: rds.ClusterScailabilityType.LIMITLESS,
+  clusterScalabilityType: rds.ClusterScalabilityType.LIMITLESS,
   // Requires enabling Performance Insights
   enablePerformanceInsights: true,
   performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_1,
