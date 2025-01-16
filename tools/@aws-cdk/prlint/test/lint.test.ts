@@ -2,6 +2,7 @@ import * as path from 'path';
 import { GitHubFile, GitHubLabel, GitHubPr } from '../github';
 import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, CODECOV_PREFIX } from '../constants';
 import { PullRequestLinter } from '../lint';
+import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 
 let mockRemoveLabel = jest.fn();
 let mockAddLabel = jest.fn();
@@ -50,7 +51,7 @@ describe('breaking changes format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/'BREAKING CHANGE: ', variations are not allowed/);
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(/'BREAKING CHANGE: ', variations are not allowed/);
   });
 
   test('the first breaking change should immediately follow "BREAKING CHANGE:"', async () => {
@@ -65,7 +66,7 @@ describe('breaking changes format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/description of the first breaking change should immediately follow/);
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(/description of the first breaking change should immediately follow/);
   });
 
   test('invalid title', async () => {
@@ -79,7 +80,7 @@ describe('breaking changes format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/The title of this pull request must specify the module name that the first breaking change should be associated to./);
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(/The title of this pull request must specify the module name that the first breaking change should be associated to./);
   });
 
   test('valid title', async () => {
@@ -93,7 +94,7 @@ describe('breaking changes format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves; // not throw
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves; // not throw
   });
 });
 
@@ -112,7 +113,7 @@ test('disallow PRs from main branch of fork', async () => {
     }
   };
   const prLinter = configureMock(issue, undefined);
-  await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork./);
+  await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(/Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork./);
 });
 
 describe('commit message format', () => {
@@ -127,7 +128,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves;
   });
 
   test('invalid scope with aws- prefix', async () => {
@@ -141,7 +142,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/The title of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(/The title of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
   });
 
   test('valid scope with aws- in summary and body', async () => {
@@ -155,7 +156,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves;
   });
 
   test('valid with missing scope', async () => {
@@ -169,7 +170,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves;
   });
 
   test('valid with aws-cdk-lib as a scope', async () => {
@@ -183,7 +184,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves;
   });
 
   test.each(['core', 'prlint', 'awslint'])('valid scope for packages that dont use aws- prefix', async (scope) => {
@@ -197,7 +198,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves;
   });
 
   test('invalid capitalized title', async () => {
@@ -211,7 +212,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/The first word of the pull request title should not be capitalized. If the title starts with a CDK construct, it should be in backticks "``"/);
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(/The first word of the pull request title should not be capitalized. If the title starts with a CDK construct, it should be in backticks "``"/);
   });
 
   test('valid capitalized title with backticks', async () => {
@@ -225,7 +226,7 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves;
   });
 });
 
@@ -241,7 +242,7 @@ describe('ban breaking changes in stable modules', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
   });
 
   test('breaking changes multiple in stable modules', async () => {
@@ -259,7 +260,7 @@ describe('ban breaking changes in stable modules', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
   });
 
   test('unless exempt-breaking-change label added', async () => {
@@ -276,7 +277,7 @@ describe('ban breaking changes in stable modules', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves; // not throw
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves; // not throw
   });
 
   test('with additional "closes" footer', async () => {
@@ -296,7 +297,7 @@ describe('ban breaking changes in stable modules', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow('Breaking changes in stable modules [s3] is disallowed.');
   });
 });
 
@@ -327,7 +328,7 @@ describe('integration tests required on features', () => {
       },
     ];
     const prLinter = configureMock(issue, files);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves;
   });
 
   test('integ files not changed in feat', async () => {
@@ -356,12 +357,8 @@ describe('integration tests required on features', () => {
       },
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
-      'The pull request linter fails with the following errors:' +
-      '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
-      '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
-      'If you would like to request an exemption from the status checks or clarification on feedback,' +
-      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.',
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(
+      'Features must contain a change to an integration test file and the resulting snapshot.'
     );
   });
 
@@ -391,12 +388,8 @@ describe('integration tests required on features', () => {
       },
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
-      'The pull request linter fails with the following errors:' +
-      '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
-      '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
-      'If you would like to request an exemption from the status checks or clarification on feedback,' +
-      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.',
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(
+      'Features must contain a change to an integration test file and the resulting snapshot.'
     );
   });
 
@@ -426,12 +419,8 @@ describe('integration tests required on features', () => {
       },
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
-      'The pull request linter fails with the following errors:' +
-      '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
-      '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
-      'If you would like to request an exemption from the status checks or clarification on feedback,' +
-      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.',
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(
+      'Fixes must contain a change to an integration test file and the resulting snapshot.'
     );
   });
 
@@ -461,12 +450,8 @@ describe('integration tests required on features', () => {
       },
     ];
     const prLinter = configureMock(issue, files);
-    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
-      'The pull request linter fails with the following errors:' +
-      '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
-      '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
-      'If you would like to request an exemption from the status checks or clarification on feedback,' +
-      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.',
+    await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(
+      'Fixes must contain a change to an integration test file and the resulting snapshot.'
     );
   });
 
@@ -493,7 +478,7 @@ describe('integration tests required on features', () => {
       },
     ];
     const prLinter = configureMock(issue, files);
-    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prLinter, SHA)).resolves;
   });
 
   test('integ files not changed, not a feature', async () => {
@@ -519,7 +504,7 @@ describe('integration tests required on features', () => {
       },
     ];
     const prlinter = configureMock(issue, files);
-    expect(await prlinter.validatePullRequestTarget(SHA)).resolves;
+    expect(legacyValidatePullRequestTarget(await prlinter, SHA)).resolves;
   });
 
   describe('CLI file changed', () => {
@@ -540,14 +525,14 @@ describe('integration tests required on features', () => {
 
     test('no label throws error', async () => {
       const prLinter = configureMock(issue, files);
-      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/CLI code has changed. A maintainer must/);
+      await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(/CLI code has changed. A maintainer must/);
     });
 
     test('with label no error', async () => {
       labels.push({ name: 'pr-linter/cli-integ-tested' });
       const prLinter = configureMock(issue, files);
       // THEN: no exception
-      expect(async () => await prLinter.validatePullRequestTarget(SHA)).resolves;
+      expect(async () => await legacyValidatePullRequestTarget(prLinter, SHA)).resolves;
     });
 
     test('with aws-cdk-automation author', async () => {
@@ -559,7 +544,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(issue, files);
-      await prLinter.validatePullRequestTarget(SHA);
+legacyValidatePullRequestTarget(      await prLinter, SHA);
       // THEN: no exception
     });
   });
@@ -582,7 +567,7 @@ describe('integration tests required on features', () => {
     test('needs a review', async () => {
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -602,7 +587,7 @@ describe('integration tests required on features', () => {
       // WHEN
       pr.labels = [{ name: 'p1' }];
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -633,7 +618,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -664,7 +649,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -701,7 +686,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -734,7 +719,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -767,7 +752,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -807,7 +792,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -845,7 +830,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -875,7 +860,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -903,7 +888,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -932,7 +917,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -962,7 +947,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -995,7 +980,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent({
+      await legacyValidateStatusEvent(prLinter, {
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -1028,7 +1013,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow();
+      await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow();
 
       // THEN
       expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
@@ -1053,13 +1038,8 @@ describe('integration tests required on features', () => {
         },
       };
       const prLinter = configureMock(issue, undefined, ['Exemption Request']);
-      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
-        'The pull request linter fails with the following errors:' +
-        '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
-        '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
-        'If you would like to request an exemption from the status checks or clarification on feedback,' +
-        ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
-        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
+      await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(
+        'Fixes must contain a change to an integration test file and the resulting snapshot.'
       );
     });
 
@@ -1074,13 +1054,9 @@ describe('integration tests required on features', () => {
         },
       };
       const prLinter = configureMock(issue, undefined, ['Exemption Request: \nThe reason is blah blah blah.']);
-      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
-        'The pull request linter fails with the following errors:' +
-        '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
-        '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
-        'If you would like to request an exemption from the status checks or clarification on feedback,' +
-        ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
-        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
+      await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(
+        'Fixes must contain a change to an integration test file and the resulting snapshot.\n' +
+        'A exemption request has been requested. Please wait for a maintainer\'s review.',
       );
     });
 
@@ -1095,13 +1071,9 @@ describe('integration tests required on features', () => {
         },
       };
       const prLinter = configureMock(issue, undefined, ['Random content - Exemption Request - hello world']);
-      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
-        'The pull request linter fails with the following errors:' +
-        '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
-        '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
-        'If you would like to request an exemption from the status checks or clarification on feedback,' +
-        ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
-        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
+      await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow(
+        'Fixes must contain a change to an integration test file and the resulting snapshot.\n' +
+        'A exemption request has been requested. Please wait for a maintainer\'s review.',
       );
     });
   });
@@ -1122,7 +1094,7 @@ describe('integration tests required on features', () => {
       };
 
       const prLinter = configureMock(pr, files);
-      await expect(prLinter.validatePullRequestTarget(SHA)).resolves;
+      await expect(legacyValidatePullRequestTarget(prLinter, SHA)).resolves;
     });
 
     test('with another author', async () => {
@@ -1136,7 +1108,7 @@ describe('integration tests required on features', () => {
       };
 
       const prLinter = configureMock(pr, files);
-      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow();
+      await expect(legacyValidatePullRequestTarget(prLinter, SHA)).rejects.toThrow();
     });
   });
 });
@@ -1222,4 +1194,35 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingCom
       paginate: (method: any, args: any) => { return method(args).data; },
     } as any,
   });
+}
+
+/**
+ * Interface-compatible implementation of validatePullRequestTarget before the refactor
+ *
+ * Previously, one method did 3 things:
+ *
+ * - Evaluate rules
+ * - Apply changes to the PR
+ * - Throw an exception
+ *
+ * We pulled those things apart, but many tests are still expecting all things to happen together
+ * so it's easier to bundle them back up into a legacy compat functin.
+ *
+ * This is just so we can mass-replace code in the tests and move on with our
+ * lives. It's not recommended to write new code using this!
+ *
+ * @deprecated Assert on the contents of `LinterActions` instead.
+ */
+async function legacyValidatePullRequestTarget(prLinter: PullRequestLinter, sha: string) {
+  const actions = await prLinter.validatePullRequestTarget(sha);
+  await prLinter.executeActions(actions);
+  prLinter.actionsToException(actions);
+}
+
+/**
+ * Same as for validatePullRequesTarget
+ */
+async function legacyValidateStatusEvent(prLinter: PullRequestLinter, statusEvent: StatusEvent) {
+  const actions = await prLinter.validateStatusEvent(statusEvent);
+  await prLinter.executeActions(actions);
 }

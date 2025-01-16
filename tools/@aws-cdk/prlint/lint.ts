@@ -288,7 +288,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
     console.log("Deleting PR Linter Comment now");
     ret.deleteSingletonPrLinterComment = true;
 
-    ret = mergeLinterActions(ret, await this.communicateResult(validationCollector));
+    ret = mergeLinterActions(ret, await this.validationToActions(validationCollector));
 
     // also assess whether the PR needs review or not
     try {
@@ -309,15 +309,22 @@ export class PullRequestLinter extends PullRequestLinterBase {
    * Creates a new review, requesting changes, with the reasons that the linter did not pass.
    * @param result The result of the PR Linter run.
    */
-  private async communicateResult(result: ValidationCollector): Promise<LinterActions> {
+  private async validationToActions(result: ValidationCollector): Promise<LinterActions> {
     if (result.isValid()) {
       console.log('✅  Success');
       return {
         dismissPreviousReview: true,
       };
     } else {
+      // Not the best place to put this, but this is ~where it was before the refactor.
+      const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
+      const exemptionRequest = comments.some(comment => comment.body?.toLowerCase().includes("exemption request"));
+
       return {
-        requestChanges: { failures: result.errors },
+        requestChanges: {
+          failures: result.errors,
+          exemptionRequest,
+        },
       };
     }
   }

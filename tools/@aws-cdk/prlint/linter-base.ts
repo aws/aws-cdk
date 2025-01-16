@@ -111,8 +111,22 @@ export class PullRequestLinterBase {
         this.dismissPRLinterReview(existingReview);
       }
       if (actions.requestChanges) {
-        this.createOrUpdatePRLinterReview(actions.requestChanges.failures, existingReview);
+        this.createOrUpdatePRLinterReview(actions.requestChanges.failures, actions.requestChanges.exemptionRequest, existingReview);
       }
+    }
+  }
+
+  /**
+   * For code that requires an exception
+   */
+  public actionsToException(actions: LinterActions) {
+    if (actions.requestChanges) {
+      // The tests check for exactly these messages
+      const messages = [...actions.requestChanges.failures];
+      if (actions.requestChanges.exemptionRequest) {
+        messages.push('A exemption request has been requested. Please wait for a maintainer\'s review.');
+      }
+      throw new LinterError(messages.join('\n'));
     }
   }
 
@@ -168,7 +182,7 @@ export class PullRequestLinterBase {
    * @param failureMessages The failures received by the pr linter validation checks.
    * @param existingReview The review created by a previous run of the linter.
    */
-  private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
+  private async createOrUpdatePRLinterReview(failureMessages: string[], exemptionRequest?: boolean, existingReview?: Review): Promise<void> {
     // FIXME: this function is doing too much at once. We should split this out into separate
     // actions on `LinterActions`.
 
@@ -187,8 +201,7 @@ export class PullRequestLinterBase {
       });
     }
 
-    const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
-    if (comments.find(comment => comment.body?.toLowerCase().includes("exemption request"))) {
+    if (exemptionRequest) {
       body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
     }
     await this.client.issues.createComment({
@@ -216,8 +229,6 @@ export class PullRequestLinterBase {
         state: 'closed',
       });
     }
-
-    throw new LinterError(body);
   }
 
   private formatErrors(errors: string[]) {
@@ -282,6 +293,7 @@ export interface LinterActions {
    */
   requestChanges?: {
     failures: string[];
+    exemptionRequest?: boolean;
   };
 
   /**

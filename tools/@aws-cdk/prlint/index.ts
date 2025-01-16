@@ -73,6 +73,8 @@ async function run() {
         // Actually running in GitHub actions, do it (otherwise we're just testing)
         await prLinter.executeActions(actions);
       }
+
+      await prLinter.actionsToException(actions);
     }
 
   } catch (error: any) {
