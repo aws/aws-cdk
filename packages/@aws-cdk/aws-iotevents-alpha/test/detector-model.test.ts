@@ -237,7 +237,7 @@ test('can set an action to multiple detector models', () => {
     }),
   });
 
-  // THEN creates two detector model resouces and two iam policy resources
+  // THEN creates two detector model resources and two iam policy resources
   Template.fromStack(stack).resourceCountIs('AWS::IoTEvents::DetectorModel', 2);
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 2);
 
@@ -469,7 +469,7 @@ test('cannot create without event', () => {
   }).toThrow('Detector Model must have at least one Input with a condition');
 });
 
-test('cannot create transitions that transit to duprecated target state', () => {
+test('cannot create transitions that transit to deprecated target state', () => {
   const firstState = new iotevents.State({
     stateName: 'firstState',
     onEnter: [{
