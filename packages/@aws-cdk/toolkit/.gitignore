@@ -26,6 +26,9 @@ build-info.json
 lib/**/*.wasm
 lib/**/*.yaml
 
+# Include test resources
+!test/_fixtures/**/*.js
+
 # Include config files
 !.eslintrc.js
 !jest.config.js
