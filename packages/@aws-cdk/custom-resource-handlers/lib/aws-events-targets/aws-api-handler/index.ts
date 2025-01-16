@@ -6,7 +6,7 @@ interface AwsApiInput {
   readonly service: string;
   readonly action: string;
   readonly parameters?: {
-    [param: string]: any,
+    [param: string]: any;
   };
   readonly apiVersion?: string;
   readonly catchErrorPattern?: string;

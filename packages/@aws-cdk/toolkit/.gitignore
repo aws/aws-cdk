@@ -1,6 +1,7 @@
 *.js
 *.js.map
 *.d.ts
+*.d.ts.map
 *.gz
 node_modules
 dist
