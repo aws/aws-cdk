@@ -10,7 +10,7 @@
      ]
     },
     "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2",
-    "RejectUnauthoried": true,
+    "RejectUnauthorized": true,
     "CodeHash": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4"
    },
    "UpdateReplacePolicy": "Delete",
@@ -105,7 +105,7 @@
      "bar"
     ],
     "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3",
-    "RejectUnauthoried": true,
+    "RejectUnauthorized": true,
     "CodeHash": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4"
    },
    "UpdateReplacePolicy": "Delete",
@@ -125,7 +125,7 @@
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
     ],
     "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4",
-    "RejectUnauthoried": true,
+    "RejectUnauthorized": true,
     "CodeHash": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4"
    },
    "UpdateReplacePolicy": "Delete",

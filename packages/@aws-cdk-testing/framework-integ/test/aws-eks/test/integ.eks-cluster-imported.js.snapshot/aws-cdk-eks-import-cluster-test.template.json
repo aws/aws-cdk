@@ -1044,7 +1044,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "RejectUnauthoried": false,
+    "RejectUnauthorized": false,
     "CodeHash": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4"
    },
    "UpdateReplacePolicy": "Delete",
