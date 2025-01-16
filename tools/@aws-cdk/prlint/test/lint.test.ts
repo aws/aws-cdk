@@ -1,5 +1,7 @@
 import * as path from 'path';
-import * as linter from '../lint';
+import { GitHubFile, GitHubLabel, GitHubPr } from '../github';
+import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, CODECOV_PREFIX } from '../constants';
+import { PullRequestLinter } from '../lint';
 
 let mockRemoveLabel = jest.fn();
 let mockAddLabel = jest.fn();
@@ -10,7 +12,7 @@ let mockListReviews = jest.fn().mockImplementation((_props: { _owner: string, _r
 
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation();
-  jest.spyOn(linter.PullRequestLinter.prototype as any, 'getTrustedCommunityMembers').mockImplementation(() => ['trusted1', 'trusted2', 'trusted3'])
+  jest.spyOn(PullRequestLinter.prototype as any, 'getTrustedCommunityMembers').mockImplementation(() => ['trusted1', 'trusted2', 'trusted3'])
   process.env.REPO_ROOT = path.join(__dirname, '..', '..', '..', '..');
 });
 
@@ -23,7 +25,7 @@ afterAll(() => {
   jest.resetAllMocks();
 });
 
-let mockCreateReview: (errorMessage: string) => Promise<any>;
+let mockCreateReview: (errorMessage: string) => Promise<any> = jest.fn();
 const SHA = 'ABC';
 
 type Subset<K> = {
@@ -38,7 +40,7 @@ type Subset<K> = {
 
 describe('breaking changes format', () => {
   test('disallow variations to "BREAKING CHANGE:"', async () => {
-    const issue: Subset<linter.GitHubPr> = {
+    const issue: Subset<GitHubPr> = {
       number: 1,
       title: 'chore: some title',
       body: 'BREAKING CHANGES:',
@@ -96,7 +98,7 @@ describe('breaking changes format', () => {
 });
 
 test('disallow PRs from main branch of fork', async () => {
-  const issue: Subset<linter.GitHubPr> = {
+  const issue: Subset<GitHubPr> = {
     number: 1,
     title: 'chore: some title',
     body: 'making a pr from main of my fork',
@@ -521,7 +523,7 @@ describe('integration tests required on features', () => {
   });
 
   describe('CLI file changed', () => {
-    const labels: linter.GitHubLabel[] = [];
+    const labels: GitHubLabel[] = [];
     const issue = {
       number: 23,
       title: 'chore(cli): change the help or something',
@@ -582,7 +584,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -602,7 +604,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -633,7 +635,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -664,7 +666,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -701,7 +703,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -734,7 +736,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -767,7 +769,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -807,7 +809,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -845,7 +847,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -875,7 +877,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -903,7 +905,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -932,7 +934,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -962,7 +964,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -995,7 +997,7 @@ describe('integration tests required on features', () => {
       const prLinter = configureMock(pr);
       await prLinter.validateStatusEvent(pr as any, {
         sha: SHA,
-        context: linter.CODE_BUILD_CONTEXT,
+        context: CODE_BUILD_CONTEXT,
         state: 'success',
       } as any);
 
@@ -1041,7 +1043,7 @@ describe('integration tests required on features', () => {
 
   describe('with existing Exemption Request comment', () => {
     test('valid exemption request comment', async () => {
-      const issue: Subset<linter.GitHubPr> = {
+      const issue: Subset<GitHubPr> = {
         number: 1,
         title: 'fix: some title',
         body: '',
@@ -1062,7 +1064,7 @@ describe('integration tests required on features', () => {
     });
 
     test('valid exemption request with additional context', async () => {
-      const issue: Subset<linter.GitHubPr> = {
+      const issue: Subset<GitHubPr> = {
         number: 1,
         title: 'fix: some title',
         body: '',
@@ -1083,7 +1085,7 @@ describe('integration tests required on features', () => {
     });
 
     test('valid exemption request with middle exemption request', async () => {
-      const issue: Subset<linter.GitHubPr> = {
+      const issue: Subset<GitHubPr> = {
         number: 1,
         title: 'fix: some title',
         body: '',
@@ -1105,7 +1107,7 @@ describe('integration tests required on features', () => {
   });
 
   describe('metadata file changed', () => {
-    const files: linter.GitHubFile[] = [{
+    const files: GitHubFile[] = [{
       filename: 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts',
     }];
 
@@ -1139,7 +1141,7 @@ describe('integration tests required on features', () => {
   });
 });
 
-function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[], existingComments?: string[]): linter.PullRequestLinter {
+function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingComments?: string[]): PullRequestLinter {
   const pullsClient = {
     get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {
       return { data: { ...pr, base: { ref: 'main'}} };
@@ -1183,7 +1185,7 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
     listCommitStatusesForRef() {
       return {
         data: [{
-          context: linter.CODE_BUILD_CONTEXT,
+          context: CODE_BUILD_CONTEXT,
           state: 'success',
         }],
       };
@@ -1193,8 +1195,8 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
   const checksClient = {
     listForRef() {
       return {
-        data: linter.CODECOV_CHECKS.map(c => ({ 
-          name: `${linter.CODECOV_PREFIX}${c}`, 
+        data: CODECOV_CHECKS.map(c => ({
+          name: `${CODECOV_PREFIX}${c}`,
           conclusion: 'success',
           completed_at: '1'
         })),
@@ -1205,7 +1207,7 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
   const searchClient = {
     issuesAndPullRequests() {},
   };
-  return new linter.PullRequestLinter({
+  return new PullRequestLinter({
     owner: 'aws',
     repo: 'aws-cdk',
     number: 1000,

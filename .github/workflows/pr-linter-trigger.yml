@@ -1,3 +1,7 @@
+# Unprivileged workflow that runs in the context of the PR.
+#
+# Save the PR number, and download it again in the context of the PR Linter,
+# which runs privileged.
 name: PR Linter Trigger
 
 on:
