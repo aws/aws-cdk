@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.176.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.175.1-alpha.0...v2.176.0-alpha.0) (2025-01-15)
+
+
+### Features
+
+* **scheduler-targets:** add support for universal target ([#32341](https://github.com/aws/aws-cdk/issues/32341)) ([021e6d6](https://github.com/aws/aws-cdk/commit/021e6d6ca6c01ecece485f7a51620fd42e632f0b)), closes [#32328](https://github.com/aws/aws-cdk/issues/32328)
+
+
+### Bug Fixes
+
+* **msk:** clusterName validation in Cluster class is incorrect ([#32792](https://github.com/aws/aws-cdk/issues/32792)) ([41ddd46](https://github.com/aws/aws-cdk/commit/41ddd46dc17e0afd551cce2737ecc11ed343de04)), closes [/github.com/aws/aws-cdk/pull/32505#discussion_r1891027876](https://github.com/aws//github.com/aws/aws-cdk/pull/32505/issues/discussion_r1891027876)
+
+## [2.175.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.175.0-alpha.0...v2.175.1-alpha.0) (2025-01-10)
+
+## [2.175.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.174.1-alpha.0...v2.175.0-alpha.0) (2025-01-09)
+
+
+### Features
+
+* **s3objectlambda:** open s3 access point arn ([#32661](https://github.com/aws/aws-cdk/issues/32661)) ([0486b9c](https://github.com/aws/aws-cdk/commit/0486b9c5e2b4286499a9d3f87a0db7c95741fb6b)), closes [#31950](https://github.com/aws/aws-cdk/issues/31950)
+
+
+### Bug Fixes
+
+* **apprunner:** the Service class does not implement IService ([#32771](https://github.com/aws/aws-cdk/issues/32771)) ([3d56efa](https://github.com/aws/aws-cdk/commit/3d56efa20ef92761ed22f12e4f651856b6889be3)), closes [#32745](https://github.com/aws/aws-cdk/issues/32745)
+* **integ-runner:** `ENOENT` no such file or directory 'recommended-feature-flags.json' ([#32750](https://github.com/aws/aws-cdk/issues/32750)) ([f809b94](https://github.com/aws/aws-cdk/commit/f809b94d9952b8203221e73e177d2615c21248a8))
+
 ## [2.174.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.174.0-alpha.0...v2.174.1-alpha.0) (2025-01-07)
 
 ## [2.174.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.173.4-alpha.0...v2.174.0-alpha.0) (2025-01-04)
