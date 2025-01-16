@@ -1,9 +1,7 @@
 import { Octokit } from '@octokit/rest';
-import { GitHubComment, GitHubPr, Review } from "./github";
+import { GitHubPr, Review } from "./github";
 
 export const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
-
-const LINTER_MARKER = '<!--LINTER-->\n';
 
 /**
  * Props used to perform linting against the pull request.
@@ -110,14 +108,13 @@ export class PullRequestLinterBase {
         throw new Error(`It does not make sense to supply both dismissPreviousReview and requestChanges: ${JSON.stringify(actions)}`);
       }
 
-      const existingReview = await this.findExistingPRLinterReview();
-      this.deletePRLinterComment();
+      const existingReviews = await this.findExistingPRLinterReview();
 
       if (actions.dismissPreviousReview) {
-        this.dismissPRLinterReview(existingReview);
+        this.dismissPRLinterReviews(existingReviews, 'passing');
       }
       if (actions.requestChanges) {
-        this.createOrUpdatePRLinterReview(actions.requestChanges.failures, actions.requestChanges.exemptionRequest, existingReview);
+        this.createOrUpdatePRLinterReview(actions.requestChanges.failures, actions.requestChanges.exemptionRequest, existingReviews);
       }
     }
   }
@@ -137,30 +134,32 @@ export class PullRequestLinterBase {
   }
 
   /**
-   * Deletes the previous linter comment if it exists.
-   */
-  private async deletePRLinterComment(): Promise<void> {
-    // Since previous versions of this pr linter didn't add comments, we need to do this check first.
-    const comment = await this.findExistingPRLinterComment();
-    if (comment) {
-      await this.client.issues.deleteComment({
-        ...this.issueParams,
-        comment_id: comment.id,
-      });
-    };
-  };
-
-  /**
    * Dismisses previous reviews by aws-cdk-automation when the pull request succeeds the linter.
    * @param existingReview The review created by a previous run of the linter
    */
-  private async dismissPRLinterReview(existingReview?: Review): Promise<void> {
-    if (existingReview) {
-      await this.client.pulls.dismissReview({
-        ...this.prParams,
-        review_id: existingReview.id,
-        message: '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.',
-      });
+  private async dismissPRLinterReviews(existingReviews: Review[], reason: 'passing' | 'stale'): Promise<void> {
+    let message: string;
+    switch (reason) {
+      case 'passing':
+        message = '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.';
+        break;
+      case 'stale':
+        message = 'Dismissing outdated PRLinter review.';
+        break;
+    }
+
+    for (const existingReview of existingReviews ?? []) {
+      try {
+        console.log('Dismissing review');
+        await this.client.pulls.dismissReview({
+          ...this.prParams,
+          review_id: existingReview.id,
+          message,
+        });
+      } catch (e: any) {
+        // This can fail with a "not found" for some reason
+        throw new Error(`Dismissing review failed, user is probably not authorized: ${JSON.stringify(e, undefined, 2)}`);
+      }
     }
   }
 
@@ -168,54 +167,53 @@ export class PullRequestLinterBase {
    * Finds existing review, if present
    * @returns Existing review, if present
    */
-  private async findExistingPRLinterReview(): Promise<Review | undefined> {
+  private async findExistingPRLinterReview(): Promise<Review[]> {
     const reviews = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
-    return reviews.find((review) => review.user?.login === this.linterLogin && review.state !== 'DISMISSED') as Review;
-  }
-
-  /**
-   * Finds existing comment from previous review, if present
-   * @returns Existing comment, if present
-   */
-  private async findExistingPRLinterComment(): Promise<GitHubComment | undefined> {
-    const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
-    return comments.find((comment) => comment.user?.login === this.linterLogin && comment.body?.startsWith(LINTER_MARKER)) as GitHubComment;
+    return reviews.filter((review) => review.user?.login === this.linterLogin && review.state !== 'DISMISSED');
   }
 
   /**
    * Creates a new review and comment for first run with failure or creates a new comment with new failures for existing reviews.
    *
+   * We assume the PR linter only ever creates "Changes Requested" reviews, or dismisses
+   * their own "Changes Requested" reviews.
+   *
    * @param failureMessages The failures received by the pr linter validation checks.
    * @param existingReview The review created by a previous run of the linter.
    */
-  private async createOrUpdatePRLinterReview(failureMessages: string[], exemptionRequest?: boolean, existingReview?: Review): Promise<void> {
+  private async createOrUpdatePRLinterReview(failureMessages: string[], exemptionRequest?: boolean, existingReviews?: Review[]): Promise<void> {
     // FIXME: this function is doing too much at once. We should split this out into separate
     // actions on `LinterActions`.
 
-    let body = LINTER_MARKER
-      + `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
-      + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
-      + 'If you would like to request an exemption from the status checks or clarification on feedback,'
-      + ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.';
-    if (!existingReview || existingReview.state !== 'REQUEST_CHANGES') {
+    const paras = [
+      'The pull request linter fails with the following errors:',
+      this.formatErrors(failureMessages),
+      'If you believe this pull request should receive an exemption, please comment and provide a justification. ' +
+      'A comment requesting an exemption should contain the text `Exemption Request`. ' +
+      'Additionally, if clarification is needed, add `Clarification Request` to a comment.',
+    ];
+
+    if (exemptionRequest) {
+      paras.push('✅ A exemption request has been requested. Please wait for a maintainer\'s review.');
+    }
+    const body = paras.join('\n\n');
+
+    // Dismiss every review except the last one
+    this.dismissPRLinterReviews((existingReviews ?? []).slice(0, -1), 'stale');
+
+    // Update the last review
+    const existingReview = (existingReviews ?? []).slice(-1)[0];
+
+    if (!existingReview) {
+      console.log('Creating review');
       await this.client.pulls.createReview({
         ...this.prParams,
-        body: LINTER_MARKER
-          + 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.'
-          + ' If you believe this pull request should receive an exemption, please comment and provide a justification.'
-          + '\n\n\nA comment requesting an exemption should contain the text `Exemption Request`.'
-          + ' Additionally, if clarification is needed add `Clarification Request` to a comment.',
         event: 'REQUEST_CHANGES',
-      });
-
-      if (exemptionRequest) {
-        body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
-      }
-      await this.client.issues.createComment({
-        ...this.issueParams,
         body,
       });
-    } else if (existingReview.body !== body) {
+    } else if (existingReview.body !== body && existingReview.state === 'CHANGES_REQUESTED') {
+      // State is good but body is wrong
+      console.log('Updating review');
       this.client.pulls.updateReview({
         ...this.prParams,
         review_id: existingReview.id,
@@ -232,6 +230,7 @@ export class PullRequestLinterBase {
       + '(this setting is enabled by default for personal accounts, and cannot be enabled for organization owned accounts). '
       + 'The reason for this is that our automation needs to synchronize your branch with our main after it has been approved, '
       + 'and we cannot do that if we cannot push to your branch.'
+      console.log('Closing pull request');
 
       await this.client.issues.createComment({
         ...this.issueParams,
@@ -246,7 +245,7 @@ export class PullRequestLinterBase {
   }
 
   private formatErrors(errors: string[]) {
-    return `\n\n\t❌ ${errors.join('\n\t❌ ')}\n\n`;
+    return errors.map(e => `    ❌ ${e}`).join('\n');
   }
 
   private addLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {

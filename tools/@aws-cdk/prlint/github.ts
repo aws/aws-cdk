@@ -14,7 +14,7 @@ export interface Review {
   id: number;
   user: {
     login: string;
-  };
+  } | null;
   body: string;
   state: string;
 }
