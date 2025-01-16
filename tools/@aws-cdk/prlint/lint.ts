@@ -276,8 +276,10 @@ export class PullRequestLinter extends PullRequestLinterBase {
       };
     } else {
       // Not the best place to put this, but this is ~where it was before the refactor.
+      const prAuthor = (await this.pr()).user?.login;
+
       const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
-      const exemptionRequest = comments.some(comment => comment.body?.toLowerCase().includes("exemption request"));
+      const exemptionRequest = comments.some(comment => comment.user?.login === prAuthor && comment.body?.toLowerCase().includes("exemption request"));
 
       return {
         requestChanges: {
