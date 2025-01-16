@@ -23,8 +23,8 @@ new sfn.StateMachine(this, 'StateMachine', {
 });
 ```
 
-State machines are made up of a sequence of **Steps**, which represent different actions
-taken in sequence. Some of these steps represent *control flow* (like `Choice`, `Map` and `Wait`)
+State machines are made up of a sequence of **States**, which represent different actions
+taken in sequence. Some of these state represent *control flow* (like `Choice`, `Map` and `Wait`)
 while others represent calls made against other AWS services (like `LambdaInvoke`).
 The second category are called `Task`s and they can all be found in the module [`aws-stepfunctions-tasks`].
 
@@ -53,46 +53,16 @@ new sfn.StateMachine(this, 'StateMachineFromFile', {
 
 ## Query Language
 
-Step Functions added variables and JSONata to manage state and transform data.
+Step Functions now provides the ability to select the `QueryLanguage` for the state machine or its states: `JSONata` or `JSONPath`.
 
-For new state machines, we recommend the JSONata query language. In state machines that do not specify a query language, the state machine defaults to JSON Path for backward compatibility. You must opt-in to use JSONata for your state machines or individual states. Check the [documentation](https://docs.aws.amazon.com/step-functions/latest/dg/transforming-data.html) for differences between query languages.
+For new state machines, we recommend using `JSONata` by specifying it at the state machine level.
+If you do not specify a `QueryLanguage`, the state machine will default to using `JSONPath`.
 
-The AWS CDK defines state constructs, and there are 3 ways to initialize them.
+If a state contains a specified `QueryLanguage`, Step Functions will use the specified query language for that state.
+If the state does not specify a `QueryLanguage`, then it will use the query language specified in the state machine level, or `JSONPath` if none.
 
-| Method | Query Language | Description |
-| ------ | ------- | ------- |
-| `State.jsonata()` | `JSONata` | Since a type specific to JSONata is set for props, it is possible to focus only on the properties required for JSONata. |
-| `State.jsonPath()` | `JSON Path` | Since a type specific to JSON Path is set for props, it is possible to focus only on the properties required for JSON Path. |
-| `new State()` | `JSONata` or `JSON Path` | This is a legacy pattern. Props can be used for both JSONata and JSON Path, but since both types information is included and there are no optimized types for each query language, consider using methods prepared for each query language. |
-
-Code examples for initializing Pass State with each pattern are shown below.
-
-```ts
-// JSONata Pattern
-sfn.Pass.jsonata(this, 'JSONata Pattern', {
-  outputs: { foo: 'bar' },
-  // The outputPath does not exist in the props type
-  // outputPath: '$.status',
-});
-
-// JSON Path Pattern
-sfn.Pass.jsonPath(this, 'JSON Path Pattern', {
-  // The outputs does not exist in the props type
-  // outputs: { foo: 'bar' },
-  outputPath: '$.status',
-});
-
-// Constructor (Legacy) Pattern
-new sfn.Pass(this, 'Constructor Pattern', {
-  queryLanguage: sfn.QueryLanguage.JSONATA, // or JSON_PATH
-  // Both outputs and outputPath exist as prop types.
-  outputs: { foo: 'bar' }, // For JSONata
-  // or
-  outputPath: '$.status', // For JSON Path
-});
-```
-
-The query language can also be specified at the top level, and JSONata can only be mixed at the state level when the JSON path set by default is specified at the top level.
+If the state machine level `QueryLanguage`  is set to `JSONPath`, then any individual state-level `QueryLanguage` can be set to either `JSONPath` or `JSONata` to support incremental upgrades.
+If the state-level `QueryLanguage` is set to `JSONata`, then any individual state-level `QueryLanguage` can either be `JSONata` or not set.
 
 ```ts
 const jsonata = sfn.Pass.jsonata(this, 'JSONata');
@@ -104,16 +74,53 @@ new sfn.StateMachine(this, 'MixedStateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
-// This throw an error. If JSONata is specified at the top level, JSON Path cannot be mixed.
+// This throw an error. If JSONata is specified at the top level, JSONPath cannot be mixed.
 new sfn.StateMachine(this, 'JSONataOnlyStateMachine', {
   queryLanguage: sfn.QueryLanguage.JSONATA,
   definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 ```
 
+The AWS CDK defines state constructs, and there are 3 ways to initialize them.
+
+| Method | Query Language | Description |
+| ------ | ------- | ------- |
+| `State.jsonata()` | `JSONata` | Since a type specific to JSONata is set for props, it is possible to focus only on the properties required for JSONata. |
+| `State.jsonPath()` | `JSONPath` | Since a type specific to JSONPath is set for props, it is possible to focus only on the properties required for JSONPath. |
+| `new State()` | `JSONata` or `JSONPath` | This is a legacy pattern. Props can be used for both JSONata and JSONPath, but since both types information is included and there are no optimized types for each query language, consider using methods prepared for each query language. |
+
+Code examples for initializing Pass State with each pattern are shown below.
+
+```ts
+// JSONata Pattern
+sfn.Pass.jsonata(this, 'JSONata Pattern', {
+  outputs: { foo: 'bar' },
+  // The outputPath does not exist in the props type
+  // outputPath: '$.status',
+});
+
+// JSONPath Pattern
+sfn.Pass.jsonPath(this, 'JSONPath Pattern', {
+  // The outputs does not exist in the props type
+  // outputs: { foo: 'bar' },
+  outputPath: '$.status',
+});
+
+// Constructor (Legacy) Pattern
+new sfn.Pass(this, 'Constructor Pattern', {
+  queryLanguage: sfn.QueryLanguage.JSONATA, // or JSON_PATH
+  // Both outputs and outputPath exist as prop types.
+  outputs: { foo: 'bar' }, // For JSONata
+  // or
+  outputPath: '$.status', // For JSONPath
+});
+```
+
 Learn more in the blog post [Simplifying developer experience with variables and JSONata in AWS Step Functions](https://aws.amazon.com/jp/blogs/compute/simplifying-developer-experience-with-variables-and-jsonata-in-aws-step-functions/).
 
 ### JSONata example
+
+The following example defines a state machine in `JSONata` that calls a fictional service API to update issue labels.
 
 ```ts
 import * as events from 'aws-cdk-lib/aws-events';
@@ -145,7 +152,7 @@ const notMatchTitleTemplate = sfn.Pass.jsonata(this, 'Not Match Title Template')
 const definition = getIssue
   .next(sfn.Choice.jsonata(this, 'Match Title Template?')
     // Look at the "title" field of issue in variables using Regex
-    .when(sfn.Condition.jsonata('{% $contains($issue.title, /(feat)|(fix)|(chore)\(\w*\):.*/) %}'), updateLabel, {
+    .when(sfn.Condition.jsonata('{% $contains($issue.title, /(feat)|(fix)|(chore)\(\w*\):.*/) %}'), updateLabels, {
       assign: {
         type: '{% $match($states.input.title, /(\w*)\((.*)\)/).groups[0] %}',
         component: '{% $match($states.input.title, /(\w*)\((.*)\)/).groups[1] %}',
@@ -160,7 +167,7 @@ new sfn.StateMachine(this, 'StateMachine', {
 });
 ```
 
-### JSON Path (Legacy pattern) example
+### JSONPath (Legacy pattern) example
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -249,16 +256,18 @@ With variables, you can store data and use it in any future step. You can also m
  (End)
 ```
 
-Use `assign` to express the above example in AWS CDK. You can use both JSONata and JSON Path to assign.
+Use `assign` to express the above example in AWS CDK. You can use both JSONata and JSONPath to assign.
 
 ```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
 declare const callApiFunc: lambda.Function;
 declare const useVariableFunc: lambda.Function;
 const step1 = tasks.LambdaInvoke.jsonata(this, 'Step 1', {
-  lambdaFunction: callApiTask,
+  lambdaFunction: callApiFunc,
   assign: {
     x: '{% $states.result.Payload.x %}', // JSONata
-    // x: sfn.JsonPath.stringAt('$.Payload.x'), // When use JSON Path
+    // x: sfn.JsonPath.stringAt('$.Payload.x'), // When use JSONPath
   },
 });
 const step2 = sfn.Pass.jsonata(this, 'Step 2');
@@ -266,10 +275,10 @@ const step3 = sfn.Pass.jsonata(this, 'Step 3');
 const step4 = sfn.Pass.jsonata(this, 'Step 4');
 const step5 = tasks.LambdaInvoke.jsonata(this, 'Step 5', {
   lambdaFunction: useVariableFunc,
-  payload: {
+  payload: sfn.TaskInput.fromObject({
     x: '{% $x %}',  // JSONata
-    // x: sfn.JsonPath.stringAt('$x'), // When use JSON Path
-  },
+    // x: sfn.JsonPath.stringAt('$x'), // When use JSONPath
+  }),
 });
 ```
 
@@ -293,7 +302,7 @@ To change the default behavior of using a JSONata, supplying values for `outputs
 The following example uses JSONata expressions for `outputs` and `time`.
 
 ```ts
-sfn.Wait.jsonata(stack, 'Wait', {
+sfn.Wait.jsonata(this, 'Wait', {
   time: sfn.WaitTime.timestamp('{% $timestamp %}'),
   outputs: {
     stringArgument: 'inital-task',
@@ -361,14 +370,14 @@ You can access reserved variables as follows:
 
 ```ts
 sfn.Pass.jsonata(this, 'Pass', {
-  output: {
+  outputs: {
     foo: '{% $states.input.foo %}',
   },
 });
 ```
 
 
-#### JSON Path
+#### JSONPath
 
 To change the default behavior of using a JSON path, supplying values for `inputPath`, `resultSelector`, `resultPath`, and `outputPath`.
 
@@ -660,7 +669,7 @@ sfn.Condition.jsonata("{% $contains('abracadabra', /a.*a/) %}"); // true
 
 See the [JSONata comparison operators](https://docs.jsonata.org/comparison-operators) to find more operators.
 
-##### JSON Path
+##### JSONPath
 
 see [step function comparison operators](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html#amazon-states-language-choice-state-rules)
 
