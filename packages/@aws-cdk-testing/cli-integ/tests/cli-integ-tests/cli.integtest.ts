@@ -325,14 +325,10 @@ integTest(
       captureStderr: false,
     });
 
-    const stackName = fixture.fullStackName('test-2');
-
     // verify the number of resources in the stack
-    process.stdout.write(`\n\n ------- Stack Arn: ${stackArn} ------- \n\n`);
-    process.stdout.write(`\n\n ------- Stack Name: ${stackName} ------- \n\n`);
     const response = await fixture.aws.cloudFormation.send(
       new DescribeStackResourcesCommand({
-        StackName: stackName,
+        StackName: stackArn,
       }),
     );
     expect(response.StackResources?.length).toBeGreaterThan(0);

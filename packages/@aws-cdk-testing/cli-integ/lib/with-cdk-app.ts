@@ -753,7 +753,6 @@ async function ensureBootstrapped(fixture: TestFixture) {
   // It doesn't matter for tests: when they want to test something about an actual legacy
   // bootstrap stack, they'll create a bootstrap stack with a non-default name to test that exact property.
   const envSpecifier = `aws://${await fixture.aws.account()}/${fixture.aws.region}`;
-  if (ALREADY_BOOTSTRAPPED_IN_THIS_RUN.has(envSpecifier)) { return; }
 
   await fixture.cdk(['bootstrap', envSpecifier], {
     modEnv: {
@@ -762,7 +761,6 @@ async function ensureBootstrapped(fixture: TestFixture) {
     },
   });
 
-  ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
 }
 
 function defined<A>(x: A): x is NonNullable<A> {
@@ -809,5 +807,3 @@ export async function installNpmPackages(fixture: TestFixture, packages: Record<
   // Now install that `package.json` using NPM7
   await fixture.shell(['node', require.resolve('npm'), 'install']);
 }
-
-const ALREADY_BOOTSTRAPPED_IN_THIS_RUN = new Set();

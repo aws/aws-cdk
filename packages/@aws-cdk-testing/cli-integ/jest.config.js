@@ -7,5 +7,4 @@ module.exports = {
             branches: 2,
         },
     },
-    maxWorkers: '100%'
 };
