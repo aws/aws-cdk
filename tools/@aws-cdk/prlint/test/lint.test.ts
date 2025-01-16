@@ -1154,6 +1154,8 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingCom
 
     dismissReview() {},
 
+    updateReview() { },
+
     update() {},
   };
 
