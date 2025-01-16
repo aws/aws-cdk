@@ -3,6 +3,8 @@ import { GitHubComment, GitHubPr, Review } from "./github";
 
 export const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
+const LINTER_MARKER = '<!--LINTER-->\n';
+
 /**
  * Props used to perform linting against the pull request.
  */
@@ -177,7 +179,7 @@ export class PullRequestLinterBase {
    */
   private async findExistingPRLinterComment(): Promise<GitHubComment | undefined> {
     const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
-    return comments.find((comment) => comment.user?.login === this.linterLogin && comment.body?.startsWith('The pull request linter fails with the following errors:')) as GitHubComment;
+    return comments.find((comment) => comment.user?.login === this.linterLogin && comment.body?.startsWith(LINTER_MARKER)) as GitHubComment;
   }
 
   /**
@@ -190,28 +192,36 @@ export class PullRequestLinterBase {
     // FIXME: this function is doing too much at once. We should split this out into separate
     // actions on `LinterActions`.
 
-    let body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
+    let body = LINTER_MARKER
+      + `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
       + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
       + 'If you would like to request an exemption from the status checks or clarification on feedback,'
       + ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.';
-    if (!existingReview) {
+    if (!existingReview || existingReview.state !== 'REQUEST_CHANGES') {
       await this.client.pulls.createReview({
         ...this.prParams,
-        body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.'
+        body: LINTER_MARKER
+          + 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.'
           + ' If you believe this pull request should receive an exemption, please comment and provide a justification.'
           + '\n\n\nA comment requesting an exemption should contain the text `Exemption Request`.'
           + ' Additionally, if clarification is needed add `Clarification Request` to a comment.',
         event: 'REQUEST_CHANGES',
       });
-    }
 
-    if (exemptionRequest) {
-      body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
+      if (exemptionRequest) {
+        body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
+      }
+      await this.client.issues.createComment({
+        ...this.issueParams,
+        body,
+      });
+    } else if (existingReview.body !== body) {
+      this.client.pulls.updateReview({
+        ...this.prParams,
+        review_id: existingReview.id,
+        body,
+      });
     }
-    await this.client.issues.createComment({
-      ...this.issueParams,
-      body,
-    });
 
     // Closing the PR if it is opened from main branch of author's fork
     if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
@@ -242,7 +252,6 @@ export class PullRequestLinterBase {
   private addLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
     // already has label, so no-op
     if (pr.labels.some(l => l.name === label)) { return; }
-    console.log(`adding ${label} to pr ${pr.number}`);
     this.client.issues.addLabels({
       issue_number: pr.number,
       owner: this.prParams.owner,
@@ -256,7 +265,6 @@ export class PullRequestLinterBase {
   private removeLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
     // does not have label, so no-op
     if (!pr.labels.some(l => l.name === label)) { return; }
-    console.log(`removing ${label} to pr ${pr.number}`);
     this.client.issues.removeLabel({
       issue_number: pr.number,
       owner: this.prParams.owner,
