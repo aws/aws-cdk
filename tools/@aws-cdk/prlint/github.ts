@@ -1,6 +1,5 @@
 import { Endpoints } from '@octokit/types';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
-import type { components } from '@octokit/openapi-types';
 
 export type GitHubPr =
   Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
@@ -32,5 +31,3 @@ export interface GitHubLabel {
 export interface GitHubFile {
   readonly filename: string;
 }
-
-export type CheckRunConclusion = components['schemas']['check-run']['conclusion']

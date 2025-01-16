@@ -4,7 +4,7 @@ import { Octokit } from '@octokit/rest';
 import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
 import { PullRequestLinter } from './lint';
 import { LinterActions } from './linter-base';
-import { LINTER_LOGIN } from './constants';
+import { DEFEAULT_LINTER_LOGIN } from './constants';
 
 /**
  * Entry point for PR linter
@@ -30,7 +30,7 @@ async function run() {
       console.error(`Could not find PR belonging to status event, but that's not unusual. Skipping.`);
       process.exit(0);
     }
-    throw new Error(`Could not find PR number from context.`);
+    throw new Error(`Could not find PR number from event: ${github.context.eventName}`);
   }
 
   try {
@@ -40,7 +40,7 @@ async function run() {
       repo,
       number,
       // On purpose || instead of ??, also collapse empty string
-      linterLogin: process.env.LINTER_LOGIN || LINTER_LOGIN,
+      linterLogin: process.env.LINTER_LOGIN || DEFEAULT_LINTER_LOGIN,
     });
 
     let actions: LinterActions | undefined;
