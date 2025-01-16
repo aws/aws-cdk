@@ -1,4 +1,4 @@
-import { StackSelector } from '../api/cloud-assembly';
+import type { StackSelector } from '../../api/cloud-assembly';
 
 export interface RollbackOptions {
   /**

@@ -21,9 +21,6 @@ bundle.mjs
 # Explicitly allow all required files
 !build-info.json
 !db.json.gz
-# !lib/main.js
-# !lib/bridge.js
-# !lib/setup-sandbox.js
 # !lib/api/bootstrap/bootstrap-template.yaml
 !*.d.ts
 !*.d.ts.map
