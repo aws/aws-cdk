@@ -3,6 +3,7 @@ import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
 import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
 import { PullRequestLinter } from './lint';
+import { LinterActions } from './linter-base';
 
 async function run() {
   const token: string = process.env.GITHUB_TOKEN!;
@@ -49,20 +50,31 @@ async function run() {
       number,
     });
 
+    let actions: LinterActions | undefined;
+
     switch (github.context.eventName) {
       case 'status':
         const statusPayload = github.context.payload as StatusEvent;
-        const pr = await PullRequestLinter.getPRFromCommit(client, owner, repo, statusPayload.sha);
-        if (pr) {
-          console.log('validating status event');
-          await prLinter.validateStatusEvent(pr, statusPayload);
-        }
+        console.log('validating status event');
+        actions = await prLinter.validateStatusEvent(statusPayload);
         break;
 
       default:
-        await prLinter.validatePullRequestTarget(sha);
+        actions = await prLinter.validatePullRequestTarget(sha);
         break;
     }
+
+    if (actions) {
+      console.log(actions);
+
+      if (github.context.eventName || process.env.FOR_REAL) {
+        console.log('Carrying out actions');
+
+        // Actually running in GitHub actions, do it (otherwise we're just testing)
+        await prLinter.executeActions(actions);
+      }
+    }
+
   } catch (error: any) {
     // Fail the action
     core.setFailed(error.message);

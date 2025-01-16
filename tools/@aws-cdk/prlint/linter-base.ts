@@ -1,6 +1,5 @@
 import { Octokit } from '@octokit/rest';
 import { GitHubComment, GitHubPr, Review } from "./github";
-import { ValidationCollector } from './results';
 
 export const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
@@ -67,16 +66,60 @@ export class PullRequestLinterBase {
   protected readonly prParams: { owner: string, repo: string, pull_number: number };
   protected readonly issueParams: { owner: string, repo: string, issue_number: number };
 
+  private _pr: GitHubPr | undefined;
+
   constructor(readonly props: PullRequestLinterBaseProps) {
     this.client = props.client;
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
     this.issueParams = { owner: props.owner, repo: props.repo, issue_number: props.number };
   }
 
+  public async pr(): Promise<GitHubPr> {
+    if (!this._pr) {
+      const r = await this.client.pulls.get(this.prParams);
+      this._pr = r.data;
+    }
+    return this._pr;
+  }
+
+  /**
+   * Execute the given set of actions
+   */
+  public async executeActions(actions: LinterActions) {
+    const pr = await this.pr();
+
+    for (const label of actions.removeLabels ?? []) {
+      this.removeLabel(label, pr);
+    }
+
+    for (const label of actions.addLabels ?? []) {
+      this.addLabel(label, pr);
+    }
+
+    if (actions.deleteSingletonPrLinterComment) {
+      this.deletePRLinterComment();
+    }
+
+    if (actions.dismissPreviousReview || actions.requestChanges) {
+      if (actions.dismissPreviousReview && actions.requestChanges) {
+        throw new Error(`It does not make sense to supply both dismissPreviousReview and requestChanges: ${JSON.stringify(actions)}`);
+      }
+
+      const existingReview = await this.findExistingPRLinterReview();
+
+      if (actions.dismissPreviousReview) {
+        this.dismissPRLinterReview(existingReview);
+      }
+      if (actions.requestChanges) {
+        this.createOrUpdatePRLinterReview(actions.requestChanges.failures, existingReview);
+      }
+    }
+  }
+
   /**
    * Deletes the previous linter comment if it exists.
    */
-  protected async deletePRLinterComment(): Promise<void> {
+  private async deletePRLinterComment(): Promise<void> {
     // Since previous versions of this pr linter didn't add comments, we need to do this check first.
     const comment = await this.findExistingPRLinterComment();
     if (comment) {
@@ -91,27 +134,13 @@ export class PullRequestLinterBase {
    * Dismisses previous reviews by aws-cdk-automation when the pull request succeeds the linter.
    * @param existingReview The review created by a previous run of the linter
    */
-  protected async dismissPRLinterReview(existingReview?: Review): Promise<void> {
+  private async dismissPRLinterReview(existingReview?: Review): Promise<void> {
     if (existingReview) {
       await this.client.pulls.dismissReview({
         ...this.prParams,
         review_id: existingReview.id,
         message: '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.',
       });
-    }
-  }
-
-  /**
-   * Creates a new review, requesting changes, with the reasons that the linter did not pass.
-   * @param result The result of the PR Linter run.
-   */
-  protected async communicateResult(result: ValidationCollector): Promise<void> {
-    const existingReview = await this.findExistingPRLinterReview();
-    if (result.isValid()) {
-      console.log('✅  Success');
-      await this.dismissPRLinterReview(existingReview);
-    } else {
-      await this.createOrUpdatePRLinterReview(result.errors, existingReview);
     }
   }
 
@@ -135,10 +164,14 @@ export class PullRequestLinterBase {
 
   /**
    * Creates a new review and comment for first run with failure or creates a new comment with new failures for existing reviews.
+   *
    * @param failureMessages The failures received by the pr linter validation checks.
    * @param existingReview The review created by a previous run of the linter.
    */
   private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
+    // FIXME: this function is doing too much at once. We should split this out into separate
+    // actions on `LinterActions`.
+
     let body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
       + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
       + 'If you would like to request an exemption from the status checks or clarification on feedback,'
@@ -191,7 +224,7 @@ export class PullRequestLinterBase {
     return `\n\n\t❌ ${errors.join('\n\t❌ ')}\n\n`;
   }
 
-  protected addLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
+  private addLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
     // already has label, so no-op
     if (pr.labels.some(l => l.name === label)) { return; }
     console.log(`adding ${label} to pr ${pr.number}`);
@@ -205,7 +238,7 @@ export class PullRequestLinterBase {
     });
   }
 
-  protected removeLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
+  private removeLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
     // does not have label, so no-op
     if (!pr.labels.some(l => l.name === label)) { return; }
     console.log(`removing ${label} to pr ${pr.number}`);
@@ -223,4 +256,50 @@ export class LinterError extends Error {
   constructor(message: string) {
     super(message);
   }
+}
+
+/**
+ * Actions that the PR linter should carry out
+ */
+export interface LinterActions {
+  /**
+   * Add labels to the PR
+   */
+  addLabels?: string[];
+
+  /**
+   * Remove labels from the PR
+   */
+  removeLabels?: string[];
+
+  /**
+   * Delete the singleton PR linter comment
+   */
+  deleteSingletonPrLinterComment?: boolean;
+
+  /**
+   * Post a "request changes" review
+   */
+  requestChanges?: {
+    failures: string[];
+  };
+
+  /**
+   * Dismiss the PR linter's previous review.
+   */
+  dismissPreviousReview?: boolean;
+}
+
+export function mergeLinterActions(a: LinterActions, b: LinterActions): LinterActions {
+  return {
+    addLabels: nonEmpty([...(a.addLabels ?? []), ...(b.addLabels ?? [])]),
+    removeLabels: nonEmpty([...(a.removeLabels ?? []), ...(b.removeLabels ?? [])]),
+    deleteSingletonPrLinterComment: b.deleteSingletonPrLinterComment ?? a.deleteSingletonPrLinterComment,
+    requestChanges: b.requestChanges ?? a.requestChanges,
+    dismissPreviousReview: b.dismissPreviousReview ?? a.dismissPreviousReview,
+  };
+}
+
+function nonEmpty<A>(xs: A[]): A[] | undefined {
+  return xs.length > 0 ? xs : undefined;
 }

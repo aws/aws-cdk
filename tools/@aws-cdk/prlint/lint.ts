@@ -6,7 +6,7 @@ import { CheckRunConclusion, GitHubFile, GitHubPr, Review } from "./github";
 import { Test, TestResult, ValidationCollector } from './results';
 import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, CODECOV_PREFIX, Exemption } from './constants';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
-import { PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
+import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 
 /**
  * This class provides functionality to run lint checks against a pull request, request changes with the lint failures
@@ -31,10 +31,11 @@ export class PullRequestLinter extends PullRequestLinterBase {
     return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
   }
 
-  public async validateStatusEvent(pr: GitHubPr, status: StatusEvent): Promise<void> {
+  public async validateStatusEvent(status: StatusEvent): Promise<LinterActions> {
     if (status.context === CODE_BUILD_CONTEXT && status.state === 'success') {
-      await this.assessNeedsReview(pr);
+      return await this.assessNeedsReview();
     }
+    return {};
   }
 
   private async checkRunConclusion(sha: string, checkName: string): Promise<CheckRunConclusion> {
@@ -72,9 +73,9 @@ export class PullRequestLinter extends PullRequestLinterBase {
    *   6. It links to a p1 issue
    *   7. It links to a p2 issue and has an approved community review
    */
-  private async assessNeedsReview(
-    pr: Pick<GitHubPr, 'mergeable_state' | 'draft' | 'labels' | 'number'>,
-  ): Promise<void> {
+  private async assessNeedsReview(): Promise<LinterActions> {
+    const pr = await this.pr();
+
     const reviewsData = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
     console.log(JSON.stringify(reviewsData));
 
@@ -164,14 +165,22 @@ export class PullRequestLinter extends PullRequestLinterBase {
     // 2) is already community approved
     // 3) is authored by a core team member
     if (readyForReview && (fixesP1 || communityApproved || pr.labels.some(label => label.name === 'contribution/core'))) {
-      this.addLabel('pr/needs-maintainer-review', pr);
-      this.removeLabel('pr/needs-community-review', pr);
+      return {
+        addLabels: ['pr/needs-maintainer-review'],
+        removeLabels: ['pr/needs-community-review'],
+      };
     } else if (readyForReview && !fixesP1) {
-      this.removeLabel('pr/needs-maintainer-review', pr);
-      this.addLabel('pr/needs-community-review', pr);
+      return {
+        addLabels: ['pr/needs-community-review'],
+        removeLabels: ['pr/needs-maintainer-review'],
+      };
     } else {
-      this.removeLabel('pr/needs-community-review', pr);
-      this.removeLabel('pr/needs-maintainer-review', pr);
+      return {
+        removeLabels: [
+          'pr/needs-community-review',
+          'pr/needs-maintainer-review',
+        ],
+      };
     }
   }
 
@@ -194,11 +203,13 @@ export class PullRequestLinter extends PullRequestLinterBase {
    * Performs validations and communicates results via pull request comments, upon failure.
    * This also dismisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
    */
-  public async validatePullRequestTarget(sha: string): Promise<void> {
+  public async validatePullRequestTarget(sha: string): Promise<LinterActions> {
+    let ret: LinterActions = {};
+
     const number = this.props.number;
 
     console.log(`⌛  Fetching PR number ${number}`);
-    const pr = (await this.client.pulls.get(this.prParams)).data as GitHubPr;
+    const pr = await this.pr();
     console.log(`PR base ref is: ${pr.base.ref}`)
 
     console.log(`⌛  Fetching files for PR number ${number}`);
@@ -275,107 +286,124 @@ export class PullRequestLinter extends PullRequestLinterBase {
     }
 
     console.log("Deleting PR Linter Comment now");
-    await this.deletePRLinterComment();
+    ret.deleteSingletonPrLinterComment = true;
+
+    ret = mergeLinterActions(ret, await this.communicateResult(validationCollector));
+
+    // also assess whether the PR needs review or not
     try {
-      await this.communicateResult(validationCollector);
-      // always assess the review, even if the linter fails
-    } finally {
-      // also assess whether the PR needs review or not
-      try {
-        const state = await this.codeBuildJobSucceeded(sha);
-        console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
-        if (state) {
-          console.log('Assessing if the PR needs a review now');
-          await this.assessNeedsReview(pr);
-        }
-      } catch (e) {
-        console.log(`assessing review failed for sha ${sha}: `, e);
+      const state = await this.codeBuildJobSucceeded(sha);
+      console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
+      if (state) {
+        console.log('Assessing if the PR needs a review now');
+        ret = mergeLinterActions(ret, await this.assessNeedsReview());
       }
+    } catch (e) {
+      console.log(`assessing review failed for sha ${sha}: `, e);
+    }
+
+    return ret;
+  }
+
+  /**
+   * Creates a new review, requesting changes, with the reasons that the linter did not pass.
+   * @param result The result of the PR Linter run.
+   */
+  private async communicateResult(result: ValidationCollector): Promise<LinterActions> {
+    if (result.isValid()) {
+      console.log('✅  Success');
+      return {
+        dismissPreviousReview: true,
+      };
+    } else {
+      return {
+        requestChanges: { failures: result.errors },
+      };
     }
   }
 }
 
-export function isFeature(pr: GitHubPr): boolean {
+function isFeature(pr: GitHubPr): boolean {
   return pr.title.startsWith('feat');
 }
 
-export function isFix(pr: GitHubPr): boolean {
+function isFix(pr: GitHubPr): boolean {
   return pr.title.startsWith('fix');
 }
 
-export function testChanged(files: GitHubFile[]): boolean {
+function testChanged(files: GitHubFile[]): boolean {
   return files.filter(f => f.filename.toLowerCase().includes('test')).length != 0;
 }
 
-export function integTestChanged(files: GitHubFile[]): boolean {
+function integTestChanged(files: GitHubFile[]): boolean {
   return files.filter(f => f.filename.toLowerCase().match(/integ.*.ts$/)).length != 0;
 }
 
-export function integTestSnapshotChanged(files: GitHubFile[]): boolean {
+function integTestSnapshotChanged(files: GitHubFile[]): boolean {
   return files.filter(f => f.filename.toLowerCase().includes('.snapshot')).length != 0;
 }
 
-export function readmeChanged(files: GitHubFile[]): boolean {
+function readmeChanged(files: GitHubFile[]): boolean {
   return files.filter(f => path.basename(f.filename) == 'README.md').length != 0;
 }
 
-export function featureContainsReadme(pr: GitHubPr, files: GitHubFile[]): TestResult {
+function featureContainsReadme(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && !readmeChanged(files), 'Features must contain a change to a README file.');
   return result;
 }
 
-export function featureContainsTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
+function featureContainsTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && !testChanged(files), 'Features must contain a change to a test file.');
   return result;
 }
 
-export function fixContainsTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
+function fixContainsTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFix(pr) && !testChanged(files), 'Fixes must contain a change to a test file.');
   return result;
 }
 
-export function featureContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
+function featureContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFeature(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Features must contain a change to an integration test file and the resulting snapshot.');
   return result;
 }
 
-export function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
+function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
 }
 
-export function shouldExemptCodecov(pr: GitHubPr): boolean {
+function shouldExemptCodecov(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.CODECOV);
 }
 
-export function shouldExemptReadme(pr: GitHubPr): boolean {
+function shouldExemptReadme(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.README);
 }
 
-export function shouldExemptTest(pr: GitHubPr): boolean {
+function shouldExemptTest(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.TEST);
 }
 
-export function shouldExemptIntegTest(pr: GitHubPr): boolean {
+function shouldExemptIntegTest(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.INTEG_TEST);
 }
 
-export function shouldExemptBreakingChange(pr: GitHubPr): boolean {
+function shouldExemptBreakingChange(pr: GitHubPr): boolean {
   return hasLabel(pr, Exemption.BREAKING_CHANGE);
 }
 
-export function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
+function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
   return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
 }
 
-export function hasLabel(pr: GitHubPr, labelName: string): boolean {
+function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
     return l.name === labelName;
   });

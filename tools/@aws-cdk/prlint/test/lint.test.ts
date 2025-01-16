@@ -582,7 +582,7 @@ describe('integration tests required on features', () => {
     test('needs a review', async () => {
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -602,7 +602,7 @@ describe('integration tests required on features', () => {
       // WHEN
       pr.labels = [{ name: 'p1' }];
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -633,7 +633,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -664,7 +664,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -701,7 +701,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -734,7 +734,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -767,7 +767,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -807,7 +807,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -845,7 +845,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -875,7 +875,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -903,7 +903,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -932,7 +932,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -962,7 +962,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
@@ -995,7 +995,7 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(pr);
-      await prLinter.validateStatusEvent(pr as any, {
+      await prLinter.validateStatusEvent({
         sha: SHA,
         context: CODE_BUILD_CONTEXT,
         state: 'success',
