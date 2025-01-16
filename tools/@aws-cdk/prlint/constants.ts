@@ -1,4 +1,6 @@
 
+export const LINTER_LOGIN = 'aws-cdk-automation';
+
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 
 /**

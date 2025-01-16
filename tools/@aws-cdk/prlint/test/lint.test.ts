@@ -1192,6 +1192,7 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingCom
     owner: 'aws',
     repo: 'aws-cdk',
     number: 1000,
+    linterLogin: 'aws-cdk-automation',
 
     // hax hax
     client: {

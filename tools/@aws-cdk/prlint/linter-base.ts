@@ -26,6 +26,11 @@ export interface PullRequestLinterBaseProps {
    * Pull request number.
    */
   readonly number: number;
+
+  /**
+   * For cases where the linter needs to know its own username
+   */
+  readonly linterLogin: string;
 }
 
 
@@ -65,6 +70,7 @@ export class PullRequestLinterBase {
   protected readonly client: Octokit;
   protected readonly prParams: { owner: string, repo: string, pull_number: number };
   protected readonly issueParams: { owner: string, repo: string, issue_number: number };
+  protected readonly linterLogin: string;
 
   private _pr: GitHubPr | undefined;
 
@@ -72,6 +78,7 @@ export class PullRequestLinterBase {
     this.client = props.client;
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
     this.issueParams = { owner: props.owner, repo: props.repo, issue_number: props.number };
+    this.linterLogin = props.linterLogin;
   }
 
   public async pr(): Promise<GitHubPr> {
@@ -161,7 +168,7 @@ export class PullRequestLinterBase {
    */
   private async findExistingPRLinterReview(): Promise<Review | undefined> {
     const reviews = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
-    return reviews.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+    return reviews.find((review) => review.user?.login === this.linterLogin && review.state !== 'DISMISSED') as Review;
   }
 
   /**
@@ -170,7 +177,7 @@ export class PullRequestLinterBase {
    */
   private async findExistingPRLinterComment(): Promise<GitHubComment | undefined> {
     const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
-    return comments.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as GitHubComment;
+    return comments.find((comment) => comment.user?.login === this.linterLogin && comment.body?.startsWith('The pull request linter fails with the following errors:')) as GitHubComment;
   }
 
   /**

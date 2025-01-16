@@ -4,6 +4,7 @@ import { Octokit } from '@octokit/rest';
 import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
 import { PullRequestLinter } from './lint';
 import { LinterActions } from './linter-base';
+import { LINTER_LOGIN } from './constants';
 
 /**
  * Entry point for PR linter
@@ -13,7 +14,7 @@ import { LinterActions } from './linter-base';
  * To test locally, do the following:
  *
  * ```
- * env GITHUB_TOKEN=$(cat ~/.my-github-token) GITHUB_REPOSITORY=aws/aws-cdk PR_NUMBER=1234 npx ts-node ./index
+ * env GITHUB_TOKEN=$(cat ~/.my-github-token) LINTER_LOGIN=my-gh-alias GITHUB_REPOSITORY=aws/aws-cdk PR_NUMBER=1234 npx ts-node ./index
  * ```
  */
 async function run() {
@@ -38,6 +39,8 @@ async function run() {
       owner,
       repo,
       number,
+      // On purpose || instead of ??, also collapse empty string
+      linterLogin: process.env.LINTER_LOGIN || LINTER_LOGIN,
     });
 
     let actions: LinterActions | undefined;

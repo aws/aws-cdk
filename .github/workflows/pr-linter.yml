@@ -72,4 +72,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           PR_NUMBER: ${{ needs.download-if-workflow-run.outputs.pr_number }}
           PR_SHA: ${{ needs.download-if-workflow-run.outputs.pr_sha }}
+          LINTER_LOGIN: ${{ vars.LINTER_LOGIN }}
           REPO_ROOT: ${{ github.workspace }}
