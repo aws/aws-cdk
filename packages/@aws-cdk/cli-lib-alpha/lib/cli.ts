@@ -123,7 +123,7 @@ export class AwsCdkCli implements IAwsCdkCli {
     return new AwsCdkCli(async (args) => changeDir(
       () => runCli(args, async (sdk, config) => {
         const env = await prepareDefaultEnvironment(sdk);
-        const context = await prepareContext(config, env);
+        const context = await prepareContext(config.settings, config.context.all, env);
 
         return withEnv(async() => createAssembly(await producer.produce(context)), env);
       }),
