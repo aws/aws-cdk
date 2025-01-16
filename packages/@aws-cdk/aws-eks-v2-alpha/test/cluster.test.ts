@@ -1000,7 +1000,7 @@ describe('cluster', () => {
           Type: 'Custom::AWSCDK-EKS-KubernetesResource',
           Properties: {
             ServiceToken: {
-              'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttawscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6BOutputsStackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn49BEF20C',
+              'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttawscdkawseksKubectlProviderframeworkonEvent0A650005Arn27EC41A8',
             },
             Manifest: '[{\"foo\":\"bar\"}]',
             ClusterName: { 'Fn::ImportValue': 'Stack:ExportsOutputRefcluster611F8AFFA07FC079' },
@@ -1904,11 +1904,9 @@ describe('cluster', () => {
       },
     });
 
-    // the kubectl provider is inside a nested stack.
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       VpcConfig: {
-        SecurityGroupIds: [{ Ref: 'referencetoStackCluster17032651AClusterSecurityGroupId' }],
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['Cluster192CD0375', 'ClusterSecurityGroupId'] }],
       },
     });
   });
@@ -1936,9 +1934,7 @@ describe('cluster', () => {
       },
     });
 
-    // the kubectl provider is inside a nested stack.
-    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
           Foo: 'Bar',
@@ -1974,11 +1970,9 @@ describe('cluster', () => {
         },
       });
 
-      // the kubectl provider is inside a nested stack.
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Role: {
-          Ref: 'referencetoStackKubectlIamRole02F8947EArn',
+          'Fn::GetAtt': ['awscdkawseksKubectlProviderframeworkonEventServiceRoleF4FAF053', 'Arn'],
         },
       });
     });
@@ -2000,10 +1994,9 @@ describe('cluster', () => {
         chart,
       });
 
-      const nested = stack.node.tryFindChild('Imported-KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Role: {
-          Ref: 'referencetoKubectlLambdaRole7D084D94Arn',
+          'Fn::GetAtt': ['ImportedKubectlProviderframeworkonEventServiceRole6603B49A', 'Arn'],
         },
       });
       Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
@@ -2034,11 +2027,9 @@ describe('cluster', () => {
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-
       // we don't attach vpc config in case endpoint is public only, regardless of whether
       // the vpc has private subnets or not.
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
@@ -2052,11 +2043,9 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC,
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-
       // we don't attach vpc config in case endpoint is public only, regardless of whether
       // the vpc has private subnets or not.
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
@@ -2083,11 +2072,9 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PRIVATE,
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-
-      const functions = Template.fromStack(nested).findResources('AWS::Lambda::Function');
-      expect(functions.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
-      expect(functions.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
+      const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
     });
 
     test('private and non restricted public without private subnets', () => {
@@ -2100,11 +2087,9 @@ describe('cluster', () => {
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-
       // we don't have private subnets, but we don't need them since public access
       // is not restricted.
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
     });
@@ -2118,12 +2103,10 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-
       // we have private subnets so we should use them.
-      const functions = Template.fromStack(nested).findResources('AWS::Lambda::Function');
-      expect(functions.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
-      expect(functions.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
+      const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
     });
 
     test('private and restricted public without private subnets', () => {
@@ -2148,12 +2131,10 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-
       // we have private subnets so we should use them.
-      const functions = Template.fromStack(nested).findResources('AWS::Lambda::Function');
-      expect(functions.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
-      expect(functions.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
+      const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
     });
 
     test('private endpoint access selects only private subnets from looked up vpc', () => {
@@ -2207,8 +2188,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PRIVATE,
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: { SubnetIds: ['subnet-private-in-us-east-1a'] },
       });
     });
@@ -2272,8 +2252,7 @@ describe('cluster', () => {
         }],
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: { SubnetIds: ['subnet-private-in-us-east-1a'] },
       });
     });
@@ -2297,11 +2276,10 @@ describe('cluster', () => {
         }],
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: {
           SubnetIds: [
-            { Ref: 'referencetoStackVpcPrivateSubnet1Subnet8E6A14CBRef' },
+            { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
             'subnet-unknown',
           ],
         },
@@ -2323,8 +2301,7 @@ describe('cluster', () => {
         }],
       });
 
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: { SubnetIds: ['subnet1'] },
       });
     });
@@ -2376,21 +2353,19 @@ describe('cluster', () => {
         },
       });
 
-      // the kubectl provider is inside a nested stack.
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster17032651AClusterSecurityGroupId',
+              'Fn::GetAtt': ['Cluster192CD0375', 'ClusterSecurityGroupId'],
             },
           ],
           SubnetIds: [
             {
-              Ref: 'referencetoStackVpcPrivate1Subnet1Subnet6764A0F6Ref',
+              Ref: 'VpcPrivate1Subnet1SubnetC688B2B1',
             },
             {
-              Ref: 'referencetoStackVpcPrivate1Subnet2SubnetDFD49645Ref',
+              Ref: 'VpcPrivate1Subnet2SubnetA2AF15C7',
             },
           ],
         },
@@ -2439,10 +2414,8 @@ describe('cluster', () => {
         },
       });
 
-      // the kubectl provider is inside a nested stack.
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      const functions = Template.fromStack(nested).findResources('AWS::Lambda::Function');
-      expect(functions.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).toEqual(16);
+      const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+      expect(functions.awscdkawseksKubectlProviderHandlerAABA4423.Properties.VpcConfig.SubnetIds.length).toEqual(16);
     });
 
     test('kubectl provider considers vpc subnet selection', () => {
@@ -2488,27 +2461,25 @@ describe('cluster', () => {
         },
       });
 
-      // the kubectl provider is inside a nested stack.
-      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             {
-              Ref: 'referencetoStackCluster17032651AClusterSecurityGroupId',
+              'Fn::GetAtt': ['Cluster192CD0375', 'ClusterSecurityGroupId'],
             },
           ],
           SubnetIds: [
             {
-              Ref: 'referencetoStackVpcPrivate1Subnet1Subnet6764A0F6Ref',
+              Ref: 'VpcPrivate1Subnet1SubnetC688B2B1',
             },
             {
-              Ref: 'referencetoStackVpcPrivate1Subnet2SubnetDFD49645Ref',
+              Ref: 'VpcPrivate1Subnet2SubnetA2AF15C7',
             },
             {
-              Ref: 'referencetoStackVpcPrivate2Subnet1Subnet586AD392Ref',
+              Ref: 'VpcPrivate2Subnet1SubnetE13E2E30',
             },
             {
-              Ref: 'referencetoStackVpcPrivate2Subnet2SubnetE42148C0Ref',
+              Ref: 'VpcPrivate2Subnet2Subnet158A38AB',
             },
           ],
         },
@@ -2569,8 +2540,8 @@ describe('cluster', () => {
     expect(resources[expectedKubernetesGetId].Properties).toEqual({
       ServiceToken: {
         'Fn::GetAtt': [
-          'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-          'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+          'awscdkawseksKubectlProviderframeworkonEvent0A650005',
+          'Arn',
         ],
       },
       ClusterName: {
@@ -2608,10 +2579,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    Template.fromStack(providerStack).hasResourceProperties('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: [
-        { Ref: 'AwsCliLayerF44AAF94' },
+        { Ref: 'awscdkawseksKubectlProviderAwsCliLayerF72FE066' },
         'arn:of:layer',
       ],
     });
@@ -2668,11 +2638,10 @@ describe('cluster', () => {
     });
 
     // THEN
-    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    Template.fromStack(providerStack).hasResourceProperties('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: [
         'arn:of:layer',
-        { Ref: 'KubectlLayer600207B5' },
+        { Ref: 'awscdkawseksKubectlProviderKubectlLayerA7F2FE55' },
       ],
     });
   });
@@ -2703,42 +2672,6 @@ describe('cluster', () => {
         Resources: ['secrets'],
       }],
     });
-  });
-
-  test('custom memory size for kubectl provider', () => {
-    // GIVEN
-    const { stack, vpc, app } = testFixture();
-
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      version: CLUSTER_VERSION,
-      kubectlMemory: cdk.Size.gibibytes(2),
-    });
-
-    // THEN
-    const casm = app.synth();
-    const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackawscdkawseksKubectlProvider7346F799.nested.template.json'), 'utf-8'));
-    expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(2048);
-  });
-
-  test('custom memory size for imported clusters', () => {
-    // GIVEN
-    const { stack, app } = testFixture();
-
-    // WHEN
-    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
-      clusterName: 'my-cluster',
-      kubectlRoleArn: 'arn:aws:iam::123456789012:role/MyRole',
-      kubectlMemory: cdk.Size.gibibytes(4),
-    });
-
-    cluster.addManifest('foo', { bar: 123 });
-
-    // THEN
-    const casm = app.synth();
-    const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackStackImported1CBA9C50KubectlProviderAA00BA49.nested.template.json'), 'utf-8'));
-    expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(4096);
   });
 
   test('create a cluster using custom kubernetes network config', () => {
