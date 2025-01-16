@@ -5,10 +5,10 @@ import type { ICloudAssemblySource } from '../';
 import { ContextAwareCloudAssembly, ContextAwareCloudAssemblyProps } from './context-aware-source';
 import { execInChildProcess } from './exec';
 import { assemblyFromDirectory, changeDir, guessExecutable, prepareDefaultEnvironment, withContext, withEnv } from './prepare-source';
+import { ToolkitServices } from '../../../toolkit/private';
 import { Context, ILock, RWLock } from '../../aws-cdk';
 import { ToolkitError } from '../../errors';
 import { debug } from '../../io/private';
-import { ToolkitServices } from '../../toolkit/private';
 
 /**
  * Configuration for creating a CLI from an AWS CDK App directory

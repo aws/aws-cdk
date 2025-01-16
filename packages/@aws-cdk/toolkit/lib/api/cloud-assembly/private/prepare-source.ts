@@ -6,9 +6,9 @@ import * as fs from 'fs-extra';
 import { lte } from 'semver';
 import type { AppSynthOptions } from './source-builder';
 import { prepareDefaultEnvironment as oldPrepare, prepareContext, spaceAvailableForContext, Settings, loadTree, some, splitBySize, versionNumber } from '../../../api/aws-cdk';
+import { ToolkitServices } from '../../../toolkit/private';
 import { ToolkitError } from '../../errors';
 import { ActionAwareIoHost, asLogger, error } from '../../io/private';
-import { ToolkitServices } from '../../toolkit/private';
 
 export { guessExecutable } from '../../../api/aws-cdk';
 

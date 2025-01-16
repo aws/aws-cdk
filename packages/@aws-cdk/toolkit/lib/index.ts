@@ -7,6 +7,3 @@ export * from './api/aws-auth';
 export * from './api/cloud-assembly';
 export * from './api/io';
 export * from './api/errors';
-
-// shared types
-export * from './api/cloud-assembly/stack-selector';

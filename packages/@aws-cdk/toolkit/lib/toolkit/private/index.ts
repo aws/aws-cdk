@@ -1,6 +1,6 @@
 
-import { SdkProvider } from '../../aws-cdk';
-import { ActionAwareIoHost } from '../../io/private';
+import { SdkProvider } from '../../api/aws-cdk';
+import { ActionAwareIoHost } from '../../api/io/private';
 
 /**
  * Helper struct to pass internal services around.
