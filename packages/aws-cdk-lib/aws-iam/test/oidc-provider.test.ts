@@ -34,6 +34,29 @@ describe('OpenIdConnectProvider resource', () => {
     expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
   });
 
+  it.each(
+    [true, false, undefined],
+  )('Check the status of RejectUnauthorized when IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS is set to different values', (flag) => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections': flag,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+      url: 'https://my-issuer',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
+      Url: 'https://my-issuer',
+      RejectUnauthorized: flag ?? false,
+    });
+  });
+
   test('static fromOpenIdConnectProviderArn can be used to import a provider', () => {
     // GIVEN
     const stack = new Stack();
