@@ -133,7 +133,7 @@ const getIssue = tasks.HttpInvoke.jsonata(this, 'Get Issue', {
   method: sfn.TaskInput.fromText('GET'),
   // Parse the API call result to object and set to the variables
   assign: {
-    hostname: $states.input.hostname,
+    hostname: '{% $states.input.hostname %}',
     issue: '{% $parse($states.result.ResponseBody) %}',
   },
 });
