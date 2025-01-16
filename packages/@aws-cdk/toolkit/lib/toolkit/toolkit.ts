@@ -183,11 +183,11 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   /**
    * Deploys the selected stacks into an AWS account
    */
-  public async deploy(cx: ICloudAssemblySource, options: DeployOptions): Promise<void> {
+  public async deploy(cx: ICloudAssemblySource, options: DeployOptions = {}): Promise<void> {
     const ioHost = withAction(this.ioHost, 'deploy');
     const timer = Timer.start();
     const assembly = await this.assemblyFromSource(cx);
-    const stackCollection = assembly.selectStacksV2(options.stacks);
+    const stackCollection = assembly.selectStacksV2(options.stacks ?? ALL_STACKS);
     await this.validateStacksMetadata(stackCollection, ioHost);
 
     const synthTime = timer.end();
@@ -423,9 +423,16 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
           await ioHost.notify(info(`${chalk.cyan(stack.id)}.${chalk.cyan(name)} = ${chalk.underline(chalk.cyan(value))}`));
         }
 
-        await ioHost.notify(info('Stack ARN:'));
-
-        await ioHost.notify(data(deployResult.stackArn));
+        const obscuredTemplate = obscureTemplate(stack.template);
+        await ioHost.notify(info(`Stack ARN:${deployResult.stackArn}`, 'CDK_TOOLKIT_I0002', {
+          stack: {
+            stackName: stack.stackName,
+            hierarchicalId: stack.hierarchicalId,
+            template: stack.template,
+            stringifiedJson: serializeStructure(obscuredTemplate, true),
+            stringifiedYaml: serializeStructure(obscuredTemplate, false),
+          },
+        }));
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
