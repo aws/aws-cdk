@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { GitHubFile, GitHubLabel, GitHubPr } from '../github';
-import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, CODECOV_PREFIX } from '../constants';
+import { CODE_BUILD_CONTEXT } from '../constants';
 import { PullRequestLinter } from '../lint';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 
@@ -1116,7 +1116,7 @@ legacyValidatePullRequestTarget(      await prLinter);
 function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingComments?: string[]): PullRequestLinter {
   const pullsClient = {
     get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {
-      return { data: { ...pr, base: { ref: 'main'}, head: { sha: 'ABC', ...pr?.head }} };
+      return { data: { ...pr, base: { ref: 'main', ...pr?.base }, head: { sha: 'ABC', ...pr?.head }} };
     },
 
     listFiles(_props: { _owner: string, _repo: string, _pull_number: number }) {
@@ -1164,18 +1164,6 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingCom
     },
   };
 
-  const checksClient = {
-    listForRef() {
-      return {
-        data: CODECOV_CHECKS.map(c => ({
-          name: `${CODECOV_PREFIX}${c}`,
-          conclusion: 'success',
-          completed_at: '1'
-        })),
-      }
-    }
-  }
-
   const searchClient = {
     issuesAndPullRequests() {},
   };
@@ -1190,7 +1178,6 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingCom
       issues: issuesClient as any,
       search: searchClient as any,
       repos: reposClient as any,
-      checks: checksClient as any,
       paginate: (method: any, args: any) => { return method(args).data; },
     } as any,
   });

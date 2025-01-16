@@ -14,14 +14,3 @@ export enum Exemption {
   REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
   CODECOV = "pr-linter/exempt-codecov",
 }
-
-export const CODECOV_PREFIX = 'codecov/';
-
-export const CODECOV_CHECKS = [
-  'patch',
-  'patch/packages/aws-cdk',
-  'patch/packages/aws-cdk-lib/core',
-  'project',
-  'project/packages/aws-cdk',
-  'project/packages/aws-cdk-lib/core'
-];

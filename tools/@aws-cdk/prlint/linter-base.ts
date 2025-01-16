@@ -96,16 +96,13 @@ export class PullRequestLinterBase {
       this.addLabel(label, pr);
     }
 
-    if (actions.deleteSingletonPrLinterComment) {
-      this.deletePRLinterComment();
-    }
-
     if (actions.dismissPreviousReview || actions.requestChanges) {
       if (actions.dismissPreviousReview && actions.requestChanges) {
         throw new Error(`It does not make sense to supply both dismissPreviousReview and requestChanges: ${JSON.stringify(actions)}`);
       }
 
       const existingReview = await this.findExistingPRLinterReview();
+      this.deletePRLinterComment();
 
       if (actions.dismissPreviousReview) {
         this.dismissPRLinterReview(existingReview);
@@ -284,11 +281,6 @@ export interface LinterActions {
   removeLabels?: string[];
 
   /**
-   * Delete the singleton PR linter comment
-   */
-  deleteSingletonPrLinterComment?: boolean;
-
-  /**
    * Post a "request changes" review
    */
   requestChanges?: {
@@ -306,7 +298,6 @@ export function mergeLinterActions(a: LinterActions, b: LinterActions): LinterAc
   return {
     addLabels: nonEmpty([...(a.addLabels ?? []), ...(b.addLabels ?? [])]),
     removeLabels: nonEmpty([...(a.removeLabels ?? []), ...(b.removeLabels ?? [])]),
-    deleteSingletonPrLinterComment: b.deleteSingletonPrLinterComment ?? a.deleteSingletonPrLinterComment,
     requestChanges: b.requestChanges ?? a.requestChanges,
     dismissPreviousReview: b.dismissPreviousReview ?? a.dismissPreviousReview,
   };

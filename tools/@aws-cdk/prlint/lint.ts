@@ -2,9 +2,9 @@ import { execSync } from 'child_process';
 import * as path from 'path';
 import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
-import { CheckRunConclusion, GitHubFile, GitHubPr, Review } from "./github";
-import { Test, TestResult, ValidationCollector } from './results';
-import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, CODECOV_PREFIX, Exemption } from './constants';
+import { GitHubFile, GitHubPr, Review } from "./github";
+import { TestResult, ValidationCollector } from './results';
+import { CODE_BUILD_CONTEXT, Exemption } from './constants';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 
@@ -36,23 +36,6 @@ export class PullRequestLinter extends PullRequestLinterBase {
       return await this.assessNeedsReview();
     }
     return {};
-  }
-
-  private async checkRunConclusion(sha: string, checkName: string): Promise<CheckRunConclusion> {
-    const response = await this.client.paginate(this.client.checks.listForRef, {
-      owner: this.prParams.owner,
-      repo: this.prParams.repo,
-      ref: sha,
-    });
-
-    // grab the last check run that was completed
-    const conclusion = response
-      .filter(c => c.name === checkName && c.completed_at != null)
-      .sort((c1, c2) => c2.completed_at!.localeCompare(c1.completed_at!))
-      .map(s => s.conclusion)[0];
-
-    console.log(`${checkName} conclusion: ${conclusion}`)
-    return conclusion;
   }
 
   /**
@@ -264,31 +247,6 @@ export class PullRequestLinter extends PullRequestLinterBase {
       ],
     });
 
-    if (pr.base.ref === 'main') {
-      // we don't enforce codecov on release branches
-      const codecovTests: Test[] = [];
-      for (const c of CODECOV_CHECKS) {
-        const checkName = `${CODECOV_PREFIX}${c}`;
-        const conclusion = await this.checkRunConclusion(sha, checkName);
-        codecovTests.push({
-          test: () => {
-            const result = new TestResult();
-            const message = conclusion == null ? `${checkName} has not reported a status yet` : `${checkName} job is in status: ${conclusion}`;
-            result.assessFailure(conclusion !== 'success', message);
-            return result;
-          }
-        })
-      }
-
-      validationCollector.validateRuleSet({
-        exemption: shouldExemptCodecov,
-        testRuleSet: codecovTests,
-      });
-    }
-
-    console.log("Deleting PR Linter Comment now");
-    ret.deleteSingletonPrLinterComment = true;
-
     ret = mergeLinterActions(ret, await this.validationToActions(validationCollector));
 
     // also assess whether the PR needs review or not
@@ -385,10 +343,6 @@ function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
   result.assessFailure(isFix(pr) && (!integTestChanged(files) || !integTestSnapshotChanged(files)),
     'Fixes must contain a change to an integration test file and the resulting snapshot.');
   return result;
-}
-
-function shouldExemptCodecov(pr: GitHubPr): boolean {
-  return hasLabel(pr, Exemption.CODECOV);
 }
 
 function shouldExemptReadme(pr: GitHubPr): boolean {
