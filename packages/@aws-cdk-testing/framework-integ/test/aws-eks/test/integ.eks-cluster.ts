@@ -12,6 +12,7 @@ import * as constructs from 'constructs';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
 
@@ -349,7 +350,11 @@ const supportedRegions = [
   'us-west-2',
 ];
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
+});
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
