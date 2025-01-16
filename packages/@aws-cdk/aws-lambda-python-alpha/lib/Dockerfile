@@ -17,6 +17,9 @@ ENV PIP_CACHE_DIR=/tmp/pip-cache
 # set the poetry cache
 ENV POETRY_CACHE_DIR=/tmp/poetry-cache
 
+# Create a non-root user and switch to it
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
 RUN \
 # create a new virtualenv for python to use
 # so that it isn't using root
@@ -35,5 +38,7 @@ RUN \
     pip install pipenv==2022.4.8 poetry==$POETRY_VERSION && \
 # Ensure no temporary files remain in the caches
     rm -rf /tmp/pip-cache/* /tmp/poetry-cache/*
+
+USER appuser    
 
 CMD [ "python" ]

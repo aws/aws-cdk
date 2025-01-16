@@ -21,6 +21,9 @@ RUN npm install --global typescript
 ARG ESBUILD_VERSION=0.21
 RUN npm install --global --unsafe-perm=true esbuild@$ESBUILD_VERSION
 
+# Create a non-root user and switch to it
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
 # Ensure all users can write to npm cache
 RUN mkdir /tmp/npm-cache && \
     chmod -R 777 /tmp/npm-cache && \
@@ -46,5 +49,7 @@ RUN /sbin/useradd -u 1000 user && chmod 711 /
 RUN mkdir /tmp/bun-cache && \
     chmod -R 777 /tmp/bun-cache && \
     echo -e "[install.cache]\ndir = \"/tmp/bun-cache\"\ndisable = true" >> /home/user/.bunfig.toml
+
+USER appuser
 
 CMD [ "esbuild" ]
