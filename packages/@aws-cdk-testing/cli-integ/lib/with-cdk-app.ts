@@ -4,6 +4,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { DescribeStacksCommand, Stack } from '@aws-sdk/client-cloudformation';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 import { outputFromStack, AwsClients } from './aws';
 import { TestContext } from './integ-test';
 import { findYarnPackages } from './package-sources/repo-source';
@@ -99,6 +101,11 @@ export function withCdkApp(
   return withSpecificCdkApp('app', block);
 }
 
+// will cause all aws environments to be allocated from the atmosphere service
+// instead of the static local region pool.
+const CDK_ATMOSPHERE_ENABLED = process.env.CDK_INTEG_ATMOSPHERE_ENABLED ? true : false;
+const CDK_ATMOSPHERE_ENDPOINT = process.env.CDK_INTEG_ATMOSPHERE_ENDPOINT;
+
 export function withCdkMigrateApp<A extends TestContext>(language: string, block: (context: TestFixture) => Promise<void>) {
   return async (context: A) => {
     const stackName = `cdk-migrate-${language}-integ-${context.randomString}`;
@@ -107,7 +114,28 @@ export function withCdkMigrateApp<A extends TestContext>(language: string, block
     context.output.write(` Stack name:   ${stackName}\n`);
     context.output.write(` Test directory: ${integTestDir}\n`);
 
-    const awsClients = await AwsClients.default(context.output);
+    let awsClients = undefined;
+
+    const atmosphere = new AtmosphereClient(CDK_ATMOSPHERE_ENDPOINT!);
+    const allocation = await atmosphere.acquire({ pool: 'pool-1', requester: context.name, timeoutMinutes: 15 });
+
+    if (CDK_ATMOSPHERE_ENABLED) {
+
+      if (!CDK_ATMOSPHERE_ENDPOINT) {
+        throw new Error('CDK_INTEG_ATMOSPHERE_ENABLED is set but CDK_INTEG_ATMOSPHERE_ENDPOINT is not');
+      }
+
+      awsClients = await AwsClients.forEnvironment(allocation.environment, {
+        accessKeyId: allocation.credentials.accessKeyId,
+        secretAccessKey: allocation.credentials.secretAccessKey,
+        sessionToken: allocation.credentials.sessionToken,
+        accountId: allocation.environment.account,
+      }, context.output);
+
+    } else {
+      awsClients = await AwsClients.default(context.output);
+    }
+
     fs.mkdirSync(integTestDir);
     const fixture = new TestFixture(
       integTestDir,
@@ -134,6 +162,7 @@ export function withCdkMigrateApp<A extends TestContext>(language: string, block
       await block(testFixture);
     } catch (e) {
       success = false;
+      await atmosphere.release(allocation.id, 'failure');
       throw e;
     } finally {
       if (process.env.INTEG_NO_CLEAN) {
@@ -159,7 +188,28 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
     context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
     context.output.write(` Test directory: ${integTestDir}\n`);
 
-    const awsClients = await AwsClients.default(context.output);
+    let awsClients = undefined;
+
+    const atmosphere = new AtmosphereClient(CDK_ATMOSPHERE_ENDPOINT!);
+    const allocation = await atmosphere.acquire({ pool: 'pool-1', requester: context.name, timeoutMinutes: 15 });
+
+    if (CDK_ATMOSPHERE_ENABLED) {
+
+      if (!CDK_ATMOSPHERE_ENDPOINT) {
+        throw new Error('CDK_INTEG_ATMOSPHERE_ENABLED is set but CDK_INTEG_ATMOSPHERE_ENDPOINT is not');
+      }
+
+      awsClients = await AwsClients.forEnvironment(allocation.environment, {
+        accessKeyId: allocation.credentials.accessKeyId,
+        secretAccessKey: allocation.credentials.secretAccessKey,
+        sessionToken: allocation.credentials.sessionToken,
+        accountId: allocation.environment.account,
+      }, context.output);
+
+    } else {
+      awsClients = await AwsClients.default(context.output);
+    }
+
     await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', 'cfn-include-app'), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
@@ -178,6 +228,7 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
       await block(fixture);
     } catch (e) {
       success = false;
+      await atmosphere.release(allocation.id, 'failure');
       throw e;
     } finally {
       if (process.env.INTEG_NO_CLEAN) {

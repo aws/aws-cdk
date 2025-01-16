@@ -31,7 +31,7 @@ export function withAws<A extends TestContext>(
       }
 
       const atmosphere = new AtmosphereClient(CDK_ATMOSPHERE_ENDPOINT);
-      const allocation = await atmosphere.acquire({ pool: 'pool-1', requester: `eli-test-run-${context.randomString}` });
+      const allocation = await atmosphere.acquire({ pool: 'pool-1', requester: context.name, timeoutMinutes: 15 });
       const aws = await AwsClients.forEnvironment(allocation.environment, {
         accessKeyId: allocation.credentials.accessKeyId,
         secretAccessKey: allocation.credentials.secretAccessKey,
@@ -42,9 +42,9 @@ export function withAws<A extends TestContext>(
       await sanityCheck(aws);
 
       try {
-        // const result = await block({ ...context, disableBootstrap, aws });
+        const result = await block({ ...context, disableBootstrap, aws });
         await atmosphere.release(allocation.id, 'success');
-        // return result;
+        return result;
       } catch (e: any) {
         await atmosphere.release(allocation.id, 'failure');
         throw e;
