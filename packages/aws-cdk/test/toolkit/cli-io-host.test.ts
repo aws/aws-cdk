@@ -4,7 +4,7 @@ import { CliIoHost, IoMessage } from '../../lib/toolkit/cli-io-host';
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
   let mockStderr: jest.Mock;
-  let defaultMessage: IoMessage;
+  let defaultMessage: IoMessage<unknown>;
 
   beforeEach(() => {
     mockStdout = jest.fn();
@@ -13,7 +13,7 @@ describe('CliIoHost', () => {
     // Reset singleton state
     CliIoHost.isTTY = process.stdout.isTTY ?? false;
     CliIoHost.ci = false;
-    CliIoHost.currentAction = 'none';
+    CliIoHost.currentAction = 'synth';
 
     defaultMessage = {
       time: new Date('2024-01-01T12:00:00'),
@@ -237,6 +237,23 @@ describe('CliIoHost', () => {
         message: 'test message',
         forceStdout: true,
       })).rejects.toThrow('Write failed');
+    });
+  });
+
+  describe('requestResponse', () => {
+    test('logs messages and returns default', async () => {
+      CliIoHost.isTTY = true;
+      const response = await CliIoHost.getIoHost().requestResponse({
+        time: new Date(),
+        level: 'info',
+        action: 'synth',
+        code: 'CDK_TOOLKIT_I0001',
+        message: 'test message',
+        defaultResponse: 'default response',
+      });
+
+      expect(mockStderr).toHaveBeenCalledWith(chalk.white('test message') + '\n');
+      expect(response).toBe('default response');
     });
   });
 });
