@@ -1,25 +1,24 @@
-
 import * as path from 'node:path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
-import { AssetBuildTime, buildParameterMap, DeployOptions, removePublishedAssets, RequireApproval } from './actions/deploy';
-import { DestroyOptions } from './actions/destroy';
-import { DiffOptions } from './actions/diff';
-import { ListOptions } from './actions/list';
-import { RollbackOptions } from './actions/rollback';
-import { SynthOptions } from './actions/synth';
-import { patternsArrayForWatch, WatchOptions } from './actions/watch';
-import { SdkOptions } from './api/aws-auth';
-import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode } from './api/aws-cdk';
-import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource } from './api/cloud-assembly';
-import { CloudAssemblySourceBuilder } from './api/cloud-assembly/private/source-builder';
-import { StackSelectionStrategy } from './api/cloud-assembly/stack-selector';
-import { ToolkitError } from './api/errors';
-import { IIoHost, IoMessageCode, IoMessageLevel } from './api/io';
-import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost, debug } from './api/io/private';
-import { ToolkitServices } from './api/toolkit/private';
+import { ToolkitServices } from './private';
+import { AssetBuildTime, DeployOptions, RequireApproval } from '../actions/deploy';
+import { buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
+import { DestroyOptions } from '../actions/destroy';
+import { DiffOptions } from '../actions/diff';
+import { ListOptions } from '../actions/list';
+import { RollbackOptions } from '../actions/rollback';
+import { SynthOptions } from '../actions/synth';
+import { patternsArrayForWatch, WatchOptions } from '../actions/watch';
+import { SdkOptions } from '../api/aws-auth';
+import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode } from '../api/aws-cdk';
+import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource, StackSelectionStrategy } from '../api/cloud-assembly';
+import { CloudAssemblySourceBuilder } from '../api/cloud-assembly/private/source-builder';
+import { ToolkitError } from '../api/errors';
+import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
+import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost, debug } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
