@@ -203,10 +203,11 @@ export class PullRequestLinter extends PullRequestLinterBase {
    * Performs validations and communicates results via pull request comments, upon failure.
    * This also dismisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
    */
-  public async validatePullRequestTarget(sha: string): Promise<LinterActions> {
+  public async validatePullRequestTarget(): Promise<LinterActions> {
     let ret: LinterActions = {};
 
     const number = this.props.number;
+    const sha = (await this.pr()).head.sha;
 
     console.log(`⌛  Fetching PR number ${number}`);
     const pr = await this.pr();
