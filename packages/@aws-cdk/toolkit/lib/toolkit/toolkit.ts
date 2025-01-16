@@ -425,7 +425,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
 
         await ioHost.notify(info('Stack ARN:'));
 
-        await ioHost.notify(data(deployResult.stackArn));
+        await ioHost.notify(info(deployResult.stackArn));
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
