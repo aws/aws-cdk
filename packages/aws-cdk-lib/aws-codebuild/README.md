@@ -329,8 +329,15 @@ is available for specifying Lambda-compatible images.
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
 `WindowsBuildImage.WINDOWS_BASE_2_0`, `LinuxBuildImage.STANDARD_2_0`,
-`LinuxBuildImage.AMAZON_LINUX_2_5`, `MacBuildImage.BASE_14`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
+`LinuxBuildImage.AMAZON_LINUX_2_5`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
 `LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18` or `LinuxArmLambdaBuildImage.AMAZON_LINUX_2_NODE_18`.
+
+For non-containerized environment types:
+
+* `LINUX_EC2`: `LinuxBuildImage.AMAZON_LINUX_2023_1_0_AMI`
+* `ARM_EC2`: `LinuxArmBuildImage.AMAZON_LINUX_2023_1_0_AMI`
+* `WINDOWS_EC2`: `WindowsBuildImage.WIN_SERVER_2022_1_0_AMI`
+* `MAC_ARM`: `MacBuildImage.BASE_14`
 
 Alternatively, you can specify a custom image using one of the static methods on
 `LinuxBuildImage`:
