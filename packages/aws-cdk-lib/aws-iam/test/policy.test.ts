@@ -1,4 +1,6 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
+import * as lambda from '../../aws-lambda';
+import * as s3 from '../../aws-s3';
 import { App, CfnResource, Resource, Stack } from '../../core';
 import { AddToPrincipalPolicyResult, AnyPrincipal, CfnPolicy, Grant, Group, IResourceWithPolicy, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
@@ -567,9 +569,9 @@ describe('IAM policy', () => {
   test('Policies can be granted principal permissions', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
+      users: [new User(stack, 'User')],
     });
     Grant.addToPrincipal({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'] });
-    pol.attachToUser(new User(stack, 'User'));
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyPolicyName',
@@ -582,25 +584,54 @@ describe('IAM policy', () => {
     });
   });
 
-  test('addPrincipalOrResource() correctly grants Policies permissions', () => {
+  test('Policies can be granted on s3.Bucket', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
+      users: [new User(stack, 'User')],
     });
-    pol.attachToUser(new User(stack, 'User'));
 
-    class DummyResource extends Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    };
-    const resource = new DummyResource(stack, 'Dummy');
-    Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resource, resourceArns: ['*'] });
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucketname');
+    bucket.grantRead(pol);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyPolicyName',
       PolicyDocument: {
         Statement: [
-          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+          {
+            Action: Match.anyValue(),
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::mybucketname']] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::mybucketname/*']] },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('Policies can be granted on lambda.Function', () => {
+    const pol = new Policy(stack, 'Policy', {
+      policyName: 'MyPolicyName',
+      users: [new User(stack, 'User')],
+    });
+
+    const func = lambda.Function.fromFunctionName(stack, 'Function', 'myfunctionname');
+    func.grantInvoke(pol);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: 'MyPolicyName',
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':lambda:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':function:myfunctionname']] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':lambda:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':function:myfunctionname:*']] },
+            ],
+          },
         ],
         Version: '2012-10-17',
       },
@@ -610,35 +641,31 @@ describe('IAM policy', () => {
   test('Policies cannot be granted principal permissions across accounts', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
+      users: [new User(stack, 'User')],
     });
 
-    class DummyResource extends Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    };
-    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
+    const stack2 = new Stack(stack, 'CrossAccountStack', { env: { account: '5678' } });
+    const bucket = new s3.Bucket(stack2, 'Bucket');
 
-    expect(() => {
-      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a Policy 'MyStack\/Policy'/);
+    expect(() => bucket.grantRead(pol))
+      .toThrow("Cannot use a Policy 'MyStack/Policy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
   });
 
   test('Policies cannot be granted resource permissions', () => {
     const pol = new Policy(stack, 'Policy', {
       policyName: 'MyPolicyName',
+      users: [new User(stack, 'User')],
     });
 
-    class DummyResource extends Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    };
-    const resource = new DummyResource(stack, 'Dummy');
+    const bucket = new s3.Bucket(stack, 'Bucket');
 
     expect(() => {
-      Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: pol, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a Policy 'MyStack\/Policy'/);
+      bucket.addToResourcePolicy(new PolicyStatement({
+        principals: [pol],
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+    }).toThrow("Cannot use a Policy 'MyStack/Policy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
   });
 });
 
