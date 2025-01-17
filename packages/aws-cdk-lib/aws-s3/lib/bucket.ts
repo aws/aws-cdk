@@ -4,7 +4,7 @@ import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule } from './rule';
+import { LifecycleRule, StorageClass } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
@@ -94,6 +94,11 @@ export interface IBucket extends IResource {
    * first call to addToResourcePolicy(s).
    */
   policy?: BucketPolicy;
+
+  /**
+   * Role used to set up permissions on this bucket for replication
+   */
+  replicationRoleArn?: string;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -384,6 +389,16 @@ export interface IBucket extends IResource {
    * - Object Tags Deleted
    */
   enableEventBridgeNotification(): void;
+
+  /**
+   * Function to add required permissions to the destination bucket for cross account
+   * replication. These permissions will be added as a resource based policy on the bucket.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   * If owner of the bucket needs to be overriden, set accessControlTransition to true and provide
+   * account ID in which destination bucket is hosted. For more information on accessControlTransition
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   */
+  addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string): void;
 }
 
 /**
@@ -521,6 +536,11 @@ export abstract class BucketBase extends Resource implements IBucket {
    * first call to addToResourcePolicy(s).
    */
   public abstract policy?: BucketPolicy;
+
+  /**
+   * Role used to set up permissions on this bucket for replication
+   */
+  public abstract replicationRoleArn?: string;
 
   /**
    * Indicates if a bucket resource policy should automatically created upon
@@ -938,6 +958,42 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public enableEventBridgeNotification() {
     this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+  }
+
+  /**
+   * Function to add required permissions to the destination bucket for cross account
+   * replication. These permissions will be added as a resource based policy on the bucket
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   * If owner of the bucket needs to be overriden, set accessControlTransition to true and provide
+   * account ID in which destination bucket is hosted. For more information on accessControlTransition
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   */
+  public addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string) {
+    const results: boolean[] = [];
+    results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetBucketVersioning', 's3:PutBucketVersioning'],
+      resources: [this.bucketArn],
+      principals: [new iam.ArnPrincipal(roleArn)],
+    })).statementAdded);
+    results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['s3:ReplicateObject', 's3:ReplicateDelete'],
+      resources: [this.arnForObjects('*')],
+      principals: [new iam.ArnPrincipal(roleArn)],
+    })).statementAdded);
+    if (accessControlTransition) {
+      if (!account) {
+        throw new Error('account must be specified to override ownership access control transition');
+      }
+      results.push(this.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:ObjectOwnerOverrideToBucketOwner'],
+        resources: [this.arnForObjects('*')],
+        principals: [new iam.AccountPrincipal(account)],
+      })).statementAdded);
+    }
+
+    if (results.includes(false)) {
+      Annotations.of(this).addInfo(`Cross-account S3 replication for a referenced destination bucket is set up. In the destination bucket's bucket policy, please grant access permissions from ${this.stack.resolve(roleArn)}.`);
+    }
   }
 
   private get writeActions(): string[] {
@@ -1404,6 +1460,158 @@ export abstract class TargetObjectKeyFormat {
 }
 
 /**
+ * The replication time value used for S3 Replication Time Control (S3 RTC).
+ */
+export class ReplicationTimeValue {
+  /**
+   * Fifteen minutes.
+   */
+  public static readonly FIFTEEN_MINUTES = new ReplicationTimeValue(15);
+
+  /**
+   * @param minutes the time in minutes
+   */
+  private constructor(public readonly minutes: number) {};
+}
+
+/**
+ * Specifies which Amazon S3 objects to replicate and where to store the replicas.
+ */
+export interface ReplicationRule {
+  /**
+   * The destination bucket for the replicated objects.
+   *
+   * The destination can be either in the same AWS account or a cross account.
+   *
+   * If you want to configure cross-account replication,
+   * the destination bucket must have a policy that allows the source bucket to replicate objects to it.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
+   */
+  readonly destination: IBucket;
+
+  /**
+   * Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+   *
+   * This can only be specified if the source bucket and the destination bucket are not in the same AWS account.
+   *
+   * @default - The replicas are owned by same AWS account that owns the source object
+   */
+  readonly accessControlTransition?: boolean;
+
+  /**
+   * Specifying S3 Replication Time Control (S3 RTC),
+   * including whether S3 RTC is enabled and the time when all objects and operations on objects must be replicated.
+   *
+   * @default - S3 Replication Time Control is not enabled
+   */
+  readonly replicationTimeControl?: ReplicationTimeValue;
+
+  /**
+   * A container specifying replication metrics-related settings enabling replication metrics and events.
+   *
+   * When a value is set, metrics will be output to indicate whether the replication took longer than the specified time.
+   *
+   * @default - Replication metrics are not enabled
+   */
+  readonly metrics?: ReplicationTimeValue;
+
+  /**
+   * The customer managed AWS KMS key stored in AWS Key Management Service (KMS) for the destination bucket.
+   * Amazon S3 uses this key to encrypt replica objects.
+   *
+   * Amazon S3 only supports symmetric encryption KMS keys.
+   *
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html
+   *
+   * @default - Amazon S3 uses the AWS managed KMS key for encryption
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The storage class to use when replicating objects, such as S3 Standard or reduced redundancy.
+   *
+   * @default - The storage class of the source object
+   */
+  readonly storageClass?: StorageClass;
+
+  /**
+   * Specifies whether Amazon S3 replicates objects created with server-side encryption using an AWS KMS key stored in AWS Key Management Service.
+   *
+   * @default false
+   */
+  readonly sseKmsEncryptedObjects?: boolean;
+
+  /**
+   * Specifies whether Amazon S3 replicates modifications on replicas.
+   *
+   * @default false
+   */
+  readonly replicaModifications?: boolean;
+
+  /**
+   * The priority indicates which rule has precedence whenever two or more replication rules conflict.
+   *
+   * Amazon S3 will attempt to replicate objects according to all replication rules.
+   * However, if there are two or more rules with the same destination bucket,
+   * then objects will be replicated according to the rule with the highest priority.
+   *
+   * The higher the number, the higher the priority.
+   *
+   * It is essential to specify priority explicitly when the replication configuration has multiple rules.
+   *
+   * @default 0
+   */
+  readonly priority?: number;
+
+  /**
+   * Specifies whether Amazon S3 replicates delete markers.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/delete-marker-replication.html
+   *
+   * @default - delete markers in source bucket is not replicated to destination bucket
+   */
+  readonly deleteMarkerReplication?: boolean;
+
+  /**
+   * A unique identifier for the rule.
+   *
+   * The maximum value is 255 characters.
+   *
+   * @default - auto generated random ID
+   */
+  readonly id?: string;
+
+  /**
+   * A filter that identifies the subset of objects to which the replication rule applies.
+   *
+   * @default - applies to all objects
+   */
+  readonly filter?: Filter;
+}
+
+/**
+ * A filter that identifies the subset of objects to which the replication rule applies.
+ */
+export interface Filter {
+  /**
+   * An object key name prefix that identifies the object or objects to which the rule applies.
+   *
+   * @default - applies to all objects
+   */
+  readonly prefix?: string;
+
+  /**
+   * The tag array used for tag filters.
+   *
+   * The rule applies only to objects that have the tag in this set.
+   *
+   * @default - applies to all objects
+   */
+  readonly tags?: Tag[];
+}
+
+/**
  * The transition default minimum object size for lifecycle
  */
 export enum TransitionDefaultMinimumObjectSize {
@@ -1712,6 +1920,13 @@ export interface BucketProps {
   * @default No minimum TLS version is enforced.
   */
   readonly minimumTLSVersion?: number;
+
+  /**
+   * A container for one or more replication rules.
+   *
+   * @default - No replication
+   */
+  readonly replicationRules?: ReplicationRule[];
 }
 
 /**
@@ -1801,6 +2016,7 @@ export class Bucket extends BucketBase {
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;
+      public replicationRoleArn?: string = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
       protected notificationsHandlerRole = attrs.notificationsHandlerRole;
@@ -1865,6 +2081,7 @@ export class Bucket extends BucketBase {
       public readonly encryptionKey = encryptionKey;
       public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined;
+      public replicationRoleArn = undefined;
       protected autoCreatePolicy = true;
       protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
         (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
@@ -1949,6 +2166,8 @@ export class Bucket extends BucketBase {
   public readonly encryptionKey?: kms.IKey;
   public readonly isWebsite?: boolean;
   public policy?: BucketPolicy;
+
+  public replicationRoleArn?: string;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
   private accessControl?: BucketAccessControl;
@@ -1969,6 +2188,7 @@ export class Bucket extends BucketBase {
     this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+    this.encryptionKey = encryptionKey;
 
     Bucket.validateBucketName(this.physicalName);
 
@@ -1976,7 +2196,8 @@ export class Bucket extends BucketBase {
     this.isWebsite = (websiteConfiguration !== undefined);
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
-
+    const replicationConfiguration = this.renderReplicationConfiguration(props);
+    this.replicationRoleArn = replicationConfiguration?.role;
     this.objectOwnership = props.objectOwnership;
     this.transitionDefaultMinimumObjectSize = props.transitionDefaultMinimumObjectSize;
     const resource = new CfnBucket(this, 'Resource', {
@@ -1996,12 +2217,12 @@ export class Bucket extends BucketBase {
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
+      replicationConfiguration,
     });
     this._resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.encryptionKey = encryptionKey;
     this.eventBridgeEnabled = props.eventBridgeEnabled;
 
     this.bucketName = this.getResourceNameAttribute(resource.ref);
@@ -2531,6 +2752,139 @@ export class Bucket extends BucketBase {
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
       routingRules,
+    };
+  }
+
+  private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
+
+    if (!props.replicationRules || props.replicationRules.length === 0) {
+      return undefined;
+    }
+
+    if (!props.versioned) {
+      throw new Error('Replication rules require versioning to be enabled on the bucket');
+    }
+    if (props.replicationRules.length > 1 && props.replicationRules.some(rule => rule.priority === undefined)) {
+      throw new Error('\'priority\' must be specified for all replication rules when there are multiple rules');
+    }
+    props.replicationRules.forEach(rule => {
+      if (rule.replicationTimeControl && !rule.metrics) {
+        throw new Error('\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.');
+      }
+      if (rule.deleteMarkerReplication && rule.filter?.tags) {
+        throw new Error('tag filter cannot be specified when \'deleteMarkerReplication\' is enabled.');
+      }
+    });
+
+    const destinationBuckets = props.replicationRules.map(rule => rule.destination);
+    const kmsKeys = props.replicationRules.map(rule => rule.kmsKey).filter(kmsKey => kmsKey !== undefined) as kms.IKey[];
+
+    const replicationRole = new iam.Role(this, 'ReplicationRole', {
+      assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
+      // To avoid the error where the replication role cannot be used during cross-account replication,
+      // it is necessary to set the `roleName`.
+      roleName: 'CDKReplicationRole',
+    });
+
+    // add permissions to the role
+    // @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
+    replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['s3:GetReplicationConfiguration', 's3:ListBucket'],
+      resources: [Lazy.string({ produce: () => this.bucketArn })],
+      effect: iam.Effect.ALLOW,
+    }));
+    replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObjectVersionForReplication', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'],
+      resources: [Lazy.string({ produce: () => this.arnForObjects('*') })],
+      effect: iam.Effect.ALLOW,
+    }));
+    if (destinationBuckets.length > 0) {
+      replicationRole.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags', 's3:ObjectOwnerOverrideToBucketOwner'],
+        resources: destinationBuckets.map(bucket => bucket.arnForObjects('*')),
+        effect: iam.Effect.ALLOW,
+      }));
+    }
+
+    kmsKeys.forEach(kmsKey => {
+      kmsKey.grantEncrypt(replicationRole);
+    });
+
+    // If KMS key encryption is enabled on the source bucket, configure the decrypt permissions.
+    this.encryptionKey?.grantDecrypt(replicationRole);
+
+    return {
+      role: replicationRole.roleArn,
+      rules: props.replicationRules.map((rule) => {
+        const sourceSelectionCriteria = (rule.replicaModifications !== undefined || rule.sseKmsEncryptedObjects !== undefined) ? {
+          replicaModifications: rule.replicaModifications !== undefined ? {
+            status: rule.replicaModifications ? 'Enabled' : 'Disabled',
+          } : undefined,
+          sseKmsEncryptedObjects: rule.sseKmsEncryptedObjects !== undefined ? {
+            status: rule.sseKmsEncryptedObjects ? 'Enabled' : 'Disabled',
+          } : undefined,
+        } : undefined;
+
+        // Whether to configure filter settings by And property.
+        const isAndFilter = rule.filter?.tags && rule.filter.tags.length > 0;
+        // To avoid deploy error when there are multiple replication rules with undefined prefix,
+        // CDK set the prefix to an empty string if it is undefined.
+        const prefix = rule.filter?.prefix ?? '';
+        const filter = isAndFilter ? {
+          and: {
+            prefix,
+            tagFilters: rule.filter?.tags,
+          },
+        } : {
+          prefix,
+        };
+
+        const sourceAccount = Stack.of(this).account;
+        const destinationAccount = rule.destination.env.account;
+        const isCrossAccount = sourceAccount !== destinationAccount;
+
+        if (isCrossAccount) {
+          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on source bucket using method addReplicationPolicy() ');
+        } else if (rule.accessControlTransition) {
+          throw new Error('accessControlTranslation is only supported for cross-account replication');
+        }
+
+        return {
+          id: rule.id,
+          priority: rule.priority,
+          status: 'Enabled',
+          destination: {
+            bucket: rule.destination.bucketArn,
+            account: isCrossAccount ? destinationAccount : undefined,
+            storageClass: rule.storageClass?.toString(),
+            accessControlTranslation: rule.accessControlTransition ? {
+              owner: 'Destination',
+            } : undefined,
+            encryptionConfiguration: rule.kmsKey ? {
+              replicaKmsKeyId: rule.kmsKey.keyArn,
+            } : undefined,
+            replicationTime: rule.replicationTimeControl !== undefined ? {
+              status: 'Enabled',
+              time: {
+                minutes: rule.replicationTimeControl.minutes,
+              },
+            } : undefined,
+            metrics: rule.metrics !== undefined ? {
+              status: 'Enabled',
+              eventThreshold: {
+                minutes: rule.metrics.minutes,
+              },
+            } : undefined,
+          },
+          filter,
+          // To avoid deploy error when there are multiple replication rules with undefined deleteMarkerReplication,
+          // CDK explicitly set the deleteMarkerReplication if it is undefined.
+          deleteMarkerReplication: {
+            status: rule.deleteMarkerReplication ? 'Enabled' : 'Disabled',
+          },
+          sourceSelectionCriteria,
+        };
+      }),
     };
   }
 
