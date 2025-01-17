@@ -5,8 +5,6 @@ import { Toolkit } from '../../lib/toolkit';
 import { TestIoHost } from '../_helpers';
 
 const ioHost = new TestIoHost();
-const notifySpy = jest.spyOn(ioHost, 'notify');
-const requestResponseSpy = jest.spyOn(ioHost, 'requestResponse');
 const cdk = new Toolkit({ ioHost });
 
 jest.mock('../../lib/api/aws-cdk', () => {
@@ -38,8 +36,7 @@ const cxFromBuilder = async () => {
 };
 
 beforeEach(() => {
-  requestResponseSpy.mockClear();
-  notifySpy.mockClear();
+  ioHost.notifySpy.mockClear();
   jest.clearAllMocks();
 });
 
@@ -50,7 +47,7 @@ describe('deploy', () => {
     await cdk.deploy(cx);
 
     // THEN
-    expect(notifySpy).toHaveBeenCalledWith(expect.objectContaining({
+    expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'deploy',
       level: 'info',
       message: expect.stringContaining('Deployment time:'),
@@ -73,7 +70,7 @@ describe('deploy', () => {
     });
 
     // THEN
-    expect(requestResponseSpy).toHaveBeenCalledWith(expect.objectContaining({
+    expect(ioHost.requestSpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'deploy',
       level: 'info',
       code: 'CDK_TOOLKIT_I5060',
@@ -97,7 +94,7 @@ describe('deploy', () => {
     });
 
     // THEN
-    expect(requestResponseSpy).not.toHaveBeenCalledWith(expect.objectContaining({
+    expect(ioHost.requestSpy).not.toHaveBeenCalledWith(expect.objectContaining({
       action: 'deploy',
       level: 'info',
       code: 'CDK_TOOLKIT_I5060',
