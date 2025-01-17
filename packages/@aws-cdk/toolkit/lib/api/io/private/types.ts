@@ -1,4 +1,5 @@
-import { IIoHost, IoMessage, IoRequest } from '../io-host';
+import { IIoHost } from '../io-host';
+import { IoMessage, IoRequest } from '../io-message';
 
 export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 export type SimplifiedMessage<T> = Pick<IoMessage<T>, 'level' | 'code' | 'message' | 'data'>;
