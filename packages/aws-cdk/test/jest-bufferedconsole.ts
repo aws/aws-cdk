@@ -26,11 +26,15 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
     // doesn't work properly.
     (this as JestEnvironment<unknown>).handleTestEvent = (async (event, _state) => {
       if (event.name === 'test_done' && event.test.errors.length > 0 && this.log.length > 0) {
+        this.stopCapture();
+
         this.originalConsole.log(`[Console output] ${fullTestName(event.test)}\n`);
         for (const item of this.log) {
           this.originalConsole[item.type]('    ' + item.message);
         }
         this.originalConsole.log('\n');
+
+        this.startCapture();
       }
 
       if (event.name === 'test_done') {
@@ -43,6 +47,15 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
     await super.setup();
 
     this.log = [];
+    this.startCapture();
+  }
+
+  async teardown() {
+    this.stopCapture();
+    await super.teardown();
+  }
+
+  private startCapture() {
     this.originalConsole = console;
     this.originalStdoutWrite = process.stdout.write;
     this.originalStderrWrite = process.stderr.write;
@@ -66,6 +79,7 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
       }
     } as any;
     process.stderr.write = function (chunk: Buffer | string, enccb?: BufferEncoding | ((error?: Error | null) => void)): void {
+      self.originalStderrWrite(chunk);
       const encoding = typeof enccb === 'string' ? enccb : 'utf-8';
       const message = Buffer.isBuffer(chunk) ? chunk.toString(encoding) : chunk;
       self.log.push({ type: 'error', message: message.replace(/\n$/, '') });
@@ -75,11 +89,10 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
     } as any;
   }
 
-  async teardown() {
+  private stopCapture() {
     this.global.console = this.originalConsole;
     process.stdout.write = this.originalStdoutWrite;
     process.stderr.write = this.originalStderrWrite;
-    await super.teardown();
   }
 }
 
