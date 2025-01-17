@@ -12,6 +12,7 @@ queue_rules:
       - -closed
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
@@ -30,6 +31,7 @@ queue_rules:
       - -closed
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
@@ -61,6 +63,7 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
@@ -81,6 +84,7 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=2"
       - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
@@ -101,6 +105,7 @@ pull_request_rules:
       - author!=dependabot-preview[bot]
       - "#approved-reviews-by>=1"
       - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
@@ -140,6 +145,7 @@ pull_request_rules:
       - -closed
       - author~=dependabot
       - "#approved-reviews-by>=1"
+      # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
