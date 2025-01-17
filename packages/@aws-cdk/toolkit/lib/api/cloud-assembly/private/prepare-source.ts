@@ -169,6 +169,7 @@ export async function assemblyFromDirectory(assemblyDir: string, ioHost: ActionA
     throw err;
   }
 }
+
 function synthOptsDefaults(synthOpts: AppSynthOptions = {}): Settings {
   return new Settings({
     debug: false,
@@ -179,4 +180,3 @@ function synthOptsDefaults(synthOpts: AppSynthOptions = {}): Settings {
     ...synthOpts,
   }, true);
 }
-
