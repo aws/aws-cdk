@@ -36,4 +36,7 @@ RUN \
 # Ensure no temporary files remain in the caches
     rm -rf /tmp/pip-cache/* /tmp/poetry-cache/*
 
+# Switch to a non-root user
+USER nobody    
+
 CMD [ "python" ]
