@@ -1092,10 +1092,10 @@ export class BlockPublicAccess {
   public restrictPublicBuckets: boolean | undefined;
 
   constructor(options: BlockPublicAccessOptions) {
-    this.blockPublicAcls = options.blockPublicAcls;
-    this.blockPublicPolicy = options.blockPublicPolicy;
-    this.ignorePublicAcls = options.ignorePublicAcls;
-    this.restrictPublicBuckets = options.restrictPublicBuckets;
+    this.blockPublicAcls = options.blockPublicAcls ?? true;
+    this.blockPublicPolicy = options.blockPublicPolicy ?? true;
+    this.ignorePublicAcls = options.ignorePublicAcls ?? true;
+    this.restrictPublicBuckets = options.restrictPublicBuckets ?? true;
   }
 }
 
