@@ -27,7 +27,8 @@ lib/**/*.wasm
 lib/**/*.yaml
 
 # Include test resources
-!test/_fixtures/**/*.js
+!test/_fixtures/**/app.js
+!test/_fixtures/**/cdk.out
 
 # Include config files
 !.eslintrc.js
