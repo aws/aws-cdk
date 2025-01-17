@@ -24,16 +24,15 @@ jest.mock('../lib/bundling', () => {
           throw new Error('unexpected asset hash type');
         })();
 
-        return {
-          isInline: false,
-          bind: () => ({
+        return new class extends lambda.Code {
+          public readonly isInline: boolean = false;
+          public bind = () => ({
             s3Location: {
               bucketName: 'mock-bucket-name',
               objectKey: mockObjectKey,
             },
-          }),
-          bindToResource: () => { return; },
-        };
+          });
+        }();
       }),
       hasDependencies: jest.fn().mockReturnValue(false),
     },
