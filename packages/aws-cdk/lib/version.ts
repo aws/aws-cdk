@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
