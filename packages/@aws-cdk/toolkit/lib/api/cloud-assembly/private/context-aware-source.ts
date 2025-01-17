@@ -55,8 +55,8 @@ export class ContextAwareCloudAssembly implements ICloudAssemblySource {
    * Produce a Cloud Assembly, i.e. a set of stacks
    */
   public async produce(): Promise<cxapi.CloudAssembly> {
-    // We may need to run the cloud executable multiple times in order to satisfy all missing context
-    // (When the executable runs, it will tell us about context it wants to use
+    // We may need to run the cloud assembly source multiple times in order to satisfy all missing context
+    // (When the source producer runs, it will tell us about context it wants to use
     // but it missing. We'll then look up the context and run the executable again, and
     // again, until it doesn't complain anymore or we've stopped making progress).
     let previouslyMissingKeys: Set<string> | undefined;
@@ -82,7 +82,9 @@ export class ContextAwareCloudAssembly implements ICloudAssemblySource {
         previouslyMissingKeys = missingKeys;
 
         if (tryLookup) {
-          await this.ioHost.notify(debug('Some context information is missing. Fetching...'));
+          await this.ioHost.notify(debug('Some context information is missing. Fetching...', 'CDK_ASSEMBLY_I0241', {
+            missingKeys: Array.from(missingKeys),
+          }));
           await contextproviders.provideContextValues(
             assembly.manifest.missing,
             this.context,
@@ -90,6 +92,10 @@ export class ContextAwareCloudAssembly implements ICloudAssemblySource {
           );
 
           // Cache the new context to disk
+          await this.ioHost.notify(debug(`Writing updated context to ${this.contextFile}...`, 'CDK_ASSEMBLY_I0042', {
+            contextFile: this.contextFile,
+            context: this.context.all,
+          }));
           await this.context.save(this.contextFile);
 
           // Execute again
