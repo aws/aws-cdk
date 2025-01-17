@@ -9,6 +9,7 @@ dist
 coverage
 .nyc_output
 *.tgz
+docs
 
 # Ignore config files
 .eslintrc.js
