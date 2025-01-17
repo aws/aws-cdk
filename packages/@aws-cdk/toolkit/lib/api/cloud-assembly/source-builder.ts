@@ -19,6 +19,8 @@ export type AssemblyBuilder = (props: AppProps) => Promise<cxapi.CloudAssembly>;
  */
 export interface CdkAppSourceProps {
   /**
+   * Execute the application in this working directory.
+   *
    * @default - current working directory
    */
   readonly workingDirectory?: string;
@@ -38,6 +40,17 @@ export interface CdkAppSourceProps {
    * @default true
    */
   readonly lookups?: boolean;
+
+  /**
+   * Context values for the application.
+   *
+   * Context can be read in the app from any construct using `node.getContext(key)`.
+   *
+   * @default - no context
+   */
+  readonly context?: {
+    [key: string]: any;
+  };
 
   /**
    * Options that are passed through the context to a CDK app on synth

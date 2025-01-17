@@ -9,7 +9,7 @@ function fixturePath(...parts: string[]): string {
   return path.normalize(path.join(__dirname, '..', '_fixtures', ...parts));
 }
 
-export async function appFixture(toolkit: Toolkit, name: string) {
+export async function appFixture(toolkit: Toolkit, name: string, context?: { [key: string]: any }) {
   const appPath = fixturePath(name, 'app.js');
   if (!fs.existsSync(appPath)) {
     throw new Error(`App Fixture ${name} does not exist in ${appPath}`);
@@ -17,14 +17,16 @@ export async function appFixture(toolkit: Toolkit, name: string) {
   const app = `cat ${appPath} | node --input-type=module`;
   return toolkit.fromCdkApp(app, {
     outdir: determineOutputDirectory(),
+    context,
   });
 }
 
-export function builderFixture(toolkit: Toolkit, name: string) {
+export function builderFixture(toolkit: Toolkit, name: string, context?: { [key: string]: any }) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const builder = require(path.join(__dirname, '..', '_fixtures', name)).default;
   return toolkit.fromAssemblyBuilder(builder, {
     outdir: determineOutputDirectory(),
+    context,
   });
 }
 
