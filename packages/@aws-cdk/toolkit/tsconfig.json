@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "skipLibCheck": true,
     "target": "es2022",
     "allowJs": true,
@@ -25,6 +25,7 @@
   "references": [
     { "path": "../cx-api" },
     { "path": "../cloudformation-diff" },
-    { "path": "../../aws-cdk" }
+    { "path": "../../aws-cdk" },
+    { "path": "../../aws-cdk-lib" }
   ]
 }
