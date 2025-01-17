@@ -90,7 +90,7 @@
         "packageName": "awscdk"
       }
     },
-    "projectReferences": false,
+    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
