@@ -79,7 +79,6 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
       }
     } as any;
     process.stderr.write = function (chunk: Buffer | string, enccb?: BufferEncoding | ((error?: Error | null) => void)): void {
-      self.originalStderrWrite(chunk);
       const encoding = typeof enccb === 'string' ? enccb : 'utf-8';
       const message = Buffer.isBuffer(chunk) ? chunk.toString(encoding) : chunk;
       self.log.push({ type: 'error', message: message.replace(/\n$/, '') });
