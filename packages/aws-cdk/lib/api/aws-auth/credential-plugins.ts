@@ -1,8 +1,8 @@
-import { inspect } from 'util';
+import { inspect, format } from 'util';
 import type { CredentialProviderSource, ForReading, ForWriting, PluginProviderResult, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
 import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
-import { debug, warning } from '../../logging';
+import { debug, warning, info } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
 import { formatErrorMessage } from '../../util/error';
 import { Mode } from '../plugin/mode';
@@ -151,8 +151,7 @@ function v3ProviderFromV2Credentials(x: SDKv2CompatibleCredentials): AwsCredenti
 
 function refreshFromPluginProvider(current: AwsCredentialIdentity, producer: () => Promise<PluginProviderResult>): AwsCredentialIdentityProvider {
   return async () => {
-    // eslint-disable-next-line no-console
-    console.error(current, Date.now());
+    info(format(current), Date.now());
     if (credentialsAboutToExpire(current)) {
       const newCreds = await producer();
       if (!isV3Credentials(newCreds)) {

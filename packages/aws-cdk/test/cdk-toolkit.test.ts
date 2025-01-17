@@ -88,9 +88,10 @@ import {
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Mode } from '../lib/api/plugin/mode';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
+import { CdkToolkit, markTesting } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
+import { Tag } from '../lib/tags';
 import { flatten } from '../lib/util';
 
 markTesting();
@@ -1486,7 +1487,7 @@ describe('synth', () => {
 
     const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
 
-    // Rollback might be called -- just don't do nothing.
+    // Rollback might be called -- just don't do anything.
     const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
 
     const mockedDeployStack = jest

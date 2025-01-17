@@ -5,10 +5,10 @@ import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import * as chalk from 'chalk';
 import type { SdkProvider } from './aws-auth/sdk-provider';
 import { type DeploymentMethod, deployStack, DeployStackResult, destroyStack } from './deploy-stack';
-import { type EnvironmentResources } from './environment-resources';
-import type { Tag } from '../cdk-toolkit';
-import { debug, warning } from '../logging';
 import { EnvironmentAccess } from './environment-access';
+import { type EnvironmentResources } from './environment-resources';
+import { debug, warning } from '../logging';
+import type { Tag } from '../tags';
 import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import {
   loadCurrentTemplate,
@@ -25,10 +25,6 @@ import {
   Template,
   uploadStackTemplateAssets,
 } from './util/cloudformation';
-import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-import { StackEventPoller } from './util/cloudformation/stack-event-poller';
-import { RollbackChoice } from './util/cloudformation/stack-status';
-import { makeBodyParameter } from './util/template-body-parameter';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import {
   buildAssets,
@@ -38,6 +34,10 @@ import {
   type PublishAssetsOptions,
   PublishingAws,
 } from '../util/asset-publishing';
+import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
+import { StackEventPoller } from './util/cloudformation/stack-event-poller';
+import { RollbackChoice } from './util/cloudformation/stack-status';
+import { makeBodyParameter } from './util/template-body-parameter';
 import { formatErrorMessage } from '../util/error';
 
 const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
@@ -715,7 +715,6 @@ export class Deployments {
 
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
-    // eslint-disable-next-line no-console
     await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack) });
     if (publisher.hasFailures) {
       throw new Error(`Failed to publish asset ${asset.id}`);
