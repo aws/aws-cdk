@@ -1,27 +1,64 @@
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as version from '../../lib/version';
-import { CommandOptions } from '../command-api';
-import { print, error, warning } from '../logging';
+import { error, warning, info, data } from '../logging';
 import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
 import { renderTable } from '../util';
 
-export async function realHandler(options: CommandOptions): Promise<number> {
-  const { configuration, args } = options;
-  if (args.clear) {
-    configuration.context.clear();
-    await configuration.saveContext();
-    print('All context values cleared.');
-  } else if (args.reset) {
-    invalidateContext(configuration.context, args.reset as string, args.force as boolean);
-    await configuration.saveContext();
+/**
+ * Options for the context command
+ */
+export interface ContextOptions {
+  /**
+   * The context object sourced from all context locations
+   */
+  context: Context;
+
+  /**
+   * The context key (or its index) to reset
+   *
+   * @default undefined
+   */
+  reset?: string;
+
+  /**
+   * Ignore missing key error
+   *
+   * @default false
+   */
+  force?: boolean;
+
+  /**
+   * Clear all context
+   *
+   * @default false
+   */
+  clear?: boolean;
+
+  /**
+   * Use JSON output instead of YAML when templates are printed to STDOUT
+   *
+   * @default false
+   */
+  json?: boolean;
+}
+
+export async function contextHandler(options: ContextOptions): Promise<number> {
+  if (options.clear) {
+    options.context.clear();
+    await options.context.save(PROJECT_CONTEXT);
+    info('All context values cleared.');
+  } else if (options.reset) {
+    invalidateContext(options.context, options.reset, options.force ?? false);
+    await options.context.save(PROJECT_CONTEXT);
   } else {
     // List -- support '--json' flag
-    if (args.json) {
-      const contextValues = configuration.context.all;
-      process.stdout.write(JSON.stringify(contextValues, undefined, 2));
+    if (options.json) {
+      /* istanbul ignore next */
+      const contextValues = options.context.all;
+      data(JSON.stringify(contextValues, undefined, 2));
     } else {
-      listContext(configuration.context);
+      listContext(options.context);
     }
   }
   await version.displayVersionMessage();
@@ -33,27 +70,27 @@ function listContext(context: Context) {
   const keys = contextKeys(context);
 
   if (keys.length === 0) {
-    print('This CDK application does not have any saved context values yet.');
-    print('');
-    print('Context will automatically be saved when you synthesize CDK apps');
-    print('that use environment context information like AZ information, VPCs,');
-    print('SSM parameters, and so on.');
+    info('This CDK application does not have any saved context values yet.');
+    info('');
+    info('Context will automatically be saved when you synthesize CDK apps');
+    info('that use environment context information like AZ information, VPCs,');
+    info('SSM parameters, and so on.');
 
     return;
   }
 
   // Print config by default
-  const data: any[] = [[chalk.green('#'), chalk.green('Key'), chalk.green('Value')]];
+  const data_out: any[] = [[chalk.green('#'), chalk.green('Key'), chalk.green('Value')]];
   for (const [i, key] of keys) {
     const jsonWithoutNewlines = JSON.stringify(context.all[key], undefined, 2).replace(/\s+/g, ' ');
-    data.push([i, key, jsonWithoutNewlines]);
+    data_out.push([i, key, jsonWithoutNewlines]);
   }
-  print('Context found in %s:', chalk.blue(PROJECT_CONFIG));
-  print('');
-  print(renderTable(data, process.stdout.columns));
+  info('Context found in %s:', chalk.blue(PROJECT_CONFIG));
+  info('');
+  info(renderTable(data_out, process.stdout.columns));
 
   // eslint-disable-next-line max-len
-  print(`Run ${chalk.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
+  info(`Run ${chalk.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
 function invalidateContext(context: Context, key: string, force: boolean) {
@@ -67,7 +104,7 @@ function invalidateContext(context: Context, key: string, force: boolean) {
     context.unset(key);
     // check if the value was actually unset.
     if (!context.has(key)) {
-      print('Context value %s reset. It will be refreshed on next synthesis', chalk.blue(key));
+      info('Context value %s reset. It will be refreshed on next synthesis', chalk.blue(key));
       return;
     }
 
@@ -105,22 +142,25 @@ function invalidateContext(context: Context, key: string, force: boolean) {
     throw new Error(`No context value matching key: ${key}`);
   }
 }
+
 function printUnset(unset: string[]) {
   if (unset.length === 0) return;
-  print('The following matched context values reset. They will be refreshed on next synthesis');
+  info('The following matched context values reset. They will be refreshed on next synthesis');
   unset.forEach((match) => {
-    print('  %s', match);
+    info('  %s', match);
   });
 }
+
 function printReadonly(readonly: string[]) {
   if (readonly.length === 0) return;
   warning('The following matched context values could not be reset through the CLI');
   readonly.forEach((match) => {
-    print('  %s', match);
+    info('  %s', match);
   });
-  print('');
-  print('This usually means they are configured in %s or %s', chalk.blue(PROJECT_CONFIG), chalk.blue(USER_DEFAULTS));
+  info('');
+  info('This usually means they are configured in %s or %s', chalk.blue(PROJECT_CONFIG), chalk.blue(USER_DEFAULTS));
 }
+
 function keysByExpression(context: Context, expression: string) {
   return context.keys.filter(minimatch.filter(expression));
 }

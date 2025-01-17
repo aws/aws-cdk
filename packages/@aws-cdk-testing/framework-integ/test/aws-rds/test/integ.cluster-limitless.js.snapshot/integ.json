@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "LimitlessClusterInteg/DefaultTest": {
+      "stacks": [
+        "LimitlessClusterStack"
+      ],
+      "assertionStack": "LimitlessClusterInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LimitlessClusterIntegDefaultTestDeployAssertAD81C491"
+    }
+  }
+}

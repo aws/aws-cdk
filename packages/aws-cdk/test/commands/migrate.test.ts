@@ -51,7 +51,7 @@ describe('Migrate Function Tests', () => {
   });
 
   test('parseSourceOptions throws if both --from-path and --from-stack is provided', () => {
-    expect(() => parseSourceOptions('any-value', true, 'my-awesome-stack')).toThrowError(
+    expect(() => parseSourceOptions('any-value', true, 'my-awesome-stack')).toThrow(
       'Only one of `--from-path` or `--from-stack` may be provided.',
     );
   });
@@ -86,7 +86,7 @@ describe('Migrate Function Tests', () => {
 
   test('readFromPath throws error when template file does not exist at a given path', () => {
     const badTemplatePath = './not-here.json';
-    expect(() => readFromPath(badTemplatePath)).toThrowError(`\'${badTemplatePath}\' is not a valid path.`);
+    expect(() => readFromPath(badTemplatePath)).toThrow(`\'${badTemplatePath}\' is not a valid path.`);
   });
 
   test('readFromStack produces a string representation of the template retrieved from CloudFormation', async () => {
@@ -190,7 +190,7 @@ describe('Migrate Function Tests', () => {
   });
 
   test('generateStack throws error when called for other language', () => {
-    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError(
+    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrow(
       'BadBadBadStack could not be generated because php is not a supported language',
     );
   });
@@ -384,7 +384,6 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
 
 describe('generateTemplate', () => {
   let sdkProvider: MockSdkProvider;
-  restoreSdkMocksToDefault();
   const sampleResource = {
     ResourceType: 'AWS::S3::Bucket',
     ManagedByStack: true,
@@ -440,6 +439,7 @@ describe('generateTemplate', () => {
   };
 
   beforeEach(() => {
+    restoreSdkMocksToDefault();
     sdkProvider = new MockSdkProvider();
     mockCloudFormationClient
       .on(StartResourceScanCommand)
@@ -479,6 +479,10 @@ describe('generateTemplate', () => {
       });
   });
 
+  afterEach(() => {
+    restoreSdkMocksToDefault();
+  });
+
   test('generateTemplate successfully generates template with a new scan', async () => {
     const opts: GenerateTemplateOptions = {
       stackName: stackName,
@@ -516,9 +520,10 @@ describe('generateTemplate', () => {
   });
 
   test('generateTemplate throws an error when from-scan most-recent is passed but no scans are found.', async () => {
-    mockCloudFormationClient.on(ListResourceScansCommand).resolves({
-      ResourceScanSummaries: [],
-    });
+    mockCloudFormationClient.on(ListResourceScansCommand)
+      .resolves({
+        ResourceScanSummaries: [],
+      });
 
     const opts: GenerateTemplateOptions = {
       stackName: stackName,
@@ -543,7 +548,15 @@ describe('generateTemplate', () => {
     await expect(generateTemplate(opts)).rejects.toThrow('Invalid filter: invalid-key');
   });
 
-  test('generateTemplate defaults to starting a new scan when no options are provided', async () => {
+  test('generateTemplate defaults to starting a new scan when no options are provided and no scans are found', async () => {
+    mockCloudFormationClient.on(ListResourceScansCommand)
+      // First call: list current scans, there aren't any.
+      .resolvesOnce({ ResourceScanSummaries: [] })
+      // The generator will then call StartScan and ListResourceScans again which it now will expect to return something
+      .resolves({
+        ResourceScanSummaries: [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }],
+      });
+
     const opts: GenerateTemplateOptions = {
       stackName: stackName,
       sdkProvider: sdkProvider,

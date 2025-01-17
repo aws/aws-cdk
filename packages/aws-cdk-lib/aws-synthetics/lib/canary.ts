@@ -544,7 +544,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.validateHandler(props.test.handler, props.runtime);
     const codeConfig = {
       handler: props.test.handler,
-      ...props.test.code.bind(this, props.test.handler, props.runtime.family),
+      ...props.test.code.bind(this, props.test.handler, props.runtime.family, props.runtime.name),
     };
     return {
       handler: codeConfig.handler,
@@ -588,9 +588,15 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       return undefined;
     }
 
-    // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
-    if (props.activeTracing && !cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) {
-      throw new Error('You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.');
+    if (
+      props.activeTracing &&
+      (
+        // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
+        (!cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) ||
+        (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
+      )
+    ) {
+      throw new Error(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${props.runtime.name}.`);
     }
 
     let memoryInMb: number | undefined;
@@ -684,7 +690,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     // Only check runtime family is Node.js because versions prior to `syn-nodejs-puppeteer-3.3` are deprecated and can no longer be configured.
     if (!isNodeRuntime && props.artifactS3EncryptionMode) {
-      throw new Error(`Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later, got \`${props.runtime.name}\`.`);
+      throw new Error(`Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got ${props.runtime.name}.`);
     }
 
     const encryptionMode = props.artifactS3EncryptionMode ? props.artifactS3EncryptionMode :
@@ -745,8 +751,8 @@ const nameRegex: RegExp = /^[0-9a-z_\-]+$/;
  * @param name - the given name of the canary
  */
 function validateName(name: string) {
-  if (name.length > 21) {
-    throw new Error(`Canary name is too large, must be between 1 and 21 characters, but is ${name.length} (got "${name}")`);
+  if (name.length > 255) {
+    throw new Error(`Canary name is too large, must be between 1 and 255 characters, but is ${name.length} (got "${name}")`);
   }
   if (!nameRegex.test(name)) {
     throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);

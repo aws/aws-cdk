@@ -225,7 +225,158 @@ new Route(this, 'DynamoDBRoute', {
   destination: '0.0.0.0/0',
   target: { endpoint: dynamoEndpoint },
 });
+
 ```
+
+## VPC Peering Connection
+
+VPC peering connection allows you to connect two VPCs and route traffic between them using private IP addresses. The VpcV2 construct supports creating VPC peering connections through the `VPCPeeringConnection` construct from the `route` module.
+
+Peering Connection cannot be established between two VPCs with overlapping CIDR ranges. Please make sure the two VPC CIDRs do not overlap with each other else it will throw an error.
+
+For more information, see [What is VPC peering?](https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html).
+
+The following show examples of how to create a peering connection between two VPCs for all possible combinations of same-account or cross-account, and same-region or cross-region configurations.
+
+Note: You cannot create a VPC peering connection between VPCs that have matching or overlapping CIDR blocks
+
+**Case 1: Same Account and Same Region Peering Connection**
+
+```ts
+const stack = new Stack();
+
+const vpcA = new VpcV2(this, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const vpcB = new VpcV2(this, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const peeringConnection = vpcA.createPeeringConnection('sameAccountSameRegionPeering', {
+  acceptorVpc: vpcB,
+});
+```
+
+**Case 2: Same Account and Cross Region Peering Connection**
+
+There is no difference from Case 1 when calling `createPeeringConnection`. The only change is that one of the VPCs are created in another stack with a different region. To establish cross region VPC peering connection, acceptorVpc needs to be imported to the requestor VPC stack using `fromVpcV2Attributes` method. 
+
+```ts
+const app = new App();
+
+const stackA = new Stack(app, 'VpcStackA', { env: { account: '000000000000', region: 'us-east-1' } });
+const stackB = new Stack(app, 'VpcStackB', { env: { account: '000000000000', region: 'us-west-2' } });
+
+const vpcA = new VpcV2(stackA, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+new VpcV2(stackB, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const vpcB = VpcV2.fromVpcV2Attributes(stackA, 'ImportedVpcB', {
+      vpcId: 'MockVpcBid',
+      vpcCidrBlock: '10.1.0.0/16',
+      region: 'us-west-2',
+      ownerAccountId: '000000000000',
+    });
+
+
+const peeringConnection = vpcA.createPeeringConnection('sameAccountCrossRegionPeering', {
+  acceptorVpc: vpcB,
+});
+```
+
+**Case 3: Cross Account Peering Connection**
+
+For cross-account connections, the acceptor account needs an IAM role that grants the requestor account permission to initiate the connection. Create a new IAM role in the acceptor account using method `createAcceptorVpcRole` to provide the necessary permissions. 
+
+Once role is created in account, provide role arn for field `peerRoleArn` under method `createPeeringConnection`
+
+```ts
+const stack = new Stack();
+
+const acceptorVpc = new VpcV2(this, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('000000000000'); // Requestor account ID
+```
+
+After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC. Import acceptorVpc to the stack using `fromVpcV2Attributes` method, it is recommended to specify owner account id of the acceptor VPC in case of cross account peering connection, if acceptor VPC is hosted in different region provide region value for import as well.
+The following code snippet demonstrates how to set up VPC peering between two VPCs in different AWS accounts using CDK:
+
+```ts
+const stack = new Stack();
+
+const acceptorVpc = VpcV2.fromVpcV2Attributes(this, 'acceptorVpc', {
+      vpcId: 'vpc-XXXX',
+      vpcCidrBlock: '10.0.0.0/16',
+      region: 'us-east-2',
+      ownerAccountId: '111111111111',
+    });
+
+const acceptorRoleArn = 'arn:aws:iam::111111111111:role/VpcPeeringRole';
+
+const requestorVpc = new VpcV2(this, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const peeringConnection = requestorVpc.createPeeringConnection('crossAccountCrossRegionPeering', {
+  acceptorVpc: acceptorVpc,
+  peerRoleArn: acceptorRoleArn,
+});
+```
+
+### Route Table Configuration
+
+After establishing the VPC peering connection, routes must be added to the respective route tables in the VPCs to enable traffic flow. If a route is added to the requestor stack, information will be able to flow from the requestor VPC to the acceptor VPC, but not in the reverse direction. For bi-directional communication, routes need to be added in both VPCs from their respective stacks.
+
+For more information, see [Update your route tables for a VPC peering connection](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-routing.html).
+
+```ts
+const stack = new Stack();
+
+const acceptorVpc = new VpcV2(this, 'VpcA', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+const requestorVpc = new VpcV2(this, 'VpcB', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+});
+
+const peeringConnection = requestorVpc.createPeeringConnection('peeringConnection', {
+  acceptorVpc: acceptorVpc,
+});
+
+const routeTable = new RouteTable(this, 'RouteTable', {
+  vpc: requestorVpc,
+});
+
+routeTable.addRoute('vpcPeeringRoute', '10.0.0.0/16', { gateway: peeringConnection });
+```
+
+This can also be done using AWS CLI. For more information, see [create-route](https://docs.aws.amazon.com/cli/latest/reference/ec2/create-route.html).
+
+```bash
+# Add a route to the requestor VPC route table
+aws ec2 create-route --route-table-id rtb-requestor --destination-cidr-block 10.0.0.0/16 --vpc-peering-connection-id pcx-xxxxxxxx
+
+# For bi-directional add a route in the acceptor vpc account as well
+aws ec2 create-route --route-table-id rtb-acceptor --destination-cidr-block 10.1.0.0/16 --vpc-peering-connection-id pcx-xxxxxxxx
+```
+
+### Deleting the Peering Connection
+
+To delete a VPC peering connection, use the following command:
+
+```bash
+aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id pcx-xxxxxxxx
+```
+
+For more information, see [Delete a VPC peering connection](https://docs.aws.amazon.com/vpc/latest/peering/create-vpc-peering-connection.html#delete-vpc-peering-connection).
 
 ## Adding Egress-Only Internet Gateway to VPC
 
@@ -310,11 +461,11 @@ For more information, see [What is AWS Site-to-Site VPN?](https://docs.aws.amazo
 
 VPN route propagation is a feature in Amazon Web Services (AWS) that automatically updates route tables in your Virtual Private Cloud (VPC) with routes learned from a VPN connection.
 
-To enable VPN route propogation, use the `vpnRoutePropagation` property to specify the subnets as an input to the function. VPN route propagation will then be enabled for each subnet with the corresponding route table IDs.
+To enable VPN route propagation, use the `vpnRoutePropagation` property to specify the subnets as an input to the function. VPN route propagation will then be enabled for each subnet with the corresponding route table IDs.
 
 Additionally, you can set up a route in any route table with the target set to the VPN Gateway. The function `enableVpnGatewayV2` returns a `VPNGatewayV2` object that you can reference later.
 
-The code example below provides the definition for setting up a VPN gateway with `vpnRoutePropogation` enabled:
+The code example below provides the definition for setting up a VPN gateway with `vpnRoutePropagation` enabled:
 
 ```ts
 
@@ -343,7 +494,7 @@ An internet gateway is a horizontally scaled, redundant, and highly available VP
 For more information, see [Enable VPC internet access using internet gateways](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-igw-internet-access.html).
 
 You can add an internet gateway to a VPC using `addInternetGateway` method. By default, this method creates a route in all Public Subnets with outbound destination set to `0.0.0.0` for IPv4 and `::0` for IPv6 enabled VPC. 
-Instead of using the default settings, you can configure a custom destinatation range by providing an optional input `destination` to the method.
+Instead of using the default settings, you can configure a custom destination range by providing an optional input `destination` to the method.
 
 The code example below shows how to add an internet gateway with a custom outbound destination IP range:
 
@@ -388,13 +539,13 @@ const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
 
 In case of cross account or cross region VPC, its recommended to provide region and ownerAccountId so that these values for the VPC can be used to populate correct arn value for the VPC. If a VPC region and account ID is not provided, then region and account configured in the stack will be used. Furthermore, these fields will be referenced later while setting up VPC peering connection, so its necessary to set these fields to a correct value.
 
-Below is an example of importing a cross region and cross acount VPC, VPC arn for this case would be 'arn:aws:ec2:us-west-2:123456789012:vpc/mockVpcID'
+Below is an example of importing a cross region and cross account VPC, VPC arn for this case would be 'arn:aws:ec2:us-west-2:123456789012:vpc/mockVpcID'
 
 ``` ts
 
 const stack = new Stack();
 
-//Importing a cross acount or cross region VPC
+//Importing a cross account or cross region VPC
 const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
@@ -494,3 +645,22 @@ SubnetV2.fromSubnetV2Attributes(this, 'ImportedSubnet', {
 ```
 
 By importing existing VPCs and subnets, you can easily integrate your existing AWS infrastructure with new resources created through CDK. This is particularly useful when you need to work with pre-existing network configurations or when you're migrating existing infrastructure to CDK.
+
+### Tagging VPC and its components
+
+By default, when a resource name is given to the construct, it automatically adds a tag with the key `Name` and the value set to the provided resource name. To add additional custom tags, use the Tag Manager, like this: `Tags.of(myConstruct).add('key', 'value');`.
+
+For example, if the `vpcName` is set to `TestVpc`, the following code will add a tag to the VPC with `key: Name` and `value: TestVpc`.
+
+```ts
+
+const vpc = new VpcV2(this, 'VPC-integ-test-tag', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+  enableDnsHostnames: true,
+  enableDnsSupport: true,
+  vpcName: 'CDKintegTestVPC',
+});
+
+// Add custom tags if needed
+Tags.of(vpc).add('Environment', 'Production');
+```

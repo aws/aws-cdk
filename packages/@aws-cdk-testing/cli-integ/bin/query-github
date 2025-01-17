@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('./query-github.js');
+require('../lib/cli/query-github.js');

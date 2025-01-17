@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-
 // source maps must be enabled before importing files
-if (process.argv.includes('--debug')) {
-  process.setSourceMapsEnabled(true);
-}
-require('./cdk.js');
+process.setSourceMapsEnabled(true);
+const { cli } = require("../lib");
+
+cli();

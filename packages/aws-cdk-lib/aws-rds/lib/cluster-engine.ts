@@ -616,6 +616,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_04_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.1');
   /** Version "8.0.mysql_aurora.3.04.2". */
   public static readonly VER_3_04_2 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.2');
+  /** Version "8.0.mysql_aurora.3.04.3". */
+  public static readonly VER_3_04_3 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.3');
   /**
    * Version "8.0.mysql_aurora.3.05.0"
    * @deprecated Aurora MySQL 8.0.mysql_aurora.3.05.0 is no longer supported by Amazon RDS.
@@ -636,6 +638,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_07_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.07.0');
   /** Version "8.0.mysql_aurora.3.07.1". */
   public static readonly VER_3_07_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.07.1');
+  /** Version "8.0.mysql_aurora.3.08.0". */
+  public static readonly VER_3_08_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.08.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -971,6 +975,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_12_19 = AuroraPostgresEngineVersion.of('12.19', '12', { s3Import: true, s3Export: true });
   /** Version "12.20". */
   public static readonly VER_12_20 = AuroraPostgresEngineVersion.of('12.20', '12', { s3Import: true, s3Export: true });
+  /** Version "12.21". */
+  public static readonly VER_12_21 = AuroraPostgresEngineVersion.of('12.21', '12', { s3Import: true, s3Export: true });
+  /** Version "12.22". */
+  public static readonly VER_12_22 = AuroraPostgresEngineVersion.of('12.22', '12', { s3Import: true, s3Export: true });
   /**
    *  Version "13.3".
    * @deprecated Version 13.3 is no longer supported by Amazon RDS.
@@ -1011,6 +1019,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_13_15 = AuroraPostgresEngineVersion.of('13.15', '13', { s3Import: true, s3Export: true });
   /** Version "13.16". */
   public static readonly VER_13_16 = AuroraPostgresEngineVersion.of('13.16', '13', { s3Import: true, s3Export: true });
+  /** Version "13.17". */
+  public static readonly VER_13_17 = AuroraPostgresEngineVersion.of('13.17', '13', { s3Import: true, s3Export: true });
+  /** Version "13.18". */
+  public static readonly VER_13_18 = AuroraPostgresEngineVersion.of('13.18', '13', { s3Import: true, s3Export: true });
   /** Version "14.3". */
   public static readonly VER_14_3 = AuroraPostgresEngineVersion.of('14.3', '14', { s3Import: true, s3Export: true });
   /**  Version "14.4". */
@@ -1033,6 +1045,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_14_12 = AuroraPostgresEngineVersion.of('14.12', '14', { s3Import: true, s3Export: true });
   /** Version "14.13". */
   public static readonly VER_14_13 = AuroraPostgresEngineVersion.of('14.13', '14', { s3Import: true, s3Export: true });
+  /** Version "14.14". */
+  public static readonly VER_14_14 = AuroraPostgresEngineVersion.of('14.14', '14', { s3Import: true, s3Export: true });
+  /** Version "14.15". */
+  public static readonly VER_14_15 = AuroraPostgresEngineVersion.of('14.15', '14', { s3Import: true, s3Export: true });
   /** Version "15.2". */
   public static readonly VER_15_2 = AuroraPostgresEngineVersion.of('15.2', '15', { s3Import: true, s3Export: true });
   /** Version "15.3". */
@@ -1047,6 +1063,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_15_7 = AuroraPostgresEngineVersion.of('15.7', '15', { s3Import: true, s3Export: true });
   /** Version "15.8". */
   public static readonly VER_15_8 = AuroraPostgresEngineVersion.of('15.8', '15', { s3Import: true, s3Export: true });
+  /** Version "15.9". */
+  public static readonly VER_15_9 = AuroraPostgresEngineVersion.of('15.9', '15', { s3Import: true, s3Export: true });
+  /** Version "15.10". */
+  public static readonly VER_15_10 = AuroraPostgresEngineVersion.of('15.10', '15', { s3Import: true, s3Export: true });
   /**
    * Version "16.0"
    * @deprecated Version 16.0 is no longer supported by Amazon RDS.
@@ -1060,6 +1080,16 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_3 = AuroraPostgresEngineVersion.of('16.3', '16', { s3Import: true, s3Export: true });
   /** Version "16.4". */
   public static readonly VER_16_4 = AuroraPostgresEngineVersion.of('16.4', '16', { s3Import: true, s3Export: true });
+  /** Version "16.4 limitless" */
+  public static readonly VER_16_4_LIMITLESS = AuroraPostgresEngineVersion.of('16.4-limitless', '16', { s3Import: true, s3Export: true });
+  /** Version "16.5". */
+  public static readonly VER_16_5 = AuroraPostgresEngineVersion.of('16.5', '16', { s3Import: true, s3Export: true });
+  /** Version "16.6". */
+  public static readonly VER_16_6 = AuroraPostgresEngineVersion.of('16.6', '16', { s3Import: true, s3Export: true });
+  /** Version "17.1". */
+  public static readonly VER_17_1 = AuroraPostgresEngineVersion.of('17.1', '17', { s3Import: true, s3Export: true });
+  /** Version "17.2". */
+  public static readonly VER_17_2 = AuroraPostgresEngineVersion.of('17.2', '17', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.

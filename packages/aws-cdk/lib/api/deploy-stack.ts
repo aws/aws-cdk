@@ -15,7 +15,7 @@ import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { addMetadataAssetsToManifest } from '../assets';
-import { debug, print, warning } from '../logging';
+import { debug, info, warning } from '../logging';
 import {
   changeSetHasNoChanges,
   CloudFormationStack,
@@ -33,11 +33,12 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
 import { StringWithoutPlaceholders } from './util/placeholders';
+import { formatErrorMessage } from '../util/error';
 
 export type DeployStackResult =
   | SuccessfulDeployStackResult
   | NeedRollbackFirstDeployStackResult
-  | ReplacementRequiresNoRollbackStackResult
+  | ReplacementRequiresRollbackStackResult
   ;
 
 /** Successfully deployed a stack */
@@ -52,11 +53,12 @@ export interface SuccessfulDeployStackResult {
 export interface NeedRollbackFirstDeployStackResult {
   readonly type: 'failpaused-need-rollback-first';
   readonly reason: 'not-norollback' | 'replacement';
+  readonly status: string;
 }
 
-/** The upcoming change has a replacement, which requires deploying without --no-rollback */
-export interface ReplacementRequiresNoRollbackStackResult {
-  readonly type: 'replacement-requires-norollback';
+/** The upcoming change has a replacement, which requires deploying with --rollback */
+export interface ReplacementRequiresRollbackStackResult {
+  readonly type: 'replacement-requires-rollback';
 }
 
 export function assertIsSuccessfulDeployStackResult(x: DeployStackResult): asserts x is SuccessfulDeployStackResult {
@@ -269,6 +271,13 @@ export interface ChangeSetDeploymentMethod {
    * If not provided, a name will be generated automatically.
    */
   readonly changeSetName?: string;
+
+  /**
+   * Indicates if the change set imports resources that already exist.
+   *
+   * @default false
+   */
+  readonly importExistingResources?: boolean;
 }
 
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -324,7 +333,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // if we can skip deployment and we are performing a hotswap, let the user know
     // that no hotswap deployment happened
     if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
-      print(
+      info(
         `\n ${ICON} %s\n`,
         chalk.bold('hotswap deployment skipped - no changes were detected (use --force to override)'),
       );
@@ -370,7 +379,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }
-      print(
+      info(
         'Could not perform a hotswap deployment, as the stack %s contains non-Asset changes',
         stackArtifact.displayName,
       );
@@ -378,14 +387,14 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       if (!(e instanceof CfnEvaluationException)) {
         throw e;
       }
-      print(
+      info(
         'Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s',
-        e.message,
+        formatErrorMessage(e),
       );
     }
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
-      print('Falling back to doing a full deployment');
+      info('Falling back to doing a full deployment');
       options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
     } else {
       return {
@@ -461,7 +470,8 @@ class FullCloudFormationDeployment {
   private async changeSetDeployment(deploymentMethod: ChangeSetDeploymentMethod): Promise<DeployStackResult> {
     const changeSetName = deploymentMethod.changeSetName ?? 'cdk-deploy-change-set';
     const execute = deploymentMethod.execute ?? true;
-    const changeSetDescription = await this.createChangeSet(changeSetName, execute);
+    const importExistingResources = deploymentMethod.importExistingResources ?? false;
+    const changeSetDescription = await this.createChangeSet(changeSetName, execute, importExistingResources);
     await this.updateTerminationProtection();
 
     if (changeSetHasNoChanges(changeSetDescription)) {
@@ -495,7 +505,7 @@ class FullCloudFormationDeployment {
     }
 
     if (!execute) {
-      print(
+      info(
         'Changeset %s created and waiting in review for manual execution (--no-execute)',
         changeSetDescription.ChangeSetId,
       );
@@ -512,23 +522,23 @@ class FullCloudFormationDeployment {
     const isPausedFailState = this.cloudFormationStack.stackStatus.isRollbackable;
     const rollback = this.options.rollback ?? true;
     if (isPausedFailState && replacement) {
-      return { type: 'failpaused-need-rollback-first', reason: 'replacement' };
+      return { type: 'failpaused-need-rollback-first', reason: 'replacement', status: this.cloudFormationStack.stackStatus.name };
     }
-    if (isPausedFailState && !rollback) {
-      return { type: 'failpaused-need-rollback-first', reason: 'not-norollback' };
+    if (isPausedFailState && rollback) {
+      return { type: 'failpaused-need-rollback-first', reason: 'not-norollback', status: this.cloudFormationStack.stackStatus.name };
     }
     if (!rollback && replacement) {
-      return { type: 'replacement-requires-norollback' };
+      return { type: 'replacement-requires-rollback' };
     }
 
     return this.executeChangeSet(changeSetDescription);
   }
 
-  private async createChangeSet(changeSetName: string, willExecute: boolean) {
+  private async createChangeSet(changeSetName: string, willExecute: boolean, importExistingResources: boolean) {
     await this.cleanupOldChangeset(changeSetName);
 
     debug(`Attempting to create ChangeSet with name ${changeSetName} to ${this.verb} stack ${this.stackName}`);
-    print('%s: creating CloudFormation changeset...', chalk.bold(this.stackName));
+    info('%s: creating CloudFormation changeset...', chalk.bold(this.stackName));
     const changeSet = await this.cfn.createChangeSet({
       StackName: this.stackName,
       ChangeSetName: changeSetName,
@@ -536,6 +546,7 @@ class FullCloudFormationDeployment {
       ResourcesToImport: this.options.resourcesToImport,
       Description: `CDK Changeset for execution ${this.uuid}`,
       ClientToken: `create${this.uuid}`,
+      ImportExistingResources: importExistingResources,
       ...this.commonPrepareOptions(),
     });
 
@@ -598,7 +609,7 @@ class FullCloudFormationDeployment {
   }
 
   private async directDeployment(): Promise<SuccessfulDeployStackResult> {
-    print('%s: %s stack...', chalk.bold(this.stackName), this.update ? 'updating' : 'creating');
+    info('%s: %s stack...', chalk.bold(this.stackName), this.update ? 'updating' : 'creating');
 
     const startTime = new Date();
 
@@ -662,7 +673,7 @@ class FullCloudFormationDeployment {
       }
       finalState = successStack;
     } catch (e: any) {
-      throw new Error(suffixWithErrors(e.message, monitor?.errors));
+      throw new Error(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
     } finally {
       await monitor?.stop();
     }
@@ -740,7 +751,7 @@ export async function destroyStack(options: DestroyStackOptions) {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
   } catch (e: any) {
-    throw new Error(suffixWithErrors(e.message, monitor?.errors));
+    throw new Error(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
   } finally {
     if (monitor) {
       await monitor.stop();

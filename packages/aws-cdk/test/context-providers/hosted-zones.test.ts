@@ -1,11 +1,11 @@
 import { GetHostedZoneCommand, ListHostedZonesByNameCommand } from '@aws-sdk/client-route-53';
 import { SDK, SdkForEnvironment } from '../../lib';
 import { HostedZoneContextProviderPlugin } from '../../lib/context-providers/hosted-zones';
-import { FAKE_CREDENTIALS, mockRoute53Client, MockSdkProvider } from '../util/mock-sdk';
+import { FAKE_CREDENTIAL_CHAIN, mockRoute53Client, MockSdkProvider } from '../util/mock-sdk';
 
 const mockSDK = new (class extends MockSdkProvider {
   public forEnvironment(): Promise<SdkForEnvironment> {
-    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIALS, mockSDK.defaultRegion, {}), didAssumeRole: false });
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
   }
 })();
 

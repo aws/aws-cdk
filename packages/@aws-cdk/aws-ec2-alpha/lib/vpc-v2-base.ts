@@ -1,9 +1,10 @@
-import { Resource, Annotations } from 'aws-cdk-lib';
+import { Aws, Resource, Annotations } from 'aws-cdk-lib';
 import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter } from 'aws-cdk-lib/aws-ec2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPNGatewayV2 } from './route';
+import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPCPeeringConnection, VPCPeeringConnectionOptions, VPNGatewayV2 } from './route';
 import { ISubnetV2 } from './subnet-v2';
+import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { IVPCCidrBlock } from './vpc-v2';
 
 /**
@@ -23,6 +24,14 @@ export interface EgressOnlyInternetGatewayOptions {
    * @default - '::/0' all Ipv6 traffic
    */
   readonly destination?: string;
+
+  /**
+   * The resource name of the egress-only internet gateway.
+   * Provided name will be used for tagging
+   *
+   * @default - no name tag associated and provisioned without a resource name
+   */
+  readonly egressOnlyInternetGatewayName?: string;
 }
 
 /**
@@ -43,6 +52,14 @@ export interface InternetGatewayOptions{
    * @default - '::/0' all Ipv6 traffic
    */
   readonly ipv6Destination?: string;
+
+  /**
+   * The resource name of the internet gateway.
+   * Provided name will be used for tagging
+   *
+   * @default - provisioned without a resource name
+   */
+  readonly internetGatewayName?: string;
 }
 
 /**
@@ -119,6 +136,12 @@ export interface IVpcV2 extends IVpc {
   readonly ipv4IpamProvisionedCidrs?: string[];
 
   /**
+   * VpcName to be used for tagging its components
+   * @attribute
+   */
+  readonly vpcName?: string;
+
+  /**
    * Add an Egress only Internet Gateway to current VPC.
    * Can only be used for ipv6 enabled VPCs.
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway-basics.html}.
@@ -150,6 +173,19 @@ export interface IVpcV2 extends IVpc {
    */
   addNatGateway(options: NatGatewayOptions): NatGateway;
 
+  /**
+   * Adds a new role to acceptor VPC account
+   * A cross account role is required for the VPC to peer with another account.
+   * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/peer-with-vpc-in-another-account.html}.
+   */
+  createAcceptorVpcRole(requestorAccountId: string): Role;
+
+  /**
+   * Creates a new peering connection
+   * A peering connection is a private virtual network established between two VPCs.
+   * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html}.
+   */
+  createPeeringConnection(id: string, options: VPCPeeringConnectionOptions): VPCPeeringConnection;
 }
 
 /**
@@ -219,6 +255,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4}.
    */
   public abstract readonly ipv4CidrBlock: string;
+
+  /**
+   * VpcName to be used for tagging its components
+   */
+  public abstract readonly vpcName?: string;
 
   /**
   * Region for this VPC
@@ -317,6 +358,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Adds VPNGAtewayV2 to this VPC
    */
   public enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2 {
+
     if (this.vpnGatewayId) {
       throw new Error('The VPN Gateway has already been enabled.');
     }
@@ -379,8 +421,10 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * @default - in case of no input subnets, no route is created
    */
   public addEgressOnlyInternetGateway(options?: EgressOnlyInternetGatewayOptions): void {
+
     const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
       vpc: this,
+      egressOnlyInternetGatewayName: options?.egressOnlyInternetGatewayName,
     });
 
     let useIpv6;
@@ -411,6 +455,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       routeTable: subnet.routeTable,
       destination: destinationIpv6, // IPv6 default route
       target: { gateway: egw },
+      routeName: 'CDKEIGWRoute',
     });
   }
 
@@ -426,6 +471,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     const igw = new InternetGateway(this, 'InternetGateway', {
       vpc: this,
+      internetGatewayName: options?.internetGatewayName,
     });
 
     this._internetConnectivityEstablished.add(igw);
@@ -453,6 +499,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
         routeTable: subnet.routeTable,
         destination: options?.ipv6Destination ?? '::/0',
         target: { gateway: igw },
+        routeName: 'CDKDefaultIPv6Route',
       });
     }
     //Add default route to IGW for IPv4
@@ -460,6 +507,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       routeTable: subnet.routeTable,
       destination: options?.ipv4Destination ?? '0.0.0.0/0',
       target: { gateway: igw },
+      routeName: 'CDKDefaultIPv4Route',
     });
   }
 
@@ -483,6 +531,46 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   public addFlowLog(id: string, options?: FlowLogOptions): FlowLog {
     return new FlowLog(this, id, {
       resourceType: FlowLogResourceType.fromVpc(this),
+      ...options,
+    });
+  }
+
+  /**
+  * Creates peering connection role for acceptor VPC
+  */
+  public createAcceptorVpcRole(requestorAccountId: string): Role {
+    const peeringRole = new Role(this, 'VpcPeeringRole', {
+      assumedBy: new AccountPrincipal(requestorAccountId),
+      roleName: 'VpcPeeringRole',
+      description: 'Restrictive role for VPC peering',
+    });
+
+    peeringRole.addToPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['ec2:AcceptVpcPeeringConnection'],
+      resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`],
+    }));
+
+    peeringRole.addToPolicy(new PolicyStatement({
+      actions: ['ec2:AcceptVpcPeeringConnection'],
+      effect: Effect.ALLOW,
+      resources: [`arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc-peering-connection/*`],
+      conditions: {
+        StringEquals: {
+          'ec2:AccepterVpc': `arn:${Aws.PARTITION}:ec2:${this.region}:${this.ownerAccountId}:vpc/${this.vpcId}`,
+        },
+      },
+    }));
+
+    return peeringRole;
+  }
+
+  /**
+  * Creates a peering connection
+  */
+  public createPeeringConnection(id: string, options: VPCPeeringConnectionOptions): VPCPeeringConnection {
+    return new VPCPeeringConnection(this, id, {
+      requestorVpc: this,
       ...options,
     });
   }
@@ -548,17 +636,18 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     return subnets;
   }
 
-  private selectSubnetObjectsByType(subnetType: SubnetType) {
-    const allSubnets = {
+  private selectSubnetObjectsByType(subnetType: SubnetType): ISubnet[] {
+    type DeprecatedSubnetType = 'Deprecated_Isolated' | 'Deprecated_Private';
+    const allSubnets: { [key in SubnetType | DeprecatedSubnetType]?: ISubnet[] } = {
       [SubnetType.PRIVATE_ISOLATED]: this.isolatedSubnets,
-      [SubnetType.ISOLATED]: this.isolatedSubnets,
+      ['Deprecated_Isolated']: this.isolatedSubnets,
       [SubnetType.PRIVATE_WITH_NAT]: this.privateSubnets,
       [SubnetType.PRIVATE_WITH_EGRESS]: this.privateSubnets,
-      [SubnetType.PRIVATE]: this.privateSubnets,
+      ['Deprecated_Private']: this.privateSubnets,
       [SubnetType.PUBLIC]: this.publicSubnets,
     };
 
-    const subnets = allSubnets[subnetType];
+    const subnets = allSubnets[subnetType]!;
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
     // see ImportedVpc
@@ -580,13 +669,13 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
 
     // TODO: throw error as new VpcV2 cannot support subnetName or subnetGroupName anymore
-    if (placement.subnetName !== undefined) {
+    if ('subnetName' in placement && placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
       } else {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:subnetNameDeprecated', 'Usage of \'subnetName\' in SubnetSelection is deprecated, use \'subnetGroupName\' instead');
       }
-      placement = { ...placement, subnetGroupName: placement.subnetName };
+      placement = { ...placement, subnetGroupName: placement.subnetName as string };
     }
 
     const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];

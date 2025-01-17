@@ -61,7 +61,13 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-alpha-integ-ipam/VPC-integ-test-1"
+     }
+    ]
    }
   },
   "VPCintegtest1ipv4IpamCidr451A5376": {
@@ -124,6 +130,12 @@
   "testsbubnetRouteTableD0136BEA": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
     "VpcId": {
      "Fn::GetAtt": [
       "VPCintegtest1EBA1CB75",

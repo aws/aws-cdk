@@ -308,7 +308,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     class ImportedIdentityPool extends Resource implements IIdentityPool {
       public readonly identityPoolId = res;
       public readonly identityPoolArn = identityPoolArn;
-      public readonly identityPoolName: string
+      public readonly identityPoolName: string;
       constructor() {
         super(scope, id, {
           account: pool.account,

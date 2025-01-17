@@ -154,7 +154,7 @@ export abstract class ScheduleTargetBase {
 
   private renderRetryPolicy(maximumEventAge: Duration | undefined, maximumRetryAttempts: number | undefined): CfnSchedule.RetryPolicyProperty {
     const maxMaxAge = Duration.days(1).toSeconds();
-    const minMaxAge = Duration.minutes(15).toSeconds();
+    const minMaxAge = Duration.minutes(1).toSeconds();
     let maxAge: number = maxMaxAge;
     if (maximumEventAge) {
       maxAge = maximumEventAge.toSeconds({ integral: true });
@@ -162,7 +162,7 @@ export abstract class ScheduleTargetBase {
         throw new Error('Maximum event age is 1 day');
       }
       if (maxAge < minMaxAge) {
-        throw new Error('Minimum event age is 15 minutes');
+        throw new Error('Minimum event age is 1 minute');
       }
     };
     let maxAttempts = 185;

@@ -45,6 +45,13 @@ export interface IDistribution extends IResource {
   readonly distributionId: string;
 
   /**
+   * The distribution ARN for this distribution.
+   *
+   * @attribute
+   */
+  readonly distributionArn: string;
+
+  /**
    * Adds an IAM policy statement associated with this distribution to an IAM
    * principal's policy.
    *
@@ -291,6 +298,9 @@ export class Distribution extends Resource implements IDistribution {
         this.distributionId = attrs.distributionId;
       }
 
+      public get distributionArn(): string {
+        return formatDistributionArn(this);
+      }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
@@ -312,6 +322,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
   private readonly publishAdditionalMetrics?: boolean;
+  private webAclId?: string;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -333,6 +344,11 @@ export class Distribution extends Resource implements IDistribution {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
       });
+    }
+
+    if (props.webAclId) {
+      this.validateWebAclId(props.webAclId);
+      this.webAclId = props.webAclId;
     }
 
     this.certificate = props.certificate;
@@ -363,7 +379,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: props.webAclId,
+        webAclId: Lazy.string({ produce: () => this.webAclId }),
       },
     });
 
@@ -381,6 +397,10 @@ export class Distribution extends Resource implements IDistribution {
         },
       });
     }
+  }
+
+  public get distributionArn(): string {
+    return formatDistributionArn(this);
   }
 
   /**
@@ -599,6 +619,30 @@ export class Distribution extends Resource implements IDistribution {
    */
   public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity, 'cloudfront:CreateInvalidation');
+  }
+
+  /**
+   * Attach WAF WebACL to this CloudFront distribution
+   *
+   * WebACL must be in the us-east-1 region
+   *
+   * @param webAclId The WAF WebACL to associate with this distribution
+   */
+  public attachWebAclId(webAclId: string) {
+    if (this.webAclId) {
+      throw new Error('A WebACL has already been attached to this distribution');
+    }
+    this.validateWebAclId(webAclId);
+    this.webAclId = webAclId;
+  }
+
+  private validateWebAclId(webAclId: string) {
+    if (webAclId.startsWith('arn:')) {
+      const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
+      if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
+        throw new Error(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`);
+      }
+    }
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {

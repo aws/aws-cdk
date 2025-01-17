@@ -54,7 +54,7 @@ describe('State Machine', () => {
         definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
         definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass2'))),
       });
-    }).toThrowError('Cannot specify definition and definitionBody at the same time');
+    }).toThrow('Cannot specify definition and definitionBody at the same time');
   }),
 
   test('Instantiate fails with no definition specified', () => {
@@ -66,7 +66,7 @@ describe('State Machine', () => {
       new sfn.StateMachine(stack, 'MyStateMachine', {
         stateMachineName: 'MyStateMachine',
       });
-    }).toThrowError('You need to specify either definition or definitionBody');
+    }).toThrow('You need to specify either definition or definitionBody');
   }),
 
   test('Instantiate Default State Machine', () => {

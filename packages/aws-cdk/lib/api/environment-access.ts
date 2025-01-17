@@ -3,8 +3,9 @@ import { SDK } from './aws-auth';
 import { warning } from '../logging';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { Mode } from './plugin';
+import { Mode } from './plugin/mode';
 import { replaceEnvPlaceholders, StringWithoutPlaceholders } from './util/placeholders';
+import { formatErrorMessage } from '../util/error';
 
 /**
  * Access particular AWS resources, based on information from the CX manifest
@@ -130,7 +131,7 @@ export class EnvironmentAccess {
     try {
       return await this.accessStackForLookup(stack);
     } catch (e: any) {
-      warning(`${e.message}`);
+      warning(`${formatErrorMessage(e)}`);
     }
     return this.accessStackForStackOperations(stack, Mode.ForReading);
   }

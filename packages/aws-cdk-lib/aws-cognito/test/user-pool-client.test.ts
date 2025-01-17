@@ -255,6 +255,7 @@ describe('User Pool Client', () => {
         custom: true,
         userPassword: true,
         userSrp: true,
+        user: true,
       },
     });
 
@@ -264,6 +265,7 @@ describe('User Pool Client', () => {
         'ALLOW_ADMIN_USER_PASSWORD_AUTH',
         'ALLOW_CUSTOM_AUTH',
         'ALLOW_USER_SRP_AUTH',
+        'ALLOW_USER_AUTH',
         'ALLOW_REFRESH_TOKEN_AUTH',
       ],
     });
@@ -281,6 +283,7 @@ describe('User Pool Client', () => {
         custom: false,
         userPassword: false,
         userSrp: false,
+        user: false,
       },
     });
 

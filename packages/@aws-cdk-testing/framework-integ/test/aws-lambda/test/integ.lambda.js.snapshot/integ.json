@@ -1,12 +1,14 @@
 {
-  "version": "38.0.1",
+  "version": "36.0.0",
   "testCases": {
-    "TestLambdaFunctionTesting/DefaultTest": {
+    "integ.lambda": {
       "stacks": [
         "aws-cdk-lambda-1"
       ],
-      "assertionStack": "TestLambdaFunctionTesting/DefaultTest/DeployAssert",
-      "assertionStackName": "TestLambdaFunctionTestingDefaultTestDeployAssertE49CDD88"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }

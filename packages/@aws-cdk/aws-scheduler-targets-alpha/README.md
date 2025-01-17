@@ -3,13 +3,13 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
@@ -34,6 +34,7 @@ The following targets are supported:
 9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
 10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
+12. `targets.Universal`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
 
 ## Invoke a Lambda function
 
@@ -309,6 +310,55 @@ new Schedule(this, 'Schedule', {
       name: 'parameter-name',
       value: 'parameter-value',
     }],
+  }),
+});
+```
+
+## Invoke a wider set of AWS API
+
+Use the `Universal` target to invoke AWS API.
+
+The code snippet below creates an event rule with AWS API as the target which is
+called at midnight every day by EventBridge Scheduler.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.cron({
+    minute: '0',
+    hour: '0',
+  }),
+  target: new targets.Universal({
+    service: 'rds',
+    action: 'stopDBCluster',
+    input: ScheduleTargetInput.fromObject({
+      DbClusterIdentifier: 'my-db',
+    }),
+  }),
+});
+```
+
+The `service` must be in lowercase and the `action` must be in camelCase.
+
+By default, an IAM policy for the Scheduler is extracted from the API call.
+
+You can control the IAM policy for the Scheduler by specifying the `policyStatements` property.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.Universal({
+    service: 'sqs',
+    action: 'sendMessage',
+    policyStatements: [
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+      }),
+      new iam.PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+        resources: ['arn:aws:kms:us-east-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
+      }),
+    ],
   }),
 });
 ```

@@ -260,7 +260,7 @@ export class CidrBlock {
   }
 
   /**
-   * Checks if two IP address ranges overlap.
+   * Checks if two IPv4 address ranges overlap.
    *
    * @param range1 The first IP address range represented as an array [start, end].
    * @param range2 The second IP address range represented as an array [start, end].
@@ -269,9 +269,8 @@ export class CidrBlock {
    * Note: This method assumes that the start and end addresses are valid IPv4 addresses.
    */
   public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
-    const [start1, end1] = range1;
-    const [start2, end2] = range2;
-
+    const [start1, end1] = range1.map(ip => NetworkUtils.ipToNum(ip));
+    const [start2, end2] = range2.map(ip => NetworkUtils.ipToNum(ip));
     // Check if ranges overlap
     return start1 <= end2 && start2 <= end1;
   }
@@ -379,4 +378,3 @@ export class CidrBlockIpv6 {
     return ipv6Number;
   }
 }
-

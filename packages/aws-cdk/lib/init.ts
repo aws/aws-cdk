@@ -1,11 +1,12 @@
 import * as childProcess from 'child_process';
 import * as path from 'path';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { invokeBuiltinHooks } from './init-hooks';
-import { error, print, warning } from './logging';
+import { error, info, warning } from './logging';
+import { ToolkitError } from './toolkit/error';
 import { cdkHomeDir, rootDir } from './util/directories';
+import { formatErrorMessage } from './util/error';
 import { rangeFromSemver } from './util/version-range';
 
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
@@ -41,7 +42,7 @@ export async function cliInit(options: CliInitOptions) {
   const template = (await availableInitTemplates()).find((t) => t.hasName(type!));
   if (!template) {
     await printAvailableTemplates(options.language);
-    throw new Error(`Unknown init template: ${type}`);
+    throw new ToolkitError(`Unknown init template: ${type}`);
   }
   if (!options.language && template.languages.length === 1) {
     const language = template.languages[0];
@@ -50,8 +51,8 @@ export async function cliInit(options: CliInitOptions) {
     );
   }
   if (!options.language) {
-    print(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
-    throw new Error('No language was selected');
+    info(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
+    throw new ToolkitError('No language was selected');
   }
 
   await initializeProject(
@@ -81,8 +82,8 @@ export class InitTemplate {
   public static async fromName(templatesDir: string, name: string) {
     const basePath = path.join(templatesDir, name);
     const languages = await listDirectory(basePath);
-    const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
-    return new InitTemplate(basePath, name, languages, info);
+    const initInfo = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
+    return new InitTemplate(basePath, name, languages, initInfo);
   }
 
   public readonly description: string;
@@ -92,10 +93,10 @@ export class InitTemplate {
     private readonly basePath: string,
     public readonly name: string,
     public readonly languages: string[],
-    info: any,
+    initInfo: any,
   ) {
-    this.description = info.description;
-    for (const alias of info.aliases || []) {
+    this.description = initInfo.description;
+    for (const alias of initInfo.aliases || []) {
       this.aliases.add(alias);
     }
   }
@@ -120,12 +121,13 @@ export class InitTemplate {
         `The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} ` +
           `(it supports: ${this.languages.map((l) => chalk.blue(l)).join(', ')})`,
       );
-      throw new Error(`Unsupported language: ${language}`);
+      throw new ToolkitError(`Unsupported language: ${language}`);
     }
 
     const projectInfo: ProjectInfo = {
       name: decamelize(path.basename(path.resolve(targetDirectory))),
       stackName,
+      versions: await loadInitVersions(),
     };
 
     const sourceDirectory = path.join(this.basePath, language);
@@ -173,11 +175,9 @@ export class InitTemplate {
   }
 
   private expand(template: string, language: string, project: ProjectInfo) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const manifest = require(path.join(rootDir(), 'package.json'));
-    const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
-    const cdkVersion = manifest.version.replace(MATCH_VER_BUILD, '');
-    let constructsVersion = manifest.devDependencies.constructs.replace(MATCH_VER_BUILD, '');
+    const cdkVersion = project.versions['aws-cdk-lib'];
+    let constructsVersion = project.versions.constructs;
+
     switch (language) {
       case 'java':
       case 'csharp':
@@ -222,7 +222,7 @@ export class InitTemplate {
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...cxapi.NEW_PROJECT_CONTEXT,
+      ...await currentlyRecommendedAwsCdkLibFlags(),
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
@@ -248,6 +248,8 @@ interface ProjectInfo {
   /** The value used for %name% */
   readonly name: string;
   readonly stackName?: string;
+
+  readonly versions: Versions;
 }
 
 export async function availableInitTemplates(): Promise<InitTemplate[]> {
@@ -294,18 +296,18 @@ async function listDirectory(dirPath: string) {
 }
 
 export async function printAvailableTemplates(language?: string) {
-  print('Available templates:');
+  info('Available templates:');
   for (const template of await availableInitTemplates()) {
     if (language && template.languages.indexOf(language) === -1) {
       continue;
     }
-    print(`* ${chalk.green(template.name)}: ${template.description}`);
+    info(`* ${chalk.green(template.name)}: ${template.description}`);
     const languageArg = language
       ? chalk.bold(language)
       : template.languages.length > 1
         ? `[${template.languages.map((t) => chalk.bold(t)).join('|')}]`
         : chalk.bold(template.languages[0]);
-    print(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
+    info(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
   }
 }
 
@@ -319,18 +321,14 @@ async function initializeProject(
   migrate?: boolean,
 ) {
   await assertIsEmptyDirectory(workDir);
-  print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
+  info(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir, stackName);
   if (migrate) {
     await template.addMigrateContext(workDir);
   }
-  if (await fs.pathExists('README.md')) {
-    const readme = await fs.readFile('README.md', { encoding: 'utf-8' });
-    // Save the logs!
-    // Without this statement, the readme of the CLI is printed in every init test
-    if (!readme.startsWith('# AWS CDK Toolkit')) {
-      print(chalk.green(readme));
-    }
+  if (await fs.pathExists(`${workDir}/README.md`)) {
+    const readme = await fs.readFile(`${workDir}/README.md`, { encoding: 'utf-8' });
+    info(chalk.green(readme));
   }
 
   if (!generateOnly) {
@@ -338,13 +336,13 @@ async function initializeProject(
     await postInstall(language, canUseNetwork, workDir);
   }
 
-  print('✅ All done!');
+  info('✅ All done!');
 }
 
 async function assertIsEmptyDirectory(workDir: string) {
   const files = await fs.readdir(workDir);
   if (files.filter((f) => !f.startsWith('.')).length !== 0) {
-    throw new Error('`cdk init` cannot be run in a non-empty directory!');
+    throw new ToolkitError('`cdk init` cannot be run in a non-empty directory!');
   }
 }
 
@@ -352,7 +350,7 @@ async function initializeGitRepository(workDir: string) {
   if (await isInGitRepository(workDir)) {
     return;
   }
-  print('Initializing a new git repository...');
+  info('Initializing a new git repository...');
   try {
     await execute('git', ['init'], { cwd: workDir });
     await execute('git', ['add', '.'], { cwd: workDir });
@@ -387,11 +385,11 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
     return;
   }
 
-  print(`Executing ${chalk.green(`${command} install`)}...`);
+  info(`Executing ${chalk.green(`${command} install`)}...`);
   try {
     await execute(command, ['install'], { cwd });
   } catch (e: any) {
-    warning(`${command} install failed: ` + e.message);
+    warning(`${command} install failed: ` + formatErrorMessage(e));
   }
 }
 
@@ -402,7 +400,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
     return;
   }
 
-  print("Executing 'mvn package'");
+  info("Executing 'mvn package'");
   try {
     await execute('mvn', ['package'], { cwd });
   } catch {
@@ -414,7 +412,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
   warning(`Please run '${python} -m venv .venv'!`);
-  print(`Executing ${chalk.green('Creating virtualenv...')}`);
+  info(`Executing ${chalk.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.venv'], { cwd });
   } catch {
@@ -469,9 +467,47 @@ async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
       if (status === 0) {
         return ok(stdout);
       } else {
-        process.stderr.write(stdout);
-        return fail(new Error(`${cmd} exited with status ${status}`));
+        error(stdout);
+        return fail(new ToolkitError(`${cmd} exited with status ${status}`));
       }
     });
   });
+}
+
+interface Versions {
+  ['aws-cdk-lib']: string;
+  constructs: string;
+}
+
+/**
+ * Return the 'aws-cdk-lib' version we will init
+ *
+ * This has been built into the CLI at build time.
+ */
+async function loadInitVersions(): Promise<Versions> {
+  const recommendedFlagsFile = path.join(__dirname, './init-templates/.init-version.json');
+  const contents = JSON.parse(await fs.readFile(recommendedFlagsFile, { encoding: 'utf-8' }));
+
+  const ret = {
+    'aws-cdk-lib': contents['aws-cdk-lib'],
+    'constructs': contents.constructs,
+  };
+  for (const [key, value] of Object.entries(ret)) {
+    /* istanbul ignore next */
+    if (!value) {
+      throw new Error(`Missing init version from ${recommendedFlagsFile}: ${key}`);
+    }
+  }
+
+  return ret;
+}
+
+/**
+ * Return the currently recommended flags for `aws-cdk-lib`.
+ *
+ * These have been built into the CLI at build time.
+ */
+export async function currentlyRecommendedAwsCdkLibFlags() {
+  const recommendedFlagsFile = path.join(__dirname, './init-templates/.recommended-feature-flags.json');
+  return JSON.parse(await fs.readFile(recommendedFlagsFile, { encoding: 'utf-8' }));
 }

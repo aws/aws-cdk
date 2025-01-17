@@ -14,7 +14,7 @@ test('create a tracker', () => {
   const key = new kms.Key(stack, 'Key');
 
   new Tracker(stack, 'Tracker', {
-    trackerName: 'MyTracker',
+    trackerName: 'my_tracker',
     description: 'My Tracker',
     eventBridgeEnabled: true,
     kmsKeyEnableGeospatialQueries: true,
@@ -23,7 +23,7 @@ test('create a tracker', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Location::Tracker', {
-    TrackerName: 'MyTracker',
+    TrackerName: 'my_tracker',
     Description: 'My Tracker',
     EventBridgeEnabled: true,
     KmsKeyEnableGeospatialQueries: true,
@@ -81,10 +81,16 @@ test('throws with invalid description', () => {
   })).toThrow('`description` must be between 0 and 1000 characters. Received: 1001 characters');
 });
 
+test.each(['', 'a'.repeat(101)])('throws with invalid name, got: %s', (trackerName) => {
+  expect(() => new Tracker(stack, 'Tracker', {
+    trackerName,
+  })).toThrow(`\`trackerName\` must be between 1 and 100 characters, got: ${trackerName.length} characters.`);
+});
+
 test('throws with invalid name', () => {
   expect(() => new Tracker(stack, 'Tracker', {
     trackerName: 'inv@lid',
-  })).toThrow(/Invalid tracker name/);
+  })).toThrow('`trackerName` must contain only alphanumeric characters, hyphens, periods and underscores, got: inv@lid.');
 });
 
 test('throws when kmsKeyEnableGeospatialQueries is true without a customer managed key', () => {
