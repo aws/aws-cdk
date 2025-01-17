@@ -15,10 +15,10 @@ import { patternsArrayForWatch, WatchOptions } from '../actions/watch';
 import { SdkOptions } from '../api/aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode } from '../api/aws-cdk';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource, StackSelectionStrategy } from '../api/cloud-assembly';
-import { CloudAssemblySourceBuilder } from '../api/cloud-assembly/private/source-builder';
+import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
-import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost, debug } from '../api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -38,7 +38,7 @@ export interface ToolkitOptions {
   /**
    * The IoHost implementation, handling the inline interactions between the Toolkit and an integration.
    */
-  // ioHost: IIoHost;
+  ioHost?: IIoHost;
 
   /**
    * Configuration options for the SDK.
@@ -78,10 +78,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   public constructor(private readonly props: ToolkitOptions = {}) {
     super();
 
-    // @todo open ioHost up
-    this.ioHost = CliIoHost.getIoHost();
-    // this.ioHost = options.ioHost;
-
+    this.ioHost = props.ioHost ?? CliIoHost.getIoHost();
     this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 
@@ -121,26 +118,38 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   /**
    * Synth Action
    */
-  public async synth(cx: ICloudAssemblySource, options: SynthOptions): Promise<ICloudAssemblySource> {
+  public async synth(cx: ICloudAssemblySource, options: SynthOptions = {}): Promise<ICloudAssemblySource> {
     const ioHost = withAction(this.ioHost, 'synth');
     const assembly = await this.assemblyFromSource(cx);
-    const stacks = assembly.selectStacksV2(options.stacks);
+    const stacks = assembly.selectStacksV2(options.stacks ?? ALL_STACKS);
     const autoValidateStacks = options.validateStacks ? [assembly.selectStacksForValidation()] : [];
     await this.validateStacksMetadata(stacks.concat(...autoValidateStacks), ioHost);
 
     // if we have a single stack, print it to STDOUT
+    const message = `Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`;
+    const assemblyData = {
+      assemblyDirectory: stacks.assembly.directory,
+      stacksCount: stacks.stackCount,
+      stackIds: stacks.hierarchicalIds,
+    };
+
     if (stacks.stackCount === 1) {
-      const template = stacks.firstStack?.template;
+      const firstStack = stacks.firstStack!;
+      const template = firstStack.template;
       const obscuredTemplate = obscureTemplate(template);
-      await ioHost.notify(info('', 'CDK_TOOLKIT_I0001', {
-        raw: template,
-        json: serializeStructure(obscuredTemplate, true),
-        yaml: serializeStructure(obscuredTemplate, false),
-      },
-      ));
+      await ioHost.notify(info(message, 'CDK_TOOLKIT_I0001', {
+        ...assemblyData,
+        stack: {
+          stackName: firstStack.stackName,
+          hierarchicalId: firstStack.hierarchicalId,
+          template,
+          stringifiedJson: serializeStructure(obscuredTemplate, true),
+          stringifiedYaml: serializeStructure(obscuredTemplate, false),
+        },
+      }));
     } else {
       // not outputting template to stdout, let's explain things to the user a little bit...
-      await ioHost.notify(success(`Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`));
+      await ioHost.notify(success(message, 'CDK_TOOLKIT_I0002', assemblyData));
       await ioHost.notify(info(`Supply a stack id (${stacks.stackArtifacts.map((s) => chalk.green(s.hierarchicalId)).join(', ')}) to display its template.`));
     }
 
@@ -416,7 +425,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
 
         await ioHost.notify(info('Stack ARN:'));
 
-        await ioHost.notify(data(deployResult.stackArn));
+        await ioHost.notify(info(deployResult.stackArn));
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -518,7 +527,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const watchExcludes = patternsArrayForWatch(options.exclude, {
       rootDir,
       returnRootDirIfEmpty: false,
-    }).concat(`${options.output}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
+    }).concat(`${options.outdir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
     await ioHost.notify(debug(`'exclude' patterns for 'watch': ${watchExcludes}`));
 
     // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
