@@ -49,4 +49,4 @@ RUN mkdir /tmp/bun-cache && \
 
 USER nobody
 
-# CMD [ "esbuild" ]
+CMD [ "esbuild" ]
