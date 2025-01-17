@@ -484,7 +484,7 @@ export class CdkToolkit {
                 );
               }
 
-              // Go around through the 'while' loop again but switch rollback to false.
+              // Go around through the 'while' loop again but switch rollback to true.
               rollback = true;
               break;
             }
