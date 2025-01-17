@@ -1049,52 +1049,33 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     async () => {
       const realSetTimeout = setTimeout;
       jest.useFakeTimers();
-
-      // Ignore the wait times that the SDK tries to impose and always set timers for 1 ms
-      jest.spyOn(global, 'setTimeout').mockImplementation((fn) => {
-        return realSetTimeout(fn, 1);
-      });
-
-      // GIVEN
-      mockAppSyncClient
-        .on(ListFunctionsCommand)
-        .resolvesOnce({
-          functions: [{ name: 'my-function', functionId: 'functionId' }],
+      try {
+        // Ignore the wait times that the SDK tries to impose and always set timers for 1 ms
+        jest.spyOn(global, 'setTimeout').mockImplementation((fn) => {
+          return realSetTimeout(fn, 1);
         });
 
-      const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
-      ConcurrentModError.name = 'ConcurrentModificationException';
-      mockAppSyncClient
-        .on(UpdateFunctionCommand)
-        .rejectsOnce(ConcurrentModError)
-        .rejectsOnce(ConcurrentModError)
-        .rejectsOnce(ConcurrentModError)
-        .rejectsOnce(ConcurrentModError)
-        .rejectsOnce(ConcurrentModError)
-        .rejectsOnce(ConcurrentModError)
-        .rejectsOnce(ConcurrentModError)
-        .resolvesOnce({ functionConfiguration: { name: 'my-function', dataSourceName: 'my-datasource', functionId: 'functionId' } });
+        // GIVEN
+        mockAppSyncClient
+          .on(ListFunctionsCommand)
+          .resolvesOnce({
+            functions: [{ name: 'my-function', functionId: 'functionId' }],
+          });
 
-      setup.setCurrentCfnStackTemplate({
-        Resources: {
-          AppSyncFunction: {
-            Type: 'AWS::AppSync::FunctionConfiguration',
-            Properties: {
-              Name: 'my-function',
-              ApiId: 'apiId',
-              DataSourceName: 'my-datasource',
-              FunctionVersion: '2018-05-29',
-              RequestMappingTemplate: '## original request template',
-              ResponseMappingTemplate: '## original response template',
-            },
-            Metadata: {
-              'aws:asset:path': 'old-path',
-            },
-          },
-        },
-      });
-      const cdkStackArtifact = setup.cdkStackArtifactOf({
-        template: {
+        const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
+        ConcurrentModError.name = 'ConcurrentModificationException';
+        mockAppSyncClient
+          .on(UpdateFunctionCommand)
+          .rejectsOnce(ConcurrentModError)
+          .rejectsOnce(ConcurrentModError)
+          .rejectsOnce(ConcurrentModError)
+          .rejectsOnce(ConcurrentModError)
+          .rejectsOnce(ConcurrentModError)
+          .rejectsOnce(ConcurrentModError)
+          .rejectsOnce(ConcurrentModError)
+          .resolvesOnce({ functionConfiguration: { name: 'my-function', dataSourceName: 'my-datasource', functionId: 'functionId' } });
+
+        setup.setCurrentCfnStackTemplate({
           Resources: {
             AppSyncFunction: {
               Type: 'AWS::AppSync::FunctionConfiguration',
@@ -1104,34 +1085,55 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
                 DataSourceName: 'my-datasource',
                 FunctionVersion: '2018-05-29',
                 RequestMappingTemplate: '## original request template',
-                ResponseMappingTemplate: '## new response template',
+                ResponseMappingTemplate: '## original response template',
               },
               Metadata: {
-                'aws:asset:path': 'new-path',
+                'aws:asset:path': 'old-path',
               },
             },
           },
-        },
-      });
+        });
+        const cdkStackArtifact = setup.cdkStackArtifactOf({
+          template: {
+            Resources: {
+              AppSyncFunction: {
+                Type: 'AWS::AppSync::FunctionConfiguration',
+                Properties: {
+                  Name: 'my-function',
+                  ApiId: 'apiId',
+                  DataSourceName: 'my-datasource',
+                  FunctionVersion: '2018-05-29',
+                  RequestMappingTemplate: '## original request template',
+                  ResponseMappingTemplate: '## new response template',
+                },
+                Metadata: {
+                  'aws:asset:path': 'new-path',
+                },
+              },
+            },
+          },
+        });
 
-      // WHEN
-      await expect(() => hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact)).rejects.toThrow(
-        'ConcurrentModificationException',
-      );
+        // WHEN
+        await expect(() => hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact)).rejects.toThrow(
+          'ConcurrentModificationException',
+        );
 
-      // THEN
-      expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 7); // 1st attempt and then 6 retries before bailing
-      expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
-        apiId: 'apiId',
-        dataSourceName: 'my-datasource',
-        functionId: 'functionId',
-        functionVersion: '2018-05-29',
-        name: 'my-function',
-        requestMappingTemplate: '## original request template',
-        responseMappingTemplate: '## new response template',
-      });
+        // THEN
+        expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 7); // 1st attempt and then 6 retries before bailing
+        expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
+          apiId: 'apiId',
+          dataSourceName: 'my-datasource',
+          functionId: 'functionId',
+          functionVersion: '2018-05-29',
+          name: 'my-function',
+          requestMappingTemplate: '## original request template',
+          responseMappingTemplate: '## new response template',
+        });
 
-      jest.useRealTimers();
+      } finally {
+        jest.useRealTimers();
+      }
     },
     320000,
   );
