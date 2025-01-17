@@ -104,7 +104,7 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 function fullTestName(test: TestDescription) {
   let ret = test.name;
   while (test.parent != null && test.parent.name !== 'ROOT_DESCRIBE_BLOCK') {
-    ret = test.parent.name + ' › ' + fullTestName;
+    ret = test.parent.name + ' › ' + ret;
     test = test.parent;
   }
   return ret;
