@@ -16,7 +16,10 @@ tsconfig.json
 *.tsbuildinfo
 junit.xml
 jest.config.js
-bundle.mjs
+build-tools
+
+# Ignore tests
+test
 
 # Explicitly allow all required files
 !build-info.json
@@ -24,7 +27,7 @@ bundle.mjs
 # !lib/api/bootstrap/bootstrap-template.yaml
 !*.d.ts
 !*.d.ts.map
-!*.js
+!lib/*.js
 !LICENSE
 !NOTICE
 !THIRD_PARTY_LICENSES
