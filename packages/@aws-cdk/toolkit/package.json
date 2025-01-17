@@ -3,15 +3,15 @@
   "description": "AWS CDK Programmatic Toolkit Library",
   "private": true,
   "version": "0.0.0",
-  "main": "./lib/main.js",
+  "type": "commonjs",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
-      "default": "./lib/main.js"
+      "default": "./lib/index.js"
     }
   },
-  "types": "./lib/index.d.ts",
-  "type": "commonjs",
   "scripts": {
     "awslint": "cdk-awslint",
     "build": "cdk-build",
@@ -19,18 +19,20 @@
     "build+test+package": "yarn build+test && yarn package",
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test",
-    "bundle": "node bundle.mjs",
+    "bundle": "node build-tools/bundle.mjs",
     "docs": "typedoc lib/index.ts --excludeExternals --excludePrivate --excludeProtected --excludeInternal",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
+    "publish-local": "./build-tools/package.sh",
     "test": "cdk-test",
     "watch": "cdk-watch"
   },
   "cdk-build": {
     "post": [
       "yarn bundle",
-      "node ./lib/main.js >/dev/null 2>/dev/null </dev/null"
+      "node ./lib/index.js >/dev/null 2>/dev/null </dev/null",
+      "node ./lib/api/aws-cdk.js >/dev/null 2>/dev/null </dev/null"
     ]
   },
   "author": {
