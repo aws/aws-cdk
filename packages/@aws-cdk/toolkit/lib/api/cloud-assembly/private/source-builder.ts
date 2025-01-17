@@ -4,7 +4,7 @@ import { ContextAwareCloudAssembly, ContextAwareCloudAssemblyProps } from './con
 import { execInChildProcess } from './exec';
 import { assemblyFromDirectory, changeDir, determineOutputDirectory, guessExecutable, prepareDefaultEnvironment, withContext, withEnv } from './prepare-source';
 import { ToolkitServices } from '../../../toolkit/private';
-import { Context, ILock, RWLock } from '../../aws-cdk';
+import { Context, ILock, RWLock, Settings } from '../../aws-cdk';
 import { ToolkitError } from '../../errors';
 import { debug } from '../../io/private';
 import { AssemblyBuilder, CdkAppSourceProps } from '../source-builder';
@@ -28,7 +28,7 @@ export abstract class CloudAssemblySourceBuilder {
     props: CdkAppSourceProps = {},
   ): Promise<ICloudAssemblySource> {
     const services = await this.toolkitServices();
-    const context = new Context(); // @todo check if this needs to read anything
+    const context = new Context({ bag: new Settings(props.context ?? {}) });
     const contextAssemblyProps: ContextAwareCloudAssemblyProps = {
       services,
       context,
@@ -85,7 +85,8 @@ export abstract class CloudAssemblySourceBuilder {
    */
   public async fromCdkApp(app: string, props: CdkAppSourceProps = {}): Promise<ICloudAssemblySource> {
     const services: ToolkitServices = await this.toolkitServices();
-    const context = new Context(); // @todo this definitely needs to read files
+    // @todo this definitely needs to read files from the CWD
+    const context = new Context({ bag: new Settings(props.context ?? {}) });
     const contextAssemblyProps: ContextAwareCloudAssemblyProps = {
       services,
       context,
