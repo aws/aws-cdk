@@ -423,16 +423,9 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
           await ioHost.notify(info(`${chalk.cyan(stack.id)}.${chalk.cyan(name)} = ${chalk.underline(chalk.cyan(value))}`));
         }
 
-        const obscuredTemplate = obscureTemplate(stack.template);
-        await ioHost.notify(info(`Stack ARN:${deployResult.stackArn}`, 'CDK_TOOLKIT_I0002', {
-          stack: {
-            stackName: stack.stackName,
-            hierarchicalId: stack.hierarchicalId,
-            template: stack.template,
-            stringifiedJson: serializeStructure(obscuredTemplate, true),
-            stringifiedYaml: serializeStructure(obscuredTemplate, false),
-          },
-        }));
+        await ioHost.notify(info('Stack ARN:'));
+
+        await ioHost.notify(info(deployResult.stackArn));
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -534,7 +527,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const watchExcludes = patternsArrayForWatch(options.exclude, {
       rootDir,
       returnRootDirIfEmpty: false,
-    }).concat(`${options.output}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
+    }).concat(`${options.outdir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
     await ioHost.notify(debug(`'exclude' patterns for 'watch': ${watchExcludes}`));
 
     // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
