@@ -3,8 +3,8 @@ import { ArtifactMetadataEntryType, type MetadataEntry } from '@aws-cdk/cloud-as
 import type { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { ResourceEvent, StackEventPoller } from './stack-event-poller';
-import { error, setIoMessageThreshold, info } from '../../../logging';
-import { IoMessageLevel } from '../../../toolkit/cli-io-host';
+import { error, info } from '../../../logging';
+import { CliIoHost, IoMessageLevel } from '../../../toolkit/cli-io-host';
 import type { ICloudFormationClient } from '../../aws-auth';
 import { RewritableBlock } from '../display';
 
@@ -623,12 +623,13 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
    */
   public readonly updateSleep: number = 2_000;
 
-  private oldLogThreshold: IoMessageLevel = 'info';
+  private oldLogThreshold: IoMessageLevel;
   private readonly stream: NodeJS.WriteStream;
   private block: RewritableBlock;
 
   constructor(props: PrinterProps) {
     super(props);
+    this.oldLogThreshold = CliIoHost.instance().logLevel;
     this.stream = props.stream;
     this.block = new RewritableBlock(this.stream);
   }
@@ -674,11 +675,12 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   public start() {
     // Need to prevent the waiter from printing 'stack not stable' every 5 seconds, it messes
     // with the output calculations.
-    setIoMessageThreshold('info');
+    this.oldLogThreshold = CliIoHost.instance().logLevel;
+    CliIoHost.instance().logLevel = 'info';
   }
 
   public stop() {
-    setIoMessageThreshold(this.oldLogThreshold);
+    CliIoHost.instance().logLevel = this.oldLogThreshold;
 
     // Print failures at the end
     const lines = new Array<string>();
