@@ -3,7 +3,7 @@
     "esModuleInterop": false,
     "skipLibCheck": true,
     "target": "es2022",
-    "allowJs": true,
+    "allowJs": false,
     "resolveJsonModule": true,
     "moduleDetection": "force",
     "isolatedModules": true,
@@ -20,7 +20,7 @@
     "composite": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo"
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "build-tools/*.mjs"],
   "exclude": ["node_modules", "**/*.d.ts", "dist"],
   "references": [
     { "path": "../cx-api" },
