@@ -5,7 +5,8 @@ const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
 
 beforeEach(() => {
-  ioHost.spy.mockClear();
+  ioHost.notifySpy.mockClear();
+  ioHost.requestSpy.mockClear();
 });
 
 describe('fromAssemblyBuilder', () => {

@@ -5,7 +5,8 @@ const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
 
 beforeEach(() => {
-  ioHost.spy.mockClear();
+  ioHost.notifySpy.mockClear();
+  ioHost.requestSpy.mockClear();
 });
 
 describe('synth', () => {
@@ -15,7 +16,7 @@ describe('synth', () => {
     await toolkit.synth(cx);
 
     // THEN
-    expect(ioHost.spy).toHaveBeenCalledWith(expect.objectContaining({
+    expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
       level: 'info',
       message: expect.stringContaining('Successfully synthesized'),
@@ -28,7 +29,7 @@ describe('synth', () => {
     await toolkit.synth(cx);
 
     // THEN
-    expect(ioHost.spy).toHaveBeenCalledWith(expect.objectContaining({
+    expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
       level: 'info',
       message: expect.stringContaining('Successfully synthesized'),
@@ -41,7 +42,7 @@ describe('synth', () => {
     await toolkit.synth(cx);
 
     // THEN
-    expect(ioHost.spy).toHaveBeenCalledWith(expect.objectContaining({
+    expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
       level: 'info',
       code: 'CDK_TOOLKIT_I0001',
@@ -62,7 +63,7 @@ describe('synth', () => {
     await toolkit.synth(await appFixture(toolkit, 'two-empty-stacks'));
 
     // THEN
-    expect(ioHost.spy).toHaveBeenCalledWith(expect.objectContaining({
+    expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
       level: 'info',
       code: 'CDK_TOOLKIT_I0002',
