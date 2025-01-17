@@ -92,6 +92,7 @@ import { CdkToolkit, markTesting } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { Tag } from '../lib/tags';
+import { CliIoHost } from '../lib/toolkit/cli-io-host';
 import { flatten } from '../lib/util';
 
 markTesting();
@@ -124,6 +125,7 @@ beforeEach(() => {
     ],
   });
 
+  CliIoHost.instance().isCI = false;
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
     return true;
   });

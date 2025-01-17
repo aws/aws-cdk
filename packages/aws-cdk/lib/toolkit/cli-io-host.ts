@@ -71,6 +71,14 @@ export interface IoRequest<T, U> extends IoMessage<T> {
 
 export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
+export const levelPriority: Record<IoMessageLevel, number> = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  debug: 3,
+  trace: 4,
+};
+
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
@@ -114,7 +122,7 @@ export interface CliIoHostProps {
   /**
    * The initial Toolkit action the hosts starts with.
    *
-   * @default 'synth'
+   * @default 'none'
    */
   readonly currentAction?: ToolkitAction;
 
@@ -166,22 +174,6 @@ export class CliIoHost implements IIoHost {
    * Singleton instance of the CliIoHost
    */
   private static _instance: CliIoHost | undefined;
-
-  /**
-   * Determines which output stream to use based on log level and configuration.
-   */
-  private static getStream(level: IoMessageLevel, forceStdout: boolean) {
-    // For legacy purposes all log streams are written to stderr by default, unless
-    // specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
-    // if the CDK is running in a CI environment. This is because some CI environments will immediately
-    // fail if stderr is written to. In these cases, we detect if we are in a CI environment and
-    // write all messages to stdout instead.
-    if (forceStdout) {
-      return process.stdout;
-    }
-    if (level == 'error') return process.stderr;
-    return CliIoHost.instance().isCI ? process.stdout : process.stderr;
-  }
 
   private _currentAction: ToolkitAction;
   private _isCI: boolean;
@@ -276,9 +268,12 @@ export class CliIoHost implements IIoHost {
       return this._internalIoHost.notify(msg);
     }
 
-    const output = this.formatMessage(msg);
+    if (levelPriority[msg.level] > levelPriority[this.logLevel]) {
+      return;
+    }
 
-    const stream = CliIoHost.getStream(msg.level, msg.forceStdout ?? false);
+    const output = this.formatMessage(msg);
+    const stream = this.stream(msg.level, msg.forceStdout ?? false);
 
     return new Promise((resolve, reject) => {
       stream.write(output, (err) => {
@@ -289,6 +284,22 @@ export class CliIoHost implements IIoHost {
         }
       });
     });
+  }
+
+  /**
+   * Determines which output stream to use based on log level and configuration.
+   */
+  private stream(level: IoMessageLevel, forceStdout: boolean) {
+    // For legacy purposes all log streams are written to stderr by default, unless
+    // specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
+    // if the CDK is running in a CI environment. This is because some CI environments will immediately
+    // fail if stderr is written to. In these cases, we detect if we are in a CI environment and
+    // write all messages to stdout instead.
+    if (forceStdout) {
+      return process.stdout;
+    }
+    if (level == 'error') return process.stderr;
+    return CliIoHost.instance().isCI ? process.stdout : process.stderr;
   }
 
   /**

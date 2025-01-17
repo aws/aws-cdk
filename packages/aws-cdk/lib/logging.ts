@@ -1,18 +1,10 @@
 import * as util from 'util';
 import * as chalk from 'chalk';
-import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageCode, IoMessageCodeCategory, IoCodeLevel } from './toolkit/cli-io-host';
+import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageCode, IoMessageCodeCategory, IoCodeLevel, levelPriority } from './toolkit/cli-io-host';
 
 // Corking mechanism
 let CORK_COUNTER = 0;
 const logBuffer: IoMessage<any>[] = [];
-
-const levelPriority: Record<IoMessageLevel, number> = {
-  error: 0,
-  warn: 1,
-  info: 2,
-  debug: 3,
-  trace: 4,
-};
 
 /**
  * Executes a block of code with corked logging. All log messages during execution
@@ -36,7 +28,7 @@ export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> 
   }
 }
 
-interface LogOptions {
+interface LogMessage {
   /**
    * The log level to use
    */
@@ -60,23 +52,22 @@ interface LogOptions {
 
 /**
  * Internal core logging function that writes messages through the CLI IO host.
- * @param options Configuration options for the log message. See  {@link LogOptions}
+ * @param msg Configuration options for the log message. See  {@link LogMessage}
  */
-function log(options: LogOptions) {
-  if (levelPriority[options.level] > levelPriority[CliIoHost.instance().logLevel]) {
-    return;
-  }
-
+function log(msg: LogMessage) {
   const ioMessage: IoMessage<undefined> = {
-    level: options.level,
-    message: options.message,
-    forceStdout: options.forceStdout,
+    level: msg.level,
+    message: msg.message,
+    forceStdout: msg.forceStdout,
     time: new Date(),
     action: CliIoHost.instance().currentAction,
-    code: options.code,
+    code: msg.code,
   };
 
   if (CORK_COUNTER > 0) {
+    if (levelPriority[msg.level] > levelPriority[CliIoHost.instance().logLevel]) {
+      return;
+    }
     logBuffer.push(ioMessage);
     return;
   }

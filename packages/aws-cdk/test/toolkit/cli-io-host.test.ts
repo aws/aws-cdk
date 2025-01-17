@@ -1,7 +1,9 @@
 import * as chalk from 'chalk';
 import { CliIoHost, IoMessage } from '../../lib/toolkit/cli-io-host';
 
-const ioHost = CliIoHost.instance();
+const ioHost = CliIoHost.instance({
+  logLevel: 'trace',
+});
 
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
