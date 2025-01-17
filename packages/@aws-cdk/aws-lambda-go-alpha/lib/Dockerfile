@@ -12,4 +12,7 @@ ENV GOPROXY=direct
 RUN mkdir $GOPATH && \
   chmod -R 777 $GOPATH
 
+# Switch to a non-root user
+USER nobody
+
 CMD [ "go" ]
