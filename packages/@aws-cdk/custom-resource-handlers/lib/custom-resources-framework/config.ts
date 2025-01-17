@@ -54,7 +54,7 @@ export enum ComponentType {
 }
 
 /**
- * Properites used to generate individual framework components.
+ * Properties used to generate individual framework components.
  */
 export interface ComponentProps {
   /**
