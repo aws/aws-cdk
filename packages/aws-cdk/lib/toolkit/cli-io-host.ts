@@ -1,5 +1,4 @@
 import * as chalk from 'chalk';
-import { isCI } from '../util/yargs-helpers';
 
 export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS';
 export type IoCodeLevel = 'E' | 'W' | 'I';
@@ -95,6 +94,22 @@ export type ToolkitAction =
 | 'migrate'
 | 'version';
 
+export interface IIoHost {
+  /**
+   * Notifies the host of a message.
+   * The caller waits until the notification completes.
+   */
+  notify<T>(msg: IoMessage<T>): Promise<void>;
+
+  /**
+   * Notifies the host of a message that requires a response.
+   *
+   * If the host does not return a response the suggested
+   * default response from the input message will be used.
+   */
+  requestResponse<T, U>(msg: IoRequest<T, U>): Promise<U>;
+}
+
 export interface CliIoHostProps {
   /**
    * The initial Toolkit action the hosts starts with.
@@ -136,7 +151,7 @@ export interface CliIoHostProps {
 /**
  * A simple IO host for the CLI that writes messages to the console.
  */
-export class CliIoHost {
+export class CliIoHost implements IIoHost {
   /**
    * Returns the singleton instance
    */
@@ -172,12 +187,22 @@ export class CliIoHost {
   private _isCI: boolean;
   private _isTTY: boolean;
   private _logLevel: IoMessageLevel;
+  private _internalIoHost?: IIoHost;
 
   private constructor(props: CliIoHostProps = {}) {
     this._currentAction = props.currentAction ?? 'none' as ToolkitAction;
     this._isTTY = props.isTTY ?? process.stdout.isTTY ?? false;
     this._logLevel = props.logLevel ?? 'info';
     this._isCI = props.isCI ?? isCI();
+  }
+
+  /**
+   * Returns the singleton instance
+   */
+  public registerIoHost(ioHost: IIoHost) {
+    if (ioHost !== this) {
+      this._internalIoHost = ioHost;
+    }
   }
 
   /**
@@ -247,6 +272,10 @@ export class CliIoHost {
    * The caller waits until the notification completes.
    */
   public async notify<T>(msg: IoMessage<T>): Promise<void> {
+    if (this._internalIoHost) {
+      return this._internalIoHost.notify(msg);
+    }
+
     const output = this.formatMessage(msg);
 
     const stream = CliIoHost.getStream(msg.level, msg.forceStdout ?? false);
@@ -269,6 +298,10 @@ export class CliIoHost {
    * default response from the input message will be used.
    */
   public async requestResponse<T, U>(msg: IoRequest<T, U>): Promise<U> {
+    if (this._internalIoHost) {
+      return this._internalIoHost.requestResponse(msg);
+    }
+
     await this.notify(msg);
     return msg.defaultResponse;
   }
@@ -304,3 +337,11 @@ const styleMap: Record<IoMessageLevel, (str: string) => string> = {
   debug: chalk.gray,
   trace: chalk.gray,
 };
+
+/**
+ * Returns true if the current process is running in a CI environment
+ * @returns true if the current process is running in a CI environment
+ */
+export function isCI(): boolean {
+  return process.env.CI !== undefined && process.env.CI !== 'false' && process.env.CI !== '0';
+}
