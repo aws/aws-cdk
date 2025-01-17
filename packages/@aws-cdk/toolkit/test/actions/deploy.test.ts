@@ -1,11 +1,9 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as core from 'aws-cdk-lib/core';
 import { RequireApproval } from '../../lib';
 import { Toolkit } from '../../lib/toolkit';
-import { TestIoHost } from '../_helpers';
+import { builderFixture, TestIoHost } from '../_helpers';
 
 const ioHost = new TestIoHost();
-const cdk = new Toolkit({ ioHost });
+const toolkit = new Toolkit({ ioHost });
 
 jest.mock('../../lib/api/aws-cdk', () => {
   return {
@@ -24,27 +22,17 @@ jest.mock('../../lib/api/aws-cdk', () => {
   };
 });
 
-const cxFromBuilder = async () => {
-  return cdk.fromAssemblyBuilder(async () => {
-    const app = new core.App();
-    new core.Stack(app, 'Stack1');
-    new core.Stack(app, 'Stack2');
-
-    // @todo fix api
-    return app.synth() as any;
-  });
-};
-
 beforeEach(() => {
   ioHost.notifySpy.mockClear();
+  ioHost.requestSpy.mockClear();
   jest.clearAllMocks();
 });
 
 describe('deploy', () => {
   test('deploy from builder', async () => {
     // WHEN
-    const cx = await cxFromBuilder();
-    await cdk.deploy(cx);
+    const cx = await builderFixture(toolkit, 'two-empty-stacks');
+    await toolkit.deploy(cx);
 
     // THEN
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
@@ -56,16 +44,8 @@ describe('deploy', () => {
 
   test('request response when require approval is set', async () => {
     // WHEN
-    const cx = await cdk.fromAssemblyBuilder(async () => {
-      const app = new core.App();
-      const stack = new core.Stack(app, 'Stack1');
-      new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ArnPrincipal('arn'),
-      });
-      return app.synth() as any;
-    });
-
-    await cdk.deploy(cx, {
+    const cx = await builderFixture(toolkit, 'stack-with-role');
+    await toolkit.deploy(cx, {
       requireApproval: RequireApproval.ANY_CHANGE,
     });
 
@@ -80,16 +60,8 @@ describe('deploy', () => {
 
   test('skips response by default', async () => {
     // WHEN
-    const cx = await cdk.fromAssemblyBuilder(async () => {
-      const app = new core.App();
-      const stack = new core.Stack(app, 'Stack1');
-      new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ArnPrincipal('arn'),
-      });
-      return app.synth() as any;
-    });
-
-    await cdk.deploy(cx, {
+    const cx = await builderFixture(toolkit, 'stack-with-role');
+    await toolkit.deploy(cx, {
       requireApproval: RequireApproval.NEVER,
     });
 
