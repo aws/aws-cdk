@@ -1045,8 +1045,15 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
   );
 
   silentTest(
-    'updateFunction() API fails if it recieves 7 failed attempts in a row - this is a long running test',
+    'updateFunction() API fails if it recieves 7 failed attempts in a row',
     async () => {
+      const realSetTimeout = setTimeout;
+      jest.useFakeTimers();
+
+      // Ignore the wait times that the SDK tries to impose and always set timers for 1 ms
+      jest.spyOn(global, 'setTimeout').mockImplementation((fn) => {
+        return realSetTimeout(fn, 1);
+      });
 
       // GIVEN
       mockAppSyncClient
@@ -1123,6 +1130,8 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
         requestMappingTemplate: '## original request template',
         responseMappingTemplate: '## new response template',
       });
+
+      jest.useRealTimers();
     },
     320000,
   );
