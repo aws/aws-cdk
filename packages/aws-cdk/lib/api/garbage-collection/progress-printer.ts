@@ -41,6 +41,13 @@ export class ProgressPrinter {
   }
 
   public start() {
+    // If there is already a running setInterval, clear it first.
+    // This is because if this.setInterval is reassigned to another setInterval,
+    // the original setInterval remains and can no longer be cleared.
+    if (this.setInterval) {
+      clearInterval(this.setInterval);
+    }
+
     this.setInterval = setInterval(() => {
       if (!this.isPaused) {
         this.print();
