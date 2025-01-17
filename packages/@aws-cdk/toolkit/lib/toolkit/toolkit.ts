@@ -527,7 +527,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const watchExcludes = patternsArrayForWatch(options.exclude, {
       rootDir,
       returnRootDirIfEmpty: false,
-    }).concat(`${options.output}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
+    }).concat(`${options.outdir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
     await ioHost.notify(debug(`'exclude' patterns for 'watch': ${watchExcludes}`));
 
     // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
