@@ -48,6 +48,10 @@ export enum AccessLevel {
    */
   READ = 'READ',
   /**
+   * Grants list permissions to CloudFront Distribution
+   */
+  LIST = 'LIST',
+  /**
    * Grants write permission to CloudFront Distribution
    */
   WRITE = 'WRITE',
