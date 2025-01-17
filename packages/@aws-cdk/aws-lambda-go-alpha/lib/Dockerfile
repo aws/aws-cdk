@@ -8,14 +8,11 @@ ENV GOPATH=/go
 ENV GOCACHE=$GOPATH/.cache/go-build
 ENV GOPROXY=direct
 
-# Create a non-root user and switch to it
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
-
 # Ensure all users can write to GOPATH
 RUN mkdir $GOPATH && \
   chmod -R 777 $GOPATH
 
-# Switch to non-root user
-USER appuser
+# Switch to a non-root user
+USER nobody
 
 CMD [ "go" ]
