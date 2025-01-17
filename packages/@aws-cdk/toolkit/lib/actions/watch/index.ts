@@ -38,11 +38,11 @@ export interface WatchOptions extends BaseDeployOptions {
   readonly watchDir?: string;
 
   /**
-   * The output to write CloudFormation template to
+   * The output directory to write CloudFormation template to
    *
    * @deprecated this should be grabbed from the cloud assembly itself
    */
-  readonly output?: string;
+  readonly outdir?: string;
 }
 
 export function patternsArrayForWatch(

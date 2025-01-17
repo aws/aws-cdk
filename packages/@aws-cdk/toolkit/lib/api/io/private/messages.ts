@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import type { IoMessageCode, IoMessageCodeCategory, IoMessageLevel } from '../io-host';
+import type { IoMessageCode, IoMessageCodeCategory, IoMessageLevel } from '../io-message';
 import type { ActionLessMessage, ActionLessRequest, Optional, SimplifiedMessage } from './types';
 
 /**
