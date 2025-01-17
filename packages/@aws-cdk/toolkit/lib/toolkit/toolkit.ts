@@ -33,7 +33,13 @@ export type ToolkitAction =
 | 'deploy'
 | 'rollback'
 | 'watch'
-| 'destroy';
+| 'destroy'
+| 'doctor'
+| 'gc'
+| 'import'
+| 'metadata'
+| 'init'
+| 'migrate';
 
 export interface ToolkitOptions {
   /**
@@ -78,9 +84,14 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
 
   public constructor(private readonly props: ToolkitOptions = {}) {
     super();
-
-    this.ioHost = props.ioHost ?? CliIoHost.getIoHost();
     this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
+
+    // Hacky way to re-use the global IoHost until we have fully removed the need for it
+    const globalIoHost = CliIoHost.instance();
+    if (props.ioHost) {
+      globalIoHost.registerIoHost(props.ioHost as any);
+    }
+    this.ioHost = globalIoHost as IIoHost;
   }
 
   public async dispose(): Promise<void> {
@@ -394,7 +405,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
                 if (!confirmed) { throw new ToolkitError('Aborted by user'); }
               }
 
-              // Go around through the 'while' loop again but switch rollback to false.
+              // Go around through the 'while' loop again but switch rollback to true.
               rollback = true;
               break;
             }
