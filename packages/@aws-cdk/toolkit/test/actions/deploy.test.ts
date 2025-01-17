@@ -1,8 +1,6 @@
-import { CloudFormationClient, DescribeChangeSetCommand, DescribeStacksCommand, StackStatus } from '@aws-sdk/client-cloudformation';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as core from 'aws-cdk-lib/core';
-import { mockClient } from 'aws-sdk-client-mock';
-import { RequireApproval, StackSelectionStrategy } from '../../lib';
+import { RequireApproval } from '../../lib';
 import { Toolkit } from '../../lib/toolkit';
 import { TestIoHost } from '../_helpers';
 
@@ -10,7 +8,23 @@ const ioHost = new TestIoHost();
 const notifySpy = jest.spyOn(ioHost, 'notify');
 const requestResponseSpy = jest.spyOn(ioHost, 'requestResponse');
 const cdk = new Toolkit({ ioHost });
-const mockCloudFormationClient = mockClient(CloudFormationClient);
+
+jest.mock('../../lib/api/aws-cdk', () => {
+  return {
+    ...jest.requireActual('../../lib/api/aws-cdk'),
+    Deployments: jest.fn().mockImplementation(() => ({
+      deployStack: jest.fn().mockResolvedValue({
+        type: 'did-deploy-stack',
+        stackArn: 'arn:aws:cloudformation:region:account:stack/test-stack',
+        outputs: {},
+        noOp: false,
+      }),
+      resolveEnvironment: jest.fn().mockResolvedValue({}),
+      isSingleAssetPublished: jest.fn().mockResolvedValue(true),
+      readCurrentTemplate: jest.fn().mockResolvedValue({ Resources: {} }),
+    })),
+  };
+});
 
 const cxFromBuilder = async () => {
   return cdk.fromAssemblyBuilder(async () => {
@@ -26,30 +40,7 @@ const cxFromBuilder = async () => {
 beforeEach(() => {
   requestResponseSpy.mockClear();
   notifySpy.mockClear();
-  mockCloudFormationClient.reset();
-  mockCloudFormationClient.onAnyCommand().resolves({});
-  mockCloudFormationClient.on(DescribeChangeSetCommand).resolves({
-    Status: StackStatus.CREATE_COMPLETE,
-    Changes: [],
-  });
-  mockCloudFormationClient
-    .on(DescribeStacksCommand)
-    // First call, no stacks exis
-    .resolvesOnce({
-      Stacks: [],
-    })
-    // Second call, stack has been created
-    .resolves({
-      Stacks: [
-        {
-          StackStatus: StackStatus.CREATE_COMPLETE,
-          StackStatusReason: 'It is magic',
-          EnableTerminationProtection: false,
-          StackName: 'MagicalStack',
-          CreationTime: new Date(),
-        },
-      ],
-    });
+  jest.clearAllMocks();
 });
 
 describe('deploy', () => {
@@ -90,41 +81,27 @@ describe('deploy', () => {
     }));
   });
 
-  test('stack information is returned when successfully deployed', async () => {
+  test('skips response by default', async () => {
     // WHEN
-    const cx = await cxFromBuilder();
+    const cx = await cdk.fromAssemblyBuilder(async () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'Stack1');
+      new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ArnPrincipal('arn'),
+      });
+      return app.synth() as any;
+    });
+
     await cdk.deploy(cx, {
-      stacks: {
-        strategy: StackSelectionStrategy.PATTERN_MUST_MATCH_SINGLE,
-        patterns: ['Stack1'],
-      },
+      requireApproval: RequireApproval.NEVER,
     });
 
     // THEN
-    expect(notifySpy).toHaveBeenCalledWith(expect.objectContaining({
+    expect(requestResponseSpy).not.toHaveBeenCalledWith(expect.objectContaining({
       action: 'deploy',
       level: 'info',
-      message: expect.stringContaining('Stack ARN:'),
-      data: expect.objectContaining({
-        stack: expect.objectContaining({
-          hierarchicalId: 'Stack1',
-          stackName: 'Stack1',
-          stringifiedJson: expect.not.stringContaining('CheckBootstrapVersion'),
-        }),
-      }),
-    }));
-
-    expect(notifySpy).not.toHaveBeenCalledWith(expect.objectContaining({
-      action: 'deploy',
-      level: 'info',
-      message: expect.stringContaining('Stack ARN:'),
-      data: expect.objectContaining({
-        stack: expect.objectContaining({
-          hierarchicalId: 'Stack2',
-          stackName: 'Stack2',
-          stringifiedJson: expect.not.stringContaining('CheckBootstrapVersion'),
-        }),
-      }),
+      code: 'CDK_TOOLKIT_I5060',
+      message: expect.stringContaining('Do you wish to deploy these changes'),
     }));
   });
 });
