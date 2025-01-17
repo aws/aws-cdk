@@ -1,5 +1,6 @@
 import { FilterLogEventsCommand, type FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
+import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
 import { sleep } from '../../util';
 import { MockSdk, mockCloudWatchClient } from '../../util/mock-sdk';
 
@@ -13,6 +14,7 @@ let sdk: MockSdk;
 let stderrMock: jest.SpyInstance;
 let monitor: CloudWatchLogEventMonitor;
 beforeEach(() => {
+  CliIoHost.instance().isCI = false;
   monitor = new CloudWatchLogEventMonitor(new Date(T100));
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation((chunk: any) => {
     // Strip ANSI codes when capturing output

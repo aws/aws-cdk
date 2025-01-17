@@ -1,6 +1,10 @@
 import * as chalk from 'chalk';
 import { CliIoHost, IoMessage } from '../../lib/toolkit/cli-io-host';
 
+const ioHost = CliIoHost.instance({
+  logLevel: 'trace',
+});
+
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
   let mockStderr: jest.Mock;
@@ -11,9 +15,9 @@ describe('CliIoHost', () => {
     mockStderr = jest.fn();
 
     // Reset singleton state
-    CliIoHost.isTTY = process.stdout.isTTY ?? false;
-    CliIoHost.ci = false;
-    CliIoHost.currentAction = 'synth';
+    ioHost.isTTY = process.stdout.isTTY ?? false;
+    ioHost.isCI = false;
+    ioHost.currentAction = 'synth';
 
     defaultMessage = {
       time: new Date('2024-01-01T12:00:00'),
@@ -44,8 +48,8 @@ describe('CliIoHost', () => {
 
   describe('stream selection', () => {
     test('writes to stderr by default for non-error messages in non-CI mode', async () => {
-      CliIoHost.isTTY = true;
-      await CliIoHost.getIoHost().notify({
+      ioHost.isTTY = true;
+      await ioHost.notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
@@ -58,8 +62,8 @@ describe('CliIoHost', () => {
     });
 
     test('writes to stderr for error level with red color', async () => {
-      CliIoHost.isTTY = true;
-      await CliIoHost.getIoHost().notify({
+      ioHost.isTTY = true;
+      await ioHost.notify({
         time: new Date(),
         level: 'error',
         action: 'synth',
@@ -72,8 +76,8 @@ describe('CliIoHost', () => {
     });
 
     test('writes to stdout when forceStdout is true', async () => {
-      CliIoHost.isTTY = true;
-      await CliIoHost.getIoHost().notify({
+      ioHost.isTTY = true;
+      await ioHost.notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
@@ -89,11 +93,11 @@ describe('CliIoHost', () => {
 
   describe('message formatting', () => {
     beforeEach(() => {
-      CliIoHost.isTTY = true;
+      ioHost.isTTY = true;
     });
 
     test('formats debug messages with timestamp', async () => {
-      await CliIoHost.getIoHost().notify({
+      await ioHost.notify({
         ...defaultMessage,
         level: 'debug',
         forceStdout: true,
@@ -103,7 +107,7 @@ describe('CliIoHost', () => {
     });
 
     test('formats trace messages with timestamp', async () => {
-      await CliIoHost.getIoHost().notify({
+      await ioHost.notify({
         ...defaultMessage,
         level: 'trace',
         forceStdout: true,
@@ -113,8 +117,8 @@ describe('CliIoHost', () => {
     });
 
     test('applies no styling when TTY is false', async () => {
-      CliIoHost.isTTY = false;
-      await CliIoHost.getIoHost().notify({
+      ioHost.isTTY = false;
+      await ioHost.notify({
         ...defaultMessage,
         forceStdout: true,
       });
@@ -132,7 +136,7 @@ describe('CliIoHost', () => {
       ];
 
       for (const { level, style } of testCases) {
-        await CliIoHost.getIoHost().notify({
+        await ioHost.notify({
           ...defaultMessage,
           level,
           forceStdout: true,
@@ -150,19 +154,19 @@ describe('CliIoHost', () => {
 
   describe('action handling', () => {
     test('sets and gets current action', () => {
-      CliIoHost.currentAction = 'deploy';
-      expect(CliIoHost.currentAction).toBe('deploy');
+      ioHost.currentAction = 'deploy';
+      expect(ioHost.currentAction).toBe('deploy');
     });
   });
 
   describe('CI mode behavior', () => {
     beforeEach(() => {
-      CliIoHost.isTTY = true;
-      CliIoHost.ci = true;
+      ioHost.isTTY = true;
+      ioHost.isCI = true;
     });
 
     test('writes to stdout in CI mode when level is not error', async () => {
-      await CliIoHost.getIoHost().notify({
+      await ioHost.notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
@@ -175,7 +179,7 @@ describe('CliIoHost', () => {
     });
 
     test('writes to stderr for error level in CI mode', async () => {
-      await CliIoHost.getIoHost().notify({
+      await ioHost.notify({
         time: new Date(),
         level: 'error',
         action: 'synth',
@@ -190,12 +194,12 @@ describe('CliIoHost', () => {
 
   describe('timestamp handling', () => {
     beforeEach(() => {
-      CliIoHost.isTTY = true;
+      ioHost.isTTY = true;
     });
 
     test('includes timestamp for DEBUG level with gray color', async () => {
       const testDate = new Date('2024-01-01T12:34:56');
-      await CliIoHost.getIoHost().notify({
+      await ioHost.notify({
         time: testDate,
         level: 'debug',
         action: 'synth',
@@ -209,7 +213,7 @@ describe('CliIoHost', () => {
 
     test('excludes timestamp for other levels but includes color', async () => {
       const testDate = new Date('2024-01-01T12:34:56');
-      await CliIoHost.getIoHost().notify({
+      await ioHost.notify({
         time: testDate,
         level: 'info',
         action: 'synth',
@@ -229,7 +233,7 @@ describe('CliIoHost', () => {
         return true;
       });
 
-      await expect(CliIoHost.getIoHost().notify({
+      await expect(ioHost.notify({
         time: new Date(),
         level: 'info',
         action: 'synth',
@@ -242,8 +246,8 @@ describe('CliIoHost', () => {
 
   describe('requestResponse', () => {
     test('logs messages and returns default', async () => {
-      CliIoHost.isTTY = true;
-      const response = await CliIoHost.getIoHost().requestResponse({
+      ioHost.isTTY = true;
+      const response = await ioHost.requestResponse({
         time: new Date(),
         level: 'info',
         action: 'synth',

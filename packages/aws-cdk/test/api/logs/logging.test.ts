@@ -1,6 +1,8 @@
-import { setIoMessageThreshold, setCI, data, success, highlight, error, warning, info, debug, trace, withCorkedLogging } from '../../../lib/logging';
+import { data, success, highlight, error, warning, info, debug, trace, withCorkedLogging } from '../../../lib/logging';
+import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
 
 describe('logging', () => {
+  const ioHost = CliIoHost.instance({}, true);
   let mockStdout: jest.Mock;
   let mockStderr: jest.Mock;
 
@@ -10,8 +12,8 @@ describe('logging', () => {
   };
 
   beforeEach(() => {
-    setIoMessageThreshold('info');
-    setCI(false);
+    ioHost.logLevel = 'info';
+    ioHost.isCI = false;
 
     mockStdout = jest.fn();
     mockStderr = jest.fn();
@@ -66,7 +68,7 @@ describe('logging', () => {
     });
 
     test('info() writes to stdout in CI mode with both styles', () => {
-      setCI(true);
+      ioHost.isCI = true;
       // String style
       info('test print');
       expect(mockStdout).toHaveBeenCalledWith('test print\n');
@@ -80,7 +82,7 @@ describe('logging', () => {
 
   describe('log levels', () => {
     test('respects log level settings with both styles', () => {
-      setIoMessageThreshold('error');
+      ioHost.logLevel = 'error';
 
       // String style
       error('error message');
@@ -101,12 +103,12 @@ describe('logging', () => {
     });
 
     test('debug messages only show at debug level with both styles', () => {
-      setIoMessageThreshold('info');
+      ioHost.logLevel = 'info';
       debug('debug message');
       debug({ message: 'debug message 2' });
       expect(mockStderr).not.toHaveBeenCalled();
 
-      setIoMessageThreshold('debug');
+      ioHost.logLevel = 'debug';
       debug('debug message');
       debug({ message: 'debug message 2' });
       expect(mockStderr).toHaveBeenCalledWith(
@@ -118,12 +120,12 @@ describe('logging', () => {
     });
 
     test('trace messages only show at trace level with both styles', () => {
-      setIoMessageThreshold('debug');
+      ioHost.logLevel = 'debug';
       trace('trace message');
       trace({ message: 'trace message 2' });
       expect(mockStderr).not.toHaveBeenCalled();
 
-      setIoMessageThreshold('trace');
+      ioHost.logLevel = 'trace';
       trace('trace message');
       trace({ message: 'trace message 2' });
       expect(mockStderr).toHaveBeenCalledWith(
@@ -287,7 +289,7 @@ describe('logging', () => {
 
     test('maintains correct order with mixed log levels in corked block', async () => {
       // Set threshold to debug to allow debug messages
-      setIoMessageThreshold('debug');
+      ioHost.logLevel = 'debug';
 
       await withCorkedLogging(async () => {
         error('error message');
@@ -303,15 +305,12 @@ describe('logging', () => {
         'success message\n',
         expect.stringMatching(/^\[\d{2}:\d{2}:\d{2}\] debug message\n$/),
       ]);
-
-      // Reset threshold back to info for other tests
-      setIoMessageThreshold('info');
     });
   });
 
   describe('CI mode behavior', () => {
     test('correctly switches between stdout and stderr based on CI mode', () => {
-      setCI(true);
+      ioHost.isCI = true;
       warning('warning in CI');
       success('success in CI');
       error('error in CI');
@@ -320,7 +319,7 @@ describe('logging', () => {
       expect(mockStdout).toHaveBeenCalledWith('success in CI\n');
       expect(mockStderr).toHaveBeenCalledWith('error in CI\n');
 
-      setCI(false);
+      ioHost.isCI = false;
       warning('warning not in CI');
       success('success not in CI');
       error('error not in CI');
