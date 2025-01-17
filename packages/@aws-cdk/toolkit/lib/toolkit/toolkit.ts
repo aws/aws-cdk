@@ -32,7 +32,13 @@ export type ToolkitAction =
 | 'deploy'
 | 'rollback'
 | 'watch'
-| 'destroy';
+| 'destroy'
+| 'doctor'
+| 'gc'
+| 'import'
+| 'metadata'
+| 'init'
+| 'migrate';
 
 export interface ToolkitOptions {
   /**
