@@ -30,6 +30,18 @@ class TestStack extends Stack {
       },
       runtime: STANDARD_NODEJS_RUNTIME,
     });
+
+    new lambda.NodejsFunction(this, 'ts-paths-handler-tsconfig', {
+      entry: path.join(__dirname, 'integ-handlers/ts-paths-handler.ts'),
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        sourceMapMode: lambda.SourceMapMode.BOTH,
+        tsconfig: path.join(__dirname, '..', 'tsconfig-custom.json'),
+        preCompilation: true,
+      },
+      runtime: STANDARD_NODEJS_RUNTIME,
+    });
   }
 }
 
