@@ -339,7 +339,7 @@ new Schedule(this, 'Schedule', {
 
 The `service` must be in lowercase and the `action` must be in camelCase.
 
-By default, an IAM policy for the Scheduler is extracted from the API call. The action is the policy is constructed using the `service` and `action` prop.
+By default, an IAM policy for the Scheduler is extracted from the API call. The action in the policy is constructed using the `service` and `action` prop.
 Re-using the example above, the action will be `rds:stopDBCluster`. Note that not all IAM actions follow the same pattern. In such scenario, please use the
 `policyStatments` prop to override the policy:
 
