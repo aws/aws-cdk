@@ -394,7 +394,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
                 if (!confirmed) { throw new ToolkitError('Aborted by user'); }
               }
 
-              // Go around through the 'while' loop again but switch rollback to false.
+              // Go around through the 'while' loop again but switch rollback to true.
               rollback = true;
               break;
             }
