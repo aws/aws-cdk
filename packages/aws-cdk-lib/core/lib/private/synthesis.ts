@@ -8,7 +8,7 @@ import { CloudAssembly } from '../../../cx-api';
 import * as cxapi from '../../../cx-api';
 import { Annotations } from '../annotations';
 import { App } from '../app';
-import { AspectApplication, Aspects } from '../aspect';
+import { AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
@@ -228,7 +228,7 @@ function invokeAspects(root: IConstruct) {
     const node = construct.node;
     const aspects = Aspects.of(construct);
 
-    let localAspects = aspects.applied;
+    let localAspects = getAspectApplications(construct);
     const allAspectsHere = sortAspectsByPriority(inheritedAspects, localAspects);
 
     const nodeAspectsCount = aspects.all.length;
@@ -290,11 +290,10 @@ function invokeAspectsV2(root: IConstruct) {
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): boolean {
     const node = construct.node;
-    const aspects = Aspects.of(construct);
 
     let didSomething = false;
 
-    let localAspects = aspects.applied;
+    let localAspects = getAspectApplications(construct);
     const allAspectsHere = sortAspectsByPriority(inheritedAspects, localAspects);
 
     for (const aspectApplication of allAspectsHere) {
@@ -352,6 +351,21 @@ function sortAspectsByPriority(inheritedAspects: AspectApplication[], localAspec
     return 0; // Otherwise, maintain original order
   });
   return allAspects;
+}
+
+/**
+ * Helper function to get aspect applications.
+ * If `Aspects.applied` is available, it is used; otherwise, create AspectApplications from `Aspects.all`.
+ */
+function getAspectApplications(node: IConstruct): AspectApplication[] {
+  const aspects = Aspects.of(node);
+  if (aspects.applied !== undefined) {
+    return aspects.applied;
+  }
+
+  // Fallback: Create AspectApplications from `aspects.all`
+  const typedAspects = aspects as Aspects;
+  return typedAspects.all.map(aspect => new AspectApplication(node, aspect, AspectPriority.DEFAULT));
 }
 
 /**

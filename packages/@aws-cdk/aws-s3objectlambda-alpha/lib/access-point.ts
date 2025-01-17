@@ -173,7 +173,7 @@ export class AccessPoint extends AccessPointBase {
   public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     const arn = core.Arn.split(attrs.accessPointArn, core.ArnFormat.SLASH_RESOURCE_NAME);
     if (!arn.resourceName) {
-      throw new Error('Unable to parse acess point name');
+      throw new Error('Unable to parse access point name');
     }
     const name = arn.resourceName;
     class Import extends AccessPointBase {
@@ -200,6 +200,11 @@ export class AccessPoint extends AccessPointBase {
    * @attribute
    */
   public readonly accessPointCreationDate: string;
+
+  /**
+   * The ARN of the S3 access point.
+   */
+  public readonly s3AccessPointArn: string;
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id, {
@@ -241,6 +246,7 @@ export class AccessPoint extends AccessPointBase {
         ],
       },
     });
+    this.s3AccessPointArn = supporting.attrArn;
     this.accessPointName = accessPoint.ref;
     this.accessPointArn = accessPoint.attrArn;
     this.accessPointCreationDate = accessPoint.attrCreationDate;

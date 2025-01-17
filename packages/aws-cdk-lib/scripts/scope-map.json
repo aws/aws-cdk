@@ -359,9 +359,6 @@
   "aws-iot": [
     "AWS::IoT"
   ],
-  "aws-iot1click": [
-    "AWS::IoT1Click"
-  ],
   "aws-iotanalytics": [
     "AWS::IoTAnalytics"
   ],
@@ -545,6 +542,9 @@
   ],
   "aws-pcaconnectorscep": [
     "AWS::PCAConnectorSCEP"
+  ],
+  "aws-pcs": [
+    "AWS::PCS"
   ],
   "aws-personalize": [
     "AWS::Personalize"
