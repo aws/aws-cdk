@@ -1,4 +1,3 @@
-import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
 import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
@@ -33,50 +32,42 @@ async function run() {
     throw new Error(`Could not find PR number from event: ${github.context.eventName}`);
   }
 
-  try {
-    const prLinter = new PullRequestLinter({
-      client,
-      owner,
-      repo,
-      number,
-      // On purpose || instead of ??, also collapse empty string
-      linterLogin: process.env.LINTER_LOGIN || DEFEAULT_LINTER_LOGIN,
-    });
+  const prLinter = new PullRequestLinter({
+    client,
+    owner,
+    repo,
+    number,
+    // On purpose || instead of ??, also collapse empty string
+    linterLogin: process.env.LINTER_LOGIN || DEFEAULT_LINTER_LOGIN,
+  });
 
-    let actions: LinterActions | undefined;
+  let actions: LinterActions | undefined;
 
-    switch (github.context.eventName) {
-      case 'status':
-        // Triggering on a 'status' event is solely used to see if the CodeBuild
-        // job just turned green, and adding certain 'ready for review' labels
-        // if it does.
-        const statusPayload = github.context.payload as StatusEvent;
-        console.log('validating status event');
-        actions = await prLinter.validateStatusEvent(statusPayload);
-        break;
+  switch (github.context.eventName) {
+    case 'status':
+      // Triggering on a 'status' event is solely used to see if the CodeBuild
+      // job just turned green, and adding certain 'ready for review' labels
+      // if it does.
+      const statusPayload = github.context.payload as StatusEvent;
+      console.log('validating status event');
+      actions = await prLinter.validateStatusEvent(statusPayload);
+      break;
 
-      default:
-        // This is the main PR validator action.
-        actions = await prLinter.validatePullRequestTarget();
-        break;
+    default:
+      // This is the main PR validator action.
+      actions = await prLinter.validatePullRequestTarget();
+      break;
+  }
+
+  if (actions) {
+    console.log(actions);
+
+    if (github.context.eventName || process.env.FOR_REAL) {
+      console.log('Carrying out actions');
+
+      // Actually running in GitHub actions, do it (otherwise we're just testing)
+      await prLinter.executeActions(actions);
     }
-
-    if (actions) {
-      console.log(actions);
-
-      if (github.context.eventName || process.env.FOR_REAL) {
-        console.log('Carrying out actions');
-
-        // Actually running in GitHub actions, do it (otherwise we're just testing)
-        await prLinter.executeActions(actions);
-      }
-
-      await prLinter.actionsToException(actions);
-    }
-
-  } catch (error: any) {
-    // Fail the action
-    core.setFailed(error.message);
   }
 }
 
