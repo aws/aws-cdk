@@ -23,8 +23,8 @@ new sfn.StateMachine(this, 'StateMachine', {
 });
 ```
 
-State machines are made up of a sequence of **States**, which represent different actions
-taken in sequence. Some of these state represent *control flow* (like `Choice`, `Map` and `Wait`)
+State machines are made up of a sequence of **Steps**, which represent different actions
+taken in sequence. Some of these steps represent *control flow* (like `Choice`, `Map` and `Wait`)
 while others represent calls made against other AWS services (like `LambdaInvoke`).
 The second category are called `Task`s and they can all be found in the module [`aws-stepfunctions-tasks`].
 
