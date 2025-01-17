@@ -260,7 +260,7 @@ export class Build extends BuildBase {
   public readonly buildArn: string;
 
   /**
-   * The IAM role GameLift assumes to acccess server build content.
+   * The IAM role GameLift assumes to access server build content.
    */
   public readonly role: iam.IRole;
 

@@ -13,7 +13,7 @@ export abstract class Content {
    * Game content as an S3 object.
    * @param bucket The S3 bucket
    * @param key The object key
-   * @param objectVersion Optional S3 ob ject version
+   * @param objectVersion Optional S3 object version
    */
   public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Content {
     return new S3Content(bucket, key, objectVersion);

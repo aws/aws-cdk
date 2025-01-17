@@ -75,7 +75,7 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
   public readonly content: IBuild;
 
   /**
-   * The IAM role GameLift assumes by fleet instances to access AWS ressources.
+   * The IAM role GameLift assumes by fleet instances to access AWS resources.
    */
   public readonly role: iam.IRole;
 

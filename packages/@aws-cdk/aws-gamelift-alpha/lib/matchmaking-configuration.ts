@@ -120,7 +120,7 @@ export interface MatchmakingConfigurationAttributes {
    *
    * @see https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-notification.html
    *
-   * @default no notification target binded to imported ressource
+   * @default no notification target binded to imported resource
    */
   readonly notificationTarget?: sns.ITopic;
 }

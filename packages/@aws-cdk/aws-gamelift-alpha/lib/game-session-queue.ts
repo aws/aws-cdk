@@ -18,7 +18,7 @@ export interface IGameSessionQueueDestination {
 }
 
 /**
- * Priority to condider when placing new game sessions
+ * Priority to consider when placing new game sessions
  */
 export enum PriorityType {
   /**
@@ -294,7 +294,7 @@ export abstract class GameSessionQueueBase extends cdk.Resource implements IGame
 /**
  * The GameSessionQueue resource creates a placement queue that processes requests for new game sessions.
  * A queue uses FleetIQ algorithms to determine the best placement locations and find an available game server, then prompts the game server to start a new game session.
- * Queues can have destinations (GameLift fleets or gameSessionQueuees), which determine where the queue can place new game sessions.
+ * Queues can have destinations (GameLift fleets or gameSessionQueues), which determine where the queue can place new game sessions.
  * A queue can have destinations with varied fleet type (Spot and On-Demand), instance type, and AWS Region.
  *
  * @resource AWS::GameLift::GameSessionQueue
