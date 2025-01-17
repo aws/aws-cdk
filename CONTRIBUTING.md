@@ -718,6 +718,10 @@ To make this easier we have a `pr/needs-review` label that we can add to each
 PR. If you do not see this label on your PR then it means that something needs
 to be fixed before it can be reviewed.
 
+> [!NOTE]  
+> The `aws-cdk` repository is frequently updated, so PR branches may quickly become out-of-date, showing "This branch is out-of-date with the base branch." This is not an issue as long as there are no conflicts with the newly merged commits. Once the PR is approved, our automation will update it with the latest `main` branch and handle the merge. No action is needed on your part.
+
+
 #### Adding construct runtime dependencies
 
 Any tool that is not part of the CDK, and needs to be used by a construct during
