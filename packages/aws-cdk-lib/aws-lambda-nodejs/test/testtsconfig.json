@@ -29,6 +29,7 @@
     "stripInternal": false,
     "target": "ES2020",
     "composite": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "paths": {   "@test/paths": ["./test/paths"] }
   }
 }

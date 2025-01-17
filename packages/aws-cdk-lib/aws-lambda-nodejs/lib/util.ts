@@ -186,6 +186,8 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
     } else if (type === 'object') {
       if (Array.isArray(value)) {
         compilerOptionsString += option + ' ' + value.join(',') + ' ';
+      } else {
+        compilerOptionsString += option + ' \'' + JSON.stringify(value) + '\' '
       }
     } else {
       throw new Error(`Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
