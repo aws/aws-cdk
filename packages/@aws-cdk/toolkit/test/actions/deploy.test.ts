@@ -149,11 +149,22 @@ describe('deploy', () => {
 
     test('failpaused-need-rollback-first', async () => {
       // GIVEN
-      mockDeployStack = jest.fn().mockResolvedValue({
-        type: 'failpaused-need-rollback-first',
-        stackArn: 'arn:aws:cloudformation:region:account:stack/test-stack',
-        outputs: {},
-        noOp: false,
+      mockDeployStack.mockImplementation((params) => {
+        if (params.rollback === true) {
+          return {
+            type: 'did-deploy-stack',
+            stackArn: 'arn:aws:cloudformation:region:account:stack/test-stack',
+            outputs: {},
+            noOp: false,
+          };
+        } else {
+          return {
+            type: 'failpaused-need-rollback-first',
+            stackArn: 'arn:aws:cloudformation:region:account:stack/test-stack',
+            outputs: {},
+            noOp: false,
+          };
+        }
       });
 
       // WHEN
@@ -161,21 +172,41 @@ describe('deploy', () => {
       await toolkit.deploy(cx);
 
       // THEN
-      noDeployment();
+      successfulDeployment();
+    });
+
+    test('replacement-requires-rollback', async () => {
+      // GIVEN
+      mockDeployStack.mockImplementation((params) => {
+        if (params.rollback === true) {
+          return {
+            type: 'did-deploy-stack',
+            stackArn: 'arn:aws:cloudformation:region:account:stack/test-stack',
+            outputs: {},
+            noOp: false,
+          };
+        } else {
+          return {
+            type: 'replacement-requires-rollback',
+            stackArn: 'arn:aws:cloudformation:region:account:stack/test-stack',
+            outputs: {},
+            noOp: false,
+          };
+        }
+      });
+
+      // WHEN
+      const cx = await builderFixture(toolkit, 'stack-with-role');
+      await toolkit.deploy(cx);
+
+      // THEN
+      successfulDeployment();
     });
   });
 });
 
 function successfulDeployment() {
   expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
-    action: 'deploy',
-    level: 'info',
-    message: expect.stringContaining('Deployment time:'),
-  }));
-}
-
-function noDeployment() {
-  expect(ioHost.notifySpy).not.toHaveBeenCalledWith(expect.objectContaining({
     action: 'deploy',
     level: 'info',
     message: expect.stringContaining('Deployment time:'),
