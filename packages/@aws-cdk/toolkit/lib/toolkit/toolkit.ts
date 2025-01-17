@@ -77,8 +77,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
 
   public constructor(private readonly props: ToolkitOptions = {}) {
     super();
-
-    this.ioHost = props.ioHost ?? CliIoHost.getIoHost();
+    this.ioHost = props.ioHost ?? CliIoHost.instance() as IIoHost;
     this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 

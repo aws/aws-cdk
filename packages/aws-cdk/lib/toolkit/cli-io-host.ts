@@ -1,4 +1,5 @@
 import * as chalk from 'chalk';
+import { isCI } from '../util/yargs-helpers';
 
 export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS';
 export type IoCodeLevel = 'E' | 'W' | 'I';
@@ -82,7 +83,55 @@ export type ToolkitAction =
 | 'deploy'
 | 'rollback'
 | 'watch'
-| 'destroy';
+| 'destroy'
+| 'context'
+| 'docs'
+| 'doctor'
+| 'gc'
+| 'import'
+| 'metadata'
+| 'notices'
+| 'init'
+| 'migrate'
+| 'version';
+
+export interface CliIoHostProps {
+  /**
+   * The initial Toolkit action the hosts starts with.
+   *
+   * @default 'synth'
+   */
+  readonly currentAction?: ToolkitAction;
+
+  /**
+   * Determines the verbosity of the output.
+   *
+   * The CliIoHost will still receive all messages and requests,
+   * but only the messages included in this level will be printed.
+   *
+   * @default 'info'
+   */
+  readonly logLevel?: IoMessageLevel;
+
+  /**
+   * Overrides the automatic TTY detection.
+   *
+   * When TTY is disabled, the CLI will have no interactions or color.
+   *
+   * @default - determined from the current process
+   */
+  readonly isTTY?: boolean;
+
+  /**
+   * Whether the CliIoHost is running in CI mode.
+   *
+   * In CI mode, all non-error output goes to stdout instead of stderr.
+   * Set to false in the CliIoHost constructor it will be overwritten if the CLI CI argument is passed
+   *
+   * @default - determined from the environment, specifically based on `process.env.CI`
+   */
+  readonly isCI?: boolean;
+}
 
 /**
  * A simple IO host for the CLI that writes messages to the console.
@@ -91,17 +140,17 @@ export class CliIoHost {
   /**
    * Returns the singleton instance
    */
-  static getIoHost(): CliIoHost {
-    if (!CliIoHost.instance) {
-      CliIoHost.instance = new CliIoHost();
+  static instance(props: CliIoHostProps = {}, forceNew = false): CliIoHost {
+    if (forceNew || !CliIoHost._instance) {
+      CliIoHost._instance = new CliIoHost(props);
     }
-    return CliIoHost.instance;
+    return CliIoHost._instance;
   }
 
   /**
    * Singleton instance of the CliIoHost
    */
-  private static instance: CliIoHost | undefined;
+  private static _instance: CliIoHost | undefined;
 
   /**
    * Determines which output stream to use based on log level and configuration.
@@ -116,62 +165,88 @@ export class CliIoHost {
       return process.stdout;
     }
     if (level == 'error') return process.stderr;
-    return this.ci ? process.stdout : process.stderr;
+    return CliIoHost.instance().isCI ? process.stdout : process.stderr;
+  }
+
+  private _currentAction: ToolkitAction;
+  private _isCI: boolean;
+  private _isTTY: boolean;
+  private _logLevel: IoMessageLevel;
+
+  private constructor(props: CliIoHostProps = {}) {
+    this._currentAction = props.currentAction ?? 'none' as ToolkitAction;
+    this._isTTY = props.isTTY ?? process.stdout.isTTY ?? false;
+    this._logLevel = props.logLevel ?? 'info';
+    this._isCI = props.isCI ?? isCI();
   }
 
   /**
-   * Whether the host should apply chalk styles to messages. Defaults to false if the host is not running in a TTY.
-   *
-   * @default false
+   * The current action being performed by the CLI.
    */
-  private isTTY: boolean;
+  public get currentAction(): ToolkitAction {
+    return this._currentAction;
+  }
+
+  /**
+   * Sets the current action being performed by the CLI.
+   *
+   * @param action The action being performed by the CLI.
+   */
+  public set currentAction(action: ToolkitAction) {
+    this._currentAction = action;
+  }
+
+  /**
+   * Whether the host can use interactions and message styling.
+   */
+  public get isTTY(): boolean {
+    return this._isTTY;
+  }
+
+  /**
+   * Set TTY mode, i.e can the host use interactions and message styling.
+   *
+   * @param value set TTY mode
+   */
+  public set isTTY(value: boolean) {
+    this._isTTY = value;
+  }
 
   /**
    * Whether the CliIoHost is running in CI mode. In CI mode, all non-error output goes to stdout instead of stderr.
-   *
-   * Set to false in the CliIoHost constructor it will be overwritten if the CLI CI argument is passed
    */
-  private ci: boolean;
+  public get isCI(): boolean {
+    return this._isCI;
+  }
 
   /**
-   * the current {@link ToolkitAction} set by the CLI.
+   * Set the CI mode. In CI mode, all non-error output goes to stdout instead of stderr.
+   * @param value set the CI mode
    */
-  private currentAction: ToolkitAction = 'synth';
-
-  private constructor() {
-    this.isTTY = process.stdout.isTTY ?? false;
-    this.ci = false;
+  public set isCI(value: boolean) {
+    this._isCI = value;
   }
 
-  public static get currentAction(): ToolkitAction {
-    return CliIoHost.getIoHost().currentAction;
+  /**
+   * The current threshold. Messages with a lower priority level will be ignored.
+   */
+  public get logLevel(): IoMessageLevel {
+    return this._logLevel;
   }
 
-  public static set currentAction(action: ToolkitAction) {
-    CliIoHost.getIoHost().currentAction = action;
-  }
-
-  public static get ci(): boolean {
-    return CliIoHost.getIoHost().ci;
-  }
-
-  public static set ci(value: boolean) {
-    CliIoHost.getIoHost().ci = value;
-  }
-
-  public static get isTTY(): boolean {
-    return CliIoHost.getIoHost().isTTY;
-  }
-
-  public static set isTTY(value: boolean) {
-    CliIoHost.getIoHost().isTTY = value;
+  /**
+   * Sets the current threshold. Messages with a lower priority level will be ignored.
+   * @param level The new log level threshold
+   */
+  public set logLevel(level: IoMessageLevel) {
+    this._logLevel = level;
   }
 
   /**
    * Notifies the host of a message.
    * The caller waits until the notification completes.
    */
-  async notify<T>(msg: IoMessage<T>): Promise<void> {
+  public async notify<T>(msg: IoMessage<T>): Promise<void> {
     const output = this.formatMessage(msg);
 
     const stream = CliIoHost.getStream(msg.level, msg.forceStdout ?? false);
@@ -193,7 +268,7 @@ export class CliIoHost {
    * If the host does not return a response the suggested
    * default response from the input message will be used.
    */
-  async requestResponse<T, U>(msg: IoRequest<T, U>): Promise<U> {
+  public async requestResponse<T, U>(msg: IoRequest<T, U>): Promise<U> {
     await this.notify(msg);
     return msg.defaultResponse;
   }
@@ -203,7 +278,7 @@ export class CliIoHost {
    */
   private formatMessage(msg: IoMessage<any>): string {
     // apply provided style or a default style if we're in TTY mode
-    let message_text = this.isTTY
+    let message_text = this._isTTY
       ? styleMap[msg.level](msg.message)
       : msg.message;
 
@@ -222,7 +297,7 @@ export class CliIoHost {
   }
 }
 
-export const styleMap: Record<IoMessageLevel, (str: string) => string> = {
+const styleMap: Record<IoMessageLevel, (str: string) => string> = {
   error: chalk.red,
   warn: chalk.yellow,
   info: chalk.white,

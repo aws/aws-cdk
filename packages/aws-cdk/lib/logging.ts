@@ -14,25 +14,6 @@ const levelPriority: Record<IoMessageLevel, number> = {
   trace: 4,
 };
 
-let currentIoMessageThreshold: IoMessageLevel = 'info';
-
-/**
- * Sets the current threshold. Messages with a lower priority level will be ignored.
- * @param level The new log level threshold
- */
-export function setIoMessageThreshold(level: IoMessageLevel) {
-  currentIoMessageThreshold = level;
-}
-
-/**
- * Sets whether the logger is running in CI mode.
- * In CI mode, all non-error output goes to stdout instead of stderr.
- * @param newCI - Whether CI mode should be enabled
- */
-export function setCI(newCI: boolean) {
-  CliIoHost.ci = newCI;
-}
-
 /**
  * Executes a block of code with corked logging. All log messages during execution
  * are buffered and only written when all nested cork blocks complete (when CORK_COUNTER reaches 0).
@@ -48,7 +29,7 @@ export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> 
     if (CORK_COUNTER === 0) {
       // Process each buffered message through notify
       for (const ioMessage of logBuffer) {
-        void CliIoHost.getIoHost().notify(ioMessage);
+        void CliIoHost.instance().notify(ioMessage);
       }
       logBuffer.splice(0);
     }
@@ -82,7 +63,7 @@ interface LogOptions {
  * @param options Configuration options for the log message. See  {@link LogOptions}
  */
 function log(options: LogOptions) {
-  if (levelPriority[options.level] > levelPriority[currentIoMessageThreshold]) {
+  if (levelPriority[options.level] > levelPriority[CliIoHost.instance().logLevel]) {
     return;
   }
 
@@ -91,7 +72,7 @@ function log(options: LogOptions) {
     message: options.message,
     forceStdout: options.forceStdout,
     time: new Date(),
-    action: CliIoHost.currentAction,
+    action: CliIoHost.instance().currentAction,
     code: options.code,
   };
 
@@ -100,7 +81,7 @@ function log(options: LogOptions) {
     return;
   }
 
-  void CliIoHost.getIoHost().notify(ioMessage);
+  void CliIoHost.instance().notify(ioMessage);
 }
 
 /**
