@@ -1047,35 +1047,52 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
   silentTest(
     'updateFunction() API fails if it recieves 7 failed attempts in a row',
     async () => {
+      // Ignore the wait times that the SDK tries to impose and always set timers for 1 ms
       const realSetTimeout = setTimeout;
-      jest.useFakeTimers();
-      try {
-        // Ignore the wait times that the SDK tries to impose and always set timers for 1 ms
-        jest.spyOn(global, 'setTimeout').mockImplementation((fn) => {
-          return realSetTimeout(fn, 1);
+      const mockSetTimeout = jest.spyOn(global, 'setTimeout').mockImplementation((fn) => {
+        return realSetTimeout(fn, 1);
+      });
+
+      // GIVEN
+      mockAppSyncClient
+        .on(ListFunctionsCommand)
+        .resolvesOnce({
+          functions: [{ name: 'my-function', functionId: 'functionId' }],
         });
 
-        // GIVEN
-        mockAppSyncClient
-          .on(ListFunctionsCommand)
-          .resolvesOnce({
-            functions: [{ name: 'my-function', functionId: 'functionId' }],
-          });
+      const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
+      ConcurrentModError.name = 'ConcurrentModificationException';
+      mockAppSyncClient
+        .on(UpdateFunctionCommand)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .rejectsOnce(ConcurrentModError)
+        .resolvesOnce({ functionConfiguration: { name: 'my-function', dataSourceName: 'my-datasource', functionId: 'functionId' } });
 
-        const ConcurrentModError = new Error('ConcurrentModificationException: Schema is currently being altered, please wait until that is complete.');
-        ConcurrentModError.name = 'ConcurrentModificationException';
-        mockAppSyncClient
-          .on(UpdateFunctionCommand)
-          .rejectsOnce(ConcurrentModError)
-          .rejectsOnce(ConcurrentModError)
-          .rejectsOnce(ConcurrentModError)
-          .rejectsOnce(ConcurrentModError)
-          .rejectsOnce(ConcurrentModError)
-          .rejectsOnce(ConcurrentModError)
-          .rejectsOnce(ConcurrentModError)
-          .resolvesOnce({ functionConfiguration: { name: 'my-function', dataSourceName: 'my-datasource', functionId: 'functionId' } });
-
-        setup.setCurrentCfnStackTemplate({
+      setup.setCurrentCfnStackTemplate({
+        Resources: {
+          AppSyncFunction: {
+            Type: 'AWS::AppSync::FunctionConfiguration',
+            Properties: {
+              Name: 'my-function',
+              ApiId: 'apiId',
+              DataSourceName: 'my-datasource',
+              FunctionVersion: '2018-05-29',
+              RequestMappingTemplate: '## original request template',
+              ResponseMappingTemplate: '## original response template',
+            },
+            Metadata: {
+              'aws:asset:path': 'old-path',
+            },
+          },
+        },
+      });
+      const cdkStackArtifact = setup.cdkStackArtifactOf({
+        template: {
           Resources: {
             AppSyncFunction: {
               Type: 'AWS::AppSync::FunctionConfiguration',
@@ -1085,55 +1102,40 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
                 DataSourceName: 'my-datasource',
                 FunctionVersion: '2018-05-29',
                 RequestMappingTemplate: '## original request template',
-                ResponseMappingTemplate: '## original response template',
+                ResponseMappingTemplate: '## new response template',
               },
               Metadata: {
-                'aws:asset:path': 'old-path',
+                'aws:asset:path': 'new-path',
               },
             },
           },
-        });
-        const cdkStackArtifact = setup.cdkStackArtifactOf({
-          template: {
-            Resources: {
-              AppSyncFunction: {
-                Type: 'AWS::AppSync::FunctionConfiguration',
-                Properties: {
-                  Name: 'my-function',
-                  ApiId: 'apiId',
-                  DataSourceName: 'my-datasource',
-                  FunctionVersion: '2018-05-29',
-                  RequestMappingTemplate: '## original request template',
-                  ResponseMappingTemplate: '## new response template',
-                },
-                Metadata: {
-                  'aws:asset:path': 'new-path',
-                },
-              },
-            },
-          },
-        });
+        },
+      });
 
-        // WHEN
-        await expect(() => hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact)).rejects.toThrow(
-          'ConcurrentModificationException',
-        );
+      // WHEN
+      const expectation = expect(() => hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact)).rejects.toThrow(
+        'ConcurrentModificationException',
+      );
 
-        // THEN
-        expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 7); // 1st attempt and then 6 retries before bailing
-        expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
-          apiId: 'apiId',
-          dataSourceName: 'my-datasource',
-          functionId: 'functionId',
-          functionVersion: '2018-05-29',
-          name: 'my-function',
-          requestMappingTemplate: '## original request template',
-          responseMappingTemplate: '## new response template',
-        });
-
-      } finally {
-        jest.useRealTimers();
+      for (let i = 0; i < 1000; i++) {
+        jest.advanceTimersByTime(1000);
       }
+
+      await expectation;
+
+      // THEN
+      expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 7); // 1st attempt and then 6 retries before bailing
+      expect(mockAppSyncClient).toHaveReceivedCommandWith(UpdateFunctionCommand, {
+        apiId: 'apiId',
+        dataSourceName: 'my-datasource',
+        functionId: 'functionId',
+        functionVersion: '2018-05-29',
+        name: 'my-function',
+        requestMappingTemplate: '## original request template',
+        responseMappingTemplate: '## new response template',
+      });
+
+      mockSetTimeout.mockRestore();
     },
     320000,
   );
