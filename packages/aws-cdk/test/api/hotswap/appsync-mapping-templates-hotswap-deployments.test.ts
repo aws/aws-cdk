@@ -1113,15 +1113,9 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       });
 
       // WHEN
-      const expectation = expect(() => hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact)).rejects.toThrow(
+      await expect(() => hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact)).rejects.toThrow(
         'ConcurrentModificationException',
       );
-
-      for (let i = 0; i < 1000; i++) {
-        jest.advanceTimersByTime(1000);
-      }
-
-      await expectation;
 
       // THEN
       expect(mockAppSyncClient).toHaveReceivedCommandTimes(UpdateFunctionCommand, 7); // 1st attempt and then 6 retries before bailing
