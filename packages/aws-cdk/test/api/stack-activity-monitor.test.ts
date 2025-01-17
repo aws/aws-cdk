@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 import { stderr } from './console-listener';
 import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
 import { ResourceStatus } from '@aws-sdk/client-cloudformation';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
 
 let TIMESTAMP: number;
 let HUMAN_TIME: string;
@@ -10,6 +11,7 @@ let HUMAN_TIME: string;
 beforeAll(() => {
   TIMESTAMP = new Date().getTime();
   HUMAN_TIME = new Date(TIMESTAMP).toLocaleTimeString();
+  CliIoHost.instance().isCI = false;
 });
 
 test('prints 0/4 progress report, when addActivity is called with an "IN_PROGRESS" ResourceStatus', () => {

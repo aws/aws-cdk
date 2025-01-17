@@ -10,6 +10,7 @@ import {
   MockSdkProvider,
   restoreSdkMocksToDefault, setDefaultSTSMocks,
 } from '../util/mock-sdk';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
 
 const mockDeployStack = jest.spyOn(deployStack, 'deployStack');
 
@@ -17,6 +18,7 @@ let bootstrapper: Bootstrapper;
 let stderrMock: jest.SpyInstance;
 
 beforeEach(() => {
+  CliIoHost.instance().isCI = false;
   bootstrapper = new Bootstrapper({ source: 'default' });
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
     return true;
