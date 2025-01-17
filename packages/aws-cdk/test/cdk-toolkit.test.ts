@@ -1487,7 +1487,7 @@ describe('synth', () => {
 
     const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
 
-    // Rollback might be called -- just don't do nothing.
+    // Rollback might be called -- just don't do anything.
     const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
 
     const mockedDeployStack = jest
