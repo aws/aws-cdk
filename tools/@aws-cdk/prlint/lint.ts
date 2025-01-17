@@ -1,334 +1,19 @@
 import { execSync } from 'child_process';
 import * as path from 'path';
-import { Octokit } from '@octokit/rest';
-import { Endpoints } from '@octokit/types';
-import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
-
-export type GitHubPr =
-  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
-
-export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
-
-const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
-
-/**
- * Types of exemption labels in aws-cdk project.
- */
-enum Exemption {
-  README = 'pr-linter/exempt-readme',
-  TEST = 'pr-linter/exempt-test',
-  INTEG_TEST = 'pr-linter/exempt-integ-test',
-  BREAKING_CHANGE = 'pr-linter/exempt-breaking-change',
-  CLI_INTEG_TESTED = 'pr-linter/cli-integ-tested',
-  REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
-  REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
-}
-
-export interface GithubStatusEvent {
-  readonly sha: string;
-  readonly state?: StatusEvent['state'];
-  readonly context?: string;
-}
-
-export interface GitHubLabel {
-  readonly name: string;
-}
-
-export interface GitHubFile {
-  readonly filename: string;
-}
-
-export interface Review {
-  id: number;
-  user: {
-    login: string;
-  };
-  body: string;
-  state: string;
-}
-
-export interface Comment {
-  id: number;
-}
-
-class LinterError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
-/**
- * Results of a single test.
- *
- * On a successful validation, no failures will be present.
- * Some tests may return multiple failures.
- */
-class TestResult {
-  /**
-   * Create a test result from a potential failure
-   */
-  public static fromFailure(failureCondition: boolean, failureMessage: string): TestResult {
-    const ret = new TestResult();
-    ret.assessFailure(failureCondition, failureMessage);
-    return ret;
-  }
-
-  public errorMessages: string[] = [];
-
-  /**
-   * Assesses the failure condition for the type of pull request being tested and adds the failure message
-   * to errorMessages if failures are present.
-   * @param failureCondition The conditions for this failure type.
-   * @param failureMessage The message to emit to the contributor.
-   */
-  public assessFailure(failureCondition: boolean, failureMessage: string): void {
-    if (failureCondition) {
-      this.errorMessages.push(failureMessage);
-    }
-  }
-}
-
-/**
- * Represents a single test.
- */
-interface Test {
-  test: (pr: GitHubPr, files: GitHubFile[]) => TestResult;
-}
-
-/**
- * Represents a set of tests and the conditions under which those rules exempt.
- */
-interface ValidateRuleSetOptions {
-  /**
-   * The function to test for exemption from the rules in testRuleSet.
-   */
-  exemption?: (pr: GitHubPr) => boolean;
-
-  /**
-   * The log message printed if the exemption is granted.
-   */
-  exemptionMessage?: string;
-
-  /**
-   * The set of rules to test against if the pull request is not exempt.
-   */
-  testRuleSet: Test[];
-}
-
-/**
- * This class provides functionality for performing validation tests against each ruleset and
- * collecting all the errors returned by those tests.
- */
-class ValidationCollector {
-  public errors: string[] = [];
-
-  constructor(private pr: GitHubPr, private files: GitHubFile[]) { }
-
-  /**
-   * Checks for exemption criteria and then validates against the ruleset when not exempt to it.
-   * Any validation failures are collected by the ValidationCollector.
-   * @param validationOptions the options to validate against
-   */
-  public validateRuleSet(validationOptions: ValidateRuleSetOptions): void {
-    if (validationOptions.exemption ? validationOptions.exemption(this.pr) : false) {
-      console.log(validationOptions.exemptionMessage);
-    } else {
-      this.errors = this.errors.concat(...validationOptions.testRuleSet.map(((test: Test) => test.test(this.pr, this.files).errorMessages)));
-    }
-  }
-
-  /**
-   * Checks whether any validation errors have been collected.
-   * @returns boolean
-   */
-  public isValid() {
-    return this.errors.length === 0;
-  }
-}
-
-/**
- * Props used to perform linting against the pull request.
- */
-export interface PullRequestLinterProps {
-  /**
-   * GitHub client scoped to pull requests. Imported via @actions/github.
-   */
-  readonly client: Octokit;
-
-  /**
-   * Repository owner.
-   */
-  readonly owner: string;
-
-  /**
-   * Repository name.
-   */
-  readonly repo: string;
-
-  /**
-   * Pull request number.
-   */
-  readonly number: number;
-}
+import { GitHubFile, GitHubPr, Review } from "./github";
+import { TestResult, ValidationCollector } from './results';
+import { CODE_BUILD_CONTEXT, Exemption } from './constants';
+import { StatusEvent } from '@octokit/webhooks-definitions/schema';
+import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 
 /**
  * This class provides functionality to run lint checks against a pull request, request changes with the lint failures
  * in the body of the review, and dismiss any previous reviews upon changes to the pull request.
  */
-export class PullRequestLinter {
-  /**
-   * Find an open PR for the given commit.
-   * @param sha the commit sha to find the PR of
-   */
-  public static async getPRFromCommit(client: Octokit, owner: string, repo: string, sha: string): Promise<GitHubPr | undefined> {
-    const prs = await client.search.issuesAndPullRequests({
-      q: sha,
-    });
-    console.log('Found PRs: ', prs);
-    const foundPr = prs.data.items.find(pr => pr.state === 'open');
-    if (foundPr) {
-      // need to do this because the list PR response does not have
-      // all the necessary information
-      const pr = (await client.pulls.get({
-        owner,
-        repo,
-        pull_number: foundPr.number,
-      })).data;
-      console.log(`PR: ${foundPr.number}: `, pr);
-      // only process latest commit
-      if (pr.head.sha === sha) {
-        return pr;
-      }
-    }
-    return;
-  }
-
-  private readonly client: Octokit;
-  private readonly prParams: { owner: string, repo: string, pull_number: number };
-  private readonly issueParams: { owner: string, repo: string, issue_number: number };
+export class PullRequestLinter extends PullRequestLinterBase {
   private readonly trustedCommunity: string[] = [];
-
-  constructor(private readonly props: PullRequestLinterProps) {
-    this.client = props.client;
-    this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
-    this.issueParams = { owner: props.owner, repo: props.repo, issue_number: props.number };
-  }
-
-  /**
-   * Deletes the previous linter comment if it exists.
-   */
-  private async deletePRLinterComment(): Promise<void> {
-    // Since previous versions of this pr linter didn't add comments, we need to do this check first.
-    const comment = await this.findExistingPRLinterComment();
-    if (comment) {
-      await this.client.issues.deleteComment({
-        ...this.issueParams,
-        comment_id: comment.id,
-      });
-    };
-  };
-
-  /**
-   * Dismisses previous reviews by aws-cdk-automation when the pull request succeeds the linter.
-   * @param existingReview The review created by a previous run of the linter
-   */
-  private async dismissPRLinterReview(existingReview?: Review): Promise<void> {
-    if (existingReview) {
-      await this.client.pulls.dismissReview({
-        ...this.prParams,
-        review_id: existingReview.id,
-        message: '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.',
-      });
-    }
-  }
-
-  /**
-   * Creates a new review and comment for first run with failure or creates a new comment with new failures for existing reviews.
-   * @param failureMessages The failures received by the pr linter validation checks.
-   * @param existingReview The review created by a previous run of the linter.
-   */
-  private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
-    let body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
-      + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
-      + 'If you would like to request an exemption from the status checks or clarification on feedback,'
-      + ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.';
-    if (!existingReview) {
-      await this.client.pulls.createReview({
-        ...this.prParams,
-        body: 'The pull request linter has failed. See the aws-cdk-automation comment below for failure reasons.'
-          + ' If you believe this pull request should receive an exemption, please comment and provide a justification.'
-          + '\n\n\nA comment requesting an exemption should contain the text `Exemption Request`.'
-          + ' Additionally, if clarification is needed add `Clarification Request` to a comment.',
-        event: 'REQUEST_CHANGES',
-      });
-    }
-
-    const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
-    if (comments.find(comment => comment.body?.toLowerCase().includes("exemption request"))) {
-      body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
-    }
-    await this.client.issues.createComment({
-      ...this.issueParams,
-      body,
-    });
-
-    // Closing the PR if it is opened from main branch of author's fork
-    if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
-
-      const errorMessageBody = 'Your pull request must be based off of a branch in a personal account '
-      + '(not an organization owned account, and not the main branch). You must also have the setting '
-      + 'enabled that <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork">allows the CDK team to push changes to your branch</a> '
-      + '(this setting is enabled by default for personal accounts, and cannot be enabled for organization owned accounts). '
-      + 'The reason for this is that our automation needs to synchronize your branch with our main after it has been approved, '
-      + 'and we cannot do that if we cannot push to your branch.'
-
-      await this.client.issues.createComment({
-        ...this.issueParams,
-        body: errorMessageBody,
-      });
-
-      await this.client.pulls.update({
-        ...this.prParams,
-        state: 'closed',
-      });
-    }
-
-    throw new LinterError(body);
-  }
-
-  /**
-   * Finds existing review, if present
-   * @returns Existing review, if present
-   */
-  private async findExistingPRLinterReview(): Promise<Review | undefined> {
-    const reviews = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
-    return reviews.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
-  }
-
-  /**
-   * Finds existing comment from previous review, if present
-   * @returns Existing comment, if present
-   */
-  private async findExistingPRLinterComment(): Promise<Comment | undefined> {
-    const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
-    return comments.find((comment) => comment.user?.login === 'aws-cdk-automation' && comment.body?.startsWith('The pull request linter fails with the following errors:')) as Comment;
-  }
-
-  /**
-   * Creates a new review, requesting changes, with the reasons that the linter did not pass.
-   * @param result The result of the PR Linter run.
-   */
-  private async communicateResult(result: ValidationCollector): Promise<void> {
-    const existingReview = await this.findExistingPRLinterReview();
-    if (result.isValid()) {
-      console.log('✅  Success');
-      await this.dismissPRLinterReview(existingReview);
-    } else {
-      await this.createOrUpdatePRLinterReview(result.errors, existingReview);
-    }
-  }
 
   /**
    * Whether or not the codebuild job for the given commit is successful
@@ -346,10 +31,11 @@ export class PullRequestLinter {
     return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
   }
 
-  public async validateStatusEvent(pr: GitHubPr, status: StatusEvent): Promise<void> {
+  public async validateStatusEvent(status: StatusEvent): Promise<LinterActions> {
     if (status.context === CODE_BUILD_CONTEXT && status.state === 'success') {
-      await this.assessNeedsReview(pr);
+      return await this.assessNeedsReview();
     }
+    return {};
   }
 
   /**
@@ -370,9 +56,9 @@ export class PullRequestLinter {
    *   6. It links to a p1 issue
    *   7. It links to a p2 issue and has an approved community review
    */
-  private async assessNeedsReview(
-    pr: Pick<GitHubPr, 'mergeable_state' | 'draft' | 'labels' | 'number'>,
-  ): Promise<void> {
+  private async assessNeedsReview(): Promise<LinterActions> {
+    const pr = await this.pr();
+
     const reviewsData = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
     console.log(JSON.stringify(reviewsData));
 
@@ -462,41 +148,23 @@ export class PullRequestLinter {
     // 2) is already community approved
     // 3) is authored by a core team member
     if (readyForReview && (fixesP1 || communityApproved || pr.labels.some(label => label.name === 'contribution/core'))) {
-      this.addLabel('pr/needs-maintainer-review', pr);
-      this.removeLabel('pr/needs-community-review', pr);
+      return {
+        addLabels: ['pr/needs-maintainer-review'],
+        removeLabels: ['pr/needs-community-review'],
+      };
     } else if (readyForReview && !fixesP1) {
-      this.removeLabel('pr/needs-maintainer-review', pr);
-      this.addLabel('pr/needs-community-review', pr);
+      return {
+        addLabels: ['pr/needs-community-review'],
+        removeLabels: ['pr/needs-maintainer-review'],
+      };
     } else {
-      this.removeLabel('pr/needs-community-review', pr);
-      this.removeLabel('pr/needs-maintainer-review', pr);
+      return {
+        removeLabels: [
+          'pr/needs-community-review',
+          'pr/needs-maintainer-review',
+        ],
+      };
     }
-  }
-
-  private addLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
-    // already has label, so no-op
-    if (pr.labels.some(l => l.name === label)) { return; }
-    console.log(`adding ${label} to pr ${pr.number}`);
-    this.client.issues.addLabels({
-      issue_number: pr.number,
-      owner: this.prParams.owner,
-      repo: this.prParams.repo,
-      labels: [
-        label,
-      ],
-    });
-  }
-
-  private removeLabel(label: string, pr: Pick<GitHubPr, 'labels' | 'number'>) {
-    // does not have label, so no-op
-    if (!pr.labels.some(l => l.name === label)) { return; }
-    console.log(`removing ${label} to pr ${pr.number}`);
-    this.client.issues.removeLabel({
-      issue_number: pr.number,
-      owner: this.prParams.owner,
-      repo: this.prParams.repo,
-      name: label,
-    });
   }
 
   /**
@@ -518,11 +186,15 @@ export class PullRequestLinter {
    * Performs validations and communicates results via pull request comments, upon failure.
    * This also dismisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
    */
-  public async validatePullRequestTarget(sha: string): Promise<void> {
+  public async validatePullRequestTarget(): Promise<LinterActions> {
+    let ret: LinterActions = {};
+
     const number = this.props.number;
+    const sha = (await this.pr()).head.sha;
 
     console.log(`⌛  Fetching PR number ${number}`);
-    const pr = (await this.client.pulls.get(this.prParams)).data as GitHubPr;
+    const pr = await this.pr();
+    console.log(`PR base ref is: ${pr.base.ref}`)
 
     console.log(`⌛  Fetching files for PR number ${number}`);
     const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
@@ -575,29 +247,48 @@ export class PullRequestLinter {
       ],
     });
 
-    console.log("Deleting PR Linter Comment now");
-    await this.deletePRLinterComment();
+    ret = mergeLinterActions(ret, await this.validationToActions(validationCollector));
+
+    // also assess whether the PR needs review or not
     try {
-      await this.communicateResult(validationCollector);
-      // always assess the review, even if the linter fails
-    } finally {
-      // also assess whether the PR needs review or not
-      try {
-        const state = await this.codeBuildJobSucceeded(sha);
-        console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
-        if (state) {
-          console.log('Assessing if the PR needs a review now');
-          await this.assessNeedsReview(pr);
-        }
-      } catch (e) {
-        console.log(`assessing review failed for sha ${sha}: `, e);
+      const state = await this.codeBuildJobSucceeded(sha);
+      console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
+      if (state) {
+        console.log('Assessing if the PR needs a review now');
+        ret = mergeLinterActions(ret, await this.assessNeedsReview());
       }
+    } catch (e) {
+      console.log(`assessing review failed for sha ${sha}: `, e);
     }
+
+    return ret;
   }
 
-  private formatErrors(errors: string[]) {
-    return `\n\n\t❌ ${errors.join('\n\t❌ ')}\n\n`;
-  };
+  /**
+   * Creates a new review, requesting changes, with the reasons that the linter did not pass.
+   * @param result The result of the PR Linter run.
+   */
+  private async validationToActions(result: ValidationCollector): Promise<LinterActions> {
+    if (result.isValid()) {
+      console.log('✅  Success');
+      return {
+        dismissPreviousReview: true,
+      };
+    } else {
+      // Not the best place to put this, but this is ~where it was before the refactor.
+      const prAuthor = (await this.pr()).user?.login;
+
+      const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
+      const exemptionRequest = comments.some(comment => comment.user?.login === prAuthor && comment.body?.toLowerCase().includes("exemption request"));
+
+      return {
+        requestChanges: {
+          failures: result.errors,
+          exemptionRequest,
+        },
+      };
+    }
+  }
 }
 
 function isFeature(pr: GitHubPr): boolean {
@@ -681,6 +372,7 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
     return l.name === labelName;
   });
 }
+
 
 /**
  * Check that the 'BREAKING CHANGE:' note in the body is correct.
