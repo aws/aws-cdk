@@ -53,6 +53,9 @@ export abstract class CloudAssemblySourceBuilder {
 
   /**
    * Create a Cloud Assembly from a Cloud Assembly builder function.
+   * @param builder the builder function
+   * @param props additional configuration properties
+   * @returns the CloudAssembly source
    */
   public async fromAssemblyBuilder(
     builder: AssemblyBuilder,
@@ -82,9 +85,8 @@ export abstract class CloudAssemblySourceBuilder {
 
   /**
    * Creates a Cloud Assembly from an existing assembly directory.
-   * @param directory the directory of the AWS CDK app. Defaults to the current working directory.
-   * @param props additional configuration properties
-   * @returns an instance of `AwsCdkCli`
+   * @param directory the directory of a already produced Cloud Assembly.
+   * @returns the CloudAssembly source
    */
   public async fromAssemblyDirectory(directory: string): Promise<ICloudAssemblySource> {
     const services: ToolkitServices = await this.toolkitServices();
@@ -108,9 +110,8 @@ export abstract class CloudAssemblySourceBuilder {
   }
   /**
    * Use a directory containing an AWS CDK app as source.
-   * @param directory the directory of the AWS CDK app. Defaults to the current working directory.
    * @param props additional configuration properties
-   * @returns an instance of `AwsCdkCli`
+   * @returns the CloudAssembly source
    */
   public async fromCdkApp(app: string, props: CdkAppSourceProps = {}): Promise<ICloudAssemblySource> {
     const services: ToolkitServices = await this.toolkitServices();
