@@ -1022,13 +1022,11 @@ describe('ProgressPrinter', () => {
     clearInterval.mockRestore();
   });
 
-  test('clears the previous interval before creating a new one', () => {
-    progressPrinter.start();
+  test('throws if start is called twice without stop', () => {
     progressPrinter.start();
 
-    expect(setInterval).toHaveBeenCalledTimes(2);
-    // check that the older interval is cleared before creating a new one
-    expect(clearInterval).toHaveBeenCalledTimes(1);
+    expect(setInterval).toHaveBeenCalledTimes(1);
+    expect(() => progressPrinter.start()).toThrow('ProgressPrinter is already running. Stop it first using the stop() method before starting it again.');
   });
 });
 
