@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import type { ICloudAssemblySource } from '../';
 import { ContextAwareCloudAssembly, ContextAwareCloudAssemblyProps } from './context-aware-source';
@@ -8,6 +9,12 @@ import { Context, ILock, RWLock, Settings } from '../../aws-cdk';
 import { ToolkitError } from '../../errors';
 import { debug } from '../../io/private';
 import { AssemblyBuilder, CdkAppSourceProps } from '../source-builder';
+
+// bypass loading from disk if we already have a supported object
+const CLOUD_ASSEMBLY_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudAssembly');
+function isCloudAssembly(x: any): x is cxapi.CloudAssembly {
+  return x !== null && typeof(x) === 'object' && CLOUD_ASSEMBLY_SYMBOL in x;
+}
 
 export abstract class CloudAssemblySourceBuilder {
 
@@ -40,13 +47,19 @@ export abstract class CloudAssemblySourceBuilder {
         produce: async () => {
           const outdir = determineOutputDirectory(props.outdir);
           const env = await prepareDefaultEnvironment(services, { outdir });
-          return changeDir(async () =>
+          const assembly = await changeDir(async () =>
             withContext(context.all, env, props.synthOptions ?? {}, async (envWithContext, ctx) =>
               withEnv(envWithContext, () => builder({
                 outdir,
                 context: ctx,
               })),
             ), props.workingDirectory);
+
+          if (isCloudAssembly(assembly)) {
+            return assembly;
+          }
+
+          return new cxapi.CloudAssembly(assembly.directory);
         },
       },
       contextAssemblyProps,

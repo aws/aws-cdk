@@ -62,7 +62,7 @@
     "gen": "cdk-copy cx-api",
     "watch": "cdk-watch",
     "lint": "cdk-lint && madge --circular --extensions js lib",
-    "test": "cdk-test",
+    "test": "jest",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
