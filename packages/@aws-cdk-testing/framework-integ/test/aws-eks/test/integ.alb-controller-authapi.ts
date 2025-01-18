@@ -6,6 +6,7 @@ import {
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -28,7 +29,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'integ-eks-stack');
 
