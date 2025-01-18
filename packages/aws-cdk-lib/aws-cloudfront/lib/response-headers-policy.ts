@@ -133,7 +133,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     withResolved(behavior.accessControlAllowMethods, (methods) => {
       const allowedMethods = ['GET', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'ALL'];
       if (methods.includes('ALL') && methods.length !== 1) {
-        throw new Error("accessControlAllowMethods cannot be mixed 'ALL' with other values");
+        throw new Error("accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.");
       } else if (!methods.every((method) => Token.isUnresolved(method) || allowedMethods.includes(method))) {
         throw new Error(`accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`);
       }
