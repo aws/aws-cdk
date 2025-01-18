@@ -7,18 +7,18 @@ import * as semver from 'semver';
 import * as sinon from 'sinon';
 import { ImportMock } from 'ts-mock-imports';
 import { execProgram } from '../../lib/api/cxapp/exec';
-import { setIoMessageThreshold } from '../../lib/logging';
 import { Configuration } from '../../lib/settings';
 import { testAssembly } from '../util';
 import { mockSpawn } from '../util/mock-child_process';
 import { MockSdkProvider } from '../util/mock-sdk';
 import { RWLock } from '../../lib/api/util/rwlock';
 import { rewriteManifestVersion } from './assembly-versions';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
 
 let sdkProvider: MockSdkProvider;
 let config: Configuration;
 beforeEach(() => {
-  setIoMessageThreshold('debug');
+  CliIoHost.instance().logLevel = 'debug';
 
   sdkProvider = new MockSdkProvider();
   config = new Configuration();
@@ -37,7 +37,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  setIoMessageThreshold('info');
+  CliIoHost.instance().logLevel = 'info';
 
   sinon.restore();
   bockfs.restore();
