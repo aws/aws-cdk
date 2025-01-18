@@ -4144,8 +4144,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "RejectUnauthorized": false,
-    "CodeHash": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4"
+    "CodeHash": "a4796a13d6463dc004e4c4a2558caba37e681d86598515bae73669dde9bc73c8"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -4282,7 +4281,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/9bd33d1e1eaf1b892712d7a7b59b910c69acb11b6aaf47a6daf626f86dd9e3d4.json"
+       "/3267a3b1db64e4c841c97465b9b19a18f2e1cd61b6b4e4d5a64efab66ffc6ad2.json"
       ]
      ]
     }
@@ -4328,7 +4327,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/da09b37fcfde017272055109722f2f32f25601dceb8b92afac0c7b1138e385ad.json"
+       "/35067f83e0ebfaa3b05a893a5515c610d6f041dc30357c3598893cb8ed1ab3b1.json"
       ]
      ]
     }
@@ -4446,7 +4445,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4.zip"
+     "S3Key": "a4796a13d6463dc004e4c4a2558caba37e681d86598515bae73669dde9bc73c8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
