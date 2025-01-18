@@ -191,7 +191,7 @@ describe('ResponseHeadersPolicy', () => {
           accessControlAllowOrigins: ['*'],
           originOverride: true,
         },
-      })).toThrow("accessControlAllowMethods cannot be mixed 'ALL' with other values");
+      })).toThrow("accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.");
     });
 
     test('throws if accessControlAllowMethods contains unallowed value', () => {
