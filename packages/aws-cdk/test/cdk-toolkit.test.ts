@@ -92,6 +92,7 @@ import { CdkToolkit, markTesting } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
 import { Tag } from '../lib/tags';
+import { CliIoHost } from '../lib/toolkit/cli-io-host';
 import { flatten } from '../lib/util';
 
 markTesting();
@@ -124,6 +125,7 @@ beforeEach(() => {
     ],
   });
 
+  CliIoHost.instance().isCI = false;
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
     return true;
   });
@@ -1487,7 +1489,7 @@ describe('synth', () => {
 
     const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
 
-    // Rollback might be called -- just don't do nothing.
+    // Rollback might be called -- just don't do anything.
     const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
 
     const mockedDeployStack = jest
