@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnObservabilityConfiguration } from 'aws-cdk-lib/aws-apprunner';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The implementation provider chosen for tracing App Runner services
@@ -140,6 +141,8 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     super(scope, id, {
       physicalName: props.observabilityConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.observabilityConfigurationName !== undefined && !cdk.Token.isUnresolved(props.observabilityConfigurationName)) {
 

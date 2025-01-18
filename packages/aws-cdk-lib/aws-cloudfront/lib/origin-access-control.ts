@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a CloudFront Origin Access Control
@@ -195,6 +196,8 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
 
   constructor(scope: Construct, id: string, props: S3OriginAccessControlProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {

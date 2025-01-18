@@ -3,6 +3,7 @@ import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
 export interface IHttpNamespace extends INamespace { }
@@ -60,6 +61,8 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
 
   constructor(scope: Construct, id: string, props: HttpNamespaceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const ns = new CfnHttpNamespace(this, 'Resource', {
       name: props.name,

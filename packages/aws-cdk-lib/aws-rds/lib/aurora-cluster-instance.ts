@@ -11,6 +11,7 @@ import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
@@ -474,6 +475,8 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
       {
         physicalName: props.instanceIdentifier,
       });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.tier = props.promotionTier ?? 2;
     if (this.tier > 15) {
       throw new Error('promotionTier must be between 0-15');

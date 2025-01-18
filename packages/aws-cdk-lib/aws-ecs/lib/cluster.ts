@@ -27,6 +27,7 @@ import {
   AspectPriority,
   FeatureFlags, Annotations,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
@@ -261,6 +262,8 @@ export class Cluster extends Resource implements ICluster {
     super(scope, id, {
       physicalName: props.clusterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if ((props.containerInsights !== undefined) && props.containerInsightsV2) {
       throw new Error('You cannot set both containerInsights and containerInsightsV2');

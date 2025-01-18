@@ -4,6 +4,7 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Lazy, Resource } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -274,6 +275,8 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       }),
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);

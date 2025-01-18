@@ -589,6 +589,7 @@ describe('external service', () => {
     expect(service.node.metadata.map((m) => m.data)).toEqual([
       'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]',
       'Deployment circuit breaker requires the ECS deployment controller.',
+      expect.anything(),
     ]);
   });
 

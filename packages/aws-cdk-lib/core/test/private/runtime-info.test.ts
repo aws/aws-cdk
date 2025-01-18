@@ -1,10 +1,10 @@
 import { MetadataEntry } from 'constructs';
 import { Code, Function, Runtime } from '../../../aws-lambda';
 import { Stack } from '../../lib';
-import { MetadataType } from '../../lib/metadata-resource';
+import { MetadataType, redactTelemetryDataHelper } from '../../lib/metadata-resource';
 import {
   constructInfoFromConstruct,
-  redactTelemetryData,
+  filterMetadataType,
 } from '../../lib/private/runtime-info';
 
 test('test constructInfoFromConstruct can correctly get metadata information', () => {
@@ -16,12 +16,56 @@ test('test constructInfoFromConstruct can correctly get metadata information', (
       "def handler(event, context):\n\tprint('The function has been invoked.')",
     ),
   });
-  myFunction.node.addMetadata('hello', 'foo');
-  myFunction.node.addMetadata(MetadataType.CONSTRUCT, { foo: 'bar' });
 
   const constructInfo = constructInfoFromConstruct(myFunction);
-  expect(constructInfo?.metadata).toEqual([
-    { type: MetadataType.CONSTRUCT, data: { foo: '*' } },
+  expect(constructInfo?.metadata).toMatchObject([
+    {
+      type: 'aws:cdk:analytics:construct',
+      trace: undefined,
+      data: expect.any(Object), // Matches any object for `data`
+    },
+  ]);
+});
+
+test('test filterMetadataType correct filter', () => {
+  const metadata: MetadataEntry[] = [
+    { type: MetadataType.CONSTRUCT, data: { hello: 'world' } },
+    {
+      type: MetadataType.METHOD,
+      data: {
+        bool: true,
+        nested: { foo: 'bar' },
+        arr: [1, 2, 3],
+        str: 'foo',
+        arrOfObjects: [{ foo: { hello: 'world' } }],
+      },
+    },
+    {
+      type: 'hello',
+      data: { bool: true, nested: { foo: 'bar' }, arr: [1, 2, 3], str: 'foo' },
+    },
+    {
+      type: MetadataType.FEATURE_FLAG,
+      data: 'foobar',
+    },
+  ];
+
+  expect(filterMetadataType(metadata)).toEqual([
+    { type: MetadataType.CONSTRUCT, data: { hello: 'world' } },
+    {
+      type: MetadataType.METHOD,
+      data: {
+        bool: true,
+        nested: { foo: 'bar' },
+        arr: [1, 2, 3],
+        str: 'foo',
+        arrOfObjects: [{ foo: { hello: 'world' } }],
+      },
+    },
+    {
+      type: MetadataType.FEATURE_FLAG,
+      data: 'foobar',
+    },
   ]);
 });
 
@@ -35,10 +79,9 @@ test('test metadata is redacted correctly', () => {
     ),
   });
 
-  const metadata: MetadataEntry[] = [
-    { type: 'foo', data: { hello: 'world' } },
+  const metadata = [
+    { data: { hello: 'world' } },
     {
-      type: MetadataType.CONSTRUCT,
       data: {
         bool: true,
         nested: { foo: 'bar' },
@@ -48,24 +91,21 @@ test('test metadata is redacted correctly', () => {
       },
     },
     {
-      type: MetadataType.METHOD,
       data: { bool: true, nested: { foo: 'bar' }, arr: [1, 2, 3], str: 'foo' },
     },
     {
-      type: MetadataType.FEATURE_FLAG,
       data: 'foobar',
     },
     {
-      type: 'aws:cdk:analytics:construct',
       data: 'foo',
     },
   ];
 
   // TODO: change this test case to verify that we only collect objects
   // that's part of CDK and redact any customer provided object.
-  expect(redactTelemetryData(metadata)).toEqual([
+  expect(redactTelemetryDataHelper(metadata)).toEqual([
+    { data: { hello: '*' } },
     {
-      type: MetadataType.CONSTRUCT,
       data: {
         bool: true,
         nested: { foo: '*' },
@@ -75,7 +115,6 @@ test('test metadata is redacted correctly', () => {
       },
     },
     {
-      type: MetadataType.METHOD,
       data: {
         bool: true,
         nested: { foo: '*' },
@@ -84,11 +123,9 @@ test('test metadata is redacted correctly', () => {
       },
     },
     {
-      type: MetadataType.FEATURE_FLAG,
       data: '*',
     },
     {
-      type: 'aws:cdk:analytics:construct',
       data: '*',
     },
   ]);

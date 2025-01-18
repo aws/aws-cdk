@@ -11,6 +11,7 @@ import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
 import { IAutoScalingConfiguration } from './auto-scaling-configuration';
 import { IObservabilityConfiguration } from './observability-configuration';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The image repository types
@@ -1267,6 +1268,8 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
 
   public constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const source = props.source.bind(this);
     this.source = source;

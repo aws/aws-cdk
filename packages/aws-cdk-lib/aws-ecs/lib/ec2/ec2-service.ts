@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import { Lazy, Resource, Stack, Annotations } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -183,6 +184,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
       placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.taskDefinition);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.constraints = undefined;
     this.strategies = [];

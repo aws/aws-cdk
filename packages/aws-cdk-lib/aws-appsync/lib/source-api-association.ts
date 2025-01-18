@@ -3,6 +3,7 @@ import { CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
 import { Fn, IResource, Lazy, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Merge type used to associate the source API
@@ -162,6 +163,8 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
 
   constructor(scope: Construct, id: string, props: SourceApiAssociationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.mergeType = props.mergeType ?? MergeType.AUTO_MERGE;
     this.mergedApiExecutionRole = props.mergedApiExecutionRole;

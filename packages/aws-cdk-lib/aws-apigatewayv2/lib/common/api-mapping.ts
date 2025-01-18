@@ -4,6 +4,7 @@ import { IDomainName } from './domain-name';
 import { IStage } from './stage';
 import { CfnApiMapping, CfnApiMappingProps } from '.././index';
 import { IResource, Resource } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource
@@ -88,6 +89,8 @@ export class ApiMapping extends Resource implements IApiMapping {
 
   constructor(scope: Construct, id: string, props: ApiMappingProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // defaultStage is present in IHttpStage.
     // However, importing "http" or "websocket" must import "common", but creating dependencies

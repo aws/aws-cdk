@@ -8,6 +8,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for an AWS CloudTrail trail
@@ -248,6 +249,8 @@ export class Trail extends Resource {
     super(scope, id, {
       physicalName: props.trailName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 

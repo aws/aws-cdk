@@ -3,6 +3,7 @@ import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnRoute } from './ec2.generated';
 import { ISubnet } from './vpc';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for a ClientVpnRoute
@@ -95,6 +96,8 @@ export class ClientVpnRoute extends Resource {
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     const route = new CfnClientVpnRoute(this, 'Resource', {
       clientVpnEndpointId: clientVpnEndpoint!.endpointId,
       description: props.description,

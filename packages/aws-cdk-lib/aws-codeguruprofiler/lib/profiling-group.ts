@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The compute platform of the profiling group.
@@ -188,6 +189,8 @@ export class ProfilingGroup extends ProfilingGroupBase {
     super(scope, id, {
       physicalName: props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
       profilingGroupName: this.physicalName,

@@ -26,6 +26,7 @@ import {
   Tokenization,
   Annotations,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
@@ -1964,6 +1965,8 @@ export class Bucket extends BucketBase {
     super(scope, id, {
       physicalName: props.bucketName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
     this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;

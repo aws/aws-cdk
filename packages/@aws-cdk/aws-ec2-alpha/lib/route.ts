@@ -4,6 +4,7 @@ import { Annotations, Duration, IResource, Resource, Tags } from 'aws-cdk-lib/co
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
 import { ISubnetV2 } from './subnet-v2';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -236,6 +237,8 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
 
   constructor(scope: Construct, id: string, props: EgressOnlyInternetGatewayProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.egressOnlyInternetGatewayName) {
       Tags.of(this).add(NAME_TAG, props.egressOnlyInternetGatewayName);

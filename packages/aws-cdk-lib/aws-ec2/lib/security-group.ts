@@ -6,6 +6,7 @@ import { Port } from './port';
 import { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
@@ -502,6 +503,8 @@ export class SecurityGroup extends SecurityGroupBase {
     super(scope, id, {
       physicalName: props.securityGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const groupDescription = props.description || this.node.path;
 

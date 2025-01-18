@@ -9,6 +9,7 @@ import {
 import { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IResource, Resource, SecretValue, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IVpnConnection extends IResource {
   /**
@@ -170,6 +171,8 @@ export class VpnGateway extends Resource implements IVpnGateway {
 
   constructor(scope: Construct, id: string, props: VpnGatewayProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // This is 'Default' instead of 'Resource', because using 'Default' will generate
     // a logical ID for a VpnGateway which is exactly the same as the logical ID that used

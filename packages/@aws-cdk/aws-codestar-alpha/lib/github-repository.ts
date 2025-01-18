@@ -2,6 +2,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as codestar from 'aws-cdk-lib/aws-codestar';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * GitHubRepository resource interface
@@ -90,6 +91,8 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
 
   constructor(scope: Construct, id: string, props: GitHubRepositoryProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new codestar.CfnGitHubRepository(this, 'Resource', {
       repositoryOwner: props.owner,

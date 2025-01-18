@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnKeyGroup } from './cloudfront.generated';
 import { IPublicKey } from './public-key';
 import { IResource, Names, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Key Group
@@ -53,6 +54,8 @@ export class KeyGroup extends Resource implements IKeyGroup {
 
   constructor(scope: Construct, id: string, props: KeyGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnKeyGroup(this, 'Resource', {
       keyGroupConfig: {

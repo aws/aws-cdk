@@ -4,6 +4,7 @@ import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
 import { IResource, RemovalPolicy, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Non runtime options
@@ -185,6 +186,8 @@ export class LayerVersion extends LayerVersionBase {
     super(scope, id, {
       physicalName: props.layerVersionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
       throw new Error('Attempted to define a Lambda layer that supports no runtime!');

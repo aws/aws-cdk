@@ -3,6 +3,7 @@ import { CfnUserPoolGroup } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { IRole } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a user pool group.
@@ -86,6 +87,8 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
 
   constructor(scope: Construct, id: string, props: UserPoolGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&

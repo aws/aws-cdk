@@ -6,6 +6,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -813,6 +814,8 @@ export class Stream extends StreamBase {
     super(scope, id, {
       physicalName: props.streamName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let shardCount = props.shardCount;
     const streamMode = props.streamMode;

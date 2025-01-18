@@ -4,6 +4,7 @@ import { Duration, Fn, IResource, Resource, Stack, Token } from 'aws-cdk-lib/cor
 import { Construct } from 'constructs';
 import { RenditionConfiguration } from './rendition-configuration';
 import { ThumbnailConfiguration } from './thumbnail-configuration';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of the IVS Recording configuration
@@ -130,6 +131,8 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     super(scope, id, {
       physicalName: props.recordingConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.props = props;
 

@@ -12,6 +12,7 @@ import * as logs from '../../aws-logs';
 import { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 
@@ -466,6 +467,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;

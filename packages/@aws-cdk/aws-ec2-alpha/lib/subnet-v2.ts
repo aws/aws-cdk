@@ -4,6 +4,7 @@ import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
 import { RouteTable } from './route';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Interface to define subnet CIDR
@@ -249,6 +250,8 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const ipv4CidrBlock = props.ipv4CidrBlock.cidr;
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;

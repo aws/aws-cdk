@@ -31,6 +31,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
@@ -915,6 +916,8 @@ export class Function extends FunctionBase {
     super(scope, id, {
       physicalName: props.functionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.functionName && !Token.isUnresolved(props.functionName)) {
       if (props.functionName.length > 64) {

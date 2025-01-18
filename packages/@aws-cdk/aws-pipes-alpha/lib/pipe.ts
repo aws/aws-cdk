@@ -1,6 +1,7 @@
 import { IResource, Resource, Stack } from 'aws-cdk-lib';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
@@ -183,6 +184,8 @@ class ImportedPipe extends PipeBase {
 
   constructor(scope: Construct, id: string, pipeName: string) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, { pipeName: pipeName });
     this.pipeName = pipeName;
     this.pipeArn = Stack.of(this).formatArn({
       service: 'pipes',

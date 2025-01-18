@@ -4,6 +4,7 @@ import { IDomainName } from './domain-name';
 import { IRestApi, RestApiBase } from './restapi';
 import { Stage } from './stage';
 import { Resource, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface BasePathMappingOptions {
   /**
@@ -54,6 +55,8 @@ export interface BasePathMappingProps extends BasePathMappingOptions {
 export class BasePathMapping extends Resource {
   constructor(scope: Construct, id: string, props: BasePathMappingProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.basePath && !Token.isUnresolved(props.basePath)) {
       if (props.basePath.startsWith('/') || props.basePath.endsWith('/')) {

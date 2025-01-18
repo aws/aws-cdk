@@ -3,6 +3,7 @@ import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -432,6 +433,8 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.family = props.family || Names.uniqueId(this);
     this.compatibility = props.compatibility;

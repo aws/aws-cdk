@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -101,6 +102,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
       throw new Error('VPC Endpoint Service must have at least one load balancer specified.');

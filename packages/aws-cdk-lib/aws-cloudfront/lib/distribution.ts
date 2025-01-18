@@ -16,6 +16,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
 /**
@@ -326,6 +327,8 @@ export class Distribution extends Resource implements IDistribution {
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;

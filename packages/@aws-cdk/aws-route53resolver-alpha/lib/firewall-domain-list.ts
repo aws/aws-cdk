@@ -4,6 +4,7 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { IResource, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnFirewallDomainList } from 'aws-cdk-lib/aws-route53resolver';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Firewall Domain List
@@ -209,6 +210,8 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
 
   constructor(scope: Construct, id: string, props: FirewallDomainListProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.name && !Token.isUnresolved(props.name) && !/^[\w-.]{1,128}$/.test(props.name)) {
       throw new Error(`Invalid domain list name: ${props.name}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);

@@ -18,6 +18,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import { IVpcEndpoint } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -700,6 +701,8 @@ export class SpecRestApi extends RestApiBase {
 
   constructor(scope: Construct, id: string, props: SpecRestApiProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.restApiName,

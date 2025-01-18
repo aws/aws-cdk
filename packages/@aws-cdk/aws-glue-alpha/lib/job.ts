@@ -10,6 +10,7 @@ import { Code, GlueVersion, JobExecutable, JobExecutableConfig, JobType } from '
 import { IConnection } from './connection';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { ISecurityConfiguration } from './security-configuration';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The type of predefined worker that is allocated when a job runs.
@@ -701,6 +702,8 @@ export class Job extends JobBase {
     super(scope, id, {
       physicalName: props.jobName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const executable = props.executable.bind();
 

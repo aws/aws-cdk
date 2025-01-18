@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnResponseHeadersPolicy } from './cloudfront.generated';
 import { Duration, Names, Resource, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a response headers policy.
@@ -109,6 +110,8 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     super(scope, id, {
       physicalName: props.responseHeadersPolicyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const responseHeadersPolicyName = props.responseHeadersPolicyName ?? Names.uniqueResourceName(this, {
       maxLength: 128,

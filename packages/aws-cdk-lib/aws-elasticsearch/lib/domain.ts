@@ -14,6 +14,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Elasticsearch version
@@ -1466,6 +1467,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     super(scope, id, {
       physicalName: props.domainName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultInstanceType = 'r5.large.elasticsearch';
     const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';

@@ -5,6 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -728,6 +729,8 @@ export class FileSystem extends FileSystemBase {
    */
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.props = props;
 

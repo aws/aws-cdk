@@ -19,6 +19,7 @@ import {
   CustomResource,
   Aws,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
@@ -723,6 +724,8 @@ export class Repository extends RepositoryBase {
     super(scope, id, {
       physicalName: props.repositoryName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Repository.validateRepositoryName(this.physicalName);
 

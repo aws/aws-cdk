@@ -4,6 +4,7 @@ import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { CfnGeofenceCollection } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Geofence Collection
@@ -131,6 +132,8 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     super(scope, id, {
       physicalName: props.geofenceCollectionName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {
       collectionName: this.physicalName,

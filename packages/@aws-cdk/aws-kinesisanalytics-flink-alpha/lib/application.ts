@@ -10,6 +10,7 @@ import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps as validateApplicationProps } from './private/validation';
 import { LogLevel, MetricsLevel, Runtime } from './types';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * An interface expressing the public properties on both an imported and
@@ -907,6 +908,8 @@ class Import extends ApplicationBase {
 
   constructor(scope: Construct, id: string, attrs: { applicationArn: string; securityGroups?: ec2.ISecurityGroup[] }) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     // Imported applications have no associated role or grantPrincipal
     this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });

@@ -18,6 +18,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1174,6 +1175,8 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;

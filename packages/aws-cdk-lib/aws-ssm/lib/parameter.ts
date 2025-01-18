@@ -10,6 +10,7 @@ import {
   ContextProvider, Fn, IResource, Resource, Stack, Token,
   Tokenization,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An SSM Parameter reference.
@@ -664,6 +665,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     super(scope, id, {
       physicalName: props.parameterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.allowedPattern) {
       _assertValidValue(props.stringValue, props.allowedPattern);

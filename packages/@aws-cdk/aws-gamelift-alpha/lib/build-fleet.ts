@@ -5,6 +5,7 @@ import { IBuild } from './build';
 import { FleetBase, FleetProps, IFleet } from './fleet-base';
 import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import { Port, IPeer, IngressRule } from './ingress-rule';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a GameLift Fleet used to run a custom game build.
@@ -90,6 +91,8 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
     super(scope, id, {
       physicalName: props.fleetName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!cdk.Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length > 1024) {

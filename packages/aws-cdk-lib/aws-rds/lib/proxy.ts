@@ -8,6 +8,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -446,6 +447,8 @@ export class DatabaseProxy extends DatabaseProxyBase
 
   constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const physicalName = props.dbProxyName || (
       cdk.FeatureFlags.of(this).isEnabled(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME) ?

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
 import { ArnFormat, IResource, Resource, Stack, Tags, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an EFS AccessPoint
@@ -209,6 +210,8 @@ export class AccessPoint extends AccessPointBase {
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const clientToken = props.clientToken;
     if ((clientToken?.length === 0 || (clientToken && clientToken.length > 64)) && !Token.isUnresolved(clientToken)) {

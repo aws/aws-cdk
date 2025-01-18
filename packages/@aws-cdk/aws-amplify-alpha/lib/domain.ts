@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { IBranch } from './branch';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Options to add a domain to an application
@@ -127,6 +128,8 @@ export class Domain extends Resource {
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.subDomains = props.subDomains || [];
 

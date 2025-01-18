@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
 import { IResource, Names, Resource, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Public Key
@@ -56,6 +57,8 @@ export class PublicKey extends Resource implements IPublicKey {
 
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
       throw new Error(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`);

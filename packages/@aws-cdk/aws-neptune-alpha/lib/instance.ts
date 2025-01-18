@@ -6,6 +6,7 @@ import { IDatabaseCluster } from './cluster';
 import { Endpoint } from './endpoint';
 import { CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IParameterGroup } from './parameter-group';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -499,6 +500,8 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const instance = new CfnDBInstance(this, 'Resource', {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,

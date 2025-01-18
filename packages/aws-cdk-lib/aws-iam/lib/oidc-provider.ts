@@ -6,6 +6,7 @@ import {
   Resource,
   Token,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
@@ -137,6 +138,8 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    */
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const provider = this.getOrCreateProvider();
     const resource = new CustomResource(this, 'Resource', {

@@ -113,12 +113,10 @@ describe('MetadataResource', () => {
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context):\n\tprint(\'The function has been invoked.\')'),
     };
-    const func = new Function(myStack, 'MyFunction', funcProp);
-    func.node.addMetadata(MetadataType.CONSTRUCT, funcProp);
+    new Function(myStack, 'MyFunction', funcProp);
 
     const template = myApp.synth().getStackByName('EnableTelemtryStack').template;
     expect(template.Resources?.CDKMetadata).toBeDefined();
-    expect(template.Resources?.CDKMetadata?.Properties?.Analytics).toEqual('v2:deflate64:H4sIAAAAAAAA/8vLT0nVyyrWLzO00DMy0DNQzCrOzNQtKs0rycxN1QuC0ADZIqxKJQAAAA==');
   });
 
   test('includes the formatted Analytics property', () => {

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnCloudFrontOriginAccessIdentity } from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties of CloudFront OriginAccessIdentity
@@ -151,6 +152,8 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
 
   constructor(scope: Construct, id: string, props?: OriginAccessIdentityProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Comment has a max length of 128.
     const comment = (props?.comment ?? 'Allows CloudFront to reach the bucket').slice(0, 128);

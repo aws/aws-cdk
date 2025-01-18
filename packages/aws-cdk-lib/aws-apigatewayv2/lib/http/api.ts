@@ -7,6 +7,7 @@ import { VpcLink, VpcLinkProps } from './vpc-link';
 import { CfnApi, CfnApiProps } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { ArnFormat, Duration, Stack, Token } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
@@ -409,6 +410,8 @@ export class HttpApi extends HttpApiBase {
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.httpApiName = props?.apiName ?? id;
     this.disableExecuteApiEndpoint = props?.disableExecuteApiEndpoint;

@@ -5,6 +5,7 @@ import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
 import { Aws, Duration, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The Lustre version for the file system.
@@ -316,6 +317,8 @@ export class LustreFileSystem extends FileSystemBase {
 
   constructor(scope: Construct, id: string, props: LustreFileSystemProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateProps(props);
 

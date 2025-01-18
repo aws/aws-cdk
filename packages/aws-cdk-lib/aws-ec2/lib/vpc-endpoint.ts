@@ -9,6 +9,7 @@ import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A VPC endpoint.
@@ -184,6 +185,8 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
 
   constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const subnets: ISubnet[] = props.subnets
       ? flatten(props.subnets.map(s => props.vpc.selectSubnets(s).subnets))

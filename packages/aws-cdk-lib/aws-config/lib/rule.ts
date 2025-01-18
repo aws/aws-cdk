@@ -5,6 +5,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { IResource, Lazy, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface representing an AWS Config rule
@@ -288,6 +289,8 @@ export class ManagedRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.ruleScope = props.ruleScope;
 

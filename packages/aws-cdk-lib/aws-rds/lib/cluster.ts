@@ -20,6 +20,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1190,6 +1191,8 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
     this._clusterResourceIdentifier = attrs.clusterResourceIdentifier;

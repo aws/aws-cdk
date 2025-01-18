@@ -4,11 +4,13 @@ import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cloudmap from '../../../aws-servicediscovery';
 import { ArnFormat, Resource, Stack, Annotations } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAttributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
 import { Compatibility, LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+
 /**
  * The properties for defining a service using the External launch type.
  */
@@ -124,6 +126,8 @@ export class ExternalService extends BaseService implements IExternalService {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
     }, props.taskDefinition);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.node.addValidation({
       validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],

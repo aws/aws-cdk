@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
 import { ArnFormat, Lazy, Names, Stack, Duration } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for creating a Composite Alarm
@@ -116,6 +117,8 @@ export class CompositeAlarm extends AlarmBase {
     super(scope, id, {
       physicalName: props.compositeAlarmName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.alarmRule.renderAlarmRule().length > 10240) {
       throw new Error('Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule');

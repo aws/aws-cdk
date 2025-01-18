@@ -3,6 +3,7 @@ import { DestinationType, IDestination } from './destination';
 import { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
 import { Duration, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options to add an EventInvokeConfig to a function.
@@ -72,6 +73,8 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
 export class EventInvokeConfig extends Resource {
   constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
       throw new Error('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.');

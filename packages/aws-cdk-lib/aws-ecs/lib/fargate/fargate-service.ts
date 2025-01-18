@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
@@ -156,6 +157,9 @@ export class FargateService extends BaseService implements IFargateService {
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
       platformVersion: props.platformVersion,
     }, props.taskDefinition);
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let securityGroups;
     if (props.securityGroup !== undefined) {

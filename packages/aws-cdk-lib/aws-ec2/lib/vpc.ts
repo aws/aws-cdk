@@ -18,6 +18,7 @@ import {
   Arn, Annotations, ContextProvider,
   IResource, Fn, Lazy, Resource, Stack, Token, Tags, Names, CustomResource, FeatureFlags,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
@@ -1498,6 +1499,8 @@ export class Vpc extends VpcBase {
    */
   constructor(scope: Construct, id: string, props: VpcProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const stack = Stack.of(this);
 

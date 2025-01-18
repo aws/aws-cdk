@@ -5,6 +5,7 @@ import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
@@ -203,6 +204,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.certificateArns = [];
     this.loadBalancer = props.loadBalancer;

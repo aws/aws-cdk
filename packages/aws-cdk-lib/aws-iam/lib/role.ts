@@ -15,6 +15,7 @@ import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
 import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -412,6 +413,8 @@ export class Role extends Resource implements IRole {
     super(scope, id, {
       physicalName: props.roleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.roleName && !Token.isUnresolved(props.roleName) && !/^[\w+=,.@-]{1,64}$/.test(props.roleName)) {
       throw new Error('Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.');

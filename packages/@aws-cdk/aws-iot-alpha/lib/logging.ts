@@ -2,6 +2,7 @@ import { Resource, Stack, IResource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as iot from 'aws-cdk-lib/aws-iot';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents AWS IoT Logging
@@ -90,6 +91,8 @@ export class Logging extends Resource implements ILogging {
 
   constructor(scope: Construct, id: string, props?: LoggingProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const accountId = Stack.of(this).account;
 

@@ -3,6 +3,7 @@ import { WebSocketRoute, WebSocketRouteOptions } from './route';
 import { CfnApi } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 
@@ -135,6 +136,8 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
   constructor(scope: Construct, id: string, props?: WebSocketApiProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.webSocketApiName = props?.apiName ?? id;
 
