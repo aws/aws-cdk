@@ -20,7 +20,7 @@ import { assertIsSuccessfulDeployStackResult, deployStack, DeployStackOptions } 
 import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
-import { setCI } from '../../lib/logging';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import {
   mockCloudFormationClient,
@@ -386,7 +386,7 @@ describe('ci=true', () => {
   let stderrMock: jest.SpyInstance;
   let stdoutMock: jest.SpyInstance;
   beforeEach(() => {
-    setCI(true);
+    CliIoHost.instance().isCI = true;
     jest.resetAllMocks();
     stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
       return true;
@@ -396,7 +396,7 @@ describe('ci=true', () => {
     });
   });
   afterEach(() => {
-    setCI(false);
+    CliIoHost.instance().isCI = false;
   });
   test('output written to stdout', async () => {
     // GIVEN
@@ -1123,6 +1123,41 @@ describe('disable rollback', () => {
       ...expect.anything,
       DisableRollback: true,
     } as ExecuteChangeSetCommandInput);
+  });
+});
+
+describe('import-existing-resources', () => {
+  test('is disabled by default', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      deploymentMethod: {
+        method: 'change-set',
+      },
+    });
+
+    // THEN
+    expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+      ...expect.anything,
+      ImportExistingResources: false,
+    } as CreateChangeSetCommandInput);
+  });
+
+  test('is added to the CreateChangeSetCommandInput', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      deploymentMethod: {
+        method: 'change-set',
+        importExistingResources: true,
+      },
+    });
+
+    // THEN
+    expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+      ...expect.anything,
+      ImportExistingResources: true,
+    } as CreateChangeSetCommandInput);
   });
 });
 

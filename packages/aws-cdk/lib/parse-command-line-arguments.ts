@@ -2,7 +2,7 @@
 // GENERATED FROM packages/aws-cdk/lib/config.ts.
 // Do not edit by hand; all changes will be overwritten at build time from the config file.
 // -------------------------------------------------------------------------------------------
-/* eslint-disable max-len */
+/* eslint-disable @stylistic/max-len */
 import { Argv } from 'yargs';
 import * as helpers from './util/yargs-helpers';
 
@@ -172,7 +172,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Display stack dependency information for each stack',
         }),
     )
-    .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
+    .command(['synth [STACKS..]', 'synthesize [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
       yargs
         .option('exclusively', {
           default: undefined,
@@ -400,6 +400,11 @@ export function parseCommandLineArguments(args: Array<string>): any {
           choices: ['direct', 'change-set', 'prepare-change-set'],
           requiresArg: true,
           desc: 'How to perform the deployment. Direct is a bit faster but lacks progress information',
+        })
+        .option('import-existing-resources', {
+          default: false,
+          type: 'boolean',
+          desc: 'Indicates if the stack set imports resources that already exist.',
         })
         .option('force', {
           default: false,

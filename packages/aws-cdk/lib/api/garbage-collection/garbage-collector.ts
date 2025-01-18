@@ -3,13 +3,13 @@ import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
-import { debug, print } from '../../logging';
+import { debug, info } from '../../logging';
 import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
 import { ToolkitError } from '../../toolkit/error';
-import { Mode } from '../plugin';
+import { Mode } from '../plugin/mode';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -284,7 +284,7 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          await this.confirmationPrompt(printer, deletables);
+          await this.confirmationPrompt(printer, deletables, 'image');
           await this.parallelDeleteEcr(ecr, repo, deletables, printer);
         }
 
@@ -360,7 +360,7 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          await this.confirmationPrompt(printer, deletables);
+          await this.confirmationPrompt(printer, deletables, 'object');
           await this.parallelDeleteS3(s3, bucket, deletables, printer);
         }
 
@@ -526,7 +526,7 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting images: ${err}`));
+      info(chalk.red(`Error deleting images: ${err}`));
     }
   }
 
@@ -559,23 +559,23 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting objects: ${err}`));
+      info(chalk.red(`Error deleting objects: ${err}`));
     }
   }
 
   private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bucketName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bucketName;
   }
 
   private async bootstrapRepositoryName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.repositoryName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.repositoryName;
   }
 
   private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bootstrapStack.parameters.Qualifier;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bootstrapStack.parameters.Qualifier;
   }
 
   private async numObjectsInBucket(s3: IS3Client, bucket: string): Promise<number> {
@@ -621,6 +621,7 @@ export class GarbageCollector {
       while (batch.length < batchSize) {
         const response = await ecr.listImages({
           repositoryName: repo,
+          nextToken: continuationToken,
         });
 
         // No images in the repository
@@ -712,12 +713,16 @@ export class GarbageCollector {
     } while (continuationToken);
   }
 
-  private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[]) {
+  private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[], type: string) {
+    const pluralize = (name: string, count: number): string => {
+      return count === 1 ? name : `${name}s`;
+    };
+
     if (this.confirm) {
       const message = [
-        `Found ${deletables.length} assets to delete based off of the following criteria:`,
-        `- assets have been isolated for > ${this.props.rollbackBufferDays} days`,
-        `- assets were created > ${this.props.createdBufferDays} days ago`,
+        `Found ${deletables.length} ${pluralize(type, deletables.length)} to delete based off of the following criteria:`,
+        `- ${type}s have been isolated for > ${this.props.rollbackBufferDays} days`,
+        `- ${type}s were created > ${this.props.createdBufferDays} days ago`,
         '',
         'Delete this batch (yes/no/delete-all)?',
       ].join('\n');

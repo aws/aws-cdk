@@ -1,8 +1,8 @@
 import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
-import { Tag } from './cdk-toolkit';
 import { debug, warning } from './logging';
+import { Tag } from './tags';
 import { ToolkitError } from './toolkit/error';
 import * as util from './util';
 
@@ -32,6 +32,17 @@ export enum Command {
   INIT = 'init',
   VERSION = 'version',
   WATCH = 'watch',
+  GC = 'gc',
+  ROLLBACK = 'rollback',
+  IMPORT = 'import',
+  ACKNOWLEDGE = 'acknowledge',
+  ACK = 'ack',
+  NOTICES = 'notices',
+  MIGRATE = 'migrate',
+  CONTEXT = 'context',
+  DOCS = 'docs',
+  DOC = 'doc',
+  DOCTOR = 'doctor',
 }
 
 const BUNDLING_COMMANDS = [
@@ -115,6 +126,7 @@ export class Configuration {
     this._projectConfig = await loadAndLog(PROJECT_CONFIG);
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
+    // @todo cannot currently be disabled by cli users
     const readUserContext = this.props.readUserContext ?? true;
 
     if (userConfig.get(['build'])) {

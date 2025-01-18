@@ -487,6 +487,65 @@ integTest(
   }),
 );
 
+integTest('deploy with import-existing-resources true', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('test-2', {
+    options: ['--no-execute', '--import-existing-resources'],
+    captureStderr: false,
+  });
+  // verify that we only deployed a single stack (there's a single ARN in the output)
+  expect(stackArn.split('\n').length).toEqual(1);
+
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
+    StackName: stackArn,
+  }));
+  expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
+
+  // verify a change set was successfully created
+  // Here, we do not test whether a resource is actually imported, because that is a CloudFormation feature, not a CDK feature.
+  const changeSetResponse = await fixture.aws.cloudFormation.send(new ListChangeSetsCommand({
+    StackName: stackArn,
+  }));
+  const changeSets = changeSetResponse.Summaries || [];
+  expect(changeSets.length).toEqual(1);
+  expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
+  expect(changeSets[0].ImportExistingResources).toEqual(true);
+}));
+
+integTest('deploy without import-existing-resources', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('test-2', {
+    options: ['--no-execute'],
+    captureStderr: false,
+  });
+  // verify that we only deployed a single stack (there's a single ARN in the output)
+  expect(stackArn.split('\n').length).toEqual(1);
+
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
+    StackName: stackArn,
+  }));
+  expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
+
+  // verify a change set was successfully created and ImportExistingResources = false
+  const changeSetResponse = await fixture.aws.cloudFormation.send(new ListChangeSetsCommand({
+    StackName: stackArn,
+  }));
+  const changeSets = changeSetResponse.Summaries || [];
+  expect(changeSets.length).toEqual(1);
+  expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
+  expect(changeSets[0].ImportExistingResources).toEqual(false);
+}));
+
+integTest('deploy with method=direct and import-existing-resources fails', withDefaultFixture(async (fixture) => {
+  const stackName = 'iam-test';
+  await expect(fixture.cdkDeploy(stackName, {
+    options: ['--import-existing-resources', '--method=direct'],
+  })).rejects.toThrow('exited with error');
+
+  // Ensure stack was not deployed
+  await expect(fixture.aws.cloudFormation.send(new DescribeStacksCommand({
+    StackName: fixture.fullStackName(stackName),
+  }))).rejects.toThrow('does not exist');
+}));
+
 integTest(
   'update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one',
   withDefaultFixture(async (fixture) => {

@@ -8,8 +8,9 @@ import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
 import { ConfigurationOptions, CredentialsOptions, SDK, SdkProvider } from '../../lib/api/aws-auth';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { defaultCliUserAgent } from '../../lib/api/aws-auth/user-agent';
-import { Mode, PluginHost } from '../../lib/api/plugin';
-import * as logging from '../../lib/logging';
+import { PluginHost } from '../../lib/api/plugin';
+import { Mode } from '../../lib/api/plugin/mode';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
 import { withMocked } from '../util';
 import { mockSTSClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
@@ -39,7 +40,7 @@ beforeEach(() => {
   uid = `(${uuid.v4()})`;
   pluginQueried = false;
 
-  logging.setLogLevel(logging.LogLevel.TRACE);
+  CliIoHost.instance().logLevel = 'trace';
 
   PluginHost.instance.credentialProviderSources.splice(0);
   PluginHost.instance.credentialProviderSources.push({
@@ -70,6 +71,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  CliIoHost.instance().logLevel = 'info';
   bockfs.restore();
   jest.restoreAllMocks();
 });

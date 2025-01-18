@@ -8,12 +8,13 @@ import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
+import { makeCachingProvider } from './provider-caching';
 import { SDK } from './sdk';
 import { debug, warning } from '../../logging';
-import { traceMethods } from '../../util/tracing';
-import { Mode } from '../plugin';
-import { makeCachingProvider } from './provider-caching';
 import { AuthenticationError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
+import { traceMethods } from '../../util/tracing';
+import { Mode } from '../plugin/mode';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
 
@@ -281,7 +282,7 @@ export class SdkProvider {
           return undefined;
         }
 
-        debug(`Unable to determine the default AWS account (${e.name}): ${e.message}`);
+        debug(`Unable to determine the default AWS account (${e.name}): ${formatErrorMessage(e)}`);
         return undefined;
       }
     });
