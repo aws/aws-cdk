@@ -1,11 +1,9 @@
 # Amazon S3 Construct Library
 
-
-
 Define an S3 bucket.
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyFirstBucket');
+const bucket = new s3.Bucket(this, "MyFirstBucket");
 ```
 
 `Bucket` constructs expose the following deploy-time attributes:
@@ -34,7 +32,7 @@ const bucket = new s3.Bucket(this, 'MyFirstBucket');
 Define a KMS-encrypted bucket:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
+const bucket = new s3.Bucket(this, "MyEncryptedBucket", {
   encryption: s3.BucketEncryption.KMS,
 });
 
@@ -45,9 +43,9 @@ assert(bucket.encryptionKey instanceof kms.Key);
 You can also supply your own key:
 
 ```ts
-const myKmsKey = new kms.Key(this, 'MyKey');
+const myKmsKey = new kms.Key(this, "MyKey");
 
-const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
+const bucket = new s3.Bucket(this, "MyEncryptedBucket", {
   encryption: s3.BucketEncryption.KMS,
   encryptionKey: myKmsKey,
 });
@@ -58,7 +56,7 @@ assert(bucket.encryptionKey === myKmsKey);
 Enable KMS-SSE encryption via [S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-key.html):
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
+const bucket = new s3.Bucket(this, "MyEncryptedBucket", {
   encryption: s3.BucketEncryption.KMS,
   bucketKeyEnabled: true,
 });
@@ -67,7 +65,7 @@ const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
 Use `BucketEncryption.ManagedKms` to use the S3 master KMS key:
 
 ```ts
-const bucket = new s3.Bucket(this, 'Buck', {
+const bucket = new s3.Bucket(this, "Buck", {
   encryption: s3.BucketEncryption.KMS_MANAGED,
 });
 
@@ -89,11 +87,11 @@ A bucket policy will be automatically created for the bucket upon the first call
 `addToResourcePolicy(statement)`:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket');
+const bucket = new s3.Bucket(this, "MyBucket");
 const result = bucket.addToResourcePolicy(
   new iam.PolicyStatement({
-    actions: ['s3:GetObject'],
-    resources: [bucket.arnForObjects('file.txt')],
+    actions: ["s3:GetObject"],
+    resources: [bucket.arnForObjects("file.txt")],
     principals: [new iam.AccountRootPrincipal()],
   })
 );
@@ -103,13 +101,17 @@ If you try to add a policy statement to an existing bucket, this method will
 not do anything:
 
 ```ts
-const bucket = s3.Bucket.fromBucketName(this, 'existingBucket', 'amzn-s3-demo-bucket');
+const bucket = s3.Bucket.fromBucketName(
+  this,
+  "existingBucket",
+  "amzn-s3-demo-bucket"
+);
 
 // No policy statement will be added to the resource
 const result = bucket.addToResourcePolicy(
   new iam.PolicyStatement({
-    actions: ['s3:GetObject'],
-    resources: [bucket.arnForObjects('file.txt')],
+    actions: ["s3:GetObject"],
+    resources: [bucket.arnForObjects("file.txt")],
     principals: [new iam.AccountRootPrincipal()],
   })
 );
@@ -120,11 +122,11 @@ already has a policy attached, let alone to re-use that policy to add more
 statements to it. We recommend that you always check the result of the call:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket');
+const bucket = new s3.Bucket(this, "MyBucket");
 const result = bucket.addToResourcePolicy(
   new iam.PolicyStatement({
-    actions: ['s3:GetObject'],
-    resources: [bucket.arnForObjects('file.txt')],
+    actions: ["s3:GetObject"],
+    resources: [bucket.arnForObjects("file.txt")],
     principals: [new iam.AccountRootPrincipal()],
   })
 );
@@ -138,7 +140,7 @@ The bucket policy can be directly accessed after creation to add statements or
 adjust the removal policy.
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket');
+const bucket = new s3.Bucket(this, "MyBucket");
 bucket.policy?.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 ```
 
@@ -149,7 +151,7 @@ to other resources. For example:
 ```ts
 declare const myLambda: lambda.Function;
 
-const bucket = new s3.Bucket(this, 'MyBucket');
+const bucket = new s3.Bucket(this, "MyBucket");
 bucket.grantReadWrite(myLambda);
 ```
 
@@ -163,7 +165,7 @@ from the bucket.
 To require all requests use Secure Socket Layer (SSL):
 
 ```ts
-const bucket = new s3.Bucket(this, 'Bucket', {
+const bucket = new s3.Bucket(this, "Bucket", {
   enforceSSL: true,
 });
 ```
@@ -171,7 +173,7 @@ const bucket = new s3.Bucket(this, 'Bucket', {
 To require a minimum TLS version for all requests:
 
 ```ts
-const bucket = new s3.Bucket(this, 'Bucket', {
+const bucket = new s3.Bucket(this, "Bucket", {
   enforceSSL: true,
   minimumTLSVersion: 1.2,
 });
@@ -191,7 +193,7 @@ class Producer extends Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const bucket = new s3.Bucket(this, 'MyBucket', {
+    const bucket = new s3.Bucket(this, "MyBucket", {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     this.myBucket = bucket;
@@ -209,14 +211,14 @@ class Consumer extends Stack {
   constructor(scope: Construct, id: string, props: ConsumerProps) {
     super(scope, id, props);
 
-    const user = new iam.User(this, 'MyUser');
+    const user = new iam.User(this, "MyUser");
     props.userBucket.grantReadWrite(user);
   }
 }
 
 const app = new App();
-const producer = new Producer(app, 'ProducerStack');
-new Consumer(app, 'ConsumerStack', { userBucket: producer.myBucket });
+const producer = new Producer(app, "ProducerStack");
+new Consumer(app, "ConsumerStack", { userBucket: producer.myBucket });
 ```
 
 ## Importing existing buckets
@@ -231,14 +233,18 @@ are not allowed in the bucket name.
 
 ```ts
 declare const myLambda: lambda.Function;
-const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
+const bucket = s3.Bucket.fromBucketAttributes(this, "ImportedBucket", {
+  bucketArn: "arn:aws:s3:::amzn-s3-demo-bucket",
 });
 
 // now you can just call methods on the bucket
-bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {
-  prefix: 'home/myusername/*',
-});
+bucket.addEventNotification(
+  s3.EventType.OBJECT_CREATED,
+  new s3n.LambdaDestination(myLambda),
+  {
+    prefix: "home/myusername/*",
+  }
+);
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
@@ -246,18 +252,30 @@ Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
 name or ARN respectively:
 
 ```ts
-const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'amzn-s3-demo-bucket');
-const byArn = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::amzn-s3-demo-bucket');
+const byName = s3.Bucket.fromBucketName(
+  this,
+  "BucketByName",
+  "amzn-s3-demo-bucket"
+);
+const byArn = s3.Bucket.fromBucketArn(
+  this,
+  "BucketByArn",
+  "arn:aws:s3:::amzn-s3-demo-bucket"
+);
 ```
 
 The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
 regional properties needs to contain the correct values.
 
 ```ts
-const myCrossRegionBucket = s3.Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
-  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
-  region: 'us-east-1',
-});
+const myCrossRegionBucket = s3.Bucket.fromBucketAttributes(
+  this,
+  "CrossRegionImport",
+  {
+    bucketArn: "arn:aws:s3:::amzn-s3-demo-bucket",
+    region: "us-east-1",
+  }
+);
 // myCrossRegionBucket.bucketRegionalDomainName === 'amzn-s3-demo-bucket.s3.us-east-1.amazonaws.com'
 ```
 
@@ -274,9 +292,12 @@ these common use cases.
 The following example will subscribe an SNS topic to be notified of all `s3:ObjectCreated:*` events:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket');
-const topic = new sns.Topic(this, 'MyTopic');
-bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
+const bucket = new s3.Bucket(this, "MyBucket");
+const topic = new sns.Topic(this, "MyTopic");
+bucket.addEventNotification(
+  s3.EventType.OBJECT_CREATED,
+  new s3n.SnsDestination(topic)
+);
 ```
 
 This call will also ensure that the topic policy can accept notifications for
@@ -290,31 +311,41 @@ have the `.jpg` suffix are removed from the bucket.
 
 ```ts
 declare const myQueue: sqs.Queue;
-const bucket = new s3.Bucket(this, 'MyBucket');
-bucket.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.SqsDestination(myQueue), {
-  prefix: 'foo/',
-  suffix: '.jpg',
-});
+const bucket = new s3.Bucket(this, "MyBucket");
+bucket.addEventNotification(
+  s3.EventType.OBJECT_REMOVED,
+  new s3n.SqsDestination(myQueue),
+  {
+    prefix: "foo/",
+    suffix: ".jpg",
+  }
+);
 ```
 
 Adding notifications on existing buckets:
 
 ```ts
 declare const topic: sns.Topic;
-const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
+const bucket = s3.Bucket.fromBucketAttributes(this, "ImportedBucket", {
+  bucketArn: "arn:aws:s3:::amzn-s3-demo-bucket",
 });
-bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
+bucket.addEventNotification(
+  s3.EventType.OBJECT_CREATED,
+  new s3n.SnsDestination(topic)
+);
 ```
 
 If you do not want for S3 to validate permissions of Amazon SQS, Amazon SNS, and Lambda destinations you can use the `notificationsSkipDestinationValidation` flag:
 
 ```ts
 declare const myQueue: sqs.Queue;
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   notificationsSkipDestinationValidation: true,
 });
-bucket.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.SqsDestination(myQueue));
+bucket.addEventNotification(
+  s3.EventType.OBJECT_REMOVED,
+  new s3n.SqsDestination(myQueue)
+);
 ```
 
 When you add an event notification to a bucket, a custom resource is created to
@@ -324,7 +355,7 @@ you should provide it in the `Bucket` constructor:
 
 ```ts
 declare const myRole: iam.IRole;
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   notificationsHandlerRole: myRole,
 });
 ```
@@ -336,9 +367,14 @@ If you’re passing an imported role, and you don’t want this to happen, confi
 it to be immutable:
 
 ```ts
-const importedRole = iam.Role.fromRoleArn(this, 'role', 'arn:aws:iam::123456789012:role/RoleName', {
-  mutable: false,
-});
+const importedRole = iam.Role.fromRoleArn(
+  this,
+  "role",
+  "arn:aws:iam::123456789012:role/RoleName",
+  {
+    mutable: false,
+  }
+);
 ```
 
 > If you provide an imported immutable role, make sure that it has at least all
@@ -354,7 +390,7 @@ Unlike other destinations, you don't need to select which event types you want t
 The following example will enable EventBridge notifications:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyEventBridgeBucket', {
+const bucket = new s3.Bucket(this, "MyEventBridgeBucket", {
   eventBridgeEnabled: true,
 });
 ```
@@ -368,7 +404,7 @@ Use `blockPublicAccess` to specify [block public access settings] on the bucket.
 Enable all block public access settings:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+const bucket = new s3.Bucket(this, "MyBlockedBucket", {
   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
 });
 ```
@@ -376,7 +412,7 @@ const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
 Block and ignore public ACLs:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+const bucket = new s3.Bucket(this, "MyBlockedBucket", {
   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
 });
 ```
@@ -384,7 +420,7 @@ const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
 Alternatively, specify the settings manually:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+const bucket = new s3.Bucket(this, "MyBlockedBucket", {
   blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
 });
 ```
@@ -401,8 +437,9 @@ Note that to enable `publicReadAccess`, make sure both bucket-level and account-
 
 Bucket-level block public access control can be configured through `blockPublicAccess` property. Account-level block public
 access control can be configured on AWS Console -> S3 -> Block Public Access settings for this account (Navigation Panel).
+
 ```ts
-const bucket = new s3.Bucket(this, 'Bucket', {
+const bucket = new s3.Bucket(this, "Bucket", {
   publicReadAccess: true,
   blockPublicAccess: {
     blockPublicPolicy: false,
@@ -418,9 +455,9 @@ const bucket = new s3.Bucket(this, 'Bucket', {
 Use `serverAccessLogsBucket` to describe where server access logs are to be stored.
 
 ```ts
-const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
+const accessLogsBucket = new s3.Bucket(this, "AccessLogsBucket");
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   serverAccessLogsBucket: accessLogsBucket,
 });
 ```
@@ -428,11 +465,11 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 It's also possible to specify a prefix for Amazon S3 to assign to all log object keys.
 
 ```ts
-const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
+const accessLogsBucket = new s3.Bucket(this, "AccessLogsBucket");
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   serverAccessLogsBucket: accessLogsBucket,
-  serverAccessLogsPrefix: 'logs',
+  serverAccessLogsPrefix: "logs",
 });
 ```
 
@@ -444,11 +481,11 @@ You have two options for the log object key format.
 ```
 
 ```ts
-const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
+const accessLogsBucket = new s3.Bucket(this, "AccessLogsBucket");
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   serverAccessLogsBucket: accessLogsBucket,
-  serverAccessLogsPrefix: 'logs',
+  serverAccessLogsPrefix: "logs",
   // You can use a simple prefix with `TargetObjectKeyFormat.simplePrefix()`, but it is the same even if you do not specify `targetObjectKeyFormat` property.
   targetObjectKeyFormat: s3.TargetObjectKeyFormat.simplePrefix(),
 });
@@ -463,12 +500,14 @@ This format appears as follows:
 ```
 
 ```ts
-const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
+const accessLogsBucket = new s3.Bucket(this, "AccessLogsBucket");
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   serverAccessLogsBucket: accessLogsBucket,
-  serverAccessLogsPrefix: 'logs',
-  targetObjectKeyFormat: s3.TargetObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
+  serverAccessLogsPrefix: "logs",
+  targetObjectKeyFormat: s3.TargetObjectKeyFormat.partitionedPrefix(
+    s3.PartitionDateSource.EVENT_TIME
+  ),
 });
 ```
 
@@ -482,13 +521,13 @@ bucket support using bucket policy instead of ACLs), you can set object ownershi
 to [bucket owner enforced](#bucket-owner-enforced-recommended), as is recommended.
 
 ```ts
-const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
+const accessLogsBucket = new s3.Bucket(this, "AccessLogsBucket", {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
 });
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   serverAccessLogsBucket: accessLogsBucket,
-  serverAccessLogsPrefix: 'logs',
+  serverAccessLogsPrefix: "logs",
 });
 ```
 
@@ -501,7 +540,7 @@ recommended, there are no mechanisms in place to prevent users from doing this a
 
 ```ts
 const bucketName = "amzn-s3-demo-bucket";
-const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
+const accessLogsBucket = new s3.Bucket(this, "AccessLogsBucket", {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
   bucketName,
 });
@@ -512,26 +551,26 @@ const bucketPolicy = new s3.CfnBucketPolicy(this, "BucketPolicy", {
   policyDocument: {
     Statement: [
       {
-        Action: 's3:*',
-        Effect: 'Deny',
+        Action: "s3:*",
+        Effect: "Deny",
         Principal: {
-          AWS: '*',
+          AWS: "*",
         },
         Resource: [
           accessLogsBucket.bucketArn,
-          `${accessLogsBucket.bucketArn}/*`
+          `${accessLogsBucket.bucketArn}/*`,
         ],
       },
     ],
-    Version: '2012-10-17',
+    Version: "2012-10-17",
   },
 });
 
 // 'serverAccessLogsBucket' will create a new L2 bucket policy
 // to allow log delivery and overwrite the L1 bucket policy.
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   serverAccessLogsBucket: accessLogsBucket,
-  serverAccessLogsPrefix: 'logs',
+  serverAccessLogsPrefix: "logs",
 });
 ```
 
@@ -544,21 +583,24 @@ As noted above, we highly discourage the mixed usage of L1 and L2 Constructs. Th
 approach would to define the bucket policy using `addToResourcePolicy` method.
 
 ```ts
-const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
+const accessLogsBucket = new s3.Bucket(this, "AccessLogsBucket", {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
 });
 
 accessLogsBucket.addToResourcePolicy(
   new iam.PolicyStatement({
-    actions: ['s3:*'],
-    resources: [accessLogsBucket.bucketArn, accessLogsBucket.arnForObjects('*')],
+    actions: ["s3:*"],
+    resources: [
+      accessLogsBucket.bucketArn,
+      accessLogsBucket.arnForObjects("*"),
+    ],
     principals: [new iam.AnyPrincipal()],
   })
-)
+);
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   serverAccessLogsBucket: accessLogsBucket,
-  serverAccessLogsPrefix: 'logs',
+  serverAccessLogsPrefix: "logs",
 });
 ```
 
@@ -567,7 +609,7 @@ Alternatively, users can use the L2 Bucket Policy Construct
 
 ```ts
 const bucketName = "amzn-s3-demo-bucket";
-const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
+const accessLogsBucket = new s3.Bucket(this, "AccessLogsBucket", {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
   bucketName,
 });
@@ -577,29 +619,29 @@ const bucketPolicy = new s3.CfnBucketPolicy(this, "BucketPolicy", {
   policyDocument: {
     Statement: [
       {
-        Action: 's3:*',
-        Effect: 'Deny',
+        Action: "s3:*",
+        Effect: "Deny",
         Principal: {
-          AWS: '*',
+          AWS: "*",
         },
         Resource: [
           accessLogsBucket.bucketArn,
-          `${accessLogsBucket.bucketArn}/*`
+          `${accessLogsBucket.bucketArn}/*`,
         ],
       },
     ],
-    Version: '2012-10-17',
+    Version: "2012-10-17",
   },
 });
 
-// Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent 
-// generated bucket policy to allow access log delivery would append 
+// Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent
+// generated bucket policy to allow access log delivery would append
 // to the current policy.
 s3.BucketPolicy.fromCfnBucketPolicy(bucketPolicy);
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   serverAccessLogsBucket: accessLogsBucket,
-  serverAccessLogsPrefix: 'logs',
+  serverAccessLogsPrefix: "logs",
 });
 ```
 
@@ -610,9 +652,9 @@ An [inventory](https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory
 You can configure multiple inventory lists for a bucket. You can configure what object metadata to include in the inventory, whether to list all object versions or only current versions, where to store the inventory list file output, and whether to generate the inventory on a daily or weekly basis.
 
 ```ts
-const inventoryBucket = new s3.Bucket(this, 'InventoryBucket');
+const inventoryBucket = new s3.Bucket(this, "InventoryBucket");
 
-const dataBucket = new s3.Bucket(this, 'DataBucket', {
+const dataBucket = new s3.Bucket(this, "DataBucket", {
   inventories: [
     {
       frequency: s3.InventoryFrequency.DAILY,
@@ -626,7 +668,7 @@ const dataBucket = new s3.Bucket(this, 'DataBucket', {
       includeObjectVersions: s3.InventoryObjectVersion.ALL,
       destination: {
         bucket: inventoryBucket,
-        prefix: 'with-all-versions',
+        prefix: "with-all-versions",
       },
     },
   ],
@@ -662,8 +704,8 @@ You can use the two following properties to specify the bucket [redirection poli
 You can statically redirect a to a given Bucket URL or any other host name with `websiteRedirect`:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyRedirectedBucket', {
-  websiteRedirect: { hostName: 'www.example.com' },
+const bucket = new s3.Bucket(this, "MyRedirectedBucket", {
+  websiteRedirect: { hostName: "www.example.com" },
 });
 ```
 
@@ -672,16 +714,16 @@ const bucket = new s3.Bucket(this, 'MyRedirectedBucket', {
 Alternatively, you can also define multiple `websiteRoutingRules`, to define complex, conditional redirections:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyRedirectedBucket', {
+const bucket = new s3.Bucket(this, "MyRedirectedBucket", {
   websiteRoutingRules: [
     {
-      hostName: 'www.example.com',
-      httpRedirectCode: '302',
+      hostName: "www.example.com",
+      httpRedirectCode: "302",
       protocol: s3.RedirectProtocol.HTTPS,
-      replaceKey: s3.ReplaceKey.prefixWith('test/'),
+      replaceKey: s3.ReplaceKey.prefixWith("test/"),
       condition: {
-        httpErrorCodeReturnedEquals: '200',
-        keyPrefixEquals: 'prefix',
+        httpErrorCodeReturnedEquals: "200",
+        keyPrefixEquals: "prefix",
       },
     },
   ],
@@ -705,10 +747,10 @@ We recommend to use Virtual Hosted-Style URL for newly made bucket.
 You can generate both of them.
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket');
-bucket.urlForObject('objectname'); // Path-Style URL
-bucket.virtualHostedUrlForObject('objectname'); // Virtual Hosted-Style URL
-bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual Hosted-Style URL but non-regional
+const bucket = new s3.Bucket(this, "MyBucket");
+bucket.urlForObject("objectname"); // Path-Style URL
+bucket.virtualHostedUrlForObject("objectname"); // Virtual Hosted-Style URL
+bucket.virtualHostedUrlForObject("objectname", { regional: false }); // Virtual Hosted-Style URL but non-regional
 ```
 
 ## Object Ownership
@@ -722,7 +764,7 @@ You can use one of following properties to specify the bucket [object Ownership]
 The Uploading account will own the object.
 
 ```ts
-new s3.Bucket(this, 'MyBucket', {
+new s3.Bucket(this, "MyBucket", {
   objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
 });
 ```
@@ -732,7 +774,7 @@ new s3.Bucket(this, 'MyBucket', {
 The bucket owner will own the object if the object is uploaded with the bucket-owner-full-control canned ACL. Without this setting and canned ACL, the object is uploaded and remains owned by the uploading account.
 
 ```ts
-new s3.Bucket(this, 'MyBucket', {
+new s3.Bucket(this, "MyBucket", {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
 });
 ```
@@ -744,7 +786,7 @@ over every object in the bucket. ACLs no longer affect permissions to data in th
 S3 bucket. The bucket uses policies to define access control.
 
 ```ts
-new s3.Bucket(this, 'MyBucket', {
+new s3.Bucket(this, "MyBucket", {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
 });
 ```
@@ -770,7 +812,7 @@ enable the`autoDeleteObjects` option.
 When `autoDeleteObjects` is enabled, `s3:PutBucketPolicy` is added to the bucket policy. This is done to allow the custom resource this feature is built on to add a deny policy for `s3:PutObject` to the bucket policy when a delete stack event occurs. Adding this deny policy prevents new objects from being written to the bucket. Doing this prevents race conditions with external bucket writers during the deletion process.
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
+const bucket = new s3.Bucket(this, "MyTempFileBucket", {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
@@ -786,7 +828,7 @@ by deploying with CDK version `1.126.0` or later **before** switching this value
 [Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   transferAcceleration: true,
 });
 ```
@@ -794,10 +836,10 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 To access the bucket that is enabled for Transfer Acceleration, you must use a special endpoint. The URL can be generated using method `transferAccelerationUrlForObject`:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   transferAcceleration: true,
 });
-bucket.transferAccelerationUrlForObject('objectname');
+bucket.transferAccelerationUrlForObject("objectname");
 ```
 
 ## Intelligent Tiering
@@ -805,14 +847,14 @@ bucket.transferAccelerationUrlForObject('objectname');
 [Intelligent Tiering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html) can be configured to automatically move files to glacier:
 
 ```ts
-new s3.Bucket(this, 'MyBucket', {
+new s3.Bucket(this, "MyBucket", {
   intelligentTieringConfigurations: [
     {
-      name: 'foo',
-      prefix: 'folder/name',
+      name: "foo",
+      prefix: "folder/name",
       archiveAccessTierTime: Duration.days(90),
       deepArchiveAccessTierTime: Duration.days(180),
-      tags: [{ key: 'tagname', value: 'tagvalue' }],
+      tags: [{ key: "tagname", value: "tagvalue" }],
     },
   ],
 });
@@ -823,7 +865,7 @@ new s3.Bucket(this, 'MyBucket', {
 [Managing lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) can be configured transition or expiration actions.
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   lifecycleRules: [
     {
       abortIncompleteMultipartUploadAfter: Duration.minutes(30),
@@ -831,7 +873,7 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
       expiration: Duration.days(30),
       expirationDate: new Date(),
       expiredObjectDeleteMarker: false,
-      id: 'id',
+      id: "id",
       noncurrentVersionExpiration: Duration.days(30),
 
       // the properties below are optional
@@ -846,7 +888,7 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
         },
       ],
       objectSizeGreaterThan: 500,
-      prefix: 'prefix',
+      prefix: "prefix",
       objectSizeLessThan: 10000,
       transitions: [
         {
@@ -875,22 +917,27 @@ can add a filter that specifies a custom `objectSizeGreaterThan` or `objectSizeL
 property. Custom filters always take precedence over the default transition behavior.
 
 ```ts
-new s3.Bucket(this, 'MyBucket', {
-  transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS,
+new s3.Bucket(this, "MyBucket", {
+  transitionDefaultMinimumObjectSize:
+    s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS,
   lifecycleRules: [
     {
-      transitions: [{
-        storageClass: s3.StorageClass.DEEP_ARCHIVE,
-        transitionAfter: Duration.days(30),
-      }],
+      transitions: [
+        {
+          storageClass: s3.StorageClass.DEEP_ARCHIVE,
+          transitionAfter: Duration.days(30),
+        },
+      ],
     },
     {
       objectSizeLessThan: 300000,
       objectSizeGreaterThan: 200000,
-      transitions: [{
-        storageClass: s3.StorageClass.ONE_ZONE_INFREQUENT_ACCESS,
-        transitionAfter: Duration.days(30),
-      }],
+      transitions: [
+        {
+          storageClass: s3.StorageClass.ONE_ZONE_INFREQUENT_ACCESS,
+          transitionAfter: Duration.days(30),
+        },
+      ],
     },
   ],
 });
@@ -906,7 +953,7 @@ enabled later via the CDK.
 Object Lock can be enabled on an S3 bucket by specifying:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, "MyBucket", {
   objectLockEnabled: true,
 });
 ```
@@ -918,13 +965,17 @@ These can be specified by providing `objectLockDefaultRetention`:
 
 ```ts
 // Configure for governance mode with a duration of 7 years
-new s3.Bucket(this, 'Bucket1', {
-  objectLockDefaultRetention: s3.ObjectLockRetention.governance(Duration.days(7 * 365)),
+new s3.Bucket(this, "Bucket1", {
+  objectLockDefaultRetention: s3.ObjectLockRetention.governance(
+    Duration.days(7 * 365)
+  ),
 });
 
 // Configure for compliance mode with a duration of 1 year
-new s3.Bucket(this, 'Bucket2', {
-  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(Duration.days(365)),
+new s3.Bucket(this, "Bucket2", {
+  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(
+    Duration.days(365)
+  ),
 });
 ```
 
@@ -942,7 +993,7 @@ declare const destinationBucket1: s3.IBucket;
 declare const destinationBucket2: s3.IBucket;
 declare const kmsKey: kms.IKey;
 
-const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+const sourceBucket = new s3.Bucket(this, "SourceBucket", {
   // Versioning must be enabled on both the source and destination bucket
   versioned: true,
   replicationRules: [
@@ -978,19 +1029,19 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
       // This property cannot be enabled if the replication rule has a tag filter.
       deleteMarkerReplication: false,
       // The ID of the rule.
-      id: 'full-settings-rule',
+      id: "full-settings-rule",
       // The object filter for the rule.
       filter: {
         // The prefix filter for the rule.
-        prefix: 'prefix',
+        prefix: "prefix",
         // The tag filter for the rule.
         tags: [
           {
-            key: 'tagKey',
-            value: 'tagValue',
+            key: "tagKey",
+            value: "tagValue",
           },
         ],
-      }
+      },
     },
   ],
 });
@@ -1000,14 +1051,14 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 
 You can also set a destination bucket from a different account as the replication destination.
 
-In this case, the bucket policy for the destination bucket is required, to configure it through CDK use  `addReplicationPolicy()` method to add bucket policy on destination bucket.
+In this case, the bucket policy for the destination bucket is required, to configure it through CDK use `addReplicationPolicy()` method to add bucket policy on destination bucket.
 In a cross-account scenario, where the source and destination buckets are owned by different AWS accounts, you can use a KMS key to encrypt object replicas. However, the KMS key owner must grant the source bucket owner permission to use the KMS key.
 For more information, please refer to https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html .
+
 > **NOTE:** AWS managed keys don't allow cross-account use, and therefore can't be used to perform cross-account replication.
 
-If you need to ovveride the bucket ownership to destination account pass the account value to the method to provide permissions to override bucket owner.
+If you need to override the bucket ownership to destination account pass the account value to the method to provide permissions to override bucket owner.
 `addReplicationPolicy(bucket.replicationRoleArn, true, '11111111111')`;
-
 
 However, if the destination bucket is a referenced bucket, CDK cannot set the bucket policy,
 so you will need to [configure the necessary bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html) separately.
@@ -1016,7 +1067,7 @@ so you will need to [configure the necessary bucket policy](https://docs.aws.ama
 // The destination bucket in a different account.
 declare const destinationBucket: s3.IBucket;
 
-const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+const sourceBucket = new s3.Bucket(this, "SourceBucket", {
   versioned: true,
   replicationRules: [
     {
@@ -1031,6 +1082,10 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 
 //Add permissions to the destination after replication role is created
 if (sourceBucket.replicationRoleArn) {
-  destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
-  }
+  destinationBucket.addReplicationPolicy(
+    sourceBucket.replicationRoleArn,
+    true,
+    "111111111111"
+  );
+}
 ```
