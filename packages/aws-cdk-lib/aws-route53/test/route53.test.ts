@@ -157,7 +157,7 @@ describe('route53', () => {
     });
   });
 
-  test('public hosted zone wiht caaAmazon set to true', () => {
+  test('public hosted zone with caaAmazon set to true', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
