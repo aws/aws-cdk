@@ -262,7 +262,7 @@ export enum LicenseModel {
   LICENSE_INCLUDED = 'license-included',
 
   /**
-   * Bring your own licencse.
+   * Bring your own license.
    */
   BRING_YOUR_OWN_LICENSE = 'bring-your-own-license',
 
@@ -1355,7 +1355,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     }
 
     // The read replica instance always uses the same engine as the source instance
-    // but some CF validations require the engine to be explicitely passed when some
+    // but some CF validations require the engine to be explicitly passed when some
     // properties are specified.
     const shouldPassEngine = props.domain != null;
 

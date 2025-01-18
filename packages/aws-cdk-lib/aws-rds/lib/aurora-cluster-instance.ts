@@ -144,7 +144,7 @@ export interface ServerlessV2ClusterInstanceProps extends ClusterInstanceOptions
    *
    * For serverless v2 instances this means:
    * - true: The serverless v2 reader will scale to match the writer instance (provisioned or serverless)
-   * - false: The serverless v2 reader will scale with the read workfload on the instance
+   * - false: The serverless v2 reader will scale with the read workload on the instance
    *
    * @default false
    */
