@@ -286,9 +286,19 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * Whether point-in-time recovery is enabled.
-   * @default - point-in-time recovery is disabled
+   *
+   * @default - point-in-time recovery is true if `recoveryPeriodInDays` is set, otherwise it is disabled.
    */
   readonly pointInTimeRecovery?: boolean;
+
+  /**
+   * The number of preceding days for which continuous backups are taken and maintained.
+   *
+   * Your table data is only recoverable to any point-in-time from within the configured recovery period.
+   *
+   * @default - recovery period in days is not configured.
+   */
+  readonly recoveryPeriodInDays?: number;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
@@ -1209,7 +1219,7 @@ export class Table extends TableBase {
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-      pointInTimeRecoverySpecification: props.pointInTimeRecovery != null ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
+      pointInTimeRecoverySpecification: this.renderPointInTimeRecoverySpecification(props.pointInTimeRecovery, props.recoveryPeriodInDays),
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
@@ -1233,7 +1243,7 @@ export class Table extends TableBase {
       resourcePolicy: props.resourcePolicy
         ? { policyDocument: props.resourcePolicy }
         : undefined,
-      warmThroughput: props.warmThroughput?? undefined,
+      warmThroughput: props.warmThroughput ?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1787,6 +1797,25 @@ export class Table extends TableBase {
         s3KeyPrefix: importSource.keyPrefix,
       },
     };
+  }
+
+  private renderPointInTimeRecoverySpecification(
+    pointInTimeRecovery?: boolean,
+    recoveryPeriodInDays?: number,
+  ): CfnTable.PointInTimeRecoverySpecificationProperty | undefined {
+    if (pointInTimeRecovery == null && recoveryPeriodInDays === undefined) return undefined;
+
+    let pointInTimeRecoverySpecification: CfnTable.PointInTimeRecoverySpecificationProperty | undefined;
+
+    if (recoveryPeriodInDays !== undefined) {
+      pointInTimeRecoverySpecification = { pointInTimeRecoveryEnabled: true, recoveryPeriodInDays };
+    }
+
+    if (pointInTimeRecovery != null) {
+      pointInTimeRecoverySpecification = { ...pointInTimeRecoverySpecification, pointInTimeRecoveryEnabled: pointInTimeRecovery };
+    }
+
+    return pointInTimeRecoverySpecification;
   }
 }
 

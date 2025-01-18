@@ -631,6 +631,15 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
+`recoveryPeriodInDays` specifies the number of preceding days for which continuous backups are taken and maintained. If this property is set without configuring `pointInTimeRecovery` then point-in-time recovery will be enabled by default.
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  recoveryPeriodInDays: 35,
+});
+```
+
 ## Table Class
 
 You can configure a `TableV2` instance with table classes:

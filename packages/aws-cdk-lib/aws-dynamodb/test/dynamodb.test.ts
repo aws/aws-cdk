@@ -340,6 +340,7 @@ testDeprecated('when specifying every property', () => {
     readCapacity: 42,
     writeCapacity: 1337,
     pointInTimeRecovery: true,
+    recoveryPeriodInDays: 35,
     serverSideEncryption: true,
     billingMode: BillingMode.PROVISIONED,
     stream: StreamViewType.KEYS_ONLY,
@@ -365,7 +366,7 @@ testDeprecated('when specifying every property', () => {
         ReadCapacityUnits: 42,
         WriteCapacityUnits: 1337,
       },
-      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true, RecoveryPeriodInDays: 35 },
       SSESpecification: { SSEEnabled: true },
       StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
       TableName: 'MyTable',
@@ -379,6 +380,81 @@ testDeprecated('when specifying every property', () => {
       },
     },
   );
+});
+
+describe('point in time recovery specification', () => {
+  let stack: Stack;
+
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
+  test('when specifying pointInTimeRecovery = true without recoveryPeriodInDays', () => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      pointInTimeRecovery: true,
+    });
+    Tags.of(table).add('Environment', 'Production');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
+    });
+  });
+
+  test('when specifying pointInTimeRecovery = false without recoveryPeriodInDays', () => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      pointInTimeRecovery: false,
+    });
+    Tags.of(table).add('Environment', 'Production');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: false },
+    });
+  });
+
+  test('when specifying recoveryPeriodInDays without pointInTimeRecovery', () => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      recoveryPeriodInDays: 1,
+    });
+    Tags.of(table).add('Environment', 'Production');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true, RecoveryPeriodInDays: 1 },
+    });
+  });
+
+  test('when specifying pointInTimeRecovery = true and recoveryPeriodInDays', () => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      pointInTimeRecovery: true,
+      recoveryPeriodInDays: 1,
+    });
+    Tags.of(table).add('Environment', 'Production');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true, RecoveryPeriodInDays: 1 },
+    });
+  });
+
+  test('when specifying pointInTimeRecovery = false and recoveryPeriodInDays', () => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      pointInTimeRecovery: false,
+      recoveryPeriodInDays: 1,
+    });
+    Tags.of(table).add('Environment', 'Production');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: false, RecoveryPeriodInDays: 1 },
+    });
+  });
 });
 
 test('when specifying sse with customer managed CMK', () => {

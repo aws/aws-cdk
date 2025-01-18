@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "ee4dc88de2a043fab3bf727d1e606ac6c8ff89dbb652e38b369494bdd1c9750f": {
+      "source": {
+        "path": "aws-cdk-dynamodb-point-in-time-recovery.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ee4dc88de2a043fab3bf727d1e606ac6c8ff89dbb652e38b369494bdd1c9750f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
