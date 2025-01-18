@@ -827,8 +827,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "RejectUnauthorized": false,
-    "CodeHash": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4"
+    "CodeHash": "a4796a13d6463dc004e4c4a2558caba37e681d86598515bae73669dde9bc73c8"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1057,7 +1056,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/94623fc5c3936ef09905022fa1bfc57cf1817e85f883c6637b492af5fb80aa96.json"
+       "/d94bddc47fc4d0c6c04f735144e1b17b074ed151df0807bab5516a6f87427dfe.json"
       ]
      ]
     }
@@ -1107,7 +1106,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/75e6340b2e61d2c74f9ae8a37d9fcfde9f296f872f9505680bb81e850e4e4855.json"
+       "/954cd97cc39f6d1deeaf8301d391257047d76aa601bbecc402b72214eeedf71f.json"
       ]
      ]
     }
@@ -1714,7 +1713,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4.zip"
+     "S3Key": "a4796a13d6463dc004e4c4a2558caba37e681d86598515bae73669dde9bc73c8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -1976,6 +1975,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IngressPingerFunction54746D9B",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
