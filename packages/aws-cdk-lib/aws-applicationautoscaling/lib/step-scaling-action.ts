@@ -192,4 +192,3 @@ export interface AdjustmentTier {
    */
   readonly upperBound?: number;
 }
-
