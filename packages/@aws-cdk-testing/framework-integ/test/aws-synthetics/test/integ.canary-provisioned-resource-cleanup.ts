@@ -38,7 +38,7 @@ const getCleanupCanaryInfo = integ.assertions.awsApiCall('synthetics', 'getCanar
 });
 const stopCanary = integ.assertions.awsApiCall('synthetics', 'stopCanary', {
   Name: testStack.cleanupCanary.canaryName,
-}).waitForAssertions() as AwsApiCall;
+}).waitForAssertions();
 const deleteCanary = integ.assertions.awsApiCall('synthetics', 'deleteCanary', {
   Name: testStack.cleanupCanary.canaryName,
 }).waitForAssertions();
