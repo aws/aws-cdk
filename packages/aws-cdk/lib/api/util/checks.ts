@@ -1,4 +1,5 @@
 import { debug } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
 import { SDK } from '../aws-auth/sdk';
 
 export async function determineAllowCrossAccountAssetPublishing(sdk: SDK, customStackName?: string): Promise<boolean> {
@@ -45,19 +46,19 @@ export async function getBootstrapStackInfo(sdk: SDK, stackName: string): Promis
     const stackResponse = await cfn.describeStacks({ StackName: stackName });
 
     if (!stackResponse.Stacks || stackResponse.Stacks.length === 0) {
-      throw new Error(`Toolkit stack ${stackName} not found`);
+      throw new ToolkitError(`Toolkit stack ${stackName} not found`);
     }
 
     const stack = stackResponse.Stacks[0];
     const versionOutput = stack.Outputs?.find(output => output.OutputKey === 'BootstrapVersion');
 
     if (!versionOutput?.OutputValue) {
-      throw new Error(`Unable to find BootstrapVersion output in the toolkit stack ${stackName}`);
+      throw new ToolkitError(`Unable to find BootstrapVersion output in the toolkit stack ${stackName}`);
     }
 
     const bootstrapVersion = parseInt(versionOutput.OutputValue);
     if (isNaN(bootstrapVersion)) {
-      throw new Error(`Invalid BootstrapVersion value: ${versionOutput.OutputValue}`);
+      throw new ToolkitError(`Invalid BootstrapVersion value: ${versionOutput.OutputValue}`);
     }
 
     // try to get bucketname from the logical resource id. If there is no
@@ -76,6 +77,6 @@ export async function getBootstrapStackInfo(sdk: SDK, stackName: string): Promis
       bootstrapVersion,
     };
   } catch (e) {
-    throw new Error(`Error retrieving toolkit stack info: ${e}`);
+    throw new ToolkitError(`Error retrieving toolkit stack info: ${e}`);
   }
 }

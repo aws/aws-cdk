@@ -2,6 +2,7 @@ import { exec as _exec } from 'child_process';
 import { promisify } from 'util';
 import * as semver from 'semver';
 import { debug } from '../../lib/logging';
+import { ToolkitError } from '../toolkit/error';
 
 const exec = promisify(_exec);
 
@@ -13,7 +14,7 @@ export async function getLatestVersionFromNpm(): Promise<string> {
   }
   const latestVersion = stdout.trim();
   if (!semver.valid(latestVersion)) {
-    throw new Error(`npm returned an invalid semver ${latestVersion}`);
+    throw new ToolkitError(`npm returned an invalid semver ${latestVersion}`);
   }
 
   return latestVersion;

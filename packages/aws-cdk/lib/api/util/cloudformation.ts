@@ -14,6 +14,7 @@ import { StackStatus } from './cloudformation/stack-status';
 import { makeBodyParameter, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
+import { ToolkitError } from '../../toolkit/error';
 import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
 import { formatErrorMessage } from '../../util/error';
 import type { ICloudFormationClient, SdkProvider } from '../aws-auth';
@@ -201,7 +202,7 @@ export class CloudFormationStack {
 
   private assertExists() {
     if (!this.exists) {
-      throw new Error(`No stack named '${this.stackName}'`);
+      throw new ToolkitError(`No stack named '${this.stackName}'`);
     }
   }
 }
@@ -306,13 +307,13 @@ export async function waitForChangeSet(
     }
 
     // eslint-disable-next-line max-len
-    throw new Error(
+    throw new ToolkitError(
       `Failed to create ChangeSet ${changeSetName} on ${stackName}: ${description.Status || 'NO_STATUS'}, ${description.StatusReason || 'no reason provided'}`,
     );
   });
 
   if (!ret) {
-    throw new Error('Change set took too long to be created; aborting');
+    throw new ToolkitError('Change set took too long to be created; aborting');
   }
 
   return ret;
@@ -543,7 +544,7 @@ export async function waitForStackDelete(
 
   const status = stack.stackStatus;
   if (status.isFailure) {
-    throw new Error(
+    throw new ToolkitError(
       `The stack named ${stackName} is in a failed state. You may need to delete it from the AWS console : ${status}`,
     );
   } else if (status.isDeleted) {
@@ -575,11 +576,11 @@ export async function waitForStackDeploy(
   const status = stack.stackStatus;
 
   if (status.isCreationFailure) {
-    throw new Error(
+    throw new ToolkitError(
       `The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`,
     );
   } else if (!status.isDeploySuccess) {
-    throw new Error(`The stack named ${stackName} failed to deploy: ${status}`);
+    throw new ToolkitError(`The stack named ${stackName} failed to deploy: ${status}`);
   }
 
   return stack;
@@ -695,7 +696,7 @@ export class ParameterValues {
     }
 
     if (missingRequired.length > 0) {
-      throw new Error(`The following CloudFormation Parameters are missing a value: ${missingRequired.join(', ')}`);
+      throw new ToolkitError(`The following CloudFormation Parameters are missing a value: ${missingRequired.join(', ')}`);
     }
 
     // Just append all supplied overrides that aren't really expected (this

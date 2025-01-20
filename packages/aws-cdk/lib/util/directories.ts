@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { ToolkitError } from '../toolkit/error';
 
 /**
  * Return a location that will be used as the CDK home directory.
@@ -52,7 +53,7 @@ export function rootDir(fail?: boolean) {
     }
     if (path.dirname(dirname) === dirname) {
       if (fail ?? true) {
-        throw new Error('Unable to find package manifest');
+        throw new ToolkitError('Unable to find package manifest');
       }
       return undefined;
     }

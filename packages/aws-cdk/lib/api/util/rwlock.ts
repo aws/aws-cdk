@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
+import { ToolkitError } from '../../toolkit/error';
 
 /**
  * A single-writer/multi-reader lock on a directory
@@ -33,7 +34,7 @@ export class RWLock {
 
     const readers = await this.currentReaders();
     if (readers.length > 0) {
-      throw new Error(`Other CLIs (PID=${readers}) are currently reading from ${this.directory}. Invoke the CLI in sequence, or use '--output' to synth into different directories.`);
+      throw new ToolkitError(`Other CLIs (PID=${readers}) are currently reading from ${this.directory}. Invoke the CLI in sequence, or use '--output' to synth into different directories.`);
     }
 
     await writeFileAtomic(this.writerFile, this.pidString);
@@ -89,7 +90,7 @@ export class RWLock {
   private async assertNoOtherWriters() {
     const writer = await this.currentWriter();
     if (writer) {
-      throw new Error(`Another CLI (PID=${writer}) is currently synthing to ${this.directory}. Invoke the CLI in sequence, or use '--output' to synth into different directories.`);
+      throw new ToolkitError(`Another CLI (PID=${writer}) is currently synthing to ${this.directory}. Invoke the CLI in sequence, or use '--output' to synth into different directories.`);
     }
   }
 

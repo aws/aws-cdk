@@ -4,6 +4,7 @@ import type { IRoute53Client } from '../api';
 import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
+import { ContextProviderError } from '../toolkit/error';
 
 export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {}
@@ -12,19 +13,19 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
     const account = args.account;
     const region = args.region;
     if (!this.isHostedZoneQuery(args)) {
-      throw new Error(`HostedZoneProvider requires domainName property to be set in ${args}`);
+      throw new ContextProviderError(`HostedZoneProvider requires domainName property to be set in ${args}`);
     }
     const domainName = args.domainName;
     debug(`Reading hosted zone ${account}:${region}:${domainName}`);
     const r53 = (await initContextProviderSdk(this.aws, args)).route53();
     const response = await r53.listHostedZonesByName({ DNSName: domainName });
     if (!response.HostedZones) {
-      throw new Error(`Hosted Zone not found in account ${account}, region ${region}: ${domainName}`);
+      throw new ContextProviderError(`Hosted Zone not found in account ${account}, region ${region}: ${domainName}`);
     }
     const candidateZones = await this.filterZones(r53, response.HostedZones, args);
     if (candidateZones.length !== 1) {
       const filteProps = `dns:${domainName}, privateZone:${args.privateZone}, vpcId:${args.vpcId}`;
-      throw new Error(`Found zones: ${JSON.stringify(candidateZones)} for ${filteProps}, but wanted exactly 1 zone`);
+      throw new ContextProviderError(`Found zones: ${JSON.stringify(candidateZones)} for ${filteProps}, but wanted exactly 1 zone`);
     }
 
     return {

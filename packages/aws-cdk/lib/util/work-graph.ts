@@ -1,6 +1,7 @@
 import { parallelPromises } from './parallel';
 import { WorkNode, DeploymentState, StackNode, AssetBuildNode, AssetPublishNode } from './work-graph-types';
 import { debug, trace } from '../logging';
+import { ToolkitError } from '../toolkit/error';
 
 export type Concurrency = number | Record<WorkNode['type'], number>;
 
@@ -17,7 +18,7 @@ export class WorkGraph {
   public addNodes(...nodes: WorkNode[]) {
     for (const node of nodes) {
       if (this.nodes[node.id]) {
-        throw new Error(`Duplicate use of node id: ${node.id}`);
+        throw new ToolkitError(`Duplicate use of node id: ${node.id}`);
       }
 
       const ld = this.lazyDependencies.get(node.id);
@@ -85,7 +86,7 @@ export class WorkGraph {
   public node(id: string) {
     const ret = this.nodes[id];
     if (!ret) {
-      throw new Error(`No node with id ${id} among ${Object.keys(this.nodes)}`);
+      throw new ToolkitError(`No node with id ${id} among ${Object.keys(this.nodes)}`);
     }
     return ret;
   }
@@ -297,7 +298,7 @@ export class WorkGraph {
     if (this.readyPool.length === 0 && activeCount === 0 && pendingCount > 0) {
       const cycle = this.findCycle() ?? ['No cycle found!'];
       trace(`Cycle ${cycle.join(' -> ')} in graph ${this}`);
-      throw new Error(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${cycle.join(' -> ')} (run with -vv for full graph)`);
+      throw new ToolkitError(`Unable to make progress anymore, dependency cycle between remaining artifacts: ${cycle.join(' -> ')} (run with -vv for full graph)`);
     }
   }
 
