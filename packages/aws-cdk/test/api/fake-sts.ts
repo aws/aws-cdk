@@ -44,14 +44,14 @@ export class FakeSts {
   public readonly assumedRoles = new Array<AssumedRole>();
 
   /**
-   * AccessKey -> User
+   * AccessKey -> User or Session
    */
   private identities: Record<string, RegisteredIdentity> = {};
 
   /**
    * RoleARN -> Role
    *
-   * When a Role is assumed it creates a User on the spot.
+   * When a Role is assumed it creates a Session.
    */
   private roles: Record<string, RegisteredRole> = {};
 
