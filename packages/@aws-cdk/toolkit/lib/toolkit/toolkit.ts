@@ -8,6 +8,7 @@ import { AssetBuildTime, DeployOptions, RequireApproval } from '../actions/deplo
 import { buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
 import { DestroyOptions } from '../actions/destroy';
 import { DiffOptions } from '../actions/diff';
+import { diffRequiresApproval } from '../actions/diff/private';
 import { ListOptions } from '../actions/list';
 import { RollbackOptions } from '../actions/rollback';
 import { SynthOptions } from '../actions/synth';
@@ -32,7 +33,13 @@ export type ToolkitAction =
 | 'deploy'
 | 'rollback'
 | 'watch'
-| 'destroy';
+| 'destroy'
+| 'doctor'
+| 'gc'
+| 'import'
+| 'metadata'
+| 'init'
+| 'migrate';
 
 export interface ToolkitOptions {
   /**
@@ -77,9 +84,14 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
 
   public constructor(private readonly props: ToolkitOptions = {}) {
     super();
-
-    this.ioHost = props.ioHost ?? CliIoHost.getIoHost();
     this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
+
+    // Hacky way to re-use the global IoHost until we have fully removed the need for it
+    const globalIoHost = CliIoHost.instance();
+    if (props.ioHost) {
+      globalIoHost.registerIoHost(props.ioHost as any);
+    }
+    this.ioHost = globalIoHost as IIoHost;
   }
 
   public async dispose(): Promise<void> {
@@ -166,6 +178,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const assembly = await this.assemblyFromSource(cx);
     ioHost;
     assembly;
+    // temporary
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error('Not implemented yet');
   }
 
@@ -177,17 +191,19 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const assembly = await this.assemblyFromSource(cx);
     const stacks = await assembly.selectStacksV2(options.stacks);
     await this.validateStacksMetadata(stacks, ioHost);
+    // temporary
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error('Not implemented yet');
   }
 
   /**
    * Deploys the selected stacks into an AWS account
    */
-  public async deploy(cx: ICloudAssemblySource, options: DeployOptions): Promise<void> {
+  public async deploy(cx: ICloudAssemblySource, options: DeployOptions = {}): Promise<void> {
     const ioHost = withAction(this.ioHost, 'deploy');
     const timer = Timer.start();
     const assembly = await this.assemblyFromSource(cx);
-    const stackCollection = assembly.selectStacksV2(options.stacks);
+    const stackCollection = assembly.selectStacksV2(options.stacks ?? ALL_STACKS);
     await this.validateStacksMetadata(stackCollection, ioHost);
 
     const synthTime = timer.end();
@@ -207,7 +223,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     });
     await migrator.tryMigrateResources(stackCollection, options);
 
-    // const requireApproval = options.requireApproval ?? RequireApproval.BROADENING;
+    const requireApproval = options.requireApproval ?? RequireApproval.NEVER;
 
     const parameterMap = buildParameterMap(options.parameters?.parameters);
 
@@ -281,17 +297,16 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
         return;
       }
 
-      // @TODO
-      // if (requireApproval !== RequireApproval.NEVER) {
-      //   const currentTemplate = await deployments.readCurrentTemplate(stack);
-      //   if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
-      //     await askUserConfirmation(
-      //       concurrency,
-      //       '"--require-approval" is enabled and stack includes security-sensitive updates',
-      //       'Do you wish to deploy these changes',
-      //     );
-      //   }
-      // }
+      if (requireApproval !== RequireApproval.NEVER) {
+        const currentTemplate = await deployments.readCurrentTemplate(stack);
+        if (diffRequiresApproval(currentTemplate, stack, requireApproval)) {
+          const motivation = '"--require-approval" is enabled and stack includes security-sensitive updates.';
+          const question = `${motivation}\nDo you wish to deploy these changes`;
+          // @todo reintroduce concurrency and corked logging in CliHost
+          const confirmed = await ioHost.requestResponse(confirm('CDK_TOOLKIT_I5060', question, motivation, true, concurrency));
+          if (!confirmed) { throw new ToolkitError('Aborted by user'); }
+        }
+      }
 
       // Following are the same semantics we apply with respect to Notification ARNs (dictated by the SDK)
       //
@@ -394,7 +409,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
                 if (!confirmed) { throw new ToolkitError('Aborted by user'); }
               }
 
-              // Go around through the 'while' loop again but switch rollback to false.
+              // Go around through the 'while' loop again but switch rollback to true.
               rollback = true;
               break;
             }
@@ -608,6 +623,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       time: synthTime.asMs,
     }));
 
+    // temporary
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error('Not implemented yet');
   }
 

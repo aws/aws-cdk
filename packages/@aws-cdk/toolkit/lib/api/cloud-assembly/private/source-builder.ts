@@ -4,7 +4,7 @@ import { ContextAwareCloudAssembly, ContextAwareCloudAssemblyProps } from './con
 import { execInChildProcess } from './exec';
 import { assemblyFromDirectory, changeDir, determineOutputDirectory, guessExecutable, prepareDefaultEnvironment, withContext, withEnv } from './prepare-source';
 import { ToolkitServices } from '../../../toolkit/private';
-import { Context, ILock, RWLock } from '../../aws-cdk';
+import { Context, ILock, RWLock, Settings } from '../../aws-cdk';
 import { ToolkitError } from '../../errors';
 import { debug } from '../../io/private';
 import { AssemblyBuilder, CdkAppSourceProps } from '../source-builder';
@@ -19,13 +19,16 @@ export abstract class CloudAssemblySourceBuilder {
 
   /**
    * Create a Cloud Assembly from a Cloud Assembly builder function.
+   * @param builder the builder function
+   * @param props additional configuration properties
+   * @returns the CloudAssembly source
    */
   public async fromAssemblyBuilder(
     builder: AssemblyBuilder,
     props: CdkAppSourceProps = {},
   ): Promise<ICloudAssemblySource> {
     const services = await this.toolkitServices();
-    const context = new Context(); // @todo check if this needs to read anything
+    const context = new Context({ bag: new Settings(props.context ?? {}) });
     const contextAssemblyProps: ContextAwareCloudAssemblyProps = {
       services,
       context,
@@ -52,9 +55,8 @@ export abstract class CloudAssemblySourceBuilder {
 
   /**
    * Creates a Cloud Assembly from an existing assembly directory.
-   * @param directory the directory of the AWS CDK app. Defaults to the current working directory.
-   * @param props additional configuration properties
-   * @returns an instance of `AwsCdkCli`
+   * @param directory the directory of a already produced Cloud Assembly.
+   * @returns the CloudAssembly source
    */
   public async fromAssemblyDirectory(directory: string): Promise<ICloudAssemblySource> {
     const services: ToolkitServices = await this.toolkitServices();
@@ -78,13 +80,13 @@ export abstract class CloudAssemblySourceBuilder {
   }
   /**
    * Use a directory containing an AWS CDK app as source.
-   * @param directory the directory of the AWS CDK app. Defaults to the current working directory.
    * @param props additional configuration properties
-   * @returns an instance of `AwsCdkCli`
+   * @returns the CloudAssembly source
    */
   public async fromCdkApp(app: string, props: CdkAppSourceProps = {}): Promise<ICloudAssemblySource> {
     const services: ToolkitServices = await this.toolkitServices();
-    const context = new Context(); // @todo this definitely needs to read files
+    // @todo this definitely needs to read files from the CWD
+    const context = new Context({ bag: new Settings(props.context ?? {}) });
     const contextAssemblyProps: ContextAwareCloudAssemblyProps = {
       services,
       context,

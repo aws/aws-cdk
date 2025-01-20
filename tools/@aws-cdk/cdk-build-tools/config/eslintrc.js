@@ -19,6 +19,7 @@ module.exports = {
     '@stylistic',
     'jest',
   ],
+  overrides: [],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: '2018',

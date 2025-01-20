@@ -87,7 +87,6 @@ export class StackAssembly extends CloudAssembly implements ICloudAssemblySource
   /**
    * Select all stacks that have the validateOnSynth flag et.
    *
-   * @param assembly
    * @returns a `StackCollection` of all stacks that needs to be validated
    */
   public selectStacksForValidation() {
