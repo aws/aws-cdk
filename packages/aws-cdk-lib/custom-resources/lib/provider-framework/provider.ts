@@ -250,8 +250,8 @@ export class Provider extends Construct implements ICustomResourceProvider {
     };
   }
 
-  private addPermissions(frameworkLambda: lambda.Function, arnOfUserDefinedHandlerLambda: lambda.IFunction) {
-    arnOfUserDefinedHandlerLambda.grantInvoke(frameworkLambda);
+  private addPermissions(frameworkLambda: lambda.Function, userDefinedHandlerLambda: lambda.IFunction) {
+    userDefinedHandlerLambda.grantInvoke(frameworkLambda);
 
     /*
     lambda:GetFunction is needed as the framework Lambda use it to poll the state of User Defined
@@ -260,7 +260,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
     frameworkLambda.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['lambda:GetFunction'],
-      resources: [arnOfUserDefinedHandlerLambda.functionArn],
+      resources: [userDefinedHandlerLambda.functionArn],
     }));
   }
 
