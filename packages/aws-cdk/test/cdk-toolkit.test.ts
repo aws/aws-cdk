@@ -68,7 +68,7 @@ import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
-import { SdkProvider } from '../lib';
+import { SdkProvider } from '../lib/api';
 import {
   mockCloudFormationClient,
   MockSdk,
