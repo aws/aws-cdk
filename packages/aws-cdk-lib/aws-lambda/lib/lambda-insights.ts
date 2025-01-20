@@ -105,7 +105,7 @@ export abstract class LambdaInsightsVersion {
     return new InsightsArn();
   }
 
-  // Use the verison to build the object. Not meant to be called by the user -- user should use e.g. VERSION_1_0_54_0
+  // Use the version to build the object. Not meant to be called by the user -- user should use e.g. VERSION_1_0_54_0
   private static fromInsightsVersion(insightsVersion: string): LambdaInsightsVersion {
     class InsightsVersion extends LambdaInsightsVersion {
       public readonly layerVersionArn = Lazy.uncachedString({
