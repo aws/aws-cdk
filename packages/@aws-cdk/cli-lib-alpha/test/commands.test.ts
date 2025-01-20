@@ -1,9 +1,9 @@
 import * as core from 'aws-cdk-lib/core';
-import * as cli from 'aws-cdk/lib';
+import * as cli from '../../../aws-cdk/lib';
 import { AwsCdkCli } from '../lib';
 import { HotswapMode, RequireApproval, StackActivityProgress } from '../lib/commands';
 
-jest.mock('aws-cdk/lib');
+jest.mock('../../../aws-cdk/lib');
 jest.mocked(cli.exec).mockResolvedValue(0);
 
 afterEach(() => {
