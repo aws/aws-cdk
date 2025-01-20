@@ -5,6 +5,7 @@ import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/s
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { Mode } from './plugin/mode';
 import { replaceEnvPlaceholders, StringWithoutPlaceholders } from './util/placeholders';
+import { ToolkitError } from '../toolkit/error';
 import { formatErrorMessage } from '../util/error';
 
 /**
@@ -87,7 +88,7 @@ export class EnvironmentAccess {
    */
   public async accessStackForLookup(stack: cxapi.CloudFormationStackArtifact): Promise<TargetEnvironment> {
     if (!stack.environment) {
-      throw new Error(`The stack ${stack.displayName} does not have an environment`);
+      throw new ToolkitError(`The stack ${stack.displayName} does not have an environment`);
     }
 
     const lookupEnv = await this.prepareSdk({
@@ -102,7 +103,7 @@ export class EnvironmentAccess {
     if (lookupEnv.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
       const version = await lookupEnv.resources.versionFromSsmParameter(stack.lookupRole.bootstrapStackVersionSsmParameter);
       if (version < stack.lookupRole.requiresBootstrapStackVersion) {
-        throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'. To get rid of this error, please upgrade to bootstrap version >= ${stack.lookupRole.requiresBootstrapStackVersion}`);
+        throw new ToolkitError(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'. To get rid of this error, please upgrade to bootstrap version >= ${stack.lookupRole.requiresBootstrapStackVersion}`);
       }
     }
     if (lookupEnv.isFallbackCredentials) {
@@ -125,7 +126,7 @@ export class EnvironmentAccess {
    */
   public async accessStackForLookupBestEffort(stack: cxapi.CloudFormationStackArtifact): Promise<TargetEnvironment> {
     if (!stack.environment) {
-      throw new Error(`The stack ${stack.displayName} does not have an environment`);
+      throw new ToolkitError(`The stack ${stack.displayName} does not have an environment`);
     }
 
     try {
@@ -147,7 +148,7 @@ export class EnvironmentAccess {
    */
   private async accessStackForStackOperations(stack: cxapi.CloudFormationStackArtifact, mode: Mode): Promise<TargetEnvironment> {
     if (!stack.environment) {
-      throw new Error(`The stack ${stack.displayName} does not have an environment`);
+      throw new ToolkitError(`The stack ${stack.displayName} does not have an environment`);
     }
 
     return this.prepareSdk({

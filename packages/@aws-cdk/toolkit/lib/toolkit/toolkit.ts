@@ -178,6 +178,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const assembly = await this.assemblyFromSource(cx);
     ioHost;
     assembly;
+    // temporary
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error('Not implemented yet');
   }
 
@@ -189,6 +191,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const assembly = await this.assemblyFromSource(cx);
     const stacks = await assembly.selectStacksV2(options.stacks);
     await this.validateStacksMetadata(stacks, ioHost);
+    // temporary
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error('Not implemented yet');
   }
 
@@ -619,6 +623,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       time: synthTime.asMs,
     }));
 
+    // temporary
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error('Not implemented yet');
   }
 

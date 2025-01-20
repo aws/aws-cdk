@@ -304,7 +304,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               throw new ToolkitError('--change-set-name cannot be used with method=direct');
             }
             if (args.importExistingResources) {
-              throw new Error('--import-existing-resources cannot be enabled with method=direct');
+              throw new ToolkitError('--import-existing-resources cannot be enabled with method=direct');
             }
             deploymentMethod = { method: 'direct' };
             break;

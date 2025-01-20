@@ -1,4 +1,5 @@
 import { isArray, isObject, Obj } from './types';
+import { ToolkitError } from '../toolkit/error';
 
 /**
  * Return a new object by adding missing keys into another object
@@ -84,7 +85,7 @@ export function deepSet(x: any, path: string[], value: any) {
   path = path.slice();
 
   if (path.length === 0) {
-    throw new Error('Path may not be empty');
+    throw new ToolkitError('Path may not be empty');
   }
 
   while (path.length > 1 && isObject(x)) {
@@ -94,7 +95,7 @@ export function deepSet(x: any, path: string[], value: any) {
   }
 
   if (!isObject(x)) {
-    throw new Error(`Expected an object, got '${x}'`);
+    throw new ToolkitError(`Expected an object, got '${x}'`);
   }
 
   if (value !== undefined) {

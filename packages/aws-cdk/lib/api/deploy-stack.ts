@@ -33,6 +33,7 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
 import { StringWithoutPlaceholders } from './util/placeholders';
+import { ToolkitError } from '../toolkit/error';
 import { formatErrorMessage } from '../util/error';
 
 export type DeployStackResult =
@@ -63,7 +64,7 @@ export interface ReplacementRequiresRollbackStackResult {
 
 export function assertIsSuccessfulDeployStackResult(x: DeployStackResult): asserts x is SuccessfulDeployStackResult {
   if (x.type !== 'did-deploy-stack') {
-    throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(x)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
+    throw new ToolkitError(`Unexpected deployStack result. This should not happen: ${JSON.stringify(x)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
   }
 }
 
@@ -297,7 +298,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     await cfn.deleteStack({ StackName: deployName });
     const deletedStack = await waitForStackDelete(cfn, deployName);
     if (deletedStack && deletedStack.stackStatus.name !== 'DELETE_COMPLETE') {
-      throw new Error(
+      throw new ToolkitError(
         `Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.stackStatus})`,
       );
     }
@@ -455,7 +456,7 @@ class FullCloudFormationDeployment {
     };
 
     if (deploymentMethod.method === 'direct' && this.options.resourcesToImport) {
-      throw new Error('Importing resources requires a changeset deployment');
+      throw new ToolkitError('Importing resources requires a changeset deployment');
     }
 
     switch (deploymentMethod.method) {
@@ -669,11 +670,11 @@ class FullCloudFormationDeployment {
 
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!successStack) {
-        throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)');
+        throw new ToolkitError('Stack deploy failed (the stack disappeared while we were deploying it)');
       }
       finalState = successStack;
     } catch (e: any) {
-      throw new Error(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
+      throw new ToolkitError(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
     } finally {
       await monitor?.stop();
     }
@@ -748,10 +749,10 @@ export async function destroyStack(options: DestroyStackOptions) {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn });
     const destroyedStack = await waitForStackDelete(cfn, deployName);
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
-      throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
+      throw new ToolkitError(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
   } catch (e: any) {
-    throw new Error(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
+    throw new ToolkitError(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
   } finally {
     if (monitor) {
       await monitor.stop();

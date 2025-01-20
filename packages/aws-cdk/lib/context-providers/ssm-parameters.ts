@@ -3,6 +3,7 @@ import type { GetParameterCommandOutput } from '@aws-sdk/client-ssm';
 import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
+import { ContextProviderError } from '../toolkit/error';
 
 /**
  * Plugin to read arbitrary SSM parameter names
@@ -15,7 +16,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
     const account = args.account;
 
     if (!('parameterName' in args)) {
-      throw new Error('parameterName must be provided in props for SSMContextProviderPlugin');
+      throw new ContextProviderError('parameterName must be provided in props for SSMContextProviderPlugin');
     }
     const parameterName = args.parameterName;
     debug(`Reading SSM parameter ${account}:${region}:${parameterName}`);
@@ -27,7 +28,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
       return args.dummyValue;
     }
     if (parameterNotFound) {
-      throw new Error(`SSM parameter not available in account ${account}, region ${region}: ${parameterName}`);
+      throw new ContextProviderError(`SSM parameter not available in account ${account}, region ${region}: ${parameterName}`);
     }
     // will not be undefined because we've handled undefined cases above
     return response.Parameter!.Value;
