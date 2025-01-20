@@ -1,7 +1,7 @@
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import { DescribeStacksCommand, GetTemplateCommand, StackStatus } from '@aws-sdk/client-cloudformation';
 import { MockSdk, mockCloudFormationClient } from './mock-sdk';
-import type { ICloudFormationClient } from '../../lib';
+import type { ICloudFormationClient } from '../../lib/api';
 import { CloudFormationStack, TemplateParameters } from '../../lib/api/util/cloudformation';
 
 const PARAM = 'TheParameter';

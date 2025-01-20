@@ -1,5 +1,5 @@
-export { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider } from '../../../../aws-cdk/lib';
-export type { SuccessfulDeployStackResult } from '../../../../aws-cdk/lib';
+export { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider } from '../../../../aws-cdk/lib/api';
+export type { SuccessfulDeployStackResult } from '../../../../aws-cdk/lib/api';
 export { formatSdkLoggerContent } from '../../../../aws-cdk/lib/api/aws-auth/sdk-logger';
 export { CloudAssembly, sanitizePatterns, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';
 export { prepareDefaultEnvironment, prepareContext, spaceAvailableForContext } from '../../../../aws-cdk/lib/api/cxapp/exec';
