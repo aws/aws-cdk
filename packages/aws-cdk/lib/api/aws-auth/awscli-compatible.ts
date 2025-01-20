@@ -9,6 +9,7 @@ import { makeCachingProvider } from './provider-caching';
 import type { SdkHttpOptions } from './sdk-provider';
 import { readIfPossible } from './util';
 import { debug } from '../../logging';
+import { AuthenticationError } from '../../toolkit/error';
 
 const DEFAULT_CONNECTION_TIMEOUT = 10000;
 const DEFAULT_TIMEOUT = 300000;
@@ -291,7 +292,7 @@ async function tokenCodeFn(serialArn: string): Promise<string> {
     return token;
   } catch (err: any) {
     debug('Failed to get MFA token', err);
-    const e = new Error(`Error fetching MFA token: ${err.message ?? err}`);
+    const e = new AuthenticationError(`Error fetching MFA token: ${err.message ?? err}`);
     e.name = 'SharedIniFileCredentialsProviderFailure';
     throw e;
   }

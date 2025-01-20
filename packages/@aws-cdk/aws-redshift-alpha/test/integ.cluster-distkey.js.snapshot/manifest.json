@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-redshift-distkey-create.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/654dac42f13b13875196142a61b0a246e6e649087142501c45c311291b0204d3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a78cb83b9114389c2dece3558b332fa3cc4521a214e420f22594df895c4a096c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -214,18 +214,6 @@
             "data": "ClusterParameterGroup879806FD"
           }
         ],
-        "/aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableProviderframeworkonEventServiceRoleC3128F67"
-          }
-        ],
-        "/aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D"
-          }
-        ],
         "/aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -262,6 +250,18 @@
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
           }
         ],
+        "/aws-cdk-redshift-distkey-create/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
+          }
+        ],
+        "/aws-cdk-redshift-distkey-create/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05"
+          }
+        ],
         "/aws-cdk-redshift-distkey-create/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -294,7 +294,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/56d804c108ae167e92882443750bef6c2685937df49eec3dc5846e9bd8312330.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/067a48ff0f9ab9f25888e5eac1c87567c8a9c86a6c0ae98b5ef8d07228ff1ba0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -491,18 +491,6 @@
             "data": "ClusterParameterGroup879806FD"
           }
         ],
-        "/aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableProviderframeworkonEventServiceRoleC3128F67"
-          }
-        ],
-        "/aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D"
-          }
-        ],
         "/aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -537,6 +525,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
+          }
+        ],
+        "/aws-cdk-redshift-distkey-update/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
+          }
+        ],
+        "/aws-cdk-redshift-distkey-update/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05"
           }
         ],
         "/aws-cdk-redshift-distkey-update/BootstrapVersion": [

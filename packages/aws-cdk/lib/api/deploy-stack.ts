@@ -15,7 +15,7 @@ import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { addMetadataAssetsToManifest } from '../assets';
-import { debug, print, warning } from '../logging';
+import { debug, info, warning } from '../logging';
 import {
   changeSetHasNoChanges,
   CloudFormationStack,
@@ -33,6 +33,8 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { determineAllowCrossAccountAssetPublishing } from './util/checks';
 import { publishAssets } from '../util/asset-publishing';
 import { StringWithoutPlaceholders } from './util/placeholders';
+import { ToolkitError } from '../toolkit/error';
+import { formatErrorMessage } from '../util/error';
 
 export type DeployStackResult =
   | SuccessfulDeployStackResult
@@ -62,7 +64,7 @@ export interface ReplacementRequiresRollbackStackResult {
 
 export function assertIsSuccessfulDeployStackResult(x: DeployStackResult): asserts x is SuccessfulDeployStackResult {
   if (x.type !== 'did-deploy-stack') {
-    throw new Error(`Unexpected deployStack result. This should not happen: ${JSON.stringify(x)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
+    throw new ToolkitError(`Unexpected deployStack result. This should not happen: ${JSON.stringify(x)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
   }
 }
 
@@ -270,6 +272,13 @@ export interface ChangeSetDeploymentMethod {
    * If not provided, a name will be generated automatically.
    */
   readonly changeSetName?: string;
+
+  /**
+   * Indicates if the change set imports resources that already exist.
+   *
+   * @default false
+   */
+  readonly importExistingResources?: boolean;
 }
 
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -289,7 +298,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     await cfn.deleteStack({ StackName: deployName });
     const deletedStack = await waitForStackDelete(cfn, deployName);
     if (deletedStack && deletedStack.stackStatus.name !== 'DELETE_COMPLETE') {
-      throw new Error(
+      throw new ToolkitError(
         `Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.stackStatus})`,
       );
     }
@@ -325,7 +334,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // if we can skip deployment and we are performing a hotswap, let the user know
     // that no hotswap deployment happened
     if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
-      print(
+      info(
         `\n ${ICON} %s\n`,
         chalk.bold('hotswap deployment skipped - no changes were detected (use --force to override)'),
       );
@@ -371,7 +380,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }
-      print(
+      info(
         'Could not perform a hotswap deployment, as the stack %s contains non-Asset changes',
         stackArtifact.displayName,
       );
@@ -379,14 +388,14 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       if (!(e instanceof CfnEvaluationException)) {
         throw e;
       }
-      print(
+      info(
         'Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s',
-        e.message,
+        formatErrorMessage(e),
       );
     }
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
-      print('Falling back to doing a full deployment');
+      info('Falling back to doing a full deployment');
       options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
     } else {
       return {
@@ -447,7 +456,7 @@ class FullCloudFormationDeployment {
     };
 
     if (deploymentMethod.method === 'direct' && this.options.resourcesToImport) {
-      throw new Error('Importing resources requires a changeset deployment');
+      throw new ToolkitError('Importing resources requires a changeset deployment');
     }
 
     switch (deploymentMethod.method) {
@@ -462,7 +471,8 @@ class FullCloudFormationDeployment {
   private async changeSetDeployment(deploymentMethod: ChangeSetDeploymentMethod): Promise<DeployStackResult> {
     const changeSetName = deploymentMethod.changeSetName ?? 'cdk-deploy-change-set';
     const execute = deploymentMethod.execute ?? true;
-    const changeSetDescription = await this.createChangeSet(changeSetName, execute);
+    const importExistingResources = deploymentMethod.importExistingResources ?? false;
+    const changeSetDescription = await this.createChangeSet(changeSetName, execute, importExistingResources);
     await this.updateTerminationProtection();
 
     if (changeSetHasNoChanges(changeSetDescription)) {
@@ -496,7 +506,7 @@ class FullCloudFormationDeployment {
     }
 
     if (!execute) {
-      print(
+      info(
         'Changeset %s created and waiting in review for manual execution (--no-execute)',
         changeSetDescription.ChangeSetId,
       );
@@ -525,11 +535,11 @@ class FullCloudFormationDeployment {
     return this.executeChangeSet(changeSetDescription);
   }
 
-  private async createChangeSet(changeSetName: string, willExecute: boolean) {
+  private async createChangeSet(changeSetName: string, willExecute: boolean, importExistingResources: boolean) {
     await this.cleanupOldChangeset(changeSetName);
 
     debug(`Attempting to create ChangeSet with name ${changeSetName} to ${this.verb} stack ${this.stackName}`);
-    print('%s: creating CloudFormation changeset...', chalk.bold(this.stackName));
+    info('%s: creating CloudFormation changeset...', chalk.bold(this.stackName));
     const changeSet = await this.cfn.createChangeSet({
       StackName: this.stackName,
       ChangeSetName: changeSetName,
@@ -537,6 +547,7 @@ class FullCloudFormationDeployment {
       ResourcesToImport: this.options.resourcesToImport,
       Description: `CDK Changeset for execution ${this.uuid}`,
       ClientToken: `create${this.uuid}`,
+      ImportExistingResources: importExistingResources,
       ...this.commonPrepareOptions(),
     });
 
@@ -599,7 +610,7 @@ class FullCloudFormationDeployment {
   }
 
   private async directDeployment(): Promise<SuccessfulDeployStackResult> {
-    print('%s: %s stack...', chalk.bold(this.stackName), this.update ? 'updating' : 'creating');
+    info('%s: %s stack...', chalk.bold(this.stackName), this.update ? 'updating' : 'creating');
 
     const startTime = new Date();
 
@@ -659,11 +670,11 @@ class FullCloudFormationDeployment {
 
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!successStack) {
-        throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)');
+        throw new ToolkitError('Stack deploy failed (the stack disappeared while we were deploying it)');
       }
       finalState = successStack;
     } catch (e: any) {
-      throw new Error(suffixWithErrors(e.message, monitor?.errors));
+      throw new ToolkitError(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
     } finally {
       await monitor?.stop();
     }
@@ -738,10 +749,10 @@ export async function destroyStack(options: DestroyStackOptions) {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn });
     const destroyedStack = await waitForStackDelete(cfn, deployName);
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
-      throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
+      throw new ToolkitError(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
   } catch (e: any) {
-    throw new Error(suffixWithErrors(e.message, monitor?.errors));
+    throw new ToolkitError(suffixWithErrors(formatErrorMessage(e), monitor?.errors));
   } finally {
     if (monitor) {
       await monitor.stop();

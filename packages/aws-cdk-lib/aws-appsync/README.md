@@ -23,6 +23,7 @@ type demo {
 }
 type Query {
   getDemos: [ demo! ]
+  getDemosConsistent: [demo!]
 }
 input DemoInput {
   version: String!
@@ -239,6 +240,10 @@ input DemoInput {
 
 type Mutation {
   callStepFunction(input: DemoInput!): job
+}
+
+type Query {
+  _placeholder: String
 }
 ```
 
