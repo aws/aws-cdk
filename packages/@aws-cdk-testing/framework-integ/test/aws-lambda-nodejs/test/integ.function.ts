@@ -47,7 +47,7 @@ class TestStack extends Stack {
     new lambda.NodejsFunction(this, 'js-handler-tsconfig-path', {
       entry: path.join(__dirname, 'integ-handlers/js-handler.js'),
       bundling: {
-        tsconfig: path.join(__dirname, 'whitespace path/tsconfig.ts'),
+        tsconfig: path.join(__dirname, 'whitespace path/tsconfig.json'),
       },
     });
 
