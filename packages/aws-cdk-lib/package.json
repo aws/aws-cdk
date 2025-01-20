@@ -136,7 +136,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.48",
+    "@aws-cdk/aws-service-spec": "^0.1.49",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -402,6 +402,8 @@
     "./aws-networkfirewall": "./aws-networkfirewall/index.js",
     "./aws-networkmanager": "./aws-networkmanager/index.js",
     "./aws-nimblestudio": "./aws-nimblestudio/index.js",
+    "./aws-notifications": "./aws-notifications/index.js",
+    "./aws-notificationscontacts": "./aws-notificationscontacts/index.js",
     "./aws-oam": "./aws-oam/index.js",
     "./aws-omics": "./aws-omics/index.js",
     "./aws-opensearchserverless": "./aws-opensearchserverless/index.js",

@@ -507,6 +507,12 @@
   "aws-nimblestudio": [
     "AWS::NimbleStudio"
   ],
+  "aws-notifications": [
+    "AWS::Notifications"
+  ],
+  "aws-notificationscontacts": [
+    "AWS::NotificationsContacts"
+  ],
   "aws-oam": [
     "AWS::Oam"
   ],
