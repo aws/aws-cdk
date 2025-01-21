@@ -22,15 +22,15 @@ export interface SecondaryAddressProps {
  */
 export interface Ipv6PoolSecondaryAddressProps extends SecondaryAddressProps {
   /**
-   * ID of the IPv6 address pool from which to allocate the IPv6 CIDR block
-   * Note: BYOIP Pool ID is different than the pool ID of IPAM.
-   * To onboard your IPv6 address range to AWS account please refer to below documentation
+   * ID of the IPv6 address pool from which to allocate the IPv6 CIDR block.
+   * Note: BYOIP Pool ID is different from the IPAM Pool ID.
+   * To onboard your IPv6 address range to your AWS account please refer to the below documentation
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/byoip-onboard.html
    */
   readonly ipv6PoolId: string;
 
   /**
-   * An valid IPv6 CIDR block from the IPv6 address pool onboarded to AWS using BYOIP.
+   * A valid IPv6 CIDR block from the IPv6 address pool onboarded to AWS using BYOIP.
    * The most specific IPv6 address range that you can bring is /48 for CIDRs that are publicly advertisable
    * and /56 for CIDRs that are not publicly advertisable.
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-byoip.html#byoip-definitions
@@ -158,7 +158,7 @@ export interface VpcCidrOptions {
   readonly ipv6CidrBlock?: string;
 
   /**
-   * ID of the BYOIP IPv6 address pool from which to allocate the IPv6 CIDR block
+   * ID of the BYOIP IPv6 address pool from which to allocate the IPv6 CIDR block.
    *
    * @default - None
    */
@@ -804,6 +804,7 @@ export interface VPCCidrBlockattributes {
   /**
    * The ID of the IPv6 address pool from which to allocate the IPv6 CIDR block.
    * Note: BYOIP Pool ID is different than IPAM Pool ID.
+   *
    * @default - No BYOIP pool associated with VPC.
    */
   readonly ipv6Pool?: string;

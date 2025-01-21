@@ -109,7 +109,7 @@ Since `VpcV2` does not create subnets automatically, users have full control ove
 
 If you have your own IP address that you would like to use with EC2, you can set up an IPv6 pool via the AWS CLI, and use that pool ID in your application.
 
-Once you have certified your IP address block with an ROA and have an X-509 certificate, you can run the following command to provision your CIDR block in AWS account:
+Once you have certified your IP address block with an ROA and have obtained an X-509 certificate, you can run the following command to provision your CIDR block in your AWS account:
 
 ```shell
 aws ec2 provision-byoip-cidr --region <region> --cidr <your CIDR block> --cidr-authorization-context Message="1|aws|<account>|<your CIDR block>|<expiration date>|SHA256".Signature="<signature>"
