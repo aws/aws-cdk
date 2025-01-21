@@ -1,6 +1,7 @@
 import { IConstruct } from 'constructs';
 import { BucketAttributes } from './bucket';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 export function parseBucketArn(construct: IConstruct, props: BucketAttributes): string {
 
@@ -20,7 +21,7 @@ export function parseBucketArn(construct: IConstruct, props: BucketAttributes): 
     });
   }
 
-  throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');
+  throw new ValidationError('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed', construct);
 }
 
 export function parseBucketName(construct: IConstruct, props: BucketAttributes): string | undefined {
