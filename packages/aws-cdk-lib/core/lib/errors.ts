@@ -69,12 +69,12 @@ abstract class ConstructError extends Error {
     return this.#constructInfo;
   }
 
-  constructor(msg: string, scope?: IConstruct) {
+  constructor(msg: string, scope?: IConstruct, name?: string) {
     super(msg);
     Object.setPrototypeOf(this, ConstructError.prototype);
     Object.defineProperty(this, CONSTRUCT_ERROR_SYMBOL, { value: true });
 
-    this.name = new.target.name;
+    this.name = name ?? new.target.name;
     this.#time = new Date().toISOString();
     this.#constructPath = scope?.node.path;
 
@@ -140,6 +140,21 @@ export class ValidationError extends ConstructError {
   constructor(msg: string, scope: IConstruct) {
     super(msg, scope);
     Object.setPrototypeOf(this, ValidationError.prototype);
+    Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
+  }
+}
+
+/**
+ * An Error that is thrown when a class has validation errors.
+ */
+export class UnscopedValidationError extends ConstructError {
+  public get type(): 'validation' {
+    return 'validation';
+  }
+
+  constructor(msg: string) {
+    super(msg, undefined, ValidationError.name);
+    Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
   }
 }
