@@ -13,8 +13,8 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
-import * as cxapi from '../../cx-api';
 import { ValidationError } from '../../core/lib/errors';
+import * as cxapi from '../../cx-api';
 
 /**
   * Interface representing a serverless database cluster.

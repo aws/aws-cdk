@@ -18,8 +18,8 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
-import * as cxapi from '../../cx-api';
 import { ValidationError } from '../../core/lib/errors';
+import * as cxapi from '../../cx-api';
 
 /**
  * A database instance

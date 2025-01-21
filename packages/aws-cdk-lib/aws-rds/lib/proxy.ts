@@ -8,8 +8,8 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import * as cxapi from '../../cx-api';
 import { ValidationError } from '../../core/lib/errors';
+import * as cxapi from '../../cx-api';
 
 /**
  * Client password authentication type used by a proxy to log in as a specific database user.
@@ -100,13 +100,13 @@ export class ProxyTarget {
     if (!engine) {
       const errorResource = this.dbCluster ?? this.dbInstance;
       throw new ValidationError(`Could not determine engine for proxy target '${errorResource?.node.path}'. ` +
-        'Please provide it explicitly when importing the resource', this);
+        'Please provide it explicitly when importing the resource', proxy);
     }
 
     const engineFamily = engine.engineFamily;
     if (!engineFamily) {
       throw new ValidationError('RDS proxies require an engine family to be specified on the database cluster or instance. ' +
-        `No family specified for engine '${engineDescription(engine)}'`, this);
+        `No family specified for engine '${engineDescription(engine)}'`, proxy);
     }
 
     // allow connecting to the Cluster/Instance from the Proxy

@@ -20,8 +20,8 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
-import * as cxapi from '../../cx-api';
 import { ValidationError } from '../../core/lib/errors';
+import * as cxapi from '../../cx-api';
 
 /**
  * Common properties for a new database cluster or cluster from snapshot.
