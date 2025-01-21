@@ -48,6 +48,10 @@ export enum AccessLevel {
    */
   READ = 'READ',
   /**
+   * Grants versioned read permissions to CloudFront Distribution
+   */
+  READ_VERSIONED = 'READ_VERSIONED',
+  /**
    * Grants list permissions to CloudFront Distribution
    */
   LIST = 'LIST',
