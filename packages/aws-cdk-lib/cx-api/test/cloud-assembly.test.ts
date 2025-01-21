@@ -185,3 +185,12 @@ test('getStackArtifact retrieves a stack by artifact id from a nested assembly',
   expect(assembly.getStackArtifact('stack1').id).toEqual('stack1');
   expect(assembly.getStackArtifact('stack2').id).toEqual('stack2');
 });
+
+test('isCloudAssembly correctly detects Cloud Assemblies', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'nested-assemblies'));
+  const inheritedAssembly = new (class extends CloudAssembly {})(path.join(FIXTURES, 'nested-assemblies'));
+
+  expect(CloudAssembly.isCloudAssembly(assembly)).toBe(true);
+  expect(CloudAssembly.isCloudAssembly(inheritedAssembly)).toBe(true);
+  expect(CloudAssembly.isCloudAssembly({})).toBe(false);
+});
