@@ -2,7 +2,6 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { testFixture } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as eks from '../lib';
@@ -1014,65 +1013,6 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'WINDOWS_FULL_2022_x86_64',
-    });
-  });
-
-  test('aws-auth will be updated', () => {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-
-    // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-      mastersRole: new iam.Role(stack, 'MastersRole', {
-        assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
-      }),
-    });
-    new eks.Nodegroup(stack, 'Nodegroup', { cluster });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-      Manifest: {
-        'Fn::Join': [
-          '',
-          [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'MastersRole0257C11B',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'MastersRole0257C11B',
-                'Arn',
-              ],
-            },
-            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'NodegroupNodeGroupRole038A128B',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-          ],
-        ],
-      },
-      ClusterName: {
-        Ref: 'ClusterEB0386A7',
-      },
-      RoleArn: {
-        'Fn::GetAtt': [
-          'ClusterkubectlRole4CCE0069',
-          'Arn',
-        ],
-      },
-      PruneLabel: 'aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76',
     });
   });
 
