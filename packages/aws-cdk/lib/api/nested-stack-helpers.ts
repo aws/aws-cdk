@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import type { SDK } from './aws-auth';
 import { LazyListStackResources, type ListStackResources } from './evaluate-cloudformation-template';
 import { CloudFormationStack, type Template } from './util/cloudformation';
+import { formatErrorMessage } from '../util/error';
 
 export interface NestedStackTemplates {
   readonly physicalName: string | undefined;
@@ -129,7 +130,7 @@ async function getNestedStackArn(
     const stackResources = await listStackResources?.listStackResources();
     return stackResources?.find((sr) => sr.LogicalResourceId === nestedStackLogicalId)?.PhysicalResourceId;
   } catch (e: any) {
-    if (e.message.startsWith('Stack with id ') && e.message.endsWith(' does not exist')) {
+    if (formatErrorMessage(e).startsWith('Stack with id ') && formatErrorMessage(e).endsWith(' does not exist')) {
       return;
     }
     throw e;
