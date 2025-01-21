@@ -5,6 +5,5 @@ export default async () => {
   new core.Stack(app, 'Stack1');
   new core.Stack(app, 'Stack2');
 
-  // @todo fix api
-  return app.synth() as any;
+  return app.synth();
 };
