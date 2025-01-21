@@ -1,5 +1,5 @@
 import { App, Duration, Size, Stack, StackProps } from 'aws-cdk-lib/core';
-import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as synthetics from 'aws-cdk-lib/aws-synthetics';
 
