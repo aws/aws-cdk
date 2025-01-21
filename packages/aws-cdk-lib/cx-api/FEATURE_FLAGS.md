@@ -1672,6 +1672,7 @@ thumbprints from unsecure connections.
 **Compatibility with old behavior:** Disable the feature flag to allow unsecure OIDC connection.
 
 
+
 ### @aws-cdk/core:enableAdditionalMetadataCollection
 
 *When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.* (config)

@@ -5,6 +5,7 @@ import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-p
 import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
 import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IScalableTarget extends IResource {
   /**
@@ -97,6 +98,8 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
   constructor(scope: Construct, id: string, props: ScalableTargetProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     withResolved(props.maxCapacity, max => {
       if (max < 0) {

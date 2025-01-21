@@ -3,6 +3,7 @@ import { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { Stack } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
@@ -82,6 +83,8 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     super(scope, id, {
       physicalName: props.stageName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.baseApi = props.webSocketApi;
     this.api = props.webSocketApi;

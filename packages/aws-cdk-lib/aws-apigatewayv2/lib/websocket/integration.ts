@@ -4,6 +4,7 @@ import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IIntegration } from '../common';
 
 /**
@@ -170,6 +171,8 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
 
   constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
       throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');

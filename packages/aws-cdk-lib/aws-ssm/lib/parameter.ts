@@ -11,6 +11,7 @@ import {
   Tokenization,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An SSM Parameter reference.
@@ -664,6 +665,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     super(scope, id, {
       physicalName: props.parameterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.allowedPattern) {
       _assertValidValue(this, props.stringValue, props.allowedPattern);

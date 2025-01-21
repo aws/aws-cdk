@@ -4,6 +4,7 @@ import { Method } from './method';
 import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface DeploymentProps {
   /**
@@ -80,6 +81,8 @@ export class Deployment extends Resource {
 
   constructor(scope: Construct, id: string, props: DeploymentProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,

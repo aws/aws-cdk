@@ -9,6 +9,7 @@ import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -268,6 +269,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
       } : undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;

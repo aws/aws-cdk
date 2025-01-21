@@ -3,6 +3,7 @@ import { IHttpApi } from './api';
 import { CfnStage } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { Stack } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
@@ -162,6 +163,8 @@ export class HttpStage extends HttpStageBase {
     super(scope, id, {
       physicalName: props.stageName ? props.stageName : DEFAULT_STAGE_NAME,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     new CfnStage(this, 'Resource', {
       apiId: props.httpApi.apiId,

@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Common properties to create a Route 53 hosted zone
@@ -199,6 +200,8 @@ export class HostedZone extends Resource implements IHostedZone {
 
   constructor(scope: Construct, id: string, props: HostedZoneProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     validateZoneName(props.zoneName);
 

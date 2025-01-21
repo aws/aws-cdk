@@ -1061,6 +1061,8 @@ export class Project extends ProjectBase {
     super(scope, id, {
       physicalName: props.projectName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -1793,6 +1795,7 @@ interface LinuxBuildImageProps {
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
 // eslint-disable-next-line import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A CodeBuild image running x86-64 Linux.

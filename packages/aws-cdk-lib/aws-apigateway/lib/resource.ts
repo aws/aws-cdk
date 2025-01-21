@@ -6,6 +6,7 @@ import { MockIntegration } from './integrations';
 import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
 import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IResource extends IResourceBase {
   /**
@@ -438,6 +439,8 @@ export class Resource extends ResourceBase {
 
   constructor(scope: Construct, id: string, props: ResourceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     validateResourcePathPart(props.pathPart);
 
