@@ -15,6 +15,7 @@ import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
 import { replaceEnvPlaceholders } from '../api/util/placeholders';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
+import { ContextProviderError } from '../toolkit/error';
 import { formatErrorMessage } from '../util/error';
 
 export type ContextProviderFactory = ((sdk: SdkProvider) => ContextProviderPlugin);
@@ -42,14 +43,14 @@ export async function provideContextValues(
       const plugin = PluginHost.instance.contextProviderPlugins[providerName.substring(PLUGIN_PROVIDER_PREFIX.length + 1)];
       if (!plugin) {
         // eslint-disable-next-line max-len
-        throw new Error(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
+        throw new ContextProviderError(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
       }
       factory = () => plugin;
     } else {
       factory = availableContextProviders[providerName];
       if (!factory) {
         // eslint-disable-next-line max-len
-        throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
+        throw new ContextProviderError(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
       }
     }
 
