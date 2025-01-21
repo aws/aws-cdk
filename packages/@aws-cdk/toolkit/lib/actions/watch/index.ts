@@ -41,6 +41,8 @@ export interface WatchOptions extends BaseDeployOptions {
    * The output directory to write CloudFormation template to
    *
    * @deprecated this should be grabbed from the cloud assembly itself
+   * 
+   * @default 'cdk.out'
    */
   readonly outdir?: string;
 }

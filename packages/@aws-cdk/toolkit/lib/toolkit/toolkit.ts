@@ -531,7 +531,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       rootDir,
       returnRootDirIfEmpty: true,
     });
-    await ioHost.notify(debug(`'include' patterns for 'watch': ${watchIncludes}`));
+    await ioHost.notify(debug(`'include' patterns for 'watch': ${JSON.stringify(watchIncludes)}`));
 
     // For the "exclude" subkey under the "watch" key,
     // the behavior is to add some default excludes in addition to the ones specified by the user:
@@ -539,11 +539,12 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     // 2. Any file whose name starts with a dot.
     // 3. Any directory's content whose name starts with a dot.
     // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
+    const outdir = options.outdir ?? 'cdk.out';
     const watchExcludes = patternsArrayForWatch(options.exclude, {
       rootDir,
       returnRootDirIfEmpty: false,
-    }).concat(`${options.outdir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
-    await ioHost.notify(debug(`'exclude' patterns for 'watch': ${watchExcludes}`));
+    }).concat(`${outdir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
+    await ioHost.notify(debug(`'exclude' patterns for 'watch': ${JSON.stringify(watchExcludes)}`));
 
     // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
     // introduce a concurrency latch that tracks the state.
