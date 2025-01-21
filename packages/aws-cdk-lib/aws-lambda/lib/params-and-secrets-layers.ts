@@ -1,6 +1,7 @@
 import { Construct, IConstruct } from 'constructs';
 import { IFunction } from './function-base';
 import { Token, Stack, Duration } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { RegionInfo, FactName } from '../../region-info';
 
 /**
@@ -161,10 +162,10 @@ export abstract class ParamsAndSecretsLayerVersion {
    */
   public static fromVersionArn(arn: string, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
-      public _bind(_scope: Construct, _fn: IFunction): ParamsAndSecretsBindConfig {
+      public _bind(_scope: Construct, fn: IFunction): ParamsAndSecretsBindConfig {
         return {
           arn,
-          environmentVars: this.environmentVariablesFromOptions,
+          environmentVars: this.environmentVariablesFromOptions(fn),
         };
       }
     })(options);
@@ -178,7 +179,7 @@ export abstract class ParamsAndSecretsLayerVersion {
       public _bind(scope: Construct, fn: IFunction): ParamsAndSecretsBindConfig {
         return {
           arn: this.getVersionArn(scope, version, fn.architecture.name),
-          environmentVars: this.environmentVariablesFromOptions,
+          environmentVars: this.environmentVariablesFromOptions(fn),
         };
       }
     })(options);
@@ -196,26 +197,26 @@ export abstract class ParamsAndSecretsLayerVersion {
   /**
    * Configure environment variables for Parameters and Secrets Extension based on configuration options
    */
-  private get environmentVariablesFromOptions(): { [key: string]: any } {
+  private environmentVariablesFromOptions(scope: Construct): { [key: string]: any } {
     if (this.options.cacheSize !== undefined && (this.options.cacheSize < 0 || this.options.cacheSize > 1000)) {
-      throw new Error(`Cache size must be between 0 and 1000 inclusive - provided: ${this.options.cacheSize}`);
+      throw new ValidationError(`Cache size must be between 0 and 1000 inclusive - provided: ${this.options.cacheSize}`, scope);
     }
 
     if (this.options.httpPort !== undefined && (this.options.httpPort < 1 || this.options.httpPort > 65535)) {
-      throw new Error(`HTTP port must be between 1 and 65535 inclusive - provided: ${this.options.httpPort}`);
+      throw new ValidationError(`HTTP port must be between 1 and 65535 inclusive - provided: ${this.options.httpPort}`, scope);
     }
 
     // max connections has no maximum limit
     if (this.options.maxConnections !== undefined && this.options.maxConnections < 1) {
-      throw new Error(`Maximum connections must be at least 1 - provided: ${this.options.maxConnections}`);
+      throw new ValidationError(`Maximum connections must be at least 1 - provided: ${this.options.maxConnections}`, scope);
     }
 
     if (this.options.secretsManagerTtl !== undefined && this.options.secretsManagerTtl.toSeconds() > 300) {
-      throw new Error(`Maximum TTL for a cached secret is 300 seconds - provided: ${this.options.secretsManagerTtl.toSeconds()} seconds`);
+      throw new ValidationError(`Maximum TTL for a cached secret is 300 seconds - provided: ${this.options.secretsManagerTtl.toSeconds()} seconds`, scope);
     }
 
     if (this.options.parameterStoreTtl !== undefined && this.options.parameterStoreTtl.toSeconds() > 300) {
-      throw new Error(`Maximum TTL for a cached parameter is 300 seconds - provided: ${this.options.parameterStoreTtl.toSeconds()} seconds`);
+      throw new ValidationError(`Maximum TTL for a cached parameter is 300 seconds - provided: ${this.options.parameterStoreTtl.toSeconds()} seconds`, scope);
     }
 
     return {
@@ -245,7 +246,7 @@ export abstract class ParamsAndSecretsLayerVersion {
     if (region !== undefined && !Token.isUnresolved(region)) {
       const layerArn = RegionInfo.get(region).paramsAndSecretsLambdaLayerArn(version, architecture);
       if (layerArn === undefined) {
-        throw new Error(`Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`);
+        throw new ValidationError(`Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`, scope);
       }
       return layerArn;
     }
