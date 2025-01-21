@@ -1,0 +1,225 @@
+{
+ "Resources": {
+  "KeyValueStoreA7449E89": {
+   "Type": "AWS::CloudFront::KeyValueStore",
+   "Properties": {
+    "ImportSource": {
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":s3:::",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/47ae18762663e5017f1b901bfe0a06cb436df2476a53b49e1db53fc36a08a793.json"
+       ]
+      ]
+     },
+     "SourceType": "S3"
+    },
+    "Name": "awscdkcloudfrontfunctionfindreplaceKeyValueStore8D3A5570"
+   }
+  },
+  "Function76856677": {
+   "Type": "AWS::CloudFront::Function",
+   "Properties": {
+    "AutoPublish": true,
+    "FunctionCode": {
+     "Fn::Join": [
+      "",
+      [
+       "\n      import cf from 'cloudfront';\n      const kvsId = \"",
+       {
+        "Fn::GetAtt": [
+         "KeyValueStoreA7449E89",
+         "Id"
+        ]
+       },
+       "\";\n      const kvsHandle = cf.kvs(kvsId);\n      async function handler(event) {\n        const meta = await kvsHandle.meta()\n        const keyCount = meta.keyCount;\n        return {\n          statusCode: 200, statusDescription: 'OK',\n          headers: { 'content-type': { value: 'application/json' } },  \n          body: JSON.stringify({ keyCount }),\n        };\n      }\n    "
+      ]
+     ]
+    },
+    "FunctionConfig": {
+     "Comment": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "AWS::Region"
+        },
+        "aws-cdk-cloudfro-replaceFunctionA2285C0B"
+       ]
+      ]
+     },
+     "KeyValueStoreAssociations": [
+      {
+       "KeyValueStoreARN": {
+        "Fn::GetAtt": [
+         "KeyValueStoreA7449E89",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Runtime": "cloudfront-js-2.0"
+    },
+    "Name": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "aws-cdk-cloudfro-replaceFunctionA2285C0B"
+      ]
+     ]
+    }
+   }
+  },
+  "Distribution830FAC52": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+      "Compress": true,
+      "FunctionAssociations": [
+       {
+        "EventType": "viewer-request",
+        "FunctionARN": {
+         "Fn::GetAtt": [
+          "Function76856677",
+          "FunctionARN"
+         ]
+        }
+       }
+      ],
+      "TargetOriginId": "awscdkcloudfrontfunctionfindreplaceDistributionOrigin12EFB7DFF",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "awscdkcloudfrontfunctionfindreplaceDistributionOrigin12EFB7DFF"
+      }
+     ]
+    }
+   }
+  },
+  "IntegrationTestServiceRole30442675": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "IntegrationTestEE002965": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async (event) => {\n        const distributionDomainName = process.env.DISTRIBUTION_DOMAIN_NAME;\n        const response = await fetch(`https://${ distributionDomainName }/`);\n        return await response.json();\n      }"
+    },
+    "Environment": {
+     "Variables": {
+      "DISTRIBUTION_DOMAIN_NAME": {
+       "Fn::GetAtt": [
+        "Distribution830FAC52",
+        "DomainName"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "IntegrationTestServiceRole30442675",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "IntegrationTestServiceRole30442675"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefIntegrationTestEE002965D39D559E": {
+   "Value": {
+    "Ref": "IntegrationTestEE002965"
+   },
+   "Export": {
+    "Name": "aws-cdk-cloudfront-function-find-replace:ExportsOutputRefIntegrationTestEE002965D39D559E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

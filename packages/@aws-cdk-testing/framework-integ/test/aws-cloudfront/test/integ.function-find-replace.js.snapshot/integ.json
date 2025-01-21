@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "CloudFrontFunctionFindReplace/DefaultTest": {
+      "stacks": [
+        "aws-cdk-cloudfront-function-find-replace"
+      ],
+      "assertionStack": "CloudFrontFunctionFindReplace/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudFrontFunctionFindReplaceDefaultTestDeployAssertD25DC6A8"
+    }
+  }
+}
