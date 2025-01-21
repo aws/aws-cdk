@@ -71,11 +71,11 @@ To set up the prioritization automation, we need to get the field IDs of the pro
 ## Common Labels and Categories
 
 ### Priority Labels
-`R1` -> PRs from the team (`contribution/core`)
-`R2` -> Already approved PRs but stuck in the automation
-`R3` -> PRs that needs maintainer review (`pr/needs-maintainer-review`)
-`R4` -> PRs that needs clarification or exemption (`pr/reviewer-clarification-requested, pr-linter/exemption-requested`)
-`R5` -> PRs that are in needs-community-review more than 21 days (`pr/needs-community-review`)
+`R1` -> Non-draft PRs from the team (`contribution/core`)
+`R2` -> Approved PRs with failing/pending checks
+`R3` -> Non-draft PRs that needs maintainer review (`pr/needs-maintainer-review`)
+`R4` -> PRs that needs clarification or exemption (`pr/reviewer-clarification-requested, pr-linter/exemption-requested`), draft state allowed
+`R5` -> Non-draft PRs that are in needs-community-review more than 21 days (`pr/needs-community-review`)
 
 ### Work Status Labels
 `Ready` -> Means the PR is ready to be picked up for review
