@@ -10,14 +10,7 @@ import { ToolkitError } from '../../errors';
 import { debug } from '../../io/private';
 import { AssemblyBuilder, CdkAppSourceProps } from '../source-builder';
 
-// bypass loading from disk if we already have a supported object
-const CLOUD_ASSEMBLY_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudAssembly');
-function isCloudAssembly(x: any): x is cxapi.CloudAssembly {
-  return x !== null && typeof(x) === 'object' && CLOUD_ASSEMBLY_SYMBOL in x;
-}
-
 export abstract class CloudAssemblySourceBuilder {
-
   /**
    * Helper to provide the CloudAssemblySourceBuilder with required toolkit services
    * @deprecated this should move to the toolkit really.
@@ -55,7 +48,7 @@ export abstract class CloudAssemblySourceBuilder {
               })),
             ), props.workingDirectory);
 
-          if (isCloudAssembly(assembly)) {
+          if (cxapi.CloudAssembly.isCloudAssembly(assembly)) {
             return assembly;
           }
 
