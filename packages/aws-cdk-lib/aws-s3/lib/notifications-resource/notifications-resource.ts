@@ -2,6 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
@@ -71,7 +72,7 @@ export class BucketNotifications extends Construct {
     const targetProps = target.bind(this, this.bucket);
     const commonConfig: CommonConfiguration = {
       Events: [event],
-      Filter: renderFilters(filters),
+      Filter: renderFilters(filters, this),
     };
 
     // if the target specifies any dependencies, add them to the custom resource.
@@ -96,7 +97,7 @@ export class BucketNotifications extends Construct {
         break;
 
       default:
-        throw new Error('Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type]);
+        throw new ValidationError('Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type], this);
     }
   }
 
@@ -171,7 +172,7 @@ export class BucketNotifications extends Construct {
   }
 }
 
-function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
+function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotifications): Filter | undefined {
   if (!filters || filters.length === 0) {
     return undefined;
   }
@@ -182,12 +183,12 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
 
   for (const rule of filters) {
     if (!rule.suffix && !rule.prefix) {
-      throw new Error('NotificationKeyFilter must specify `prefix` and/or `suffix`');
+      throw new ValidationError('NotificationKeyFilter must specify `prefix` and/or `suffix`', scope);
     }
 
     if (rule.suffix) {
       if (hasSuffix) {
-        throw new Error('Cannot specify more than one suffix rule in a filter.');
+        throw new ValidationError('Cannot specify more than one suffix rule in a filter.', scope);
       }
       renderedRules.push({ Name: 'suffix', Value: rule.suffix });
       hasSuffix = true;
@@ -195,7 +196,7 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
 
     if (rule.prefix) {
       if (hasPrefix) {
-        throw new Error('Cannot specify more than one prefix rule in a filter.');
+        throw new ValidationError('Cannot specify more than one prefix rule in a filter.', scope);
       }
       renderedRules.push({ Name: 'prefix', Value: rule.prefix });
       hasPrefix = true;
