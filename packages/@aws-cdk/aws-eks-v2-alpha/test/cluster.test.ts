@@ -462,49 +462,6 @@ describe('cluster', () => {
     app.synth();
   });
 
-  test('throws when declaring an ASG role in a different stack than the cluster', () => {
-    class ClusterStack extends cdk.Stack {
-      public eksCluster: eks.Cluster;
-
-      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-        super(scope, id, props);
-        this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: CLUSTER_VERSION,
-          prune: false,
-        });
-      }
-    }
-
-    class CapacityStack extends cdk.Stack {
-
-      public group: asg.AutoScalingGroup;
-
-      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
-        super(scope, id, props);
-
-        // the role is create in this stack implicitly by the ASG
-        this.group = new asg.AutoScalingGroup(this, 'autoScaling', {
-          instanceType: new ec2.InstanceType('t3.medium'),
-          vpc: props.cluster.vpc,
-          machineImage: new eks.EksOptimizedImage({
-            kubernetesVersion: CLUSTER_VERSION.version,
-            nodeType: eks.NodeType.STANDARD,
-          }),
-        });
-      }
-    }
-
-    const { app } = testFixture();
-    const clusterStack = new ClusterStack(app, 'ClusterStack');
-    const capacityStack = new CapacityStack(app, 'CapacityStack', { cluster: clusterStack.eksCluster });
-
-    expect(() => {
-      clusterStack.eksCluster.connectAutoScalingGroupCapacity(capacityStack.group, {});
-    }).toThrow(
-      'CapacityStack/autoScaling/InstanceRole should be defined in the scope of the ClusterStack stack to prevent circular dependencies',
-    );
-  });
-
   test('can declare a ServiceAccount in a different stack than the cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
@@ -997,47 +954,6 @@ describe('cluster', () => {
     });
   });
 
-  test('mastersRole can be used to map an IAM role to "system:masters"', () => {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-    const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
-
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      mastersRole: role,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-      prune: false,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-      Manifest: {
-        'Fn::Join': [
-          '',
-          [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'roleC7B7E775',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'roleC7B7E775',
-                'Arn',
-              ],
-            },
-            '\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-          ],
-        ],
-      },
-    });
-  });
-
   test('addManifest can be used to apply k8s manifests on this cluster', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -1093,87 +1009,6 @@ describe('cluster', () => {
           UpdateReplacePolicy: 'Delete',
           DeletionPolicy: 'Delete',
         },
-      },
-    });
-  });
-
-  test('adding capacity will automatically map its IAM role', () => {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-      prune: false,
-    });
-
-    // WHEN
-    cluster.addAutoScalingGroupCapacity('default', {
-      instanceType: new ec2.InstanceType('t2.nano'),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-      Manifest: {
-        'Fn::Join': [
-          '',
-          [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'ClusterdefaultInstanceRoleF20A29CD',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-          ],
-        ],
-      },
-    });
-  });
-
-  test('addAutoScalingGroupCapacity will *not* map the IAM role if mapRole is false', () => {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-      prune: false,
-      mastersRole: new iam.Role(stack, 'MastersRole', {
-        assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
-      }),
-    });
-
-    // WHEN
-    cluster.addAutoScalingGroupCapacity('default', {
-      instanceType: new ec2.InstanceType('t2.nano'),
-      mapRole: false,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-      Manifest: {
-        'Fn::Join': [
-          '',
-          [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'MastersRole0257C11B',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'MastersRole0257C11B',
-                'Arn',
-              ],
-            },
-            '\\",\\"groups\\":[\\"system:masters\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-          ],
-        ],
       },
     });
   });
@@ -1951,7 +1786,7 @@ describe('cluster', () => {
         'ClusterEB0386A7',
       ]);
 
-      const kubectlResources = ['chartF2447AFC', 'patch1B964AC93', 'Clustermanifestresource10B1C9505', 'ClusterAwsAuthmanifestFE51F8AE'];
+      const kubectlResources = ['chartF2447AFC', 'patch1B964AC93', 'Clustermanifestresource10B1C9505'];
 
       // check that all kubectl resources depend on the barrier
       for (const r of kubectlResources) {
@@ -2859,31 +2694,6 @@ describe('cluster', () => {
   });
 
   describe('AccessConfig', () => {
-    test.each([
-      [eks.AuthenticationMode.API, 'API'],
-      [eks.AuthenticationMode.CONFIG_MAP, 'CONFIG_MAP'],
-      [eks.AuthenticationMode.API_AND_CONFIG_MAP, 'API_AND_CONFIG_MAP'],
-    ])(
-      'authenticationMode(%s) should work',
-      (a, b) => {
-        // GIVEN
-        const { stack } = testFixture();
-
-        // WHEN
-        new eks.Cluster(stack, 'Cluster', {
-          version: CLUSTER_VERSION,
-          authenticationMode: a,
-        });
-
-        // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
-          AccessConfig: {
-            AuthenticationMode: b,
-          },
-        });
-      },
-    );
-
     // bootstrapClusterCreatorAdminPermissions can be explicitly enabled or disabled
     test.each([
       [true, true],
@@ -2896,7 +2706,6 @@ describe('cluster', () => {
         // WHEN
         new eks.Cluster(stack, 'Cluster', {
           version: CLUSTER_VERSION,
-          authenticationMode: eks.AuthenticationMode.API,
           bootstrapClusterCreatorAdminPermissions: a,
         });
 
