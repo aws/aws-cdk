@@ -371,11 +371,11 @@ export class VpcV2 extends VpcV2Base {
         if (props.subnets) {
           for (const subnet of props.subnets) {
             if (subnet.subnetType === SubnetType.PRIVATE_WITH_EGRESS || subnet.subnetType === SubnetType.PRIVATE_WITH_NAT ||
-              subnet.subnetType === SubnetType.PRIVATE) {
+              subnet.subnetType as string === 'Deprecated_Private') {
               this.privateSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedPrivateSubnet', subnet));
             } else if (subnet.subnetType === SubnetType.PUBLIC) {
               this.publicSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedPublicSubnet', subnet));
-            } else if (subnet.subnetType === SubnetType.ISOLATED || subnet.subnetType === SubnetType.PRIVATE_ISOLATED) {
+            } else if (subnet.subnetType as string === 'Deprecated_Isolated' || subnet.subnetType === SubnetType.PRIVATE_ISOLATED) {
               this.isolatedSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedIsolatedSubnet', subnet));
             }
           }
