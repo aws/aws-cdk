@@ -15,7 +15,8 @@ import {
 import type { SDK } from '../api';
 import type { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { Mode } from '../api/plugin/mode';
-import { debug, error, print } from '../logging';
+import { debug, error, info } from '../logging';
+import { ToolkitError } from '../toolkit/error';
 
 export interface PublishAssetsOptions {
   /**
@@ -60,7 +61,7 @@ export async function publishAssets(
     targetEnv.region === undefined ||
     targetEnv.account === UNKNOWN_REGION
   ) {
-    throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
+    throw new ToolkitError(`Asset publishing requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
   const publisher = new AssetPublishing(manifest, {
@@ -74,7 +75,7 @@ export async function publishAssets(
   });
   await publisher.publish({ allowCrossAccount: options.allowCrossAccount });
   if (publisher.hasFailures) {
-    throw new Error('Failed to publish one or more assets. See the error messages above for more information.');
+    throw new ToolkitError('Failed to publish one or more assets. See the error messages above for more information.');
   }
 }
 
@@ -109,7 +110,7 @@ export async function buildAssets(
     targetEnv.region === undefined ||
     targetEnv.account === UNKNOWN_REGION
   ) {
-    throw new Error(`Asset building requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
+    throw new ToolkitError(`Asset building requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
   const publisher = new AssetPublishing(manifest, {
@@ -122,7 +123,7 @@ export async function buildAssets(
   });
   await publisher.publish();
   if (publisher.hasFailures) {
-    throw new Error('Failed to build one or more assets. See the error messages above for more information.');
+    throw new ToolkitError('Failed to build one or more assets. See the error messages above for more information.');
   }
 }
 
@@ -227,8 +228,8 @@ export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
   debug,
   fail: error,
   found: debug,
-  start: print,
-  success: print,
+  start: info,
+  success: info,
   upload: debug,
 };
 

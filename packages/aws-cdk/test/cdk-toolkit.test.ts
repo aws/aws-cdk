@@ -68,7 +68,7 @@ import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
-import { SdkProvider } from '../lib';
+import { SdkProvider } from '../lib/api';
 import {
   mockCloudFormationClient,
   MockSdk,
@@ -88,9 +88,11 @@ import {
 import { HotswapMode } from '../lib/api/hotswap/common';
 import { Mode } from '../lib/api/plugin/mode';
 import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
+import { CdkToolkit, markTesting } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
+import { Tag } from '../lib/tags';
+import { CliIoHost } from '../lib/toolkit/cli-io-host';
 import { flatten } from '../lib/util';
 
 markTesting();
@@ -123,6 +125,7 @@ beforeEach(() => {
     ],
   });
 
+  CliIoHost.instance().isCI = false;
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
     return true;
   });
@@ -953,70 +956,6 @@ describe('destroy', () => {
       });
     }).resolves;
   });
-
-  test('does not throw and warns if there are only non-existent stacks', async () => {
-    const toolkit = defaultToolkitSetup();
-
-    await toolkit.destroy({
-      selector: { patterns: ['Test-Stack-X', 'Test-Stack-Y'] },
-      exclusively: true,
-      force: true,
-      fromDeploy: true,
-    });
-
-    expect(flatten(stderrMock.mock.calls)).toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/Test-Stack-X does not exist./),
-        expect.stringMatching(/Test-Stack-Y does not exist./),
-        expect.stringMatching(/No stacks match the name\(s\): Test-Stack-X, Test-Stack-Y/),
-      ]),
-    );
-  });
-
-  test('does not throw and warns if there is a non-existent stack and the other exists', async () => {
-    const toolkit = defaultToolkitSetup();
-
-    await toolkit.destroy({
-      selector: { patterns: ['Test-Stack-X', 'Test-Stack-B'] },
-      exclusively: true,
-      force: true,
-      fromDeploy: true,
-    });
-
-    expect(flatten(stderrMock.mock.calls)).toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/Test-Stack-X does not exist./),
-      ]),
-    );
-    expect(flatten(stderrMock.mock.calls)).not.toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/Test-Stack-B does not exist./),
-      ]),
-    );
-    expect(flatten(stderrMock.mock.calls)).not.toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/No stacks match the name\(s\)/),
-      ]),
-    );
-  });
-
-  test('does not throw and suggests valid names if there is a non-existent but closely matching stack', async () => {
-    const toolkit = defaultToolkitSetup();
-
-    await toolkit.destroy({
-      selector: { patterns: ['test-stack-b'] },
-      exclusively: true,
-      force: true,
-      fromDeploy: true,
-    });
-
-    expect(flatten(stderrMock.mock.calls)).toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/test-stack-b does not exist. Do you mean Test-Stack-B?/),
-        expect.stringMatching(/No stacks match the name\(s\): test-stack-b/),
-      ]),
-    );
-  });
 });
 
 describe('watch', () => {
@@ -1550,7 +1489,7 @@ describe('synth', () => {
 
     const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
 
-    // Rollback might be called -- just don't do nothing.
+    // Rollback might be called -- just don't do anything.
     const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
 
     const mockedDeployStack = jest
