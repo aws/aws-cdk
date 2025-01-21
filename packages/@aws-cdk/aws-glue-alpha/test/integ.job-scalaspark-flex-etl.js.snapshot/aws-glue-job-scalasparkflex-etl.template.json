@@ -1,0 +1,210 @@
+{
+ "Resources": {
+  "IAMServiceRole61C662C4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "IAMServiceRoleDefaultPolicy379D1A0E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IAMServiceRoleDefaultPolicy379D1A0E",
+    "Roles": [
+     {
+      "Ref": "IAMServiceRole61C662C4"
+     }
+    ]
+   }
+  },
+  "BasicScalaSparkFlexEtlJobF8FD9EFB": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "scala",
+     "--class": "com.example.HelloWorld",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-metrics": "",
+     "--enable-observability-metrics": "true"
+    },
+    "ExecutionClass": "FLEX",
+    "GlueVersion": "3.0",
+    "JobRunQueuingEnabled": false,
+    "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "IAMServiceRole61C662C4",
+      "Arn"
+     ]
+    },
+    "WorkerType": "G.1X"
+   }
+  },
+  "OverrideScalaSparkFlexEtlJob843D93B4": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "ScriptLocation": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
+       ]
+      ]
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "scala",
+     "--class": "com.example.HelloWorld",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--enable-metrics": "",
+     "--enable-observability-metrics": "true",
+     "arg1": "value1",
+     "arg2": "value2"
+    },
+    "Description": "Optional Override ScalaSpark Flex Etl Job",
+    "ExecutionClass": "FLEX",
+    "GlueVersion": "3.0",
+    "JobRunQueuingEnabled": false,
+    "Name": "Optional Override ScalaSpark Flex Etl Job",
+    "NumberOfWorkers": 20,
+    "Role": {
+     "Fn::GetAtt": [
+      "IAMServiceRole61C662C4",
+      "Arn"
+     ]
+    },
+    "Tags": {
+     "key": "value"
+    },
+    "Timeout": 15,
+    "WorkerType": "G.1X"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
