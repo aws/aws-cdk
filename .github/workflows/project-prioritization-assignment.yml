@@ -8,6 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check Token Availability
+        run: |
+          if [ -n "${{ secrets.PROJEN_GITHUB_TOKEN }}" ]; then
+            echo "Token is available"
+          else
+            echo "Token is not available"
+          fi
       - name: Add PR to Project & Set Priority
         uses: actions/github-script@v7
         with:
