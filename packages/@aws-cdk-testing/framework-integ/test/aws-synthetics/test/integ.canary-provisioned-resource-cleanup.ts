@@ -44,6 +44,7 @@ const deleteCanary = integ.assertions.awsApiCall('synthetics', 'deleteCanary', {
 }).waitForAssertions();
 const getLayer = integ.assertions.awsApiCall('lambda', 'listLayers');
 getLayer.expect(ExpectedResult.objectLike({
+  // The canary should have been deleted, so it should not have any layers
   Layers: [],
 }));
 
