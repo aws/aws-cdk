@@ -143,7 +143,6 @@ const getCanContainersAccessInstanceRoleDefault = (canContainersAccessInstanceRo
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
-
   /**
    * Return whether the given object is a Cluster
    */

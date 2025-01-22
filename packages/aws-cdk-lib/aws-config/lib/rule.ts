@@ -2926,7 +2926,6 @@ export class ResourceType {
   private constructor(type: string) {
     this.complianceResourceType = type;
   }
-
 }
 
 function renderScope(ruleScope?: RuleScope): CfnConfigRule.ScopeProperty | undefined {

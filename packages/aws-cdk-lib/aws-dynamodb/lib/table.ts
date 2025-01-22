@@ -1087,7 +1087,6 @@ export class Table extends TableBase {
   public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
 
     class Import extends TableBase {
-
       public readonly tableName: string;
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;

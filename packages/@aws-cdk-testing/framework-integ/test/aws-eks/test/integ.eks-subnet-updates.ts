@@ -5,7 +5,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksClusterStack extends Stack {
-
   constructor(scope: App, id: string) {
     super(scope, id);
 
