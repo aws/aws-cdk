@@ -1,4 +1,4 @@
-/// !cdk-integ *
+// / !cdk-integ *
 
 import { Construct } from 'constructs';
 import * as codebuild from '../../aws-codebuild';
@@ -18,7 +18,7 @@ import * as codepipeline_actions from '../lib';
  * use the CDK Pipelines module instead of this method.
  */
 
-/// !show
+// / !show
 
 /**
  * These are the construction properties for `EcsAppStack`.
@@ -216,6 +216,6 @@ const pipelineStack = new PipelineStack(app, 'aws-cdk-pipeline-ecs-separate-sour
 new EcsAppStack(app, 'EcsStackDeployedInPipeline', {
   image: pipelineStack.tagParameterContainerImage,
 });
-/// !hide
+// / !hide
 
 app.synth();

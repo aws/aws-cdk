@@ -10,7 +10,7 @@ const table = new dynamodb.Table(stack, 'Table', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-/// !show
+// / !show
 const readScaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 50 });
 
 readScaling.scaleOnUtilization({
@@ -26,6 +26,6 @@ readScaling.scaleOnSchedule('ScaleDownAtNight', {
   schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
   maxCapacity: 20,
 });
-/// !hide
+// / !hide
 
 app.synth();

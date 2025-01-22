@@ -11,7 +11,7 @@ class SnsToSqs extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    /// !show
+    // / !show
     const topic = new sns.Topic(this, 'MyTopic');
     const queue = new sqs.Queue(this, 'MyQueue', {
       encryptionMasterKey: new kms.Key(this, 'EncryptionMasterKey'),
@@ -20,7 +20,7 @@ class SnsToSqs extends cdk.Stack {
     topic.addSubscription(new subs.SqsSubscription(queue, {
       deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue'),
     }));
-    /// !hide
+    // / !hide
   }
 }
 

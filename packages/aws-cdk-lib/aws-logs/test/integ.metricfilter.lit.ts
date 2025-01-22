@@ -9,7 +9,7 @@ class MetricFilterIntegStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    /// !show
+    // / !show
     new MetricFilter(this, 'MetricFilter', {
       logGroup,
       metricNamespace: 'MyApp',
@@ -17,7 +17,7 @@ class MetricFilterIntegStack extends Stack {
       filterPattern: FilterPattern.exists('$.latency'),
       metricValue: '$.latency',
     });
-    /// !hide
+    // / !hide
   }
 }
 

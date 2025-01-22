@@ -1,10 +1,10 @@
-/// !cdk-integ *
+// / !cdk-integ *
 import * as cdk from '../../core';
 import * as kms from '../lib';
 
 const app = new cdk.App();
 
-/// !show
+// / !show
 
 /**
  * Stack that defines the key
@@ -39,6 +39,6 @@ class UseStack extends cdk.Stack {
 
 const keyStack = new KeyStack(app, 'KeyStack');
 new UseStack(app, 'UseStack', { key: keyStack.key });
-/// !hide
+// / !hide
 
 app.synth();

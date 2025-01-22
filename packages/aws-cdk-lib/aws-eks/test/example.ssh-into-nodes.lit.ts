@@ -13,7 +13,7 @@ class EksClusterStack extends cdk.Stack {
       version: eks.KubernetesVersion.V1_21,
     });
 
-    /// !show
+    // / !show
     const asg = cluster.addAutoScalingGroupCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
@@ -22,7 +22,7 @@ class EksClusterStack extends cdk.Stack {
 
     // Replace with desired IP
     asg.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.tcp(22));
-    /// !hide
+    // / !hide
   }
 }
 

@@ -1,4 +1,4 @@
-/// !cdk-integ *
+// / !cdk-integ *
 import { Construct } from 'constructs';
 import * as cdk from '../../core';
 import * as ec2 from '../lib';
@@ -20,7 +20,7 @@ class ConstructThatTakesAVpc extends Construct {
   }
 }
 
-/// !show
+// / !show
 /**
  * Stack1 creates the VPC
  */
@@ -56,7 +56,7 @@ const stack1 = new Stack1(app, 'Stack1');
 const stack2 = new Stack2(app, 'Stack2', {
   vpc: stack1.vpc,
 });
-/// !hide
+// / !hide
 
 Array.isArray(stack2);
 

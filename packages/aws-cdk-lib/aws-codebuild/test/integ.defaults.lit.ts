@@ -5,7 +5,7 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    /// !show
+    // / !show
     new codebuild.Project(this, 'MyProject', {
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
@@ -18,7 +18,7 @@ class TestStack extends cdk.Stack {
         },
       }),
     });
-    /// !hide
+    // / !hide
   }
 }
 

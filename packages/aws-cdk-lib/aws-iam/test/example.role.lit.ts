@@ -5,7 +5,7 @@ export class ExampleConstruct extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    /// !show
+    // / !show
     const role = new Role(this, 'MyRole', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
@@ -14,6 +14,6 @@ export class ExampleConstruct extends Construct {
       resources: ['*'],
       actions: ['lambda:InvokeFunction'],
     }));
-    /// !hide
+    // / !hide
   }
 }

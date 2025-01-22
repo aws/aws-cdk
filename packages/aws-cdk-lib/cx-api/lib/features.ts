@@ -1,4 +1,5 @@
 import { FlagInfo, FlagType } from './private/flag-modeling';
+/* eslint-disable-file @stylistic/spaced-comment */
 
 ////////////////////////////////////////////////////////////////////////
 //

@@ -7,11 +7,11 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    /// !show
+    // / !show
     const asset = new assets.Asset(this, 'SampleAsset', {
       path: path.join(__dirname, 'file-asset.txt'),
     });
-    /// !hide
+    // / !hide
 
     const user = new iam.User(this, 'MyUser');
     asset.grantRead(user);

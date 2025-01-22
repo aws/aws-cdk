@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-layer-version-1');
 // Just for the example - granting to the current account is not necessary.
 const awsAccountId = stack.account;
 
-/// !show
+// / !show
 const layer = new lambda.LayerVersion(stack, 'MyLayer', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
   compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
@@ -29,6 +29,6 @@ new lambda.Function(stack, 'MyLayeredLambda', {
   runtime: lambda.Runtime.NODEJS_LATEST,
   layers: [layer],
 });
-/// !hide
+// / !hide
 
 app.synth();

@@ -6,7 +6,7 @@ class ExampleStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    /// !show
+    // / !show
     const loginSecret = secretsmanager.Secret.fromSecretAttributes(this, 'Secret', {
       secretArn: 'SomeLogin',
     });
@@ -16,7 +16,7 @@ class ExampleStack extends cdk.Stack {
       // { "username": "XXXX", "password": "YYYY" }
       password: loginSecret.secretValueFromJson('password'),
     });
-    /// !hide
+    // / !hide
 
   }
 }

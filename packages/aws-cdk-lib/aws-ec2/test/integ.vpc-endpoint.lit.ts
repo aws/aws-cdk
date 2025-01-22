@@ -8,7 +8,7 @@ class VpcEndpointStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    /// !show
+    // / !show
     // Add gateway endpoints when creating the VPC
     const vpc = new ec2.Vpc(this, 'MyVpc', {
       gatewayEndpoints: {
@@ -39,7 +39,7 @@ class VpcEndpointStack extends cdk.Stack {
       // who can access the endpoint via the '.connections' object.
       // open: false
     });
-    /// !hide
+    // / !hide
   }
 }
 

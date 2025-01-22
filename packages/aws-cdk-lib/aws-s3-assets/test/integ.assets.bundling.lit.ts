@@ -8,7 +8,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    /// !show
+    // / !show
     const asset = new assets.Asset(this, 'BundledAsset', {
       path: path.join(__dirname, 'markdown-asset'), // /asset-input and working directory in the container
       bundling: {
@@ -20,7 +20,7 @@ class TestStack extends Stack {
         ],
       },
     });
-    /// !hide
+    // / !hide
 
     const user = new iam.User(this, 'MyUser');
     asset.grantRead(user);

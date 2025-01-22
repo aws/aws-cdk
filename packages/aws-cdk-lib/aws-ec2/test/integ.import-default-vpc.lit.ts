@@ -1,4 +1,4 @@
-/// !cdk-integ * pragma:enable-lookups
+// / !cdk-integ * pragma:enable-lookups
 import * as cdk from '../../core';
 import * as ec2 from '../lib';
 
@@ -15,13 +15,13 @@ const env = {
 
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-import', { env });
 
-/// !show
+// / !show
 const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
   // This imports the default VPC but you can also
   // specify a 'vpcName' or 'tags'.
   isDefault: true,
 });
-/// !hide
+// / !hide
 
 // The only thing in this library that takes a VPC as an argument :)
 new ec2.SecurityGroup(stack, 'SecurityGroup', {

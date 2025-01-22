@@ -4,22 +4,22 @@ import { LogGroup, RetentionDays } from '../lib';
 const stack = new Stack();
 
 function shortLogGroup() {
-  /// !show
+  // / !show
   // Configure log group for short retention
   const logGroup = new LogGroup(stack, 'LogGroup', {
     retention: RetentionDays.ONE_WEEK,
   });
-  /// !hide
+  // / !hide
   return logGroup;
 }
 
 function infiniteLogGroup() {
-  /// !show
+  // / !show
   // Configure log group for infinite retention
   const logGroup = new LogGroup(stack, 'LogGroup', {
     retention: Infinity,
   });
-  /// !hide
+  // / !hide
   return logGroup;
 }
 

@@ -6,7 +6,7 @@ import * as certmgr from '../lib';
 class CertStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    /// !show
+    // / !show
     const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
       domainName: 'example.com',
       privateZone: false,
@@ -16,7 +16,7 @@ class CertStack extends Stack {
       domainName: 'test.example.com',
       hostedZone,
     });
-    /// !hide
+    // / !hide
 
     Array.isArray(certificate);
   }

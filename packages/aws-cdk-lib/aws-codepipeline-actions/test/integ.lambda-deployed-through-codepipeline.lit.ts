@@ -1,4 +1,4 @@
-/// !cdk-integ PipelineStack
+// / !cdk-integ PipelineStack
 import * as codebuild from '../../aws-codebuild';
 import * as codecommit from '../../aws-codecommit';
 import * as codepipeline from '../../aws-codepipeline';
@@ -12,7 +12,7 @@ const app = new cdk.App({
   },
 });
 
-/// !show
+// / !show
 const lambdaStack = new cdk.Stack(app, 'LambdaStack');
 const lambdaCode = lambda.Code.fromCfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {

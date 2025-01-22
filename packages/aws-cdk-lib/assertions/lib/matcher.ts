@@ -240,7 +240,7 @@ export class MatchResult {
       // Failures that have been reported against this MatchResult that we didn't print yet
       const remainingFailures = new Set(Array.from(r.failuresHere.keys()).filter(x => x !== ''));
 
-      //////////////////////////////////////////////////////////////////////
+      // ////////////////////////////////////////////////////////////////////
       if (Array.isArray(r.target)) {
         indents.push('  ');
         emit('[\n');
@@ -265,7 +265,7 @@ export class MatchResult {
         return;
       }
 
-      //////////////////////////////////////////////////////////////////////
+      // ////////////////////////////////////////////////////////////////////
       if (r.target && typeof r.target === 'object') {
         indents.push('  ');
         emit('{\n');
@@ -297,7 +297,7 @@ export class MatchResult {
         return;
       }
 
-      //////////////////////////////////////////////////////////////////////
+      // ////////////////////////////////////////////////////////////////////
       emitRemaining();
       emit(jsonify(r.target));
 
