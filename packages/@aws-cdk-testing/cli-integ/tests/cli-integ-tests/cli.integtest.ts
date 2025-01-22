@@ -2547,6 +2547,8 @@ integTest(
     // THEN
     const expectedSubstring = 'Resource is not in the expected state due to waiter status: TIMEOUT';
     expect(deployOutput).toContain(expectedSubstring);
+    expect(deployOutput).toContain('Observed responses:');
+    expect(deployOutput).toContain('200: OK');
     expect(deployOutput).not.toContain('hotswapped!');
   }),
 );
