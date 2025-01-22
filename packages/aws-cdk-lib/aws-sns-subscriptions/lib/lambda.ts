@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
-import * as iam from '../../aws-iam';
+import { Subscription, SubscriptionProps } from './subscription';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import { ArnFormat, Names, Stack, Token } from '../../core';
@@ -14,8 +13,9 @@ export interface LambdaSubscriptionProps extends SubscriptionProps {
 /**
  * Use a Lambda function as a subscription target
  */
-export class LambdaSubscription implements sns.ITopicSubscription {
+export class LambdaSubscription extends Subscription {
   constructor(private readonly fn: lambda.IFunction, private readonly props: LambdaSubscriptionProps = {}) {
+    super(fn);
   }
 
   /**
@@ -30,7 +30,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
 
     this.fn.addPermission(`AllowInvoke:${Names.nodeUniqueId(topic.node)}`, {
       sourceArn: topic.topicArn,
-      principal: new iam.ServicePrincipal('sns.amazonaws.com'),
+      principal: this.generateGrantPrincipal(topic),
     });
 
     // if the topic and function are created in different stacks
