@@ -29,10 +29,6 @@ interface ClientConfig {
 }
 
 export class AwsClients {
-  public static async default(output: NodeJS.WritableStream) {
-    const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
-    return AwsClients.forRegion(region, output);
-  }
 
   public static async forRegion(region: string, output: NodeJS.WritableStream) {
     return new AwsClients(region, output);
