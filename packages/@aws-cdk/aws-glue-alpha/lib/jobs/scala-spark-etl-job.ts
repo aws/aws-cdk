@@ -1,18 +1,3 @@
-/**
- *  Spark ETL Jobs class
- *  ETL jobs support pySpark and Scala languages, for which there are separate
- *  but similar constructors. ETL jobs default to the G2 worker type, but you
- *  can override this default with other supported worker type values
- *  (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
- *  override to 3.0. The following ETL features are enabled by default:
- *  —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
- *  You can find more details about version, worker type and other features
- *  in Glue's public documentation.
- *
- *  RFC: https://github.com/aws/aws-cdk-rfcs/blob/main/text/0497-glue-l2-construct.md
- *
- */
-
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
@@ -26,7 +11,6 @@ import { Code } from '../code';
  * Properties for creating a Scala Spark ETL job
  */
 export interface ScalaSparkEtlJobProps extends JobProperties {
-
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -48,7 +32,7 @@ export interface ScalaSparkEtlJobProps extends JobProperties {
    * Extra Jars S3 URL (optional)
    * S3 URL where additional jar dependencies are located
    * @default - no extra jar files
-  */
+   */
   readonly extraJars?: Code[];
 
   /**
@@ -65,11 +49,18 @@ export interface ScalaSparkEtlJobProps extends JobProperties {
 }
 
 /**
- * A Scala Spark ETL Glue Job
+ * Spark ETL Jobs class
+ *
+ * ETL jobs support pySpark and Scala languages, for which there are separate
+ * but similar constructors. ETL jobs default to the G2 worker type, but you
+ * can override this default with other supported worker type values
+ * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
+ * override to 3.0. The following ETL features are enabled by default:
+ * —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ * You can find more details about version, worker type and other features
+ * in Glue's public documentation.
  */
 export class ScalaSparkEtlJob extends Job {
-
-  // Implement abstract Job attributes
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;
@@ -85,10 +76,6 @@ export class ScalaSparkEtlJob extends Job {
 
   /**
    * ScalaSparkEtlJob constructor
-   *
-   * @param scope
-   * @param id
-   * @param props
    */
   constructor(scope: Construct, id: string, props: ScalaSparkEtlJobProps) {
     super(scope, id, {
@@ -162,7 +149,6 @@ export class ScalaSparkEtlJob extends Job {
   /**
    * Set the executable arguments with best practices enabled by default
    *
-   * @param props
    * @returns An array of arguments for Glue to use on execution
    */
   private executableArguments(props: ScalaSparkEtlJobProps) {

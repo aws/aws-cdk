@@ -12,7 +12,6 @@ import { CfnConnection } from 'aws-cdk-lib/aws-glue';
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectiontype
  */
 export class ConnectionType {
-
   /**
    * Designates a connection to a database through Java Database Connectivity (JDBC).
    */

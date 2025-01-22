@@ -5,15 +5,6 @@ import { Construct } from 'constructs';
 import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 
 /**
- * Ray Jobs class
- *
- * Glue Ray jobs use worker type Z.2X and Glue version 4.0.
- * These are not overrideable since these are the only configuration that
- * Glue Ray jobs currently support. The runtime defaults to Ray2.4 and min
- * workers defaults to 3.
- */
-
-/**
  * Properties for creating a Ray Glue job
  */
 export interface RayJobProps extends JobProperties {
@@ -38,11 +29,14 @@ export interface RayJobProps extends JobProperties {
 }
 
 /**
- * A Ray Glue Job
+ * Ray Jobs class
+ *
+ * Glue Ray jobs use worker type Z.2X and Glue version 4.0.
+ * These are not overrideable since these are the only configuration that
+ * Glue Ray jobs currently support. The runtime defaults to Ray2.4 and min
+ * workers defaults to 3.
  */
 export class RayJob extends Job {
-
-  // Implement abstract Job attributes
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;
@@ -50,12 +44,7 @@ export class RayJob extends Job {
 
   /**
    * RayJob constructor
-   *
-   * @param scope
-   * @param id
-   * @param props
    */
-
   constructor(scope: Construct, id: string, props: RayJobProps) {
     super(scope, id, {
       physicalName: props.jobName,
@@ -113,5 +102,4 @@ export class RayJob extends Job {
     this.jobArn = this.buildJobArn(this, resourceName);
     this.jobName = resourceName;
   }
-
 }
