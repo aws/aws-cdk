@@ -256,5 +256,53 @@ describe('Vpc V2 with full control', () => {
       },
     });
   });
-});
 
+  test('VPC with secondary IPv6 Pool address', () => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6ByoipPool({
+        cidrBlockName: 'SecondaryIPv6',
+        ipv6PoolId: 'SecondaryIPv6Pool',
+        ipv6CidrBlock: '2001:db8::/32',
+      })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
+      },
+      Ipv6CidrBlock: '2001:db8::/32',
+      Ipv6Pool: 'SecondaryIPv6Pool',
+    });
+  });
+
+  test('VPC with multiple IPv6 Pool addresses', () => {
+    // WHEN
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [
+        vpc.IpAddresses.ipv6ByoipPool({
+          cidrBlockName: 'SecondaryIPv6One',
+          ipv6PoolId: 'Pool1',
+          ipv6CidrBlock: '2001:db8:1::/48',
+        }),
+        vpc.IpAddresses.ipv6ByoipPool({
+          cidrBlockName: 'SecondaryIPv6Two',
+          ipv6PoolId: 'Pool2',
+          ipv6CidrBlock: '2001:db8:2::/48',
+        }),
+      ],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::EC2::VPCCidrBlock', 2);
+  });
+});

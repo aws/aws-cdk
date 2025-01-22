@@ -323,13 +323,54 @@ export class CidrBlockIpv6 {
   }
 
   /**
-   * @returns Maximum IPv6 address for a provided CIDR
+   * Calculates the maximum IPv6 address in the CIDR block
+   * @returns The maximum IPv6 address as a string
    */
   public maxIp(): string {
+    /**
+     * Calculate how many 16-bit blocks are needed for the network portion
+     * e.g. for /56, networkPartLength = ceil(56/16) = 4 blocks
+     */
+    const networkPartLength = Math.ceil(this.cidrPrefix / 16);
+    /**
+     * Calculate remaining bits in last network block
+     * e.g. for /56, remainingBits = 56 % 16 = 8 bits
+     */
+    const remainingBits = this.cidrPrefix % 16;
+    /**
+     * Create copy of network portion of address
+     * e.g. [2001, db8, 0, 0] for 2001:db8::/56
+     */
     const endIP = [...this.networkPart];
-    const hostPart = Array(8 - this.networkPart.length).fill(BigInt(0xffff));
-    endIP.push(...hostPart);
 
+    /**
+     * If there are remaining bits in last network block,
+     * create appropriate bitmask and apply to last network block
+     * e.g. for /56: mask = (1 << (16-8)) - 1 = 0x00FF
+     */
+    if (remainingBits > 0) {
+      const lastNetworkIndex = networkPartLength - 1;
+      const mask = (BigInt(1) << BigInt(16 - remainingBits)) - BigInt(1);
+      /**
+       * Apply bitmask to last network block using bitwise OR
+       * e.g. if lastNetworkIndex=3 and mask=0x00FF:
+       * networkPart[3]=0x0000 | 0x00FF = 0x00FF
+       */
+      endIP[lastNetworkIndex] = this.networkPart[lastNetworkIndex] | mask;
+    }
+
+    /**
+     * Fill remaining blocks with maximum value 0xFFFF
+     * e.g. [2001, db8, 0, ff, ffff, ffff, ffff, ffff]
+     */
+    for (let i = networkPartLength; i < 8; i++) {
+      endIP.push(BigInt('0xffff'));
+    }
+
+    /**
+     * Convert blocks to hex strings and join with colons
+     * e.g. 2001:db8:0:ff:ffff:ffff:ffff:ffff
+     */
     return endIP.map(this.formatIPv6Part).join(':');
   }
 
@@ -342,26 +383,18 @@ export class CidrBlockIpv6 {
    * @returns true if two ranges overlap, false otherwise
    */
   public rangesOverlap(range1: string, range2: string): boolean {
-    const [start1, end1] = this.getIPv6Range(range1);
-    const [start2, end2] = this.getIPv6Range(range2);
+    // Create new CidrBlockIpv6 instances for both ranges
+    const cidr1 = new CidrBlockIpv6(range1);
+    const cidr2 = new CidrBlockIpv6(range2);
 
+    // Convert min and max IPs to numeric values for comparison
+    const start1 = this.ipv6ToNumber(cidr1.minIp());
+    const end1 = this.ipv6ToNumber(cidr1.maxIp());
+    const start2 = this.ipv6ToNumber(cidr2.minIp());
+    const end2 = this.ipv6ToNumber(cidr2.maxIp());
+
+    // Check for overlap
     return (start1 <= end2) && (start2 <= end1);
-  }
-
-  /**
-   *
-   * @param cidr
-   * @returns Range in the from of big int number [start, end]
-   */
-  private getIPv6Range(cidr: string): [bigint, bigint] {
-    const [ipv6Address, prefixLength] = cidr.split('/');
-    const ipv6Number = this.ipv6ToNumber(ipv6Address);
-    const mask = (BigInt(1) << BigInt(128 - Number(prefixLength))) - BigInt(1);
-    const networkPrefix = ipv6Number & ~mask;
-    const start = networkPrefix;
-    const end = networkPrefix | mask;
-
-    return [start, end];
   }
 
   /**
