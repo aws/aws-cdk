@@ -52,7 +52,7 @@ export interface MapProps {
   /**
    * Specifies the custom layers for the style.
    *
-   * @default - no custom layes
+   * @default - no custom layers
    */
   readonly customLayers?: CustomLayer[];
 
