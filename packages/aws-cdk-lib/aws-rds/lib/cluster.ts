@@ -11,6 +11,7 @@ import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, R
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { validateDatabaseClusterProps } from './validate-database-cluster-props';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -830,36 +831,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       });
     }
 
+    validateDatabaseClusterProps(this, props);
+
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
-    if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
-    }
-
-    if (props.clusterScalabilityType === ClusterScalabilityType.LIMITLESS || props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
-      if (!props.enablePerformanceInsights) {
-        throw new ValidationError('Performance Insights must be enabled for Aurora Limitless Database.', this);
-      }
-      if (!props.performanceInsightRetention || props.performanceInsightRetention < PerformanceInsightRetention.MONTHS_1) {
-        throw new ValidationError('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.', this);
-      }
-      if (!props.monitoringInterval || !props.enableClusterLevelEnhancedMonitoring) {
-        throw new ValidationError('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.', this);
-      }
-      if (props.writer || props.readers) {
-        throw new ValidationError('Aurora Limitless Database does not support readers or writer instances.', this);
-      }
-      if (!props.engine.engineVersion?.fullVersion?.endsWith('limitless')) {
-        throw new ValidationError(`Aurora Limitless Database requires an engine version that supports it, got ${props.engine.engineVersion?.fullVersion}`, this);
-      }
-      if (props.storageType !== DBClusterStorageType.AURORA_IOPT1) {
-        throw new ValidationError(`Aurora Limitless Database requires I/O optimized storage type, got: ${props.storageType}`, this);
-      }
-      if (props.cloudwatchLogsExports === undefined || props.cloudwatchLogsExports.length === 0) {
-        throw new ValidationError('Aurora Limitless Database requires CloudWatch Logs exports to be set.', this);
-      }
-    }
-
     this.performanceInsightsEnabled = enablePerformanceInsights;
     this.performanceInsightRetention = enablePerformanceInsights
       ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)

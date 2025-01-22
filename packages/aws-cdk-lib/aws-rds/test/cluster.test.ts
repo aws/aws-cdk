@@ -268,7 +268,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports: ['postgresql'],
           });
-        }).toThrow('Performance Insights must be enabled for Aurora Limitless Database.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Performance Insights must be enabled for Aurora Limitless Database\n- Performance Insights retention period must be set to at least 31 days for Aurora Limitless Database');
       });
 
       test('throw error for invalid performance insights retention period', () => {
@@ -292,7 +292,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports: ['postgresql'],
           });
-        }).toThrow('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Performance Insights retention period must be set to at least 31 days for Aurora Limitless Database');
       });
 
       test('throw error for not specifying monitoring interval', () => {
@@ -316,7 +316,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports: ['postgresql'],
           });
-        }).toThrow('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'');
       });
 
       test.each([false, undefined])('throw error for configuring enhanced monitoring at the instance level', (enableClusterLevelEnhancedMonitoring) => {
@@ -341,7 +341,7 @@ describe('cluster new api', () => {
             cloudwatchLogsExports: ['postgresql'],
             instances: 1,
           });
-        }).toThrow('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
+        }).toThrow('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'');
       });
 
       test('throw error for specifying writer instance', () => {
@@ -366,7 +366,7 @@ describe('cluster new api', () => {
             cloudwatchLogsExports: ['postgresql'],
             writer: ClusterInstance.serverlessV2('writer'),
           });
-        }).toThrow('Aurora Limitless Database does not support readers or writer instances.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Aurora Limitless Database does not support reader or writer instances');
       });
 
       test.each([
@@ -395,7 +395,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports: ['postgresql'],
           });
-        }).toThrow(`Aurora Limitless Database requires an engine version that supports it, got ${engine.engineVersion?.fullVersion}`);
+        }).toThrow(`DatabaseCluster initialization failed due to the following validation error(s):\n- Aurora Limitless Database requires an engine version that supports it, got: ${engine.engineVersion?.fullVersion}`);
       });
 
       test('throw error for invalid storage type', () => {
@@ -443,7 +443,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports,
           });
-        }).toThrow('Aurora Limitless Database requires CloudWatch Logs exports to be set.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Aurora Limitless Database requires CloudWatch Logs exports to be set');
       });
     });
 
@@ -2130,7 +2130,7 @@ describe('cluster', () => {
           enablePerformanceInsights: false,
           performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
         });
-      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+      }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- `enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     });
 
     test('throws if performanceInsightEncryptionKey is set but performance insights is disabled', () => {
@@ -2142,7 +2142,7 @@ describe('cluster', () => {
           enablePerformanceInsights: false,
           performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
         });
-      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+      }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- `enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     });
 
     test('warn if performance insights is enabled at cluster level but disabled on writer and reader instances', () => {
