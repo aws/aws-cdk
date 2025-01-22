@@ -854,4 +854,24 @@ describe('Topic', () => {
       });
     });
   });
+
+  describe('fifoThroughputScope', () => {
+    test.each([sns.FifoThroughputScope.MESSAGE_GROUP, sns.FifoThroughputScope.TOPIC])('set fifoThroughputScope to %s', (fifoThroughputScope) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // WHEN
+      new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        fifoThroughputScope,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        FifoTopic: true,
+        FifoThroughputScope: fifoThroughputScope,
+      });
+    });
+  });
 });

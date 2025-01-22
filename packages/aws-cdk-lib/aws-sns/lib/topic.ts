@@ -98,6 +98,34 @@ export interface TopicProps {
    * @default TracingConfig.PASS_THROUGH
    */
   readonly tracingConfig?: TracingConfig;
+
+  /**
+   * Specifies the throughput quota and deduplication behavior to apply for the FIFO topic.
+   *
+   * You can only set this propery when `fifo` is `true`.
+   *
+   * @default - None. SNS default setting is FifoThroughputScope.TOPIC
+   */
+  readonly fifoThroughputScope?: FifoThroughputScope;
+}
+
+/**
+ * The throughput quota and deduplication behavior to apply for the FIFO topic.
+ */
+export enum FifoThroughputScope {
+  /**
+   * Topic scope
+   * - Throughput: 3000 message per second and a bandwidth of 20MB per second.
+   * - Deduplication: Message deduplication is verified on the entire FIFO topic.
+   */
+  TOPIC = 'Topic',
+
+  /**
+   * Message group scope
+   * - Throughput: Maximum regional limits.
+   * - Deduplication: Message deduplication is only verified within a message group.
+   */
+  MESSAGE_GROUP = 'MessageGroup',
 }
 
 /**
@@ -315,6 +343,7 @@ export class Topic extends TopicBase {
       signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
       tracingConfig: props.tracingConfig,
+      fifoThroughputScope: props.fifoThroughputScope,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {
