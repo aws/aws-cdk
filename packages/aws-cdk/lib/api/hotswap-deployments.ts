@@ -29,6 +29,7 @@ import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-
 import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
 import { Mode } from './plugin/mode';
 import { CloudFormationStack } from './util/cloudformation';
+import { ToolkitError } from '../toolkit/error';
 import { formatErrorMessage } from '../util/error';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
@@ -425,10 +426,7 @@ async function applyHotswappableChange(sdk: SDK, hotswapOperation: HotswappableC
   } catch (e: any) {
     if (e.name === 'TimeoutError' || e.name === 'AbortError') {
       const result: WaiterResult = JSON.parse(formatErrorMessage(e));
-      const error = new Error([
-        `Resource is not in the expected state due to waiter status: ${result.state}`,
-        result.reason ? `${result.reason}.` : '',
-      ].join('. '));
+      const error = new ToolkitError(formatWaiterErrorResult(result));
       error.name = e.name;
       throw error;
     }
@@ -440,6 +438,24 @@ async function applyHotswappableChange(sdk: SDK, hotswapOperation: HotswappableC
   }
 
   sdk.removeCustomUserAgent(customUserAgent);
+}
+
+function formatWaiterErrorResult(result: WaiterResult) {
+  const main = [
+    `Resource is not in the expected state due to waiter status: ${result.state}`,
+    result.reason ? `${result.reason}.` : '',
+  ].join('. ');
+
+  if (result.observedResponses != null) {
+    const observedResponses = Object
+      .entries(result.observedResponses)
+      .map(([msg, count]) => `  - ${msg} (${count})`)
+      .join('\n');
+
+    return `${main} Observed responses:\n${observedResponses}`;
+  }
+
+  return main;
 }
 
 function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange[], hotswapMode: HotswapMode): void {
