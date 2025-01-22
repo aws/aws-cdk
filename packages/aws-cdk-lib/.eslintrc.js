@@ -15,7 +15,7 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 
 // no-throw-default-error
-const modules = ['aws-s3', 'aws-lambda'];
+const modules = ['aws-s3', 'aws-lambda', 'aws-rds'];
 baseConfig.overrides.push({
   files: modules.map(m => `./${m}/lib/**`),
   rules: { "@cdklabs/no-throw-default-error": ['error'] },
