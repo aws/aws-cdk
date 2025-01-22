@@ -655,18 +655,19 @@ export class ApplicationSignalsIntegration extends Construct {
     if (runtimePlatformObj) {
       const runtimePlatform = runtimePlatformObj as ecs.RuntimePlatform;
       if (runtimePlatform.operatingSystemFamily) {
+        isWindows = runtimePlatform.operatingSystemFamily.isWindows();
+
         switch (runtimePlatform.operatingSystemFamily) {
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE:
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_FULL:
             cloudWatchAgentImage = CLOUDWATCH_AGENT_IMAGE_WIN2019;
-            isWindows = true;
             break;
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2022_CORE:
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2022_FULL:
             cloudWatchAgentImage = CLOUDWATCH_AGENT_IMAGE_WIN2022;
-            isWindows = true;
             break;
         }
+
         if (runtimePlatform.cpuArchitecture) {
           cpuArch = runtimePlatform.cpuArchitecture;
         }
