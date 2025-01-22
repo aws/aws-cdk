@@ -8,53 +8,68 @@
         "id": "ecs-enablement-integration",
         "path": "ecs-enablement-integration",
         "children": {
+          "TestRole": {
+            "id": "TestRole",
+            "path": "ecs-enablement-integration/TestRole",
+            "children": {
+              "ImportTestRole": {
+                "id": "ImportTestRole",
+                "path": "ecs-enablement-integration/TestRole/ImportTestRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ecs-enablement-integration/TestRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ecs-tasks.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/CloudWatchAgentServerPolicy"
+                          ]
+                        ]
+                      }
+                    ],
+                    "roleName": "TestRole"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
           "FargateTaskDefinition": {
             "id": "FargateTaskDefinition",
             "path": "ecs-enablement-integration/FargateTaskDefinition",
             "children": {
-              "TaskRole": {
-                "id": "TaskRole",
-                "path": "ecs-enablement-integration/FargateTaskDefinition/TaskRole",
-                "children": {
-                  "ImportTaskRole": {
-                    "id": "ImportTaskRole",
-                    "path": "ecs-enablement-integration/FargateTaskDefinition/TaskRole/ImportTaskRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "ecs-enablement-integration/FargateTaskDefinition/TaskRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "ecs-tasks.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
               "Resource": {
                 "id": "Resource",
                 "path": "ecs-enablement-integration/FargateTaskDefinition/Resource",
@@ -212,7 +227,7 @@
                     },
                     "taskRoleArn": {
                       "Fn::GetAtt": [
-                        "FargateTaskDefinitionTaskRoleE3C2BCAA",
+                        "TestRole6C9272DF",
                         "Arn"
                       ]
                     },

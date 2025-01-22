@@ -1,13 +1,14 @@
 
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import { ApplicationSignalsIntegration, InstrumentationLanguage, DotnetInstrumentationVersion } from '../lib';
 import { Role, ManagedPolicy, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-const app = new cdk.App();
+import { ApplicationSignalsIntegration, DotnetInstrumentationVersion } from '../lib';
 
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'ecs-enablement-integration');
-const taskRole = new Role(app, 'TestRole', {
+
+const taskRole = new Role(stack, 'TestRole', {
   roleName: 'TestRole',
   assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
   managedPolicies: [
@@ -30,7 +31,6 @@ fargateTaskDefinition.addContainer('app', {
 new ApplicationSignalsIntegration(stack, 'TestFargateSidecarIntegration', {
   taskDefinition: fargateTaskDefinition,
   instrumentation: {
-    language: InstrumentationLanguage.DOTNET,
     sdkVersion: DotnetInstrumentationVersion.V1_6_0_WINDOWS2019,
   },
   serviceName: 'demo',

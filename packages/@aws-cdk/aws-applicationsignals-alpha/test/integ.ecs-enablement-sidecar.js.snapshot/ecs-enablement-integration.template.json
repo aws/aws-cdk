@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "FargateTaskDefinitionTaskRoleE3C2BCAA": {
+  "TestRole6C9272DF": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -14,7 +14,22 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/CloudWatchAgentServerPolicy"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "TestRole"
    }
   },
   "FargateTaskDefinition8E3B365E": {
@@ -171,7 +186,7 @@
     },
     "TaskRoleArn": {
      "Fn::GetAtt": [
-      "FargateTaskDefinitionTaskRoleE3C2BCAA",
+      "TestRole6C9272DF",
       "Arn"
      ]
     },

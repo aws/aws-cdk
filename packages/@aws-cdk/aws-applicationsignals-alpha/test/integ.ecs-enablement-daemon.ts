@@ -1,7 +1,7 @@
 
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as appsignals from '../lib';
 
 const app = new cdk.App();
@@ -11,6 +11,7 @@ const stack = new cdk.Stack(app, 'ecs-enablement-integration');
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDefinition', {
   networkMode: ecs.NetworkMode.HOST,
 });
+
 ec2TaskDefinition.addContainer('app', {
   image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
   cpu: 0,
@@ -20,7 +21,6 @@ ec2TaskDefinition.addContainer('app', {
 new appsignals.ApplicationSignalsIntegration(stack, 'TestEc2TaskDefinitionIntegration', {
   taskDefinition: ec2TaskDefinition,
   instrumentation: {
-    language: appsignals.InstrumentationLanguage.PYTHON,
     sdkVersion: appsignals.PythonInstrumentationVersion.V0_8_0,
   },
   serviceName: 'demo',
