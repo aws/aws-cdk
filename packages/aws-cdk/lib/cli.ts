@@ -23,7 +23,7 @@ import { docs } from '../lib/commands/docs';
 import { doctor } from '../lib/commands/doctor';
 import { getMigrateScanType } from '../lib/commands/migrate';
 import { cliInit, printAvailableTemplates } from '../lib/init';
-import { data, debug, error, info, setCI, setIoMessageThreshold } from '../lib/logging';
+import { data, debug, error, info } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -40,11 +40,12 @@ if (!process.stdout.isTTY) {
 
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
   const argv = await parseCommandLineArguments(args);
+  const cmd = argv._[0];
 
   // if one -v, log at a DEBUG level
   // if 2 -v, log at a TRACE level
+  let ioMessageLevel: IoMessageLevel = 'info';
   if (argv.verbose) {
-    let ioMessageLevel: IoMessageLevel;
     switch (argv.verbose) {
       case 1:
         ioMessageLevel = 'debug';
@@ -54,16 +55,18 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         ioMessageLevel = 'trace';
         break;
     }
-    setIoMessageThreshold(ioMessageLevel);
   }
+
+  const ioHost = CliIoHost.instance({
+    logLevel: ioMessageLevel,
+    isTTY: process.stdout.isTTY,
+    isCI: Boolean(argv.ci),
+    currentAction: cmd,
+  }, true);
 
   // Debug should always imply tracing
   if (argv.debug || argv.verbose > 2) {
     enableTracing(true);
-  }
-
-  if (argv.ci) {
-    setCI(true);
   }
 
   try {
@@ -82,8 +85,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     },
   });
   await configuration.load();
-
-  const cmd = argv._[0];
 
   const notices = Notices.create({
     context: configuration.context,
@@ -175,7 +176,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   async function main(command: string, args: any): Promise<number | void> {
-    CliIoHost.currentAction = command as any;
+    ioHost.currentAction = command as any;
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
@@ -205,6 +206,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
     switch (command) {
       case 'context':
+        ioHost.currentAction = 'context';
         return context({
           context: configuration.context,
           clear: argv.clear,
@@ -214,14 +216,17 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'docs':
+      case 'doc':
+        ioHost.currentAction = 'docs';
         return docs({ browser: configuration.settings.get(['browser']) });
 
       case 'doctor':
+        ioHost.currentAction = 'doctor';
         return doctor();
 
       case 'ls':
       case 'list':
-        CliIoHost.currentAction = 'list';
+        ioHost.currentAction = 'list';
         return cli.list(args.STACKS, {
           long: args.long,
           json: argv.json,
@@ -229,6 +234,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'diff':
+        ioHost.currentAction = 'diff';
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
         return cli.diff({
           stackNames: args.STACKS,
@@ -246,6 +252,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'bootstrap':
+        ioHost.currentAction = 'bootstrap';
         const source: BootstrapSource = determineBootstrapVersion(args);
 
         if (args.showTemplate) {
@@ -277,7 +284,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'deploy':
-        CliIoHost.currentAction = 'deploy';
+        ioHost.currentAction = 'deploy';
         const parameterMap: { [name: string]: string | undefined } = {};
         for (const parameter of args.parameters) {
           if (typeof parameter === 'string') {
@@ -297,7 +304,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
               throw new ToolkitError('--change-set-name cannot be used with method=direct');
             }
             if (args.importExistingResources) {
-              throw new Error('--import-existing-resources cannot be enabled with method=direct');
+              throw new ToolkitError('--import-existing-resources cannot be enabled with method=direct');
             }
             deploymentMethod = { method: 'direct' };
             break;
@@ -356,6 +363,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'rollback':
+        ioHost.currentAction = 'rollback';
         return cli.rollback({
           selector,
           toolkitStackName,
@@ -366,6 +374,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'import':
+        ioHost.currentAction = 'import';
         return cli.import({
           selector,
           toolkitStackName,
@@ -383,6 +392,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'watch':
+        ioHost.currentAction = 'watch';
         return cli.watch({
           selector,
           exclusively: args.exclusively,
@@ -402,7 +412,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'destroy':
-        CliIoHost.currentAction = 'destroy';
+        ioHost.currentAction = 'destroy';
         return cli.destroy({
           selector,
           exclusively: args.exclusively,
@@ -412,6 +422,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
 
       case 'gc':
+        ioHost.currentAction = 'gc';
         if (!configuration.settings.get(['unstable']).includes('gc')) {
           throw new ToolkitError('Unstable feature use: \'gc\' is unstable. It must be opted in via \'--unstable\', e.g. \'cdk gc --unstable=gc\'');
         }
@@ -426,7 +437,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
-        CliIoHost.currentAction = 'synth';
+        ioHost.currentAction = 'synth';
         const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
           return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
@@ -435,17 +446,21 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         }
 
       case 'notices':
+        ioHost.currentAction = 'notices';
         // This is a valid command, but we're postponing its execution
         return;
 
       case 'metadata':
+        ioHost.currentAction = 'metadata';
         return cli.metadata(args.STACK, argv.json);
 
       case 'acknowledge':
       case 'ack':
+        ioHost.currentAction = 'notices';
         return cli.acknowledge(args.ID);
 
       case 'init':
+        ioHost.currentAction = 'init';
         const language = configuration.settings.get(['language']);
         if (args.list) {
           return printAvailableTemplates(language);
@@ -458,6 +473,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           });
         }
       case 'migrate':
+        ioHost.currentAction = 'migrate';
         return cli.migrate({
           stackName: args['stack-name'],
           fromPath: args['from-path'],
@@ -471,6 +487,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           compress: args.compress,
         });
       case 'version':
+        ioHost.currentAction = 'version';
         return data(version.DISPLAY_VERSION);
 
       default:
