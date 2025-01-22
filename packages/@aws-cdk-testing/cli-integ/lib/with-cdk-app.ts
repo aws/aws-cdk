@@ -375,6 +375,11 @@ export class TestFixture extends ShellHelper {
     this.packages = packageSourceInSubprocess();
   }
 
+  public async outputFile() {
+    await this.aws.outputFile();
+    console.log('with cdk app file written!');
+  }
+
   public log(s: string) {
     this.output.write(`${s}\n`);
   }
