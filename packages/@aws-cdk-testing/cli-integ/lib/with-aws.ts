@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 import { AwsClients } from './aws';
 import { TestContext } from './integ-test';
 import { ResourcePool } from './resource-pool';
@@ -16,6 +18,14 @@ export function atmosphereEndpoint(): string {
   return value;
 }
 
+export function atmospherePool() {
+  const value = process.env.CDK_INTEG_ATMOSPHERE_POOL;
+  if (!value) {
+    throw new Error('CDK_INTEG_ATMOSPHERE_POOL is not defined');
+  }
+  return value;
+}
+
 export type AwsContext = { readonly aws: AwsClients };
 
 /**
@@ -27,9 +37,29 @@ export function withAws<A extends TestContext>(
   block: (context: A & AwsContext & DisableBootstrapContext) => Promise<void>,
   disableBootstrap: boolean = false,
 ): (context: A) => Promise<void> {
-  return (context: A) => {
+  return async (context: A) => {
 
     if (isAtmosphereEnabled()) {
+      const atmosphere = new AtmosphereClient(atmosphereEndpoint());
+      const allocation = await atmosphere.acquire({ pool: atmospherePool(), requester: context.name });
+      const aws = await AwsClients.forIdentity(allocation.environment.region, {
+        accessKeyId: allocation.credentials.accessKeyId,
+        secretAccessKey: allocation.credentials.secretAccessKey,
+        sessionToken: allocation.credentials.sessionToken,
+        accountId: allocation.environment.account,
+      }, context.output);
+
+      await sanityCheck(aws);
+
+      let success = true;
+      try {
+        return await block({ ...context, disableBootstrap, aws });
+      } catch (e: any) {
+        success = false;
+        throw e;
+      } finally {
+        await atmosphere.release(allocation.id, success ? 'success' : 'failure');
+      }
 
     } else {
       return regionPool().using(async (region) => {
