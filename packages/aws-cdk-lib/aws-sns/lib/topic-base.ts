@@ -6,6 +6,7 @@ import { Subscription } from './subscription';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import { IResource, Resource, ResourceProps, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents an SNS topic
@@ -111,7 +112,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
     if (scope.node.tryFindChild(id)) {
-      throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
+      throw new ValidationError(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`, scope);
     }
 
     const subscription = new Subscription(scope, id, {
