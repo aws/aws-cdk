@@ -634,7 +634,7 @@ export class TestFixture extends ShellHelper {
  * Since we go striping across regions, it's going to suck doing this
  * by hand so let's just mass-automate it.
  */
-async function ensureBootstrapped(fixture: TestFixture) {
+export async function ensureBootstrapped(fixture: TestFixture) {
   // Always use the modern bootstrap stack, otherwise we may get the error
   // "refusing to downgrade from version 7 to version 0" when bootstrapping with default
   // settings using a v1 CLI.
