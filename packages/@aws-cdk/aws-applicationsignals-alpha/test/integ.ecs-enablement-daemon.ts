@@ -3,7 +3,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery';
 import * as appsignals from '../lib';
 
@@ -19,36 +18,30 @@ const namespace = new PrivateDnsNamespace(stack, 'Namespace', {
 });
 
 // Define Task Definition for CloudWatch agent (Daemon)
-const cwAgentTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'CwAgentDaemonTaskDef');
-
-// Add the CloudWatch agent container
-cwAgentTaskDefinition.addContainer('ecs-cwagent', {
-  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest'),
-  cpu: 128,
-  memoryLimitMiB: 64,
-  portMappings: [
-    {
-      name: 'cwagent-4316',
-      containerPort: 4316,
-      hostPort: 4316,
-    },
-    {
-      name: 'cwagent-2000',
-      containerPort: 2000,
-      hostPort: 2000,
-    },
-  ],
-  logging: new ecs.AwsLogDriver({
-    streamPrefix: 'ecs',
-    logGroup: new LogGroup(stack, 'CwAgentLogGroup', {
-      logGroupName: '/ecs/ecs-cwagent-cdk-daemon',
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    }),
-  }),
-  environment: {
-    CW_CONFIG_CONTENT: '{"agent": {"debug": true}, "traces": {"traces_collected": {"application_signals": {"enabled": true}}}, "logs": {"metrics_collected": {"application_signals": {"enabled": true}}}}',
-  },
+const cwAgentTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'CwAgentDaemonTaskDef', {
+  networkMode: ecs.NetworkMode.AWS_VPC,
 });
+new appsignals.CloudWatchAgentIntegration(stack, 'CloudWatchAgent',
+  {
+    taskDefinition: cwAgentTaskDefinition,
+    containerName: 'ecs-cwagent',
+    enableLogging: true,
+    cpu: 128,
+    memoryLimitMiB: 64,
+    portMappings: [
+      {
+        name: 'cwagent-4316',
+        containerPort: 4316,
+        hostPort: 4316,
+      },
+      {
+        name: 'cwagent-2000',
+        containerPort: 2000,
+        hostPort: 2000,
+      },
+    ],
+  },
+);
 
 new ecs.Ec2Service(stack, 'CwAgentDaemonService', {
   cluster,
@@ -69,7 +62,7 @@ new ecs.Ec2Service(stack, 'CwAgentDaemonService', {
 });
 
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDefinition', {
-  networkMode: ecs.NetworkMode.HOST,
+  networkMode: ecs.NetworkMode.AWS_VPC,
 });
 
 ec2TaskDefinition.addContainer('app', {
@@ -96,9 +89,6 @@ new appsignals.ApplicationSignalsIntegration(stack, 'TestEc2TaskDefinitionIntegr
       value: 'endpoint=http://cwagent-2000-http:2000',
     },
   ],
-  cloudWatchAgent: {
-    enableSidecar: false,
-  },
 });
 
 new integ.IntegTest(app, 'ApplicationSignalsIntegrationECSDaemon', {

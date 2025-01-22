@@ -17,7 +17,10 @@
                 "path": "ecs-enablement-integration/TestRole/ImportTestRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -63,7 +66,28 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "roleName": "*",
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "managedPolicies": [
+                    {
+                      "managedPolicyArn": "*"
+                    }
+                  ]
+                },
+                {
+                  "addManagedPolicy": [
+                    {
+                      "managedPolicyArn": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "FargateTaskDefinition": {
@@ -84,7 +108,7 @@
                             "condition": "SUCCESS"
                           },
                           {
-                            "containerName": "cwagent",
+                            "containerName": "cloudwatch-agent",
                             "condition": "START"
                           }
                         ],
@@ -210,9 +234,18 @@
                         "name": "adot-init"
                       },
                       {
+                        "cpu": 256,
                         "essential": true,
-                        "image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:1.300051.0b992-windowsservercore2019",
-                        "name": "cwagent"
+                        "image": "amazon/cloudwatch-agent:latest",
+                        "memory": 512,
+                        "name": "cloudwatch-agent",
+                        "user": "0:1338",
+                        "environment": [
+                          {
+                            "name": "CW_CONFIG_CONTENT",
+                            "value": "{\"logs\":{\"metrics_collected\":{\"application_signals\":{\"enabled\":true}}},\"traces\":{\"traces_collected\":{\"application_signals\":{\"enabled\":true}}}}"
+                          }
+                        ]
                       }
                     ],
                     "cpu": "2048",
@@ -270,12 +303,30 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs.FargateTaskDefinition",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*",
+                "*",
+                "*",
+                "*",
+                "*",
+                "*"
+              ]
             }
           },
           "TestFargateSidecarIntegration": {
             "id": "TestFargateSidecarIntegration",
             "path": "ecs-enablement-integration/TestFargateSidecarIntegration",
+            "children": {
+              "CloudWatchAgentSidecar": {
+                "id": "CloudWatchAgentSidecar",
+                "path": "ecs-enablement-integration/TestFargateSidecarIntegration/CloudWatchAgentSidecar",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-applicationsignals-alpha.CloudWatchAgentIntegration",
+                  "version": "0.0.0"
+                }
+              }
+            },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-applicationsignals-alpha.ApplicationSignalsIntegration",
               "version": "0.0.0"
