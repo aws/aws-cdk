@@ -262,7 +262,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     overlap = validateOverlappingCidrRanges(props.vpc, props.ipv4CidrBlock.cidr);
 
-    //check whether VPC supports ipv6
+    // check whether VPC supports ipv6
     if (props.ipv6CidrBlock?.cidr) {
       validateSupportIpv6(props.vpc);
       overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);

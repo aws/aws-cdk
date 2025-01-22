@@ -1,4 +1,4 @@
-/*eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
+/* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
 import { ISubnet } from 'aws-cdk-lib/aws-ec2';
 

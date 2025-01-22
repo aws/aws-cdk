@@ -345,7 +345,7 @@ class IpamPool extends Resource implements IIpamPool {
       throw new Error('awsService is required when addressFamily is set to ipv6');
     }
 
-    //Add tags to the IPAM Pool if name is provided
+    // Add tags to the IPAM Pool if name is provided
     if (props.ipamPoolName) {
       Tags.of(this).add(NAME_TAG, props.ipamPoolName);
     }
