@@ -3,6 +3,19 @@ import { TestContext } from './integ-test';
 import { ResourcePool } from './resource-pool';
 import { DisableBootstrapContext } from './with-cdk-app';
 
+export function isAtmosphereEnabled(): boolean {
+  const enabled = process.env.CDK_INTEG_ATMOSPHERE_ENABLED;
+  return enabled === 'true' || enabled === '1';
+}
+
+export function atmosphereEndpoint(): string {
+  const value = process.env.CDK_INTEG_ATMOSPHERE_ENDPOINT;
+  if (!value) {
+    throw new Error('CDK_INTEG_ATMOSPHERE_ENDPOINT is not defined');
+  }
+  return value;
+}
+
 export type AwsContext = { readonly aws: AwsClients };
 
 /**
@@ -14,12 +27,20 @@ export function withAws<A extends TestContext>(
   block: (context: A & AwsContext & DisableBootstrapContext) => Promise<void>,
   disableBootstrap: boolean = false,
 ): (context: A) => Promise<void> {
-  return (context: A) => regionPool().using(async (region) => {
-    const aws = await AwsClients.forRegion(region, context.output);
-    await sanityCheck(aws);
+  return (context: A) => {
 
-    return block({ ...context, disableBootstrap, aws });
-  });
+    if (isAtmosphereEnabled()) {
+
+    } else {
+      return regionPool().using(async (region) => {
+        const aws = await AwsClients.forRegion(region, context.output);
+        await sanityCheck(aws);
+
+        return block({ ...context, disableBootstrap, aws });
+      });
+    }
+
+  };
 }
 
 let _regionPool: undefined | ResourcePool;
