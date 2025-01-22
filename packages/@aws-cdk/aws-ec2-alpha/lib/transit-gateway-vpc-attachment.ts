@@ -1,5 +1,5 @@
 import { ITransitGateway, TransitGatewayFeatureStatus } from './transit-gateway';
-import { CfnTransitGatewayVpcAttachment, ISubnet, IVpc } from 'aws-cdk-lib/aws-ec2';
+import { CfnTransitGatewayAttachment, ISubnet, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
@@ -41,9 +41,6 @@ export interface TransitGatewayVpcAttachmentProps {
   /**
    * A list of one or more subnets to place the attachment in.
    * It is recommended to specify more subnets for better availability.
-   *
-   * To add/remove subnetIds, use the addSubnets and removeSubnets methods.
-   * Directly modifying this property will cause the attachment to be replaced.
    */
   readonly subnets: ISubnet[];
 
@@ -65,12 +62,13 @@ export interface TransitGatewayVpcAttachmentProps {
 
 export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
   public readonly transitGatewayVpcAttachmentId: string;
-  private transitGatewayVpcAttachment: CfnTransitGatewayVpcAttachment;
+  private readonly subnets: ISubnet[] = [];
+  private transitGatewayVpcAttachment: CfnTransitGatewayAttachment;
 
   constructor(scope: Construct, id: string, props: TransitGatewayVpcAttachmentProps) {
     super(scope, id);
 
-    const resource = new CfnTransitGatewayVpcAttachment(this, id, {
+    const resource = new CfnTransitGatewayAttachment(this, id, {
       subnetIds: props.subnets.map((subnet) => subnet.subnetId),
       transitGatewayId: props.transitGateway.transitGatewayId,
       vpcId: props.vpc.vpcId,
@@ -88,6 +86,7 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
 
     this.transitGatewayVpcAttachment = resource;
     this.transitGatewayVpcAttachmentId = resource.ref;
+    this.subnets = props.subnets;
 
     if (props.transitGateway.defaultRouteTableAssociation) {
       new TransitGatewayRouteTableAssociation(this, id + 'Association', {
@@ -103,14 +102,25 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
       });
     }
   }
-
+  
   addSubnets(subnets: ISubnet[]): void {
-    this.transitGatewayVpcAttachment.addSubnetIds =
-      this.transitGatewayVpcAttachment.addSubnetIds?.concat(subnets.map((subnet) => subnet.subnetId));
+    for (const subnet of subnets) {
+      if (this.subnets.some(existing => existing.subnetId === subnet.subnetId)) {
+        throw new Error(`Subnet with ID ${subnet.subnetId} is already added to the Attachment ${this.transitGatewayVpcAttachmentId}.`);
+      }
+      this.subnets.push(subnet);
+    }
+    this.transitGatewayVpcAttachment.subnetIds = this.subnets.map(subnet => subnet.subnetId);
   }
 
   removeSubnets(subnets: ISubnet[]): void {
-    this.transitGatewayVpcAttachment.removeSubnetIds =
-      this.transitGatewayVpcAttachment.removeSubnetIds?.concat(subnets.map((subnet) => subnet.subnetId));
+    for (const subnet of subnets) {
+      const index = this.subnets.findIndex(existing => existing.subnetId === subnet.subnetId);
+      if (index === -1) {
+        throw new Error(`Subnet with ID ${subnet.subnetId} does not exist in the Attachment ${this.transitGatewayVpcAttachmentId}.`);
+      }
+      this.subnets.splice(index, 1);
+    }
+    this.transitGatewayVpcAttachment.subnetIds = this.subnets.map(subnet => subnet.subnetId);
   }
 }

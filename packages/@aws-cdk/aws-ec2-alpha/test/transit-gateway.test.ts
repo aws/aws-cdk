@@ -116,7 +116,7 @@ describe('Transit Gateway with default settings', () => {
 
     tgw.attachVpc('VpcAttachment', myVpc, [mySubnet]);
 
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayVpcAttachment', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
         {
           Ref: 'TestSubnet2A4BE4CA',
@@ -267,7 +267,7 @@ describe('Transit Gateway with default route table association and propagation d
 
     tgw.attachVpc('VpcAttachment', myVpc, [mySubnet]);
 
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayVpcAttachment', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
         {
           Ref: 'TestSubnet2A4BE4CA',
@@ -418,7 +418,7 @@ describe('Transit Gateway with default route table association and propagation d
 
     tgw.attachVpc('VpcAttachment', myVpc, [mySubnet]);
 
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayVpcAttachment', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
         {
           Ref: 'TestSubnet2A4BE4CA',
@@ -458,7 +458,7 @@ describe('Transit Gateway with default route table association and propagation d
 
     tgw.attachVpc('VpcAttachment', myVpc, [mySubnet], undefined, tgw.defaultRouteTable, [tgw.defaultRouteTable]);
 
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayVpcAttachment', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
         {
           Ref: 'TestSubnet2A4BE4CA',
