@@ -20,6 +20,7 @@ import {
   ClusterScalabilityType,
   ClusterScailabilityType,
   DBClusterStorageType,
+  DatabaseInsightsMode,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -2539,6 +2540,82 @@ describe('cluster', () => {
           },
         });
       }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+    });
+  });
+
+  describe('database insights for cluster', () => {
+    test('cluster with the advanced mode of database insights', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
+        performanceInsightRetention: PerformanceInsightRetention.MONTHS_15,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        PerformanceInsightsEnabled: true,
+        PerformanceInsightsRetentionPeriod: 465,
+        DatabaseInsightsMode: 'advanced',
+      });
+    });
+
+    test('cluster with the standard mode of database insights and performance insights is disabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.provisioned('writer'),
+        enablePerformanceInsights: false,
+        databaseInsightsMode: DatabaseInsightsMode.STANDARD,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        PerformanceInsightsEnabled: false,
+        PerformanceInsightsRetentionPeriod: Match.absent(),
+        DatabaseInsightsMode: 'standard',
+      });
+    });
+
+    test('throw if performance insights is disabled and the advanced mode of database insights is set', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.provisioned('writer'),
+          enablePerformanceInsights: false,
+          databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
+        });
+      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to '\${DatabaseInsightsMode.ADVANCED}'/);
+    });
+
+    test('throw if the advanced mode of database insights is set and any retention other than MONTHS_15 is set for performanceInsightRetention', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.provisioned('writer'),
+          performanceInsightRetention: PerformanceInsightRetention.LONG_TERM,
+          databaseInsightsMode: DatabaseInsightsMode.ADVANCED,
+        });
+      }).toThrow(/`performanceInsightRetention` must be set to '\${PerformanceInsightRetention.MONTHS_15}' when `databaseInsightsMode` is set to '\${DatabaseInsightsMode.ADVANCED}'/);
     });
   });
 
