@@ -1,6 +1,8 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
+import * as lambda from '../../aws-lambda';
+import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { AddToPrincipalPolicyResult, Grant, Group, IResourceWithPolicy, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
+import { Grant, Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;
@@ -689,24 +691,54 @@ describe('managed policy', () => {
     });
   });
 
-  test('addPrincipalOrResource() correctly grants Policies permissions', () => {
+  test('Policies can be granted on s3.Bucket', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
 
-    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    };
-    const resource = new DummyResource(stack, 'Dummy');
-    Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucketname');
+    bucket.grantRead(mp);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
       ManagedPolicyName: 'MyManagedPolicyName',
       PolicyDocument: {
         Statement: [
-          { Action: 'dummy:Action', Effect: 'Allow', Resource: '*' },
+          {
+            Action: Match.anyValue(),
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::mybucketname']] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::mybucketname/*']] },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Path: '/',
+      Description: '',
+    });
+  });
+
+  test('Policies can be granted on lambda.Function', () => {
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+
+    const func = lambda.Function.fromFunctionName(stack, 'Function', 'myfunctionname');
+    func.grantInvoke(mp);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      ManagedPolicyName: 'MyManagedPolicyName',
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':lambda:us-east-1:1234:function:myfunctionname']] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':lambda:us-east-1:1234:function:myfunctionname:*']] },
+            ],
+          },
         ],
         Version: '2012-10-17',
       },
@@ -720,16 +752,11 @@ describe('managed policy', () => {
       managedPolicyName: 'MyManagedPolicyName',
     });
 
-    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    };
-    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
+    const stack2 = new cdk.Stack(stack, 'CrossAccountStack', { env: { account: '5678' } });
+    const bucket = new s3.Bucket(stack2, 'Bucket');
 
-    expect(() => {
-      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a ManagedPolicy 'MyStack\/Policy'/);
+    expect(() => bucket.grantRead(mp))
+      .toThrow("Cannot use a ManagedPolicy 'MyStack/Policy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
   });
 
   test('Policies cannot be granted resource permissions', () => {
@@ -737,16 +764,15 @@ describe('managed policy', () => {
       managedPolicyName: 'MyManagedPolicyName',
     });
 
-    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    };
-    const resource = new DummyResource(stack, 'Dummy');
+    const bucket = new s3.Bucket(stack, 'Bucket');
 
     expect(() => {
-      Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a ManagedPolicy 'MyStack\/Policy'/);
+      bucket.addToResourcePolicy(new PolicyStatement({
+        principals: [mp],
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+    }).toThrow("Cannot use a ManagedPolicy 'MyStack/Policy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
   });
 
   test('prevent creation when customizeRoles is configured', () => {

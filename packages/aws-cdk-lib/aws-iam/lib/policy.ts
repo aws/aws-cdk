@@ -3,11 +3,11 @@ import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { IResource, Lazy, Resource } from '../../core';
+import { IResource, Lazy, Resource, Stack } from '../../core';
 
 /**
  * Represents an IAM Policy
@@ -102,7 +102,7 @@ export interface PolicyProps {
  * [Overview of IAM Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Resource implements IPolicy, IGrantable {
+export class Policy extends Resource implements IPolicy, IPrincipal {
 
   /**
    * Import a policy in this app based on its name
@@ -120,7 +120,14 @@ export class Policy extends Resource implements IPolicy, IGrantable {
    */
   public readonly document = new PolicyDocument();
 
-  public readonly grantPrincipal: IPrincipal;
+  public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    const dummyArn = Stack.of(this).formatArn({ service: 'iam', resource: 'dummy-policy', resourceName: this.node.path });
+    return new ArnPrincipal(dummyArn).policyFragment;
+  }
 
   private readonly _policyName: string;
   private readonly roles = new Array<IRole>();
@@ -182,8 +189,6 @@ export class Policy extends Resource implements IPolicy, IGrantable {
       props.statements.forEach(p => this.addStatements(p));
     }
 
-    this.grantPrincipal = new PolicyGrantPrincipal(this);
-
     this.node.addValidation({ validate: () => this.validatePolicy() });
   }
 
@@ -231,6 +236,18 @@ export class Policy extends Resource implements IPolicy, IGrantable {
     return this._policyName;
   }
 
+  /**
+   * Adds an IAM statement to the policy document.
+   */
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    this.addStatements(statement);
+    return { statementAdded: true, policyDependable: this };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
   private validatePolicy(): string[] {
     const result = new Array<string>();
 
@@ -264,32 +281,5 @@ export class Policy extends Resource implements IPolicy, IGrantable {
    */
   private get isAttached() {
     return this.groups.length + this.users.length + this.roles.length > 0;
-  }
-}
-
-class PolicyGrantPrincipal implements IPrincipal {
-  public readonly assumeRoleAction = 'sts:AssumeRole';
-  public readonly grantPrincipal: IPrincipal;
-  public readonly principalAccount?: string;
-
-  constructor(private _policy: Policy) {
-    this.grantPrincipal = this;
-    this.principalAccount = _policy.env.account;
-  }
-
-  public get policyFragment(): PrincipalPolicyFragment {
-    // This property is referenced to add policy statements as a resource-based policy.
-    // We should fail because a policy cannot be used as a principal of a policy document.
-    // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new Error(`Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
-  }
-
-  public addToPolicy(statement: PolicyStatement): boolean {
-    return this.addToPrincipalPolicy(statement).statementAdded;
-  }
-
-  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-    this._policy.addStatements(statement);
-    return { statementAdded: true, policyDependable: this._policy };
   }
 }

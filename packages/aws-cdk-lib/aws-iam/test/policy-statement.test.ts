@@ -210,9 +210,9 @@ describe('IAM policy statement', () => {
     const policyStatement = new PolicyStatement();
 
     expect(() => policyStatement.addPrincipals(group))
-      .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
+      .toThrow("Cannot use an IAM Group 'Default/groupId' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
     expect(() => policyStatement.addNotPrincipals(group))
-      .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
+      .toThrow("Cannot use an IAM Group 'Default/groupId' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
   });
 
   test('throws error when an invalid \'Action\' or \'NotAction\' is added', () => {
