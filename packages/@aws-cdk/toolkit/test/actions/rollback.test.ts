@@ -1,4 +1,4 @@
-import { RequireApproval, StackParameters, StackSelectionStrategy } from '../../lib';
+import { StackSelectionStrategy } from '../../lib';
 import { Toolkit } from '../../lib/toolkit';
 import { builderFixture, TestIoHost } from '../_helpers';
 
@@ -40,7 +40,7 @@ describe('rollback', () => {
     mockRollbackStack.mockImplementation(() => ({
       notInRollbackableState: true,
       success: false,
-    }))
+    }));
     // WHEN
     const cx = await builderFixture(toolkit, 'two-empty-stacks');
     await expect(async () => toolkit.rollback(cx, {
