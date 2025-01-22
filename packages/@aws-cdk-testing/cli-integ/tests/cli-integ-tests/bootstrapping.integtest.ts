@@ -494,12 +494,12 @@ integTest('create ECR with tag IMMUTABILITY to set on', withoutBootstrap(async (
 integTest('can remove trusted account', withoutBootstrap(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
-    await fixture.cdkBootstrapModern({
-      verbose: false,
-      toolkitStackName: bootstrapStackName,
-      cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
-      trust: ['599757620138', '730170552321'],
-    });
+  await fixture.cdkBootstrapModern({
+    verbose: false,
+    toolkitStackName: bootstrapStackName,
+    cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
+    trust: ['599757620138', '730170552321'],
+  });
 
   await fixture.cdkBootstrapModern({
     verbose: true,
@@ -514,5 +514,5 @@ integTest('can remove trusted account', withoutBootstrap(async (fixture) => {
 
   const trustedAccounts = response.Stacks?.[0].Parameters?.find(p => p.ParameterKey === 'TrustedAccounts')?.ParameterValue;
   expect(trustedAccounts).toEqual('599757620138');
-}))
+}));
 
