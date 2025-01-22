@@ -74,7 +74,7 @@ new sfn.StateMachine(this, 'MixedStateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
-// This throw an error. If JSONata is specified at the top level, JSONPath cannot be mixed.
+// This throws an error. If JSONata is specified at the top level, JSONPath cannot be used in the state machine definition.
 new sfn.StateMachine(this, 'JSONataOnlyStateMachine', {
   queryLanguage: sfn.QueryLanguage.JSONATA,
   definitionBody: sfn.DefinitionBody.fromChainable(definition),
