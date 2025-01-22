@@ -9,7 +9,7 @@ import { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-/** ********************************************************************************************************************
+/**********************************************************************************************************************
  *
  *    Warning! This test case can not be deployed!
  *

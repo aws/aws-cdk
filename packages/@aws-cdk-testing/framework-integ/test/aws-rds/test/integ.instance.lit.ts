@@ -8,7 +8,7 @@ import { RemovalPolicy } from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-/** ********************************************************************************************************************
+/**********************************************************************************************************************
  *
  *    Warning! This test case can not be deployed!
  *
