@@ -1,18 +1,3 @@
-/**
- *  Scala Streaming Jobs class
- *
- * A Streaming job is similar to an ETL job, except that it performs ETL on data streams
- * using the Apache Spark Structured Streaming framework.
- * These jobs will default to use Python 3.9.
- *
- * Similar to ETL jobs, streaming job supports Scala and Python languages. Similar to ETL,
- * it supports G1 and G2 worker type and 2.0, 3.0 and 4.0 version. We’ll default to G2 worker
- * and 4.0 version for streaming jobs which developers can override.
- * We will enable —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
- *
- * RFC: https://github.com/aws/aws-cdk-rfcs/blob/main/text/0497-glue-l2-construct.md
- */
-
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
@@ -25,15 +10,14 @@ import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSpark
  * Properties for creating a Scala Spark ETL job
  */
 export interface ScalaSparkStreamingJobProps extends JobProperties {
-
   /**
-     * Enables the Spark UI debugging and monitoring with the specified props.
-     *
-     * @default - Spark UI debugging and monitoring is disabled.
-     *
-     * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
-     * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-     */
+   * Enables the Spark UI debugging and monitoring with the specified props.
+   *
+   * @default - Spark UI debugging and monitoring is disabled.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
   readonly sparkUI?: SparkUIProps;
 
   /**
@@ -64,11 +48,18 @@ export interface ScalaSparkStreamingJobProps extends JobProperties {
 }
 
 /**
- * A Scala Spark Streaming Glue Job
+ * Scala Streaming Jobs class
+ *
+ * A Streaming job is similar to an ETL job, except that it performs ETL on data streams
+ * using the Apache Spark Structured Streaming framework.
+ * These jobs will default to use Python 3.9.
+ *
+ * Similar to ETL jobs, streaming job supports Scala and Python languages. Similar to ETL,
+ * it supports G1 and G2 worker type and 2.0, 3.0 and 4.0 version. We’ll default to G2 worker
+ * and 4.0 version for streaming jobs which developers can override.
+ * We will enable —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
  */
 export class ScalaSparkStreamingJob extends Job {
-
-  // Implement abstract Job attributes
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;
@@ -84,11 +75,7 @@ export class ScalaSparkStreamingJob extends Job {
 
   /**
    * ScalaSparkStreamingJob constructor
-   *
-   * @param scope
-   * @param id
-   * @param props
-  */
+   */
   constructor(scope: Construct, id: string, props: ScalaSparkStreamingJobProps) {
     super(scope, id, {
       physicalName: props.jobName,
@@ -161,9 +148,8 @@ export class ScalaSparkStreamingJob extends Job {
   /**
    * Set the executable arguments with best practices enabled by default
    *
-   * @param props
    * @returns An array of arguments for Glue to use on execution
-  */
+   */
   private executableArguments(props: ScalaSparkStreamingJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.SCALA;

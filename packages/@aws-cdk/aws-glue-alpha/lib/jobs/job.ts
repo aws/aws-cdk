@@ -131,7 +131,6 @@ export interface ContinuousLoggingProps {
  * event-driven flow using the job.
  */
 export abstract class JobBase extends cdk.Resource implements IJob {
-
   public abstract readonly jobArn: string;
   public abstract readonly jobName: string;
   public abstract readonly grantPrincipal: iam.IPrincipal;
@@ -264,7 +263,6 @@ export abstract class JobBase extends cdk.Resource implements IJob {
    *
    * @param id construct id.
    * @param jobState the job state.
-   * @private
    */
   private metricJobStateRule(id: string, jobState: JobState): events.Rule {
     return this.node.tryFindChild(id) as events.Rule ?? this.onStateChange(id, jobState);
@@ -272,8 +270,6 @@ export abstract class JobBase extends cdk.Resource implements IJob {
 
   /**
    * Returns the job arn
-   * @param scope
-   * @param jobName
    */
   protected buildJobArn(scope: constructs.Construct, jobName: string) : string {
     return cdk.Stack.of(scope).formatArn({
@@ -308,13 +304,12 @@ export interface JobImportAttributes {
  * JobProperties will be used to create new Glue Jobs using this L2 Construct.
  */
 export interface JobProperties {
-
   /**
-     * Script Code Location (required)
-     * Script to run when the Glue job executes. Can be uploaded
-     * from the local directory structure using fromAsset
-     * or referenced via S3 location using fromBucket
-     **/
+   * Script Code Location (required)
+   * Script to run when the Glue job executes. Can be uploaded
+   * from the local directory structure using fromAsset
+   * or referenced via S3 location using fromBucket
+   */
   readonly script: Code;
 
   /**
@@ -326,26 +321,29 @@ export interface JobProperties {
    * and be granted sufficient permissions.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/getting-started-access.html
-   **/
+   */
   readonly role: iam.IRole;
 
   /**
    * Name of the Glue job (optional)
    * Developer-specified name of the Glue job
+   *
    * @default - a name is automatically generated
-   **/
+   */
   readonly jobName?: string;
 
   /**
    * Description (optional)
    * Developer-specified description of the Glue job
+   *
    * @default - no value
-   **/
+   */
   readonly description?: string;
 
   /**
    * Number of Workers (optional)
    * Number of workers for Glue to use during job execution
+   *
    * @default 10
    */
   readonly numberOfWorkers?: number;
@@ -354,8 +352,9 @@ export interface JobProperties {
    * Worker Type (optional)
    * Type of Worker for Glue to use during job execution
    * Enum options: Standard, G_1X, G_2X, G_025X. G_4X, G_8X, Z_2X
-   * @default G_1X
-   **/
+   *
+   * @default WorkerType.G_1X
+   */
   readonly workerType?: WorkerType;
 
   /**
@@ -366,7 +365,7 @@ export interface JobProperties {
    * you can specify is controlled by a service limit.
    *
    * @default 1
-   **/
+   */
   readonly maxConcurrentRuns?: number;
 
   /**
@@ -377,7 +376,7 @@ export interface JobProperties {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    * for a list of reserved parameters
    * @default - no arguments
-   **/
+   */
   readonly defaultArguments?: { [key: string]: string };
 
   /**
@@ -386,44 +385,49 @@ export interface JobProperties {
    * Connections are used to connect to other AWS Service or resources within a VPC.
    *
    * @default [] - no connections are added to the job
-   **/
+   */
   readonly connections?: IConnection[];
 
   /**
    * Max Retries (optional)
    * Maximum number of retry attempts Glue performs if the job fails
+   *
    * @default 0
-   **/
+   */
   readonly maxRetries?: number;
 
   /**
    * Timeout (optional)
    * The maximum time that a job run can consume resources before it is
    * terminated and enters TIMEOUT status. Specified in minutes.
+   *
    * @default 2880 (2 days for non-streaming)
    *
-   **/
+   */
   readonly timeout?: cdk.Duration;
 
   /**
    * Security Configuration (optional)
    * Defines the encryption options for the Glue job
+   *
    * @default - no security configuration.
-   **/
+   */
   readonly securityConfiguration?: ISecurityConfiguration;
 
   /**
    * Tags (optional)
-   * A list of key:value pairs of tags to apply to this Glue job resourcex
+   * A list of key:value pairs of tags to apply to this Glue job resources
+   *
    * @default {} - no tags
-   **/
+   */
   readonly tags?: { [key: string]: string };
 
   /**
    * Glue Version
    * The version of Glue to use to execute this job
+   *
    * @default 3.0 for ETL
-   **/
+   */
   readonly glueVersion?: GlueVersion;
 
   /**
@@ -431,8 +435,8 @@ export interface JobProperties {
    *
    * @default - no profiling metrics emitted.
    *
-   * @see `--enable-metrics` at https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   **/
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
   readonly enableProfilingMetrics? :boolean;
 
   /**
@@ -444,7 +448,6 @@ export interface JobProperties {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    **/
   readonly continuousLogging?: ContinuousLoggingProps;
-
 }
 
 /**
@@ -452,7 +455,6 @@ export interface JobProperties {
  * @resource AWS::Glue::Job
  */
 export abstract class Job extends JobBase {
-
   /**
    * Identifies an existing Glue Job from a subset of attributes that can
    * be referenced from within another Stack or Construct.
@@ -500,7 +502,6 @@ export abstract class Job extends JobBase {
    * @returns String containing the args for the continuous logging command
    */
   public setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined) : any {
-
     // If the developer has explicitly disabled continuous logging return no args
     if (props && !props.enabled) {
       return {};
@@ -536,7 +537,6 @@ export abstract class Job extends JobBase {
     const s3Location = code.bind(this, this.role).s3Location;
     return `s3://${s3Location.bucketName}/${s3Location.objectKey}`;
   }
-
 }
 
 /**

@@ -1,11 +1,3 @@
-/**
- *  Triggers
- *
- * In AWS Glue, developers can use workflows to create and visualize complex extract,
- * transform, and load (ETL) activities involving multiple crawlers, jobs, and triggers.
- *
- */
-
 import * as cdk from 'aws-cdk-lib/core';
 import { JobState, CrawlerState, ConditionLogicalOperator, PredicateLogical } from '../constants';
 import { IJob } from '../jobs/job'; // Use IJob interface instead of concrete class

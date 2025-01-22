@@ -9,21 +9,9 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Code } from '../code';
 
 /**
- * Flex Jobs class
- *
- * Flex jobs supports Python and Scala language.
- * The flexible execution class is appropriate for non-urgent jobs such as
- * pre-production jobs, testing, and one-time data loads.
- * Flexible job runs are supported for jobs using AWS Glue version 3.0 or later and G.1X or
- * G.2X worker types but will default to the latest version of Glue (currently Glue 3.0.)
- *
- * Similar to ETL, we’ll enable these features: —enable-metrics, —enable-spark-ui,
- * —enable-continuous-cloudwatch-log
- *
+ * Properties for PySparkFlexEtlJob
  */
-
 export interface PySparkFlexEtlJobProps extends JobProperties {
-
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -46,7 +34,7 @@ export interface PySparkFlexEtlJobProps extends JobProperties {
    *
    * @default - no extra python files specified.
    *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraPythonFiles?: Code[];
 
@@ -55,18 +43,25 @@ export interface PySparkFlexEtlJobProps extends JobProperties {
    *
    * @default - no extra files specified.
    *
-   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraFiles?: Code[];
 
 }
 
 /**
- * A Python Spark ETL Glue Job
+ * Flex Jobs class
+ *
+ * Flex jobs supports Python and Scala language.
+ * The flexible execution class is appropriate for non-urgent jobs such as
+ * pre-production jobs, testing, and one-time data loads.
+ * Flexible job runs are supported for jobs using AWS Glue version 3.0 or later and G.1X or
+ * G.2X worker types but will default to the latest version of Glue (currently Glue 3.0.)
+ *
+ * Similar to ETL, we’ll enable these features: —enable-metrics, —enable-spark-ui,
+ * —enable-continuous-cloudwatch-log
  */
 export class PySparkFlexEtlJob extends Job {
-
-  // Implement abstract Job attributes
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;
@@ -82,10 +77,6 @@ export class PySparkFlexEtlJob extends Job {
 
   /**
    * PySparkFlexEtlJob constructor
-   *
-   * @param scope
-   * @param id
-   * @param props
    */
   constructor(scope: Construct, id: string, props: PySparkFlexEtlJobProps) {
     super(scope, id, {
@@ -154,7 +145,6 @@ export class PySparkFlexEtlJob extends Job {
   /**
    *Set the executable arguments with best practices enabled by default
    *
-   * @param props
    * @returns An array of arguments for Glue to use on execution
    */
   private executableArguments(props: PySparkFlexEtlJobProps) {
@@ -174,7 +164,6 @@ export class PySparkFlexEtlJob extends Job {
   /**
    * Set the arguments for sparkUI with best practices enabled by default
    *
-   * @param sparkUiProps, role
    * @returns An array of arguments for enabling sparkUI
    */
 

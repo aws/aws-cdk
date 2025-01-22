@@ -41,10 +41,10 @@ export enum TableEncryption {
 
 export interface S3TableProps extends TableBaseProps {
   /**
- * S3 bucket in which to store data.
- *
- * @default one is created for you
- */
+   * S3 bucket in which to store data.
+   *
+   * @default one is created for you
+   */
   readonly bucket?: s3.IBucket;
 
   /**
