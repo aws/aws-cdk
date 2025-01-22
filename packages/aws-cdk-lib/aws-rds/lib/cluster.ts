@@ -1146,7 +1146,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     const autoPauseSeconds = this.secondsUntilAutoPause;
     if (autoPauseSeconds < 300 || autoPauseSeconds > 86400) {
-      throw new Error(`secondsUntilAutoPause must be >= 300 & <= 86400, received ${autoPauseSeconds}!`);
+      throw new ValidationError(`secondsUntilAutoPause must be >= 300 & <= 86400, received ${autoPauseSeconds}!`, this);
     }
 
   }
