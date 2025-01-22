@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76ae201d6ac397b6a3ba171c80e8d2e82bb0be5818af316bc2d5816068334084.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dcac3df399e5ea2ad6e83532fc55e1a6e67edc5542e26ee9116810cfe3207a9d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,228 @@
         "ecs-enablement-integration.assets"
       ],
       "metadata": {
+        "/ecs-enablement-integration/TestVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcE77CE678"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet1SubnetA7DB1EDF"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet1RouteTable4CBFF871"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet1DefaultRoute6C0F0315"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet1EIP4884338C"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet1NATGatewayA323E3EC"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet2Subnet80A14523"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet2RouteTable75B88314"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet2RouteTableAssociationB386A819"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet2DefaultRoute054DAE0A"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet2EIP83F7944C"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPublicSubnet2NATGatewayA9858C31"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPrivateSubnet1SubnetCC65D771"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPrivateSubnet1RouteTable469B0105"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPrivateSubnet1DefaultRoute32E7B814"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPrivateSubnet2SubnetDE0C64A2"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPrivateSubnet2RouteTableCEF29F7C"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPrivateSubnet2RouteTableAssociation18250AB4"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcPrivateSubnet2DefaultRouteA7EB6930"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcIGW9DD53F70"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcVPCGWF1827B84"
+          }
+        ],
+        "/ecs-enablement-integration/TestVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestVpcRestrictDefaultSecurityGroupCustomResourceB02B826A"
+          }
+        ],
+        "/ecs-enablement-integration/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ecs-enablement-integration/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/ecs-enablement-integration/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/ecs-enablement-integration/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/ecs-enablement-integration/TestCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestClusterE0095054"
+          }
+        ],
+        "/ecs-enablement-integration/Namespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Namespace9B63B8C8"
+          }
+        ],
+        "/ecs-enablement-integration/CwAgentDaemonTaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwAgentDaemonTaskDefTaskRoleB630618E"
+          }
+        ],
+        "/ecs-enablement-integration/CwAgentDaemonTaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwAgentDaemonTaskDefD42721B8"
+          }
+        ],
+        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwAgentDaemonTaskDefExecutionRoleDB11FC2A"
+          }
+        ],
+        "/ecs-enablement-integration/CwAgentDaemonTaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwAgentDaemonTaskDefExecutionRoleDefaultPolicy765BB856"
+          }
+        ],
+        "/ecs-enablement-integration/CwAgentLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwAgentLogGroupBF702CD8"
+          }
+        ],
+        "/ecs-enablement-integration/CwAgentDaemonService": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentDaemon]"
+          }
+        ],
+        "/ecs-enablement-integration/CwAgentDaemonService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwAgentDaemonServiceA063D544"
+          }
+        ],
         "/ecs-enablement-integration/Ec2TaskDefinition/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -43,10 +265,7 @@
         "/ecs-enablement-integration/Ec2TaskDefinition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2TaskDefinitionB25030BE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "Ec2TaskDefinitionB25030BE"
           }
         ],
         "/ecs-enablement-integration/BootstrapVersion": [
