@@ -8,6 +8,9 @@ import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSpark
 import * as cdk from 'aws-cdk-lib/core';
 import { Code } from '../code';
 
+/**
+ * Properties for PySparkFlexEtlJob
+ */
 export interface PySparkFlexEtlJobProps extends JobProperties {
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
