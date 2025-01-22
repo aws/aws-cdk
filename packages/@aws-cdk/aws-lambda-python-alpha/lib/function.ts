@@ -74,7 +74,7 @@ export class PythonFunction extends Function {
         entry,
         runtime,
         skip: !Stack.of(scope).bundlingRequired,
-        // define architecture based on the target architecture of the function, possibly overriden in bundling options
+        // define architecture based on the target architecture of the function, possibly overridden in bundling options
         architecture: props.architecture,
         ...props.bundling,
       }),
