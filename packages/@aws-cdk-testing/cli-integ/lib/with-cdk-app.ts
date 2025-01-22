@@ -332,6 +332,10 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
    * @default undefined
    */
   readonly usePreviousParameters?: boolean;
+
+  readonly trust?: string[];
+
+  readonly untrust?: string[];
 }
 
 export interface CdkGarbageCollectionCommandOptions {
@@ -478,6 +482,13 @@ export class TestFixture extends ShellHelper {
     }
     if (options.bootstrapTemplate) {
       args.push('--template', options.bootstrapTemplate);
+    }
+
+    if (options.trust != null) {
+      args.push('--trust', options.trust.join(','));
+    }
+    if (options.untrust != null) {
+      args.push('--untrust', options.untrust.join(','));
     }
 
     return this.cdk(args, {
