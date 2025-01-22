@@ -282,7 +282,7 @@ const step5 = tasks.LambdaInvoke.jsonata(this, 'Step 5', {
 });
 ```
 
-For more detailes, see the [official document](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-variables.html)
+For more details, see the [official documentation](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-variables.html)
 
 ### State Output
 
