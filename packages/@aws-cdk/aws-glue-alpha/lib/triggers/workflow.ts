@@ -1,39 +1,3 @@
-/**
- * This module defines a construct for creating and managing AWS Glue Workflows and Triggers.
- *
- * AWS Glue Workflows are orchestration services that allow you to create, manage, and monitor complex extract, transform, and load (ETL) activities involving multiple crawlers, jobs, and triggers. Workflows are designed to allow you to manage interdependent jobs and crawlers as a single unit, making it easier to orchestrate and monitor complex ETL pipelines.
- *
- * Triggers are used to initiate an AWS Glue Workflow. You can configure different types of triggers, such as on-demand, scheduled, event-based, or conditional triggers, to start your Workflow based on specific conditions or events.
- *
- * @see https://docs.aws.amazon.com/glue/latest/dg/workflows_overview.html
- * @see https://docs.aws.amazon.com/glue/latest/dg/about-triggers.html
- *
- * ## Usage Example
- *
- * ```typescript
- * import * as cdk from 'aws-cdk-lib';
- * import * as glue from 'aws-glue-cdk-lib';
- *
- * const app = new cdk.App();
- * const stack = new cdk.Stack(app, 'TestStack');
- *
- * // Create a Glue Job
- * const job = new glue.Job(stack, 'TestJob', {
- *   // Job properties
- * });
- *
- * // Create a Glue Workflow
- * const workflow = new glue.Workflow(stack, 'TestWorkflow', {
- *   // Workflow properties
- * });
- *
- * // Add an on-demand trigger to the Workflow
- * workflow.addOnDemandTrigger('OnDemandTrigger', {
- *   actions: [{ job: job }],
- * });
- * ```
- */
-
 import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
@@ -160,13 +124,13 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   public abstract readonly workflowArn: string;
 
   /**
- * Add an on-demand trigger to the workflow.
- *
- * @param id The id of the trigger.
- * @param options Additional options for the trigger.
- * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
- * @returns The created CfnTrigger resource.
- */
+   * Add an on-demand trigger to the workflow.
+   *
+   * @param id The id of the trigger.
+   * @param options Additional options for the trigger.
+   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
+   * @returns The created CfnTrigger resource.
+   */
   public addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): CfnTrigger {
     const trigger = new CfnTrigger(this, id, {
       ...options,
@@ -180,13 +144,13 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   }
 
   /**
- * Add a daily-scheduled trigger to the workflow.
- *
- * @param id The id of the trigger.
- * @param options Additional options for the trigger.
- * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
- * @returns The created CfnTrigger resource.
- */
+   * Add a daily-scheduled trigger to the workflow.
+   *
+   * @param id The id of the trigger.
+   * @param options Additional options for the trigger.
+   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
+   * @returns The created CfnTrigger resource.
+   */
   public addDailyScheduledTrigger(id: string, options: DailyScheduleTriggerOptions): CfnTrigger {
     const dailySchedule = TriggerSchedule.cron({
       minute: '0',
@@ -206,13 +170,13 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   }
 
   /**
- * Add a weekly-scheduled trigger to the workflow.
- *
- * @param id The id of the trigger.
- * @param options Additional options for the trigger.
- * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
- * @returns The created CfnTrigger resource.
- */
+   * Add a weekly-scheduled trigger to the workflow.
+   *
+   * @param id The id of the trigger.
+   * @param options Additional options for the trigger.
+   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
+   * @returns The created CfnTrigger resource.
+   */
   public addWeeklyScheduledTrigger(id: string, options: WeeklyScheduleTriggerOptions): CfnTrigger {
     const weeklySchedule = TriggerSchedule.cron({
       minute: '0',
@@ -233,13 +197,13 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   }
 
   /**
- * Add a custom-scheduled trigger to the workflow.
- *
- * @param id The id of the trigger.
- * @param options Additional options for the trigger.
- * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
- * @returns The created CfnTrigger resource.
- */
+   * Add a custom-scheduled trigger to the workflow.
+   *
+   * @param id The id of the trigger.
+   * @param options Additional options for the trigger.
+   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
+   * @returns The created CfnTrigger resource.
+   */
   public addCustomScheduledTrigger(id: string, options: CustomScheduledTriggerOptions): CfnTrigger {
     const trigger = new CfnTrigger(this, id, {
       ...options,
@@ -254,13 +218,13 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   }
 
   /**
- * Add an Event Bridge based trigger to the workflow.
- *
- * @param id The id of the trigger.
- * @param options Additional options for the trigger.
- * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
- * @returns The created CfnTrigger resource.
- */
+   * Add an Event Bridge based trigger to the workflow.
+   *
+   * @param id The id of the trigger.
+   * @param options Additional options for the trigger.
+   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
+   * @returns The created CfnTrigger resource.
+   */
   public addNotifyEventTrigger(id: string, options: NotifyEventTriggerOptions): CfnTrigger {
     const trigger = new CfnTrigger(this, id, {
       ...options,
@@ -275,14 +239,14 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   }
 
   /**
- * Add a Condition (Predicate) based trigger to the workflow.
- *
- * @param id The id of the trigger.
- * @param options Additional options for the trigger.
- * @throws If both job and crawler are provided, or if neither job nor crawler is provided for any condition.
- * @throws If a job is provided without a job state, or if a crawler is provided without a crawler state for any condition.
- * @returns The created CfnTrigger resource.
- */
+   * Add a Condition (Predicate) based trigger to the workflow.
+   *
+   * @param id The id of the trigger.
+   * @param options Additional options for the trigger.
+   * @throws If both job and crawler are provided, or if neither job nor crawler is provided for any condition.
+   * @throws If a job is provided without a job state, or if a crawler is provided without a crawler state for any condition.
+   * @returns The created CfnTrigger resource.
+   */
   public addconditionalTrigger(id: string, options: ConditionalTriggerOptions): CfnTrigger {
     const trigger = new CfnTrigger(this, id, {
       ...options,
@@ -349,7 +313,6 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   }
 
   private renderEventBatchingCondition(props: NotifyEventTriggerOptions): CfnTrigger.EventBatchingConditionProperty {
-
     const defaultBatchSize = 1;
     const defaultBatchWindow = cdk.Duration.seconds(900).toSeconds();
 
@@ -376,9 +339,34 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 }
 
 /**
- * A class used for defining a Glue Workflow
+ * This module defines a construct for creating and managing AWS Glue Workflows and Triggers.
  *
- * @resource AWS::Glue::Workflow
+ * AWS Glue Workflows are orchestration services that allow you to create, manage, and monitor complex extract, transform, and load (ETL) activities involving multiple crawlers, jobs, and triggers. Workflows are designed to allow you to manage interdependent jobs and crawlers as a single unit, making it easier to orchestrate and monitor complex ETL pipelines.
+ *
+ * Triggers are used to initiate an AWS Glue Workflow. You can configure different types of triggers, such as on-demand, scheduled, event-based, or conditional triggers, to start your Workflow based on specific conditions or events.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/workflows_overview.html
+ * @see https://docs.aws.amazon.com/glue/latest/dg/about-triggers.html
+ *
+ * ## Usage Example
+ *
+ * ```ts
+ * const app = new App();
+ * const stack = new Stack(app, 'TestStack');
+ *
+ * // Create a Glue Job
+ * declare const role: iam.IRole;
+ * declare const script: glue.Code;
+ * const job = new glue.PySparkStreamingJob(stack, 'ImportedJob', { role, script });
+ *
+ * // Create a Glue Workflow
+ * const workflow = new glue.Workflow(stack, 'TestWorkflow');
+ *
+ * // Add an on-demand trigger to the Workflow
+ * workflow.addOnDemandTrigger('OnDemandTrigger', {
+ *   actions: [{ job: job }],
+ * });
+ * ```
  */
 export class Workflow extends WorkflowBase {
   /**
