@@ -292,6 +292,9 @@ export class Topic extends TopicBase {
     if (props.messageRetentionPeriodInDays && !props.fifo) {
       throw new Error('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.');
     }
+    if (props.fifoThroughputScope && !props.fifo) {
+      throw new Error('`fifoThroughputScope` can only be set for FIFO SNS topics.');
+    }
     if (
       props.messageRetentionPeriodInDays !== undefined
       && !Token.isUnresolved(props.messageRetentionPeriodInDays)

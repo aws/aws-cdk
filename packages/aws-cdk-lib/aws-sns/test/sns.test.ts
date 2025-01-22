@@ -873,5 +873,16 @@ describe('Topic', () => {
         FifoThroughputScope: fifoThroughputScope,
       });
     });
+
+    test('throw error when specify fifoThroughputScope to standard topic', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      expect(
+        () => new sns.Topic(stack, 'MyTopic', {
+          fifoThroughputScope: sns.FifoThroughputScope.MESSAGE_GROUP,
+        }),
+      ).toThrow('`fifoThroughputScope` can only be set for FIFO SNS topics.');
+    });
   });
 });
