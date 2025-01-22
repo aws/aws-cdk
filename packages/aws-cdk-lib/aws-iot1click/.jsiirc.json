@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.iot1click"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.IoT1Click"
+    },
+    "python": {
+      "module": "aws_cdk.aws_iot1click"
+    }
+  }
+}
