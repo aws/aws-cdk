@@ -43,14 +43,14 @@ abstract class TransitGatewayRouteTableBase extends Resource implements ITransit
 
   addAssociation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): TransitGatewayRouteTableAssociation {
     return new TransitGatewayRouteTableAssociation(this, id, {
-      transitGatewayAttachment: transitGatewayAttachment,
+      transitGatewayVpcAttachment: transitGatewayAttachment,
       transitGatewayRouteTable: this,
     });
   }
 
   enablePropagation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): TransitGatewayRouteTablePropagation {
     return new TransitGatewayRouteTablePropagation(this, id, {
-      transitGatewayAttachment: transitGatewayAttachment,
+      transitGatewayVpcAttachment: transitGatewayAttachment,
       transitGatewayRouteTable: this,
     });
   }

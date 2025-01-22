@@ -15,7 +15,7 @@ export interface TransitGatewayRouteTableAssociationProps {
   /**
      * The ID of the transit gateway route table association.
      */
-  readonly transitGatewayAttachment: ITransitGatewayAttachment;
+  readonly transitGatewayVpcAttachment: ITransitGatewayAttachment;
 
   /**
      * The ID of the transit gateway route table association.
@@ -39,8 +39,8 @@ export class TransitGatewayRouteTableAssociation extends TransitGatewayRouteTabl
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTableAssociationProps) {
     super(scope, id);
 
-    const resource = new CfnTransitGatewayRouteTableAssociation(this, 'TransitGatewayRouteTableAssociation', {
-      transitGatewayAttachmentId: props.transitGatewayAttachment.transitGatewayAttachmentId,
+    const resource = new CfnTransitGatewayRouteTableAssociation(this, id, {
+      transitGatewayAttachmentId: props.transitGatewayVpcAttachment.transitGatewayVpcAttachmentId,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
     });
 

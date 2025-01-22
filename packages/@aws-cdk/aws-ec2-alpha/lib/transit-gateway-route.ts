@@ -7,6 +7,9 @@ import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 export interface ITransitGatewayRoute extends IResource {
   /**
      * The destination CIDR block for this route.
+     *
+     * Destination Cidr cannot overlap for static routes but is allowed for propagated routes.
+     * When overlapping occurs, static routes take precedence over propagated routes.
      */
   readonly destinationCidrBlock: string;
 
@@ -61,7 +64,7 @@ export class TransitGatewayActiveRoute extends TransitGatewayRouteBase {
       blackhole: false,
       destinationCidrBlock: props.destinationCidrBlock,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
-      transitGatewayAttachmentId: props.transitGatewayAttachment?.transitGatewayAttachmentId,
+      transitGatewayAttachmentId: props.transitGatewayAttachment?.transitGatewayVpcAttachmentId,
     });
 
     this.destinationCidrBlock = resource.destinationCidrBlock;
@@ -76,7 +79,7 @@ export class TransitGatewayBlackholeRoute extends TransitGatewayRouteBase {
   constructor(scope: Construct, id: string, props: TransitGatewayBlackholeRouteProps) {
     super(scope, id);
 
-    const resource = new CfnTransitGatewayRoute(this, 'TransitGatewayRoute', {
+    const resource = new CfnTransitGatewayRoute(this, id, {
       blackhole: true,
       destinationCidrBlock: props.destinationCidrBlock,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,

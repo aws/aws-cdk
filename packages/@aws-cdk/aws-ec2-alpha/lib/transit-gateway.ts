@@ -2,8 +2,10 @@ import { CfnTransitGateway, ISubnet, IVpc, RouterType } from 'aws-cdk-lib/aws-ec
 import { Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { ITransitGatewayRouteTable, TransitGatewayRouteTable } from './transit-gateway-route-table';
-import { TransitGatewayVpcAttachment, ITransitGatewayAttachmentOptions } from './transit-gateway-attachment';
+import { TransitGatewayVpcAttachment, ITransitGatewayVpcAttachmentOptions } from './transit-gateway-vpc-attachment';
 import { IRouteTarget } from './route';
+import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
+import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 
 export enum TransitGatewayFeatureStatus {
   ENABLE = 'enable',
@@ -46,13 +48,6 @@ export interface TransitGatewayProps {
    * @default - enable
    */
   readonly defaultRouteTablePropagation?: boolean;
-
-  /**
-   * A route table to be used in place of the default route table.
-   *
-   * @default - if not specified, a default route table will be created by the CDK instead of by EC2.
-   */
-  readonly customDefaultRouteTable?: ITransitGatewayRouteTable;
 
   /**
    * The description of the transit gateway.
@@ -111,14 +106,40 @@ abstract class TransitGatewayBase extends Resource implements ITransitGateway, I
   attachVpc(
     id: string, vpc: IVpc,
     subnets: ISubnet[],
-    transitGatewayAttachmentOptions?: ITransitGatewayAttachmentOptions,
+    transitGatewayAttachmentOptions?: ITransitGatewayVpcAttachmentOptions,
+    associationRouteTable?: ITransitGatewayRouteTable,
+    propagationRouteTables?: ITransitGatewayRouteTable[],
   ): TransitGatewayVpcAttachment {
-    return new TransitGatewayVpcAttachment(this, id, {
+    const attachment = new TransitGatewayVpcAttachment(this, id, {
       transitGateway: this,
       vpc: vpc,
       subnets: subnets,
-      transitGatewayAttachmentOptions: transitGatewayAttachmentOptions ?? undefined,
+      transitGatewayVpcAttachmentOptions: transitGatewayAttachmentOptions ?? undefined,
     });
+
+    // If `associationRouteTable` is provided, skip creating the Association only if `associationRouteTable` is the default route table and
+    // automatic association (`defaultRouteTableAssociation`) is enabled, as the TransitGatewayRouteTableAttachment's constructor will handle it in that case.
+    if (associationRouteTable && !(this.defaultRouteTable === associationRouteTable && this.defaultRouteTableAssociation)) {
+      new TransitGatewayRouteTableAssociation(this, `${id}-Assoc-${this.node.addr}`, {
+        transitGatewayVpcAttachment: attachment,
+        transitGatewayRouteTable: associationRouteTable,
+      });
+    }
+
+    if (propagationRouteTables) {
+      propagationRouteTables.forEach((propagationRouteTable, index) => {
+        // If `propagationRouteTable` is provided, skip creating the Propagation only if `propagationRouteTable` is the default route table and
+        // automatic propagation (`defaultRouteTablePropagation`) is enabled, as the TransitGatewayRouteTableAttachment's constructor will handle it in that case.
+        if (!(this.defaultRouteTable === propagationRouteTable && this.defaultRouteTablePropagation)) {
+          new TransitGatewayRouteTablePropagation(this, `${id}-Propagation-${index}`, {
+            transitGatewayVpcAttachment: attachment,
+            transitGatewayRouteTable: propagationRouteTable,
+          });
+        }
+      });
+    }
+
+    return attachment;
   }
 }
 
@@ -159,7 +180,7 @@ export class TransitGateway extends TransitGatewayBase {
       resourceName: this.physicalName,
     });
 
-    this.defaultRouteTable = (props?.customDefaultRouteTable as TransitGatewayRouteTable) ?? new TransitGatewayRouteTable(this, 'DefaultRouteTable', {
+    this.defaultRouteTable = new TransitGatewayRouteTable(this, 'DefaultRouteTable', {
       transitGateway: this,
     });
 
