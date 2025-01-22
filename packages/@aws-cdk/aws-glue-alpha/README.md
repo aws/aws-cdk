@@ -356,11 +356,11 @@ declare const stack: cdk.Stack;
 declare const role: iam.IRole;
 declare const script: glue.Code;
 new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
-    role,
-    script,
-    jobName: 'PySparkETLJob',
-    jobRunQueuingEnabled: true
-  });
+  role,
+  script,
+  jobName: 'PySparkETLJob',
+  jobRunQueuingEnabled: true
+});
 ```
 
 ### Uploading scripts from the CDK app repository to S3
@@ -666,20 +666,20 @@ If you have a table with a large number of partitions that grows over time, cons
 ```ts
 declare const myDatabase: glue.Database;
 new glue.S3Table(this, 'MyTable', {
-    database: myDatabase,
-    columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-    }],
-    partitionKeys: [{
-        name: 'year',
-        type: glue.Schema.SMALL_INT,
-    }, {
-        name: 'month',
-        type: glue.Schema.SMALL_INT,
-    }],
-    dataFormat: glue.DataFormat.JSON,
-    enablePartitionFiltering: true,
+  database: myDatabase,
+  columns: [{
+      name: 'col1',
+      type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+      name: 'year',
+      type: glue.Schema.SMALL_INT,
+  }, {
+      name: 'month',
+      type: glue.Schema.SMALL_INT,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  enablePartitionFiltering: true,
 });
 ```
 
