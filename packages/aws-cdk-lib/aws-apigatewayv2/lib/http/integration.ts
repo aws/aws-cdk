@@ -4,7 +4,7 @@ import { HttpMethod, IHttpRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Aws, Duration, Resource } from '../../../core';
-import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import { ValidationError } from '../../../core/lib/errors';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
 
