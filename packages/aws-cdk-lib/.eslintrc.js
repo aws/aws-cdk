@@ -19,6 +19,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-lambda',
   'aws-rds',
   'aws-s3',
+  'aws-sns',
   'aws-sqs',
 ];
 baseConfig.overrides.push({
