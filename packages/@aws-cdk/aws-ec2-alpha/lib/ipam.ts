@@ -311,7 +311,6 @@ export interface IIpamScopeBase {
  * @internal
  */
 class IpamPool extends Resource implements IIpamPool {
-
   /**
    * Pool ID to be passed to the VPC construct
    * @attribute IpamPoolId
@@ -388,7 +387,6 @@ class IpamPool extends Resource implements IIpamPool {
  * @resource AWS::EC2::IPAMScope
  */
 class IpamScope extends Resource implements IIpamScopeBase {
-
   /**
    * Stores the reference to newly created Resource
    */
@@ -434,7 +432,6 @@ class IpamScope extends Resource implements IIpamScopeBase {
   addPool(id: string, options: PoolOptions): IIpamPool {
     return createIpamPool(this.scope, id, this.props, options, this.scopeId);
   }
-
 }
 
 /**

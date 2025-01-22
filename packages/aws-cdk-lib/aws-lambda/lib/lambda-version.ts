@@ -113,7 +113,6 @@ export interface VersionAttributes {
  * creating the `Version.
  */
 export class Version extends QualifiedFunctionBase implements IVersion {
-
   /**
    * Construct a Version object from a Version ARN.
    *
