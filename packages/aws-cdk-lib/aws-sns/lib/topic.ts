@@ -102,9 +102,9 @@ export interface TopicProps {
   /**
    * Specifies the throughput quota and deduplication behavior to apply for the FIFO topic.
    *
-   * You can only set this propery when `fifo` is `true`.
+   * You can only set this property when `fifo` is `true`.
    *
-   * @default - None. SNS default setting is FifoThroughputScope.TOPIC
+   * @default undefined - SNS default setting is FifoThroughputScope.TOPIC
    */
   readonly fifoThroughputScope?: FifoThroughputScope;
 }

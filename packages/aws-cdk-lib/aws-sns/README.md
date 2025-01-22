@@ -354,7 +354,7 @@ To improve message throughput using high throughput FIFO topics, increasing the 
 
 For more information, see [High throughput FIFO topics in Amazon SNS](https://docs.aws.amazon.com/sns/latest/dg/fifo-high-throughput.html).
 
-You can configure high-throughput mode for your FIFO topics by setting `fifoThroughputScope` property.
+You can configure high-throughput mode for your FIFO topics by setting the `fifoThroughputScope` property:
 
 ```ts
 const topic = new sns.Topic(this, 'MyTopic', {

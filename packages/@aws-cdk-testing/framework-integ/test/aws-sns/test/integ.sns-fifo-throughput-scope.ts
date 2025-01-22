@@ -1,4 +1,4 @@
-import { App, Stack, StackProps} from 'aws-cdk-lib';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { FifoThroughputScope, Topic } from 'aws-cdk-lib/aws-sns';
 
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
