@@ -8,22 +8,9 @@ import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSpark
 import { Code } from '../code';
 
 /**
- *  PySpark ETL Jobs class
- *  ETL jobs support pySpark and Scala languages, for which there are separate
- *  but similar constructors. ETL jobs default to the G2 worker type, but you
- *  can override this default with other supported worker type values
- *  (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
- *  override to 3.0. The following ETL features are enabled by default:
- *  —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
- *  You can find more details about version, worker type and other features
- *  in Glue's public documentation.
- */
-
-/**
  * Properties for creating a Python Spark ETL job
  */
 export interface PySparkEtlJobProps extends JobProperties {
-
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -37,6 +24,7 @@ export interface PySparkEtlJobProps extends JobProperties {
   /**
    * Extra Python Files S3 URL (optional)
    * S3 URL where additional python dependencies are located
+   *
    * @default - no extra files
    */
   readonly extraPythonFiles?: Code[];
@@ -46,7 +34,7 @@ export interface PySparkEtlJobProps extends JobProperties {
    *
    * @default - no extra files specified.
    *
-   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraFiles?: Code[];
 
@@ -58,17 +46,24 @@ export interface PySparkEtlJobProps extends JobProperties {
    * the job run field will be used. This property must be set to false for flex jobs.
    * If this property is enabled, maxRetries must be set to zero.
    *
-   * @default - no job run queuing
+   * @default false
    */
   readonly jobRunQueuingEnabled?: boolean;
 }
 
 /**
- * A Python Spark ETL Glue Job
+ * PySpark ETL Jobs class
+ *
+ * ETL jobs support pySpark and Scala languages, for which there are separate
+ * but similar constructors. ETL jobs default to the G2 worker type, but you
+ * can override this default with other supported worker type values
+ * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
+ * override to 3.0. The following ETL features are enabled by default:
+ * —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ * You can find more details about version, worker type and other features
+ * in Glue's public documentation.
  */
 export class PySparkEtlJob extends Job {
-
-  // Implement abstract Job attributes
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;
@@ -84,16 +79,12 @@ export class PySparkEtlJob extends Job {
 
   /**
    * PySparkEtlJob constructor
-   *
-   * @param scope
-   * @param id
-   * @param props
    */
   constructor(scope: Construct, id: string, props: PySparkEtlJobProps) {
-
     super(scope, id, {
       physicalName: props.jobName,
     });
+
     // Set up role and permissions for principal
     this.role = props.role, {
       assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
@@ -153,7 +144,6 @@ export class PySparkEtlJob extends Job {
   /**
    * Set the executable arguments with best practices enabled by default
    *
-   * @param props
    * @returns An array of arguments for Glue to use on execution
    */
   private executableArguments(props: PySparkEtlJobProps) {
@@ -171,7 +161,6 @@ export class PySparkEtlJob extends Job {
   }
 
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-
     validateSparkUiPrefix(sparkUiProps.prefix);
     const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
