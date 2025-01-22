@@ -79,16 +79,16 @@ export interface CallApiGatewayEndpointBaseOptions {
 }
 
 /**
- * Base CallApiGatewayEdnpoint Task Props
+ * Base CallApiGatewayEndpoint Task Props
  */
-export interface CallApiGatewayEndpointJsonPathBaseProps extends sfn.TaskStateJsonPathBaseProps, CallApiGatewayEndpointBaseOptions {}
+export interface CallApiGatewayEndpointJsonPathBaseProps extends sfn.TaskStateJsonPathBaseProps, CallApiGatewayEndpointBaseOptions { }
 
 /**
- * Base CallApiGatewayEdnpoint Task Props
+ * Base CallApiGatewayEndpoint Task Props
  */
-export interface CallApiGatewayEndpointJsonataBaseProps extends sfn.TaskStateJsonataBaseProps, CallApiGatewayEndpointBaseOptions {}
+export interface CallApiGatewayEndpointJsonataBaseProps extends sfn.TaskStateJsonataBaseProps, CallApiGatewayEndpointBaseOptions { }
 
 /**
- * Base CallApiGatewayEdnpoint Task Props
+ * Base CallApiGatewayEndpoint Task Props
  */
-export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps, CallApiGatewayEndpointBaseOptions {}
+export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps, CallApiGatewayEndpointBaseOptions { }
