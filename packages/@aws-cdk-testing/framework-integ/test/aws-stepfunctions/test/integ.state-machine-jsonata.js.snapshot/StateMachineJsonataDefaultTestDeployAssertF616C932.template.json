@@ -30,7 +30,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1735373678007"
+    "salt": "1737534967674"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -133,7 +133,7 @@
     },
     "service": "@aws-sdk/client-sfn",
     "api": "DescribeExecution",
-    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\",\"output\":\"{\\\"result\\\":2}\"}}",
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\",\"output\":\"{\\\"count\\\":6}\"}}",
     "stateMachineArn": {
      "Ref": "AwsApiCallawssdkclientsfnDescribeExecutionac88b279f453a1dced8aef702c638a0fWaitFor61F2417A"
     },
@@ -155,7 +155,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1735373678008"
+    "salt": "1737534967675"
    },
    "DependsOn": [
     "AwsApiCallawssdkclientsfnStartExecutiond599fddec07a36a53e2a32316433d2e1"

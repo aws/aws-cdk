@@ -5,15 +5,46 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-state-machine-jsonata-integ');
 
+const jsonPathPass = sfn.Pass.jsonPath(stack, 'JSONPathPass', {
+  parameters: {
+    count: sfn.JsonPath.mathAdd(
+      sfn.JsonPath.numberAt('$.init'),
+      1,
+    ),
+  },
+});
+const increment = {
+  outputs: {
+    count: '{% $states.input.count + 1 %}',
+  },
+};
+const jsonataPass = sfn.Pass.jsonata(stack, 'JSONataPass', {
+  ...increment,
+});
+const choice = sfn.Choice.jsonata(stack, 'Choice', {
+  ...increment,
+});
+const wait = sfn.Wait.jsonata(stack, 'Wait', {
+  time: sfn.WaitTime.seconds('{% $states.input.count %}'),
+  ...increment,
+});
+const succeed = sfn.Succeed.jsonata(stack, 'Succeed', {
+  ...increment,
+});
+
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(
-    sfn.Pass.jsonPath(stack, 'JsonPathPass').next(
-      sfn.Pass.jsonata(stack, 'JsonataPass', {
-        outputs: {
-          result: '{% $states.input.init + 1 %}',
-        },
-      }),
-    ),
+    // By default, JSONata and JSONPath must work even when mixed in a single state machine.
+    jsonPathPass // 1 -> 2
+      .next(jsonataPass) // 2 -> 3
+      .next(choice
+        .when(sfn.Condition.jsonata('{% $states.input.count % 2 = 1 %}'),
+          wait // 3 -> 4
+            .next(succeed),
+          increment, // 4 -> 5
+        )
+        .otherwise(succeed), // 5 -> 6
+      ),
   ),
 });
 
@@ -26,7 +57,7 @@ const result = executionSync(stateMachine, {
 result.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
   output: JSON.stringify({
-    result: 2,
+    count: 6,
   }),
 })).waitForAssertions({
   interval: cdk.Duration.seconds(10),

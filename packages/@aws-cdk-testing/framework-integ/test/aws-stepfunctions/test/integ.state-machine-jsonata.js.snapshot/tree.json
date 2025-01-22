@@ -8,19 +8,43 @@
         "id": "aws-stepfunctions-state-machine-jsonata-integ",
         "path": "aws-stepfunctions-state-machine-jsonata-integ",
         "children": {
-          "JsonPathPass": {
-            "id": "JsonPathPass",
-            "path": "aws-stepfunctions-state-machine-jsonata-integ/JsonPathPass",
+          "JSONPathPass": {
+            "id": "JSONPathPass",
+            "path": "aws-stepfunctions-state-machine-jsonata-integ/JSONPathPass",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
               "version": "0.0.0"
             }
           },
-          "JsonataPass": {
-            "id": "JsonataPass",
-            "path": "aws-stepfunctions-state-machine-jsonata-integ/JsonataPass",
+          "JSONataPass": {
+            "id": "JSONataPass",
+            "path": "aws-stepfunctions-state-machine-jsonata-integ/JSONataPass",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "Choice": {
+            "id": "Choice",
+            "path": "aws-stepfunctions-state-machine-jsonata-integ/Choice",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Choice",
+              "version": "0.0.0"
+            }
+          },
+          "Wait": {
+            "id": "Wait",
+            "path": "aws-stepfunctions-state-machine-jsonata-integ/Wait",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Wait",
+              "version": "0.0.0"
+            }
+          },
+          "Succeed": {
+            "id": "Succeed",
+            "path": "aws-stepfunctions-state-machine-jsonata-integ/Succeed",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Succeed",
               "version": "0.0.0"
             }
           },
@@ -77,7 +101,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "definitionString": "{\"StartAt\":\"JsonPathPass\",\"States\":{\"JsonPathPass\":{\"Type\":\"Pass\",\"Next\":\"JsonataPass\"},\"JsonataPass\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"result\":\"{% $states.input.init + 1 %}\"},\"End\":true}}}",
+                    "definitionString": "{\"StartAt\":\"JSONPathPass\",\"States\":{\"JSONPathPass\":{\"Type\":\"Pass\",\"Parameters\":{\"count.$\":\"States.MathAdd($.init, 1)\"},\"Next\":\"JSONataPass\"},\"JSONataPass\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"},\"Next\":\"Choice\"},\"Choice\":{\"Type\":\"Choice\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"},\"Choices\":[{\"Condition\":\"{% $states.input.count % 2 = 1 %}\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"},\"Next\":\"Wait\"}],\"Default\":\"Succeed\"},\"Succeed\":{\"Type\":\"Succeed\",\"QueryLanguage\":\"JSONata\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"}},\"Wait\":{\"Type\":\"Wait\",\"QueryLanguage\":\"JSONata\",\"Seconds\":\"{% $states.input.count %}\",\"Output\":{\"count\":\"{% $states.input.count + 1 %}\"},\"Next\":\"Succeed\"}}}",
                     "roleArn": {
                       "Fn::GetAtt": [
                         "StateMachineRoleB840431D",
