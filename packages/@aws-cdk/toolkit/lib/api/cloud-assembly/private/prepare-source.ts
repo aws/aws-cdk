@@ -4,16 +4,23 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { lte } from 'semver';
-import type { AppSynthOptions } from './source-builder';
 import { prepareDefaultEnvironment as oldPrepare, prepareContext, spaceAvailableForContext, Settings, loadTree, some, splitBySize, versionNumber } from '../../../api/aws-cdk';
 import { ToolkitServices } from '../../../toolkit/private';
 import { ToolkitError } from '../../errors';
 import { ActionAwareIoHost, asLogger, error } from '../../io/private';
+import type { AppSynthOptions } from '../source-builder';
 
 export { guessExecutable } from '../../../api/aws-cdk';
 
 type Env = { [key: string]: string };
 type Context = { [key: string]: any };
+
+/**
+ * Turn the given optional output directory into a fixed output directory
+ */
+export function determineOutputDirectory(outdir?: string) {
+  return outdir ?? fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk.out'));
+}
 
 /**
  * If we don't have region/account defined in context, we fall back to the default SDK behavior
@@ -162,6 +169,7 @@ export async function assemblyFromDirectory(assemblyDir: string, ioHost: ActionA
     throw err;
   }
 }
+
 function synthOptsDefaults(synthOpts: AppSynthOptions = {}): Settings {
   return new Settings({
     debug: false,
@@ -172,4 +180,3 @@ function synthOptsDefaults(synthOpts: AppSynthOptions = {}): Settings {
     ...synthOpts,
   }, true);
 }
-

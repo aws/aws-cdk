@@ -74,7 +74,7 @@ new sfn.StateMachine(this, 'MixedStateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
-// This throw an error. If JSONata is specified at the top level, JSONPath cannot be mixed.
+// This throws an error. If JSONata is specified at the top level, JSONPath cannot be used in the state machine definition.
 new sfn.StateMachine(this, 'JSONataOnlyStateMachine', {
   queryLanguage: sfn.QueryLanguage.JSONATA,
   definitionBody: sfn.DefinitionBody.fromChainable(definition),
@@ -85,11 +85,11 @@ The AWS CDK defines state constructs, and there are 3 ways to initialize them.
 
 | Method | Query Language | Description |
 | ------ | ------- | ------- |
-| `State.jsonata()` | `JSONata` | Since a type specific to JSONata is set for props, it is possible to focus only on the properties required for JSONata. |
-| `State.jsonPath()` | `JSONPath` | Since a type specific to JSONPath is set for props, it is possible to focus only on the properties required for JSONPath. |
-| `new State()` | `JSONata` or `JSONPath` | This is a legacy pattern. Props can be used for both JSONata and JSONPath, but since both types information is included and there are no optimized types for each query language, consider using methods prepared for each query language. |
+| `State.jsonata()` | `JSONata` | Use this method to specify a state definition using JSONata only fields.  |
+| `State.jsonPath()` | `JSONPath` | Use this method to specify a state definition using JSONPath only fields. |
+| `new State()` | `JSONata` or `JSONPath` | This is a legacy pattern. Since fields for both JSONata and JSONPath can be used, it is recommended to use `State.jsonata()` or `State.jsonPath()` for better type safety and clarity. |
 
-Code examples for initializing Pass State with each pattern are shown below.
+Code examples for initializing a `Pass` State with each pattern are shown below.
 
 ```ts
 // JSONata Pattern
@@ -282,7 +282,7 @@ const step5 = tasks.LambdaInvoke.jsonata(this, 'Step 5', {
 });
 ```
 
-For more detailes, see the [official document](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-variables.html)
+For more details, see the [official documentation](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-variables.html)
 
 ### State Output
 
@@ -658,7 +658,7 @@ in a `Parallel` state if you want to catch and recover from this.
 
 #### JSONata
 
-When you're using JSONata, the only function you'll use in condtion is JSONata. Write the condition with a JSONata expression. 
+When you're using JSONata, use the `jsonata` function to specify the condition using a JSONata expression: 
 
 ```ts
 sfn.Condition.jsonata('{% 1+1 = 2 %}'); // true
