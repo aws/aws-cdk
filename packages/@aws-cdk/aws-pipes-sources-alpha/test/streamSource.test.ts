@@ -199,7 +199,7 @@ describe('stream source validations', () => {
     }).toThrow('Maximum retry attempts must be between -1 and 10000, received 10001');
   });
 
-  it('validateMaxiumRetryAttemps works with a token', () => {
+  it('validateMaximumRetryAttempts works with a token', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
