@@ -21,6 +21,10 @@ const enableNoThrowDefaultErrorIn = [
   'aws-s3',
   'aws-sns',
   'aws-sqs',
+  'aws-ssm',
+  'aws-ssmcontacts',
+  'aws-ssmincidents',
+  'aws-ssmquicksetup',
 ];
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
