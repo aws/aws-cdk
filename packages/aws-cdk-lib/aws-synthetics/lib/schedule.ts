@@ -1,4 +1,5 @@
 import { Duration } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**
  * Schedule for canary runs
@@ -31,7 +32,7 @@ export class Schedule {
   public static rate(interval: Duration): Schedule {
     const minutes = interval.toMinutes();
     if (minutes > 60) {
-      throw new Error('Schedule duration must be between 1 and 60 minutes');
+      throw new UnscopedValidationError('Schedule duration must be between 1 and 60 minutes');
     }
     if (minutes === 0) {
       return Schedule.once();
@@ -47,7 +48,7 @@ export class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new UnscopedValidationError('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');
