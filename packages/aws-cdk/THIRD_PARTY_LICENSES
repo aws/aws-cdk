@@ -16464,7 +16464,7 @@ Apache License
 
 ----------------
 
-** @smithy/service-error-classification@3.0.8 - https://www.npmjs.com/package/@smithy/service-error-classification/v/3.0.8 | Apache-2.0
+** @smithy/service-error-classification@3.0.11 - https://www.npmjs.com/package/@smithy/service-error-classification/v/3.0.11 | Apache-2.0
                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -20570,7 +20570,7 @@ Apache License
 
 ----------------
 
-** @smithy/util-retry@3.0.8 - https://www.npmjs.com/package/@smithy/util-retry/v/3.0.8 | Apache-2.0
+** @smithy/util-retry@3.0.11 - https://www.npmjs.com/package/@smithy/util-retry/v/3.0.11 | Apache-2.0
 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/

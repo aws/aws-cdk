@@ -1,17 +1,18 @@
-import { UpdateFunctionCodeCommand, waitUntilFunctionUpdatedV2 } from '@aws-sdk/client-lambda';
-import * as setup from './hotswap-test-setup';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
-import { mockLambdaClient } from '../../util/mock-sdk';
-import { silentTest } from '../../util/silent';
-
+let mockWaitUntilFunctionUpdatedV2: jest.Mock = jest.fn();
 jest.mock('@aws-sdk/client-lambda', () => {
   const original = jest.requireActual('@aws-sdk/client-lambda');
 
   return {
     ...original,
-    waitUntilFunctionUpdatedV2: jest.fn(),
+    waitUntilFunctionUpdatedV2: mockWaitUntilFunctionUpdatedV2,
   };
 });
+
+import { UpdateFunctionCodeCommand, waitUntilFunctionUpdatedV2 } from '@aws-sdk/client-lambda';
+import * as setup from './hotswap-test-setup';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { mockLambdaClient } from '../../util/mock-sdk';
+import { silentTest } from '../../util/silent';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
@@ -125,4 +126,61 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       { FunctionName: 'my-function' },
     );
   });
+
+  silentTest(
+    'throws error in case of timeout',
+    async () => {
+      // GIVEN
+      mockWaitUntilFunctionUpdatedV2.mockRejectedValue({
+        name: 'TimeoutError',
+        message: JSON.stringify({
+          state: 'TIMEOUT',
+          reason: 'Function not found',
+          observedResponses: {
+            '404: The function with name foo cannot be found.': 5,
+          },
+        }),
+      });
+      setup.setCurrentCfnStackTemplate({
+        Resources: {
+          Func: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                ImageUri: 'current-image',
+              },
+              FunctionName: 'my-function',
+            },
+            Metadata: {
+              'aws:asset:path': 'old-path',
+            },
+          },
+        },
+      });
+      const cdkStackArtifact = setup.cdkStackArtifactOf({
+        template: {
+          Resources: {
+            Func: {
+              Type: 'AWS::Lambda::Function',
+              Properties: {
+                Code: {
+                  ImageUri: 'new-image',
+                },
+                FunctionName: 'my-function',
+              },
+              Metadata: {
+                'aws:asset:path': 'new-path',
+              },
+            },
+          },
+        },
+      });
+
+      // THEN
+      await expect(hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact))
+        .rejects
+        .toThrow(`Resource is not in the expected state due to waiter status: TIMEOUT. Function not found. Observed responses:
+  - 404: The function with name foo cannot be found. (5)`);
+    },
+  );
 });
