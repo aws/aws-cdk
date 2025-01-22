@@ -24,19 +24,6 @@ service that makes it easier to discover, prepare, move, and integrate data
 from multiple sources for analytics, machine learning (ML), and application
 development.
 
-Without an L2 construct, developers define Glue data sources, connections,
-jobs, and workflows for their data and ETL solutions via the AWS console,
-the AWS CLI, and Infrastructure as Code tools like CloudFormation and the
-CDK. However, there are several challenges to defining Glue resources at
-scale that an L2 construct can resolve. First, developers must reference
-documentation to determine the valid combinations of job type, Glue version,
-worker type, language versions, and other parameters that are required for specific
-job types. Additionally, developers must already know or look up the
-networking constraints for data source connections, and there is ambiguity
-around how to securely store secrets for JDBC connections. Finally,
-developers want prescriptive guidance via best practice defaults for
-throughput parameters like number of workers and batching.
-
 The Glue L2 construct has convenience methods working backwards from common
 use cases and sets required parameters to defaults that align with recommended
 best practices for each job type. It also provides customers with a balance
@@ -122,25 +109,25 @@ declare const stack: cdk.Stack;
 declare const role: iam.IRole;
 declare const script: glue.Code;
 new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
-        jobName: 'PySparkETLJobCustomName',
-        description: 'This is a description',
-        role,
-        script,
-        glueVersion: glue.GlueVersion.V3_0,
-        continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
-        maxConcurrentRuns: 100,
-        timeout: cdk.Duration.hours(2),
-        connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
-        securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
-        tags: {
-          FirstTagName: 'FirstTagValue',
-          SecondTagName: 'SecondTagValue',
-          XTagName: 'XTagValue',
-        },
-        numberOfWorkers: 2,
-        maxRetries: 2,
-      });
+  jobName: 'PySparkETLJobCustomName',
+  description: 'This is a description',
+  role,
+  script,
+  glueVersion: glue.GlueVersion.V3_0,
+  continuousLogging: { enabled: false },
+  workerType: glue.WorkerType.G_2X,
+  maxConcurrentRuns: 100,
+  timeout: cdk.Duration.hours(2),
+  connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
+  securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+  tags: {
+    FirstTagName: 'FirstTagValue',
+    SecondTagName: 'SecondTagValue',
+    XTagName: 'XTagValue',
+  },
+  numberOfWorkers: 2,
+  maxRetries: 2,
+});
 ```
 
 **Streaming Jobs**

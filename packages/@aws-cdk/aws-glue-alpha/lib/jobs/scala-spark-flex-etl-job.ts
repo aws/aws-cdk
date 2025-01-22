@@ -1,15 +1,3 @@
-/**
- *  Spark ETL Jobs class
- *  ETL jobs support pySpark and Scala languages, for which there are separate
- *  but similar constructors. ETL jobs default to the G2 worker type, but you
- *  can override this default with other supported worker type values
- *  (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
- *  override to 3.0. The following ETL features are enabled by default:
- *  —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
- *  You can find more details about version, worker type and other features
- *  in Glue's public documentation.
- */
-
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
@@ -33,9 +21,7 @@ import { Code } from '../code';
  * —enable-continuous-cloudwatch-log
  *
  */
-
 export interface ScalaSparkFlexEtlJobProps extends JobProperties {
-
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -71,12 +57,12 @@ export interface ScalaSparkFlexEtlJobProps extends JobProperties {
   readonly extraJars?: Code[];
 
   /**
-     * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
-     *
-     * @default false - priority is not given to user-provided jars
-     *
-     * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-     */
+   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   *
+   * @default false - priority is not given to user-provided jars
+   *
+   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
   readonly extraJarsFirst?: boolean;
 
   /**
@@ -88,15 +74,21 @@ export interface ScalaSparkFlexEtlJobProps extends JobProperties {
    * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraFiles?: Code[];
-
 }
 
 /**
- * A Scala Spark ETL Glue Job
+ * Spark ETL Jobs class
+ *
+ * ETL jobs support pySpark and Scala languages, for which there are separate
+ * but similar constructors. ETL jobs default to the G2 worker type, but you
+ * can override this default with other supported worker type values
+ * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
+ * override to 3.0. The following ETL features are enabled by default:
+ * —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ * You can find more details about version, worker type and other features
+ * in Glue's public documentation.
  */
 export class ScalaSparkFlexEtlJob extends Job {
-
-  // Implement abstract Job attributes
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;
@@ -112,10 +104,6 @@ export class ScalaSparkFlexEtlJob extends Job {
 
   /**
    * ScalaSparkFlexEtlJob constructor
-   *
-   * @param scope
-   * @param id
-   * @param props
    */
   constructor(scope: Construct, id: string, props: ScalaSparkFlexEtlJobProps) {
     super(scope, id, {
@@ -186,7 +174,6 @@ export class ScalaSparkFlexEtlJob extends Job {
   /**
    * Set the executable arguments with best practices enabled by default
    *
-   * @param props
    * @returns An array of arguments for Glue to use on execution
    */
   private executableArguments(props: ScalaSparkFlexEtlJobProps) {
@@ -211,7 +198,6 @@ export class ScalaSparkFlexEtlJob extends Job {
   /**
    * Set the arguments for sparkUI with best practices enabled by default
    *
-   * @param sparkUiProps, role
    * @returns An array of arguments for enabling sparkUI
    */
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {

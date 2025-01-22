@@ -9,7 +9,6 @@ import { EOL } from 'os';
  * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
  */
 export interface SparkUIProps {
-
   /**
    * The bucket where the Glue job stores the logs.
    *
