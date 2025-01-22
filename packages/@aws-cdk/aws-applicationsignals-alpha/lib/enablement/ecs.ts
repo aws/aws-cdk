@@ -2,101 +2,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as constants from './constants';
-
-/**
- * Base class for instrumentation versions.
- * Provides functionality to generate image URIs for different instrumentation types.
- */
-export abstract class InstrumentationVersion {
-  public constructor(protected readonly imageRepo: string, protected readonly version: string) { }
-
-  /**
-   * Get the image URI for the instrumentation version.
-   * @returns The image URI.
-   */
-  public imageURI(): string {
-    return `${this.imageRepo}:${this.version}`;
-  }
-}
-
-/**
- * Available versions for Java instrumentation.
- */
-export class JavaInstrumentationVersion extends InstrumentationVersion {
-  /**
-   * The image repository for Java instrumentation.
-   */
-  public static readonly IMAGE_REPO = 'public.ecr.aws/aws-observability/adot-autoinstrumentation-java';
-  /**
-   * ADOT Java Instrumentation version 1.33.0
-   */
-  public static readonly V1_33_0 = new JavaInstrumentationVersion(JavaInstrumentationVersion.IMAGE_REPO, 'v1.33.0');
-  /**
-   * ADOT Java Instrumentation version 1.32.6
-   */
-  public static readonly V1_32_6 = new JavaInstrumentationVersion(JavaInstrumentationVersion.IMAGE_REPO, 'v1.32.6');
-}
-
-/**
- * Available versions for .NET instrumentation.
- */
-/**
- * Available versions for Python instrumentation.
- */
-export class PythonInstrumentationVersion extends InstrumentationVersion {
-  /**
-   * The image repository for Python instrumentation.
-   */
-  public static readonly IMAGE_REPO = 'public.ecr.aws/aws-observability/adot-autoinstrumentation-python';
-  /**
-   * ADOT Python Instrumentation version 0.8.0
-   */
-  public static readonly V0_8_0 = new PythonInstrumentationVersion(PythonInstrumentationVersion.IMAGE_REPO, 'v0.8.0');
-}
-
-/**
- * Available versions for .NET instrumentation.
- */
-export class DotnetInstrumentationVersion extends InstrumentationVersion {
-  /**
-   * The image repository for .NET instrumentation.
-   */
-  public static readonly IMAGE_REPO = 'public.ecr.aws/aws-observability/adot-autoinstrumentation-dotnet';
-  /**
-   * ADOT .NET Instrumentation version 1.6.0
-   */
-  public static readonly V1_6_0 = new DotnetInstrumentationVersion(DotnetInstrumentationVersion.IMAGE_REPO, 'v1.6.0');
-  /**
-   * ADOT .NET Instrumentation version 1.6.0 for ARM64
-   */
-  public static readonly V1_6_0_ARM64 = new DotnetInstrumentationVersion(DotnetInstrumentationVersion.IMAGE_REPO, 'v1.6.0-arm64');
-  /**
-   * ADOT .NET Instrumentation version 1.6.0 for AMD64
-   */
-  public static readonly V1_6_0_AMD64 = new DotnetInstrumentationVersion(DotnetInstrumentationVersion.IMAGE_REPO, 'v1.6.0-amd64');
-  /**
-   * ADOT .NET Instrumentation version 1.6.0 for Windows 2022
-   */
-  public static readonly V1_6_0_WINDOWS2022 = new DotnetInstrumentationVersion(DotnetInstrumentationVersion.IMAGE_REPO, 'v1.6.0-windows2022');
-  /**
-   * ADOT .NET Instrumentation version 1.6.0 for Windows 2019
-   */
-  public static readonly V1_6_0_WINDOWS2019 = new DotnetInstrumentationVersion(DotnetInstrumentationVersion.IMAGE_REPO, 'v1.6.0-windows2019');
-}
-
-/**
- * Available versions for Node.js instrumentation.
- */
-export class NodeInstrumentationVersion extends InstrumentationVersion {
-  /**
-   * The image repository for Node.js instrumentation.
-   */
-  public static readonly IMAGE_REPO = 'public.ecr.aws/aws-observability/adot-autoinstrumentation-node';
-  /**
-   * ADOT Node.js Instrumentation version 0.5.0
-   */
-  public static readonly V0_5_0 = new NodeInstrumentationVersion(NodeInstrumentationVersion.IMAGE_REPO, 'v0.5.0');
-}
+import * as inst from './instrumentation-versions';
 
 /**
  * Interface for environment extensions.
@@ -119,7 +25,7 @@ export interface InstrumentationProps {
   /**
    * The version of the instrumentation.
    */
-  readonly sdkVersion: InstrumentationVersion;
+  readonly sdkVersion: inst.InstrumentationVersion;
   /**
    * The runtime platform of the instrumentation.
    *
@@ -202,7 +108,6 @@ const DEFAULT_CONTAINER_NAME = 'cloudwatch-agent';
  * the necessary environment variables.
  */
 abstract class SDKInject {
-
   private static readonly DEFAULT_ENVS = [
     {
       name: constants.LogsExporting.OTEL_LOGS_EXPORTER,
@@ -271,13 +176,11 @@ abstract class SDKInject {
    */
   protected abstract get containerPath(): string;
   /**
-   * Inject additional environment variables to the application container
-   * other than the DEFAULT_ENVS.
+   * Inject additional environment variables to the application container other than the DEFAULT_ENVS.
    */
   protected abstract injectAdditionalEnvironments(envsToInject: { [key: string]: string }, envsFromTaskDef: { [key: string]: string }): void;
   /**
-   * Override additional environment variables to the application container
-   * other than the DEFAULT_ENVS.
+   * Override environment variables in the application container.
    */
   protected abstract overrideAdditionalEnvironments(envsToOverride: { [key: string]: string }, envsFromTaskDef: { [key: string]: string }): void;
 
@@ -605,30 +508,30 @@ class NodeSDKInject extends SDKInject {
   }
 }
 
-const CLOUDWATCH_AGENT_IMAGE = 'amazon/cloudwatch-agent:latest';
-const CLOUDWATCH_AGENT_IMAGE_WIN2019 = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest-windowsservercore2019';
-const CLOUDWATCH_AGENT_IMAGE_WIN2022 = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest-windowsservercore2022';
-const CW_CONFIG_CONTENT = {
-  logs: {
-    metrics_collected: {
-      application_signals: {
-        enabled: true,
-      },
-    },
-  },
-  traces: {
-    traces_collected: {
-      application_signals: {
-        enabled: true,
-      },
-    },
-  },
-};
-
 /**
  * Class for integrating Application Signals into an ECS task definition.
  */
 export class ApplicationSignalsIntegration extends Construct {
+  private static readonly CLOUDWATCH_AGENT_IMAGE = 'amazon/cloudwatch-agent:latest';
+  private static readonly CLOUDWATCH_AGENT_IMAGE_WIN2019 = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest-windowsservercore2019';
+  private static readonly CLOUDWATCH_AGENT_IMAGE_WIN2022 = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest-windowsservercore2022';
+  private static readonly CW_CONFIG_CONTENT = {
+    logs: {
+      metrics_collected: {
+        application_signals: {
+          enabled: true,
+        },
+      },
+    },
+    traces: {
+      traces_collected: {
+        application_signals: {
+          enabled: true,
+        },
+      },
+    },
+  };
+
   private sdkInject?: SDKInject;
   private mountVolumeName: string = 'opentelemetry-auto-instrumentation';
 
@@ -648,7 +551,7 @@ export class ApplicationSignalsIntegration extends Construct {
     }];
 
     let runtimePlatformObj = props.instrumentation.runtimePlatform ?? (props.taskDefinition as any).runtimePlatform;
-    let cloudWatchAgentImage = CLOUDWATCH_AGENT_IMAGE;
+    let cloudWatchAgentImage = ApplicationSignalsIntegration.CLOUDWATCH_AGENT_IMAGE;
     let cpuArch = ecs.CpuArchitecture.X86_64;
     let isWindows = false;
 
@@ -660,11 +563,11 @@ export class ApplicationSignalsIntegration extends Construct {
         switch (runtimePlatform.operatingSystemFamily) {
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE:
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_FULL:
-            cloudWatchAgentImage = CLOUDWATCH_AGENT_IMAGE_WIN2019;
+            cloudWatchAgentImage = ApplicationSignalsIntegration.CLOUDWATCH_AGENT_IMAGE_WIN2019;
             break;
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2022_CORE:
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2022_FULL:
-            cloudWatchAgentImage = CLOUDWATCH_AGENT_IMAGE_WIN2022;
+            cloudWatchAgentImage = ApplicationSignalsIntegration.CLOUDWATCH_AGENT_IMAGE_WIN2022;
             break;
         }
 
@@ -684,21 +587,21 @@ export class ApplicationSignalsIntegration extends Construct {
     }
 
     overrideEnvironments.push(...props.overrideEnvironments ?? []);
-    if (props.instrumentation.sdkVersion instanceof JavaInstrumentationVersion) {
+    if (props.instrumentation.sdkVersion instanceof inst.JavaInstrumentationVersion) {
       this.sdkInject = new JavaSDKInject(
         props.taskDefinition,
         this.mountVolumeName,
         props.instrumentation.sdkVersion.imageURI(),
         overrideEnvironments,
       );
-    } else if (props.instrumentation.sdkVersion instanceof PythonInstrumentationVersion) {
+    } else if (props.instrumentation.sdkVersion instanceof inst.PythonInstrumentationVersion) {
       this.sdkInject = new PythonSDKInject(
         props.taskDefinition,
         this.mountVolumeName,
         props.instrumentation.sdkVersion.imageURI(),
         overrideEnvironments,
       );
-    } else if (props.instrumentation.sdkVersion instanceof DotnetInstrumentationVersion) {
+    } else if (props.instrumentation.sdkVersion instanceof inst.DotnetInstrumentationVersion) {
       if (isWindows) {
         this.sdkInject = new DotNetSDKOnWindowsInject(
           props.taskDefinition,
@@ -715,7 +618,7 @@ export class ApplicationSignalsIntegration extends Construct {
           overrideEnvironments,
         );
       }
-    } else if (props.instrumentation.sdkVersion instanceof NodeInstrumentationVersion) {
+    } else if (props.instrumentation.sdkVersion instanceof inst.NodeInstrumentationVersion) {
       this.sdkInject = new NodeSDKInject(
         props.taskDefinition,
         this.mountVolumeName,
@@ -761,7 +664,7 @@ export class ApplicationSignalsIntegration extends Construct {
     return {
       image: ecs.ContainerImage.fromRegistry(image),
       environment: {
-        CW_CONFIG_CONTENT: JSON.stringify(CW_CONFIG_CONTENT),
+        CW_CONFIG_CONTENT: JSON.stringify(ApplicationSignalsIntegration.CW_CONFIG_CONTENT),
       },
       logging: new ecs.AwsLogDriver({ streamPrefix: name }),
       user: '0:1338',
