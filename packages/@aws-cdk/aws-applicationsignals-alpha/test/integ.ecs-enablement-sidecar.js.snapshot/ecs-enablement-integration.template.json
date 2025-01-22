@@ -44,7 +44,7 @@
        },
        {
         "Condition": "START",
-        "ContainerName": "cwagent"
+        "ContainerName": "cloudwatch-agent"
        }
       ],
       "Environment": [
@@ -169,9 +169,18 @@
       "Name": "adot-init"
      },
      {
+      "Cpu": 256,
+      "Environment": [
+       {
+        "Name": "CW_CONFIG_CONTENT",
+        "Value": "{\"logs\":{\"metrics_collected\":{\"application_signals\":{\"enabled\":true}}},\"traces\":{\"traces_collected\":{\"application_signals\":{\"enabled\":true}}}}"
+       }
+      ],
       "Essential": true,
-      "Image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:1.300051.0b992-windowsservercore2019",
-      "Name": "cwagent"
+      "Image": "amazon/cloudwatch-agent:latest",
+      "Memory": 512,
+      "Name": "cloudwatch-agent",
+      "User": "0:1338"
      }
     ],
     "Cpu": "2048",

@@ -84,7 +84,8 @@
                     "path": "ecs-enablement-integration/TestVpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -199,7 +200,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PublicSubnet2": {
@@ -251,7 +276,8 @@
                     "path": "ecs-enablement-integration/TestVpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -366,7 +392,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PrivateSubnet1": {
@@ -418,7 +468,8 @@
                     "path": "ecs-enablement-integration/TestVpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -485,7 +536,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet2": {
@@ -537,7 +607,8 @@
                     "path": "ecs-enablement-integration/TestVpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -604,7 +675,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "IGW": {
@@ -660,13 +750,19 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "LatestNodeRuntimeMap": {
@@ -730,7 +826,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs.Cluster",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "vpc": "*"
+                }
+              ]
             }
           },
           "Namespace": {
@@ -757,7 +858,13 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_servicediscovery.PrivateDnsNamespace",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "vpc": "*",
+                  "name": "*"
+                }
+              ]
             }
           },
           "CwAgentDaemonTaskDef": {
@@ -773,7 +880,10 @@
                     "path": "ecs-enablement-integration/CwAgentDaemonTaskDef/TaskRole/ImportTaskRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -804,7 +914,15 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -817,7 +935,7 @@
                       {
                         "cpu": 128,
                         "essential": true,
-                        "image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest",
+                        "image": "amazon/cloudwatch-agent:latest",
                         "memory": 64,
                         "name": "ecs-cwagent",
                         "portMappings": [
@@ -834,13 +952,14 @@
                             "name": "cwagent-2000"
                           }
                         ],
+                        "user": "0:1338",
                         "logConfiguration": {
                           "logDriver": "awslogs",
                           "options": {
                             "awslogs-group": {
-                              "Ref": "CwAgentLogGroupBF702CD8"
+                              "Ref": "CwAgentDaemonTaskDefecscwagentLogGroupEE66E5BB"
                             },
-                            "awslogs-stream-prefix": "ecs",
+                            "awslogs-stream-prefix": "ecs-cwagent",
                             "awslogs-region": {
                               "Ref": "AWS::Region"
                             }
@@ -849,7 +968,13 @@
                         "environment": [
                           {
                             "name": "CW_CONFIG_CONTENT",
-                            "value": "{\"agent\": {\"debug\": true}, \"traces\": {\"traces_collected\": {\"application_signals\": {\"enabled\": true}}}, \"logs\": {\"metrics_collected\": {\"application_signals\": {\"enabled\": true}}}}"
+                            "value": "{\"logs\":{\"metrics_collected\":{\"application_signals\":{\"enabled\":true}}},\"traces\":{\"traces_collected\":{\"application_signals\":{\"enabled\":true}}}}"
+                          },
+                          {
+                            "name": "AWS_REGION",
+                            "value": {
+                              "Ref": "AWS::Region"
+                            }
                           }
                         ]
                       }
@@ -861,7 +986,7 @@
                       ]
                     },
                     "family": "ecsenablementintegrationCwAgentDaemonTaskDefB3E3B54C",
-                    "networkMode": "bridge",
+                    "networkMode": "awsvpc",
                     "requiresCompatibilities": [
                       "EC2"
                     ],
@@ -881,6 +1006,35 @@
               "ecs-cwagent": {
                 "id": "ecs-cwagent",
                 "path": "ecs-enablement-integration/CwAgentDaemonTaskDef/ecs-cwagent",
+                "children": {
+                  "LogGroup": {
+                    "id": "LogGroup",
+                    "path": "ecs-enablement-integration/CwAgentDaemonTaskDef/ecs-cwagent/LogGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "ecs-enablement-integration/CwAgentDaemonTaskDef/ecs-cwagent/LogGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                          "aws:cdk:cloudformation:props": {}
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "retention": "*"
+                        }
+                      ]
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
                   "version": "0.0.0"
@@ -895,7 +1049,10 @@
                     "path": "ecs-enablement-integration/CwAgentDaemonTaskDef/ExecutionRole/ImportExecutionRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -943,7 +1100,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "CwAgentLogGroupBF702CD8",
+                                      "CwAgentDaemonTaskDefecscwagentLogGroupEE66E5BB",
                                       "Arn"
                                     ]
                                   }
@@ -967,43 +1124,78 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "roleName": "*"
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs.Ec2TaskDefinition",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*",
+                "*",
+                "*",
+                "*",
+                "*",
+                "*",
+                "*",
+                "*"
+              ]
             }
           },
-          "CwAgentLogGroup": {
-            "id": "CwAgentLogGroup",
-            "path": "ecs-enablement-integration/CwAgentLogGroup",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "ecs-enablement-integration/CwAgentLogGroup/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": "/ecs/ecs-cwagent-cdk-daemon",
-                    "retentionInDays": 731
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "0.0.0"
-                }
-              }
-            },
+          "CloudWatchAgent": {
+            "id": "CloudWatchAgent",
+            "path": "ecs-enablement-integration/CloudWatchAgent",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "fqn": "@aws-cdk/aws-applicationsignals-alpha.CloudWatchAgentIntegration",
               "version": "0.0.0"
             }
           },
@@ -1026,6 +1218,27 @@
                     },
                     "enableEcsManagedTags": false,
                     "launchType": "EC2",
+                    "networkConfiguration": {
+                      "awsvpcConfiguration": {
+                        "assignPublicIp": "DISABLED",
+                        "subnets": [
+                          {
+                            "Ref": "TestVpcPrivateSubnet1SubnetCC65D771"
+                          },
+                          {
+                            "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2"
+                          }
+                        ],
+                        "securityGroups": [
+                          {
+                            "Fn::GetAtt": [
+                              "CwAgentDaemonServiceSecurityGroup4155633D",
+                              "GroupId"
+                            ]
+                          }
+                        ]
+                      }
+                    },
                     "schedulingStrategy": "DAEMON",
                     "serviceConnectConfiguration": {
                       "enabled": true,
@@ -1065,11 +1278,54 @@
                   "fqn": "aws-cdk-lib.aws_ecs.CfnService",
                   "version": "0.0.0"
                 }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "ecs-enablement-integration/CwAgentDaemonService/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ecs-enablement-integration/CwAgentDaemonService/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "ecs-enablement-integration/CwAgentDaemonService/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "TestVpcE77CE678"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "vpc": "*"
+                    }
+                  ]
+                }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs.Ec2Service",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*",
+                "*"
+              ]
             }
           },
           "Ec2TaskDefinition": {
@@ -1085,7 +1341,10 @@
                     "path": "ecs-enablement-integration/Ec2TaskDefinition/TaskRole/ImportTaskRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1116,7 +1375,15 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1146,6 +1413,12 @@
                         ],
                         "name": "app",
                         "environment": [
+                          {
+                            "name": "AWS_REGION",
+                            "value": {
+                              "Ref": "AWS::Region"
+                            }
+                          },
                           {
                             "name": "OTEL_LOGS_EXPORTER",
                             "value": "none"
@@ -1218,11 +1491,19 @@
                             "sourceVolume": "opentelemetry-auto-instrumentation"
                           }
                         ],
-                        "name": "adot-init"
+                        "name": "adot-init",
+                        "environment": [
+                          {
+                            "name": "AWS_REGION",
+                            "value": {
+                              "Ref": "AWS::Region"
+                            }
+                          }
+                        ]
                       }
                     ],
                     "family": "ecsenablementintegrationEc2TaskDefinition9DAAE5F5",
-                    "networkMode": "host",
+                    "networkMode": "awsvpc",
                     "requiresCompatibilities": [
                       "EC2"
                     ],
@@ -1263,7 +1544,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs.Ec2TaskDefinition",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*",
+                "*",
+                "*",
+                "*",
+                "*"
+              ]
             }
           },
           "TestEc2TaskDefinitionIntegration": {
