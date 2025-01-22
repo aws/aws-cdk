@@ -6,7 +6,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as config from 'aws-cdk-lib/aws-config';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-/** ********************************************************************************************************************
+/**********************************************************************************************************************
  *
  *    Warning! This test case can not be deployed!
  *
