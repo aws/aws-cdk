@@ -251,7 +251,7 @@ export class Bootstrapper {
     } catch (e: any) {
       // https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html#API_GetPolicy_Errors
       if (e.name === 'NoSuchEntity') {
-        //noop, proceed with creating the policy
+        // noop, proceed with creating the policy
       } else {
         throw e;
       }

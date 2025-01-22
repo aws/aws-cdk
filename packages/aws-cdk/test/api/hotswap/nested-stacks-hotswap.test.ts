@@ -746,7 +746,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     oldChildStack.template.Resources.GrandChildStackB.Properties.TemplateURL = 'https://www.amazon.com';
 
     const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
-    //testStack({ stackName: oldChildStack.stackName, template: oldChildStack.template });
+    // testStack({ stackName: oldChildStack.stackName, template: oldChildStack.template });
 
     const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 

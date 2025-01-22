@@ -381,7 +381,7 @@ export class EvaluateCloudFormationTemplate {
     if (foundResource.ResourceType == 'AWS::CloudFormation::Stack' && attribute?.startsWith('Outputs.')) {
       const dependantStack = this.findNestedStack(logicalId, this.nestedStacks);
       if (!dependantStack || !dependantStack.physicalName) {
-        //this is a newly created nested stack and cannot be hotswapped
+        // this is a newly created nested stack and cannot be hotswapped
         return undefined;
       }
       const evaluateCfnTemplate = await this.createNestedEvaluateCloudFormationTemplate(

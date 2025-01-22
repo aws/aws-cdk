@@ -147,7 +147,7 @@ export async function isHotswappableAppSyncChange(
             throw new ToolkitError(schemaCreationResponse.details ?? 'Schema creation has failed.');
           }
         } else {
-          //isApiKey
+          // isApiKey
           if (!sdkRequestObject.id) {
             // ApiKeyId is optional in CFN but required in SDK. Grab the KeyId from physicalArn if not available as part of CFN template
             const arnParts = physicalName?.split('/');
