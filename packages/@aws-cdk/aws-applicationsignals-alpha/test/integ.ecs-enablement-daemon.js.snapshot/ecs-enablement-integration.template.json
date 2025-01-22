@@ -1,5 +1,717 @@
 {
  "Resources": {
+  "TestVpcE77CE678": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet1SubnetA7DB1EDF": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1RouteTable4CBFF871": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1DefaultRoute6C0F0315": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871"
+    }
+   },
+   "DependsOn": [
+    "TestVpcVPCGWF1827B84"
+   ]
+  },
+  "TestVpcPublicSubnet1EIP4884338C": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet1NATGatewayA323E3EC": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "TestVpcPublicSubnet1EIP4884338C",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestVpcPublicSubnet1DefaultRoute6C0F0315",
+    "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9"
+   ]
+  },
+  "TestVpcPublicSubnet2Subnet80A14523": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2RouteTable75B88314": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2RouteTableAssociationB386A819": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet2RouteTable75B88314"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet2Subnet80A14523"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2DefaultRoute054DAE0A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet2RouteTable75B88314"
+    }
+   },
+   "DependsOn": [
+    "TestVpcVPCGWF1827B84"
+   ]
+  },
+  "TestVpcPublicSubnet2EIP83F7944C": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet2NATGatewayA9858C31": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "TestVpcPublicSubnet2EIP83F7944C",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet2Subnet80A14523"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestVpcPublicSubnet2DefaultRoute054DAE0A",
+    "TestVpcPublicSubnet2RouteTableAssociationB386A819"
+   ]
+  },
+  "TestVpcPrivateSubnet1SubnetCC65D771": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1RouteTable469B0105": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet1RouteTable469B0105"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPrivateSubnet1SubnetCC65D771"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1DefaultRoute32E7B814": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "TestVpcPublicSubnet1NATGatewayA323E3EC"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet1RouteTable469B0105"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2SubnetDE0C64A2": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2RouteTableCEF29F7C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2RouteTableAssociation18250AB4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2DefaultRouteA7EB6930": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "TestVpcPublicSubnet2NATGatewayA9858C31"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C"
+    }
+   }
+  },
+  "TestVpcIGW9DD53F70": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ecs-enablement-integration/TestVpc"
+     }
+    ]
+   }
+  },
+  "TestVpcVPCGWF1827B84": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcRestrictDefaultSecurityGroupCustomResourceB02B826A": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "TestVpcE77CE678",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "TestVpcE77CE678",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "TestClusterE0095054": {
+   "Type": "AWS::ECS::Cluster"
+  },
+  "Namespace9B63B8C8": {
+   "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+   "Properties": {
+    "Name": "local",
+    "Vpc": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "CwAgentDaemonTaskDefTaskRoleB630618E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CwAgentDaemonTaskDefD42721B8": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Cpu": 128,
+      "Environment": [
+       {
+        "Name": "CW_CONFIG_CONTENT",
+        "Value": "{\"agent\": {\"debug\": true}, \"traces\": {\"traces_collected\": {\"application_signals\": {\"enabled\": true}}}, \"logs\": {\"metrics_collected\": {\"application_signals\": {\"enabled\": true}}}}"
+       }
+      ],
+      "Essential": true,
+      "Image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "CwAgentLogGroupBF702CD8"
+        },
+        "awslogs-stream-prefix": "ecs",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Memory": 64,
+      "Name": "ecs-cwagent",
+      "PortMappings": [
+       {
+        "ContainerPort": 4316,
+        "HostPort": 4316,
+        "Name": "cwagent-4316",
+        "Protocol": "tcp"
+       },
+       {
+        "ContainerPort": 2000,
+        "HostPort": 2000,
+        "Name": "cwagent-2000",
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "CwAgentDaemonTaskDefExecutionRoleDB11FC2A",
+      "Arn"
+     ]
+    },
+    "Family": "ecsenablementintegrationCwAgentDaemonTaskDefB3E3B54C",
+    "NetworkMode": "bridge",
+    "RequiresCompatibilities": [
+     "EC2"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "CwAgentDaemonTaskDefTaskRoleB630618E",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "CwAgentDaemonTaskDefExecutionRoleDB11FC2A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CwAgentDaemonTaskDefExecutionRoleDefaultPolicy765BB856": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CwAgentLogGroupBF702CD8",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CwAgentDaemonTaskDefExecutionRoleDefaultPolicy765BB856",
+    "Roles": [
+     {
+      "Ref": "CwAgentDaemonTaskDefExecutionRoleDB11FC2A"
+     }
+    ]
+   }
+  },
+  "CwAgentLogGroupBF702CD8": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/ecs/ecs-cwagent-cdk-daemon",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CwAgentDaemonServiceA063D544": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "TestClusterE0095054"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 100,
+     "MinimumHealthyPercent": 0
+    },
+    "EnableECSManagedTags": false,
+    "LaunchType": "EC2",
+    "SchedulingStrategy": "DAEMON",
+    "ServiceConnectConfiguration": {
+     "Enabled": true,
+     "Namespace": {
+      "Fn::GetAtt": [
+       "Namespace9B63B8C8",
+       "Arn"
+      ]
+     },
+     "Services": [
+      {
+       "ClientAliases": [
+        {
+         "DnsName": "cwagent-4316-http",
+         "Port": 4316
+        }
+       ],
+       "PortName": "cwagent-4316"
+      },
+      {
+       "ClientAliases": [
+        {
+         "DnsName": "cwagent-2000-http",
+         "Port": 2000
+        }
+       ],
+       "PortName": "cwagent-2000"
+      }
+     ]
+    },
+    "TaskDefinition": {
+     "Ref": "CwAgentDaemonTaskDefD42721B8"
+    }
+   },
+   "DependsOn": [
+    "CwAgentDaemonTaskDefTaskRoleB630618E"
+   ]
+  },
   "Ec2TaskDefinitionTaskRole0B78BC85": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -48,11 +760,11 @@
        },
        {
         "Name": "OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT",
-        "Value": "http://cwagent.local:4316/v1/metrics"
+        "Value": "http://cwagent-4316-http:4316/v1/metrics"
        },
        {
         "Name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
-        "Value": "http://cwagent.local:4316/v1/traces"
+        "Value": "hhttp://cwagent-4316-http:4316/v1/traces"
        },
        {
         "Name": "OTEL_TRACES_SAMPLER",
@@ -60,7 +772,7 @@
        },
        {
         "Name": "OTEL_TRACES_SAMPLER_ARG",
-        "Value": "endpoint=http://ccwagent.local:2000"
+        "Value": "endpoint=http://cwagent-2000-http:2000"
        },
        {
         "Name": "OTEL_PROPAGATORS",
@@ -132,6 +844,130 @@
       "Name": "opentelemetry-auto-instrumentation"
      }
     ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
    }
   }
  },
