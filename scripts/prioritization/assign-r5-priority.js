@@ -27,12 +27,12 @@ module.exports = async ({ github }) => {
   while (hasNextPage) {
     const result = await fetchOpenPullRequests({
       github,
-      owner: PROJECT_CONFIG.owner,
+      org: PROJECT_CONFIG.org,
       repo: PROJECT_CONFIG.repo,
       cursor: cursor,
     });
 
-    const pullRequests = result.repository.pullRequests;
+    const pullRequests = result.organization.repository.pullRequests;
     allPRs = allPRs.concat(pullRequests.nodes);
 
     // Update pagination info
