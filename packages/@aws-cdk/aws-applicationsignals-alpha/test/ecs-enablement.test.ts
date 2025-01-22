@@ -22,6 +22,11 @@ describe('application signals integration', () => {
       instrumentation: {
         sdkVersion: JavaInstrumentationVersion.V1_32_6,
       },
+      cloudWatchAgentSidecar: {
+        containerName: 'cloudwatch-agent',
+        enableLogging: true,
+        memoryReservationMiB: 50,
+      },
     });
 
     // THEN
@@ -137,18 +142,6 @@ describe('application signals integration', () => {
           },
           MemoryReservation: 50,
           Name: 'cloudwatch-agent',
-          PortMappings: [
-            {
-              ContainerPort: 4316,
-              HostPort: 4316,
-              Protocol: 'tcp',
-            },
-            {
-              ContainerPort: 2000,
-              HostPort: 2000,
-              Protocol: 'tcp',
-            },
-          ],
           User: '0:1338',
         },
       ],
@@ -180,7 +173,6 @@ describe('application signals integration', () => {
   });
 
   test('should fail if fargate task definition does not have a sidecar', () => {
-
     expect(() => {
       // GIVEN
       const stack = new Stack();
@@ -199,9 +191,6 @@ describe('application signals integration', () => {
           sdkVersion: JavaInstrumentationVersion.V1_32_6,
         },
         serviceName: 'demo',
-        cloudWatchAgent: {
-          enableSidecar: false,
-        },
       });
     }).toThrow(/Fargate tasks must deploy CloudWatch Agent as a sidecar container/);
   });
@@ -243,9 +232,6 @@ describe('application signals integration', () => {
           value: 'endpoint=http://cwagent.local:2000',
         },
       ],
-      cloudWatchAgent: {
-        enableSidecar: false,
-      },
     });
 
     // THEN
@@ -385,9 +371,6 @@ describe('application signals integration', () => {
         sdkVersion: DotnetInstrumentationVersion.V1_6_0,
       },
       serviceName: 'demo',
-      cloudWatchAgent: {
-        enableSidecar: false,
-      },
     });
 
     // THEN
@@ -558,9 +541,6 @@ describe('application signals integration', () => {
         },
       },
       serviceName: 'demo',
-      cloudWatchAgent: {
-        enableSidecar: false,
-      },
     });
 
     // THEN
@@ -739,9 +719,6 @@ describe('application signals integration', () => {
         },
       },
       serviceName: 'demo',
-      cloudWatchAgent: {
-        enableSidecar: false,
-      },
     });
 
     // THEN
@@ -918,9 +895,6 @@ describe('application signals integration', () => {
 
       },
       serviceName: 'demo',
-      cloudWatchAgent: {
-        enableSidecar: false,
-      },
     });
 
     // THEN
@@ -1056,9 +1030,6 @@ describe('application signals integration', () => {
 
       },
       serviceName: 'demo',
-      cloudWatchAgent: {
-        enableSidecar: false,
-      },
     });
 
     // THEN
@@ -1169,5 +1140,4 @@ describe('application signals integration', () => {
       ],
     });
   });
-
 });
