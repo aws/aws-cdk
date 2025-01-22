@@ -271,13 +271,11 @@ abstract class SDKInject {
    */
   protected abstract get containerPath(): string;
   /**
-   * Inject additional environment variables to the application container
-   * other than the DEFAULT_ENVS.
+   * Inject additional environment variables to the application container other than the DEFAULT_ENVS.
    */
   protected abstract injectAdditionalEnvironments(envsToInject: { [key: string]: string }, envsFromTaskDef: { [key: string]: string }): void;
   /**
-   * Override additional environment variables to the application container
-   * other than the DEFAULT_ENVS.
+   * Override environment variables in the application container.
    */
   protected abstract overrideAdditionalEnvironments(envsToOverride: { [key: string]: string }, envsFromTaskDef: { [key: string]: string }): void;
 
@@ -605,30 +603,30 @@ class NodeSDKInject extends SDKInject {
   }
 }
 
-const CLOUDWATCH_AGENT_IMAGE = 'amazon/cloudwatch-agent:latest';
-const CLOUDWATCH_AGENT_IMAGE_WIN2019 = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest-windowsservercore2019';
-const CLOUDWATCH_AGENT_IMAGE_WIN2022 = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest-windowsservercore2022';
-const CW_CONFIG_CONTENT = {
-  logs: {
-    metrics_collected: {
-      application_signals: {
-        enabled: true,
-      },
-    },
-  },
-  traces: {
-    traces_collected: {
-      application_signals: {
-        enabled: true,
-      },
-    },
-  },
-};
-
 /**
  * Class for integrating Application Signals into an ECS task definition.
  */
 export class ApplicationSignalsIntegration extends Construct {
+  private static readonly CLOUDWATCH_AGENT_IMAGE = 'amazon/cloudwatch-agent:latest';
+  private static readonly CLOUDWATCH_AGENT_IMAGE_WIN2019 = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest-windowsservercore2019';
+  private static readonly CLOUDWATCH_AGENT_IMAGE_WIN2022 = 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest-windowsservercore2022';
+  private static readonly CW_CONFIG_CONTENT = {
+    logs: {
+      metrics_collected: {
+        application_signals: {
+          enabled: true,
+        },
+      },
+    },
+    traces: {
+      traces_collected: {
+        application_signals: {
+          enabled: true,
+        },
+      },
+    },
+  };
+
   private sdkInject?: SDKInject;
   private mountVolumeName: string = 'opentelemetry-auto-instrumentation';
 
@@ -648,7 +646,7 @@ export class ApplicationSignalsIntegration extends Construct {
     }];
 
     let runtimePlatformObj = props.instrumentation.runtimePlatform ?? (props.taskDefinition as any).runtimePlatform;
-    let cloudWatchAgentImage = CLOUDWATCH_AGENT_IMAGE;
+    let cloudWatchAgentImage = ApplicationSignalsIntegration.CLOUDWATCH_AGENT_IMAGE;
     let cpuArch = ecs.CpuArchitecture.X86_64;
     let isWindows = false;
 
@@ -660,11 +658,11 @@ export class ApplicationSignalsIntegration extends Construct {
         switch (runtimePlatform.operatingSystemFamily) {
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE:
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_FULL:
-            cloudWatchAgentImage = CLOUDWATCH_AGENT_IMAGE_WIN2019;
+            cloudWatchAgentImage = ApplicationSignalsIntegration.CLOUDWATCH_AGENT_IMAGE_WIN2019;
             break;
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2022_CORE:
           case ecs.OperatingSystemFamily.WINDOWS_SERVER_2022_FULL:
-            cloudWatchAgentImage = CLOUDWATCH_AGENT_IMAGE_WIN2022;
+            cloudWatchAgentImage = ApplicationSignalsIntegration.CLOUDWATCH_AGENT_IMAGE_WIN2022;
             break;
         }
 
@@ -761,7 +759,7 @@ export class ApplicationSignalsIntegration extends Construct {
     return {
       image: ecs.ContainerImage.fromRegistry(image),
       environment: {
-        CW_CONFIG_CONTENT: JSON.stringify(CW_CONFIG_CONTENT),
+        CW_CONFIG_CONTENT: JSON.stringify(ApplicationSignalsIntegration.CW_CONFIG_CONTENT),
       },
       logging: new ecs.AwsLogDriver({ streamPrefix: name }),
       user: '0:1338',
