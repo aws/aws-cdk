@@ -15,7 +15,7 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
 
-    /// !show
+    // / !show
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
@@ -24,7 +24,7 @@ class DatabaseInstanceStack extends cdk.Stack {
       },
     });
 
-    /// Add XMLDB and OEM with option group
+    // / Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       configurations: [
@@ -97,7 +97,7 @@ class DatabaseInstanceStack extends cdk.Stack {
         ],
       },
     });
-    /// !hide
+    // / !hide
   }
 }
 

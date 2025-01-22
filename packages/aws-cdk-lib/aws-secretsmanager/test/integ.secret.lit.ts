@@ -9,7 +9,7 @@ class SecretsManagerStack extends cdk.Stack {
 
     const role = new iam.Role(this, 'TestRole', { assumedBy: new iam.AccountRootPrincipal() });
 
-    /// !show
+    // / !show
     // Default secret
     const secret = new secretsmanager.Secret(this, 'Secret');
     secret.grantRead(role);
@@ -47,7 +47,7 @@ class SecretsManagerStack extends cdk.Stack {
         password: accessKey.secretAccessKey,
       },
     });
-    /// !hide
+    // / !hide
   }
 }
 

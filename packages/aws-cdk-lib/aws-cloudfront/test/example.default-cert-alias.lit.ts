@@ -6,7 +6,7 @@ import * as cloudfront from '../lib';
 class AcmCertificateAliasStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    /// !show
+    // / !show
     const s3BucketSource = new s3.Bucket(this, 'Bucket');
 
     const distribution = new cloudfront.CloudFrontWebDistribution(this, 'AnAmazingWebsiteProbably', {
@@ -18,7 +18,7 @@ class AcmCertificateAliasStack extends Stack {
         'www.example.com',
       ),
     });
-    /// !hide
+    // / !hide
 
     Array.isArray(s3BucketSource);
     Array.isArray(distribution);

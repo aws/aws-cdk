@@ -5,9 +5,9 @@ export class ExampleConstruct extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    /// !show
+    // / !show
     const group = new Group(this, 'MyGroup');
     group.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
-    /// !hide
+    // / !hide
   }
 }

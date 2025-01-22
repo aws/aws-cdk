@@ -7,7 +7,7 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    /// !show
+    // / !show
     const asset = new assets.Asset(this, 'SampleAsset', {
       path: path.join(__dirname, 'sample-asset-directory'),
     });
@@ -16,7 +16,7 @@ class TestStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'S3ObjectKey', { value: asset.s3ObjectKey });
     new cdk.CfnOutput(this, 'S3HttpURL', { value: asset.httpUrl });
     new cdk.CfnOutput(this, 'S3ObjectURL', { value: asset.s3ObjectUrl });
-    /// !hide
+    // / !hide
 
     // we need at least one resource
     asset.grantRead(new iam.User(this, 'MyUser'));

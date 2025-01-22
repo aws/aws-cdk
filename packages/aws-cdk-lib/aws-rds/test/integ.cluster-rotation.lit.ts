@@ -12,7 +12,7 @@ const endpoint = new ec2.InterfaceVpcEndpoint(stack, 'Endpoint', {
   service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
 });
 
-/// !show
+// / !show
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
   engine: rds.DatabaseClusterEngine.AURORA,
   instanceProps: {
@@ -37,6 +37,6 @@ clusterWithCustomRotationOptions.addRotationSingleUser({
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
   endpoint: endpoint,
 });
-/// !hide
+// / !hide
 
 app.synth();

@@ -10,7 +10,7 @@ const app = new cdk.App({
 });
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
-/// !show
+// / !show
 // Source stage: read from repository
 const repo = new codecommit.Repository(stack, 'TemplateRepo', {
   repositoryName: 'template-repo',
@@ -62,6 +62,6 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
     prodStage,
   ],
 });
-/// !hide
+// / !hide
 
 app.synth();

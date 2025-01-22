@@ -3,10 +3,10 @@ import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import * as subs from '../lib';
 
-/// !cdk-integ * pragma:enable-lookups
+// / !cdk-integ * pragma:enable-lookups
 const app = new cdk.App();
 
-/// !show
+// / !show
 const topicStack = new cdk.Stack(app, 'TopicStack', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
@@ -23,6 +23,6 @@ const queueStack = new cdk.Stack(app, 'QueueStack', {
 const queue = new sqs.Queue(queueStack, 'MyQueue');
 
 topic.addSubscription(new subs.SqsSubscription(queue));
-/// !hide
+// / !hide
 
 app.synth();

@@ -11,10 +11,10 @@ class TestStack extends cdk.Stack {
       path: path.join(__dirname, 'file-asset.txt'),
     });
 
-    /// !show
+    // / !show
     const group = new iam.Group(this, 'MyUserGroup');
     asset.grantRead(group);
-    /// !hide
+    // / !hide
   }
 }
 

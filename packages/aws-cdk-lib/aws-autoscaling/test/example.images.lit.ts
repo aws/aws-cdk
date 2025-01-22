@@ -1,6 +1,6 @@
 import * as ec2 from '../../aws-ec2';
 
-/// !show
+// / !show
 // Pick a Windows edition to use
 const windows = new ec2.WindowsImage(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE);
 
@@ -21,7 +21,7 @@ const linux = new ec2.GenericLinuxImage({
   'eu-west-1': 'ami-12345678',
   // ...
 });
-/// !hide
+// / !hide
 
 Array.isArray(windows);
 Array.isArray(amznLinux);

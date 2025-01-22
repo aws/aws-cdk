@@ -16,13 +16,13 @@ class TestStack extends cdk.Stack {
         },
       }),
       grantReportGroupPermissions: false,
-      /// !show
+      // / !show
       environment: {
         buildImage: codebuild.LinuxBuildImage.fromAsset(this, 'MyImage', {
           directory: path.join(__dirname, 'demo-image'),
         }),
       },
-      /// !hide
+      // / !hide
     });
   }
 }

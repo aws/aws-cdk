@@ -18,11 +18,11 @@ class TestStack extends cdk.Stack {
         },
       }),
       grantReportGroupPermissions: false,
-      /// !show
+      // / !show
       environment: {
         buildImage: codebuild.LinuxBuildImage.fromEcrRepository(ecrRepository, 'v1.0'),
       },
-      /// !hide
+      // / !hide
     });
   }
 }

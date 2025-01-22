@@ -1,6 +1,6 @@
 import * as ec2 from '../lib';
 
-/// !show
+// / !show
 // Pick the right Amazon Linux edition. All arguments shown are optional
 // and will default to these values when omitted.
 const amznLinux = ec2.MachineImage.latestAmazonLinux({
@@ -40,7 +40,7 @@ const genericWindows = ec2.MachineImage.genericWindows({
   'eu-west-1': 'ami-12345678',
   // ...
 });
-/// !hide
+// / !hide
 
 Array.isArray(windows);
 Array.isArray(amznLinux);
