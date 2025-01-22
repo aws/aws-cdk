@@ -384,7 +384,7 @@ export class Queue extends QueueBase {
       physicalName: props.queueName,
     });
 
-    validateProps(props);
+    validateProps(this, props);
 
     if (props.redriveAllowPolicy) {
       const { redrivePermission, sourceQueues } = props.redriveAllowPolicy;
