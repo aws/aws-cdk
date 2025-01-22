@@ -4,7 +4,7 @@ import { TestContext } from './integ-test';
 import { ResourcePool } from './resource-pool';
 import { DisableBootstrapContext } from './with-cdk-app';
 
-export function isAtmosphereEnabled(): boolean {
+export function atmosphereEnabled(): boolean {
   const enabled = process.env.CDK_INTEG_ATMOSPHERE_ENABLED;
   return enabled === 'true' || enabled === '1';
 }
@@ -38,7 +38,7 @@ export function withAws<A extends TestContext>(
 ): (context: A) => Promise<void> {
   return async (context: A) => {
 
-    if (isAtmosphereEnabled()) {
+    if (atmosphereEnabled()) {
       const atmosphere = new AtmosphereClient(atmosphereEndpoint());
       const allocation = await atmosphere.acquire({ pool: atmospherePool(), requester: context.name });
       const aws = await AwsClients.forIdentity(allocation.environment.region, {

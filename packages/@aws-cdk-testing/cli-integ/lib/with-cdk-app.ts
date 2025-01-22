@@ -11,7 +11,7 @@ import { IPackageSource } from './package-sources/source';
 import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
 import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
-import { AwsContext, isAtmosphereEnabled, withAws } from './with-aws';
+import { AwsContext, atmosphereEnabled, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
 export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
@@ -556,7 +556,7 @@ export class TestFixture extends ShellHelper {
 
     // when using the atmosphere service, it does resource cleanup on our behalf
     // so we don't have to wait for it.
-    if (!isAtmosphereEnabled()) {
+    if (!atmosphereEnabled()) {
 
       const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
@@ -669,7 +669,7 @@ async function ensureBootstrapped(fixture: TestFixture) {
 
   // when using the atmosphere service, every test needs to bootstrap
   // its own environment.
-  if (!isAtmosphereEnabled()) {
+  if (!atmosphereEnabled()) {
     ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
   }
 }
