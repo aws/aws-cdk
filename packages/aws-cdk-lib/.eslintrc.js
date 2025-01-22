@@ -25,6 +25,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmcontacts',
   'aws-ssmincidents',
   'aws-ssmquicksetup',
+  'aws-apigateway',
 ];
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
