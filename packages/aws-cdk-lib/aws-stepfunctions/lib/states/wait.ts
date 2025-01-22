@@ -67,15 +67,15 @@ interface WaitOptions {
 /**
  * Properties for defining a Wait state that using JSONPath
  */
-export interface WaitJsonPathProps extends StateBaseProps, AssignableStateOptions, WaitOptions, JsonPathCommonOptions {}
+export interface WaitJsonPathProps extends StateBaseProps, AssignableStateOptions, WaitOptions, JsonPathCommonOptions { }
 /**
  * Properties for defining a Wait state that using JSONata
  */
-export interface WaitJsonataProps extends StateBaseProps, AssignableStateOptions, WaitOptions, JsonataCommonOptions {}
+export interface WaitJsonataProps extends StateBaseProps, AssignableStateOptions, WaitOptions, JsonataCommonOptions { }
 /**
  * Properties for defining a Wait state
  */
-export interface WaitProps extends StateBaseProps, AssignableStateOptions, WaitOptions {}
+export interface WaitProps extends StateBaseProps, AssignableStateOptions, WaitOptions { }
 
 /**
  * Define a Wait state in the state machine
@@ -130,6 +130,7 @@ export class Wait extends State implements INextable {
       ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       ...this.time._json,
+      ...this.renderInputOutput(),
       ...this.renderNextEnd(),
       ...this.renderAssign(topLevelQueryLanguage),
     };
