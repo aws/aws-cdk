@@ -15,9 +15,20 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 
 // no-throw-default-error
-const modules = ['aws-s3', 'aws-lambda', 'aws-rds', 'aws-sns', 'aws-apigatewayv2'];
+const enableNoThrowDefaultErrorIn = [
+  'aws-lambda',
+  'aws-rds',
+  'aws-s3',
+  'aws-sns',
+  'aws-sqs',
+  'aws-ssm',
+  'aws-ssmcontacts',
+  'aws-ssmincidents',
+  'aws-ssmquicksetup',
+  'aws-apigatewayv2',
+];
 baseConfig.overrides.push({
-  files: modules.map(m => `./${m}/lib/**`),
+  files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
   rules: { "@cdklabs/no-throw-default-error": ['error'] },
 });
 
