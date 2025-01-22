@@ -50,14 +50,14 @@ export function withAws<A extends TestContext>(
 
       await sanityCheck(aws);
 
-      let success = true;
+      let outcome = 'success';
       try {
         return await block({ ...context, disableBootstrap, aws });
       } catch (e: any) {
-        success = false;
+        outcome = 'failure';
         throw e;
       } finally {
-        await atmosphere.release(allocation.id, success ? 'success' : 'failure');
+        await atmosphere.release(allocation.id, outcome);
       }
 
     } else {
