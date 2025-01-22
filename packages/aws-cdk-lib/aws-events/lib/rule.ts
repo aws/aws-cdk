@@ -60,7 +60,6 @@ export interface RuleProps extends EventCommonOptions {
  * @resource AWS::Events::Rule
  */
 export class Rule extends Resource implements IRule {
-
   /**
    * Import an existing EventBridge Rule provided an ARN
    *

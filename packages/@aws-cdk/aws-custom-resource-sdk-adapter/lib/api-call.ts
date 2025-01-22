@@ -145,7 +145,6 @@ export class ApiCall {
       throw Error(`No client constructor found within package: ${this.v3PackageName}`);
     }
   }
-
 }
 
 /**

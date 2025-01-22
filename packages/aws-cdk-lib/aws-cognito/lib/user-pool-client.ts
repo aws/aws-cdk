@@ -376,7 +376,6 @@ export interface IUserPoolClient extends IResource {
  * Define a UserPool App Client
  */
 export class UserPoolClient extends Resource implements IUserPoolClient {
-
   /**
    * Import a user pool client given its id.
    */

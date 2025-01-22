@@ -44,7 +44,6 @@ export interface BuildFleetProps extends FleetProps {
  * @resource AWS::GameLift::Fleet
  */
 export class BuildFleet extends FleetBase implements IBuildFleet {
-
   /**
    * Import an existing fleet from its identifier.
    */

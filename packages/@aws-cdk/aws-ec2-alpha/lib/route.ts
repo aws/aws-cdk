@@ -383,7 +383,6 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
  * @resource AWS::EC2::NatGateway
  */
 export class NatGateway extends Resource implements IRouteTarget {
-
   /**
    * Id of the NatGateway
    * @attribute
@@ -471,7 +470,6 @@ export class NatGateway extends Resource implements IRouteTarget {
  * @resource AWS::EC2::VPCPeeringConnection
  */
 export class VPCPeeringConnection extends Resource implements IRouteTarget {
-
   /**
    * The type of router used in the route.
    */
@@ -563,7 +561,6 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
     return false;
   }
-
 }
 
 /**

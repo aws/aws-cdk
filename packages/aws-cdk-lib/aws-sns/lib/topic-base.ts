@@ -224,5 +224,4 @@ export abstract class TopicBase extends Resource implements ITopic {
     }
     return `TokenSubscription:${nextSuffix}`;
   }
-
 }

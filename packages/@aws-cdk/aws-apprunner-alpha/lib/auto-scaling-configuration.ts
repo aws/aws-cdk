@@ -205,5 +205,4 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
       throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}.`);
     }
   }
-
 }

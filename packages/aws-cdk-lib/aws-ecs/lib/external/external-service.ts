@@ -66,7 +66,6 @@ export interface ExternalServiceAttributes {
  * @resource AWS::ECS::Service
  */
 export class ExternalService extends BaseService implements IExternalService {
-
   /**
    * Imports from the specified service ARN.
    */

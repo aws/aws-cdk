@@ -71,7 +71,6 @@ export class MappingValue implements IMappingValue {
  * Represents a Parameter Mapping.
  */
 export class ParameterMapping {
-
   /**
    * Creates a mapping from an object.
    */

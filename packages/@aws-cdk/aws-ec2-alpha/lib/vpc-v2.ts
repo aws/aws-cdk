@@ -42,7 +42,6 @@ export interface Ipv6PoolSecondaryAddressProps extends SecondaryAddressProps {
  * IpAddress options to define VPC V2
  */
 export class IpAddresses {
-
   /**
    * An IPv4 CIDR Range
    */
@@ -306,7 +305,6 @@ export interface VpcV2Attributes {
  * @resource AWS::EC2::VPC
  */
 export class VpcV2 extends VpcV2Base {
-
   /**
    * Create a VPC from existing attributes
    */
@@ -316,7 +314,6 @@ export class VpcV2 extends VpcV2Base {
     * @internal
     */
     class ImportedVpcV2 extends VpcV2Base {
-
       public readonly vpcId: string;
       public readonly vpcArn: string;
       public readonly publicSubnets: ISubnetV2[] = [];
@@ -603,7 +600,6 @@ export class VpcV2 extends VpcV2Base {
  * Supports assigning IPv4 address to VPC
  */
 class ipv4CidrAllocation implements IIpAddresses {
-
   constructor(private readonly cidrBlock: string, private readonly props?: { cidrBlockName: string}) {
   }
 
@@ -638,7 +634,6 @@ class AmazonProvided implements IIpAddresses {
       cidrBlockName: this.props.cidrBlockName,
     };
   }
-
 }
 
 /**
@@ -646,7 +641,6 @@ class AmazonProvided implements IIpAddresses {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html
  */
 class IpamIpv6 implements IIpAddresses {
-
   constructor(private readonly props: IpamOptions) {
   }
 
@@ -665,7 +659,6 @@ class IpamIpv6 implements IIpAddresses {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html
  */
 class IpamIpv4 implements IIpAddresses {
-
   constructor(private readonly props: IpamOptions) {
   }
   allocateVpcCidr(): VpcCidrOptions {
@@ -683,7 +676,6 @@ class IpamIpv4 implements IIpAddresses {
  * Supports assigning IPv6 address to VPC in an address pool
  */
 class Ipv6Pool implements IIpAddresses {
-
   constructor(private readonly props: Ipv6PoolSecondaryAddressProps) {
   }
   allocateVpcCidr(): VpcCidrOptions {
@@ -825,7 +817,6 @@ interface VPCCidrBlockProps extends VPCCidrBlockattributes {
  * @internal
  */
 class VPCCidrBlock extends Resource implements IVPCCidrBlock {
-
   /**
    * Import an existing VPC CIDR Block
    */

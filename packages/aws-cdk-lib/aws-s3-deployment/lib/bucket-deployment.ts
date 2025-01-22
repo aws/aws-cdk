@@ -656,7 +656,6 @@ export interface DeployTimeSubstitutedFileProps {
  * upload individual files and specify to make substitutions in the file.
  */
 export class DeployTimeSubstitutedFile extends BucketDeployment {
-
   public readonly objectKey: string;
 
   constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
@@ -726,7 +725,6 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export class CacheControl {
-
   /**
    * Sets 'must-revalidate'.
    */

@@ -10,7 +10,6 @@ export interface BucketPingerProps {
   readonly timeout?: Duration;
 }
 export class BucketPinger extends Construct {
-
   private _resource: CustomResource;
 
   constructor(scope: Construct, id: string, props: BucketPingerProps) {

@@ -206,5 +206,4 @@ export class RegionInfo {
   public get samlSignOnUrl(): string | undefined {
     return Fact.find(this.name, FactName.SAML_SIGN_ON_URL);
   }
-
 }

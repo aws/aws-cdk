@@ -12,7 +12,6 @@ export interface TriggerFunctionProps extends lambda.FunctionProps, TriggerOptio
  * Invokes an AWS Lambda function during deployment.
  */
 export class TriggerFunction extends lambda.Function implements ITrigger {
-
   /**
    * The underlying trigger resource.
    */

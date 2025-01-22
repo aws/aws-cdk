@@ -103,7 +103,6 @@ export interface PolicyProps {
  * in the IAM User Guide guide.
  */
 export class Policy extends Resource implements IPolicy, IGrantable {
-
   /**
    * Import a policy in this app based on its name
    */
