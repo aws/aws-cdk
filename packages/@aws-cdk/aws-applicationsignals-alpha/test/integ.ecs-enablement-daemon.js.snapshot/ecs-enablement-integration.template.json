@@ -553,18 +553,24 @@
       "Environment": [
        {
         "Name": "CW_CONFIG_CONTENT",
-        "Value": "{\"agent\": {\"debug\": true}, \"traces\": {\"traces_collected\": {\"application_signals\": {\"enabled\": true}}}, \"logs\": {\"metrics_collected\": {\"application_signals\": {\"enabled\": true}}}}"
+        "Value": "{\"logs\":{\"metrics_collected\":{\"application_signals\":{\"enabled\":true}}},\"traces\":{\"traces_collected\":{\"application_signals\":{\"enabled\":true}}}}"
+       },
+       {
+        "Name": "AWS_REGION",
+        "Value": {
+         "Ref": "AWS::Region"
+        }
        }
       ],
       "Essential": true,
-      "Image": "public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest",
+      "Image": "amazon/cloudwatch-agent:latest",
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
         "awslogs-group": {
-         "Ref": "CwAgentLogGroupBF702CD8"
+         "Ref": "CwAgentDaemonTaskDefecscwagentLogGroupEE66E5BB"
         },
-        "awslogs-stream-prefix": "ecs",
+        "awslogs-stream-prefix": "ecs-cwagent",
         "awslogs-region": {
          "Ref": "AWS::Region"
         }
@@ -585,7 +591,8 @@
         "Name": "cwagent-2000",
         "Protocol": "tcp"
        }
-      ]
+      ],
+      "User": "0:1338"
      }
     ],
     "ExecutionRoleArn": {
@@ -595,7 +602,7 @@
      ]
     },
     "Family": "ecsenablementintegrationCwAgentDaemonTaskDefB3E3B54C",
-    "NetworkMode": "bridge",
+    "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
      "EC2"
     ],
@@ -606,6 +613,11 @@
      ]
     }
    }
+  },
+  "CwAgentDaemonTaskDefecscwagentLogGroupEE66E5BB": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "CwAgentDaemonTaskDefExecutionRoleDB11FC2A": {
    "Type": "AWS::IAM::Role",
@@ -637,7 +649,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "CwAgentLogGroupBF702CD8",
+         "CwAgentDaemonTaskDefecscwagentLogGroupEE66E5BB",
          "Arn"
         ]
        }
@@ -653,15 +665,6 @@
     ]
    }
   },
-  "CwAgentLogGroupBF702CD8": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": "/ecs/ecs-cwagent-cdk-daemon",
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "CwAgentDaemonServiceA063D544": {
    "Type": "AWS::ECS::Service",
    "Properties": {
@@ -674,6 +677,27 @@
     },
     "EnableECSManagedTags": false,
     "LaunchType": "EC2",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "CwAgentDaemonServiceSecurityGroup4155633D",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "TestVpcPrivateSubnet1SubnetCC65D771"
+       },
+       {
+        "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2"
+       }
+      ]
+     }
+    },
     "SchedulingStrategy": "DAEMON",
     "ServiceConnectConfiguration": {
      "Enabled": true,
@@ -712,6 +736,25 @@
     "CwAgentDaemonTaskDefTaskRoleB630618E"
    ]
   },
+  "CwAgentDaemonServiceSecurityGroup4155633D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "ecs-enablement-integration/CwAgentDaemonService/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   },
+   "DependsOn": [
+    "CwAgentDaemonTaskDefTaskRoleB630618E"
+   ]
+  },
   "Ec2TaskDefinitionTaskRole0B78BC85": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -742,6 +785,12 @@
        }
       ],
       "Environment": [
+       {
+        "Name": "AWS_REGION",
+        "Value": {
+         "Ref": "AWS::Region"
+        }
+       },
        {
         "Name": "OTEL_LOGS_EXPORTER",
         "Value": "none"
@@ -815,6 +864,14 @@
        "/otel-auto-instrumentation-python"
       ],
       "Cpu": 0,
+      "Environment": [
+       {
+        "Name": "AWS_REGION",
+        "Value": {
+         "Ref": "AWS::Region"
+        }
+       }
+      ],
       "Essential": false,
       "Image": "public.ecr.aws/aws-observability/adot-autoinstrumentation-python:v0.8.0",
       "Memory": 32,
@@ -829,7 +886,7 @@
      }
     ],
     "Family": "ecsenablementintegrationEc2TaskDefinition9DAAE5F5",
-    "NetworkMode": "host",
+    "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
      "EC2"
     ],
@@ -895,10 +952,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -949,10 +1006,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

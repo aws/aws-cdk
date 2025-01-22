@@ -34,12 +34,10 @@ new ApplicationSignalsIntegration(stack, 'TestFargateSidecarIntegration', {
     sdkVersion: DotnetInstrumentationVersion.V1_6_0_WINDOWS2019,
   },
   serviceName: 'demo',
-  cloudWatchAgent: {
-    enableSidecar: true,
-    container: {
-      containerName: 'cwagent',
-      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/cloudwatch-agent/cloudwatch-agent:1.300051.0b992-windowsservercore2019'),
-    },
+  cloudWatchAgentSidecar: {
+    containerName: 'cloudwatch-agent',
+    cpu: 256,
+    memoryLimitMiB: 512,
   },
 });
 
