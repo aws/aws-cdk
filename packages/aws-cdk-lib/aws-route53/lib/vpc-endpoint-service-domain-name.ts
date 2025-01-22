@@ -35,7 +35,6 @@ export interface VpcEndpointServiceDomainNameProps {
  * A Private DNS configuration for a VPC endpoint service.
  */
 export class VpcEndpointServiceDomainName extends Construct {
-
   // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
   private static readonly endpointServices: IVpcEndpointService[] = [];
 

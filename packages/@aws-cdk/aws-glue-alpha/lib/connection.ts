@@ -245,7 +245,6 @@ export interface ConnectionProps extends ConnectionOptions {
  * An AWS Glue connection to a data source.
  */
 export class Connection extends cdk.Resource implements IConnection {
-
   /**
    * Creates a Connection construct that represents an external connection.
    *

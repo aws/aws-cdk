@@ -12,7 +12,6 @@ import * as path from 'path';
 const app = new cdk.App();
 
 class EC2DualStack extends cdk.Stack {
-
   public readonly instancePublicIp: string;
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {

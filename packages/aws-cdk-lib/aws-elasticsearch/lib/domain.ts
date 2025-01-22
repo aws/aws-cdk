@@ -1322,7 +1322,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
-
 }
 
 /**

@@ -3,7 +3,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 
 class CompositeAlarmIntegrationTest extends Stack {
-
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -61,11 +60,9 @@ class CompositeAlarmIntegrationTest extends Stack {
       actionsSuppressor: alarm5,
     });
   }
-
 }
 
 class CompositeAlarmImportIntegrationTest extends Stack {
-
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 

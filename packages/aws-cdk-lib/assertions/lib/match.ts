@@ -498,5 +498,4 @@ class StringLikeRegexpMatch extends Matcher {
 
     return result;
   }
-
 }

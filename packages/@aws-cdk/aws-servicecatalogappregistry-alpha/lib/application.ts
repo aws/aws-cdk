@@ -265,7 +265,6 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   private isSameAccount(stack: cdk.Stack): boolean {
     return isAccountUnresolved(this.env.account, stack.account) || this.env.account === stack.account;
   }
-
 }
 
 /**

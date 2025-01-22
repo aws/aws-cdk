@@ -24,7 +24,6 @@ export type TestSuiteType = 'test-suite' | 'legacy-test-suite';
  * directory. For legacy test cases use LegacyIntegTestCases
  */
 export class IntegTestSuite {
-
   /**
    * Loads integ tests from a snapshot directory
    */
@@ -114,7 +113,6 @@ export interface LegacyTestCaseConfig {
  * test cases, i.e. tests without a `integ.json`.
  */
 export class LegacyIntegTestSuite extends IntegTestSuite {
-
   /**
    * Returns the single test stack to use.
    *

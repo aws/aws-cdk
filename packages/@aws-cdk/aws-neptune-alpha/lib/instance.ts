@@ -471,7 +471,6 @@ export abstract class DatabaseInstanceBase extends cdk.Resource implements IData
  * @resource AWS::Neptune::DBInstance
  */
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
-
   /**
    * The instance's database cluster
    */

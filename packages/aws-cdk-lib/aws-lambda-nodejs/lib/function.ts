@@ -167,7 +167,6 @@ export class NodejsFunction extends lambda.Function {
       }
     }
   }
-
 }
 
 /**

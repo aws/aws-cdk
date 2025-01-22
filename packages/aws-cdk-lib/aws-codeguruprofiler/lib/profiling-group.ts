@@ -65,7 +65,6 @@ export interface IProfilingGroup extends IResource {
 }
 
 abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
-
   public abstract readonly profilingGroupName: string;
 
   public abstract readonly profilingGroupArn: string;
@@ -107,7 +106,6 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
       resourceArns: [this.profilingGroupArn],
     });
   }
-
 }
 
 /**
@@ -134,7 +132,6 @@ export interface ProfilingGroupProps {
  * A new Profiling Group.
  */
 export class ProfilingGroup extends ProfilingGroupBase {
-
   /**
    * Import an existing Profiling Group provided a Profiling Group Name.
    *
@@ -210,5 +207,4 @@ export class ProfilingGroup extends ProfilingGroupBase {
     }
     return name;
   }
-
 }

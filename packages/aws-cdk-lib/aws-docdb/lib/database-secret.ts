@@ -48,7 +48,6 @@ export interface DatabaseSecretProps {
  * @resource AWS::SecretsManager::Secret
  */
 export class DatabaseSecret extends Secret {
-
   /**
    * the excluded characters for this Secret
    * @internal

@@ -1985,5 +1985,4 @@ export class InstanceType {
   public isBurstable(): boolean {
     return this.instanceTypeIdentifier.startsWith('t3') || this.instanceTypeIdentifier.startsWith('t4g') || this.instanceTypeIdentifier.startsWith('t2');
   }
-
 }

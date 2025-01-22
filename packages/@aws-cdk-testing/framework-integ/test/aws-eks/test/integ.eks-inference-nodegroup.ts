@@ -7,7 +7,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterInferenceStack extends Stack {
-
   constructor(scope: App, id: string) {
     super(scope, id);
 

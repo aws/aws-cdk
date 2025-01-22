@@ -510,7 +510,6 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository.
  */
 export class Repository extends RepositoryBase {
-
   /**
    * Imports a codecommit repository.
    * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)

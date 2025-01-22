@@ -166,7 +166,6 @@ export class Memory {
  * The code runtimes
  */
 export class Runtime {
-
   /**
    * CORRETTO 8
    */

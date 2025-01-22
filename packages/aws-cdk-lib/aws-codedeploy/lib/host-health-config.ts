@@ -4,7 +4,6 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
  * Minimum number of healthy hosts for a server deployment.
  */
 export class MinimumHealthyHosts {
-
   /**
    * The minimum healthy hosts threshold expressed as an absolute number.
    */
@@ -39,7 +38,6 @@ export class MinimumHealthyHosts {
  * Minimum number of healthy hosts per availability zone for a server deployment.
  */
 export class MinimumHealthyHostsPerZone {
-
   /**
    * The minimum healthy hosts threshold expressed as an absolute number.
    */

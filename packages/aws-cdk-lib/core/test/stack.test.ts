@@ -2477,9 +2477,6 @@ describe('regionalFact', () => {
 });
 
 class StackWithPostProcessor extends Stack {
-
-  // ...
-
   public _toCloudFormation() {
     const template = super._toCloudFormation();
 

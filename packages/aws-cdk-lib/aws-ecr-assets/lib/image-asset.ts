@@ -577,7 +577,6 @@ export class DockerImageAsset extends Construct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY] = this.dockerCacheTo;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY] = this.dockerCacheDisabled;
   }
-
 }
 
 function validateProps(props: DockerImageAssetProps) {

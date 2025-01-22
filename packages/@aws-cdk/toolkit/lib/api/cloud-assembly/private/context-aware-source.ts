@@ -106,7 +106,6 @@ export class ContextAwareCloudAssembly implements ICloudAssemblySource {
       return assembly;
     }
   }
-
 }
 
 /**

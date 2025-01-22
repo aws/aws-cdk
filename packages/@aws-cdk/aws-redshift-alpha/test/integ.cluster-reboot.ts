@@ -25,7 +25,6 @@ const requiredStackName: Partial<cdk.StackProps> = {
 };
 
 class RedshiftRebootStack extends cdk.Stack {
-
   readonly cluster: redshift.Cluster;
   readonly parameterGroup: redshift.ClusterParameterGroup;
 

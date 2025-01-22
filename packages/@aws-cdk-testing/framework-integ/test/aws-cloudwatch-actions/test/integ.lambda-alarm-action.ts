@@ -7,7 +7,6 @@ import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from 'aws-cdk-lib/cx-api';
 
 class LambdaAlarmActionIntegrationTestStack extends Stack {
-
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 

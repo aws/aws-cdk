@@ -364,7 +364,6 @@ abstract class LazyBase<A> implements IResolvable {
   public toJSON(): any {
     return '<unresolved-lazy>';
   }
-
 }
 
 class LazyString extends LazyBase<string> {

@@ -161,5 +161,4 @@ export class Resolver extends Construct {
       ttl: config.ttl?.toSeconds(),
     } : undefined;
   }
-
 }

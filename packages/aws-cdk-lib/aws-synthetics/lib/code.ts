@@ -10,7 +10,6 @@ import { Stage, Token } from '../../core';
  * The code the canary should execute
  */
 export abstract class Code {
-
   /**
    * Specify code inline.
    *

@@ -1264,7 +1264,6 @@ export interface PortMapping {
  * PortMap ValueObjectClass having by ContainerDefinition
  */
 export class PortMap {
-
   /**
    * The networking mode to use for the containers in the task.
    */
@@ -1329,7 +1328,6 @@ export class PortMap {
     }
     return true;
   }
-
 }
 
 /**

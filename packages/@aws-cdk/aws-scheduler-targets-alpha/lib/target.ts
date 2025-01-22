@@ -61,7 +61,6 @@ export interface ScheduleTargetBaseProps {
  * Base class for Schedule Targets
  */
 export abstract class ScheduleTargetBase {
-
   constructor(
     private readonly baseProps: ScheduleTargetBaseProps,
     protected readonly targetArn: string,

@@ -258,7 +258,6 @@ export interface RetryPolicy {
  * @see https://docs.aws.amazon.com/scheduler/latest/APIReference/API_CreateSchedule.html
  */
 export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
-
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 

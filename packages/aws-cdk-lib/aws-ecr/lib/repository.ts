@@ -159,7 +159,6 @@ export interface IRepository extends IResource {
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
-
   private readonly REPO_PULL_ACTIONS: string[] = [
     'ecr:BatchCheckLayerAvailability',
     'ecr:GetDownloadUrlForLayer',

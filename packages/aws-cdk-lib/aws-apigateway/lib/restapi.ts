@@ -760,7 +760,6 @@ export interface RestApiAttributes {
  * public endpoint.
  */
 export class RestApi extends RestApiBase {
-
   /**
    * Return whether the given object is a `RestApi`
    */

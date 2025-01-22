@@ -8,7 +8,6 @@ import { IResource, Lazy, Names, Resource, Stack } from '../../core';
  * Represents the function's source code
  */
 export abstract class FunctionCode {
-
   /**
    * Inline code for function
    * @returns code object with inline code.
@@ -47,7 +46,6 @@ export interface FileCodeOptions {
  * Represents the function's source code as inline code
  */
 class InlineCode extends FunctionCode {
-
   constructor(private code: string) {
     super();
   }
@@ -61,7 +59,6 @@ class InlineCode extends FunctionCode {
  * Represents the function's source code loaded from an external file
  */
 class FileCode extends FunctionCode {
-
   constructor(private options: FileCodeOptions) {
     super();
   }
@@ -161,7 +158,6 @@ export interface FunctionProps {
  * @resource AWS::CloudFront::Function
  */
 export class Function extends Resource implements IFunction {
-
   /** Imports a function by its name and ARN */
   public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
     return new class extends Resource implements IFunction {

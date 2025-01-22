@@ -467,7 +467,6 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
  * });
  */
 export class StringParameter extends ParameterBase implements IStringParameter {
-
   /**
    * Imports an external string parameter by name.
    */

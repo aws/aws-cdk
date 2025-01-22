@@ -732,7 +732,6 @@ interface EndpointAccessConfig {
  * Endpoint access characteristics.
  */
 export class EndpointAccess {
-
   /**
    * The cluster endpoint is accessible from outside of your VPC.
    * Worker node traffic will leave your VPC to connect to the endpoint.

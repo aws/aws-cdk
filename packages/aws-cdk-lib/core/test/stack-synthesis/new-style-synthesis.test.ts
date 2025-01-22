@@ -193,7 +193,6 @@ describe('new style synthesis', () => {
   test('contains asset but not requiring a specific version parameter', () => {
     // GIVEN
     class BootstraplessStackSynthesizer extends DefaultStackSynthesizer {
-
       /**
        * Synthesize the associated bootstrap stack to the session.
        */

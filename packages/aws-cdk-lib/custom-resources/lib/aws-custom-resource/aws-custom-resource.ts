@@ -38,7 +38,6 @@ export class PhysicalResourceIdReference implements cdk.IResolvable {
  * Physical ID of the custom resource.
  */
 export class PhysicalResourceId {
-
   /**
    * Extract the physical resource id from the path (dot notation) to the data in the API call response.
    */
@@ -228,7 +227,6 @@ export interface SdkCallsPolicyOptions {
  * The IAM Policy that will be applied to the different calls.
  */
 export class AwsCustomResourcePolicy {
-
   /**
    * Use this constant to configure access to any resource.
    */

@@ -72,7 +72,6 @@ export interface BundlingProps extends BundlingOptions {
  * Bundling
  */
 export class Bundling implements cdk.BundlingOptions {
-
   public static bundle(options: BundlingProps): AssetCode {
     const bundling = new Bundling(options);
 

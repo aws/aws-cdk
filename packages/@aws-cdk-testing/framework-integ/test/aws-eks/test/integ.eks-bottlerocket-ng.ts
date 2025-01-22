@@ -8,7 +8,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 

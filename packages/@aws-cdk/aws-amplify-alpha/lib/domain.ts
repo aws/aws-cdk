@@ -66,7 +66,6 @@ export interface DomainProps extends DomainOptions {
  * An Amplify Console domain
  */
 export class Domain extends Resource {
-
   /**
    * The ARN of the domain
    *

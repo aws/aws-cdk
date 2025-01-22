@@ -130,7 +130,6 @@ class LambdaFunctionProvider extends Construct {
   public addPolicies(policies: any[]): void {
     this.policies.push(...policies);
   }
-
 }
 
 interface SingletonFunctionProps extends LambdaFunctionProviderProps {

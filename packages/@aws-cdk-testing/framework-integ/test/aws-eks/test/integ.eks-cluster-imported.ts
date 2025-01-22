@@ -17,7 +17,6 @@ import * as constructs from 'constructs';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private importedCluster: eks.ICluster;
   private vpc: ec2.IVpc;

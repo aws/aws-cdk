@@ -405,7 +405,6 @@ export interface ApplicationLoadBalancedTaskImageOptions {
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
 export abstract class ApplicationLoadBalancedServiceBase extends Construct {
-
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.

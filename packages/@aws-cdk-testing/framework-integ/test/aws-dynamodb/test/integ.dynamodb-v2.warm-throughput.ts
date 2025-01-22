@@ -4,7 +4,6 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 export class TestStack extends Stack {
-
   readonly table: dynamodb.TableV2;
 
   constructor(scope: Construct, id: string, props?: StackProps) {

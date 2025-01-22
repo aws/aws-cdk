@@ -152,7 +152,6 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * @resource AWS::EC2::VPCEndpoint
  */
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
-
   public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
     class Import extends VpcEndpoint {
       public vpcEndpointId = gatewayVpcEndpointId;
@@ -233,7 +232,6 @@ export interface IInterfaceVpcEndpointService {
  * A custom-hosted service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService {
-
   /**
    * The name of the service.
    */

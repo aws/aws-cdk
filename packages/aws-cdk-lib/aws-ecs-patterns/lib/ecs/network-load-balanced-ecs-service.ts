@@ -84,7 +84,6 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
  * An EC2 service running on an ECS cluster fronted by a network load balancer.
  */
 export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBase {
-
   /**
    * The ECS service in this construct.
    */

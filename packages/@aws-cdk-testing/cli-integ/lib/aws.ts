@@ -29,7 +29,6 @@ interface ClientConfig {
 }
 
 export class AwsClients {
-
   public static async forRegion(region: string, output: NodeJS.WritableStream) {
     return new AwsClients(region, output);
   }

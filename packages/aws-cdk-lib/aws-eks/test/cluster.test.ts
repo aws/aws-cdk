@@ -573,7 +573,6 @@ describe('cluster', () => {
     }
 
     class CapacityStack extends cdk.Stack {
-
       public group: asg.AutoScalingGroup;
 
       constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {

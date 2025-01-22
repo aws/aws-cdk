@@ -698,7 +698,6 @@ abstract class StreamBase extends Resource implements IStream {
       ...props,
     }).attachTo(this);
   }
-
 }
 
 /**
@@ -768,7 +767,6 @@ export interface StreamProps {
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
 export class Stream extends StreamBase {
-
   /**
    * Import an existing Kinesis Stream provided an ARN
    *
