@@ -180,7 +180,6 @@ describe('application signals integration', () => {
   });
 
   test('should fail if fargate task definition does not have a sidecar', () => {
-
     expect(() => {
       // GIVEN
       const stack = new Stack();
@@ -1169,5 +1168,4 @@ describe('application signals integration', () => {
       ],
     });
   });
-
 });
