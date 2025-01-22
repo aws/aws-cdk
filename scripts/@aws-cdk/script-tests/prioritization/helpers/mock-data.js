@@ -113,20 +113,22 @@ exports.createMockGithubForR5 = ({
   graphql
     // First call - fetch open PRs
     .mockResolvedValueOnce({
-      repository: {
-        pullRequests: {
-          nodes: [{
-            id: 'PR_123',
-            number: 123,
-            draft,
-            updatedAt,
-            labels: {
-              nodes: labels.map(label => ({ name: label }))
+      organization: {
+        repository: {
+          pullRequests: {
+            nodes: [{
+              id: 'PR_123',
+              number: 123,
+              draft,
+              updatedAt,
+              labels: {
+                nodes: labels.map(label => ({ name: label }))
+              }
+            }],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null
             }
-          }],
-          pageInfo: {
-            hasNextPage: false,
-            endCursor: null
           }
         }
       }
@@ -177,33 +179,35 @@ exports.createMockGithubForR2 = ({
   graphql
       // First call - fetch open PRs
       .mockResolvedValueOnce({
+        organization: {
           repository: {
-              pullRequests: {
+            pullRequests: {
+              nodes: [{
+                id: 'PR_123',
+                number: 123,
+                reviews: {
+                  nodes: approved ? [
+                    { state: 'APPROVED' }
+                  ] : []
+                },
+                commits: {
                   nodes: [{
-                      id: 'PR_123',
-                      number: 123,
-                      reviews: {
-                          nodes: approved ? [
-                              { state: 'APPROVED' }
-                          ] : []
-                      },
-                      commits: {
-                          nodes: [{
-                              commit: {
-                                  statusCheckRollup: {
-                                      state: checksState
-                                  }
-                              }
-                          }]
+                    commit: {
+                      statusCheckRollup: {
+                        state: checksState
                       }
-                  }],
-                  pageInfo: {
-                      hasNextPage: false,
-                      endCursor: null
-                  }
+                    }
+                  }]
+                }
+              }],
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: null
               }
+            }
           }
-      })
+        }
+        })
       // Second call - fetch project fields
       .mockResolvedValueOnce(projectFields)
       // Third call - check if PR is in project

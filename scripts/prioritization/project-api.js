@@ -99,55 +99,56 @@ const updateProjectField = async ({
   };
   
 
-/**
- * Fetches open pull requests from a repository with pagination support.
- * Includes data needed for both R2 and R5 priority processing.
- * @param {Object} params - The parameters for fetching pull requests
- * @param {Object} params.github - The GitHub API client
- * @param {string} params.owner - The repository owner
- * @param {string} params.repo - The repository name
- * @param {string} [params.cursor] - The pagination cursor
- * @returns {Promise<Object>} The GraphQL mutation response
- */
-  const fetchOpenPullRequests = async ({ github, owner, repo, cursor }) => {
+  /**
+   * Fetches open pull requests from a repository with pagination support.
+   * Includes data needed for both R2 and R5 priority processing.
+   * @param {Object} params - The parameters for fetching pull requests
+   * @param {Object} params.github - The GitHub API client
+   * @param {string} params.org - The organization name
+   * @param {string} params.repo - The repository name
+   * @param {string} [params.cursor] - The pagination cursor
+   * @returns {Promise<Object>} The GraphQL mutation response
+   */
+  const fetchOpenPullRequests = async ({ github, org, repo, cursor }) => {
     return github.graphql(
       `
-      query($owner: String!, $repo: String!, $cursor: String) {
-        repository(owner: $owner, name: $repo) {
-          pullRequests(first: 100, after: $cursor, states: OPEN) {
-            nodes {
-              id
-              number
-              updatedAt
-              reviews(last: 100) {
-                nodes {
-                  state
+      query($org: String!, $repo: String!, $cursor: String) {
+        organization(login: $org) {
+          repository(name: $repo) {
+            pullRequests(first: 100, after: $cursor, states: OPEN) {
+              nodes {
+                id
+                number
+                updatedAt
+                reviews(last: 100) {
+                  nodes {
+                    state
+                  }
                 }
-              }
-              commits(last: 1) {
-                nodes {
-                  commit {
-                    statusCheckRollup {
-                      state
+                commits(last: 1) {
+                  nodes {
+                    commit {
+                      statusCheckRollup {
+                        state
+                      }
                     }
                   }
                 }
-              }
-              labels(first: 10) {
-                nodes {
-                  name
+                labels(first: 10) {
+                  nodes {
+                    name
+                  }
                 }
               }
-            }
-            pageInfo {
-              hasNextPage
-              endCursor
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
             }
           }
         }
-      }
-      `,
-      { owner, repo, cursor }
+      }`,
+      { org, repo, cursor }
     );
   };
 
