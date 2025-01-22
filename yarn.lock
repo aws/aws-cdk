@@ -8582,6 +8582,17 @@
     "@smithy/util-base64" "^3.0.0"
     tslib "^2.6.2"
 
+"@smithy/fetch-http-handler@^4.1.3":
+  version "4.1.3"
+  resolved "https://registry.npmjs.org/@smithy/fetch-http-handler/-/fetch-http-handler-4.1.3.tgz#fc590dea2470d32559ae298306f1277729d24aa9"
+  integrity sha512-6SxNltSncI8s689nvnzZQc/dPXcpHQ34KUj6gR/HBroytKOd/isMG3gJF/zBE1TBmTT18TXyzhg3O3SOOqGEhA==
+  dependencies:
+    "@smithy/protocol-http" "^4.1.8"
+    "@smithy/querystring-builder" "^3.0.11"
+    "@smithy/types" "^3.7.2"
+    "@smithy/util-base64" "^3.0.0"
+    tslib "^2.6.2"
+
 "@smithy/fetch-http-handler@^5.0.0", "@smithy/fetch-http-handler@^5.0.1":
   version "5.0.1"
   resolved "https://registry.npmjs.org/@smithy/fetch-http-handler/-/fetch-http-handler-5.0.1.tgz#8463393442ca6a1644204849e42c386066f0df79"
@@ -9844,6 +9855,20 @@
   integrity sha512-bOm0YMMxRjbI3X6QkWwADPFkh2AH2xBMQIB1IQgCsCRqXXpSJatgjUR3oxHthpYwFkw3WPkOt8VgMpJxC0rFqg==
   dependencies:
     "@smithy/fetch-http-handler" "^4.1.2"
+    "@smithy/node-http-handler" "^3.3.3"
+    "@smithy/types" "^3.7.2"
+    "@smithy/util-base64" "^3.0.0"
+    "@smithy/util-buffer-from" "^3.0.0"
+    "@smithy/util-hex-encoding" "^3.0.0"
+    "@smithy/util-utf8" "^3.0.0"
+    tslib "^2.6.2"
+
+"@smithy/util-stream@^3.3.4":
+  version "3.3.4"
+  resolved "https://registry.npmjs.org/@smithy/util-stream/-/util-stream-3.3.4.tgz#c506ac41310ebcceb0c3f0ba20755e4fe0a90b8d"
+  integrity sha512-SGhGBG/KupieJvJSZp/rfHHka8BFgj56eek9px4pp7lZbOF+fRiVr4U7A3y3zJD8uGhxq32C5D96HxsTC9BckQ==
+  dependencies:
+    "@smithy/fetch-http-handler" "^4.1.3"
     "@smithy/node-http-handler" "^3.3.3"
     "@smithy/types" "^3.7.2"
     "@smithy/util-base64" "^3.0.0"
