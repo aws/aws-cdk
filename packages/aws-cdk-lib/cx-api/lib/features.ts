@@ -122,6 +122,7 @@ export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableI
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
+export const S3_BUCKET_DEFAULT_BLOCK_PUBLIC_ACCESS_PROPERTIES_TO_TRUE = '@aws-cdk/aws-s3:blockPublicAccessPropertiesDefaultToTrue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1370,6 +1371,24 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_BUCKET_DEFAULT_BLOCK_PUBLIC_ACCESS_PROPERTIES_TO_TRUE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the properties of class BlockPublicAccess will default to true',
+    detailsMd: `
+      Without this flag, the 'blockPublicAccess' property has a counter-intuitive and inconsistent behavior.
+      When the property value is not specified, then all the 4 member properties (blockPublicAcls,
+      ignorePublicAcls, blockPublicPolicy and restrictPublicBuckets) will default to 'true'. However in
+      cases where selected properties are explicitly set to false, the remaining properties for which no value
+      was specified will also default to 'false'.
+      
+      Intuitively, if the property is not set explicitly, it must default to 'true'. Enabling this flag will exhibit
+      this behavior.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to avoid accidental changes to bucket visibility settings.',
   },
 };
 

@@ -86,8 +86,9 @@ Flags come in three types:
 | [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | 2.174.0 | (fix) |
 | [@aws-cdk/aws-ecs:disableEcsImdsBlocking](#aws-cdkaws-ecsdisableecsimdsblocking) | When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)** | 2.175.0 | (temporary) |
 | [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | 2.175.0 | (temporary) |
-| [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | V2NEXT | (fix) |
+| [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | 2.176.0 | (fix) |
 | [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | V2NEXT | (fix) |
+| [@aws-cdk/aws-s3:blockPublicAccessPropertiesDefaultToTrue](#aws-cdkaws-s3blockpublicaccesspropertiesdefaulttotrue) | When enabled, the properties of class BlockPublicAccess will default to true | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -163,7 +164,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
     "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
-    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true
+    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
+    "@aws-cdk/aws-s3:blockPublicAccessPropertiesDefaultToTrue": true
   }
 }
 ```
@@ -1668,6 +1670,28 @@ thumbprints from unsecure connections.
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to allow unsecure OIDC connection.
+
+
+### @aws-cdk/aws-s3:blockPublicAccessPropertiesDefaultToTrue
+
+*When enabled, the properties of class BlockPublicAccess will default to true* (fix)
+
+Without this flag, the 'blockPublicAccess' property has a counter-intuitive and inconsistent behavior.
+When the property value is not specified, then all the 4 member properties (blockPublicAcls,
+ignorePublicAcls, blockPublicPolicy and restrictPublicBuckets) will default to 'true'. However in
+cases where selected properties are explicitly set to false, the remaining properties for which no value
+was specified will also default to 'false'.
+
+Intuitively, if the property is not set explicitly, it must default to 'true'. Enabling this flag will exhibit
+this behavior.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to avoid accidental changes to bucket visibility settings.
 
 
 <!-- END details -->

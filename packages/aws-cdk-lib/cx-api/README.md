@@ -594,3 +594,24 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-s3:blockPublicAccessPropertiesDefaultToTrue`
+
+Without this flag, the 'blockPublicAccess' property has a counter-intuitive and inconsistent behavior.
+When the property value is not specified, then all the 4 member properties (blockPublicAcls,
+ignorePublicAcls, blockPublicPolicy and restrictPublicBuckets) will default to 'true'. However in
+cases where selected properties are explicitly set to false, the remaining properties for which no value
+was specified will also default to 'false'.
+
+Intuitively, if the property is not set explicitly, it must default to 'true'. Enabling this flag will exhibit
+this behavior.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:blockPublicAccessPropertiesDefaultToTrue": true
+  }
+}
+```
