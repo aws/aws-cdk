@@ -2,17 +2,17 @@ import { Construct } from 'constructs';
 import { ValidationError } from '../../lib/errors';
 import { validateAllProps, ValidationRule } from '../../lib/helpers-internal/validate-all-props';
 
-class MockConstruct extends Construct {
+class TestConstruct extends Construct {
   constructor() {
-    super(undefined as any, 'MockConstruct');
+    super(undefined as any, 'TestConstruct');
   }
 }
 
 describe('validateAllProps', () => {
-  let mockScope: Construct;
+  let testScope: Construct;
 
   beforeEach(() => {
-    mockScope = new MockConstruct();
+    testScope = new TestConstruct();
   });
 
   it('should not throw an error when all validations pass', () => {
@@ -24,7 +24,7 @@ describe('validateAllProps', () => {
       },
     ];
 
-    expect(() => validateAllProps(mockScope, 'TestClass', props, rules)).not.toThrow();
+    expect(() => validateAllProps(testScope, 'TestClass', props, rules)).not.toThrow();
   });
 
   it('should throw a ValidationError when a validation fails', () => {
@@ -36,7 +36,7 @@ describe('validateAllProps', () => {
       },
     ];
 
-    expect(() => validateAllProps(mockScope, 'TestClass', props, rules)).toThrow(ValidationError);
+    expect(() => validateAllProps(testScope, 'TestClass', props, rules)).toThrow(ValidationError);
   });
 
   it('should include all failed validation messages in the error', () => {
@@ -52,9 +52,9 @@ describe('validateAllProps', () => {
       },
     ];
 
-    expect(() => validateAllProps(mockScope, 'TestClass', props, rules)).toThrow(ValidationError);
+    expect(() => validateAllProps(testScope, 'TestClass', props, rules)).toThrow(ValidationError);
     try {
-      validateAllProps(mockScope, 'TestClass', props, rules);
+      validateAllProps(testScope, 'TestClass', props, rules);
     } catch (error) {
       if (error instanceof ValidationError) {
         expect(error.message).toBe(
@@ -75,9 +75,9 @@ describe('validateAllProps', () => {
       },
     ];
 
-    expect(() => validateAllProps(mockScope, 'TestClass', props, rules)).toThrow(ValidationError);
+    expect(() => validateAllProps(testScope, 'TestClass', props, rules)).toThrow(ValidationError);
     try {
-      validateAllProps(mockScope, 'TestClass', props, rules);
+      validateAllProps(testScope, 'TestClass', props, rules);
     } catch (error) {
       if (error instanceof ValidationError) {
         expect(error.message).toBe(
