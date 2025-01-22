@@ -10,6 +10,7 @@ import {
   ProjectionType,
   SecondaryIndexProps,
   StreamViewType,
+  PointInTimeRecoverySpecification,
   TableClass,
   WarmThroughput,
 } from './shared';
@@ -148,10 +149,18 @@ export interface TableOptionsV2 {
 
   /**
    * Whether point-in-time recovery is enabled.
-   *
-   * @default false
+   * @deprecated use `pointInTimeRecoverySpecification` instead
+   * @default false - point in time recovery is not enabled.
    */
   readonly pointInTimeRecovery?: boolean;
+
+  /**
+   * Whether point-in-time recovery is enabled
+   * and recoveryPeriodInDays is set.
+   *
+   * @default - point in time recovery is not enabled.
+   */
+  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification;
 
   /**
    * The table class.
@@ -559,6 +568,10 @@ export class TableV2 extends TableBaseV2 {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
 
+    if (props.pointInTimeRecovery !== undefined && props.pointInTimeRecoverySpecification !== undefined) {
+      throw new Error('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+    }
+
     if (props.billing?.mode === BillingMode.PAY_PER_REQUEST || props.billing?.mode === undefined) {
       this.maxReadRequestUnits = props.billing?._renderReadCapacity();
       this.maxWriteRequestUnits = props.billing?._renderWriteCapacity();
@@ -697,8 +710,16 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
-    const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
+
+    const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
+
+    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification =
+      props.pointInTimeRecoverySpecification ??
+      this.tableOptions.pointInTimeRecoverySpecification ??
+      (pointInTimeRecovery !== undefined
+        ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
+        : { pointInTimeRecoveryEnabled: false });
 
     /*
     * Feature flag set as the following may be a breaking change.
@@ -730,9 +751,7 @@ export class TableV2 extends TableBaseV2 {
       contributorInsightsSpecification: contributorInsights !== undefined
         ? { enabled: contributorInsights }
         : undefined,
-      pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
-        ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
-        : undefined,
+      pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       readProvisionedThroughputSettings: props.readCapacity
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,

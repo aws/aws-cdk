@@ -174,6 +174,47 @@ describe('default properties', () => {
     );
   });
 
+  test('point-in-time-recovery-specification enabled', () => {
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+        recoveryPeriodInDays: 5,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+      {
+        AttributeDefinitions: [
+          { AttributeName: 'hashKey', AttributeType: 'S' },
+          { AttributeName: 'sortKey', AttributeType: 'N' },
+        ],
+        KeySchema: [
+          { AttributeName: 'hashKey', KeyType: 'HASH' },
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
+        ],
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+        PointInTimeRecoverySpecification: {
+          PointInTimeRecoveryEnabled: true,
+          RecoveryPeriodInDays: 5,
+        },
+      },
+    );
+  });
+
+  test('both point-in-time-recovery-specification and point-in-time-recovery set', () => {
+    expect(() => new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+      pointInTimeRecovery: true,
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+        recoveryPeriodInDays: 5,
+      },
+    })).toThrow('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+  });
+
   test('server-side encryption is not enabled', () => {
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
