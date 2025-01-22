@@ -456,7 +456,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
 function validateSupportIpv6(vpc: IVpcV2) {
   if (vpc.secondaryCidrBlock) {
     if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-  secondaryAddress.ipv6IpamPoolId != undefined)) {
+  secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6Pool !== undefined)) {
       return true;
     } else {
       throw new Error('To use IPv6, the VPC must enable IPv6 support.');
