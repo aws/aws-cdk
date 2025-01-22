@@ -72,7 +72,7 @@ module.exports = {
     'space-before-blocks': 'error', // require space before blocks
     'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
     'eol-last': ['error', 'always'], // require a newline a the end of files
-    "@stylistic/padded-blocks": ["error", { "classes": "never" }],
+    '@stylistic/padded-blocks': ['error', { 'classes': 'never' }],
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
