@@ -462,8 +462,18 @@ interface DatabaseClusterBaseProps {
    *
    * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
    *
-   * @default ClusterScailabilityType.STANDARD
+   * @default ClusterScalabilityType.STANDARD
    */
+  readonly clusterScalabilityType?: ClusterScalabilityType;
+
+  /**
+  * [Misspelled] Specifies the scalability mode of the Aurora DB cluster.
+  *
+  * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
+  *
+  * @default ClusterScailabilityType.STANDARD
+  * @deprecated Use clusterScalabilityType instead. This will be removed in the next major version.
+  */
   readonly clusterScailabilityType?: ClusterScailabilityType;
 }
 
@@ -503,6 +513,25 @@ export enum InstanceUpdateBehaviour {
 
 /**
  * The scalability mode of the Aurora DB cluster.
+ */
+export enum ClusterScalabilityType {
+  /**
+   * The cluster uses normal DB instance creation.
+   */
+  STANDARD = 'standard',
+
+  /**
+   * The cluster operates as an Aurora Limitless Database,
+   * allowing you to create a DB shard group for horizontal scaling (sharding) capabilities.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
+   */
+  LIMITLESS = 'limitless',
+}
+
+/**
+ * The scalability mode of the Aurora DB cluster.
+ * @deprecated Use ClusterScalabilityType instead. This will be removed in the next major version.
  */
 export enum ClusterScailabilityType {
   /**
@@ -824,7 +853,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
     }
 
-    if (props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
+    if (props.clusterScalabilityType === ClusterScalabilityType.LIMITLESS || props.clusterScailabilityType === ClusterScailabilityType.LIMITLESS) {
       if (!props.enablePerformanceInsights) {
         throw new ValidationError('Performance Insights must be enabled for Aurora Limitless Database.', this);
       }
@@ -900,7 +929,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
       storageType: props.storageType?.toString(),
       enableLocalWriteForwarding: props.enableLocalWriteForwarding,
-      clusterScalabilityType: props.clusterScailabilityType,
+      clusterScalabilityType: props.clusterScalabilityType ?? props.clusterScailabilityType,
       // Admin
       backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -1315,7 +1344,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
     setLogRetention(this, props);
 
     // create the instances for only standard aurora clusters
-    if (props.clusterScailabilityType !== ClusterScailabilityType.LIMITLESS) {
+    if (props.clusterScalabilityType !== ClusterScalabilityType.LIMITLESS && props.clusterScailabilityType !== ClusterScailabilityType.LIMITLESS) {
       if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
         throw new ValidationError('Cannot provide writer or readers if instances or instanceProps are provided', this);
       }
