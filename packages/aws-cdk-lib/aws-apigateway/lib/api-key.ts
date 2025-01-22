@@ -6,6 +6,7 @@ import { IStage } from './stage';
 import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -197,15 +198,15 @@ export class ApiKey extends ApiKeyBase {
     }
 
     if (resources && stages) {
-      throw new Error('Only one of "resources" or "stages" should be provided');
+      throw new ValidationError('Only one of "resources" or "stages" should be provided', this);
     }
 
     return resources
       ? resources.map((resource: IRestApi) => {
         const restApi = resource;
         if (!restApi.deploymentStage) {
-          throw new Error('Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
-          'Either set the RestApi.deploymentStage or create an ApiKey from a Stage');
+          throw new ValidationError('Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
+          'Either set the RestApi.deploymentStage or create an ApiKey from a Stage', this);
         }
         const restApiId = restApi.restApiId;
         const stageName = restApi.deploymentStage!.stageName.toString();
