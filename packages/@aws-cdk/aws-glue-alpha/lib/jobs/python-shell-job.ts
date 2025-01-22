@@ -5,15 +5,6 @@ import { Construct } from 'constructs';
 import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 
 /**
- * Python Shell Jobs class
- *
- * A Python shell job runs Python scripts as a shell and supports a Python version that
- * depends on the AWS Glue version you are using.
- * This can be used to schedule and run tasks that don't require an Apache Spark environment.
- *
- */
-
-/**
  * Properties for creating a Python Shell job
  */
 export interface PythonShellJobProps extends JobProperties {
@@ -26,6 +17,7 @@ export interface PythonShellJobProps extends JobProperties {
 
   /**
    * The total number of DPU to assign to the Python Job
+   *
    * @default 0.0625
    */
   readonly maxCapacity?: MaxCapacity;
@@ -38,17 +30,19 @@ export interface PythonShellJobProps extends JobProperties {
    * the job run field will be used. This property must be set to false for flex jobs.
    * If this property is enabled, maxRetries must be set to zero.
    *
-   * @default - no job run queuing
+   * @default false
    */
   readonly jobRunQueuingEnabled?: boolean;
 }
 
 /**
- * A Python Shell Glue Job
+ * Python Shell Jobs class
+ *
+ * A Python shell job runs Python scripts as a shell and supports a Python version that
+ * depends on the AWS Glue version you are using.
+ * This can be used to schedule and run tasks that don't require an Apache Spark environment.
  */
 export class PythonShellJob extends Job {
-
-  // Implement abstract Job attributes
   public readonly jobArn: string;
   public readonly jobName: string;
   public readonly role: iam.IRole;
@@ -56,10 +50,6 @@ export class PythonShellJob extends Job {
 
   /**
   * PythonShellJob constructor
-  *
-  * @param scope
-  * @param id
-  * @param props
   */
   constructor(scope: Construct, id: string, props: PythonShellJobProps) {
     super(scope, id, { physicalName: props.jobName });
@@ -117,7 +107,6 @@ export class PythonShellJob extends Job {
   /**
   * Set the executable arguments with best practices enabled by default
   *
-  * @param props
   * @returns An array of arguments for Glue to use on execution
   */
   private executableArguments(props: PythonShellJobProps) {
