@@ -463,7 +463,7 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 #### Dual Stack Configurations
 
-Here is a break down of IPv4 and IPv6 specifc `subnetConfiguration` properties in a dual stack VPC:
+Here is a break down of IPv4 and IPv6 specific `subnetConfiguration` properties in a dual stack VPC:
 
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {

@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import { Stack } from '../../core';
 
 /**
- * Validates a zone name is valid by Route53 specifc naming rules,
+ * Validates a zone name is valid by Route53 specific naming rules,
  * and that there is no trailing dot in the name.
  *
  * @param zoneName the zone name to be validated.
