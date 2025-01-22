@@ -169,3 +169,5 @@ describe('watch', () => {
     });
   });
 });
+
+// @todo unit test watch with file events 
