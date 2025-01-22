@@ -199,7 +199,7 @@ export interface CdkCliOptions extends ShellOptions {
   verbose?: boolean;
 }
 
-/**forIdentity
+/**
  * Prepare a target dir byreplicating a source directory
  */
 export async function cloneDirectory(source: string, target: string, output?: NodeJS.WritableStream) {
@@ -496,7 +496,6 @@ export class TestFixture extends ShellHelper {
     return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
-        FORCE_COLOR: '0',
         AWS_REGION: this.aws.region,
         AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
