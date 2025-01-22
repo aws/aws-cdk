@@ -104,7 +104,7 @@ export class Bootstrapper {
     // (can't use Fn::Join or reference Conditions) so we do it here instead.
     const allTrusted = new Set([
       ...params.trustedAccounts ?? [],
-      ...params.trustedAccountsForLookup ?? []
+      ...params.trustedAccountsForLookup ?? [],
     ]);
     const invalid = intersection(allTrusted, new Set(params.untrustedAccounts));
     if (invalid.size > 0) {

@@ -357,7 +357,7 @@ describe('Bootstrapping v2', () => {
           TrustedAccounts: '222222222222',
         }),
       }),
-    )
+    );
   });
 
   test('removes trusted account for lookup when it is listed as untrusted', async () => {
@@ -387,7 +387,7 @@ describe('Bootstrapping v2', () => {
           TrustedAccountsForLookup: '222222222222',
         }),
       }),
-    )
+    );
   });
 
   test('do not allow accounts to be listed as both trusted and untrusted', async () => {
