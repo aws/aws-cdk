@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 import { AwsClients } from './aws';
 import { TestContext } from './integ-test';
