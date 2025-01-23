@@ -672,20 +672,26 @@ export class Distribution extends Resource implements IDistribution {
         this.boundOrigins.push({ origin, originId, distributionId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
-        this.addOriginGroup(originGroupId,
+        this.addOriginGroup(
+          originGroupId,
           originBindConfig.failoverConfig.statusCodes,
-          originId, failoverOriginId,
-          originBindConfig.selectionCriteria);
+          originId,
+          failoverOriginId,
+          originBindConfig.selectionCriteria,
+        );
         return originGroupId;
       }
       return originBindConfig.originProperty?.id ?? originId;
     }
   }
 
-  private addOriginGroup(originGroupId: string,
+  private addOriginGroup(
+    originGroupId: string,
     statusCodes: number[] | undefined,
-    originId: string, failoverOriginId: string,
-    selectionCriteria: OriginSelectionCriteria | undefined): void {
+    originId: string,
+    failoverOriginId: string,
+    selectionCriteria: OriginSelectionCriteria | undefined,
+  ): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
       throw new Error('fallbackStatusCodes cannot be empty');

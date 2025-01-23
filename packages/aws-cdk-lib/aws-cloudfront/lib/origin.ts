@@ -13,6 +13,8 @@ export enum OriginSelectionCriteria {
 
   /**
    * Selection based on media quality.
+   *
+   * This option is only valid for AWS Elemental MediaPackage v2 Origins.
    */
   MEDIA_QUALITY_BASED='media-quality-based',
 }
