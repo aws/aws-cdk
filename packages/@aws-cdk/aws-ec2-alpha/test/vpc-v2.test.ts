@@ -305,4 +305,66 @@ describe('Vpc V2 with full control', () => {
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::EC2::VPCCidrBlock', 2);
   });
+
+  test('Set field `useIpv6` to true if secondary address is defined using IPAM IPv6', () => {
+    const ipv6Vpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
+        ipamPool: new Ipam(stack, 'TestIpam', {
+          operatingRegion: ['us-west-1'],
+        }).publicScope.addPool('PublicPool0', {
+          addressFamily: AddressFamily.IP_V6,
+          awsService: AwsServiceName.EC2,
+          publicIpSource: IpamPoolPublicIpSource.AMAZON,
+          locale: 'us-west-1',
+        }),
+        netmaskLength: 64,
+        cidrBlockName: 'IPv6Ipam',
+      })],
+    },
+    );
+    expect(ipv6Vpc.useIpv6).toBe(true);
+  });
+
+  test('Set field `useIpv6` to true if secondary address is defined using Amazon Provided IPv6', () => {
+    const ipv6Vpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({
+        cidrBlockName: 'Ipv6Amazon',
+      })],
+    },
+    );
+    expect(ipv6Vpc.useIpv6).toBe(true);
+  });
+
+  test('Set field `useIpv6` to true if secondary address is defined using BYOIP IPv6', () => {
+    const ipv6Vpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6ByoipPool({
+        ipv6PoolId: 'test-Byoip-pool',
+        ipv6CidrBlock: '2001:db8::/32',
+        cidrBlockName: 'BYOIP',
+      })],
+    },
+    );
+    expect(ipv6Vpc.useIpv6).toBe(true);
+  });
+
+  test('Set field `useIpv6` to false if no IPv6 address is attached to VPC', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
+        cidrBlockName: 'SecondaryAddress',
+      })],
+    },
+    );
+    expect(testVpc.useIpv6).toBe(false);
+  });
+
+  test('VPC throws error is secondary CIDR block name is not provided', () => {
+    expect(() => new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16')],
+    })).toThrow('Cidr Block Name is required to create secondary IP address');
+  });
 });

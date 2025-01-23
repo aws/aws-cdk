@@ -514,7 +514,7 @@ export class Ipam extends Resource {
     if (props?.ipamName) {
       Tags.of(this).add(NAME_TAG, props.ipamName);
     }
-    if (!props?.operatingRegion && !Stack.of(this).region) {
+    if (props?.operatingRegion && (props.operatingRegion.length === 0)) {
       throw new Error('Please provide at least one operating region');
     }
 

@@ -608,12 +608,8 @@ export class RouteTargetType {
   readonly endpoint?: IVpcEndpoint;
 
   constructor(props: RouteTargetProps) {
-    if ((props.gateway && props.endpoint) || (!props.gateway && !props.endpoint)) {
-      throw new Error('Exactly one of `gateway` or `endpoint` must be specified.');
-    } else {
-      this.gateway = props.gateway;
-      this.endpoint = props.endpoint;
-    }
+    this.gateway = props.gateway;
+    this.endpoint = props.endpoint;
   }
 }
 
@@ -731,6 +727,10 @@ export class Route extends Resource implements IRouteV2 {
 
     if (this.target.gateway?.routerType === RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
       throw new Error('Egress only internet gateway does not support IPv4 routing');
+    }
+
+    if ((props.target.gateway && props.target.endpoint) || (!props.target.gateway && !props.target.endpoint)) {
+      throw new Error('Exactly one of `gateway` or `endpoint` must be specified.');
     }
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
