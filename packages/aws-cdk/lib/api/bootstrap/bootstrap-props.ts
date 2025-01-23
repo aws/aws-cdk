@@ -103,6 +103,14 @@ export interface BootstrappingParameters {
   readonly trustedAccountsForLookup?: string[];
 
   /**
+   * The list of AWS account IDs that should not be trusted by the bootstrapped environment.
+   * If these accounts are already trusted, they will be removed on bootstrapping.
+   *
+   * @default - no account will be untrusted.
+   */
+  readonly untrustedAccounts?: string[];
+
+  /**
    * The ARNs of the IAM managed policies that should be attached to the role performing CloudFormation deployments.
    * In most cases, this will be the AdministratorAccess policy.
    * At least one policy is required if `trustedAccounts` were passed.
