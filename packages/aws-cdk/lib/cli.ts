@@ -548,7 +548,7 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   let hotswapMode: HotswapMode;
   if (hotswap) {
     hotswapMode = HotswapMode.HOTSWAP_ONLY;
-  /* if (hotswapFallback) */
+  /*if (hotswapFallback)*/
   } else {
     hotswapMode = HotswapMode.FALL_BACK;
   }

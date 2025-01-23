@@ -921,7 +921,7 @@ test('empty change set is deleted if --execute is given', async () => {
   expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
   expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
 
-  // the first deletion is for any existing cdk change sets, the second is for the deleting the new empty change set
+  //the first deletion is for any existing cdk change sets, the second is for the deleting the new empty change set
   expect(mockCloudFormationClient).toHaveReceivedCommandTimes(DeleteChangeSetCommand, 2);
 });
 
@@ -946,7 +946,7 @@ test('empty change set is not deleted if --no-execute is given', async () => {
   expect(mockCloudFormationClient).toHaveReceivedCommand(CreateChangeSetCommand);
   expect(mockCloudFormationClient).not.toHaveReceivedCommand(ExecuteChangeSetCommand);
 
-  // the first deletion is for any existing cdk change sets
+  //the first deletion is for any existing cdk change sets
   expect(mockCloudFormationClient).toHaveReceivedCommandTimes(DeleteChangeSetCommand, 1);
 });
 
