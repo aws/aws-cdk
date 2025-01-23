@@ -1,5 +1,5 @@
 import { DescribeStacksCommand, StackStatus } from '@aws-sdk/client-cloudformation';
-import { determineAllowCrossAccountAssetPublishing, getBootstrapStackInfo } from '../../../lib/api/util/checks';
+import { determineAllowCrossAccountAssetPublishing, getBootstrapStackInfo } from '../../../lib/api/deployments/checks';
 import { mockCloudFormationClient, MockSdk } from '../../util/mock-sdk';
 
 describe('determineAllowCrossAccountAssetPublishing', () => {
