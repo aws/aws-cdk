@@ -347,7 +347,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
      * Commands available through SDK: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRcontainers.html
      * Commands available through CLI: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr-containers/index.html
     */
-    const cliLayer = new awscli.AwsCliLayer(this, 'awsclilayer');
+    const cliLayer = awscli.AwsCliLayer.getOrCreate(this);
     const shellCliLambda = new RolePolicySingletonFunction(this, 'Call Update-Role-Trust-Policy', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8757C',
       timeout: cdk.Duration.seconds(30),

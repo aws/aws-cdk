@@ -1041,7 +1041,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       Handler: 'index.handler',
       Layers: [
         {
-          Ref: 'TaskawsclilayerB1A11740',
+          Ref: 'awscdklambdalayerawscliAwsCliLayer437D4B14',
         },
       ],
       MemorySize: 256,
