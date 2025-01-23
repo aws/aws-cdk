@@ -714,12 +714,12 @@ export class TableV2 extends TableBaseV2 {
 
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
 
-    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification =
+    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification | undefined =
       props.pointInTimeRecoverySpecification ??
       this.tableOptions.pointInTimeRecoverySpecification ??
       (pointInTimeRecovery !== undefined
         ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
-        : { pointInTimeRecoveryEnabled: false });
+        : undefined);
 
     /*
     * Feature flag set as the following may be a breaking change.

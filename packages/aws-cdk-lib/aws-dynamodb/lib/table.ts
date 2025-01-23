@@ -1193,11 +1193,11 @@ export class Table extends TableBase {
       throw new Error('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
     }
 
-    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification =
+    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification | undefined =
       props.pointInTimeRecoverySpecification ??
       (props.pointInTimeRecovery !== undefined
         ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
-        : { pointInTimeRecoveryEnabled: false });
+        : undefined);
 
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
