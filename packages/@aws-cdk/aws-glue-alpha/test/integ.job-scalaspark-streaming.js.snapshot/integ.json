@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-glue-job-scalaspark-streaming-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-job-scalaspark-streaming"
+      ],
+      "assertionStack": "aws-glue-job-scalaspark-streaming-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluejobscalasparkstreamingintegtestDefaultTestDeployAssertCD3F6A81"
+    }
+  }
+}

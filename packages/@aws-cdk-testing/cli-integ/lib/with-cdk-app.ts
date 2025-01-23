@@ -99,21 +99,23 @@ export function withCdkApp(
   return withSpecificCdkApp('app', block);
 }
 
-export function withCdkMigrateApp<A extends TestContext>(language: string, block: (context: TestFixture) => Promise<void>) {
-  return async (context: A) => {
+export function withCdkMigrateApp(
+  language: string,
+  block: (context: TestFixture) => Promise<void>,
+): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
+  return async (context: TestContext & AwsContext & DisableBootstrapContext) => {
     const stackName = `cdk-migrate-${language}-integ-${context.randomString}`;
     const integTestDir = path.join(os.tmpdir(), `cdk-migrate-${language}-integ-${context.randomString}`);
 
     context.output.write(` Stack name:   ${stackName}\n`);
     context.output.write(` Test directory: ${integTestDir}\n`);
 
-    const awsClients = await AwsClients.default(context.output);
     fs.mkdirSync(integTestDir);
     const fixture = new TestFixture(
       integTestDir,
       stackName,
       context.output,
-      awsClients,
+      context.aws,
       context.randomString,
     );
 
@@ -125,57 +127,13 @@ export function withCdkMigrateApp<A extends TestContext>(language: string, block
       path.join(integTestDir, stackName),
       stackName,
       context.output,
-      awsClients,
+      context.aws,
       context.randomString,
     );
 
     let success = true;
     try {
       await block(testFixture);
-    } catch (e) {
-      success = false;
-      throw e;
-    } finally {
-      if (process.env.INTEG_NO_CLEAN) {
-        context.log(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)`);
-      } else {
-        await fixture.dispose(success);
-      }
-    }
-  };
-}
-
-export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (context: TestFixture) => Promise<void>) {
-  return async (context: A) => {
-    const uberPackage = process.env.UBERPACKAGE;
-    if (!uberPackage) {
-      throw new Error('The UBERPACKAGE environment variable is required for running this test!');
-    }
-
-    const randy = context.randomString;
-    const stackNamePrefix = `cdk-uber-cfn-include-${randy}`;
-    const integTestDir = path.join(os.tmpdir(), `cdk-uber-cfn-include-${randy}`);
-
-    context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
-    context.output.write(` Test directory: ${integTestDir}\n`);
-
-    const awsClients = await AwsClients.default(context.output);
-    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', 'cfn-include-app'), integTestDir, context.output);
-    const fixture = new TestFixture(
-      integTestDir,
-      stackNamePrefix,
-      context.output,
-      awsClients,
-      context.randomString,
-    );
-
-    let success = true;
-    try {
-      await installNpmPackages(fixture, {
-        [uberPackage]: fixture.packages.requestedFrameworkVersion(),
-      });
-
-      await block(fixture);
     } catch (e) {
       success = false;
       throw e;
@@ -332,6 +290,10 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
    * @default undefined
    */
   readonly usePreviousParameters?: boolean;
+
+  readonly trust?: string[];
+
+  readonly untrust?: string[];
 }
 
 export interface CdkGarbageCollectionCommandOptions {
@@ -359,7 +321,7 @@ export interface CdkGarbageCollectionCommandOptions {
 }
 
 export class TestFixture extends ShellHelper {
-  public readonly qualifier = this.randomString.slice(0, 10);
+  public readonly qualifier: string;
   private readonly bucketsToDelete = new Array<string>();
   public readonly packages: IPackageSource;
 
@@ -372,6 +334,7 @@ export class TestFixture extends ShellHelper {
 
     super(integTestDir, output);
 
+    this.qualifier = this.randomString.slice(0, 10);
     this.packages = packageSourceInSubprocess();
   }
 
@@ -380,16 +343,22 @@ export class TestFixture extends ShellHelper {
   }
 
   public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
-    stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
+    return this.cdk(this.cdkDeployCommandLine(stackNames, options, skipStackRename));
+  }
 
+  public cdkDeployCommandLine(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
+    stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
     const neverRequireApproval = options.neverRequireApproval ?? true;
 
-    return this.cdk(['deploy',
+    return [
+      'deploy',
       ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
       ...(options.options ?? []),
+      ...(options.verbose ? ['-v'] : []),
       // use events because bar renders bad in tests
       '--progress', 'events',
-      ...(skipStackRename ? stackNames : this.fullStackName(stackNames))], options);
+      ...(skipStackRename ? stackNames : this.fullStackName(stackNames)),
+    ];
   }
 
   public async cdkSynth(options: CdkCliOptions = {}) {
@@ -480,6 +449,13 @@ export class TestFixture extends ShellHelper {
       args.push('--template', options.bootstrapTemplate);
     }
 
+    if (options.trust != null) {
+      args.push('--trust', options.trust.join(','));
+    }
+    if (options.untrust != null) {
+      args.push('--untrust', options.untrust.join(','));
+    }
+
     return this.cdk(args, {
       ...options.cliOptions,
       modEnv: {
@@ -532,13 +508,22 @@ export class TestFixture extends ShellHelper {
     return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
-        AWS_REGION: this.aws.region,
-        AWS_DEFAULT_REGION: this.aws.region,
-        STACK_NAME_PREFIX: this.stackNamePrefix,
-        PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+        ...this.cdkShellEnv(),
         ...options.modEnv,
       },
     });
+  }
+
+  /**
+   * Return the environment variables with which to execute CDK
+   */
+  public cdkShellEnv() {
+    return {
+      AWS_REGION: this.aws.region,
+      AWS_DEFAULT_REGION: this.aws.region,
+      STACK_NAME_PREFIX: this.stackNamePrefix,
+      PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+    };
   }
 
   public template(stackName: string): any {
@@ -676,7 +661,7 @@ export class TestFixture extends ShellHelper {
  * Since we go striping across regions, it's going to suck doing this
  * by hand so let's just mass-automate it.
  */
-async function ensureBootstrapped(fixture: TestFixture) {
+export async function ensureBootstrapped(fixture: TestFixture) {
   // Always use the modern bootstrap stack, otherwise we may get the error
   // "refusing to downgrade from version 7 to version 0" when bootstrapping with default
   // settings using a v1 CLI.

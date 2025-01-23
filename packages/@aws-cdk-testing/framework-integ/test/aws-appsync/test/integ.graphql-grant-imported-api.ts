@@ -12,7 +12,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ServicePrincipal, Role } from 'aws-cdk-lib/aws-iam';
 
 class OriginalStack extends Stack {
-
   public readonly apiId: string;
 
   constructor(scope: App, id: string) {

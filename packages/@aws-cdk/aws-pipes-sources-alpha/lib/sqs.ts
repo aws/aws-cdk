@@ -58,6 +58,5 @@ export class SqsSource implements ISource {
   grantRead(grantee: IRole): void {
     this.queue.grantConsumeMessages(grantee);
   }
-
 }
 

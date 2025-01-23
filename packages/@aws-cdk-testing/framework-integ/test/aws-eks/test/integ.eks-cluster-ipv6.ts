@@ -15,7 +15,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private vpc: ec2.Vpc;
 
@@ -347,7 +346,6 @@ class EksClusterStack extends Stack {
     });
 
   }
-
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
