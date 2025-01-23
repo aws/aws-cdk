@@ -1,5 +1,5 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
@@ -13,7 +13,7 @@ export class TestStack extends Stack {
       engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),
       serverlessV2MaxCapacity: 1,
       serverlessV2MinCapacity: 0,
-      secondsUntilAutoPause: 600,
+      secondsUntilAutoPause: Duration.minutes(10),
       writer: ClusterInstance.serverlessV2('writer'),
       removalPolicy: RemovalPolicy.DESTROY,
       vpc: vpc,
