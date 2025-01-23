@@ -38,14 +38,14 @@ export interface TransitGatewayProps {
   /**
    * Enable or disable automatic association with the default association route table.
    *
-   * @default - enable
+   * @default - enable (true)
    */
   readonly defaultRouteTableAssociation?: boolean;
 
   /**
    * Enable or disable automatic propagation of routes to the default propagation route table.
    *
-   * @default - enable
+   * @default - enable (true)
    */
   readonly defaultRouteTablePropagation?: boolean;
 
@@ -120,7 +120,7 @@ abstract class TransitGatewayBase extends Resource implements ITransitGateway, I
     // If `associationRouteTable` is provided, skip creating the Association only if `associationRouteTable` is the default route table and
     // automatic association (`defaultRouteTableAssociation`) is enabled, as the TransitGatewayRouteTableAttachment's constructor will handle it in that case.
     if (associationRouteTable && !(this.defaultRouteTable === associationRouteTable && this.defaultRouteTableAssociation)) {
-      new TransitGatewayRouteTableAssociation(this, `${id}-Assoc-${this.node.addr}`, {
+      new TransitGatewayRouteTableAssociation(this, `${id}-Association-${this.node.addr}`, {
         transitGatewayVpcAttachment: attachment,
         transitGatewayRouteTable: associationRouteTable,
       });

@@ -102,7 +102,7 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
       });
     }
   }
-  
+
   addSubnets(subnets: ISubnet[]): void {
     for (const subnet of subnets) {
       if (this.subnets.some(existing => existing.subnetId === subnet.subnetId)) {

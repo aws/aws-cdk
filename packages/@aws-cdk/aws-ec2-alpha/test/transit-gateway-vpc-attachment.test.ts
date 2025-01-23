@@ -79,22 +79,22 @@ describe('TransitGatewayVpcAttachment', () => {
   test('can add subnets', () => {
     // GIVEN
     const attachment = transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet]);
-  
+
     const additionalSubnet = new subnet.SubnetV2(stack, 'AdditionalSubnet', {
       vpc: myVpc,
       availabilityZone: 'us-east-1b',
       ipv4CidrBlock: new subnet.IpCidr('10.0.1.0/24'),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
-  
+
     // WHEN
     attachment.addSubnets([additionalSubnet]);
-  
+
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
         { Ref: 'TestSubnet2A4BE4CA' },
-        { Ref: 'AdditionalSubnetD5F4E6FA' }
+        { Ref: 'AdditionalSubnetD5F4E6FA' },
       ],
     });
   });
@@ -107,42 +107,42 @@ describe('TransitGatewayVpcAttachment', () => {
       ipv4CidrBlock: new subnet.IpCidr('10.0.1.0/24'),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
-    
+
     const attachment = transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet, additionalSubnet]);
-  
+
     // WHEN
     attachment.removeSubnets([additionalSubnet]);
-  
+
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [{ Ref: 'TestSubnet2A4BE4CA' }],
     });
   });
-  
+
   test('throws error when adding duplicate subnet', () => {
     // GIVEN
     const attachment = transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet]);
-  
+
     // THEN
     expect(() => attachment.addSubnets([mySubnet])).toThrow(
-      `Subnet with ID ${mySubnet.subnetId} is already added to the Attachment`
+      `Subnet with ID ${mySubnet.subnetId} is already added to the Attachment`,
     );
   });
-  
+
   test('throws error when removing non-existent subnet', () => {
     // GIVEN
     const attachment = transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet]);
-  
+
     const nonExistentSubnet = new subnet.SubnetV2(stack, 'NonExistentSubnet', {
       vpc: myVpc,
       availabilityZone: 'us-east-1c',
       ipv4CidrBlock: new subnet.IpCidr('10.0.2.0/24'),
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
-  
+
     // THEN
     expect(() => attachment.removeSubnets([nonExistentSubnet])).toThrow(
-      `Subnet with ID ${nonExistentSubnet.subnetId} does not exist in the Attachment`
+      `Subnet with ID ${nonExistentSubnet.subnetId} does not exist in the Attachment`,
     );
   });
 });
