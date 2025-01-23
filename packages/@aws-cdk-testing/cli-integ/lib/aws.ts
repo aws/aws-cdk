@@ -29,7 +29,6 @@ interface ClientConfig {
 }
 
 export class AwsClients {
-
   public static async forIdentity(region: string, identity: AwsCredentialIdentity, output: NodeJS.WritableStream) {
     return new AwsClients(region, output, identity);
   }
