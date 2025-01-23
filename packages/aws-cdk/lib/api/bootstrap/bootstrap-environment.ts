@@ -112,7 +112,7 @@ export class Bootstrapper {
     }
 
     const removeUntrusted = (accounts: string[]) =>
-      accounts.filter(acc => !params.untrustedAccounts?.includes(acc));
+      accounts.filter(acc => !params.untrustedAccounts?.map(String).includes(String(acc)));
 
     const trustedAccounts = removeUntrusted(params.trustedAccounts ?? splitCfnArray(current.parameters.TrustedAccounts));
     info(`Trusted accounts for deployment: ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
