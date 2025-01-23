@@ -3,7 +3,8 @@ import { ArtifactMetadataEntryType, type MetadataEntry } from '@aws-cdk/cloud-as
 import type { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { ResourceEvent, StackEventPoller } from './stack-event-poller';
-import { error, LogLevel, setLogLevel } from '../../../logging';
+import { error, info } from '../../../logging';
+import { CliIoHost, IoMessageLevel } from '../../../toolkit/cli-io-host';
 import type { ICloudFormationClient } from '../../aws-auth';
 import { RewritableBlock } from '../display';
 
@@ -48,7 +49,7 @@ export interface WithDefaultPrinterProps {
    *
    * @default - Use value from logging.logLevel
    */
-  readonly logLevel?: LogLevel;
+  readonly logLevel?: IoMessageLevel;
 
   /**
    * Whether to display all stack events or to display only the events for the
@@ -102,7 +103,7 @@ export class StackActivityMonitor {
     };
 
     const isWindows = process.platform === 'win32';
-    const verbose = options.logLevel ?? LogLevel.INFO;
+    const verbose = options.logLevel ?? 'info';
     // On some CI systems (such as CircleCI) output still reports as a TTY so we also
     // need an individual check for whether we're running on CI.
     // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
@@ -369,8 +370,6 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
   protected hookFailureMap = new Map<string, Map<string, string>>();
 
-  protected readonly stream: NodeJS.WriteStream;
-
   constructor(protected readonly props: PrinterProps) {
     // +1 because the stack also emits a "COMPLETE" event at the end, and that wasn't
     // counted yet. This makes it line up with the amount of events we expect.
@@ -378,8 +377,6 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
     // How many digits does this number take to represent?
     this.resourceDigits = this.resourcesTotal ? Math.ceil(Math.log10(this.resourcesTotal)) : 0;
-
-    this.stream = props.stream;
   }
 
   public failureReason(activity: StackActivity) {
@@ -514,7 +511,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
   public stop() {
     // Print failures at the end
     if (this.failures.length > 0) {
-      this.stream.write('\nFailed resources:\n');
+      info('\nFailed resources:');
       for (const failure of this.failures) {
         // Root stack failures are not interesting
         if (failure.isStackEvent) {
@@ -548,9 +545,9 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
 
     const logicalId = resourceName !== event.LogicalResourceId ? `(${event.LogicalResourceId}) ` : '';
 
-    this.stream.write(
+    info(
       util.format(
-        '%s | %s%s | %s | %s | %s %s%s%s\n',
+        '%s | %s%s | %s | %s | %s %s%s%s',
         event.StackName,
         progress !== false ? `${this.progress()} | ` : '',
         new Date(event.Timestamp!).toLocaleTimeString(),
@@ -591,9 +588,9 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     }
 
     if (Object.keys(this.resourcesInProgress).length > 0) {
-      this.stream.write(
+      info(
         util.format(
-          '%s Currently in progress: %s\n',
+          '%s Currently in progress: %s',
           this.progress(),
           chalk.bold(Object.keys(this.resourcesInProgress).join(', ')),
         ),
@@ -626,11 +623,15 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
    */
   public readonly updateSleep: number = 2_000;
 
-  private oldLogLevel: LogLevel = LogLevel.INFO;
-  private block = new RewritableBlock(this.stream);
+  private oldLogThreshold: IoMessageLevel;
+  private readonly stream: NodeJS.WriteStream;
+  private block: RewritableBlock;
 
   constructor(props: PrinterProps) {
     super(props);
+    this.oldLogThreshold = CliIoHost.instance().logLevel;
+    this.stream = props.stream;
+    this.block = new RewritableBlock(this.stream);
   }
 
   public print(): void {
@@ -674,11 +675,12 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   public start() {
     // Need to prevent the waiter from printing 'stack not stable' every 5 seconds, it messes
     // with the output calculations.
-    setLogLevel(LogLevel.INFO);
+    this.oldLogThreshold = CliIoHost.instance().logLevel;
+    CliIoHost.instance().logLevel = 'info';
   }
 
   public stop() {
-    setLogLevel(this.oldLogLevel);
+    CliIoHost.instance().logLevel = this.oldLogThreshold;
 
     // Print failures at the end
     const lines = new Array<string>();

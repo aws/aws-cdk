@@ -221,6 +221,27 @@ describe('Subnet V2 with custom IP and routing', () => {
     });
   });
 
+  test('Create Subnet with IPv6 if VPC has IPv6 CIDR block enabled', () => {
+    const TestVPC = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6ByoipPool(
+        {
+          ipv6PoolId: 'test-byoip-pool',
+          ipv6CidrBlock: '2001:db8:1::/56',
+          cidrBlockName: 'secondaryIpv6Pool',
+        },
+      )],
+    });
+
+    new subnet.SubnetV2(stack, 'IpamSubnet', {
+      vpc: TestVPC,
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv6CidrBlock: new subnet.IpCidr('2001:db8:1::/64'),
+      availabilityZone: 'us-east-1a',
+      subnetType: SubnetType.PUBLIC,
+    });
+  });
+
   test('Should throw error if overlapping CIDR block(IPv6) for the subnet', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
       operatingRegion: ['us-west-1'],

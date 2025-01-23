@@ -18,7 +18,6 @@ export interface IClusterParameterGroup extends IResource {
  * A new cluster or instance parameter group
  */
 abstract class ClusterParameterGroupBase extends Resource implements IClusterParameterGroup {
-
   /**
    * The name of the parameter group
    */

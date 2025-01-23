@@ -492,12 +492,6 @@
   "internetmonitor": {
     "iamPrefix": "internetmonitor"
   },
-  "iot-1click-devices-service": {
-    "iamPrefix": "iot1click"
-  },
-  "iot-1click-projects": {
-    "iamPrefix": "iot1click"
-  },
   "iot-data-plane": {
     "iamPrefix": "iotdata"
   },

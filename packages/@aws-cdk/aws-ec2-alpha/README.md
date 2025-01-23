@@ -105,6 +105,38 @@ new VpcV2(this, 'Vpc', {
 
 Since `VpcV2` does not create subnets automatically, users have full control over IP addresses allocation across subnets.
 
+### Bring your own IPv6 addresses (BYOIP) 
+
+If you have your own IP address that you would like to use with EC2, you can set up an IPv6 pool via the AWS CLI, and use that pool ID in your application.
+
+Once you have certified your IP address block with an ROA and have obtained an X-509 certificate, you can run the following command to provision your CIDR block in your AWS account:
+
+```shell
+aws ec2 provision-byoip-cidr --region <region> --cidr <your CIDR block> --cidr-authorization-context Message="1|aws|<account>|<your CIDR block>|<expiration date>|SHA256".Signature="<signature>"
+```
+
+When your BYOIP CIDR is provisioned, you can run the following command to retrieve your IPv6 pool ID, which will be used in your VPC declaration:
+
+```shell
+aws ec2 describe-byoip-cidr --region <region>
+```
+
+For more help on setting up your IPv6 address, please review the [EC2 Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-byoip.html).
+
+Once you have provisioned your address block, you can use the IPv6 in your VPC as follows:
+
+```ts
+const myVpc = new VpcV2(this, 'Vpc', {
+  primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
+  secondaryAddressBlocks: [IpAddresses.ipv6ByoipPool({
+    cidrBlockName: 'MyByoipCidrBlock',
+    ipv6PoolId: 'ipv6pool-ec2-someHashValue',
+    ipv6CidrBlock: '2001:db8::/32'
+  })],
+  enableDnsHostnames: true,
+  enableDnsSupport: true,
+});
+```
 
 ## Routing
 
@@ -305,7 +337,7 @@ const acceptorVpc = new VpcV2(this, 'VpcA', {
 const acceptorRoleArn = acceptorVpc.createAcceptorVpcRole('000000000000'); // Requestor account ID
 ```
 
-After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC. Import accpeptorVpc to the stack using `fromVpcV2Attributes` method, it is recommended to specify owner account id of the acceptor VPC in case of cross account peering connection, if acceptor VPC is hosted in different region provide region value for import as well. 
+After creating an IAM role in the acceptor account, we can initiate the peering connection request from the requestor VPC. Import acceptorVpc to the stack using `fromVpcV2Attributes` method, it is recommended to specify owner account id of the acceptor VPC in case of cross account peering connection, if acceptor VPC is hosted in different region provide region value for import as well.
 The following code snippet demonstrates how to set up VPC peering between two VPCs in different AWS accounts using CDK:
 
 ```ts
@@ -461,11 +493,11 @@ For more information, see [What is AWS Site-to-Site VPN?](https://docs.aws.amazo
 
 VPN route propagation is a feature in Amazon Web Services (AWS) that automatically updates route tables in your Virtual Private Cloud (VPC) with routes learned from a VPN connection.
 
-To enable VPN route propogation, use the `vpnRoutePropagation` property to specify the subnets as an input to the function. VPN route propagation will then be enabled for each subnet with the corresponding route table IDs.
+To enable VPN route propagation, use the `vpnRoutePropagation` property to specify the subnets as an input to the function. VPN route propagation will then be enabled for each subnet with the corresponding route table IDs.
 
 Additionally, you can set up a route in any route table with the target set to the VPN Gateway. The function `enableVpnGatewayV2` returns a `VPNGatewayV2` object that you can reference later.
 
-The code example below provides the definition for setting up a VPN gateway with `vpnRoutePropogation` enabled:
+The code example below provides the definition for setting up a VPN gateway with `vpnRoutePropagation` enabled:
 
 ```ts
 
@@ -494,7 +526,7 @@ An internet gateway is a horizontally scaled, redundant, and highly available VP
 For more information, see [Enable VPC internet access using internet gateways](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-igw-internet-access.html).
 
 You can add an internet gateway to a VPC using `addInternetGateway` method. By default, this method creates a route in all Public Subnets with outbound destination set to `0.0.0.0` for IPv4 and `::0` for IPv6 enabled VPC. 
-Instead of using the default settings, you can configure a custom destinatation range by providing an optional input `destination` to the method.
+Instead of using the default settings, you can configure a custom destination range by providing an optional input `destination` to the method.
 
 The code example below shows how to add an internet gateway with a custom outbound destination IP range:
 
@@ -539,13 +571,13 @@ const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
 
 In case of cross account or cross region VPC, its recommended to provide region and ownerAccountId so that these values for the VPC can be used to populate correct arn value for the VPC. If a VPC region and account ID is not provided, then region and account configured in the stack will be used. Furthermore, these fields will be referenced later while setting up VPC peering connection, so its necessary to set these fields to a correct value.
 
-Below is an example of importing a cross region and cross acount VPC, VPC arn for this case would be 'arn:aws:ec2:us-west-2:123456789012:vpc/mockVpcID'
+Below is an example of importing a cross region and cross account VPC, VPC arn for this case would be 'arn:aws:ec2:us-west-2:123456789012:vpc/mockVpcID'
 
 ``` ts
 
 const stack = new Stack();
 
-//Importing a cross acount or cross region VPC
+//Importing a cross account or cross region VPC
 const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',

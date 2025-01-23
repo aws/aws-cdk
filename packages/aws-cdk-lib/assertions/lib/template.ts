@@ -17,7 +17,6 @@ import { Stack, Stage } from '../../core';
  * CloudFormation template has expected resources and properties.
  */
 export class Template {
-
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
