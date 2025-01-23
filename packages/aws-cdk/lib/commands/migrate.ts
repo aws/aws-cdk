@@ -21,13 +21,13 @@ import * as chalk from 'chalk';
 import { cliInit } from '../../lib/init';
 import { info } from '../../lib/logging';
 import type { ICloudFormationClient, SdkProvider } from '../api/aws-auth';
-import { CloudFormationStack } from '../api/util/cloudformation';
+import { CloudFormationStack } from '../api/deployments';
 import { ToolkitError } from '../toolkit/error';
 import { zipDirectory } from '../util/archive';
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');
 /** The list of languages supported by the built-in noctilucent binary. */
-export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.supported_languages();
+const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.supported_languages();
 
 /**
  * Generates a CDK app from a yaml or json template.

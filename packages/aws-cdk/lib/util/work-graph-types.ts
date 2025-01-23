@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { AssetManifest, IManifestEntry } from 'cdk-assets';
+import { AssetManifest, type IManifestEntry } from 'cdk-assets';
 
 export enum DeploymentState {
   PENDING = 'pending',

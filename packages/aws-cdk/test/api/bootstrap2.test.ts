@@ -1,9 +1,9 @@
 /* eslint-disable import/order */
 
-import * as deployStack from '../../lib/api/deploy-stack';
+import * as deployStack from '../../lib/api/deployments/deploy-stack';
 import { Stack } from '@aws-sdk/client-cloudformation';
 import { CreatePolicyCommand, GetPolicyCommand } from '@aws-sdk/client-iam';
-import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import { Bootstrapper, ToolkitInfo } from '../../lib/api';
 import {
   mockBootstrapStack,
   mockIAMClient,
@@ -368,7 +368,7 @@ describe('Bootstrapping v2', () => {
 
   test('bootstrap template has the right exports', async () => {
     let template: any;
-    mockDeployStack.mockImplementation((args: DeployStackOptions) => {
+    mockDeployStack.mockImplementation((args: deployStack.DeployStackOptions) => {
       template = args.stack.template;
       return Promise.resolve({
         type: 'did-deploy-stack',
