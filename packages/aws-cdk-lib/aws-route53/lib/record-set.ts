@@ -513,7 +513,6 @@ export interface ARecordAttrs extends RecordSetOptions{
  * @resource AWS::Route53::RecordSet
  */
 export class ARecord extends RecordSet {
-
   /**
    * Creates new A record of type alias with target set to an existing A Record DNS.
    * Use when the target A record is created outside of CDK
