@@ -203,7 +203,6 @@ export interface TopicAttributes {
  * A new SNS topic
  */
 export class Topic extends TopicBase {
-
   /**
    * Import an existing SNS topic provided an ARN
    *
