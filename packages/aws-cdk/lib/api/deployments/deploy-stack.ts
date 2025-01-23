@@ -11,6 +11,7 @@ import * as chalk from 'chalk';
 import * as uuid from 'uuid';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { publishAssets } from './asset-publishing';
+import { addMetadataAssetsToManifest } from './assets';
 import { determineAllowCrossAccountAssetPublishing } from './checks';
 import {
   changeSetHasNoChanges,
@@ -26,7 +27,6 @@ import {
 import { ChangeSetDeploymentMethod, DeploymentMethod } from './deployment-method';
 import { DeployStackResult, SuccessfulDeployStackResult } from './deployment-result';
 import { tryHotswapDeployment } from './hotswap-deployments';
-import { addMetadataAssetsToManifest } from '../../assets';
 import { debug, info, warning } from '../../logging';
 import { ToolkitError } from '../../toolkit/error';
 import { formatErrorMessage } from '../../util/error';

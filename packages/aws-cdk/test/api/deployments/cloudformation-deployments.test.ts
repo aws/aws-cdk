@@ -1,5 +1,5 @@
-jest.mock('../../lib/api/deployments/deploy-stack');
-jest.mock('../../lib/util/asset-publishing');
+jest.mock('../../../lib/api/deployments/deploy-stack');
+jest.mock('../../../lib/api/deployments/asset-publishing');
 
 import {
   DescribeStacksCommand,

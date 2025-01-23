@@ -31,8 +31,8 @@ import {
   restoreSdkMocksToDefault,
 } from '../../util/mock-sdk';
 
-jest.mock('../../lib/api/hotswap-deployments');
-jest.mock('../../lib/api/util/checks', () => ({
+jest.mock('../../../lib/api/deployments/hotswap-deployments');
+jest.mock('../../../lib/api/deployments/checks', () => ({
   determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
 }));
 
