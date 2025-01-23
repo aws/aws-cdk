@@ -32,7 +32,7 @@
          "Arn"
         ]
        },
-       "\",\"Tags\":[{\"Key\":\"Name\",\"Value\":\"prod\"}]},\"physicalResourceId\":{\"id\":\"add_tag\"},\"logApiResponseData\":true}"
+       "\",\"Tags\":[{\"Key\":\"Name\",\"Value\":\"prod\"}]},\"physicalResourceId\":{\"id\":\"add_tag\"}}"
       ]
      ]
     },
