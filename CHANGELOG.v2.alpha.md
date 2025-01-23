@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.177.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.176.0-alpha.0...v2.177.0-alpha.0) (2025-01-23)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **glue-alpha:** Developers must refactor their existing Job
+instantiation method calls to choose the right job type and language,
+and use the new constants static values to define the associated Job
+configuration settings. See the RFC and/or new README for examples.
+
+### Description of how you validated changes
+
+Increased unit test coverage to > 90%, consulted with Glue service team
+on best practices and sane defaults, updated integration tests.
+
+### Checklist
+- [X] My code adheres to the [CONTRIBUTING
+GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and
+[DESIGN
+GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Bug Fixes
+
+* **custom-resource-handlers:** do not allow unauthorized connection for iam OIDC connection (under feature flag) ([#32921](https://github.com/aws/aws-cdk/issues/32921)) ([3e4f377](https://github.com/aws/aws-cdk/commit/3e4f3773bfa48b75bf0adc7d53d46bbec7714a9e)), closes [#32920](https://github.com/aws/aws-cdk/issues/32920)
+
+
+### Code Refactoring
+
+* **glue-alpha:**  Refactored glue-alpha L2 CDK construct RFC 0497 ([#32521](https://github.com/aws/aws-cdk/issues/32521)) ([1a18dc9](https://github.com/aws/aws-cdk/commit/1a18dc951a3946430231b685bd3584f62055127c))
+
 ## [2.176.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.175.1-alpha.0...v2.176.0-alpha.0) (2025-01-15)
 
 
