@@ -5,10 +5,10 @@ import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import * as chalk from 'chalk';
 import type { SdkProvider } from './aws-auth/sdk-provider';
 import { type DeploymentMethod, deployStack, DeployStackResult, destroyStack } from './deploy-stack';
-import { type EnvironmentResources } from './environment-resources';
-import type { Tag } from '../cdk-toolkit';
-import { debug, warning } from '../logging';
 import { EnvironmentAccess } from './environment-access';
+import { type EnvironmentResources } from './environment-resources';
+import { debug, warning } from '../logging';
+import type { Tag } from '../tags';
 import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
 import {
   loadCurrentTemplate,
@@ -25,10 +25,7 @@ import {
   Template,
   uploadStackTemplateAssets,
 } from './util/cloudformation';
-import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-import { StackEventPoller } from './util/cloudformation/stack-event-poller';
-import { RollbackChoice } from './util/cloudformation/stack-status';
-import { makeBodyParameter } from './util/template-body-parameter';
+import { ToolkitError } from '../toolkit/error';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import {
   buildAssets,
@@ -38,6 +35,11 @@ import {
   type PublishAssetsOptions,
   PublishingAws,
 } from '../util/asset-publishing';
+import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
+import { StackEventPoller } from './util/cloudformation/stack-event-poller';
+import { RollbackChoice } from './util/cloudformation/stack-status';
+import { makeBodyParameter } from './util/template-body-parameter';
+import { formatErrorMessage } from '../util/error';
 
 const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
 
@@ -438,7 +440,7 @@ export class Deployments {
     let deploymentMethod = options.deploymentMethod;
     if (options.changeSetName || options.execute !== undefined) {
       if (deploymentMethod) {
-        throw new Error(
+        throw new ToolkitError(
           "You cannot supply both 'deploymentMethod' and 'changeSetName/execute'. Supply one or the other.",
         );
       }
@@ -491,7 +493,7 @@ export class Deployments {
   public async rollbackStack(options: RollbackStackOptions): Promise<RollbackStackResult> {
     let resourcesToSkip: string[] = options.orphanLogicalIds ?? [];
     if (options.force && resourcesToSkip.length > 0) {
-      throw new Error('Cannot combine --force with --orphan');
+      throw new ToolkitError('Cannot combine --force with --orphan');
     }
 
     const env = await this.envs.accessStackForMutableStackOperations(options.stack);
@@ -563,7 +565,7 @@ export class Deployments {
           return { notInRollbackableState: true };
 
         default:
-          throw new Error(`Unexpected rollback choice: ${cloudFormationStack.stackStatus.rollbackChoice}`);
+          throw new ToolkitError(`Unexpected rollback choice: ${cloudFormationStack.stackStatus.rollbackChoice}`);
       }
 
       const monitor = options.quiet
@@ -579,7 +581,7 @@ export class Deployments {
 
         // This shouldn't really happen, but catch it anyway. You never know.
         if (!successStack) {
-          throw new Error('Stack deploy failed (the stack disappeared while we were rolling it back)');
+          throw new ToolkitError('Stack deploy failed (the stack disappeared while we were rolling it back)');
         }
         finalStackState = successStack;
 
@@ -588,7 +590,7 @@ export class Deployments {
           stackErrorMessage = errors;
         }
       } catch (e: any) {
-        stackErrorMessage = suffixWithErrors(e.message, monitor?.errors);
+        stackErrorMessage = suffixWithErrors(formatErrorMessage(e), monitor?.errors);
       } finally {
         await monitor?.stop();
       }
@@ -603,11 +605,11 @@ export class Deployments {
         continue;
       }
 
-      throw new Error(
+      throw new ToolkitError(
         `${stackErrorMessage} (fix problem and retry, or orphan these resources using --orphan or --force)`,
       );
     }
-    throw new Error(
+    throw new ToolkitError(
       "Rollback did not finish after a large number of iterations; stopping because it looks like we're not making progress anymore. You can retry if rollback was progressing as expected.",
     );
   }
@@ -697,7 +699,7 @@ export class Deployments {
     const publisher = this.cachedPublisher(assetManifest, resolvedEnvironment, options.stackName);
     await publisher.buildEntry(asset);
     if (publisher.hasFailures) {
-      throw new Error(`Failed to build asset ${asset.id}`);
+      throw new ToolkitError(`Failed to build asset ${asset.id}`);
     }
   }
 
@@ -714,10 +716,9 @@ export class Deployments {
 
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
-    // eslint-disable-next-line no-console
     await publisher.publishEntry(asset, { allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack) });
     if (publisher.hasFailures) {
-      throw new Error(`Failed to publish asset ${asset.id}`);
+      throw new ToolkitError(`Failed to publish asset ${asset.id}`);
     }
   }
 
@@ -756,7 +757,7 @@ export class Deployments {
     try {
       await envResources.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
     } catch (e: any) {
-      throw new Error(`${stackName}: ${e.message}`);
+      throw new ToolkitError(`${stackName}: ${formatErrorMessage(e)}`);
     }
   }
 

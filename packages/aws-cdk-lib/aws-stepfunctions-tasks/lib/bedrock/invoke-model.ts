@@ -147,7 +147,6 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
  *
  */
 export class BedrockInvokeModel extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];

@@ -5,6 +5,7 @@ import { validateProps } from './validate-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Properties for creating a new Queue
@@ -281,7 +282,6 @@ export enum RedrivePermission {
  * A new Amazon SQS queue
  */
 export class Queue extends QueueBase {
-
   /**
    * Import an existing SQS queue provided an ARN
    *
@@ -325,10 +325,10 @@ export class Queue extends QueueBase {
         } else {
           if (typeof attrs.fifo !== 'undefined') {
             if (attrs.fifo && !queueName.endsWith('.fifo')) {
-              throw new Error("FIFO queue names must end in '.fifo'");
+              throw new ValidationError("FIFO queue names must end in '.fifo'", this);
             }
             if (!attrs.fifo && queueName.endsWith('.fifo')) {
-              throw new Error("Non-FIFO queue name may not end in '.fifo'");
+              throw new ValidationError("Non-FIFO queue name may not end in '.fifo'", this);
             }
           }
           return queueName.endsWith('.fifo') ? true : false;
@@ -383,19 +383,19 @@ export class Queue extends QueueBase {
       physicalName: props.queueName,
     });
 
-    validateProps(props);
+    validateProps(this, props);
 
     if (props.redriveAllowPolicy) {
       const { redrivePermission, sourceQueues } = props.redriveAllowPolicy;
       if (redrivePermission === RedrivePermission.BY_QUEUE) {
         if (!sourceQueues || sourceQueues.length === 0) {
-          throw new Error('At least one source queue must be specified when RedrivePermission is set to \'byQueue\'');
+          throw new ValidationError('At least one source queue must be specified when RedrivePermission is set to \'byQueue\'', this);
         }
         if (sourceQueues && sourceQueues.length > 10) {
-          throw new Error('Up to 10 sourceQueues can be specified. Set RedrivePermission to \'allowAll\' to specify more');
+          throw new ValidationError('Up to 10 sourceQueues can be specified. Set RedrivePermission to \'allowAll\' to specify more', this);
         }
       } else if (redrivePermission && sourceQueues) {
-        throw new Error('sourceQueues cannot be configured when RedrivePermission is set to \'allowAll\' or \'denyAll\'');
+        throw new ValidationError('sourceQueues cannot be configured when RedrivePermission is set to \'allowAll\' or \'denyAll\'', this);
       }
     }
 
@@ -452,7 +452,7 @@ export class Queue extends QueueBase {
       let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
-        throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
+        throw new ValidationError("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used", this);
       }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
@@ -513,7 +513,7 @@ export class Queue extends QueueBase {
         };
       }
 
-      throw new Error(`Unexpected 'encryptionType': ${encryption}`);
+      throw new ValidationError(`Unexpected 'encryptionType': ${encryption}`, this);
     }
 
     // Enforce encryption of data in transit
@@ -537,23 +537,23 @@ export class Queue extends QueueBase {
     // If we have a name, see that it agrees with the FIFO setting
     if (typeof queueName === 'string') {
       if (fifoQueue && !queueName.endsWith('.fifo')) {
-        throw new Error("FIFO queue names must end in '.fifo'");
+        throw new ValidationError("FIFO queue names must end in '.fifo'", this);
       }
       if (!fifoQueue && queueName.endsWith('.fifo')) {
-        throw new Error("Non-FIFO queue name may not end in '.fifo'");
+        throw new ValidationError("Non-FIFO queue name may not end in '.fifo'", this);
       }
     }
 
     if (props.contentBasedDeduplication && !fifoQueue) {
-      throw new Error('Content-based deduplication can only be defined for FIFO queues');
+      throw new ValidationError('Content-based deduplication can only be defined for FIFO queues', this);
     }
 
     if (props.deduplicationScope && !fifoQueue) {
-      throw new Error('Deduplication scope can only be defined for FIFO queues');
+      throw new ValidationError('Deduplication scope can only be defined for FIFO queues', this);
     }
 
     if (props.fifoThroughputLimit && !fifoQueue) {
-      throw new Error('FIFO throughput limit can only be defined for FIFO queues');
+      throw new ValidationError('FIFO throughput limit can only be defined for FIFO queues', this);
     }
 
     return {

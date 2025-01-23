@@ -194,7 +194,6 @@ export interface IVpcV2 extends IVpc {
  * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html|AWS CDK Documentation on VPCs}.
  */
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
-
   /**
   * Identifier for this VPC
   */
@@ -430,7 +429,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     let useIpv6;
     if (this.secondaryCidrBlock) {
       useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-    secondaryAddress.ipv6IpamPoolId != undefined));
+    secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6CidrBlock !== undefined));
     }
 
     if (!useIpv6) {
@@ -636,17 +635,18 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     return subnets;
   }
 
-  private selectSubnetObjectsByType(subnetType: SubnetType) {
-    const allSubnets = {
+  private selectSubnetObjectsByType(subnetType: SubnetType): ISubnet[] {
+    type DeprecatedSubnetType = 'Deprecated_Isolated' | 'Deprecated_Private';
+    const allSubnets: { [key in SubnetType | DeprecatedSubnetType]?: ISubnet[] } = {
       [SubnetType.PRIVATE_ISOLATED]: this.isolatedSubnets,
-      [SubnetType.ISOLATED]: this.isolatedSubnets,
+      ['Deprecated_Isolated']: this.isolatedSubnets,
       [SubnetType.PRIVATE_WITH_NAT]: this.privateSubnets,
       [SubnetType.PRIVATE_WITH_EGRESS]: this.privateSubnets,
-      [SubnetType.PRIVATE]: this.privateSubnets,
+      ['Deprecated_Private']: this.privateSubnets,
       [SubnetType.PUBLIC]: this.publicSubnets,
     };
 
-    const subnets = allSubnets[subnetType];
+    const subnets = allSubnets[subnetType]!;
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
     // see ImportedVpc
@@ -668,13 +668,13 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
 
     // TODO: throw error as new VpcV2 cannot support subnetName or subnetGroupName anymore
-    if (placement.subnetName !== undefined) {
+    if ('subnetName' in placement && placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
       } else {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:subnetNameDeprecated', 'Usage of \'subnetName\' in SubnetSelection is deprecated, use \'subnetGroupName\' instead');
       }
-      placement = { ...placement, subnetGroupName: placement.subnetName };
+      placement = { ...placement, subnetGroupName: placement.subnetName as string };
     }
 
     const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
@@ -707,7 +707,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     return rest;
   }
-
 }
 
 class CompositeDependable implements IDependable {

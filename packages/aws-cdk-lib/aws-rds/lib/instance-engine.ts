@@ -4,6 +4,7 @@ import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * The options passed to `IInstanceEngine.bind`.
@@ -142,9 +143,9 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineFamily = props.engineFamily;
   }
 
-  public bindToInstance(_scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone && !this.supportsTimezone) {
-      throw new Error(`timezone property can not be configured for ${this.engineType}`);
+      throw new ValidationError(`timezone property can not be configured for ${this.engineType}`, scope);
     }
     return {
       features: this.features,
@@ -621,7 +622,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
 
   public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
-      throw new Error(`domain property cannot be configured for ${this.engineType}`);
+      throw new ValidationError(`domain property cannot be configured for ${this.engineType}`, scope);
     }
     return super.bindToInstance(scope, options);
   }
@@ -959,7 +960,7 @@ export class MysqlEngineVersion {
   /** Version "8.0.40". */
   public static readonly VER_8_0_40 = MysqlEngineVersion.of('8.0.40', '8.0');
   /** Version "8.4.3". */
-  public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.0');
+  public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.4');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -2828,7 +2829,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     const s3Role = options.s3ImportRole ?? options.s3ExportRole;
     if (s3Role) {
       if (options.s3ImportRole && options.s3ExportRole && options.s3ImportRole !== options.s3ExportRole) {
-        throw new Error('S3 import and export roles must be the same for SQL Server engines');
+        throw new ValidationError('S3 import and export roles must be the same for SQL Server engines', scope);
       }
 
       if (!optionGroup) {

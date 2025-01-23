@@ -20,7 +20,6 @@ enum ContainerProviderTypes {
  * Class that supports methods which return the EKS cluster name depending on input type.
  */
 export class EksClusterInput {
-
   /**
    * Specify an existing EKS Cluster as the name for this Cluster
    */
@@ -81,7 +80,6 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
  */
 export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
