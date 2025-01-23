@@ -24,6 +24,14 @@ export interface EgressOnlyInternetGatewayOptions {
    * @default - '::/0' all Ipv6 traffic
    */
   readonly destination?: string;
+
+  /**
+   * The resource name of the egress-only internet gateway.
+   * Provided name will be used for tagging
+   *
+   * @default - no name tag associated and provisioned without a resource name
+   */
+  readonly egressOnlyInternetGatewayName?: string;
 }
 
 /**
@@ -44,6 +52,14 @@ export interface InternetGatewayOptions{
    * @default - '::/0' all Ipv6 traffic
    */
   readonly ipv6Destination?: string;
+
+  /**
+   * The resource name of the internet gateway.
+   * Provided name will be used for tagging
+   *
+   * @default - provisioned without a resource name
+   */
+  readonly internetGatewayName?: string;
 }
 
 /**
@@ -120,6 +136,12 @@ export interface IVpcV2 extends IVpc {
   readonly ipv4IpamProvisionedCidrs?: string[];
 
   /**
+   * VpcName to be used for tagging its components
+   * @attribute
+   */
+  readonly vpcName?: string;
+
+  /**
    * Add an Egress only Internet Gateway to current VPC.
    * Can only be used for ipv6 enabled VPCs.
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway-basics.html}.
@@ -172,7 +194,6 @@ export interface IVpcV2 extends IVpc {
  * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html|AWS CDK Documentation on VPCs}.
  */
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
-
   /**
   * Identifier for this VPC
   */
@@ -233,6 +254,11 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * For more information, see the {@link https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#vpc-sizing-ipv4}.
    */
   public abstract readonly ipv4CidrBlock: string;
+
+  /**
+   * VpcName to be used for tagging its components
+   */
+  public abstract readonly vpcName?: string;
 
   /**
   * Region for this VPC
@@ -331,6 +357,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Adds VPNGAtewayV2 to this VPC
    */
   public enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2 {
+
     if (this.vpnGatewayId) {
       throw new Error('The VPN Gateway has already been enabled.');
     }
@@ -393,14 +420,16 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * @default - in case of no input subnets, no route is created
    */
   public addEgressOnlyInternetGateway(options?: EgressOnlyInternetGatewayOptions): void {
+
     const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
       vpc: this,
+      egressOnlyInternetGatewayName: options?.egressOnlyInternetGatewayName,
     });
 
     let useIpv6;
     if (this.secondaryCidrBlock) {
       useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-    secondaryAddress.ipv6IpamPoolId != undefined));
+    secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6CidrBlock !== undefined));
     }
 
     if (!useIpv6) {
@@ -425,6 +454,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       routeTable: subnet.routeTable,
       destination: destinationIpv6, // IPv6 default route
       target: { gateway: egw },
+      routeName: 'CDKEIGWRoute',
     });
   }
 
@@ -440,6 +470,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     const igw = new InternetGateway(this, 'InternetGateway', {
       vpc: this,
+      internetGatewayName: options?.internetGatewayName,
     });
 
     this._internetConnectivityEstablished.add(igw);
@@ -467,6 +498,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
         routeTable: subnet.routeTable,
         destination: options?.ipv6Destination ?? '::/0',
         target: { gateway: igw },
+        routeName: 'CDKDefaultIPv6Route',
       });
     }
     //Add default route to IGW for IPv4
@@ -474,6 +506,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       routeTable: subnet.routeTable,
       destination: options?.ipv4Destination ?? '0.0.0.0/0',
       target: { gateway: igw },
+      routeName: 'CDKDefaultIPv4Route',
     });
   }
 
@@ -602,17 +635,18 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     return subnets;
   }
 
-  private selectSubnetObjectsByType(subnetType: SubnetType) {
-    const allSubnets = {
+  private selectSubnetObjectsByType(subnetType: SubnetType): ISubnet[] {
+    type DeprecatedSubnetType = 'Deprecated_Isolated' | 'Deprecated_Private';
+    const allSubnets: { [key in SubnetType | DeprecatedSubnetType]?: ISubnet[] } = {
       [SubnetType.PRIVATE_ISOLATED]: this.isolatedSubnets,
-      [SubnetType.ISOLATED]: this.isolatedSubnets,
+      ['Deprecated_Isolated']: this.isolatedSubnets,
       [SubnetType.PRIVATE_WITH_NAT]: this.privateSubnets,
       [SubnetType.PRIVATE_WITH_EGRESS]: this.privateSubnets,
-      [SubnetType.PRIVATE]: this.privateSubnets,
+      ['Deprecated_Private']: this.privateSubnets,
       [SubnetType.PUBLIC]: this.publicSubnets,
     };
 
-    const subnets = allSubnets[subnetType];
+    const subnets = allSubnets[subnetType]!;
 
     // Force merge conflict here with https://github.com/aws/aws-cdk/pull/4089
     // see ImportedVpc
@@ -634,13 +668,13 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
 
     // TODO: throw error as new VpcV2 cannot support subnetName or subnetGroupName anymore
-    if (placement.subnetName !== undefined) {
+    if ('subnetName' in placement && placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
       } else {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:subnetNameDeprecated', 'Usage of \'subnetName\' in SubnetSelection is deprecated, use \'subnetGroupName\' instead');
       }
-      placement = { ...placement, subnetGroupName: placement.subnetName };
+      placement = { ...placement, subnetGroupName: placement.subnetName as string };
     }
 
     const exclusiveSelections: Array<keyof SubnetSelection> = ['subnets', 'subnetType', 'subnetGroupName'];
@@ -673,7 +707,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     return rest;
   }
-
 }
 
 class CompositeDependable implements IDependable {

@@ -42,5 +42,4 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
       dependencies: [this.queue],
     };
   }
-
 }

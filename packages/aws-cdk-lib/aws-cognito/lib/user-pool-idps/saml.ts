@@ -87,7 +87,6 @@ export enum UserPoolIdentityProviderSamlMetadataType {
  * Metadata for a SAML user pool identity provider.
  */
 export class UserPoolIdentityProviderSamlMetadata {
-
   /**
    * Specify SAML metadata via a URL.
    */

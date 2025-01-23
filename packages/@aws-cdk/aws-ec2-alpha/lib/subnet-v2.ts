@@ -1,4 +1,4 @@
-import { Resource, Names, Lazy } from 'aws-cdk-lib';
+import { Resource, Names, Lazy, Tags } from 'aws-cdk-lib';
 import { CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
@@ -16,7 +16,6 @@ interface ICidr {
  * IPv4 or IPv6 CIDR range for the subnet
  */
 export class IpCidr implements ICidr {
-
   /**
  * IPv6 CIDR range for the subnet
  * Allowed only if IPv6 is enabled on VPc
@@ -26,6 +25,16 @@ export class IpCidr implements ICidr {
     this.cidr = props;
   }
 }
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
+
+/**
+ * VPC Name tag constant
+ */
+const VPCNAME_TAG: string = 'VpcName';
 
 /**
  * Properties to define subnet for VPC.
@@ -119,7 +128,6 @@ export interface ISubnetV2 extends ISubnet {
  *
  */
 export class SubnetV2 extends Resource implements ISubnetV2 {
-
   /**
    * Import an existing subnet to the VPC
    */
@@ -129,7 +137,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     * @resource AWS::EC2::Subnet
     */
     class ImportedSubnetV2 extends Resource implements ISubnetV2 {
-
       /**
       * The IPv6 CIDR Block assigned to this subnet
       */
@@ -282,12 +289,21 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
+    if (props.subnetName) {
+      Tags.of(this).add(NAME_TAG, props.subnetName);
+    }
+
+    if (props.vpc.vpcName) {
+      Tags.of(this).add(VPCNAME_TAG, props.vpc.vpcName);
+    }
+
     if (props.routeTable) {
       this._routeTable = props.routeTable;
     } else {
       // Assigning a default route table
       this._routeTable = new RouteTable(this, 'RouteTable', {
         vpc: props.vpc,
+        routeTableName: 'DefaultCDKRouteTable',
       });
     }
 
@@ -389,12 +405,13 @@ export interface SubnetV2Attributes {
 
 }
 
-const subnetTypeMap = {
+type DeprecatedSubnetType = 'Deprecated_Isolated' | 'Deprecated_Private';
+const subnetTypeMap: { [key in SubnetType | DeprecatedSubnetType]: (vpc: IVpcV2, subnet: SubnetV2) => void } = {
   [SubnetType.PRIVATE_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
   [SubnetType.PUBLIC]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.publicSubnets.push(subnet),
   [SubnetType.PRIVATE_WITH_EGRESS]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
-  [SubnetType.ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
-  [SubnetType.PRIVATE]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
+  ['Deprecated_Isolated']: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
+  ['Deprecated_Private']: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
   [SubnetType.PRIVATE_WITH_NAT]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
 };
 
@@ -436,7 +453,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
 function validateSupportIpv6(vpc: IVpcV2) {
   if (vpc.secondaryCidrBlock) {
     if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-  secondaryAddress.ipv6IpamPoolId != undefined)) {
+  secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6Pool !== undefined)) {
       return true;
     } else {
       throw new Error('To use IPv6, the VPC must enable IPv6 support.');

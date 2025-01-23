@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.176.0](https://github.com/aws/aws-cdk/compare/v2.175.1...v2.176.0) (2025-01-15)
+
+
+### Features
+
+* **apigatewayv2-integrations:** `WebSocketMockIntegration` props ([#30622](https://github.com/aws/aws-cdk/issues/30622)) ([a5a0168](https://github.com/aws/aws-cdk/commit/a5a0168cdf0f6a3429d67cb8d300d3a3f987d0fe)), closes [#29661](https://github.com/aws/aws-cdk/issues/29661)
+* **codebuild:** add new BuildImages ([#32525](https://github.com/aws/aws-cdk/issues/32525)) ([a734841](https://github.com/aws/aws-cdk/commit/a73484142ce78dbf0a63ef5bfdb9603062916399))
+* **ecs:** enable Enhanced Observability for Container Insights ([#32622](https://github.com/aws/aws-cdk/issues/32622)) ([79ab137](https://github.com/aws/aws-cdk/commit/79ab137aa07337972d1da459db9b1a698a2d4513)), closes [#32618](https://github.com/aws/aws-cdk/issues/32618)
+* update L1 CloudFormation resource definitions ([#32847](https://github.com/aws/aws-cdk/issues/32847)) ([9317203](https://github.com/aws/aws-cdk/commit/93172033e4a8346a86ee00017acba57b57f22aab))
+* **appconfig:** environment deletion protection  ([#32737](https://github.com/aws/aws-cdk/issues/32737)) ([393e5c0](https://github.com/aws/aws-cdk/commit/393e5c0058560ff10acdc2892cc40ad542dc1629))
+
+
+### Bug Fixes
+
+* **cli:** "no stack found in the main cloud assembly" ([#32839](https://github.com/aws/aws-cdk/issues/32839)) ([3c0acce](https://github.com/aws/aws-cdk/commit/3c0acce39c6179ed18cc14d33622c69a4978ec97)), closes [aws/aws-cdk#32636](https://github.com/aws/aws-cdk/issues/32636) [#32836](https://github.com/aws/aws-cdk/issues/32836) [#32836](https://github.com/aws/aws-cdk/issues/32836)
+* **core:** use correct formatting for aggregate errors in `aws-cdk` ([#32817](https://github.com/aws/aws-cdk/issues/32817)) ([97af31b](https://github.com/aws/aws-cdk/commit/97af31b4562506570632c79bde79c0aaee31826a)), closes [#32237](https://github.com/aws/aws-cdk/issues/32237)
+* **elasticloadbalancingv2:** open, dual-stack-without-public-ipv4 ALB does not allow IPv6 inbound traffic (under feature flag) ([#32765](https://github.com/aws/aws-cdk/issues/32765)) ([aff160b](https://github.com/aws/aws-cdk/commit/aff160b62a067bcd89feb97e020287e614e39111)), closes [#32197](https://github.com/aws/aws-cdk/issues/32197)
+* **rds:** clusterScailabilityType is spelled wrong and should be clusterScalabilityType ([#32825](https://github.com/aws/aws-cdk/issues/32825)) ([d39e835](https://github.com/aws/aws-cdk/commit/d39e8356643ab89fec791df725af4ad8f0bbaecd)), closes [#32415](https://github.com/aws/aws-cdk/issues/32415) [#32415](https://github.com/aws/aws-cdk/issues/32415)
+* **rds:** incorrect version definition of MySQL 8.4.3 ([#32934](https://github.com/aws/aws-cdk/issues/32934)) ([3fbc785](https://github.com/aws/aws-cdk/commit/3fbc785522e25deb1a1167f2f655235ae3f2e762)), closes [#32933](https://github.com/aws/aws-cdk/issues/32933)
+
+
+### Reverts
+
+* **prlint:** fail prlinter on codecov failures, with exemption label ([#32867](https://github.com/aws/aws-cdk/issues/32867)) ([928d3bb](https://github.com/aws/aws-cdk/commit/928d3bb05da1be25159c58cb4f8b13c44a258ba1)), closes [aws/aws-cdk#32674](https://github.com/aws/aws-cdk/issues/32674)
+
+## [2.175.1](https://github.com/aws/aws-cdk/compare/v2.175.0...v2.175.1) (2025-01-10)
+
+### Bug Fixes
+
+* **cli:** "no stack found in the main cloud assembly" ([#32839](https://github.com/aws/aws-cdk/issues/32839)) ([7b68908](https://github.com/aws/aws-cdk/commit/7b68908dbebde02037d8b7650f4bb10d4c5db89d)), closes [aws/aws-cdk#32636](https://github.com/aws/aws-cdk/issues/32636) [#32836](https://github.com/aws/aws-cdk/issues/32836) [#32836](https://github.com/aws/aws-cdk/issues/32836)
+
+## [2.175.0](https://github.com/aws/aws-cdk/compare/v2.174.1...v2.175.0) (2025-01-09)
+
+
+### Features
+
+* **ecs:** enable fault injection flag ([#32598](https://github.com/aws/aws-cdk/issues/32598)) ([ed366ce](https://github.com/aws/aws-cdk/commit/ed366ce812a94066de04e9862d6cbd1083bf5d9c))
+* **ecs:** warning when creating a service with the default minHealthyPercent ([#31738](https://github.com/aws/aws-cdk/issues/31738)) ([3606deb](https://github.com/aws/aws-cdk/commit/3606deb5b519365d846e6e66406c835889827055)), closes [#31705](https://github.com/aws/aws-cdk/issues/31705)
+* update L1 CloudFormation resource definitions ([#32768](https://github.com/aws/aws-cdk/issues/32768)) ([107eed3](https://github.com/aws/aws-cdk/commit/107eed3b50e86246da03d6b59197452e2af0bfaf))
+* **cli:** warn of non-existent stacks in `cdk destroy` ([#32636](https://github.com/aws/aws-cdk/issues/32636)) ([c199378](https://github.com/aws/aws-cdk/commit/c199378667cb63ffe8636dda6b6316dcc6eb47e9)), closes [#32545](https://github.com/aws/aws-cdk/issues/32545) [#27179](https://github.com/aws/aws-cdk/issues/27179) [40aws-cdk-testing/cli-integ/tests/cli-integ-tests/cli.integtest.ts#L190](https://github.com/40aws-cdk-testing/cli-integ/tests/cli-integ-tests/cli.integtest.ts/issues/L190) [aws-cdk-testing/cli-integ/tests/cli-integ-tests/cli.integtest.ts#L286-L291](https://github.com/aws-cdk-testing/cli-integ/tests/cli-integ-tests/cli.integtest.ts/issues/L286-L291)
+* **eks:** update nodegroup gpu check ([#32715](https://github.com/aws/aws-cdk/issues/32715)) ([693afea](https://github.com/aws/aws-cdk/commit/693afea86310fd444d237b9f70204fbf4bb5a68d)), closes [#31347](https://github.com/aws/aws-cdk/issues/31347)
+* update L1 CloudFormation resource definitions ([#32755](https://github.com/aws/aws-cdk/issues/32755)) ([8f97112](https://github.com/aws/aws-cdk/commit/8f97112c89c6b39e299b0cd437336bab11cfdaf8))
+* **kms:** add sign and verify related grant methods ([#32681](https://github.com/aws/aws-cdk/issues/32681)) ([86d2853](https://github.com/aws/aws-cdk/commit/86d2853a9a919669694a2448805a092839a7f4db)), closes [#23185](https://github.com/aws/aws-cdk/issues/23185)
+
+
+### Bug Fixes
+
+* **cli:** cannot set environment variable `CI=false` ([#32749](https://github.com/aws/aws-cdk/issues/32749)) ([26b361d](https://github.com/aws/aws-cdk/commit/26b361de357a3b83c59dc4931d4797328d220534))
+* **cli:** requiresRefresh function does not respect null ([#32666](https://github.com/aws/aws-cdk/issues/32666)) ([2abc23c](https://github.com/aws/aws-cdk/commit/2abc23c4cfdf27e8623fea3d3fbb71ad7e25dbbe)), closes [#32653](https://github.com/aws/aws-cdk/issues/32653) [/github.com/smithy-lang/smithy-typescript/blob/main/packages/property-provider/src/memoize.ts#L27](https://github.com/aws//github.com/smithy-lang/smithy-typescript/blob/main/packages/property-provider/src/memoize.ts/issues/L27)
+* **cloudwatch:** render region and accountId when directly set on metrics ([#32325](https://github.com/aws/aws-cdk/issues/32325)) ([c393481](https://github.com/aws/aws-cdk/commit/c3934817ea15bb3187f67112a1d56c13aa555524)), closes [#28731](https://github.com/aws/aws-cdk/issues/28731)
+* **ecs:** outdated linux commands for `canContainersAccessInstanceRole=false` and also deprecate property ([#32763](https://github.com/aws/aws-cdk/issues/32763)) ([bbdd42c](https://github.com/aws/aws-cdk/commit/bbdd42c8f45916d5c6945f3429916f6199d2ec66)), closes [#28518](https://github.com/aws/aws-cdk/issues/28518)
+
+## [2.174.1](https://github.com/aws/aws-cdk/compare/v2.174.0...v2.174.1) (2025-01-07)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#32755](https://github.com/aws/aws-cdk/issues/32755)) ([0bc32c9](https://github.com/aws/aws-cdk/commit/0bc32c9acca6f8524ca0c8d925534ede79950213))
+* update L1 CloudFormation resource definitions ([#32768](https://github.com/aws/aws-cdk/issues/32768)) ([20070a4](https://github.com/aws/aws-cdk/commit/20070a4cc77133e4fbdb556655cb3d0127620397))
+
 ## [2.174.0](https://github.com/aws/aws-cdk/compare/v2.173.4...v2.174.0) (2025-01-04)
 
 

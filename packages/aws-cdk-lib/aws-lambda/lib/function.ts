@@ -30,7 +30,7 @@ import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
@@ -640,7 +640,6 @@ export interface FunctionProps extends FunctionOptions {
  * library.
  */
 export class Function extends FunctionBase {
-
   /**
    * Returns a `lambda.Version` which represents the current version of this
    * Lambda function. A new version will be created every time the function's
@@ -1620,7 +1619,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // so it can't be checked at function set up time
     // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only support published Lambda versions. Ignore if function already have published versions');
+    Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only supports published Lambda versions. Ignore if function already has published versions.');
 
     if (!props.runtime.supportsSnapStart) {
       throw new ValidationError(`SnapStart currently not supported by runtime ${props.runtime.name}`, this);
@@ -1753,20 +1752,20 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   const codeType = [code.inlineCode, code.s3Location, code.image];
 
   if (codeType.filter(x => !!x).length !== 1) {
-    throw new Error('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
+    throw new UnscopedValidationError('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
   }
 
   if (!!code.image === (props.handler !== Handler.FROM_IMAGE)) {
-    throw new Error('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
+    throw new UnscopedValidationError('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   if (!!code.image === (props.runtime !== Runtime.FROM_IMAGE)) {
-    throw new Error('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
+    throw new UnscopedValidationError('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   // if this is inline code, check that the runtime supports
   if (code.inlineCode && !props.runtime.supportsInlineCode) {
-    throw new Error(`Inline source not allowed for ${props.runtime!.name}`);
+    throw new UnscopedValidationError(`Inline source not allowed for ${props.runtime!.name}`);
   }
 }
 

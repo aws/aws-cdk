@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { exec as runCli } from 'aws-cdk/lib';
+import { exec as runCli } from '../../../aws-cdk/lib';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { createAssembly, prepareContext, prepareDefaultEnvironment } from 'aws-cdk/lib/api/cxapp/exec';
+import { createAssembly, prepareContext, prepareDefaultEnvironment } from '../../../aws-cdk/lib/api/cxapp/exec';
 import { SharedOptions, DeployOptions, DestroyOptions, BootstrapOptions, SynthOptions, ListOptions, StackActivityProgress, HotswapMode } from './commands';
 
 /**
@@ -123,7 +123,7 @@ export class AwsCdkCli implements IAwsCdkCli {
     return new AwsCdkCli(async (args) => changeDir(
       () => runCli(args, async (sdk, config) => {
         const env = await prepareDefaultEnvironment(sdk);
-        const context = await prepareContext(config, env);
+        const context = await prepareContext(config.settings, config.context.all, env);
 
         return withEnv(async() => createAssembly(await producer.produce(context)), env);
       }),
