@@ -23,7 +23,7 @@ new iam.Role(stack, 'test-iam-role', {
           actions: ['execute-api:Invoke'],
           resources: [
             websocketApi.arnForExecuteApi(),
-            websocketApi.arnForExecuteApi('$connect', 'prod'),
+            websocketApi.arnForExecuteApi('connect', 'prod'),
           ],
         }),
       ],

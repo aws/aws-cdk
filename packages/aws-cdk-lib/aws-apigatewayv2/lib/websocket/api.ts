@@ -197,6 +197,10 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    * If 'stage' is not specified, it also defaults to '*', representing all stages.
    */
   public arnForExecuteApi(route?: string, stage?: string): string {
+    if (route&&!route.startsWith('$')) {
+      route = `$${route}`;
+    };
+
     return Stack.of(this).formatArn({
       service: 'execute-api',
       resource: this.apiId,
