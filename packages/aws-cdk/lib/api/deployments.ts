@@ -1,7 +1,6 @@
 import { randomUUID } from 'crypto';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
-import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import * as chalk from 'chalk';
 import type { SdkProvider } from './aws-auth/sdk-provider';
 import { type DeploymentMethod, deployStack, DeployStackResult, destroyStack } from './deploy-stack';
@@ -368,7 +367,7 @@ export class Deployments {
    */
   private readonly deployStackSdkProvider: SdkProvider;
 
-  private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
+  private readonly publisherCache = new Map<cdk_assets.AssetManifest, cdk_assets.AssetPublishing>();
 
   private _allowCrossAccountAssetPublishing: boolean | undefined;
   constructor(private readonly props: DeploymentsProps) {
@@ -648,7 +647,7 @@ export class Deployments {
       asset.bootstrapStackVersionSsmParameter,
       env.resources);
 
-    const manifest = AssetManifest.fromFile(asset.file);
+    const manifest = cdk_assets.AssetManifest.fromFile(asset.file);
 
     return { manifest, stackEnv: env.resolvedEnvironment };
   }
@@ -684,7 +683,12 @@ export class Deployments {
    * If that is not necessary, `'no-version-validation'` can be passed.
    */
   // eslint-disable-next-line max-len
-  public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact | 'no-version-validation', assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
+  public async buildSingleAsset(
+    assetArtifact: cxapi.AssetManifestArtifact | 'no-version-validation',
+    assetManifest: cdk_assets.AssetManifest,
+    asset: cdk_assets.IManifestEntry,
+    options: BuildStackAssetsOptions,
+  ) {
     if (assetArtifact !== 'no-version-validation') {
       const env = await this.envs.accessStackForReadOnlyStackOperations(options.stack);
       await this.validateBootstrapStackVersion(
@@ -708,8 +712,8 @@ export class Deployments {
    */
   // eslint-disable-next-line max-len
   public async publishSingleAsset(
-    assetManifest: AssetManifest,
-    asset: IManifestEntry,
+    assetManifest: cdk_assets.AssetManifest,
+    asset: cdk_assets.IManifestEntry,
     options: PublishStackAssetsOptions,
   ) {
     const stackEnv = await this.envs.resolveStackEnvironment(options.stack);
@@ -734,8 +738,8 @@ export class Deployments {
    * Return whether a single asset has been published already
    */
   public async isSingleAssetPublished(
-    assetManifest: AssetManifest,
-    asset: IManifestEntry,
+    assetManifest: cdk_assets.AssetManifest,
+    asset: cdk_assets.IManifestEntry,
     options: PublishStackAssetsOptions,
   ) {
     const stackEnv = await this.envs.resolveStackEnvironment(options.stack);
