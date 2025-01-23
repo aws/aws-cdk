@@ -261,7 +261,7 @@ describe('CertificateValidation.fromDns', () => {
       subjectAlternativeNames: ['*.test.example.com'],
     });
 
-    //Wildcard domain names are de-duped.
+    // Wildcard domain names are de-duped.
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
       DomainName: 'test.example.com',
       DomainValidationOptions: [
@@ -289,7 +289,7 @@ describe('CertificateValidation.fromDns', () => {
       subjectAlternativeNames: ['*.test.example.com', '*.foo.test.example.com', 'bar.test.example.com'],
     });
 
-    //Wildcard domain names are de-duped.
+    // Wildcard domain names are de-duped.
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
       DomainName: 'test.example.com',
       DomainValidationOptions: [
