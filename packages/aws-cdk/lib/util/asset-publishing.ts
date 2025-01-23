@@ -221,6 +221,9 @@ export class PublishingAws implements IAws {
   }
 }
 
+function ignore() {
+}
+
 export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
   build: debug,
   cached: debug,
@@ -231,6 +234,10 @@ export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
   start: info,
   success: info,
   upload: debug,
+  shell_open: debug,
+  shell_stderr: ignore,
+  shell_stdout: ignore,
+  shell_close: ignore,
 };
 
 class PublishingProgressListener implements IPublishProgressListener {
