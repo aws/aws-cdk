@@ -3,7 +3,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnParameter, Duration, Stack, App, Token } from '../../core';
 import * as sqs from '../lib';
-import { validateRedrivePolicy } from '../lib/validate-queue-props';
+import { validateRedriveAllowPolicy } from '../lib/validate-queue-props';
 
 /* eslint-disable quote-props */
 
@@ -167,35 +167,62 @@ test('addToPolicy will automatically create a policy for this queue', () => {
   });
 });
 
-describe('validateRedrivePolicy', () => {
+describe('validateRedriveAllowPolicy', () => {
   test('does not throw for valid policy', () => {
+    // GIVEN
     const stack = new Stack();
-    expect(() => validateRedrivePolicy(stack, { redrivePermission: sqs.RedrivePermission.ALLOW_ALL })).not.toThrow();
+
+    // WHEN
+    const redriveAllowPolicy = { redrivePermission: sqs.RedrivePermission.ALLOW_ALL };
+
+    // THEN
+    expect(() => validateRedriveAllowPolicy(stack, redriveAllowPolicy)).not.toThrow();
   });
 
   test('throws when sourceQueues is provided with ALLOW_ALL permission', () => {
+    // GIVEN
     const stack = new Stack();
+
+    // WHEN
     const sourceQueue = new sqs.Queue(stack, 'SourceQueue');
-    expect(() => validateRedrivePolicy(stack, {
+    const redriveAllowPolicy = {
       redrivePermission: sqs.RedrivePermission.ALLOW_ALL,
       sourceQueues: [sourceQueue],
-    })).toThrow("Queue initialization failed due to the following validation error(s):\n- sourceQueues cannot be configured when RedrivePermission is set to 'allowAll' or 'denyAll'");
+    };
+
+    // THEN
+    expect(() => validateRedriveAllowPolicy(stack, redriveAllowPolicy))
+      .toThrow("Queue initialization failed due to the following validation error(s):\n- sourceQueues cannot be configured when RedrivePermission is set to 'allowAll' or 'denyAll'");
   });
 
   test('throws when sourceQueues is not provided with BY_QUEUE permission', () => {
+    // GIVEN
     const stack = new Stack();
-    expect(() => validateRedrivePolicy(stack, {
+
+    // WHEN
+    const redriveAllowPolicy = {
       redrivePermission: sqs.RedrivePermission.BY_QUEUE,
-    })).toThrow("Queue initialization failed due to the following validation error(s):\n- At least one source queue must be specified when RedrivePermission is set to 'byQueue'");
+    };
+
+    // THEN
+    expect(() => validateRedriveAllowPolicy(stack, redriveAllowPolicy))
+      .toThrow("Queue initialization failed due to the following validation error(s):\n- At least one source queue must be specified when RedrivePermission is set to 'byQueue'");
   });
 
   test('throws when more than 10 sourceQueues are provided', () => {
+    // GIVEN
     const stack = new Stack();
+
+    // WHEN
     const sourceQueues = Array(11).fill(null).map((_, i) => new sqs.Queue(stack, `SourceQueue${i}`));
-    expect(() => validateRedrivePolicy(stack, {
+    const redriveAllowPolicy = {
       redrivePermission: sqs.RedrivePermission.BY_QUEUE,
       sourceQueues,
-    })).toThrow("Queue initialization failed due to the following validation error(s):\n- Up to 10 sourceQueues can be specified. Set RedrivePermission to 'allowAll' to specify more");
+    };
+
+    // THEN
+    expect(() => validateRedriveAllowPolicy(stack, redriveAllowPolicy))
+      .toThrow("Queue initialization failed due to the following validation error(s):\n- Up to 10 sourceQueues can be specified. Set RedrivePermission to 'allowAll' to specify more");
   });
 });
 

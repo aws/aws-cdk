@@ -56,6 +56,6 @@ export function validateQueueProps(scope: Construct, props: QueueProps) {
   validateAllProps(scope, Queue.name, props, queueValidationRules);
 }
 
-export function validateRedrivePolicy(scope: Construct, policy: RedriveAllowPolicy) {
+export function validateRedriveAllowPolicy(scope: Construct, policy: RedriveAllowPolicy) {
   validateAllProps(scope, Queue.name, policy, redriveValidationRules);
 }
