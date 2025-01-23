@@ -26,6 +26,9 @@ class TestStack extends Stack {
       }]),
     });
 
+    configurationSet.addEventDestination('EventBridge', {
+      destination: ses.EventDestination.defaultEventBus(),
+    });
   }
 }
 
