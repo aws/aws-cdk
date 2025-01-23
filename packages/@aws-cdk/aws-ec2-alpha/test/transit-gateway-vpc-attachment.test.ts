@@ -68,10 +68,10 @@ describe('TransitGatewayVpcAttachment', () => {
       TransitGatewayId: stack.resolve(transitGateway.transitGatewayId),
       SubnetIds: [stack.resolve(mySubnet.subnetId)],
       Options: {
-        dnsSupport: 'enable',
-        ipv6Support: 'enable',
-        applianceModeSupport: 'enable',
-        securityGroupReferencingSupport: 'disable',
+        DnsSupport: 'enable',
+        Ipv6Support: 'enable',
+        ApplianceModeSupport: 'enable',
+        SecurityGroupReferencingSupport: 'disable',
       },
     });
   });
