@@ -4,7 +4,6 @@ import { Construct } from 'constructs';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './transit-gateway-attachment';
-// import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 export interface ITransitGatewayVpcAttachment extends ITransitGatewayAttachment {}
 
