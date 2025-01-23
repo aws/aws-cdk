@@ -95,7 +95,7 @@ export const restoreSdkMocksToDefault = () => {
  */
 export function undoAllSdkMocks() {
   applyToAllMocks('restore');
-}
+};
 
 function applyToAllMocks(meth: 'reset' | 'restore') {
   mockAppSyncClient[meth]();

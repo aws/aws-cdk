@@ -975,7 +975,7 @@ export class CdkToolkit {
         confirm: options.confirm ?? true,
       });
       await gc.garbageCollect();
-    }
+    };
   }
 
   private async defineEnvironments(userEnvironmentSpecs: string[]): Promise<cxapi.Environment[]> {
