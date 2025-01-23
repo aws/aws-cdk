@@ -125,6 +125,9 @@ export class KubernetesManifest extends Construct {
 
     const stack = Stack.of(this);
     const provider = KubectlProvider.getOrCreate(this, props.cluster);
+    if (!provider) {
+      throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
+    }
 
     const prune = props.prune ?? props.cluster.prune;
     const pruneLabel = prune
@@ -144,7 +147,6 @@ export class KubernetesManifest extends Construct {
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
-        RoleArn: provider.roleArn, // TODO: bake into provider's environment
         PruneLabel: pruneLabel,
         Overwrite: props.overwrite,
         SkipValidation: props.skipValidation,
