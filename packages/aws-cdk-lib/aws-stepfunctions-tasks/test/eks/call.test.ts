@@ -7,7 +7,7 @@ let stack: Stack;
 let cluster: eks.Cluster;
 
 beforeEach(() => {
-  //GIVEN
+  // GIVEN
   stack = new Stack();
   cluster = new eks.Cluster(stack, 'Cluster', {
     version: eks.KubernetesVersion.V1_21,

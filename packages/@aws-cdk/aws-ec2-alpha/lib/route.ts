@@ -720,7 +720,7 @@ export class Route extends Resource implements IRouteV2 {
     this.destination = props.destination;
     const isDestinationIpv4 = NetworkUtils.validIp(props.destination);
     if (!isDestinationIpv4) {
-      //TODO Validate for IPv6 CIDR range
+      // TODO Validate for IPv6 CIDR range
       this.destinationIpv6Cidr = props.destination;
     } else {
       this.destinationIpv4Cidr = props.destination;
@@ -742,7 +742,7 @@ export class Route extends Resource implements IRouteV2 {
     }
     this.node.defaultChild = this.resource;
 
-    //Create a route only after target gateway or endpoint is created
+    // Create a route only after target gateway or endpoint is created
     if (this.target.gateway) {
       this.node.addDependency(this.target.gateway);
     }

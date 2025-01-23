@@ -14,7 +14,7 @@ describe('User Pool Resource Server', () => {
       identifier: 'users',
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolResourceServer', {
       Identifier: 'users',
       Name: 'users',
@@ -34,7 +34,7 @@ describe('User Pool Resource Server', () => {
       identifier: 'users',
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolResourceServer', {
       Identifier: 'users',
       Name: 'internal-users',
@@ -58,7 +58,7 @@ describe('User Pool Resource Server', () => {
       ],
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolResourceServer', {
       Scopes: [
         {

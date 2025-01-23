@@ -446,7 +446,7 @@ describe('fargate', () => {
       ],
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         logging: {

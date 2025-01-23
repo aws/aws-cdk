@@ -113,9 +113,9 @@ export class PythonShellJob extends Job {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
 
-    //If no Python version set (default 3.9) or the version is set to 3.9 then set library-set argument
+    // If no Python version set (default 3.9) or the version is set to 3.9 then set library-set argument
     if (!props.pythonVersion || props.pythonVersion == PythonVersion.THREE_NINE) {
-      //Selecting this option includes common libraries for Python 3.9
+      // Selecting this option includes common libraries for Python 3.9
       args['library-set'] = 'analytics';
     }
 

@@ -335,7 +335,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
 function s3UrlFromUri(uri: string, region: string | undefined) {
 
   // will return something like this
-  //[
+  // [
   //  's3:',
   //   '',
   //  'cdk-hnb659fds-assets-111-${AWS::Region}',

@@ -151,7 +151,7 @@ describe('cross environment', () => {
     });
 
     test('metric attached to stack3 will render in stack1', () => {
-      //Cross-account metrics are supported in Alarms
+      // Cross-account metrics are supported in Alarms
 
       // GIVEN
       new Alarm(stack1, 'Alarm', {

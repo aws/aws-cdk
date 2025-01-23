@@ -46,7 +46,7 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
 
     const scopes = props.scopes ?? ['profile'];
 
-    //at least one of the properties must be configured
+    // at least one of the properties must be configured
     if ((!props.clientSecret && !props.clientSecretValue) ||
       (props.clientSecret && props.clientSecretValue)) {
       throw new Error('Exactly one of "clientSecret" or "clientSecretValue" must be configured.');

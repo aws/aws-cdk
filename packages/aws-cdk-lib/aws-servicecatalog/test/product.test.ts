@@ -457,7 +457,7 @@ describe('Product', () => {
 
       product.associateTagOptions(tagOptions);
 
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); // Generates a resource for each unique key-value pair
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
     }),
 
@@ -480,7 +480,7 @@ describe('Product', () => {
         tagOptions: tagOptions,
       });
 
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); // Generates a resource for each unique key-value pair
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
     }),
 
@@ -495,7 +495,7 @@ describe('Product', () => {
       product.associateTagOptions(tagOptions);
       product.associateTagOptions(tagOptions); // If not idempotent this would fail
 
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); // Generates a resource for each unique key-value pair
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
     });
   });
