@@ -13,9 +13,11 @@ class TestStack extends Stack {
       code: lambda.Code.fromAsset(path.join(__dirname, 'assets-with-dummy'), {
         include: ['index.py', 'subdir', 'subdir/**/*'],
         exclude: ['subdir/examples/*'],
-        // exclude: ['*', '!index.py', '!subdir', '!subdir/**/*', 'subdir/examples/*'],
       }),
-      runtime: lambda.Runtime.PYTHON_3_13,
+      // code: lambda.Code.fromAsset(path.join(__dirname, 'assets-with-dummy'), {
+      //   exclude: ['*', '!index.py', '!subdir', '!subdir/**/*', 'subdir/examples/*'],
+      // }),
+      runtime: lambda.Runtime.PYTHON_3_12,
       handler: 'index.main',
     });
 
