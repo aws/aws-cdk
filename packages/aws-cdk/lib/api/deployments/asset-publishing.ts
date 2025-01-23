@@ -12,11 +12,11 @@ import {
   type IS3Client,
   type ISecretsManagerClient,
 } from 'cdk-assets';
-import type { SDK } from '../api';
-import type { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { Mode } from '../api/plugin/mode';
-import { debug, error, info } from '../logging';
-import { ToolkitError } from '../toolkit/error';
+import type { SDK } from '..';
+import { debug, error, info } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
+import type { SdkProvider } from '../aws-auth';
+import { Mode } from '../plugin';
 
 export interface PublishAssetsOptions {
   /**
