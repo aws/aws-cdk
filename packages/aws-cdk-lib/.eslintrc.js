@@ -26,6 +26,10 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-synthetics',
+  'aws-elasticloadbalancing',
+  'aws-elasticloadbalancingv2',
+  'aws-elasticloadbalancingv2-actions',
+  'aws-elasticloadbalancingv2-targets',
 ];
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),

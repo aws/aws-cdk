@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
 import { IListenerCertificate } from '../shared/listener-certificate';
+import { ValidationError } from '../../../core/lib/errors';
 
 /**
  * Properties for adding a set of certificates to a listener
@@ -40,7 +41,7 @@ export class ApplicationListenerCertificate extends Construct {
     super(scope, id);
 
     if (!props.certificateArns && !props.certificates) {
-      throw new Error('At least one of \'certificateArns\' or \'certificates\' is required');
+      throw new ValidationError('At least one of \'certificateArns\' or \'certificates\' is required', this);
     }
 
     const certificates = [
