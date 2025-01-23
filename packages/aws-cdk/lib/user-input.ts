@@ -465,6 +465,13 @@ export interface BootstrapOptions {
   readonly trustForLookup?: Array<string>;
 
   /**
+   * The AWS account IDs that should not be trusted by this environment (may be repeated, modern bootstrapping only)
+   *
+   * @default - []
+   */
+  readonly untrust?: Array<string>;
+
+  /**
    * The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)
    *
    * @default - []
