@@ -263,6 +263,13 @@ export function parseCommandLineArguments(args: Array<string>): any {
           nargs: 1,
           requiresArg: true,
         })
+        .option('untrust', {
+          default: [],
+          type: 'array',
+          desc: 'The AWS account IDs that should not be trusted by this environment (may be repeated, modern bootstrapping only)',
+          nargs: 1,
+          requiresArg: true,
+        })
         .option('cloudformation-execution-policies', {
           default: [],
           type: 'array',
