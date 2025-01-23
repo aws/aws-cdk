@@ -142,7 +142,25 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(/The title of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
+    await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(/The title scope of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
+  });
+
+  test('invalid scope with capital letters', async () => {
+    const issue = {
+      number: 1,
+      title: 'fix(S3): some title',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
+    };
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+      requestChanges: expect.objectContaining({
+        failures: ["The title scope of the pull request should be entirely in lowercase. Use 's3' instead."],
+      }),
+    }));
   });
 
   test('valid scope with aws- in summary and body', async () => {
