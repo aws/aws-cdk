@@ -2,7 +2,7 @@
 import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
 import { testStack, withMocked } from './util';
 import { addMetadataAssetsToManifest } from '../lib/assets';
-import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
+import { AssetManifestBuilder } from '../lib/api/deployments';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from '../lib/api/environment-resources';
 import { MockSdk } from './util/mock-sdk';
 import { MockToolkitInfo } from './util/mock-toolkitinfo';

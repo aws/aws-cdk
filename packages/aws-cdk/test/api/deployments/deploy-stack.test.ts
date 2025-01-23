@@ -16,19 +16,20 @@ import {
   UpdateStackCommand,
   UpdateTerminationProtectionCommand,
 } from '@aws-sdk/client-cloudformation';
-import { assertIsSuccessfulDeployStackResult, deployStack, DeployStackOptions } from '../../lib/api';
-import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
-import { HotswapMode } from '../../lib/api/hotswap/common';
-import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
-import { CliIoHost } from '../../lib/toolkit/cli-io-host';
-import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
+import { assertIsSuccessfulDeployStackResult } from '../../../lib/api/deployments';
+import { deployStack, DeployStackOptions } from '../../../lib/api/deployments/deploy-stack';
+import { tryHotswapDeployment } from '../../../lib/api/deployments/hotswap-deployments';
+import { NoBootstrapStackEnvironmentResources } from '../../../lib/api/environment-resources';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
+import { DEFAULT_FAKE_TEMPLATE, testStack } from '../../util';
 import {
   mockCloudFormationClient,
   mockResolvedEnvironment,
   MockSdk,
   MockSdkProvider,
   restoreSdkMocksToDefault,
-} from '../util/mock-sdk';
+} from '../../util/mock-sdk';
 
 jest.mock('../../lib/api/hotswap-deployments');
 jest.mock('../../lib/api/util/checks', () => ({

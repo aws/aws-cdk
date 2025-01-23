@@ -2,30 +2,7 @@ import { randomUUID } from 'crypto';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import * as chalk from 'chalk';
-import type { SdkProvider } from './aws-auth/sdk-provider';
-import { type DeploymentMethod, deployStack, DeployStackResult, destroyStack } from './deploy-stack';
-import { EnvironmentAccess } from './environment-access';
-import { type EnvironmentResources } from './environment-resources';
-import { debug, warning } from '../logging';
-import type { Tag } from '../tags';
-import { HotswapMode, HotswapPropertyOverrides } from './hotswap/common';
-import {
-  loadCurrentTemplate,
-  loadCurrentTemplateWithNestedStacks,
-  type RootTemplateWithNestedStacks,
-} from './nested-stack-helpers';
-import { DEFAULT_TOOLKIT_STACK_NAME } from './toolkit-info';
-import { determineAllowCrossAccountAssetPublishing } from './util/checks';
-import {
-  CloudFormationStack,
-  type ResourceIdentifierSummaries,
-  ResourcesToImport,
-  stabilizeStack,
-  Template,
-  uploadStackTemplateAssets,
-} from './util/cloudformation';
-import { ToolkitError } from '../toolkit/error';
-import { AssetManifestBuilder } from '../util/asset-manifest-builder';
+import { AssetManifestBuilder } from './asset-manifest-builder';
 import {
   buildAssets,
   type BuildAssetsOptions,
@@ -33,12 +10,37 @@ import {
   publishAssets,
   type PublishAssetsOptions,
   PublishingAws,
-} from '../util/asset-publishing';
-import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-import { StackEventPoller } from './util/cloudformation/stack-event-poller';
-import { RollbackChoice } from './util/cloudformation/stack-status';
-import { makeBodyParameter } from './util/template-body-parameter';
-import { formatErrorMessage } from '../util/error';
+} from './asset-publishing';
+import { determineAllowCrossAccountAssetPublishing } from './checks';
+import {
+  CloudFormationStack,
+  type ResourceIdentifierSummaries,
+  ResourcesToImport,
+  stabilizeStack,
+  Template,
+  uploadStackTemplateAssets,
+} from './cloudformation';
+import { deployStack, destroyStack } from './deploy-stack';
+import { DeploymentMethod } from './deployment-method';
+import { DeployStackResult } from './deployment-result';
+import {
+  loadCurrentTemplate,
+  loadCurrentTemplateWithNestedStacks,
+  type RootTemplateWithNestedStacks,
+} from './nested-stack-helpers';
+import { debug, warning } from '../../logging';
+import type { Tag } from '../../tags';
+import { ToolkitError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
+import type { SdkProvider } from '../aws-auth/sdk-provider';
+import { EnvironmentAccess } from '../environment-access';
+import { type EnvironmentResources } from '../environment-resources';
+import { HotswapMode, HotswapPropertyOverrides } from '../hotswap/common';
+import { DEFAULT_TOOLKIT_STACK_NAME } from '../toolkit-info';
+import { StackActivityMonitor, StackActivityProgress } from '../util/cloudformation/stack-activity-monitor';
+import { StackEventPoller } from '../util/cloudformation/stack-event-poller';
+import { RollbackChoice } from '../util/cloudformation/stack-status';
+import { makeBodyParameter } from '../util/template-body-parameter';
 
 const BOOTSTRAP_STACK_VERSION_FOR_ROLLBACK = 23;
 

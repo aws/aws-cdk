@@ -1,10 +1,10 @@
 import * as path from 'path';
 import type { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import type { SDK } from './aws-auth';
-import { LazyListStackResources, type ListStackResources } from './evaluate-cloudformation-template';
-import { CloudFormationStack, type Template } from './util/cloudformation';
-import { formatErrorMessage } from '../util/error';
+import type { SDK } from '../aws-auth';
+import { CloudFormationStack, type Template } from './cloudformation';
+import { formatErrorMessage } from '../../util/error';
+import { LazyListStackResources, type ListStackResources } from '../evaluate-cloudformation-template';
 
 export interface NestedStackTemplates {
   readonly physicalName: string | undefined;

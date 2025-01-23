@@ -9,13 +9,9 @@ import type {
 } from '@aws-sdk/client-cloudformation';
 import * as chalk from 'chalk';
 import * as uuid from 'uuid';
-import type { SDK, SdkProvider, ICloudFormationClient } from './aws-auth';
-import type { EnvironmentResources } from './environment-resources';
-import { CfnEvaluationException } from './evaluate-cloudformation-template';
-import { HotswapMode, HotswapPropertyOverrides, ICON } from './hotswap/common';
-import { tryHotswapDeployment } from './hotswap-deployments';
-import { addMetadataAssetsToManifest } from '../assets';
-import { debug, info, warning } from '../logging';
+import { AssetManifestBuilder } from './asset-manifest-builder';
+import { publishAssets } from './asset-publishing';
+import { determineAllowCrossAccountAssetPublishing } from './checks';
 import {
   changeSetHasNoChanges,
   CloudFormationStack,
@@ -26,47 +22,21 @@ import {
   ParameterValues,
   ParameterChanges,
   ResourcesToImport,
-} from './util/cloudformation';
-import { StackActivityMonitor, type StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-import { type TemplateBodyParameter, makeBodyParameter } from './util/template-body-parameter';
-import { AssetManifestBuilder } from '../util/asset-manifest-builder';
-import { determineAllowCrossAccountAssetPublishing } from './util/checks';
-import { publishAssets } from '../util/asset-publishing';
-import { StringWithoutPlaceholders } from './util/placeholders';
-import { ToolkitError } from '../toolkit/error';
-import { formatErrorMessage } from '../util/error';
-
-export type DeployStackResult =
-  | SuccessfulDeployStackResult
-  | NeedRollbackFirstDeployStackResult
-  | ReplacementRequiresRollbackStackResult
-  ;
-
-/** Successfully deployed a stack */
-export interface SuccessfulDeployStackResult {
-  readonly type: 'did-deploy-stack';
-  readonly noOp: boolean;
-  readonly outputs: { [name: string]: string };
-  readonly stackArn: string;
-}
-
-/** The stack is currently in a failpaused state, and needs to be rolled back before the deployment */
-export interface NeedRollbackFirstDeployStackResult {
-  readonly type: 'failpaused-need-rollback-first';
-  readonly reason: 'not-norollback' | 'replacement';
-  readonly status: string;
-}
-
-/** The upcoming change has a replacement, which requires deploying with --rollback */
-export interface ReplacementRequiresRollbackStackResult {
-  readonly type: 'replacement-requires-rollback';
-}
-
-export function assertIsSuccessfulDeployStackResult(x: DeployStackResult): asserts x is SuccessfulDeployStackResult {
-  if (x.type !== 'did-deploy-stack') {
-    throw new ToolkitError(`Unexpected deployStack result. This should not happen: ${JSON.stringify(x)}. If you are seeing this error, please report it at https://github.com/aws/aws-cdk/issues/new/choose.`);
-  }
-}
+} from './cloudformation';
+import { ChangeSetDeploymentMethod, DeploymentMethod } from './deployment-method';
+import { DeployStackResult, SuccessfulDeployStackResult } from './deployment-result';
+import { tryHotswapDeployment } from './hotswap-deployments';
+import { addMetadataAssetsToManifest } from '../../assets';
+import { debug, info, warning } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
+import type { SDK, SdkProvider, ICloudFormationClient } from '../aws-auth';
+import type { EnvironmentResources } from '../environment-resources';
+import { CfnEvaluationException } from '../evaluate-cloudformation-template';
+import { HotswapMode, HotswapPropertyOverrides, ICON } from '../hotswap/common';
+import { StackActivityMonitor, type StackActivityProgress } from '../util/cloudformation/stack-activity-monitor';
+import { StringWithoutPlaceholders } from '../util/placeholders';
+import { type TemplateBodyParameter, makeBodyParameter } from '../util/template-body-parameter';
 
 export interface DeployStackOptions {
   /**
@@ -249,36 +219,6 @@ export interface DeployStackOptions {
    * @default true To remain backward compatible.
    */
   readonly assetParallelism?: boolean;
-}
-
-export type DeploymentMethod = DirectDeploymentMethod | ChangeSetDeploymentMethod;
-
-export interface DirectDeploymentMethod {
-  readonly method: 'direct';
-}
-
-export interface ChangeSetDeploymentMethod {
-  readonly method: 'change-set';
-
-  /**
-   * Whether to execute the changeset or leave it in review.
-   *
-   * @default true
-   */
-  readonly execute?: boolean;
-
-  /**
-   * Optional name to use for the CloudFormation change set.
-   * If not provided, a name will be generated automatically.
-   */
-  readonly changeSetName?: string;
-
-  /**
-   * Indicates if the change set imports resources that already exist.
-   *
-   * @default false
-   */
-  readonly importExistingResources?: boolean;
 }
 
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
