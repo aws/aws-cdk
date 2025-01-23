@@ -201,6 +201,24 @@ describe('commit message format', () => {
     expect(legacyValidatePullRequestTarget(await prLinter)).resolves;
   });
 
+  test('invalid with capital letters in prefix', async () => {
+    const issue = {
+      number: 1,
+      title: 'Revert(s3): some title',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
+    };
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+      requestChanges: expect.objectContaining({
+        failures: ['The title prefix of this pull request must be one of "feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert"'],
+      }),
+    }));
+  });
+
   test('invalid capitalized title', async () => {
     const issue = {
       number: 1,

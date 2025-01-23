@@ -401,11 +401,11 @@ function validateBreakingChangeFormat(pr: GitHubPr, _files: GitHubFile[]): TestR
  */
 function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|(r|R)evert)(\([\w_-]+\))?: /;
+  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert)(\([\w_-]+\))?: /;
   const m = titleRe.exec(pr.title);
   result.assessFailure(
     !m,
-    'The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.');
+    'The title prefix of this pull request must be one of "feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert"');
   return result;
 }
 
