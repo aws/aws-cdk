@@ -251,7 +251,7 @@ test('AWS_CA_BUNDLE is set', () => {
     destinationBucket: bucket,
   });
 
-  //THEN
+  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Environment: {
       Variables: {
@@ -274,7 +274,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
     vpc: new ec2.Vpc(stack, 'Vpc'),
   });
 
-  //THEN
+  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Environment: {
       Variables: {
