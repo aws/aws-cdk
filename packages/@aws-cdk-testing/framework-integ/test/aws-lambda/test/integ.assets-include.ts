@@ -15,7 +15,7 @@ class TestStack extends Stack {
         exclude: ['subdir/examples/*'],
       }),
       // code: lambda.Code.fromAsset(path.join(__dirname, 'assets-with-dummy'), {
-      //   It can extract with the exclude only, but difficult to understand.
+      //   It can extract the files with the exclude only, but difficult to understand.
       //   Also the order is important in the exclude, but it doesn't need in the include.
       //   OK -> exclude: ['*', '!index.py', '!subdir', '!subdir/**/*', 'subdir/examples/*'],
       //   NG -> exclude: ['*', 'subdir/examples/*', '!index.py', '!subdir', '!subdir/**/*'],
