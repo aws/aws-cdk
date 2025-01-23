@@ -5,7 +5,6 @@ import { UnscopedValidationError } from '../../core/lib/errors';
  * Schedule for canary runs
  */
 export class Schedule {
-
   /**
    * The canary will be executed once.
    */

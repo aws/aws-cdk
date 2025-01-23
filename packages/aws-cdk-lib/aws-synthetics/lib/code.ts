@@ -11,7 +11,6 @@ import { UnscopedValidationError, ValidationError } from '../../core/lib/errors'
  * The code the canary should execute
  */
 export abstract class Code {
-
   /**
    * Specify code inline.
    *

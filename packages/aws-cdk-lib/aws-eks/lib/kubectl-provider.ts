@@ -61,7 +61,6 @@ export interface IKubectlProvider extends IConstruct {
  * Implementation of Kubectl Lambda
  */
 export class KubectlProvider extends NestedStack implements IKubectlProvider {
-
   /**
    * Take existing provider or create new based on cluster
    *
@@ -200,11 +199,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
-
 }
 
 class ImportedKubectlProvider extends Construct implements IKubectlProvider {
-
   /**
    * The custom resource provider's service token.
    */
