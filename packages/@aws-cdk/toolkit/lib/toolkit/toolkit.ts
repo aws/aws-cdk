@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { ToolkitServices } from './private';
+import { formatErrorMessage } from '../../../../aws-cdk/lib/util/error';
 import { AssetBuildTime, DeployOptions, RequireApproval } from '../actions/deploy';
 import { buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
 import { DestroyOptions } from '../actions/destroy';
@@ -349,7 +350,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
             stack,
             deployName: stack.stackName,
             roleArn: options.roleArn,
-            toolkitStackName: options.toolkitStackName,
+            toolkitStackName: this.toolkitStackName,
             reuseAssets: options.reuseAssets,
             notificationArns,
             tags,
@@ -616,16 +617,46 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const ioHost = withAction(this.ioHost, 'rollback');
     const timer = Timer.start();
     const assembly = await this.assemblyFromSource(cx);
-    const stacks = await assembly.selectStacksV2(options.stacks);
+    const stacks = assembly.selectStacksV2(options.stacks);
     await this.validateStacksMetadata(stacks, ioHost);
     const synthTime = timer.end();
     await ioHost.notify(info(`\n✨  Synthesis time: ${synthTime.asSec}s\n`, 'CDK_TOOLKIT_I5001', {
       time: synthTime.asMs,
     }));
 
-    // temporary
-    // eslint-disable-next-line @cdklabs/no-throw-default-error
-    throw new Error('Not implemented yet');
+    if (stacks.stackCount === 0) {
+      await ioHost.notify(error('No stacks selected'));
+      return;
+    }
+
+    let anyRollbackable = false;
+
+    for (const stack of stacks.stackArtifacts) {
+      await ioHost.notify(info(`Rolling back ${chalk.bold(stack.displayName)}`));
+      const startRollbackTime = Timer.start();
+      const deployments = await this.deploymentsForAction('rollback');
+      try {
+        const result = await deployments.rollbackStack({
+          stack,
+          roleArn: options.roleArn,
+          toolkitStackName: this.toolkitStackName,
+          force: options.orphanFailedResources,
+          validateBootstrapStackVersion: options.validateBootstrapStackVersion,
+          orphanLogicalIds: options.orphanLogicalIds,
+        });
+        if (!result.notInRollbackableState) {
+          anyRollbackable = true;
+        }
+        const elapsedRollbackTime = startRollbackTime.end();
+        await ioHost.notify(info(`\n✨  Rollback time: ${elapsedRollbackTime.asSec}s\n`));
+      } catch (e: any) {
+        await ioHost.notify(error(`\n ❌  ${chalk.bold(stack.displayName)} failed: ${formatErrorMessage(e)}`));
+        throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');
+      }
+    }
+    if (!anyRollbackable) {
+      throw new ToolkitError('No stacks were in a state that could be rolled back');
+    }
   }
 
   /**
