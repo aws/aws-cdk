@@ -46,6 +46,7 @@ import { ResourceImporter, removeNonImportResources } from './import';
 import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from './logging';
 import { ResourceMigrator } from './migrator';
+import { checkRenaming, ResourceCorrespondence, ResourceMap } from './refactoring';
 import { deserializeStructure, obscureTemplate, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { Tag, tagsForStack } from './tags';
@@ -346,6 +347,42 @@ export class CdkToolkit {
         // eslint-disable-next-line max-len
         throw new ToolkitError(
           `Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`,
+        );
+      }
+
+      function asMap(r: any): ResourceMap {
+        return new Map(Object.entries(r));
+      }
+
+      const deployedResources = (await this.props.deployments.readCurrentTemplate(stack)).Resources;
+      const correspondence = checkRenaming(
+        asMap(deployedResources),
+        asMap(stack.template.Resources),
+      );
+
+      function formatCorrespondence(corr: ResourceCorrespondence): string {
+        let text = corr
+          .map(([before, after]) => {
+            if (before.size === 1 && after.size === 1) {
+              return `${[...before][0]} -> ${[...after][0]}`;
+            } else {
+              return `${before} -> ${after}`;
+            }
+          })
+          .map(x => `  - ${x}`)
+          .join('\n');
+
+        return `\n${text}\n`;
+      }
+
+      if (correspondence.length > 0) {
+        // TODO Print the metadata, if present, instead of the logical ID.
+        warning(`Some resources have been renamed:${formatCorrespondence(correspondence)}`);
+
+        await askUserConfirmation(
+          concurrency,
+          'Some resources have been renamed, which may cause resource replacement',
+          'Do you wish to deploy these changes',
         );
       }
 
