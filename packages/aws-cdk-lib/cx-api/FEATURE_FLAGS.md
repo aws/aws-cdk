@@ -90,6 +90,7 @@ Flags come in three types:
 | [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | 2.177.0 | (fix) |
 | [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | (config) |
 | [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
+| [@aws-cdk/lambda-layer-awscli:shareLayer](#aws-cdklambda-layer-awsclisharelayer) | When enabled, constructs requiring an `AwsCliLayer` will share a single layer per stack | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -167,7 +168,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
-    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
+    "@aws-cdk/lambda-layer-awscli:shareLayer": true
   }
 }
 ```
@@ -1703,6 +1705,22 @@ This solves an issue where a circular dependency could occur if adding lambda to
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.180.0 | `false` | `true` |
+
+
+### @aws-cdk/lambda-layer-awscli:shareLayer
+
+*When enabled, constructs requiring an `AwsCliLayer` will share a single layer per stack* (fix)
+
+Several L2 constructs create an AwsCliLayer resource internally.
+When this feature flag is enabled, a single AwsCliLayer will be created at the
+root of the containing stack, and shared by all constructs that require it.
+This solves an issue where many identical lambda layers could be created unnecessarily.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
