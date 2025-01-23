@@ -1,4 +1,4 @@
-import type * as cxapi from '@aws-cdk/cx-api';
+import type * as cxschema from '@aws-cdk/cloud-assembly-schema';
 
 export interface AppProps {
   /**
@@ -12,7 +12,7 @@ export interface AppProps {
   readonly context?: { [key: string]: any };
 }
 
-export type AssemblyBuilder = (props: AppProps) => Promise<cxapi.CloudAssembly>;
+export type AssemblyBuilder = (props: AppProps) => Promise<cxschema.ICloudAssembly>;
 
 /**
  * Configuration for creating a CLI from an AWS CDK App directory

@@ -6,7 +6,6 @@ import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from 'aws-cdk-lib/aws
  * The DB parameter group family that a DB parameter group is compatible with
  */
 export class ParameterGroupFamily {
-
   /**
    * Family used by Neptune engine versions before 1.2.0.0
    */

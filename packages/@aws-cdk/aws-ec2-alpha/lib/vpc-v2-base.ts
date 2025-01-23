@@ -194,7 +194,6 @@ export interface IVpcV2 extends IVpc {
  * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html|AWS CDK Documentation on VPCs}.
  */
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
-
   /**
   * Identifier for this VPC
   */
@@ -430,7 +429,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     let useIpv6;
     if (this.secondaryCidrBlock) {
       useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-    secondaryAddress.ipv6IpamPoolId != undefined));
+    secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6CidrBlock !== undefined));
     }
 
     if (!useIpv6) {
@@ -708,7 +707,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     return rest;
   }
-
 }
 
 class CompositeDependable implements IDependable {
