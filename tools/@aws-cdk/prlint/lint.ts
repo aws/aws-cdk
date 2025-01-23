@@ -410,16 +410,17 @@ function validateBreakingChangeFormat(pr: GitHubPr, _files: GitHubFile[]): TestR
  */
 function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|(r|R)evert)(\([\w_-]+\))?: /;
+  const validTypes = "feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert";
+  const titleRe = new RegExp(`^(${validTypes})(\\([\\w_-]+\\))?: `);
   const m = titleRe.exec(pr.title);
   result.assessFailure(
     !m,
-    'The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.');
+    `The title prefix of this pull request must be one of "${validTypes}"`);
   return result;
 }
 
 /**
- * Check that the PR title uses the typical convention for package names.
+ * Check that the PR title uses the typical convention for package names, and is lowercase.
  *
  * For example, "fix(s3)" is preferred over "fix(aws-s3)".
  */
@@ -436,7 +437,17 @@ function validateTitleScope(pr: GitHubPr): TestResult {
   if (m && !scopesExemptFromThisRule.includes(m[2])) {
     result.assessFailure(
       !!(m[2] && m[3]),
-      `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
+      `The title scope of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
+    );
+  }
+
+  // Title scope is lowercase
+  const scopeRe = /^\w+\(([\w_-]+)\)?: /; // Isolate the scope
+  const scope = scopeRe.exec(pr.title);
+  if (scope && scope[1]) {
+    result.assessFailure(
+      scope[1] !== scope[1].toLocaleLowerCase(),
+      `The title scope of the pull request should be entirely in lowercase. Use '${scope[1].toLocaleLowerCase()}' instead.`,
     );
   }
   return result;
