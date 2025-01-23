@@ -98,7 +98,7 @@ interface DatabaseClusterBaseProps {
    * @default 300
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
    */
-  readonly secondsUntilAutoPause?: number;
+  readonly secondsUntilAutoPause?: Duration;
 
   /**
    * What subnets to run the RDS instances in.
@@ -766,7 +766,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
-    this.secondsUntilAutoPause = props.secondsUntilAutoPause ?? 300;
+    this.secondsUntilAutoPause = props.secondsUntilAutoPause?.toSeconds() ?? 300;
 
     this.validateServerlessScalingConfig();
 

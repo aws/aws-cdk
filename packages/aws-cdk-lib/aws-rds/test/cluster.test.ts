@@ -493,7 +493,7 @@ describe('cluster new api', () => {
           vpc,
           writer: ClusterInstance.serverlessV2('writer'),
           iamAuthentication: true,
-          secondsUntilAutoPause: 600,
+          secondsUntilAutoPause: cdk.Duration.minutes(10),
         });
 
         // THEN
@@ -519,7 +519,7 @@ describe('cluster new api', () => {
           writer: ClusterInstance.serverlessV2('writer'),
           iamAuthentication: true,
           secondsUntilAutoPause: cdk.Duration.days(2),
-        })).toThrow('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.');
+        })).toThrow('secondsUntilAutoPause must be >= 300 & <= 86400, received 172800!');
       });
     });
 
@@ -764,6 +764,7 @@ describe('cluster new api', () => {
             node.serverlessV2ScalingConfiguration = {
               minCapacity: 1,
               maxCapacity: 12,
+              secondsUntilAutoPause: 300,
             };
           }
         },
