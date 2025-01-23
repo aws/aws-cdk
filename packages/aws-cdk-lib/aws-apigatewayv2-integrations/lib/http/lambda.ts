@@ -41,7 +41,6 @@ export interface HttpLambdaIntegrationProps {
  * The Lambda Proxy integration resource for HTTP API
  */
 export class HttpLambdaIntegration extends HttpRouteIntegration {
-
   private readonly _id: string;
 
   /**

@@ -744,7 +744,6 @@ export interface CloudFrontWebDistributionAttributes {
  * @deprecated Use `Distribution` instead
  */
 export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
-
   /**
    * Creates a construct that represents an external (imported) distribution.
    */
