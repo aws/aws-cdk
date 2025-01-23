@@ -981,6 +981,29 @@ Read more about [Using the Amazon Cognito
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html) and [Using Your Own
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html).
 
+
+You can use the [managed login](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-managed-login.html) page provided by Amazon Cognito to sign in users. The managed login page has two versions: a classic version and a new version. You can switch between the two versions by using the `managedLoginVersion` property.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+
+// Use the new managed login page
+pool.addDomain('CognitoDomainWithBlandingDesignManagedLogin', {
+  cognitoDomain: {
+    domainPrefix: 'blanding-design-ui',
+  },
+  managedLoginversion: cognito.ManagedLoginversion.NEWER_MANAGED_LOGIN,
+});
+
+// Use the classic hosted UI
+pool.addDomain('DomainWithClassicHostedUi', {
+  cognitoDomain: {
+    domainPrefix: 'classic-hosted-ui',
+  },
+  managedLoginVersion: cognito.ManagedLoginversion.CLASSIC_HOSTED_UI,
+});
+```
+
 The `signInUrl()` methods returns the fully qualified URL to the login page for the user pool. This page comes from the
 hosted UI configured with Cognito. Learn more at [Hosted UI with the Amazon Cognito
 Console](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html#cognito-user-pools-create-an-app-integration).

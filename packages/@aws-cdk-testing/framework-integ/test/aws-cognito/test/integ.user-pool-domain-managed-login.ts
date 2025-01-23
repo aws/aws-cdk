@@ -11,7 +11,7 @@ const userpool = new cognito.UserPool(stack, 'UserPool', {
 
 const domain = userpool.addDomain('Domain', {
   cognitoDomain: {
-    domainPrefix: 'cdk-integ-user-pool-domain',
+    domainPrefix: 'naonao-user-pool-domain',
   },
   managedLoginVersion: cognito.ManagedLoginVersion.NEWER_MANAGED_LOGIN,
 });
