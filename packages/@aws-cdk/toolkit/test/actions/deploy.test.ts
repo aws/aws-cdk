@@ -172,6 +172,8 @@ describe('deploy', () => {
       await toolkit.deploy(cx);
 
       // THEN
+      // We called rollback
+      expect(toolkit.rollback).toHaveBeenCalledTimes(1);
       successfulDeployment();
     });
 
