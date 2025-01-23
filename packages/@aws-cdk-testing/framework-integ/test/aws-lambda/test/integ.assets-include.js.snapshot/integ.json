@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "cdk-integ-assets-include-test/DefaultTest": {
+      "stacks": [
+        "cdk-integ-assets-include"
+      ],
+      "assertionStack": "cdk-integ-assets-include-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegassetsincludetestDefaultTestDeployAssert961B2CE5"
+    }
+  }
+}

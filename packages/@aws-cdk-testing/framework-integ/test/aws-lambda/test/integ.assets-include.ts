@@ -10,8 +10,10 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const fn = new lambda.Function(this, 'Function', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'), {
-        include: ['index.py'],
+      code: lambda.Code.fromAsset(path.join(__dirname, 'assets-with-dummy'), {
+        include: ['index.py', 'subdir', 'subdir/**/*'],
+        exclude: ['subdir/examples/*'],
+        // exclude: ['*', '!index.py', '!subdir', '!subdir/**/*', 'subdir/examples/*'],
       }),
       runtime: lambda.Runtime.PYTHON_3_13,
       handler: 'index.main',
@@ -22,9 +24,9 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-const stack = new TestStack(app, 'cdk-integ-asset-include');
+const stack = new TestStack(app, 'cdk-integ-assets-include');
 
-const integ = new IntegTest(app, 'cdk-integ-asset-include-test', {
+const integ = new IntegTest(app, 'cdk-integ-assets-include-test', {
   testCases: [stack],
 });
 

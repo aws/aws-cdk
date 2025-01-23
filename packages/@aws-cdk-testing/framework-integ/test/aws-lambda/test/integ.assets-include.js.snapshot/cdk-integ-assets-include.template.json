@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232.zip"
+     "S3Key": "e8bc1c887150f05d7bca4700ae0946a729fc7eeffa191d6a6228b09c970ae3f9.zip"
     },
     "Handler": "index.main",
     "Role": {
@@ -60,7 +60,7 @@
     "Ref": "Function76856677"
    },
    "Export": {
-    "Name": "cdk-integ-asset-include:ExportsOutputRefFunction76856677C48862D5"
+    "Name": "cdk-integ-assets-include:ExportsOutputRefFunction76856677C48862D5"
    }
   }
  },

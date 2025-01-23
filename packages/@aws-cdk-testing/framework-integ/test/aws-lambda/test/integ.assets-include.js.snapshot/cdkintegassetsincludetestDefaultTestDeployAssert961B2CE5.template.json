@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-integ-asset-include:ExportsOutputRefFunction76856677C48862D5"
+         "Fn::ImportValue": "cdk-integ-assets-include:ExportsOutputRefFunction76856677C48862D5"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1737615721472"
+    "salt": "1737633127106"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -37,7 +37,7 @@
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-asset-include:ExportsOutputRefFunction76856677C48862D5"
+     "Fn::ImportValue": "cdk-integ-assets-include:ExportsOutputRefFunction76856677C48862D5"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +106,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-asset-include:ExportsOutputRefFunction76856677C48862D5"
+              "Fn::ImportValue": "cdk-integ-assets-include:ExportsOutputRefFunction76856677C48862D5"
              }
             ]
            ]
