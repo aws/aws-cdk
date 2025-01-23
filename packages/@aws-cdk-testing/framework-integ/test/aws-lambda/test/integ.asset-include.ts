@@ -10,11 +10,11 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const fn = new lambda.Function(this, 'Function', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'python-lambda-handler'), {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'), {
         include: ['index.py'],
       }),
       runtime: lambda.Runtime.PYTHON_3_13,
-      handler: 'index.handler',
+      handler: 'index.main',
     });
 
     this.functionName = fn.functionName;
@@ -32,5 +32,5 @@ const invoke = integ.assertions.invokeFunction({
   functionName: stack.functionName,
 });
 invoke.expect(ExpectedResult.objectLike({
-  Payload: '200',
+  Payload: '{"message": "Hello, world!"}',
 }));
