@@ -3,7 +3,7 @@ import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
 import { Duration, SecretValue, Token, Tokenization } from '../../../core';
-import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import { UnscopedValidationError } from '../../../core/lib/errors';
 import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
