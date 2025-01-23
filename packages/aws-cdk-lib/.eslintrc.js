@@ -26,6 +26,13 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-synthetics',
+  'aws-route53',
+  'aws-route53-patterns',
+  'aws-route53-targets',
+  'aws-route53profiles',
+  'aws-route53recoverycontrol',
+  'aws-route53recoveryreadiness',
+  'aws-route53resolver',
 ];
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
