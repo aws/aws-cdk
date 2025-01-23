@@ -18,32 +18,34 @@ const vpc = new vpc_v2.VpcV2(stack, 'SubnetTest', {
   enableDnsSupport: true,
 });
 
-/**
- * Since source for IPAM IPv6 is set to amazonProvided,
- * can assign IPv6 address only after the allocation
- * uncomment ipv6CidrBlock and provide valid IPv6 range
- */
-const subnet1 = new SubnetV2(stack, 'testSubnet1', {
-// new SubnetV2(stack, 'testSubnet1', {
+const subnet = new SubnetV2(stack, 'testSubnet1', {
   vpc,
   availabilityZone: 'us-east-1a',
   ipv4CidrBlock: new IpCidr('10.1.0.0/20'),
-  //defined on the basis of allocation done in IPAM console
-  //ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
+// Create a Transit Gateway with
 const tgw = new TransitGateway(stack, 'TransitGateway', {
   defaultRouteTableAssociation: false,
   defaultRouteTablePropagation: false,
 });
 
-const attachment = tgw.attachVpc('DefaultRtbAttachment', vpc, [subnet1]);
-attachment.node.addDependency(vpc);
+// Can attach a VPC to the Transit Gateway
+const attachment = tgw.attachVpc('DefaultRtbAttachment', vpc, [subnet]);
+
+// Can add additional route tables to the Transit Gateway
 const customRtb = tgw.addRouteTable('RouteTable2');
 
+// Can add a static route to the Transit Gateway Route Table
 tgw.defaultRouteTable.addRoute('defaultRTBRoute', attachment, '0.0.0.0/0');
+
+// Add an Association and enable Propagation from the attachment to the custom Route Table
 customRtb.addAssociation('customRtbAssociation', attachment);
+
+// This will propagate the defaultRTBRoute to the custom route table.
+// The propagation is done dynamically and is reflected in the AWS console but not in the generated CFN template.
+// Run this test with --no-clean flag to confirm that the route is in both route tables.
 customRtb.enablePropagation('customRtbPropagation', attachment);
 
 new IntegTest(app, 'integtest-model', {

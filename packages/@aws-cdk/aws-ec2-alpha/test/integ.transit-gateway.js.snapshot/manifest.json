@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/167a5108084ceef3decb8bb7d4495162503fee0d91271b2a35cd9aade9293664.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b0890f8ff89af38a878af643ffb12812be08ca48a35221152b73cc356314f829.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -82,10 +82,10 @@
             "data": "TransitGatewayDefaultRouteTabledefaultRTBRouteTransitGatewayRouteAB7CA8FF"
           }
         ],
-        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRtbAttachment/TransitGatewayAttachment": [
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRtbAttachment/DefaultRtbAttachment": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TransitGatewayDefaultRtbAttachmentTransitGatewayAttachmentA377C709"
+            "data": "TransitGatewayDefaultRtbAttachment6E19DB55"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/RouteTable2": [
@@ -94,16 +94,16 @@
             "data": "TransitGatewayRouteTable2047E2A04"
           }
         ],
-        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbAssociation/TransitGatewayRouteTableAssociation": [
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbAssociation/customRtbAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TransitGatewayRouteTable2customRtbAssociationTransitGatewayRouteTableAssociation9ADF3D3E"
+            "data": "TransitGatewayRouteTable2customRtbAssociation353F1A21"
           }
         ],
-        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbPropagation/TransitGatewayRouteTablePropagation": [
+        "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbPropagation/customRtbPropagation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TransitGatewayRouteTable2customRtbPropagationTransitGatewayRouteTablePropagationFAE55BBD"
+            "data": "TransitGatewayRouteTable2customRtbPropagation45784C74"
           }
         ],
         "/aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/BootstrapVersion": [

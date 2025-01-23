@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './transit-gateway-attachment';
+// import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 export interface ITransitGatewayVpcAttachment extends ITransitGatewayAttachment {}
 
@@ -73,13 +74,13 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
       transitGatewayId: props.transitGateway.transitGatewayId,
       vpcId: props.vpc.vpcId,
       options: props.transitGatewayVpcAttachmentOptions ? {
-        applianceModeSupport: (props.transitGatewayVpcAttachmentOptions?.applianceModeSupport ?? false)
+        ApplianceModeSupport: (props.transitGatewayVpcAttachmentOptions?.applianceModeSupport ?? false)
           ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-        dnsSupport: (props.transitGatewayVpcAttachmentOptions?.dnsSupport ?? false)
+        DnsSupport: (props.transitGatewayVpcAttachmentOptions?.dnsSupport ?? false)
           ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-        ipv6Support: (props.transitGatewayVpcAttachmentOptions?.ipv6Support ?? false)
+        Ipv6Support: (props.transitGatewayVpcAttachmentOptions?.ipv6Support ?? false)
           ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-        securityGroupReferencingSupport: (props.transitGatewayVpcAttachmentOptions?.securityGroupReferencingSupport ?? false)
+        SecurityGroupReferencingSupport: (props.transitGatewayVpcAttachmentOptions?.securityGroupReferencingSupport ?? false)
           ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
       } : undefined,
     });

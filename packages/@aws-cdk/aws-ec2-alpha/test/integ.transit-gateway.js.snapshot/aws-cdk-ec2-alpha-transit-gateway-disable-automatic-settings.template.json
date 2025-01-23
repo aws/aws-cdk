@@ -106,18 +106,16 @@
     "Blackhole": false,
     "DestinationCidrBlock": "0.0.0.0/0",
     "TransitGatewayAttachmentId": {
-     "Ref": "TransitGatewayDefaultRtbAttachmentTransitGatewayAttachmentA377C709"
+     "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
     },
     "TransitGatewayRouteTableId": {
      "Ref": "TransitGatewayDefaultRouteTable608EC117"
     }
    }
   },
-  "TransitGatewayDefaultRtbAttachmentTransitGatewayAttachmentA377C709": {
-   "Type": "AWS::EC2::TransitGatewayVpcAttachment",
+  "TransitGatewayDefaultRtbAttachment6E19DB55": {
+   "Type": "AWS::EC2::TransitGatewayAttachment",
    "Properties": {
-    "AddSubnetIds": [],
-    "RemoveSubnetIds": [],
     "SubnetIds": [
      {
       "Ref": "testSubnet1Subnet72087287"
@@ -132,11 +130,7 @@
       "VpcId"
      ]
     }
-   },
-   "DependsOn": [
-    "SubnetTest3296A161",
-    "SubnetTestSecondaryTest2AB12223"
-   ]
+   }
   },
   "TransitGatewayRouteTable2047E2A04": {
    "Type": "AWS::EC2::TransitGatewayRouteTable",
@@ -146,22 +140,22 @@
     }
    }
   },
-  "TransitGatewayRouteTable2customRtbAssociationTransitGatewayRouteTableAssociation9ADF3D3E": {
+  "TransitGatewayRouteTable2customRtbAssociation353F1A21": {
    "Type": "AWS::EC2::TransitGatewayRouteTableAssociation",
    "Properties": {
     "TransitGatewayAttachmentId": {
-     "Ref": "TransitGatewayDefaultRtbAttachmentTransitGatewayAttachmentA377C709"
+     "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
     },
     "TransitGatewayRouteTableId": {
      "Ref": "TransitGatewayRouteTable2047E2A04"
     }
    }
   },
-  "TransitGatewayRouteTable2customRtbPropagationTransitGatewayRouteTablePropagationFAE55BBD": {
+  "TransitGatewayRouteTable2customRtbPropagation45784C74": {
    "Type": "AWS::EC2::TransitGatewayRouteTablePropagation",
    "Properties": {
     "TransitGatewayAttachmentId": {
-     "Ref": "TransitGatewayDefaultRtbAttachmentTransitGatewayAttachmentA377C709"
+     "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
     },
     "TransitGatewayRouteTableId": {
      "Ref": "TransitGatewayRouteTable2047E2A04"

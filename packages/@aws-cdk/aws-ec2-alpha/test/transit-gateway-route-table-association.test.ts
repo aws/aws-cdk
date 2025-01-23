@@ -42,7 +42,6 @@ describe('TransitGatewayRouteTableAssociation', () => {
       transitGateway: transitGateway,
       subnets: [mySubnet],
     });
-
   });
 
   test('creates association with required properties', () => {

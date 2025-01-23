@@ -744,6 +744,7 @@ const attachment = transitGateway.attachVpc('VpcAttachment', vpc, [subnet1, subn
 ```
 
 You can customize the VPC attachment by passing in optional parameters. These include options for fine-tuning the attachment behavior, such as support for DNS, IPv6, Appliance Mode and Security Group Referencing.
+
 ```ts
 const attachmentWithOptions = transitGateway.attachVpc('VpcAttachment', vpc, [subnet], {
   dnsSupport: true,
@@ -758,6 +759,7 @@ If you want to automatically associate and propagate routes with transit gateway
 ```ts
 const attachmentWithRoutes = transitGateway.attachVpc('VpcAttachment', vpc, [subnet], undefined, associationRouteTable, [propagationRouteTable1, propagationRouteTable2]);
 ```
+
 In this example, the `associationRouteTable` is set to `associationRouteTable`, and `propagationRouteTables` is set to an array containing `propagationRouteTable1` and `propagationRouteTable2`. This triggers the automatic creation of route table associations and route propagations between the Transit Gateway and the specified route tables.
 
 ### Adding static routes to the route table

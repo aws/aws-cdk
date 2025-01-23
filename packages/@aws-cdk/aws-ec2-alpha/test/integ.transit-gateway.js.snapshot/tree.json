@@ -224,7 +224,7 @@
                             "blackhole": false,
                             "destinationCidrBlock": "0.0.0.0/0",
                             "transitGatewayAttachmentId": {
-                              "Ref": "TransitGatewayDefaultRtbAttachmentTransitGatewayAttachmentA377C709"
+                              "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
                             },
                             "transitGatewayRouteTableId": {
                               "Ref": "TransitGatewayDefaultRouteTable608EC117"
@@ -252,14 +252,12 @@
                 "id": "DefaultRtbAttachment",
                 "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRtbAttachment",
                 "children": {
-                  "TransitGatewayAttachment": {
-                    "id": "TransitGatewayAttachment",
-                    "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRtbAttachment/TransitGatewayAttachment",
+                  "DefaultRtbAttachment": {
+                    "id": "DefaultRtbAttachment",
+                    "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/DefaultRtbAttachment/DefaultRtbAttachment",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayVpcAttachment",
+                      "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayAttachment",
                       "aws:cdk:cloudformation:props": {
-                        "addSubnetIds": [],
-                        "removeSubnetIds": [],
                         "subnetIds": [
                           {
                             "Ref": "testSubnet1Subnet72087287"
@@ -277,7 +275,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnTransitGatewayVpcAttachment",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnTransitGatewayAttachment",
                       "version": "0.0.0"
                     }
                   }
@@ -311,14 +309,14 @@
                     "id": "customRtbAssociation",
                     "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbAssociation",
                     "children": {
-                      "TransitGatewayRouteTableAssociation": {
-                        "id": "TransitGatewayRouteTableAssociation",
-                        "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbAssociation/TransitGatewayRouteTableAssociation",
+                      "customRtbAssociation": {
+                        "id": "customRtbAssociation",
+                        "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbAssociation/customRtbAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
                             "transitGatewayAttachmentId": {
-                              "Ref": "TransitGatewayDefaultRtbAttachmentTransitGatewayAttachmentA377C709"
+                              "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
                             },
                             "transitGatewayRouteTableId": {
                               "Ref": "TransitGatewayRouteTable2047E2A04"
@@ -340,14 +338,14 @@
                     "id": "customRtbPropagation",
                     "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbPropagation",
                     "children": {
-                      "TransitGatewayRouteTablePropagation": {
-                        "id": "TransitGatewayRouteTablePropagation",
-                        "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbPropagation/TransitGatewayRouteTablePropagation",
+                      "customRtbPropagation": {
+                        "id": "customRtbPropagation",
+                        "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings/TransitGateway/RouteTable2/customRtbPropagation/customRtbPropagation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayRouteTablePropagation",
                           "aws:cdk:cloudformation:props": {
                             "transitGatewayAttachmentId": {
-                              "Ref": "TransitGatewayDefaultRtbAttachmentTransitGatewayAttachmentA377C709"
+                              "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
                             },
                             "transitGatewayRouteTableId": {
                               "Ref": "TransitGatewayRouteTable2047E2A04"
