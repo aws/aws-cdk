@@ -916,7 +916,7 @@ describe('DynamoEventSource', () => {
       enabled: false,
     }));
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
@@ -945,7 +945,7 @@ describe('DynamoEventSource', () => {
         startingPosition: lambda.StartingPosition.LATEST,
         onFailure: s3OnFailureDestination,
       }));
-    //THEN
+    // THEN
     }).toThrow('S3 onFailure Destination is not supported for this event source');
 
   });
@@ -1020,7 +1020,7 @@ describe('DynamoEventSource', () => {
       },
     }));
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
       MetricsConfig: {
@@ -1050,7 +1050,7 @@ describe('DynamoEventSource', () => {
       },
     }));
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
       MetricsConfig: {

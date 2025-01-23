@@ -361,7 +361,8 @@ integTest('doubly nested stack',
     await fixture.cdkDeploy('with-doubly-nested-stack', {
       captureStderr: false,
     });
-  }));
+  }),
+);
 
 integTest(
   'nested stack with parameters',
@@ -404,7 +405,7 @@ integTest(
     );
     expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 
-    //verify a change set was created with the provided name
+    // verify a change set was created with the provided name
     const changeSetResponse = await fixture.aws.cloudFormation.send(
       new ListChangeSetsCommand({
         StackName: stackArn,

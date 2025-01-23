@@ -158,11 +158,11 @@ describe('bastion host', () => {
   });
 
   test('imdsv2 is required', () => {
-    //GIVEN
+    // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
 
-    //WHEN
+    // WHEN
     new BastionHostLinux(stack, 'Bastion', {
       vpc,
       requireImdsv2: true,
@@ -179,7 +179,7 @@ describe('bastion host', () => {
   });
 
   test('appends new hash digest to instance logical Id if userDataCausesReplacement is true', () => {
-    //GIVEN
+    // GIVEN
     const stackOld = new Stack();
     const stackNew = new Stack();
     const vpcOld = new Vpc(stackOld, 'VPC');
@@ -230,7 +230,7 @@ describe('bastion host', () => {
   });
 
   test('does not append new hash digest to instance logical Id if userDataCausesReplacement is false', () => {
-    //GIVEN
+    // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const sshKeys = ['foo', 'bar'];

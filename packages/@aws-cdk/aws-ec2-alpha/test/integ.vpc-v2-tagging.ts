@@ -13,7 +13,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-ec2-alpha-tag');
 const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-tag', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [
-    //Test Amazon provided secondary ipv6 address
+    // Test Amazon provided secondary ipv6 address
     vpc_v2.IpAddresses.amazonProvidedIpv6({
       cidrBlockName: 'AmazonProvided',
     }),

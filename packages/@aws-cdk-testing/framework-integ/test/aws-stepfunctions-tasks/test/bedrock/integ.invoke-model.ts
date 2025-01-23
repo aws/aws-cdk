@@ -71,7 +71,7 @@ const prompt3 = new BedrockInvokeModel(stack, 'Prompt3', {
 });
 
 /** Test for Bedrock s3 URI Path */
-//State Machine Execution will fail for the following input as it expects a valid s3 URI from previous prompt
+// State Machine Execution will fail for the following input as it expects a valid s3 URI from previous prompt
 const prompt4 = new BedrockInvokeModel(stack, 'Prompt4', {
   model,
   input: { s3InputUri: '$.names' },
@@ -144,7 +144,7 @@ const llamaPrompt3 = new BedrockInvokeModel(stack, 'LlamaPrompt3', {
 });
 
 /** Test for Bedrock s3 URI Path */
-//State Machine Execution will fail for the following input as it expects a valid s3 URI from previous prompt
+// State Machine Execution will fail for the following input as it expects a valid s3 URI from previous prompt
 const llamaModel4 = bedrock.FoundationModel.fromFoundationModelId(stack, 'LlamaModel4', bedrock.FoundationModelIdentifier.META_LLAMA_3_2_90B_INSTRUCT_V1);
 const llamaPrompt4 = new BedrockInvokeModel(stack, 'LlamaPrompt4', {
   model: llamaModel4,

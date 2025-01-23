@@ -425,7 +425,7 @@ describe('Subscription', () => {
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
 
-    //THEN
+    // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       protocol: sns.SubscriptionProtocol.FIREHOSE,
@@ -446,7 +446,7 @@ describe('Subscription', () => {
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
 
-    //THEN
+    // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       deliveryPolicy: {
@@ -467,7 +467,7 @@ describe('Subscription', () => {
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
 
-    //THEN
+    // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       deliveryPolicy: {
@@ -532,7 +532,7 @@ describe('Subscription', () => {
       const stack = new cdk.Stack();
       const topic = new sns.Topic(stack, 'Topic');
 
-      //THEN
+      // THEN
       expect(() => new sns.Subscription(stack, 'Subscription', {
         endpoint: 'endpoint',
         deliveryPolicy: invalidDeliveryPolicy,
@@ -547,7 +547,7 @@ describe('Subscription', () => {
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
 
-    //THEN
+    // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       deliveryPolicy: {
@@ -640,7 +640,7 @@ describe('Subscription', () => {
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
 
-    //THEN
+    // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       deliveryPolicy: invalidDeliveryPolicy,
@@ -654,7 +654,7 @@ describe('Subscription', () => {
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
 
-    //THEN
+    // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
       deliveryPolicy: {

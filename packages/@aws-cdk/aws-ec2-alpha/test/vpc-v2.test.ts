@@ -107,7 +107,7 @@ describe('Vpc V2 with full control', () => {
         TestVpcAmazonProvided00BF109D: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
-            AmazonProvidedIpv6CidrBlock: true, //Amazon Provided IPv6 address
+            AmazonProvidedIpv6CidrBlock: true, // Amazon Provided IPv6 address
             VpcId: {
               'Fn::GetAtt': [
                 'TestVpcE77CE678',

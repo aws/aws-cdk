@@ -736,7 +736,7 @@ describe('method tests', () => {
       const queue = new ResourceDifference(undefined, undefined, { resourceType: {}, propertyDiffs: {}, otherDiffs: {} });
       const logicalId = 'Queue';
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN
@@ -760,7 +760,7 @@ describe('method tests', () => {
       );
       const logicalId = 'Queue';
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN
@@ -788,7 +788,7 @@ describe('method tests', () => {
         },
       );
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN
@@ -818,7 +818,7 @@ describe('method tests', () => {
         },
       );
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN
@@ -850,7 +850,7 @@ describe('method tests', () => {
         },
       );
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN
@@ -884,7 +884,7 @@ describe('method tests', () => {
         },
       );
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN
@@ -918,7 +918,7 @@ describe('method tests', () => {
         },
       );
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN
@@ -952,7 +952,7 @@ describe('method tests', () => {
         },
       );
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN
@@ -989,7 +989,7 @@ describe('method tests', () => {
         },
       );
 
-      //WHEN
+      // WHEN
       templateAndChangeSetDiffMerger.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, queue);
 
       // THEN

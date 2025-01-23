@@ -153,11 +153,11 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
         throw new Error('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType');
       }
 
-      //if not imported, extract the name from the CFN layer to reach the
-      //literal value if it is given (rather than a token)
+      // if not imported, extract the name from the CFN layer to reach the
+      // literal value if it is given (rather than a token)
       stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineName;
     } else {
-      //imported state machine
+      // imported state machine
       stateMachineName = `StateMachine-${this.stateMachine.stack.node.addr}`;
     }
 

@@ -102,7 +102,7 @@ describe('Vpc V2 with full control', () => {
         },
       ],
     });
-      //Subnet with secondary address
+      // Subnet with secondary address
     new SubnetV2(stack, 'testsubnet', {
       vpc,
       availabilityZone: 'us-west-2a',
@@ -124,7 +124,7 @@ describe('Vpc V2 with full control', () => {
         cidrBlockName: 'ImportedIpamIpv4',
       }],
     });
-      //Subnet with secondary address from IPAM range
+      // Subnet with secondary address from IPAM range
     new SubnetV2(stack, 'testsubnet', {
       vpc,
       availabilityZone: 'us-west-2a',
@@ -146,14 +146,14 @@ describe('Vpc V2 with full control', () => {
         cidrBlockName: 'ImportedIpamIpv6',
       }],
     });
-      //will throw error if IPv6 not enabled using IPAM ipv6
+      // will throw error if IPv6 not enabled using IPAM ipv6
     vpc.addEgressOnlyInternetGateway();
 
-    //will throw error if IPv6 not enabled using Amazon Provided IPv6
+    // will throw error if IPv6 not enabled using Amazon Provided IPv6
     new SubnetV2(stack, 'AddnewSubnettoImportedIpam', {
       availabilityZone: 'us-west-2a',
       ipv4CidrBlock: new IpCidr('10.0.1.0/28'),
-      //can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
+      // can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
       ipv6CidrBlock: new IpCidr('2600:1f24:6c:4000::/64'),
       vpc: vpc,
       subnetType: SubnetType.PUBLIC,
@@ -171,13 +171,13 @@ describe('Vpc V2 with full control', () => {
         amazonProvidedIpv6CidrBlock: true,
       }],
     });
-    //will throw error if IPv6 not enabled using Amazon Provided IPv6
+    // will throw error if IPv6 not enabled using Amazon Provided IPv6
     vpc.addEgressOnlyInternetGateway();
-    //will throw error if IPv6 not enabled using Amazon Provided IPv6
+    // will throw error if IPv6 not enabled using Amazon Provided IPv6
     new SubnetV2(stack, 'AddnewSubnettoImportedIpam', {
       availabilityZone: 'us-west-2a',
       ipv4CidrBlock: new IpCidr('10.0.1.0/28'),
-      //can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
+      // can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
       ipv6CidrBlock: new IpCidr('2600:1f24:6c:4000::/64'),
       vpc: vpc,
       subnetType: SubnetType.PUBLIC,

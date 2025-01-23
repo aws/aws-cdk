@@ -142,18 +142,18 @@ describe('instance', () => {
   test('sameInstanceClassAs compares InstanceTypes contains dashes', () => {
     // GIVEN
     const comparitor = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.LARGE);
-    //WHEN
+    // WHEN
     const largerInstanceType = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.XLARGE);
-    //THEN
+    // THEN
     expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
   });
 
   test('sameInstanceClassAs compares InstanceSize contains dashes', () => {
     // GIVEN
     const comparitor = new InstanceType('c7a.metal-48xl');
-    //WHEN
+    // WHEN
     const largerInstanceType = new InstanceType('c7a.xlarge');
-    //THEN
+    // THEN
     expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
   });
 
@@ -864,27 +864,27 @@ test('ssm permissions adds right managed policy', () => {
 test('sameInstanceClassAs compares identical InstanceTypes correctly', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const sameInstanceType = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //THEN
+  // THEN
   expect(sameInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
 
 test('sameInstanceClassAs compares InstanceTypes correctly regardless of size', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const largerInstanceType = InstanceType.of(InstanceClass.T3, InstanceSize.XLARGE);
-  //THEN
+  // THEN
   expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
 
 test('sameInstanceClassAs compares different InstanceTypes correctly', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.C4, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const instanceType = new InstanceType('t3.large');
-  //THEN
+  // THEN
   expect(instanceType.sameInstanceClassAs(comparitor)).toBeFalsy();
 });
 

@@ -628,7 +628,7 @@ export class CfnInclude extends core.CfnElement {
       if (!this.allowCyclicalReferences) {
         throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
       }
-      //only allow one placeholder per logical id
+      // only allow one placeholder per logical id
       if (this.logicalIdToPlaceholderMap.get(logicalId)) {
         return this.resources[this.logicalIdToPlaceholderMap.get(logicalId)!];
       }

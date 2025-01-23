@@ -142,7 +142,7 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
       throw new Error(`Matchmaking configuration request timeout can not exceed 43200 seconds, actual ${props.requestTimeout.toSeconds()} seconds.`);
     }
 
-    //Notification target
+    // Notification target
     this.notificationTarget = props.notificationTarget;
     if (!this.notificationTarget) {
       this.notificationTarget = new sns.Topic(this, 'Topic', {});

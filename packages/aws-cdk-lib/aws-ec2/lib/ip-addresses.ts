@@ -393,7 +393,7 @@ class Cidr implements IIpAddresses {
 
     const allocatedSubnets: AllocatedSubnet[] = [];
     const subnetsWithoutDefinedCidr: IRequestedSubnetInstance[] = [];
-    //default: Available IP space is evenly divided across subnets if no cidr is given.
+    // default: Available IP space is evenly divided across subnets if no cidr is given.
 
     input.requestedSubnets.forEach((requestedSubnet, index) => {
       if (requestedSubnet.configuration.cidrMask === undefined) {
@@ -496,7 +496,7 @@ class AmazonProvided implements IIpv6Addresses {
    * Note this is specific to the IPv6 CIDR.
    */
   allocateVpcIpv6Cidr(input: AllocateVpcIpv6CidrRequest): CfnVPCCidrBlock {
-    //throw new Error(`vpcId not found, got ${(scope as any).vpcId}`);
+    // throw new Error(`vpcId not found, got ${(scope as any).vpcId}`);
     return new CfnVPCCidrBlock(input.scope, 'ipv6cidr', {
       vpcId: input.vpcId,
       amazonProvidedIpv6CidrBlock: this.amazonProvided,

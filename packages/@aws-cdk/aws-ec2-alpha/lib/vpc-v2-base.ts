@@ -501,7 +501,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
         routeName: 'CDKDefaultIPv6Route',
       });
     }
-    //Add default route to IGW for IPv4
+    // Add default route to IGW for IPv4
     new Route(this, `${subnet.node.id}-DefaultRoute`, {
       routeTable: subnet.routeTable,
       destination: options?.ipv4Destination ?? '0.0.0.0/0',

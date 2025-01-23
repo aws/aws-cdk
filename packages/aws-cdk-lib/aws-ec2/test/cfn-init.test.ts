@@ -137,7 +137,7 @@ test('empty configs are not rendered', () => {
 });
 
 test('duplicate config arguments not deduplicated', () => {
-  //GIVEN
+  // GIVEN
   const config = new ec2.InitConfig([
     ec2.InitCommand.argvCommand([
       'useradd', '-u', '1001', '-g', '1001', 'eguser',

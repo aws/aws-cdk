@@ -442,7 +442,7 @@ export class Nodegroup extends Resource implements INodegroup {
         throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
       }
 
-      //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
+      // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
       instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
         throw new Error('The specified instanceType does not support Windows workloads. '
@@ -600,7 +600,7 @@ const gpuAmiTypes: NodegroupAmiType[] = [
  * @param instanceType The EC2 instance type
  */
 function isGpuInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to known GPU InstanceTypes
+  // compare instanceType to known GPU InstanceTypes
   const knownGpuInstanceTypes = [InstanceClass.P2, InstanceClass.P3, InstanceClass.P3DN, InstanceClass.P4DE, InstanceClass.P4D,
     InstanceClass.G3S, InstanceClass.G3, InstanceClass.G4DN, InstanceClass.G4AD, InstanceClass.G5, InstanceClass.G5G,
     InstanceClass.INF1, InstanceClass.INF2];
@@ -613,8 +613,8 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
  * @param instanceType The EC2 instance type
  */
 function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
-  //NOTE: i2 instance class is not present in the InstanceClass enum.
+  // compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
+  // NOTE: i2 instance class is not present in the InstanceClass enum.
   const forbiddenInstanceClasses: InstanceClass[] = [InstanceClass.C3, InstanceClass.C4, InstanceClass.D2, InstanceClass.M4,
     InstanceClass.M6A, InstanceClass.R3];
   return instanceType.toString() === InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||

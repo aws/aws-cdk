@@ -2525,7 +2525,7 @@ export class ResourceType {
   public static readonly NETWORK_FIREWALL_RULE_GROUP = new ResourceType('AWS::NetworkFirewall::RuleGroup');
   /** AWS ResilienceHub resiliency policy */
   public static readonly RESILIENCEHUB_RESILIENCY_POLICY = new ResourceType('AWS::ResilienceHub::ResiliencyPolicy');
-  /**AWS Secrets Manager secret */
+  /** AWS Secrets Manager secret */
   public static readonly SECRETS_MANAGER_SECRET = new ResourceType('AWS::SecretsManager::Secret');
   /** AWS Service Catalog CloudFormation product */
   public static readonly SERVICE_CATALOG_CLOUDFORMATION_PRODUCT = new ResourceType('AWS::ServiceCatalog::CloudFormationProduct');

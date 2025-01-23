@@ -160,7 +160,7 @@ describe('TagOptions', () => {
       portfolio.associateTagOptions(tagOptions);
       product.associateTagOptions(tagOptions);
 
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); // Generates a resource for each unique key-value pair
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 6);
     });
 

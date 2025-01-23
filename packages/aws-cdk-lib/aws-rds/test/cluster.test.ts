@@ -922,11 +922,11 @@ describe('cluster new api', () => {
 
   describe('instanceIdentifiers', () => {
     test('should contain writer and reader instance IDs', () => {
-      //GIVEN
+      // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
 
-      //WHEN
+      // WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
@@ -935,7 +935,7 @@ describe('cluster new api', () => {
         iamAuthentication: true,
       });
 
-      //THEN
+      // THEN
       expect(cluster.instanceIdentifiers).toHaveLength(2);
       expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
         Ref: 'Databasewriter2462CC03',
@@ -945,11 +945,11 @@ describe('cluster new api', () => {
 
   describe('instanceEndpoints', () => {
     test('should contain writer and reader instance endpoints at DatabaseCluster', () => {
-      //GIVEN
+      // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
 
-      //WHEN
+      // WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
@@ -958,7 +958,7 @@ describe('cluster new api', () => {
         iamAuthentication: true,
       });
 
-      //THEN
+      // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
       expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
         hostname: {
@@ -992,11 +992,11 @@ describe('cluster new api', () => {
     });
 
     test('should contain writer and reader instance endpoints at DatabaseClusterFromSnapshot', () => {
-      //GIVEN
+      // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
 
-      //WHEN
+      // WHEN
       const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
@@ -1006,7 +1006,7 @@ describe('cluster new api', () => {
         readers: [ClusterInstance.serverlessV2('reader')],
       });
 
-      //THEN
+      // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
       expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
         hostname: {

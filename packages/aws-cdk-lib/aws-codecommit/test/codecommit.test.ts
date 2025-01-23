@@ -220,7 +220,7 @@ describe('codecommit', () => {
       });
       expect(stack.resolve(repo.repositoryName)).toEqual('my-repo');
 
-      //local name resolution should use stack region
+      // local name resolution should use stack region
       expect(stack.resolve(repo.repositoryCloneUrlHttp)).toEqual({
         'Fn::Join': [
           '',
