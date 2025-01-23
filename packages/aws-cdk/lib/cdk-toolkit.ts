@@ -6,7 +6,6 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { DeploymentMethod, SuccessfulDeployStackResult } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import {
@@ -17,12 +16,11 @@ import {
   StackSelector,
 } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
-import { Deployments } from './api/deployments';
+import { Deployments, DeploymentMethod, SuccessfulDeployStackResult, createDiffChangeSet } from './api/deployments';
 import { GarbageCollector } from './api/garbage-collection/garbage-collector';
 import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { createDiffChangeSet } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { formatTime } from './api/util/string-manipulation';
 import {

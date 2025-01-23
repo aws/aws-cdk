@@ -6,7 +6,7 @@
 // Note: All type exports are in `legacy-exports.ts`
 export * from './legacy-logging-source';
 export { deepClone, flatten, ifDefined, isArray, isEmpty, numberFromBool, partition } from './util';
-export { deployStack } from './api/deploy-stack';
+export { deployStack } from './api/deployments/deploy-stack';
 export { cli, exec } from './cli';
 export { SdkProvider } from './api/aws-auth';
 export { PluginHost } from './api/plugin';

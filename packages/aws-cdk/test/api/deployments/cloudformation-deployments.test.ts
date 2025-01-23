@@ -1,5 +1,5 @@
-jest.mock('../../lib/api/deploy-stack');
-jest.mock('../../lib/util/asset-publishing');
+jest.mock('../../../lib/api/deployments/deploy-stack');
+jest.mock('../../../lib/api/deployments/asset-publishing');
 
 import {
   DescribeStacksCommand,
@@ -11,13 +11,11 @@ import {
   DescribeStackEventsCommand,
 } from '@aws-sdk/client-cloudformation';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
-import { deployStack } from '../../lib/api/deploy-stack';
-import { Deployments } from '../../lib/api/deployments';
-import { HotswapMode } from '../../lib/api/hotswap/common';
-import { ToolkitInfo } from '../../lib/api/toolkit-info';
-import { CloudFormationStack } from '../../lib/api/util/cloudformation';
-import { testStack } from '../util';
+import { CloudFormationStack, Deployments } from '../../../lib/api/deployments';
+import { deployStack } from '../../../lib/api/deployments/deploy-stack';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { ToolkitInfo } from '../../../lib/api/toolkit-info';
+import { testStack } from '../../util';
 import {
   mockBootstrapStack,
   mockCloudFormationClient,
@@ -26,7 +24,8 @@ import {
   mockSSMClient,
   restoreSdkMocksToDefault,
   setDefaultSTSMocks,
-} from '../util/mock-sdk';
+} from '../../util/mock-sdk';
+import { FakeCloudformationStack } from '../fake-cloudformation-stack';
 
 let sdkProvider: MockSdkProvider;
 let sdk: MockSdk;

@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import { ToolkitInfo, DEFAULT_BOOTSTRAP_VARIANT } from '../../lib/api';
-import { CloudFormationStack } from '../../lib/api/util/cloudformation';
+import { CloudFormationStack } from '../../lib/api/deployments';
 
 export interface MockToolkitInfoProps {
   readonly bucketName?: string;

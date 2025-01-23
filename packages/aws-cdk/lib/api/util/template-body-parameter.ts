@@ -7,8 +7,8 @@ import * as fs from 'fs-extra';
 import { debug, error } from '../../logging';
 import { toYAML } from '../../serialize';
 import { ToolkitError } from '../../toolkit/error';
-import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
 import { contentHash } from '../../util/content-hash';
+import { type AssetManifestBuilder } from '../deployments';
 import { EnvironmentResources } from '../environment-resources';
 
 export type TemplateBodyParameter = {

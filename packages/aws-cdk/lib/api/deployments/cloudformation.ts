@@ -10,15 +10,15 @@ import {
   type Tag,
 } from '@aws-sdk/client-cloudformation';
 import { AssetManifest, FileManifestEntry } from 'cdk-assets';
-import { StackStatus } from './cloudformation/stack-status';
-import { makeBodyParameter, TemplateBodyParameter } from './template-body-parameter';
+import { AssetManifestBuilder } from './asset-manifest-builder';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
 import { ToolkitError } from '../../toolkit/error';
-import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
 import { formatErrorMessage } from '../../util/error';
 import type { ICloudFormationClient, SdkProvider } from '../aws-auth';
-import type { Deployments } from '../deployments';
+import type { Deployments } from './deployments';
+import { StackStatus } from '../util/cloudformation/stack-status';
+import { makeBodyParameter, TemplateBodyParameter } from '../util/template-body-parameter';
 
 export type ResourcesToImport = ResourceToImport[];
 export type ResourceIdentifierSummaries = ResourceIdentifierSummary[];

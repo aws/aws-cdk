@@ -1,6 +1,6 @@
 import { debug } from '../../logging';
 import { ToolkitError } from '../../toolkit/error';
-import { SDK } from '../aws-auth/sdk';
+import { SDK } from '../aws-auth';
 
 export async function determineAllowCrossAccountAssetPublishing(sdk: SDK, customStackName?: string): Promise<boolean> {
   try {
