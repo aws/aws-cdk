@@ -532,7 +532,7 @@ describe('integration tests required on features', () => {
       labels.push({ name: 'pr-linter/cli-integ-tested' });
       const prLinter = configureMock(issue, files);
       // THEN: no exception
-      await expect(async () => legacyValidatePullRequestTarget(prLinter)).resolves;
+      await legacyValidatePullRequestTarget(prLinter);
     });
 
     test('with aws-cdk-automation author', async () => {
