@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CliHelpers, type CliConfig } from '@aws-cdk/user-input-gen';
+import * as cdk_from_cfn from 'cdk-from-cfn';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { MIGRATE_SUPPORTED_LANGUAGES } from './commands/migrate';
 import { RequireApproval } from './diff';
 import { availableInitLanguages } from './init';
 
@@ -351,7 +351,7 @@ export async function makeConfig(): Promise<CliConfig> {
         description: 'Migrate existing AWS resources into a CDK app',
         options: {
           'stack-name': { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true },
-          'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES },
+          'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: cdk_from_cfn.supported_languages() },
           'account': { type: 'string', desc: 'The account to retrieve the CloudFormation stack template from' },
           'region': { type: 'string', desc: 'The region to retrieve the CloudFormation stack template from' },
           'from-path': { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' },
