@@ -90,7 +90,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
    * @param scope Construct
    * @param cluster k8s cluster
    */
-  public static getOrCreate(scope: Construct, cluster: ICluster) {
+  public static getKubectlProvider(scope: Construct, cluster: ICluster) {
     // if this is an "owned" cluster, we need to wait for the kubectl barrier
     // before applying any resources.
     if (cluster instanceof Cluster) {

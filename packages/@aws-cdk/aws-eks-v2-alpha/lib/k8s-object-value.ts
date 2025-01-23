@@ -62,7 +62,7 @@ export class KubernetesObjectValue extends Construct {
   constructor(scope: Construct, id: string, props: KubernetesObjectValueProps) {
     super(scope, id);
 
-    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+    const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
 
     if (!provider) {
       throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
