@@ -12,4 +12,6 @@ baseConfig.overrides.push({
   },
 });
 
+baseConfig.rules['@stylistic/no-extra-semi'] = "off";
+
 module.exports = baseConfig;
