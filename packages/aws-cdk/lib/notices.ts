@@ -6,7 +6,7 @@ import type { Environment } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { SdkHttpOptions } from './api';
-import { AwsCliCompatible } from './api/aws-auth/awscli-compatible';
+import { AwsCliCompatible } from './api/aws-auth';
 import { debug, info, warning, error } from './logging';
 import { Context } from './settings';
 import { ToolkitError } from './toolkit/error';

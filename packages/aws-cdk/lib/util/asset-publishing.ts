@@ -12,9 +12,8 @@ import {
   type IS3Client,
   type ISecretsManagerClient,
 } from 'cdk-assets';
-import type { SDK } from '../api';
-import type { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { Mode } from '../api/plugin/mode';
+import type { SDK, SdkProvider } from '../api/aws-auth';
+import { Mode } from '../api/plugin';
 import { debug, error, info } from '../logging';
 import { ToolkitError } from '../toolkit/error';
 

@@ -1,6 +1,6 @@
 import type { AvailabilityZonesContextQuery } from '@aws-cdk/cloud-assembly-schema';
 import type { AvailabilityZone } from '@aws-sdk/client-ec2';
-import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
+import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 

@@ -1,40 +1,34 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "module": "commonjs",
-        "lib": [
-            "es2019",
-            "es2020",
-            "dom"
-        ],
-        "strict": true,
-        "alwaysStrict": true,
-        "skipLibCheck": true,
-        "declaration": true,
-        "inlineSourceMap": true,
-        "inlineSources": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "experimentalDecorators": true,
-        "resolveJsonModule": true,
-        "composite": true,
-        "incremental": true
-    },
-    "include": [
-        "**/*.ts",
-        "**/*.d.ts",
-        "lib/init-templates/**/*.hook.ts"
-    ],
-    "exclude": [
-        "lib/init-templates/**/typescript/*/*.ts",
-        "test/integ/cli/sam_cdk_integ_app/**/*",
-        "vendor/**/*",
-    ],
-    "references": [
-        {
-            "path": "../@aws-cdk/cloudformation-diff"
-        }
-    ]
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["es2019", "es2020", "dom"],
+    "strict": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "incremental": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.d.ts",
+    "../@aws-cdk/toolkit-lib-tmp/test/api/aws-auth/sdk-provider.test.ts",
+    "../@aws-cdk/toolkit-lib-tmp/test/api/aws-auth/account-cache.test.ts",
+    "../@aws-cdk/toolkit-lib-tmp/test/api/aws-auth/credential-plugins.test.ts",
+    "../@aws-cdk/toolkit-lib-tmp/test/toolkit/cli-io-host.test.ts"
+  ],
+  "exclude": ["lib/init-templates/**/typescript/*/*.ts"],
+  "references": [
+    { "path": "../@aws-cdk/cloudformation-diff" },
+    { "path": "../@aws-cdk/toolkit-lib-tmp" }
+  ]
 }

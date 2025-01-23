@@ -2,10 +2,11 @@ import * as childProcess from 'child_process';
 import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
+import { rootDir } from './cli/root-dir';
 import { invokeBuiltinHooks } from './init-hooks';
 import { error, info, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
-import { cdkHomeDir, rootDir } from './util/directories';
+import { cdkHomeDir } from './util/directories';
 import { formatErrorMessage } from './util/error';
 import { rangeFromSemver } from './util/version-range';
 

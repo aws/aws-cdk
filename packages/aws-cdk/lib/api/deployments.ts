@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import * as chalk from 'chalk';
-import type { SdkProvider } from './aws-auth/sdk-provider';
+import type { SdkProvider } from './aws-auth';
 import { type DeploymentMethod, deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { EnvironmentAccess } from './environment-access';
 import { type EnvironmentResources } from './environment-resources';

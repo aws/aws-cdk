@@ -1,9 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { SDK } from './aws-auth';
 import { warning } from '../logging';
-import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
+import { CredentialsOptions, SdkForEnvironment, SdkProvider, SDK } from './aws-auth';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
-import { Mode } from './plugin/mode';
+import { Mode } from './plugin';
 import { replaceEnvPlaceholders, StringWithoutPlaceholders } from './util/placeholders';
 import { ToolkitError } from '../toolkit/error';
 import { formatErrorMessage } from '../util/error';

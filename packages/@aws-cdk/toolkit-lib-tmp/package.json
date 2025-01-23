@@ -1,0 +1,100 @@
+{
+  "name": "@aws-cdk/toolkit-lib-tmp",
+  "description": "Temporary package that holds shared code between the Programmatic Toolkit and the CLI",
+  "private": true,
+  "version": "0.0.0",
+  "type": "commonjs",
+  "exports": "./lib/index.js",
+  "scripts": {
+    "awslint": "cdk-awslint",
+    "build": "cdk-build",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cli-plugin-contract": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@smithy/types": "3.5.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^18.18.14",
+    "aws-cdk": "0.0.0",
+    "aws-cdk-lib": "0.0.0",
+    "aws-sdk-client-mock": "^4.0.1",
+    "aws-sdk-client-mock-jest": "^4.0.1",
+    "jest": "^29.7.0",
+    "nock": "^13.5.5",
+    "uuid": "^8.3.2",
+    "xml-js": "^1.6.11"
+  },
+  "dependencies": {
+    "@aws-cdk/cloud-assembly-schema": "^39.2.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-sdk/client-appsync": "3.699.0",
+    "@aws-sdk/client-cloudformation": "3.699.0",
+    "@aws-sdk/client-cloudwatch-logs": "3.699.0",
+    "@aws-sdk/client-codebuild": "3.699.0",
+    "@aws-sdk/client-ec2": "3.699.0",
+    "@aws-sdk/client-ecr": "3.699.0",
+    "@aws-sdk/client-ecs": "3.699.0",
+    "@aws-sdk/client-elastic-load-balancing-v2": "3.699.0",
+    "@aws-sdk/client-iam": "3.699.0",
+    "@aws-sdk/client-kms": "3.699.0",
+    "@aws-sdk/client-lambda": "3.699.0",
+    "@aws-sdk/client-route-53": "3.699.0",
+    "@aws-sdk/client-s3": "3.699.0",
+    "@aws-sdk/client-secrets-manager": "3.699.0",
+    "@aws-sdk/client-sfn": "3.699.0",
+    "@aws-sdk/client-ssm": "3.699.0",
+    "@aws-sdk/client-sts": "3.699.0",
+    "@aws-sdk/credential-providers": "3.699.0",
+    "@aws-sdk/ec2-metadata-service": "3.699.0",
+    "@aws-sdk/lib-storage": "3.699.0",
+    "@smithy/middleware-endpoint": "3.1.4",
+    "@smithy/property-provider": "3.1.10",
+    "@smithy/shared-ini-file-loader": "3.1.8",
+    "@smithy/util-retry": "3.0.7",
+    "@smithy/util-waiter": "3.1.6",
+    "cdk-assets": "^3.0.0-rc.123",
+    "chalk": "^4",
+    "fs-extra": "^9.1.0",
+    "promptly": "^3.2.0",
+    "proxy-agent": "^6.4.0"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/toolkit-lib-tmp"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "publishConfig": {
+    "access": "restricted",
+    "tag": "latest"
+  }
+}

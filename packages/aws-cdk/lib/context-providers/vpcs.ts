@@ -2,7 +2,7 @@ import type { VpcContextQuery } from '@aws-cdk/cloud-assembly-schema';
 import { type VpcContextResponse, type VpcSubnetGroup, VpcSubnetGroupType } from '@aws-cdk/cx-api';
 import type { Filter, RouteTable, Tag, Vpc } from '@aws-sdk/client-ec2';
 import type { IEC2Client } from '../api';
-import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
+import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 import { ContextProviderError } from '../toolkit/error';

@@ -27,7 +27,7 @@ import {
 } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
-import { Mode } from './plugin/mode';
+import { Mode } from './plugin';
 import { CloudFormationStack } from './util/cloudformation';
 import { ToolkitError } from '../toolkit/error';
 import { formatErrorMessage } from '../util/error';

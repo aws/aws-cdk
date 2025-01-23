@@ -3,9 +3,10 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { cdkCacheDir, rootDir } from './util/directories';
+import { cdkCacheDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
 import { debug, info } from '../lib/logging';
+import { rootDir } from './cli/root-dir';
 import { ToolkitError } from './toolkit/error';
 import { formatAsBanner } from '../lib/util/console-formatters';
 

@@ -1,7 +1,7 @@
 import { HostedZoneContextQuery } from '@aws-cdk/cloud-assembly-schema';
 import type { HostedZone } from '@aws-sdk/client-route-53';
 import type { IRoute53Client } from '../api';
-import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
+import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 import { ContextProviderError } from '../toolkit/error';

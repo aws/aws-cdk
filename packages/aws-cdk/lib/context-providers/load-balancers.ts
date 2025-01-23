@@ -6,7 +6,7 @@ import {
 } from '@aws-cdk/cx-api';
 import { type Listener, LoadBalancer, type TagDescription } from '@aws-sdk/client-elastic-load-balancing-v2';
 import type { IElasticLoadBalancingV2Client } from '../api';
-import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
+import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth';
 import { ContextProviderPlugin } from '../api/plugin';
 import { ContextProviderError } from '../toolkit/error';
 

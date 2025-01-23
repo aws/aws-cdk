@@ -1,6 +1,6 @@
 import type { SSMParameterContextQuery } from '@aws-cdk/cloud-assembly-schema';
 import type { GetParameterCommandOutput } from '@aws-sdk/client-ssm';
-import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
+import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
 import { ContextProviderError } from '../toolkit/error';

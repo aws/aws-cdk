@@ -1,6 +1,7 @@
-export { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider } from '../../../../aws-cdk/lib/api';
-export type { SuccessfulDeployStackResult } from '../../../../aws-cdk/lib/api';
-export { formatSdkLoggerContent } from '../../../../aws-cdk/lib/api/aws-auth/sdk-logger';
+export { SdkProvider } from '../../../../aws-cdk/lib/api/aws-auth';
+export { DEFAULT_TOOLKIT_STACK_NAME } from '../../../../aws-cdk/lib/api/toolkit-info';
+export type { SuccessfulDeployStackResult } from '../../../../aws-cdk/lib/api/deploy-stack';
+export { formatSdkLoggerContent } from '../../../../aws-cdk/lib/api/aws-auth';
 export { CloudAssembly, sanitizePatterns, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';
 export { prepareDefaultEnvironment, prepareContext, spaceAvailableForContext } from '../../../../aws-cdk/lib/api/cxapp/exec';
 export { Deployments } from '../../../../aws-cdk/lib/api/deployments';
@@ -16,7 +17,7 @@ export { Context, Settings, PROJECT_CONTEXT } from '../../../../aws-cdk/lib/sett
 export { tagsForStack } from '../../../../aws-cdk/lib/tags';
 export { CliIoHost } from '../../../../aws-cdk/lib/toolkit/cli-io-host';
 export { loadTree, some } from '../../../../aws-cdk/lib/tree';
-export { splitBySize } from '../../../../aws-cdk/lib/util';
+export { splitBySize } from '../../../../aws-cdk/lib/util/objects';
 export { validateSnsTopicArn } from '../../../../aws-cdk/lib/util/validate-notification-arn';
 export { WorkGraph } from '../../../../aws-cdk/lib/util/work-graph';
 export type { Concurrency } from '../../../../aws-cdk/lib/util/work-graph';

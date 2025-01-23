@@ -9,9 +9,8 @@ import { LoadBalancerContextProviderPlugin, LoadBalancerListenerContextProviderP
 import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
-import { SdkProvider } from '../api';
-import { PluginHost } from '../api/plugin';
-import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
+import { SdkProvider } from '../api/aws-auth';
+import { ContextProviderPlugin, PluginHost } from '../api/plugin';
 import { replaceEnvPlaceholders } from '../api/util/placeholders';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';

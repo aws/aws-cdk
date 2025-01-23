@@ -1059,6 +1059,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
+      '@aws-cdk/toolkit-lib-tmp',
       '@aws-cdk/region-info',
       // Private packages
       ...fs.readdirSync(path.join(monoRepoRoot(), 'tools', '@aws-cdk')).map((name) => `@aws-cdk/${name}`),

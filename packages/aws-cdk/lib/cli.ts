@@ -27,7 +27,7 @@ import { data, debug, error, info } from '../lib/logging';
 import { Notices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { SdkToCliLogger } from './api/aws-auth/sdk-logger';
+import { SdkToCliLogger } from './api/aws-auth';
 import { ToolkitError } from './toolkit/error';
 
 /* eslint-disable max-len */
