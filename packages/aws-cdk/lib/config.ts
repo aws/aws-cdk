@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CliHelpers, type CliConfig } from '@aws-cdk/user-input-gen';
+import * as cdk_from_cfn from 'cdk-from-cfn';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { MIGRATE_SUPPORTED_LANGUAGES } from './commands/migrate';
 import { RequireApproval } from './diff';
 import { availableInitLanguages } from './init';
 
@@ -87,6 +87,7 @@ export async function makeConfig(): Promise<CliConfig> {
           'execute': { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true },
           'trust': { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [] },
           'trust-for-lookup': { type: 'array', desc: 'The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)', default: [] },
+          'untrust': { type: 'array', desc: 'The AWS account IDs that should not be trusted by this environment (may be repeated, modern bootstrapping only)', default: [] },
           'cloudformation-execution-policies': { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)', default: [] },
           'force': { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false },
           'termination-protection': { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' },
@@ -350,7 +351,7 @@ export async function makeConfig(): Promise<CliConfig> {
         description: 'Migrate existing AWS resources into a CDK app',
         options: {
           'stack-name': { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true },
-          'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES },
+          'language': { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: cdk_from_cfn.supported_languages() },
           'account': { type: 'string', desc: 'The account to retrieve the CloudFormation stack template from' },
           'region': { type: 'string', desc: 'The region to retrieve the CloudFormation stack template from' },
           'from-path': { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' },
