@@ -467,12 +467,12 @@ interface DatabaseClusterBaseProps {
   readonly clusterScalabilityType?: ClusterScalabilityType;
 
   /**
-  * [Misspelled] Specifies the scalability mode of the Aurora DB cluster.
-  *
-  * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
-  *
-  * @default ClusterScailabilityType.STANDARD
-  * @deprecated Use clusterScalabilityType instead. This will be removed in the next major version.
+   * [Misspelled] Specifies the scalability mode of the Aurora DB cluster.
+   *
+   * Set LIMITLESS if you want to use a limitless database; otherwise, set it to STANDARD.
+   *
+   * @default ClusterScailabilityType.STANDARD
+   * @deprecated Use clusterScalabilityType instead. This will be removed in the next major version.
   */
   readonly clusterScailabilityType?: ClusterScailabilityType;
 }
