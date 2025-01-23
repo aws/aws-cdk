@@ -1470,7 +1470,7 @@ it is included (i.e. the `include` patterns check for symlinks by the path from 
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
-    include: ['index.py', 'some/**/*.py'],
+    include: ['index.py'],
   }),
   runtime: lambda.Runtime.PYTHON_3_9,
   handler: 'index.handler',
