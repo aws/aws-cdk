@@ -350,7 +350,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
             stack,
             deployName: stack.stackName,
             roleArn: options.roleArn,
-            toolkitStackName: options.toolkitStackName,
+            toolkitStackName: this.toolkitStackName,
             reuseAssets: options.reuseAssets,
             notificationArns,
             tags,
@@ -639,8 +639,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
         const result = await deployments.rollbackStack({
           stack,
           roleArn: options.roleArn,
-          toolkitStackName: options.toolkitStackName,
-          force: options.force,
+          toolkitStackName: this.toolkitStackName,
+          force: options.orphanFailedResources,
           validateBootstrapStackVersion: options.validateBootstrapStackVersion,
           orphanLogicalIds: options.orphanLogicalIds,
         });

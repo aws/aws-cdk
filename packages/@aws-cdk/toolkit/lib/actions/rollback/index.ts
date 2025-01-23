@@ -41,18 +41,4 @@ export interface RollbackOptions {
    * @default true
    */
   readonly validateBootstrapStackVersion?: boolean;
-
-  /**
-   * Name of the toolkit stack to use/deploy
-   *
-   * @default CDKToolkit
-   */
-  readonly toolkitStackName?: string;
-
-  /**
-   * Whether to force the rollback or not
-   *
-   * @default false
-   */
-  readonly force?: boolean;
 }
