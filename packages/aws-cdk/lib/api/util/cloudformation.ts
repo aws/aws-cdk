@@ -354,9 +354,7 @@ export async function createDiffChangeSet(
   // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
   for (const resource of Object.values(options.stack.template.Resources ?? {})) {
     if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
-      debug('This stack contains one or more nested stacks, falling back to template-only diff...');
-
-      return undefined;
+      throw new Error('Cannot create change-set diff when using nested stacks');
     }
   }
 
@@ -392,44 +390,35 @@ function templatesFromAssetManifestArtifact(
 async function uploadBodyParameterAndCreateChangeSet(
   options: PrepareChangeSetOptions,
 ): Promise<DescribeChangeSetCommandOutput | undefined> {
-  try {
-    await uploadStackTemplateAssets(options.stack, options.deployments);
-    const env = await options.deployments.envs.accessStackForMutableStackOperations(options.stack);
+  await uploadStackTemplateAssets(options.stack, options.deployments);
+  const env = await options.deployments.envs.accessStackForMutableStackOperations(options.stack);
 
-    const bodyParameter = await makeBodyParameter(
-      options.stack,
-      env.resolvedEnvironment,
-      new AssetManifestBuilder(),
-      env.resources,
-    );
-    const cfn = env.sdk.cloudFormation();
-    const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
+  const bodyParameter = await makeBodyParameter(
+    options.stack,
+    env.resolvedEnvironment,
+    new AssetManifestBuilder(),
+    env.resources,
+  );
+  const cfn = env.sdk.cloudFormation();
+  const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
-    const executionRoleArn = await env.replacePlaceholders(options.stack.cloudFormationExecutionRoleArn);
-    options.stream.write(
-      'Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n',
-    );
+  const executionRoleArn = await env.replacePlaceholders(options.stack.cloudFormationExecutionRoleArn);
+  options.stream.write(
+    'Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n',
+  );
 
-    return await createChangeSet({
-      cfn,
-      changeSetName: 'cdk-diff-change-set',
-      stack: options.stack,
-      exists,
-      uuid: options.uuid,
-      willExecute: options.willExecute,
-      bodyParameter,
-      parameters: options.parameters,
-      resourcesToImport: options.resourcesToImport,
-      role: executionRoleArn,
-    });
-  } catch (e: any) {
-    debug(e);
-    options.stream.write(
-      'Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n',
-    );
-
-    return undefined;
-  }
+  return createChangeSet({
+    cfn,
+    changeSetName: 'cdk-diff-change-set',
+    stack: options.stack,
+    exists,
+    uuid: options.uuid,
+    willExecute: options.willExecute,
+    bodyParameter,
+    parameters: options.parameters,
+    resourcesToImport: options.resourcesToImport,
+    role: executionRoleArn,
+  });
 }
 
 /**

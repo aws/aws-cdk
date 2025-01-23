@@ -199,7 +199,7 @@ export class CdkToolkit {
 
         let changeSet = undefined;
 
-        if (options.changeSet) {
+        if (options.changeSet || options.mode === 'auto' || options.mode === 'change-set') {
           let stackExists = false;
           try {
             stackExists = await this.props.deployments.stackExists({
@@ -218,16 +218,30 @@ export class CdkToolkit {
           }
 
           if (stackExists) {
-            changeSet = await createDiffChangeSet({
-              stack,
-              uuid: uuid.v4(),
-              deployments: this.props.deployments,
-              willExecute: false,
-              sdkProvider: this.props.sdkProvider,
-              parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
-              resourcesToImport,
-              stream,
-            });
+            try {
+              changeSet = await createDiffChangeSet({
+                stack,
+                uuid: uuid.v4(),
+                deployments: this.props.deployments,
+                willExecute: false,
+                sdkProvider: this.props.sdkProvider,
+                parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+                resourcesToImport,
+                stream,
+              });
+            } catch (e: any) {
+              if (options.mode === 'auto') {
+                debug(e);
+                stream.write(
+                  'Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n',
+                );
+              } else {
+                stream.write(
+                  `Could not create change set. Reason: ${e.message}\n`,
+                );
+                return 1;
+              }
+            }
           } else {
             debug(
               `the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`,
@@ -1354,9 +1368,19 @@ export interface DiffOptions {
   /**
    * Whether or not to create, analyze, and subsequently delete a changeset
    *
+   * @deprecated - use `mode` option instead
    * @default true
    */
   changeSet?: boolean;
+
+  /**
+   * Auto mode will first attempt to use change-set mode, and if any error should occur it will fallback to template-only mode.
+   * Change-set mode will use a change-set to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.
+   * Template-only mode compares the current local template with template applied on the stack
+   *
+   * @default 'auto'
+   */
+  mode?: 'auto' | 'change-set' | 'template-only';
 }
 
 interface CfnDeployOptions {

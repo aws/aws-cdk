@@ -169,9 +169,11 @@ $ cdk diff --quiet --app='node bin/main.js' MyStackName
 
 Note that the CDK::Metadata resource and the `CheckBootstrapVersion` Rule are excluded from `cdk diff` by default. You can force `cdk diff` to display them by passing the `--strict` flag.
 
-The `change-set` flag will make `diff` create a change set and extract resource replacement data from it. This is a bit slower, but will provide no false positives for resource replacement.
-The `--no-change-set` mode will consider any change to a property that requires replacement to be a resource replacement,
-even if the change is purely cosmetic (like replacing a resource reference with a hardcoded arn).
+The `mode` option selects the approach that will be used to analyze the differences:
+
+- When set to `auto`: CDK will first attempt to create a ChangeSet, should that not be possible due to the stack not yet being created, or any error encountered during the creation of the StackSet, it will automatically fallback to `template-only` mode.
+- When set to `change-set`: CDK will create a change set and extract resource replacement data from it. This is a bit slower, but will provide no false positives for resource replacement. Errors in creating a change-set will result in a non-zero exit code. Note that when using this mode against a stack that has not been created will still result in a fallback to `template-only` mode. Also note that this mode will always return an error when used against stacks that contain nested stacks.
+- When set to `template-only`: CDK will compare the local template with the template currently applied to the stack. Note that this mode will consider any change to a property that requires replacement to be a resource replacement, even if the change is purely cosmetic (like replacing a resource reference with a hardcoded arn)
 
 ### `cdk deploy`
 
