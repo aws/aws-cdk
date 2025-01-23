@@ -122,6 +122,198 @@ describe('fs copy', () => {
     ]);
 
   });
+
+  test('include a file in a directory', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'file3.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'subdir2 (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('include a file with relative path in a directory', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'subdir2/subdir3/file3.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'subdir2 (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('include a root file', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'file1.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'file1.txt',
+    ]);
+  });
+
+  test('include some files in a directory', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'file1.txt',
+        'file2.txt',
+        'file3.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'file1.txt',
+      'subdir (D)',
+      '    file2.txt',
+      'subdir2 (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('include all files in sub directories', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      include: [
+        'subdir2/**/*',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'subdir2 (D)',
+      '    empty-subdir (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('exclude takes priority if both include and exclude are specified for the same file', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      exclude: [
+        'file2.txt',
+      ],
+      include: [
+        'file1.txt',
+        'file2.txt',
+        'file3.txt',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'file1.txt',
+      'subdir2 (D)',
+      '    subdir3 (D)',
+      '        file3.txt',
+    ]);
+  });
+
+  test('include a symlink as a symlink path if SymlinkFollowMode NEVER', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      follow: SymlinkFollowMode.NEVER,
+      include: [
+        'external-link.txt', // external-link.txt => ../symlinks/normal-file.txt
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'external-link.txt => ../symlinks/normal-file.txt',
+    ]);
+  });
+
+  test('do not include a symlink that does not match but whose target file path matches if SymlinkFollowMode NEVER', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      follow: SymlinkFollowMode.NEVER,
+      include: [
+        'normal-file.txt', // external-link.txt => ../symlinks/normal-file.txt
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([]);
+  });
+
+  test('include a symlink that matches but whose target file path does not match if SymlinkFollowMode other than NEVER', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      follow: SymlinkFollowMode.ALWAYS,
+      include: [
+        'external-link.txt', // external-link.txt => ../symlinks/normal-file.txt
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'external-link.txt',
+    ]);
+  });
+
+  test('do not include a symlink that does not match but whose target file path matches if SymlinkFollowMode other than NEVER', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      follow: SymlinkFollowMode.ALWAYS,
+      include: [
+        'normal-file.txt', // external-link.txt => ../symlinks/normal-file.txt
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([]);
+  });
 });
 
 function tree(dir: string, depth = ''): string[] {

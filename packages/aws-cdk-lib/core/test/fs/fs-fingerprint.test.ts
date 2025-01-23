@@ -79,6 +79,40 @@ describe('fs fingerprint', () => {
 
     });
 
+    test('does not include requested files', () => {
+      // GIVEN
+      const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
+      const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+      FileSystem.copyDirectory(srcdir, outdir);
+
+      // WHEN
+      const hashSrc = FileSystem.fingerprint(srcdir, { include: ['*.txt'] });
+
+      fs.writeFileSync(path.join(outdir, `${hashSrc}.ignoreme`), 'Include me!');
+      const hashCopy = FileSystem.fingerprint(outdir, { include: ['*.txt'] });
+
+      // THEN
+      expect(hashSrc).toEqual(hashCopy);
+
+    });
+
+    test('includes requested files', () => {
+      // GIVEN
+      const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
+      const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+      FileSystem.copyDirectory(srcdir, outdir);
+
+      // WHEN
+      const hashSrc = FileSystem.fingerprint(srcdir, { include: ['*.txt'] });
+
+      fs.writeFileSync(path.join(outdir, `${hashSrc}.txt`), 'Include me!');
+      const hashCopy = FileSystem.fingerprint(outdir, { include: ['*.txt'] });
+
+      // THEN
+      expect(hashSrc).not.toEqual(hashCopy);
+
+    });
+
     test('changes with file names', () => {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
