@@ -21,8 +21,8 @@ class TestStack extends Stack {
         ],
       }),
       // code: lambda.Code.fromAsset(path.join(__dirname, 'assets-with-dummy'), {
-      //   It can extract the files with the exclude only, but difficult to understand.
-      //   Also the order is important in the exclude, but it doesn't need in the include.
+      //   // It can extract the files with the exclude only, but difficult to understand.
+      //   // Also the order is important in the exclude, but it doesn't need in the include.
       //   // OK
       //   exclude: [
       //     '*',
