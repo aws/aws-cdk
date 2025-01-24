@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "eks-pod-identities.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1c0998a047eac8a7047c447ef46b64506f05a2d86d6554d1a7a629c0466a3d84.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e205de360a34085b91965425ad5ed65ad9fd81df20baa53715813a90c06a2bb1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -316,12 +316,6 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 0
-          }
-        ],
         "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -332,12 +326,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandler42BEBAE0"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 0
           }
         ],
         "/eks-pod-identities/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
@@ -452,12 +440,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
-          }
-        ],
-        "/eks-pod-identities/@aws-cdk--aws-eks.KubectlProvider/Handler": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 2
           }
         ],
         "/eks-pod-identities/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
