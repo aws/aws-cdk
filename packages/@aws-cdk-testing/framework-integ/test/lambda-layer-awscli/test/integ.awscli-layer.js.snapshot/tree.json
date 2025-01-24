@@ -287,16 +287,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "Lambdapython39426A0480",
-                                          "Arn"
-                                        ]
-                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -660,16 +650,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "Lambdapython310815BD7E9",
-                                          "Arn"
-                                        ]
-                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"

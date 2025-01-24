@@ -1178,7 +1178,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.3.0"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1565,7 +1565,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip"
+                          "s3Key": "22de69e75b55e15d4d49905d8a4901edd66d1367f617c2a01ac6e86ca2b7eb84.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -1686,7 +1686,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "aea9e78c19375cc11788e490fdd0d8d90a99fc5509f3ade872bff74980f89265.zip"
+                          "s3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1826,7 +1826,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "aea9e78c19375cc11788e490fdd0d8d90a99fc5509f3ade872bff74980f89265.zip"
+                          "s3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1987,24 +1987,6 @@
                                           ]
                                         },
                                         {
-                                          "Action": "lambda:GetFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
                                           "Action": "states:StartExecution",
                                           "Effect": "Allow",
                                           "Resource": {
@@ -2075,7 +2057,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2239,24 +2221,6 @@
                                               ]
                                             }
                                           ]
-                                        },
-                                        {
-                                          "Action": "lambda:GetFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
-                                              ]
-                                            }
-                                          ]
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -2322,7 +2286,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2483,24 +2447,6 @@
                                               ]
                                             }
                                           ]
-                                        },
-                                        {
-                                          "Action": "lambda:GetFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
-                                              ]
-                                            }
-                                          ]
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -2566,7 +2512,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2919,7 +2865,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/41ea89ca2a7d613bb87fd200fab480351cf71cc4527124f0e787ce9b6921bc75.json"
+                          "/3c55303e2f06e0eb2023ef292a53f356f000a8272ea5106195b552bff186f46f.json"
                         ]
                       ]
                     }
@@ -2933,7 +2879,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "version": "10.3.0"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2980,7 +2926,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "fba306965da4b2680dd8b4e6916610efe237162f913f22b10146f647b3f6bce4.zip"
+                          "s3Key": "abc70c90ded969d12235ca11768293cb20557cff54518518480c0d9fb344a098.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "environment": {
@@ -3071,7 +3017,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
+                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3211,16 +3157,6 @@
                                               ]
                                             }
                                           ]
-                                        },
-                                        {
-                                          "Action": "lambda:GetFunction",
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::GetAtt": [
-                                              "Handler886CB40B",
-                                              "Arn"
-                                            ]
-                                          }
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -3286,7 +3222,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -3461,7 +3397,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/7473249a631268c23a2e6d22a2280df20e6344eb7d24c682ca25433cf8eacc3b.json"
+                          "/217fb3f3f9d6d996c187c5d80c770e81fc98b67923a58daba6c82f2228ae69cb.json"
                         ]
                       ]
                     }
@@ -3475,7 +3411,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.4.2"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -3513,7 +3449,7 @@
                 "path": "aws-cdk-eks-cluster-bottlerocket-ng/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -3559,7 +3495,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },
