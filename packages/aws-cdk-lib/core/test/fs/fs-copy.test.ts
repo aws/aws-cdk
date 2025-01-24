@@ -247,6 +247,29 @@ describe('fs copy', () => {
     ]);
   });
 
+  test('copy all matched contents except subdirectory listed in exclude when its parent directory is included with wildcard pattern', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      exclude: [
+        'subdir2/subdir3',
+      ],
+      include: [
+        'file1.txt',
+        'subdir2/**/*',
+      ],
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'file1.txt',
+      'subdir2 (D)',
+      '    empty-subdir (D)',
+    ]);
+  });
+
   test('include a symlink as a symlink path if SymlinkFollowMode NEVER', () => {
     // GIVEN
     const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
