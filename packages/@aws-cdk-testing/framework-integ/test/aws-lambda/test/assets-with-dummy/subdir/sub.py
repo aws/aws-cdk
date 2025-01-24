@@ -1,2 +1,3 @@
 def get_message():
-    return "Hello, world!"
+    with open("subdir/message.txt", "r") as file:
+        return file.read().strip()

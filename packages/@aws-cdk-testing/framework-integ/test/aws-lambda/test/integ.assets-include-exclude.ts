@@ -49,9 +49,9 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-const stack = new TestStack(app, 'cdk-integ-assets-include');
+const stack = new TestStack(app, 'cdk-integ-assets-include-exclude');
 
-const integ = new IntegTest(app, 'cdk-integ-assets-include-test', {
+const integ = new IntegTest(app, 'cdk-integ-assets-include-exclude-test', {
   testCases: [stack],
 });
 

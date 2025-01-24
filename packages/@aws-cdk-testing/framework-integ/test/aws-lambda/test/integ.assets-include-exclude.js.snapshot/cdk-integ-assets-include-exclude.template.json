@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.12"
+    "Runtime": "python3.13"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"
@@ -60,7 +60,7 @@
     "Ref": "Function76856677"
    },
    "Export": {
-    "Name": "cdk-integ-assets-include:ExportsOutputRefFunction76856677C48862D5"
+    "Name": "cdk-integ-assets-include-exclude:ExportsOutputRefFunction76856677C48862D5"
    }
   }
  },
