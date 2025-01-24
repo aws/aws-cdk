@@ -40,7 +40,7 @@ class TestStack extends Stack {
       //     '!subdir/**/*',
       //   ],
       // }),
-      runtime: lambda.Runtime.PYTHON_3_12,
+      runtime: lambda.Runtime.PYTHON_3_13,
       handler: 'index.main',
     });
 
