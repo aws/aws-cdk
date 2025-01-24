@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+import { formatBytes } from './util/bytes';
 import * as yaml_cfn from './util/yaml-cfn';
 
 /**
@@ -50,4 +51,36 @@ export function obscureTemplate(template: any = {}) {
   }
 
   return template;
+}
+
+/**
+ * Detects a buffer that has been converted to a JSON-like object
+ * In Node, `Buffer`s have `toJSON()` method that converts the buffer
+ * into a JS object that can be JSON stringified.
+ * Unfortunately this conversion happens before the replacer is called,
+ * so normal means of detecting a `Buffer` objet don't work anymore.
+ * @see https://github.com/nodejs/node-v0.x-archive/issues/5110
+ */
+function isJsonBuffer(value: any): value is {
+  type: 'Buffer';
+  data: number[];
+} {
+  return typeof value === 'object'
+    && 'type' in value
+    && value.type === 'Buffer'
+    && 'data' in value
+    && Array.isArray(value.data);
+}
+
+/**
+ * A JSON.stringify() replacer that converts Buffers into a string with information
+ * Use this if you plan to print out JSON stringified objects that may contain a Buffer.
+ * Without this, large buffers (think: Megabytes) will completely fill up the output
+ * and even crash the system.
+ */
+export function replacerBufferWithInfo(_key: any, value: any): any {
+  if (isJsonBuffer(value)) {
+    return `<Buffer: ${formatBytes(value.data.length)}>`;
+  }
+  return value;
 }
