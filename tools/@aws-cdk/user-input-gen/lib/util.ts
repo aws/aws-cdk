@@ -1,9 +1,5 @@
 import { code, Expression } from '@cdklabs/typewriter';
 
-export function generateDefault(type: string) {
-  return type === 'array' ? [] : undefined;
-}
-
 export function lit(value: any): Expression {
   switch (value) {
     case undefined:
