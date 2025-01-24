@@ -4,8 +4,8 @@ import { Template } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
 import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
-import * as apigw from '../lib';
 import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
+import * as apigw from '../lib';
 
 describe('restapi', () => {
   test('minimal setup', () => {
