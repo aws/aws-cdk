@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { GitHubFile, GitHubLabel, GitHubPr } from '../github';
-import { CODE_BUILD_CONTEXT } from '../constants';
+import { CODE_BUILD_CONTEXT, CODECOV_CHECKS } from '../constants';
 import { PullRequestLinter } from '../lint';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
+import { createOctomock, OctoMock } from './octomock';
 
 let mockRemoveLabel = jest.fn();
 let mockAddLabel = jest.fn();
@@ -1210,79 +1211,96 @@ describe('for any PR', () => {
       ],
     }));
   });
+
+  test('missing CodeCov runs lead to a failure', async () => {
+    // GIVEN
+    const prLinter = configureMock(ARBITRARY_PR, ARBITRARY_FILES);
+    prLinter.octomock.checks.listForRef.mockReturnValue({ data: [] });
+
+    // WHEN
+    const result = await prLinter.validatePullRequestTarget();
+
+    // THEN
+    expect(result.requestChanges?.failures).toContainEqual(
+      expect.stringContaining('Still waiting for CodeCov results'),
+    );
+  });
+
+  test('failing CodeCov runs lead to a failure', async () => {
+    // GIVEN
+    const prLinter = configureMock(ARBITRARY_PR, ARBITRARY_FILES);
+    prLinter.octomock.checks.listForRef.mockReturnValue({
+      data: CODECOV_CHECKS.map((name, i) => ({
+        name,
+        // All are success except one
+        conclusion: i == 0 ? 'failure' : 'success',
+        started_at: '2020-01-01T00:00:00Z',
+      })),
+    });
+
+    // WHEN
+    const result = await prLinter.validatePullRequestTarget();
+
+    // THEN
+    expect(result.requestChanges?.failures).toContainEqual(
+      expect.stringContaining('CodeCov is indicating a drop in code coverage'),
+    );
+  });
 });
 
-function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingComments?: Array<{ id: number, login: string, body: string }>): PullRequestLinter {
-  const pullsClient = {
-    get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {
-      return { data: { ...pr, base: { ref: 'main', ...pr?.base }, head: { sha: 'ABC', ...pr?.head }} };
-    },
+function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingComments?: Array<{ id: number, login: string, body: string }>): PullRequestLinter & { octomock: OctoMock } {
+  const octomock = createOctomock();
 
-    listFiles(_props: { _owner: string, _repo: string, _pull_number: number }) {
-      return { data: prFiles ?? [] };
-    },
+  octomock.pulls.get.mockImplementation((_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) => ({
+    data: { ...pr, base: { ref: 'main', ...pr?.base }, head: { sha: 'ABC', ...pr?.head }},
+  }));
+  octomock.pulls.listFiles.mockImplementation((_props: { _owner: string, _repo: string, _pull_number: number }) => ({
+    data: prFiles ?? [],
+  }));
+  octomock.pulls.createReview.mockImplementation((errorMessage) => {
+    return {
+      promise: () => mockCreateReview(errorMessage),
+    };
+  });
+  octomock.pulls.listReviews = mockListReviews;
+  octomock.issues.listComments.mockImplementation(() => {
+    const data = [{ id: 1000, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }];
+    if (existingComments) {
+      existingComments.forEach(comment => data.push({ id: comment.id, user: { login: comment.login }, body: comment.body }));
+    }
+    return { data };
+  });
+  octomock.issues.addLabels = mockAddLabel;
+  octomock.issues.removeLabel = mockRemoveLabel;
+  octomock.repos.listCommitStatusesForRef.mockImplementation(() => ({
+    data: [{
+      context: CODE_BUILD_CONTEXT,
+      state: 'success',
+    }],
+  }));
 
-    createReview(errorMessage: string) {
-      return {
-        promise: () => mockCreateReview(errorMessage),
-      };
-    },
+  // We need to pretend that all CodeCov checks are passing by default, otherwise
+  // the linter will complain about these even in tests that aren't testing for this.
+  octomock.checks.listForRef.mockImplementation(() => ({
+    data: CODECOV_CHECKS.map(name => ({
+      name,
+      conclusion: 'success',
+      started_at: '2020-01-01T00:00:00Z',
+    })),
+  }));
 
-    listReviews: mockListReviews,
-
-    dismissReview() {},
-
-    updateReview() { },
-
-    update() {},
-  };
-
-  const issuesClient = {
-    createComment() {},
-
-    deleteComment() {},
-
-    listComments() {
-      const data = [{ id: 1000, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }];
-      if (existingComments) {
-        existingComments.forEach(comment => data.push({ id: comment.id, user: { login: comment.login }, body: comment.body }));
-      }
-      return { data };
-    },
-
-    removeLabel: mockRemoveLabel,
-    addLabels: mockAddLabel,
-  };
-
-  const reposClient = {
-    listCommitStatusesForRef() {
-      return {
-        data: [{
-          context: CODE_BUILD_CONTEXT,
-          state: 'success',
-        }],
-      };
-    },
-  };
-
-  const searchClient = {
-    issuesAndPullRequests() {},
-  };
-  return new PullRequestLinter({
+  const linter = new PullRequestLinter({
     owner: 'aws',
     repo: 'aws-cdk',
     number: 1000,
     linterLogin: 'aws-cdk-automation',
 
     // hax hax
-    client: {
-      pulls: pullsClient as any,
-      issues: issuesClient as any,
-      search: searchClient as any,
-      repos: reposClient as any,
-      paginate: (method: any, args: any) => { return method(args).data; },
-    } as any,
+    client: octomock as any,
   });
+  // Stick the octomock on the linter, that will be useful in tests
+  (linter as any).octomock = octomock;
+  return linter as any;
 }
 
 /**
