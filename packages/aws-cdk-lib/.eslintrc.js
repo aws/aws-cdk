@@ -16,9 +16,21 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 // no-throw-default-error
 const enableNoThrowDefaultErrorIn = [
+  'aws-apigatewayv2-authorizers',
+  'aws-elasticloadbalancing',
+  'aws-elasticloadbalancingv2',
+  'aws-elasticloadbalancingv2-actions',
+  'aws-elasticloadbalancingv2-targets',  
   'aws-lambda',
   'aws-rds',
   'aws-s3',
+  'aws-s3-assets',
+  'aws-s3-deployment',
+  'aws-s3-notifications',
+  'aws-s3express',
+  'aws-s3objectlambda',
+  'aws-s3outposts',
+  'aws-s3tables',
   'aws-sns',
   'aws-sqs',
   'aws-ssm',
@@ -26,10 +38,6 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-synthetics',
-  'aws-elasticloadbalancing',
-  'aws-elasticloadbalancingv2',
-  'aws-elasticloadbalancingv2-actions',
-  'aws-elasticloadbalancingv2-targets',
 ];
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
