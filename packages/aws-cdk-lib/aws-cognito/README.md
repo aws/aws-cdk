@@ -992,7 +992,7 @@ pool.addDomain('CognitoDomainWithBlandingDesignManagedLogin', {
   cognitoDomain: {
     domainPrefix: 'blanding-design-ui',
   },
-  managedLoginversion: cognito.ManagedLoginversion.NEWER_MANAGED_LOGIN,
+  managedLoginVersion: cognito.ManagedLoginVersion.NEWER_MANAGED_LOGIN,
 });
 
 // Use the classic hosted UI
@@ -1000,7 +1000,7 @@ pool.addDomain('DomainWithClassicHostedUi', {
   cognitoDomain: {
     domainPrefix: 'classic-hosted-ui',
   },
-  managedLoginVersion: cognito.ManagedLoginversion.CLASSIC_HOSTED_UI,
+  managedLoginVersion: cognito.ManagedLoginVersion.CLASSIC_HOSTED_UI,
 });
 ```
 
