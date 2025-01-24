@@ -1,4 +1,4 @@
-import { AssemblyError, AuthenticationError, ContextProviderError, ToolkitError } from '../lib/toolkit/error';
+import { AssemblyError, AuthenticationError, ContextProviderError, ToolkitError } from '../../lib/toolkit/error';
 
 describe('toolkit error', () => {
   let toolkitError = new ToolkitError('Test toolkit error');

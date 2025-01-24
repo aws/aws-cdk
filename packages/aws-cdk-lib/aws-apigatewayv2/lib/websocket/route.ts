@@ -4,6 +4,7 @@ import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer
 import { WebSocketRouteIntegration } from './integration';
 import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import { IRoute } from '../common';
 
 /**
@@ -85,7 +86,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     super(scope, id);
 
     if (props.routeKey != '$connect' && props.authorizer) {
-      throw new Error('You can only set a WebSocket authorizer to a $connect route.');
+      throw new ValidationError('You can only set a WebSocket authorizer to a $connect route.', scope);
     }
 
     this.webSocketApi = props.webSocketApi;

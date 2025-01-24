@@ -4,6 +4,7 @@ import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Duration, Resource } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import { IIntegration } from '../common';
 
 /**
@@ -172,7 +173,7 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
     super(scope, id);
 
     if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
-      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+      throw new ValidationError('Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
@@ -228,7 +229,7 @@ export abstract class WebSocketRouteIntegration {
    */
   public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): { readonly integrationId: string } {
     if (this.integration && this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr) {
-      throw new Error('A single integration cannot be associated with multiple APIs.');
+      throw new ValidationError('A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
     if (!this.integration) {
