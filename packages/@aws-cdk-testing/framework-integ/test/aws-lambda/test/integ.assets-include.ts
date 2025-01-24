@@ -11,14 +11,34 @@ class TestStack extends Stack {
 
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'assets-with-dummy'), {
-        include: ['index.py', 'subdir', 'subdir/**/*'],
-        exclude: ['subdir/examples/*'],
+        include: [
+          'index.py',
+          'subdir',
+          'subdir/**/*',
+        ],
+        exclude: [
+          'subdir/examples/*',
+        ],
       }),
       // code: lambda.Code.fromAsset(path.join(__dirname, 'assets-with-dummy'), {
       //   It can extract the files with the exclude only, but difficult to understand.
       //   Also the order is important in the exclude, but it doesn't need in the include.
-      //   OK -> exclude: ['*', '!index.py', '!subdir', '!subdir/**/*', 'subdir/examples/*'],
-      //   NG -> exclude: ['*', 'subdir/examples/*', '!index.py', '!subdir', '!subdir/**/*'],
+      //   // OK
+      //   exclude: [
+      //     '*',
+      //     '!index.py',
+      //     '!subdir',
+      //     '!subdir/**/*',
+      //     'subdir/examples/*',
+      //   ],
+      //   // NG
+      //   exclude: [
+      //     '*',
+      //     'subdir/examples/*',
+      //     '!index.py',
+      //     '!subdir',
+      //     '!subdir/**/*',
+      //   ],
       // }),
       runtime: lambda.Runtime.PYTHON_3_12,
       handler: 'index.main',
