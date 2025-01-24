@@ -45,26 +45,7 @@ import { builderFixture, TestIoHost } from '../_helpers';
 
 const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
-jest.spyOn(toolkit, 'deploy').mockResolvedValue();
-
-let mockDeployStack = jest.fn().mockResolvedValue({
-  type: 'did-deploy-stack',
-  stackArn: 'arn:aws:cloudformation:region:account:stack/test-stack',
-  outputs: {},
-  noOp: false,
-});
-
-jest.mock('../../lib/api/aws-cdk', () => {
-  return {
-    ...jest.requireActual('../../lib/api/aws-cdk'),
-    Deployments: jest.fn().mockImplementation(() => ({
-      deployStack: mockDeployStack,
-      resolveEnvironment: jest.fn().mockResolvedValue({}),
-      isSingleAssetPublished: jest.fn().mockResolvedValue(true),
-      readCurrentTemplate: jest.fn().mockResolvedValue({ Resources: {} }),
-    })),
-  };
-});
+const deploySpy = jest.spyOn(toolkit as any, '_deploy').mockResolvedValue({});
 
 beforeEach(() => {
   ioHost.notifySpy.mockClear();
@@ -160,13 +141,10 @@ describe('watch', () => {
       await fakeChokidarWatcherOn.readyCallback();
 
       // THEN
-      expect(jest.mocked(toolkit.deploy)).toHaveBeenCalled();
-      // expect(deploySpy).toHaveBeenCalledTimes(1);
-      // expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
-      //   action: 'deploy',
-      //   level: 'warn',
-      //   message: expect.stringContaining('The --hotswap and --hotswap-fallback flags deliberately'),
-      // }));
+      expect(deploySpy).toHaveBeenCalledWith(expect.anything(), 'watch', expect.objectContaining({
+        hotswap: hotswapMode,
+        extraUserAgent: `cdk-watch/hotswap-${hotswapMode !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
+      }));
     });
   });
 });

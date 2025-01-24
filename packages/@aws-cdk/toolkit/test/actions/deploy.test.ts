@@ -4,7 +4,7 @@ import { builderFixture, TestIoHost } from '../_helpers';
 
 const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
-jest.spyOn(toolkit, 'rollback').mockResolvedValue();
+jest.spyOn(toolkit as any, '_rollback').mockResolvedValue({});
 
 let mockDeployStack = jest.fn().mockResolvedValue({
   type: 'did-deploy-stack',
