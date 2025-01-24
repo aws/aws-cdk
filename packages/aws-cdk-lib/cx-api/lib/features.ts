@@ -1367,7 +1367,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       
       When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
       thumbprints from unsecure connections.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.177.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
   },
