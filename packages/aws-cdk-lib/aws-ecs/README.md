@@ -86,12 +86,12 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
-To encrypt the fargate ephemeral storage configure a KMS key. 
+To encrypt the fargate ephemeral storage configure a KMS key.
 ```ts
 declare const key: kms.Key;
 
-const cluster = new ecs.Cluster(this, 'Cluster', { 
-  managedStorageConfiguration: { 
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  managedStorageConfiguration: {
     fargateEphemeralStorageKmsKey: key,
   },
 });
@@ -338,6 +338,17 @@ cluster.addCapacity('ASGEncryptedSNS', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
   desiredCapacity: 3,
   topicEncryptionKey: key,
+});
+```
+
+### Container Insights
+
+On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html) 
+can be disabled, enabled, or enhanced.
+
+```ts
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  containerInsightsV2: ecs.ContainerInsights.ENHANCED
 });
 ```
 
@@ -644,6 +655,22 @@ taskDefinition.addContainer('container', {
   enableRestartPolicy: true,
   restartIgnoredExitCodes: [0, 127],
   restartAttemptPeriod: Duration.seconds(360),
+});
+```
+
+### Enable Fault Injection
+You can utilize fault injection with Amazon ECS on both Amazon EC2 and Fargate to test how their application responds to certain impairment scenarios. These tests provide information you can use to optimize your application's performance and resiliency.
+
+When fault injection is enabled, the Amazon ECS container agent allows tasks access to new fault injection endpoints.
+Fault injection only works with tasks using the `AWS_VPC` or `HOST` network modes.
+
+For more infomation, see [Use fault injection with your Amazon ECS and Fargate workloads](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html).
+
+To enable Fault Injection for the task definiton, set `enableFaultInjection` to true.
+
+```ts
+new ecs.Ec2TaskDefinition(this, 'Ec2TaskDefinition', {
+  enableFaultInjection: true,
 });
 ```
 
@@ -1153,7 +1180,7 @@ taskDefinition.addContainer('TheContainer', {
 
 // An Rule that describes the event trigger (in this case a scheduled run)
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.expression('rate(1 min)'),
+  schedule: events.Schedule.expression('rate(1 minute)'),
 });
 
 // Pass an environment variable to the container 'TheContainer' in the task

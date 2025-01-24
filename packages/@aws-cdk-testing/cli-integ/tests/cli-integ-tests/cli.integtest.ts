@@ -363,7 +363,8 @@ integTest('doubly nested stack',
     await fixture.cdkDeploy('with-doubly-nested-stack', {
       captureStderr: false,
     });
-  }));
+  }),
+);
 
 integTest(
   'nested stack with parameters',
@@ -406,7 +407,7 @@ integTest(
     );
     expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 
-    //verify a change set was created with the provided name
+    // verify a change set was created with the provided name
     const changeSetResponse = await fixture.aws.cloudFormation.send(
       new ListChangeSetsCommand({
         StackName: stackArn,
@@ -2547,6 +2548,8 @@ integTest(
     // THEN
     const expectedSubstring = 'Resource is not in the expected state due to waiter status: TIMEOUT';
     expect(deployOutput).toContain(expectedSubstring);
+    expect(deployOutput).toContain('Observed responses:');
+    expect(deployOutput).toContain('200: OK');
     expect(deployOutput).not.toContain('hotswapped!');
   }),
 );
@@ -2632,20 +2635,6 @@ integTest('hotswap ECS deployment respects properties override', withDefaultFixt
   );
   expect(describeServicesResponse.services?.[0].deploymentConfiguration?.minimumHealthyPercent).toEqual(ecsMinimumHealthyPercent);
   expect(describeServicesResponse.services?.[0].deploymentConfiguration?.maximumPercent).toEqual(ecsMaximumHealthyPercent);
-}));
-
-integTest('cdk destroy does not fail even if the stacks do not exist', withDefaultFixture(async (fixture) => {
-  const nonExistingStackName1 = 'non-existing-stack-1';
-  const nonExistingStackName2 = 'non-existing-stack-2';
-
-  await expect(fixture.cdkDestroy([nonExistingStackName1, nonExistingStackName2])).resolves.not.toThrow();
-}));
-
-integTest('cdk destroy with no force option exits without prompt if the stacks do not exist', withDefaultFixture(async (fixture) => {
-  const nonExistingStackName1 = 'non-existing-stack-1';
-  const nonExistingStackName2 = 'non-existing-stack-2';
-
-  await expect(fixture.cdk(['destroy', ...fixture.fullStackName([nonExistingStackName1, nonExistingStackName2])])).resolves.not.toThrow();
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
