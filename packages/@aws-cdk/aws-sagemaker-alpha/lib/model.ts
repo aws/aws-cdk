@@ -103,7 +103,7 @@ abstract class ModelBase extends cdk.Resource implements IModel {
       return;
     }
 
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 }
 
