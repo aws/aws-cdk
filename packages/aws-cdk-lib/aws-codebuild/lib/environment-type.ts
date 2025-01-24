@@ -16,4 +16,10 @@ export enum EnvironmentType {
   WINDOWS_SERVER_2022_CONTAINER = 'WINDOWS_SERVER_2022_CONTAINER',
   /** MacOS ARM container */
   MAC_ARM = 'MAC_ARM',
+  /** Linux EC2 */
+  LINUX_EC2 = 'LINUX_EC2',
+  /** ARM EC2 */
+  ARM_EC2 = 'ARM_EC2',
+  /** Windows EC2 */
+  WINDOWS_EC2 = 'WINDOWS_EC2',
 }

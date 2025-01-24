@@ -172,7 +172,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Display stack dependency information for each stack',
         }),
     )
-    .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
+    .command(['synth [STACKS..]', 'synthesize [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) =>
       yargs
         .option('exclusively', {
           default: undefined,
@@ -260,6 +260,13 @@ export function parseCommandLineArguments(args: Array<string>): any {
           default: [],
           type: 'array',
           desc: 'The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)',
+          nargs: 1,
+          requiresArg: true,
+        })
+        .option('untrust', {
+          default: [],
+          type: 'array',
+          desc: 'The AWS account IDs that should not be trusted by this environment (may be repeated, modern bootstrapping only)',
           nargs: 1,
           requiresArg: true,
         })

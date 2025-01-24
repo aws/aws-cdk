@@ -68,7 +68,7 @@ import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
-import { SdkProvider } from '../lib';
+import { SdkProvider } from '../lib/api';
 import {
   mockCloudFormationClient,
   MockSdk,
@@ -77,8 +77,10 @@ import {
   restoreSdkMocksToDefault,
 } from './util/mock-sdk';
 import { Bootstrapper, type BootstrapSource } from '../lib/api/bootstrap';
-import { DeployStackResult, SuccessfulDeployStackResult } from '../lib/api/deploy-stack';
 import {
+  DeployStackResult,
+  SuccessfulDeployStackResult,
+  Template,
   Deployments,
   DeployStackOptions,
   DestroyStackOptions,
@@ -86,11 +88,12 @@ import {
   RollbackStackResult,
 } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
-import { Mode } from '../lib/api/plugin/mode';
-import { Template } from '../lib/api/util/cloudformation';
-import { CdkToolkit, markTesting, Tag } from '../lib/cdk-toolkit';
+import { Mode } from '../lib/api/plugin';
+import { CdkToolkit, markTesting } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
+import { Tag } from '../lib/tags';
+import { CliIoHost } from '../lib/toolkit/cli-io-host';
 import { flatten } from '../lib/util';
 
 markTesting();
@@ -123,6 +126,7 @@ beforeEach(() => {
     ],
   });
 
+  CliIoHost.instance().isCI = false;
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
     return true;
   });
@@ -1486,7 +1490,7 @@ describe('synth', () => {
 
     const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
 
-    // Rollback might be called -- just don't do nothing.
+    // Rollback might be called -- just don't do anything.
     const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
 
     const mockedDeployStack = jest

@@ -1,5 +1,5 @@
 import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { Arn, CfnResource, Lazy, Names, Resource } from 'aws-cdk-lib/core';
+import { Arn, CfnResource, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
@@ -18,10 +18,30 @@ export interface SecondaryAddressProps {
 }
 
 /**
+ * Additional props needed for BYOIP IPv6 address props
+ */
+export interface Ipv6PoolSecondaryAddressProps extends SecondaryAddressProps {
+  /**
+   * ID of the IPv6 address pool from which to allocate the IPv6 CIDR block.
+   * Note: BYOIP Pool ID is different from the IPAM Pool ID.
+   * To onboard your IPv6 address range to your AWS account please refer to the below documentation
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/byoip-onboard.html
+   */
+  readonly ipv6PoolId: string;
+
+  /**
+   * A valid IPv6 CIDR block from the IPv6 address pool onboarded to AWS using BYOIP.
+   * The most specific IPv6 address range that you can bring is /48 for CIDRs that are publicly advertisable
+   * and /56 for CIDRs that are not publicly advertisable.
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-byoip.html#byoip-definitions
+   */
+  readonly ipv6CidrBlock: string;
+}
+
+/**
  * IpAddress options to define VPC V2
  */
 export class IpAddresses {
-
   /**
    * An IPv4 CIDR Range
    */
@@ -48,6 +68,13 @@ export class IpAddresses {
    */
   public static amazonProvidedIpv6(props: SecondaryAddressProps) : IIpAddresses {
     return new AmazonProvided(props);
+  }
+
+  /**
+   * A BYOIP IPv6 address pool
+   */
+  public static ipv6ByoipPool(props: Ipv6PoolSecondaryAddressProps): IIpAddresses {
+    return new Ipv6Pool(props);
   }
 }
 
@@ -121,6 +148,20 @@ export interface VpcCidrOptions {
    * @default - no IPAM IPv4 CIDR range is provisioned using IPAM
    */
   readonly ipv4IpamProvisionedCidrs?: string[];
+
+  /**
+   * IPv6 CIDR block from the BOYIP IPv6 address pool.
+   *
+   * @default - None
+   */
+  readonly ipv6CidrBlock?: string;
+
+  /**
+   * ID of the BYOIP IPv6 address pool from which to allocate the IPv6 CIDR block.
+   *
+   * @default - None
+   */
+  readonly ipv6PoolId?: string;
 }
 
 /**
@@ -135,6 +176,11 @@ export interface IIpAddresses {
   allocateVpcCidr() : VpcCidrOptions;
 
 }
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
 
 /**
  * Properties to define VPC
@@ -259,7 +305,6 @@ export interface VpcV2Attributes {
  * @resource AWS::EC2::VPC
  */
 export class VpcV2 extends VpcV2Base {
-
   /**
    * Create a VPC from existing attributes
    */
@@ -269,7 +314,6 @@ export class VpcV2 extends VpcV2Base {
     * @internal
     */
     class ImportedVpcV2 extends VpcV2Base {
-
       public readonly vpcId: string;
       public readonly vpcArn: string;
       public readonly publicSubnets: ISubnetV2[] = [];
@@ -279,6 +323,7 @@ export class VpcV2 extends VpcV2Base {
       public readonly ipv4CidrBlock: string;
       public readonly region: string;
       public readonly ownerAccountId: string;
+      public readonly vpcName?: string;
       private readonly _partition?: string;
 
       /*
@@ -323,11 +368,11 @@ export class VpcV2 extends VpcV2Base {
         if (props.subnets) {
           for (const subnet of props.subnets) {
             if (subnet.subnetType === SubnetType.PRIVATE_WITH_EGRESS || subnet.subnetType === SubnetType.PRIVATE_WITH_NAT ||
-              subnet.subnetType === SubnetType.PRIVATE) {
+              subnet.subnetType as string === 'Deprecated_Private') {
               this.privateSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedPrivateSubnet', subnet));
             } else if (subnet.subnetType === SubnetType.PUBLIC) {
               this.publicSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedPublicSubnet', subnet));
-            } else if (subnet.subnetType === SubnetType.ISOLATED || subnet.subnetType === SubnetType.PRIVATE_ISOLATED) {
+            } else if (subnet.subnetType as string === 'Deprecated_Isolated' || subnet.subnetType === SubnetType.PRIVATE_ISOLATED) {
               this.isolatedSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedIsolatedSubnet', subnet));
             }
           }
@@ -437,6 +482,12 @@ export class VpcV2 extends VpcV2Base {
    */
   public readonly useIpv6: boolean = false;
 
+  /**
+   * VpcName to be used for tagging its components
+   * @attribute
+   */
+  public readonly vpcName?: string;
+
   public readonly ipv4CidrBlock: string = '';
 
   constructor(scope: Construct, id: string, props: VpcV2Props = {}) {
@@ -445,7 +496,7 @@ export class VpcV2 extends VpcV2Base {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
-
+    this.vpcName = props.vpcName;
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();
 
@@ -453,7 +504,7 @@ export class VpcV2 extends VpcV2Base {
     this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
     this.resource = new CfnVPC(this, 'Resource', {
-      cidrBlock: vpcOptions.ipv4CidrBlock, //for Ipv4 addresses CIDR block
+      cidrBlock: vpcOptions.ipv4CidrBlock, // for Ipv4 addresses CIDR block
       enableDnsHostnames: this.dnsHostnamesEnabled,
       enableDnsSupport: this.dnsSupportEnabled,
       ipv4IpamPoolId: vpcOptions.ipv4IpamPool?.ipamPoolId, // for Ipv4 ipam option
@@ -475,7 +526,8 @@ export class VpcV2 extends VpcV2Base {
     }, this.stack);
     this.region = this.stack.region;
     this.ownerAccountId = this.stack.account;
-
+    // Add tag to the VPC with the name provided in properties
+    Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
     if (props.secondaryAddressBlocks) {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
 
@@ -486,10 +538,10 @@ export class VpcV2 extends VpcV2Base {
           throw new Error('Cidr Block Name is required to create secondary IP address');
         }
 
-        if (secondaryVpcOptions.amazonProvided || secondaryVpcOptions.ipv6IpamPool) {
+        if (secondaryVpcOptions.amazonProvided || secondaryVpcOptions.ipv6IpamPool || secondaryVpcOptions.ipv6PoolId) {
           this.useIpv6 = true;
         }
-        //validate CIDR ranges per RFC 1918
+        // validate CIDR ranges per RFC 1918
         if (secondaryVpcOptions.ipv4CidrBlock!) {
           const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
           if (ret === false) {
@@ -507,13 +559,17 @@ export class VpcV2 extends VpcV2Base {
           ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
           ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPool?.ipamPoolId,
           amazonProvidedIpv6CidrBlock: secondaryVpcOptions.amazonProvided,
+          // BYOIP IPv6 Address
+          ipv6CidrBlock: secondaryVpcOptions?.ipv6CidrBlock,
+          // BYOIP Pool for IPv6 address
+          ipv6Pool: secondaryVpcOptions?.ipv6PoolId,
         });
         if (secondaryVpcOptions.dependencies) {
           for (const dep of secondaryVpcOptions.dependencies) {
             vpcCidrBlock.node.addDependency(dep);
           }
         }
-        //Create secondary blocks for Ipv4 and Ipv6
+        // Create secondary blocks for Ipv4 and Ipv6
         this.secondaryCidrBlock?.push(vpcCidrBlock);
       }
     }
@@ -544,7 +600,6 @@ export class VpcV2 extends VpcV2Base {
  * Supports assigning IPv4 address to VPC
  */
 class ipv4CidrAllocation implements IIpAddresses {
-
   constructor(private readonly cidrBlock: string, private readonly props?: { cidrBlockName: string}) {
   }
 
@@ -579,7 +634,6 @@ class AmazonProvided implements IIpAddresses {
       cidrBlockName: this.props.cidrBlockName,
     };
   }
-
 }
 
 /**
@@ -587,7 +641,6 @@ class AmazonProvided implements IIpAddresses {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html
  */
 class IpamIpv6 implements IIpAddresses {
-
   constructor(private readonly props: IpamOptions) {
   }
 
@@ -606,7 +659,6 @@ class IpamIpv6 implements IIpAddresses {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html
  */
 class IpamIpv4 implements IIpAddresses {
-
   constructor(private readonly props: IpamOptions) {
   }
   allocateVpcCidr(): VpcCidrOptions {
@@ -616,6 +668,21 @@ class IpamIpv4 implements IIpAddresses {
       ipv4IpamPool: this.props.ipamPool,
       cidrBlockName: this.props?.cidrBlockName,
       ipv4IpamProvisionedCidrs: this.props.ipamPool?.ipamIpv4Cidrs,
+    };
+  }
+}
+
+/**
+ * Supports assigning IPv6 address to VPC in an address pool
+ */
+class Ipv6Pool implements IIpAddresses {
+  constructor(private readonly props: Ipv6PoolSecondaryAddressProps) {
+  }
+  allocateVpcCidr(): VpcCidrOptions {
+    return {
+      ipv6CidrBlock: this.props.ipv6CidrBlock,
+      ipv6PoolId: this.props.ipv6PoolId,
+      cidrBlockName: this.props?.cidrBlockName,
     };
   }
 }
@@ -645,6 +712,16 @@ export interface IVPCCidrBlock {
    * IPAM pool for IPv4 address type
    */
   readonly ipv4IpamPoolId ?: string;
+
+  /**
+   * The IPv6 CIDR block from the specified IPv6 address pool.
+   */
+  readonly ipv6CidrBlock?: string;
+
+  /**
+   * The ID of the IPv6 address pool from which to allocate the IPv6 CIDR block.
+   */
+  readonly ipv6Pool?: string;
 }
 
 /**
@@ -708,6 +785,21 @@ export interface VPCCidrBlockattributes {
    * @default - no IPAM IPv4 CIDR range is provisioned using IPAM
    */
   readonly ipv4IpamProvisionedCidrs?: string[];
+
+  /**
+   * The IPv6 CIDR block from the specified IPv6 address pool.
+   *
+   * @default - No IPv6 CIDR block associated with VPC.
+   */
+  readonly ipv6CidrBlock?: string;
+
+  /**
+   * The ID of the IPv6 address pool from which to allocate the IPv6 CIDR block.
+   * Note: BYOIP Pool ID is different than IPAM Pool ID.
+   *
+   * @default - No BYOIP pool associated with VPC.
+   */
+  readonly ipv6Pool?: string;
 }
 
 /**
@@ -725,16 +817,18 @@ interface VPCCidrBlockProps extends VPCCidrBlockattributes {
  * @internal
  */
 class VPCCidrBlock extends Resource implements IVPCCidrBlock {
-
   /**
    * Import an existing VPC CIDR Block
    */
   public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockattributes) : IVPCCidrBlock {
     class Import extends Resource implements IVPCCidrBlock {
       public readonly cidrBlock = props.cidrBlock;
-      public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;;
+      public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;
       public readonly ipv6IpamPoolId ?: string = props.ipv6IpamPoolId;
       public readonly ipv4IpamPoolId ?: string = props.ipv4IpamPoolId;
+      // BYOIP Pool Attributes
+      public readonly ipv6Pool?: string = props.ipv6Pool;
+      public readonly ipv6CidrBlock?: string = props.ipv6CidrBlock;
     }
     return new Import(scope, id);
   }
@@ -749,6 +843,10 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
 
   public readonly ipv4IpamPoolId?: string;
 
+  public readonly ipv6CidrBlock?: string;
+
+  public readonly ipv6Pool?: string;
+
   constructor(scope: Construct, id: string, props: VPCCidrBlockProps) {
     super(scope, id);
     this.resource = new CfnVPCCidrBlock(this, id, props);
@@ -757,10 +855,13 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
     this.ipv6IpamPoolId = props.ipv6IpamPoolId;
     this.ipv4IpamPoolId = props.ipv4IpamPoolId;
     this.amazonProvidedIpv6CidrBlock = props.amazonProvidedIpv6CidrBlock;
+    // BYOIP Pool and CIDR Block
+    this.ipv6CidrBlock = props.ipv6CidrBlock;
+    this.ipv6Pool = props.ipv6Pool;
   }
 }
 
-//@internal First two Octet to verify RFC 1918
+// @internal First two Octet to verify RFC 1918
 interface IPaddressConfig {
   octet1: number;
   octet2: number;

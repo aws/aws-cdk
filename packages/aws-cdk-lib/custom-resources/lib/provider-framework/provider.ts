@@ -159,7 +159,6 @@ export interface ProviderProps {
  * Defines an AWS CloudFormation custom resource provider.
  */
 export class Provider extends Construct implements ICustomResourceProvider {
-
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
    * lifecycle operations (CREATE/UPDATE/DELETE).
@@ -250,6 +249,20 @@ export class Provider extends Construct implements ICustomResourceProvider {
     };
   }
 
+  private addPermissions(frameworkLambda: lambda.Function, userDefinedHandlerLambda: lambda.IFunction) {
+    userDefinedHandlerLambda.grantInvoke(frameworkLambda);
+
+    /*
+    lambda:GetFunction is needed as the framework Lambda use it to poll the state of User Defined
+    Handler until it is ACTIVE state
+     */
+    frameworkLambda.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['lambda:GetFunction'],
+      resources: [userDefinedHandlerLambda.functionArn],
+    }));
+  }
+
   private createFunction(entrypoint: string, name?: string) {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH, {
@@ -272,11 +285,11 @@ export class Provider extends Construct implements ICustomResourceProvider {
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
-    this.onEventHandler.grantInvoke(fn);
+    this.addPermissions(fn, this.onEventHandler);
 
     if (this.isCompleteHandler) {
       fn.addEnvironment(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, this.isCompleteHandler.functionArn);
-      this.isCompleteHandler.grantInvoke(fn);
+      this.addPermissions(fn, this.isCompleteHandler);
     }
 
     return fn;

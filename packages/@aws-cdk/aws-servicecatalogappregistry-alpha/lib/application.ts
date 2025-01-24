@@ -80,7 +80,7 @@ export interface IApplication extends cdk.IResource {
   associateStack(stack: cdk.Stack): void;
 
   /**
-   * Associate a Cloudformation statck with the application in the given stack.
+   * Associate a Cloudformation stack with the application in the given stack.
    *
    * @param stack a CFN stack
    */
@@ -265,7 +265,6 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   private isSameAccount(stack: cdk.Stack): boolean {
     return isAccountUnresolved(this.env.account, stack.account) || this.env.account === stack.account;
   }
-
 }
 
 /**
