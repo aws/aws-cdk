@@ -11,11 +11,17 @@ on:
       - opened
       - synchronize
       - reopened
+
+  # Triggered from a separate job when a review is added
   workflow_run:
     workflows: [PR Linter Trigger]
     types:
       - completed
+
+  # Trigger when a status is updated (CodeBuild leads to statuses)
   status: {}
+
+  # Trigger when a check suite is completed (GitHub actions and CodeCov create checks)
   check_suite:
     types: [completed]
 
