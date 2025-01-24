@@ -82,8 +82,8 @@ interface FileOptions {
    *
    * If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
    *
-   * If matching the symlink but not its target, it is included (i.e. the `include` patterns check
-   * for symlinks by the path from which the link originates).
+   * If matching the symlink but not its target, it is included (i.e. the `include` patterns match
+   * the symlink path itself, regardless of its target).
    *
    * @default - everything is included
    */
