@@ -18,6 +18,8 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 const enableNoThrowDefaultErrorIn = [
   'aws-apigatewayv2-integrations',
   'aws-apigatewayv2-authorizers',
+  'aws-amplify',
+  'aws-amplifyuibuilder',
   'aws-lambda',
   'aws-rds',
   'aws-s3',
