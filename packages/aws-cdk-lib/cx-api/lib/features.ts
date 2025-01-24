@@ -121,6 +121,7 @@ export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aw
 export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
+export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1354,6 +1355,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.176.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default behaviour of OIDC provider will reject unauthorized connections',
+    detailsMd: `
+      When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
+      default to reject unauthorized connections when downloading CA Certificates.
+      
+      When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
+      thumbprints from unsecure connections.`,
+    introducedIn: { v2: '2.177.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
   },
 };
 

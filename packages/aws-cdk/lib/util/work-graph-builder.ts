@@ -1,8 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { AssetManifest, IManifestEntry } from 'cdk-assets';
+import { AssetManifest, type IManifestEntry } from 'cdk-assets';
 import { contentHashAny } from './content-hash';
 import { WorkGraph } from './work-graph';
 import { DeploymentState, AssetBuildNode, WorkNode } from './work-graph-types';
+import { ToolkitError } from '../toolkit/error';
 
 export class WorkGraphBuilder {
   /**
@@ -111,7 +112,7 @@ export class WorkGraphBuilder {
         for (const entry of manifest.entries) {
           const parentStack = parentStacks.get(artifact);
           if (parentStack === undefined) {
-            throw new Error('Found an asset manifest that is not associated with a stack');
+            throw new ToolkitError('Found an asset manifest that is not associated with a stack');
           }
           this.addAsset(parentStack, artifact, manifest, entry);
         }
@@ -138,7 +139,7 @@ export class WorkGraphBuilder {
 
   private stackArtifactId(artifact: cxapi.CloudArtifact): string {
     if (!cxapi.CloudFormationStackArtifact.isCloudFormationStackArtifact(artifact)) {
-      throw new Error(`Can only call this on CloudFormationStackArtifact, got: ${artifact.constructor.name}`);
+      throw new ToolkitError(`Can only call this on CloudFormationStackArtifact, got: ${artifact.constructor.name}`);
     }
     return `${this.idPrefix}${artifact.id}`;
   }

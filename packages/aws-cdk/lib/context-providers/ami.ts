@@ -2,6 +2,7 @@ import type { AmiContextQuery } from '@aws-cdk/cloud-assembly-schema';
 import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug, info } from '../logging';
+import { ContextProviderError } from '../toolkit/error';
 
 /**
  * Plugin to search AMIs for the current account
@@ -30,7 +31,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     const images = [...(response.Images || [])].filter((i) => i.ImageId !== undefined);
 
     if (images.length === 0) {
-      throw new Error('No AMI found that matched the search criteria');
+      throw new ContextProviderError('No AMI found that matched the search criteria');
     }
 
     // Return the most recent one

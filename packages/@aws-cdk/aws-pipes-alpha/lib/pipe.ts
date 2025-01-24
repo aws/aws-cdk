@@ -170,7 +170,6 @@ abstract class PipeBase extends Resource implements IPipe {
   public abstract readonly pipeName: string;
   public abstract readonly pipeArn: string;
   public abstract readonly pipeRole: IRole;
-
 }
 
 /**
@@ -299,5 +298,4 @@ export class Pipe extends PipeBase {
     this.pipeName = resource.ref;
     this.pipeArn = resource.attrArn;
   }
-
 }

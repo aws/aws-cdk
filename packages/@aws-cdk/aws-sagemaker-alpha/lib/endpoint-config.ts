@@ -315,5 +315,4 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       variantName: v.variantName,
     }) );
   }
-
 }
