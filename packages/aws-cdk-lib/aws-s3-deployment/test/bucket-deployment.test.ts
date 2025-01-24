@@ -9,6 +9,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
 
@@ -1678,7 +1679,7 @@ function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
     }
   }
 
-  throw new Error(`File ${relativePath} not found in any of the assets of the assembly`);
+  throw new UnscopedValidationError(`File ${relativePath} not found in any of the assets of the assembly`);
 }
 
 test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {

@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { GitHubComment, GitHubPr, Review } from "./github";
+import { CheckRun, GitHubComment, GitHubPr, Review } from "./github";
 
 export const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
@@ -168,6 +168,11 @@ export class PullRequestLinterBase {
           message,
         });
       } catch (e: any) {
+        if (githubResponseErrors(e).includes('Can not dismiss a dismissed pull request review')) {
+          // Can happen because of race conditions. We already achieved the result we wanted, so ignore.
+          continue;
+        }
+
         // This can fail with a "not found" for some reason
         throw new Error(`Dismissing review failed, user is probably not authorized: ${JSON.stringify(e, undefined, 2)}`);
       }
@@ -261,6 +266,33 @@ export class PullRequestLinterBase {
         state: 'closed',
       });
     }
+  }
+
+  /**
+   * Return the check run results for the given SHA
+   *
+   * It *seems* like this only returns completed check runs. That is, in-progress
+   * runs are not included.
+   */
+  public async checkRuns(sha: string):  Promise<{[name: string]: CheckRun}> {
+    const response = await this.client.paginate(this.client.checks.listForRef, {
+      owner: this.prParams.owner,
+      repo: this.prParams.repo,
+      ref: sha,
+    });
+
+    const ret: {[name: string]: CheckRun} = {};
+    for (const c of response) {
+      if (!c.started_at) {
+        continue;
+      }
+
+      // Insert if this is the first time seeing this check, or the current DT is newer
+      if (!ret[c.name] || ret[c.name].started_at!.localeCompare(c.started_at) > 1) {
+        ret[c.name] = c;
+      }
+    }
+    return ret;
   }
 
   /**
@@ -359,4 +391,11 @@ export function mergeLinterActions(a: LinterActions, b: LinterActions): LinterAc
 
 function nonEmpty<A>(xs: A[]): A[] | undefined {
   return xs.length > 0 ? xs : undefined;
+}
+
+/**
+ * Return error messages from an exception thrown by GitHub
+ */
+function githubResponseErrors(e: Error): string[] {
+  return (e as any).response?.data?.errors ?? [];
 }
