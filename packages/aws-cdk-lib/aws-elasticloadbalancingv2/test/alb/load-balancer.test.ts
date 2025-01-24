@@ -391,7 +391,7 @@ describe('tests', () => {
       // WHEN
       lb.logAccessLogs(bucket);
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         LoadBalancerAttributes: Match.arrayWith([
           {
@@ -533,7 +533,7 @@ describe('tests', () => {
     });
 
     test('bucket with KMS throws validation error', () => {
-      //GIVEN
+      // GIVEN
       const { stack, bucket, lb } = loggingSetup(true);
 
       // WHEN
@@ -729,7 +729,7 @@ describe('tests', () => {
       // WHEN
       lb.logConnectionLogs(bucket);
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         LoadBalancerAttributes: Match.arrayWith([
           {
@@ -871,7 +871,7 @@ describe('tests', () => {
     });
 
     test('bucket with KMS throws validation error', () => {
-      //GIVEN
+      // GIVEN
       const { stack, bucket, lb } = loggingSetup(true);
 
       // WHEN

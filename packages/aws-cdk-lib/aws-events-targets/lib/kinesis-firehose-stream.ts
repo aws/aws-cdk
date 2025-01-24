@@ -24,7 +24,6 @@ export interface KinesisFirehoseStreamProps {
  * @deprecated Use KinesisFirehoseStreamV2
  */
 export class KinesisFirehoseStream implements events.IRuleTarget {
-
   constructor(private readonly stream: firehose.CfnDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
   }
 
@@ -72,7 +71,6 @@ export interface IDeliveryStream extends IResource {
  * instead of L1 Cfn Kinesis Delivery Stream.
  */
 export class KinesisFirehoseStreamV2 implements events.IRuleTarget {
-
   constructor(private readonly stream: IDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
   }
 

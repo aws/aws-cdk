@@ -156,8 +156,7 @@ To learn more about these underlying resources, see
 [Synthetics Canaries Deletion](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/synthetics_canaries_deletion.html).
 
 In the CDK, you can configure your canary to delete the underlying lambda function when the canary is deleted.
-This can be provisioned by setting `cleanup: Cleanup.LAMBDA`. Note that this
-will create a custom resource under the hood that takes care of the lambda deletion for you.
+This can be provisioned by setting `provisionedResourceCleanup` to `true`.
 
 ```ts
 const canary = new synthetics.Canary(this, 'Canary', {
@@ -165,13 +164,15 @@ const canary = new synthetics.Canary(this, 'Canary', {
     handler: 'index.handler',
     code: synthetics.Code.fromInline('/* Synthetics handler code'),
   }),
-  cleanup: synthetics.Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
 });
 ```
 
 > Note: To properly clean up your canary on deletion, you still have to manually delete other resources
 > like S3 buckets and CloudWatch logs.
+
+> Note: The deletion of Lambda resources can also be performed by setting the `cleanup` argument to `Cleanup.LAMBDA`. However, this is an outdated argument that uses custom resources and is currently deprecated.
 
 ### Configuring the Canary Script
 
@@ -180,8 +181,8 @@ To configure the script the canary executes, use the `test` property. The `test`
 The `synthetics.Code` class exposes static methods to bundle your code artifacts:
 
   - `code.fromInline(code)` - specify an inline script.
-  - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See the above Note for directory structure.
-  - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See the above Note for directory structure.
+  - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See the below Note for directory structure.
+  - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See the below Note for directory structure.
 
 Using the `Code` class static initializers:
 
@@ -216,7 +217,8 @@ new synthetics.Canary(this, 'Bucket Canary', {
 });
 ```
 
-> **Note:** Synthetics have a specified folder structure for canaries. For Node scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
+> **Note:** Synthetics have a specified folder structure for canaries.
+> For Node with puppeteer scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
 > ```plaintext
 > canary/
@@ -225,6 +227,18 @@ new synthetics.Canary(this, 'Bucket Canary', {
 >         ├── <filename>.js
 > ```
 >
+> For Node with playwright scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
+>
+> ```plaintext
+> canary/
+> ├── <filename>.js,.mjs,.cjs
+> ├─some/dir/path
+>              ├── <filename>.js,.mjs,.cjs
+> ```
+>
+> If `<filename>.js` is placed in the canary directory, the handler should be specified as `filename.handler`.
+> However, if it is placed in the `some/dir/path` directory, the handler should be specified as `some/dir/path/filename.handler`.
+> For more information, see Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Synthetics_WritingCanary_Nodejs_Playwright.html).
 >
 > For Python scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
@@ -330,3 +344,4 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   artifactS3KmsKey: key,
 });
 ```
+

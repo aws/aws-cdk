@@ -59,7 +59,6 @@ class ConsoleListener {
     }
     return inspect.output;
   }
-
 }
 
 export const stdout = new ConsoleListener(process.stdout);

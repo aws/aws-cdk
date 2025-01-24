@@ -9,6 +9,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
 
@@ -251,7 +252,7 @@ test('AWS_CA_BUNDLE is set', () => {
     destinationBucket: bucket,
   });
 
-  //THEN
+  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Environment: {
       Variables: {
@@ -274,7 +275,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
     vpc: new ec2.Vpc(stack, 'Vpc'),
   });
 
-  //THEN
+  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Environment: {
       Variables: {
@@ -1678,7 +1679,7 @@ function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
     }
   }
 
-  throw new Error(`File ${relativePath} not found in any of the assets of the assembly`);
+  throw new UnscopedValidationError(`File ${relativePath} not found in any of the assets of the assembly`);
 }
 
 test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {

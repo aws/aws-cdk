@@ -102,7 +102,6 @@ export interface KeySigningKeyAttributes {
  * @resource AWS::Route53::KeySigningKey
  */
 export class KeySigningKey extends Resource implements IKeySigningKey {
-
   /**
    * Imports a key signing key from its attributes.
    */

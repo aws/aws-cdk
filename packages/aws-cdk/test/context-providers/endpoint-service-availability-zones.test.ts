@@ -1,5 +1,5 @@
 import { DescribeVpcEndpointServicesCommand } from '@aws-sdk/client-ec2';
-import { SDK, SdkForEnvironment } from '../../lib';
+import { SDK, SdkForEnvironment } from '../../lib/api';
 import {
   EndpointServiceAZContextProviderPlugin,
 } from '../../lib/context-providers/endpoint-service-availability-zones';

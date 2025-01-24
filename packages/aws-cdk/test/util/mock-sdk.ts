@@ -20,9 +20,9 @@ import { AssumeRoleCommand, GetCallerIdentityCommand, STSClient } from '@aws-sdk
 import { createCredentialChain } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentity } from '@smithy/types';
 import { mockClient } from 'aws-sdk-client-mock';
-import { Account } from 'cdk-assets';
-import { SDK, SdkProvider } from '../../lib';
-import { CloudFormationStack } from '../../lib/api/util/cloudformation';
+import { type Account } from 'cdk-assets';
+import { SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { CloudFormationStack } from '../../lib/api/deployments';
 
 export const FAKE_CREDENTIALS: AwsCredentialIdentity = {
   accessKeyId: 'ACCESS',
@@ -54,42 +54,68 @@ export const mockSTSClient = mockClient(STSClient);
 /**
  * Resets clients back to defaults and resets the history
  * of usage of the mock.
+ *
+ * NOTE: This is distinct from the terminology of "restore" that is usually used
+ * for Sinon/Jest mocks; "restore" usually means to discard the mock and restore the
+ * original implementation. Instead, in this code base we mean "reset +
+ * default".
  */
 export const restoreSdkMocksToDefault = () => {
-  mockAppSyncClient.reset();
+  applyToAllMocks('reset');
+
   mockAppSyncClient.onAnyCommand().resolves({});
-  mockCloudFormationClient.reset();
   mockCloudFormationClient.onAnyCommand().resolves({});
-  mockCloudWatchClient.reset();
   mockCloudWatchClient.onAnyCommand().resolves({});
-  mockCodeBuildClient.reset();
   mockCodeBuildClient.onAnyCommand().resolves({});
-  mockEC2Client.reset();
   mockEC2Client.onAnyCommand().resolves({});
-  mockECRClient.reset();
   mockECRClient.onAnyCommand().resolves({});
-  mockECSClient.reset();
   mockECSClient.onAnyCommand().resolves({});
-  mockElasticLoadBalancingV2Client.reset();
   mockElasticLoadBalancingV2Client.onAnyCommand().resolves({});
-  mockIAMClient.reset();
   mockIAMClient.onAnyCommand().resolves({});
-  mockKMSClient.reset();
   mockKMSClient.onAnyCommand().resolves({});
-  mockLambdaClient.reset();
   mockLambdaClient.onAnyCommand().resolves({});
-  mockRoute53Client.reset();
   mockRoute53Client.onAnyCommand().resolves({});
-  mockS3Client.reset();
   mockS3Client.onAnyCommand().resolves({});
-  mockSecretsManagerClient.reset();
   mockSecretsManagerClient.onAnyCommand().resolves({});
-  mockSSMClient.reset();
   mockSSMClient.onAnyCommand().resolves({});
-  mockStepFunctionsClient.reset();
   mockSSMClient.onAnyCommand().resolves({});
-  mockSTSClient.reset();
 };
+
+/**
+ * Restore all SDK mocks to their real implementations
+ *
+ * This file will mock a bunch of SDK clients as soon as it is imported, and it's
+ * not really possible to avoid importing it. To run any tests that need real clients
+ * instead of fake ones, you need to run this function.
+ *
+ * This function would usually be called "restore" in Jest/Sinon terminology,
+ * but "restore" was already being used with a different meaning in this file,
+ * so I'm introducing the term "undo" as a synonym for "restore" in the context
+ * of SDK mocks.
+ */
+export function undoAllSdkMocks() {
+  applyToAllMocks('restore');
+};
+
+function applyToAllMocks(meth: 'reset' | 'restore') {
+  mockAppSyncClient[meth]();
+  mockCloudFormationClient[meth]();
+  mockCloudWatchClient[meth]();
+  mockCodeBuildClient[meth]();
+  mockEC2Client[meth]();
+  mockECRClient[meth]();
+  mockECSClient[meth]();
+  mockElasticLoadBalancingV2Client[meth]();
+  mockIAMClient[meth]();
+  mockKMSClient[meth]();
+  mockLambdaClient[meth]();
+  mockRoute53Client[meth]();
+  mockS3Client[meth]();
+  mockSecretsManagerClient[meth]();
+  mockSSMClient[meth]();
+  mockStepFunctionsClient[meth]();
+  mockSTSClient[meth]();
+}
 
 export const setDefaultSTSMocks = () => {
   mockSTSClient.on(GetCallerIdentityCommand).resolves({

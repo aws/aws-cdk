@@ -186,6 +186,8 @@ export * as aws_neptunegraph from './aws-neptunegraph';
 export * as aws_networkfirewall from './aws-networkfirewall';
 export * as aws_networkmanager from './aws-networkmanager';
 export * as aws_nimblestudio from './aws-nimblestudio';
+export * as aws_notifications from './aws-notifications';
+export * as aws_notificationscontacts from './aws-notificationscontacts';
 export * as aws_oam from './aws-oam';
 export * as aws_omics from './aws-omics';
 export * as aws_opensearchserverless from './aws-opensearchserverless';

@@ -78,7 +78,6 @@ export interface UserPoolAuthenticationProviderBindConfig {
  * Defines a User Pool Authentication Provider
  */
 export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationProvider {
-
   /**
    * The User Pool of the Associated Identity Providers
    */

@@ -3,7 +3,7 @@ import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
 import { CfnAuthorizer } from '.././index';
 import { Resource } from '../../../core';
-
+import { ValidationError } from '../../../core/lib/errors';
 import { IAuthorizer } from '../common';
 
 /**
@@ -106,7 +106,7 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
     super(scope, id);
 
     if (props.type === WebSocketAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new Error('authorizerUri is mandatory for Lambda authorizers');
+      throw new ValidationError('authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {

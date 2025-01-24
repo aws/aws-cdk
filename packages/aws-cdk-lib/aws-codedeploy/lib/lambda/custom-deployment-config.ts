@@ -65,7 +65,6 @@ export interface CustomLambdaDeploymentConfigProps {
  * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use `LambdaDeploymentConfig`.
  */
 export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
-
   /**
    * The name of the deployment config
    * @attribute

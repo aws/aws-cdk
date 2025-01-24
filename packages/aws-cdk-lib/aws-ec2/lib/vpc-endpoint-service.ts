@@ -45,7 +45,6 @@ export interface IVpcEndpointService extends IResource {
  *
  */
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
-
   /**
    * The default value for a VPC Endpoint Service name prefix, useful if you do
    * not have a synthesize-time region literal available (all you have is

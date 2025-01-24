@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-glue-job-pyspark-streaming-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-job-pyspark-streaming"
+      ],
+      "assertionStack": "aws-glue-job-pyspark-streaming-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluejobpysparkstreamingintegtestDefaultTestDeployAssert242E520E"
+    }
+  }
+}

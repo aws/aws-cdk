@@ -30,7 +30,7 @@ import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
@@ -640,7 +640,6 @@ export interface FunctionProps extends FunctionOptions {
  * library.
  */
 export class Function extends FunctionBase {
-
   /**
    * Returns a `lambda.Version` which represents the current version of this
    * Lambda function. A new version will be created every time the function's
@@ -1753,20 +1752,20 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   const codeType = [code.inlineCode, code.s3Location, code.image];
 
   if (codeType.filter(x => !!x).length !== 1) {
-    throw new Error('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
+    throw new UnscopedValidationError('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
   }
 
   if (!!code.image === (props.handler !== Handler.FROM_IMAGE)) {
-    throw new Error('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
+    throw new UnscopedValidationError('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   if (!!code.image === (props.runtime !== Runtime.FROM_IMAGE)) {
-    throw new Error('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
+    throw new UnscopedValidationError('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   // if this is inline code, check that the runtime supports
   if (code.inlineCode && !props.runtime.supportsInlineCode) {
-    throw new Error(`Inline source not allowed for ${props.runtime!.name}`);
+    throw new UnscopedValidationError(`Inline source not allowed for ${props.runtime!.name}`);
   }
 }
 

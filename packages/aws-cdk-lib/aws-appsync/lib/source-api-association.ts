@@ -105,7 +105,6 @@ export interface SourceApiAssociationProps {
  * The initial creation of the SourceApiAssociation merges the source API into the Merged API schema.
  */
 export class SourceApiAssociation extends Resource implements ISourceApiAssociation {
-
   /**
    * Import Appsync Source Api Association from source API, merged api, and merge type.
    */

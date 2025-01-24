@@ -36,7 +36,6 @@ export interface LogGroupTargetInputOptions {
  * The input to send to the CloudWatch LogGroup target
  */
 export abstract class LogGroupTargetInput {
-
   /**
    * Pass a JSON object to the the log group event target
    *

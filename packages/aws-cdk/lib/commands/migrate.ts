@@ -21,12 +21,13 @@ import * as chalk from 'chalk';
 import { cliInit } from '../../lib/init';
 import { info } from '../../lib/logging';
 import type { ICloudFormationClient, SdkProvider } from '../api/aws-auth';
-import { CloudFormationStack } from '../api/util/cloudformation';
+import { CloudFormationStack } from '../api/deployments';
+import { ToolkitError } from '../toolkit/error';
 import { zipDirectory } from '../util/archive';
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');
 /** The list of languages supported by the built-in noctilucent binary. */
-export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.supported_languages();
+const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.supported_languages();
 
 /**
  * Generates a CDK app from a yaml or json template.
@@ -78,7 +79,7 @@ export async function generateCdkApp(
         stackFileName = `${resolvedOutputPath}/${formattedStackName}.go`;
         break;
       default:
-        throw new Error(
+        throw new ToolkitError(
           `${language} is not supported by CDK Migrate. Please choose from: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`,
         );
     }
@@ -105,7 +106,7 @@ export function generateStack(template: string, stackName: string, language: str
   try {
     return cdk_from_cfn.transmute(template, language, formattedStackName);
   } catch (e) {
-    throw new Error(`${formattedStackName} could not be generated because ${(e as Error).message}`);
+    throw new ToolkitError(`${formattedStackName} could not be generated because ${(e as Error).message}`);
   }
 }
 
@@ -120,10 +121,10 @@ export function readFromPath(inputPath: string): string {
   try {
     readFile = fs.readFileSync(inputPath, 'utf8');
   } catch (e) {
-    throw new Error(`'${inputPath}' is not a valid path.`);
+    throw new ToolkitError(`'${inputPath}' is not a valid path.`);
   }
   if (readFile == '') {
-    throw new Error(`Cloudformation template filepath: '${inputPath}' is an empty file.`);
+    throw new ToolkitError(`Cloudformation template filepath: '${inputPath}' is an empty file.`);
   }
   return readFile;
 }
@@ -147,7 +148,7 @@ export async function readFromStack(
   if (stack.stackStatus.isDeploySuccess || stack.stackStatus.isRollbackSuccess) {
     return JSON.stringify(await stack.template());
   } else {
-    throw new Error(
+    throw new ToolkitError(
       `Stack '${stackName}' in account ${environment.account} and region ${environment.region} has a status of '${stack.stackStatus.name}' due to '${stack.stackStatus.reason}'. The stack cannot be migrated until it is in a healthy state.`,
     );
   }
@@ -281,7 +282,7 @@ function parseFilters(filters: string): {
     if (Object.values(FilterType).includes(filterKey as any)) {
       filterMap[filterKey as keyof typeof filterMap] = filterValue;
     } else {
-      throw new Error(`Invalid filter: ${filterKey}`);
+      throw new ToolkitError(`Invalid filter: ${filterKey}`);
     }
   }
   return filterMap;
@@ -356,10 +357,10 @@ export enum FilterType {
  */
 export function parseSourceOptions(fromPath?: string, fromStack?: boolean, stackName?: string): TemplateSource {
   if (fromPath && fromStack) {
-    throw new Error('Only one of `--from-path` or `--from-stack` may be provided.');
+    throw new ToolkitError('Only one of `--from-path` or `--from-stack` may be provided.');
   }
   if (!stackName) {
-    throw new Error('`--stack-name` is a required field.');
+    throw new ToolkitError('`--stack-name` is a required field.');
   }
   if (!fromPath && !fromStack) {
     return { source: TemplateSourceOptions.SCAN };
@@ -544,7 +545,7 @@ export function getMigrateScanType(scanType: string) {
     case undefined:
       return FromScan.DEFAULT;
     default:
-      throw new Error(`Unknown scan type: ${scanType}`);
+      throw new ToolkitError(`Unknown scan type: ${scanType}`);
   }
 }
 
@@ -679,7 +680,7 @@ export class CfnTemplateGeneratorProvider {
   ) {
     if (!resourceScanSummaries || resourceScanSummaries.length === 0) {
       if (options.fromScan === FromScan.MOST_RECENT) {
-        throw new Error(
+        throw new ToolkitError(
           'No scans found. Please either start a new scan with the `--from-scan` new or do not specify a `--from-scan` option.',
         );
       } else {
@@ -812,7 +813,7 @@ export class CfnTemplateGeneratorProvider {
       }
     }
     if (resourceList.length === 0) {
-      throw new Error(`No resources found with filters ${filters.join(' ')}. Please try again with different filters.`);
+      throw new ToolkitError(`No resources found with filters ${filters.join(' ')}. Please try again with different filters.`);
     }
     resourceList = deduplicateResources(resourceList);
 
@@ -845,7 +846,7 @@ export class CfnTemplateGeneratorProvider {
     });
 
     if (generatedTemplate.Status == ScanStatus.FAILED) {
-      throw new Error(generatedTemplate.StatusReason);
+      throw new ToolkitError(generatedTemplate.StatusReason!);
     }
 
     return generatedTemplate;
@@ -878,7 +879,7 @@ export class CfnTemplateGeneratorProvider {
     });
 
     if (createTemplateOutput.GeneratedTemplateId === undefined) {
-      throw new Error('CreateGeneratedTemplate failed to return an Arn.');
+      throw new ToolkitError('CreateGeneratedTemplate failed to return an Arn.');
     }
     return createTemplateOutput;
   }

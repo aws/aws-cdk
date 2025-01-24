@@ -18,15 +18,15 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "1.104.0",
+    "@jsii/spec": "1.106.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "1.104.0",
+    "jsii-reflect": "1.106.0",
     "change-case": "^4.1.2",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@cdklabs/eslint-plugin": "^1.0.0",
+    "@cdklabs/eslint-plugin": "^1.3.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.14",

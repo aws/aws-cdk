@@ -48,7 +48,7 @@ describe('IPAM Test', () => {
         },
         Locale: 'us-west-2',
       },
-    ); //End Template
+    ); // End Template
   }); // End Test
 
   test('Creates IP Pool under Private Scope', () => {
@@ -76,7 +76,7 @@ describe('IPAM Test', () => {
         },
         Locale: 'us-west-2',
       },
-    ); //End Template
+    ); // End Template
   });
 
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {

@@ -8,6 +8,7 @@ import { ServicePrincipal } from '../../../aws-iam/lib/principals';
 import * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource, Duration, Lazy, Names, Resource, Stack } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -188,7 +189,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
 
     if (props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 && !props.internetFacing) {
-      throw new Error('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
+      throw new ValidationError('dual-stack without public IPv4 address can only be used with internet-facing scheme.', this);
     }
 
     const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -212,18 +213,18 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.clientKeepAlive !== undefined) {
       const clientKeepAliveInMillis = props.clientKeepAlive.toMilliseconds();
       if (clientKeepAliveInMillis < 1000) {
-        throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`);
+        throw new ValidationError(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`, this);
       }
 
       const clientKeepAliveInSeconds = props.clientKeepAlive.toSeconds();
       if (clientKeepAliveInSeconds < 60 || clientKeepAliveInSeconds > 604800) {
-        throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`);
+        throw new ValidationError(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`, this);
       }
       this.setAttribute('client_keep_alive.seconds', clientKeepAliveInSeconds.toString());
     }
 
     if (props.crossZoneEnabled === false) {
-      throw new Error('crossZoneEnabled cannot be false with Application Load Balancers.');
+      throw new ValidationError('crossZoneEnabled cannot be false with Application Load Balancers.', this);
     }
   }
 
@@ -264,14 +265,13 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
-
     /**
     * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
     */
 
     if (bucket.encryptionKey) {
-      throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+      throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
 
     prefix = prefix || '';
@@ -331,7 +331,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
     */
     if (bucket.encryptionKey) {
-      throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+      throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
 
     prefix = prefix || '';
@@ -1207,13 +1207,13 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public get loadBalancerCanonicalHostedZoneId(): string {
     if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
     // eslint-disable-next-line max-len
-    throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
+    throw new ValidationError(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 
   public get loadBalancerDnsName(): string {
     if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
     // eslint-disable-next-line max-len
-    throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
+    throw new ValidationError(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 }
 

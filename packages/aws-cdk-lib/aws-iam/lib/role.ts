@@ -709,7 +709,6 @@ export class Role extends Resource implements IRole {
   private getPrecreatedRoleConfig(): CustomizeRoleConfig {
     return getPrecreatedRoleConfig(this);
   }
-
 }
 
 /**

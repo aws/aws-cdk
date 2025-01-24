@@ -63,7 +63,6 @@ export enum RevocationType {
  * A new Trust Store Revocation
  */
 export class TrustStoreRevocation extends Resource {
-
   constructor(scope: Construct, id: string, props: TrustStoreRevocationProps) {
     super(scope, id);
 

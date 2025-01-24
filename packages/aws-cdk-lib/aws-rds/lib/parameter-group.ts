@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -143,7 +144,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
     const family = props.engine.parameterGroupFamily;
     if (!family) {
-      throw new Error("ParameterGroup cannot be used with an engine that doesn't specify a version");
+      throw new ValidationError("ParameterGroup cannot be used with an engine that doesn't specify a version", this);
     }
     this.family = family;
     this.description = props.description;

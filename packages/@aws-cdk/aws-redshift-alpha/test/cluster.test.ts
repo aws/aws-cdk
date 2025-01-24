@@ -844,7 +844,7 @@ describe('reboot for Parameter Changes', () => {
       rebootForParameterChanges: true,
     });
     cluster.addToParameterGroup('foo', 'bar');
-    //WHEN
+    // WHEN
     cluster.enableRebootForParameterChanges();
     // THEN
     Template.fromStack(stack).resourceCountIs('Custom::RedshiftClusterRebooter', 1);
@@ -872,7 +872,7 @@ describe('reboot for Parameter Changes', () => {
     cluster.enableRebootForParameterChanges();
     cluster2.enableRebootForParameterChanges();
 
-    //THEN
+    // THEN
     const template = Template.fromStack(stack);
     template.resourceCountIs('Custom::RedshiftClusterRebooter', 2);
     template.templateMatches({
@@ -903,7 +903,7 @@ describe('reboot for Parameter Changes', () => {
     // WHEN
     cluster.addToParameterGroup('lorem', 'ipsum');
 
-    //THEN
+    // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::RedshiftClusterRebooter', {
       ParametersString: JSON.stringify(

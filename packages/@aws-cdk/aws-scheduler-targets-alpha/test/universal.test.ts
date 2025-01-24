@@ -1,7 +1,7 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Universal } from '../lib/universal';
@@ -105,6 +105,11 @@ describe('Universal schedule target', () => {
         ],
       },
     });
+
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      'Default policy with * for resources is used. Use custom policy for better security posture. [ack: @aws-cdk/aws-scheduler-alpha:defaultWildcardResourcePolicy]',
+    );
   });
 
   test('creates IAM policy for provided IAM role', () => {

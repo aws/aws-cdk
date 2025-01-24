@@ -14,8 +14,9 @@ import {
   WebsiteNoticeDataSource,
   BootstrappedEnvironment,
 } from '../lib/notices';
-import * as version from '../lib/version';
-import { Context, Settings } from '../lib/settings';
+import * as version from '../lib/cli/version';
+import { Settings } from '../lib/api/settings';
+import { Context } from '../lib/api/context';
 
 const BASIC_BOOTSTRAP_NOTICE = {
   title: 'Exccessive permissions on file asset publishing role',

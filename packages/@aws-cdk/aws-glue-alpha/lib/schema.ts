@@ -13,7 +13,7 @@ export interface Column {
   readonly type: Type;
 
   /**
-   * Comment describing the column.
+   * Coment describing the column.
    *
    * @default none
    */

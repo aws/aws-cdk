@@ -148,7 +148,7 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
     return new cloudwatch.Metric({
       namespace,
       metricName,
-      dimensions: {
+      dimensionsMap: {
         EndpointName: this.endpoint.endpointName,
         VariantName: this.variantName,
       },

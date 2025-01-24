@@ -27,7 +27,7 @@ beforeEach(() => {
 describe('grant Permissions', () => {
 
   test('IamResource throws error when custom is called with no arguments', () => {
-    //THEN
+    // THEN
     expect(() => {
       api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
     }).toThrow('At least 1 custom ARN must be provided.');
@@ -590,7 +590,7 @@ describe('imported API', () => {
 
   describe('grant Permissions', () => {
     test('IamResource throws error when custom is called with no arguments', () => {
-      //THEN
+      // THEN
       expect(() => {
         importedApi.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
       }).toThrow('At least 1 custom ARN must be provided.');

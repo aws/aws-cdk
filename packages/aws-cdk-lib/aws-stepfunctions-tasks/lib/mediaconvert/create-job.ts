@@ -32,7 +32,6 @@ export interface MediaConvertCreateJobProps extends sfn.TaskStateBaseProps {
  *
  */
 export class MediaConvertCreateJob extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,

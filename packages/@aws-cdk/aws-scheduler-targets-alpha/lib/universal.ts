@@ -1,5 +1,5 @@
 import { IScheduleTarget } from '@aws-cdk/aws-scheduler-alpha';
-import { Aws, Token } from 'aws-cdk-lib';
+import { Annotations, Aws, Token } from 'aws-cdk-lib';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-internal';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
@@ -95,6 +95,8 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
 
   protected addTargetActionToRole(role: IRole): void {
     if (!this.props.policyStatements?.length) {
+      Annotations.of(role).addWarningV2('@aws-cdk/aws-scheduler-alpha:defaultWildcardResourcePolicy',
+        'Default policy with * for resources is used. Use custom policy for better security posture.');
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: [awsSdkToIamAction(this.props.service, this.props.action)],
         resources: ['*'],

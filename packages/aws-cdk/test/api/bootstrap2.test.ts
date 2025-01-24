@@ -1,15 +1,16 @@
 /* eslint-disable import/order */
 
-import * as deployStack from '../../lib/api/deploy-stack';
+import * as deployStack from '../../lib/api/deployments/deploy-stack';
 import { Stack } from '@aws-sdk/client-cloudformation';
 import { CreatePolicyCommand, GetPolicyCommand } from '@aws-sdk/client-iam';
-import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import { Bootstrapper, ToolkitInfo } from '../../lib/api';
 import {
   mockBootstrapStack,
   mockIAMClient,
   MockSdkProvider,
   restoreSdkMocksToDefault, setDefaultSTSMocks,
 } from '../util/mock-sdk';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
 
 const mockDeployStack = jest.spyOn(deployStack, 'deployStack');
 
@@ -17,6 +18,7 @@ let bootstrapper: Bootstrapper;
 let stderrMock: jest.SpyInstance;
 
 beforeEach(() => {
+  CliIoHost.instance().isCI = false;
   bootstrapper = new Bootstrapper({ source: 'default' });
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {
     return true;
@@ -328,6 +330,75 @@ describe('Bootstrapping v2', () => {
     // Did not throw
   });
 
+  test('removes trusted account when it is listed as untrusted', async () => {
+    // GIVEN
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'CloudFormationExecutionPolicies',
+          ParameterValue: 'arn:aws:something',
+        },
+        {
+          ParameterKey: 'TrustedAccounts',
+          ParameterValue: '111111111111,222222222222',
+        },
+      ],
+    });
+
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        untrustedAccounts: ['111111111111'],
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          TrustedAccounts: '222222222222',
+        }),
+      }),
+    );
+  });
+
+  test('removes trusted account for lookup when it is listed as untrusted', async () => {
+    // GIVEN
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'CloudFormationExecutionPolicies',
+          ParameterValue: 'arn:aws:something',
+        },
+        {
+          ParameterKey: 'TrustedAccountsForLookup',
+          ParameterValue: '111111111111,222222222222',
+        },
+      ],
+    });
+
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        untrustedAccounts: ['111111111111'],
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parameters: expect.objectContaining({
+          TrustedAccountsForLookup: '222222222222',
+        }),
+      }),
+    );
+  });
+
+  test('do not allow accounts to be listed as both trusted and untrusted', async () => {
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        trustedAccountsForLookup: ['123456789012'],
+        untrustedAccounts: ['123456789012'],
+      },
+    })).rejects.toThrow('Accounts cannot be both trusted and untrusted. Found: 123456789012');
+  });
+
   test('Do not allow downgrading bootstrap stack version', async () => {
     // GIVEN
     mockTheToolkitInfo({
@@ -366,7 +437,7 @@ describe('Bootstrapping v2', () => {
 
   test('bootstrap template has the right exports', async () => {
     let template: any;
-    mockDeployStack.mockImplementation((args: DeployStackOptions) => {
+    mockDeployStack.mockImplementation((args: deployStack.DeployStackOptions) => {
       template = args.stack.template;
       return Promise.resolve({
         type: 'did-deploy-stack',

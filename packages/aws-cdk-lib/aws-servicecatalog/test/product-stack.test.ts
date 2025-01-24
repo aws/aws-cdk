@@ -123,7 +123,7 @@ describe('ProductStack', () => {
     // WHEN
     app.synth();
 
-    //THEN
+    // THEN
     const template = JSON.parse(fs.readFileSync(path.join(portfolioStage.outdir, templateFileUrl), 'utf-8'));
     Template.fromJSON(template).hasResourceProperties('AWS::Lambda::Function', {
       Code: {

@@ -134,7 +134,6 @@ export abstract class UserPoolEmail {
    * @internal
    */
   public abstract _bind(scope: Construct): UserPoolEmailConfig;
-
 }
 
 class CognitoEmail extends UserPoolEmail {
