@@ -1,6 +1,6 @@
 import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
-import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
+import { StatusEvent, PullRequestEvent, CheckSuiteEvent } from '@octokit/webhooks-definitions/schema';
 import { PullRequestLinter } from './lint';
 import { LinterActions } from './linter-base';
 import { DEFAULT_LINTER_LOGIN } from './constants';
@@ -25,8 +25,8 @@ async function run() {
 
   const number = await determinePrNumber(client);
   if (!number) {
-    if (github.context.eventName === 'status') {
-      console.error(`Could not find PR belonging to status event, but that's not unusual. Skipping.`);
+    if (['check_suite', 'status'].includes(github.context.eventName)) {
+      console.error(`Could not find PR belonging to event, but that's not unusual. Skipping.`);
       process.exit(0);
     }
     throw new Error(`Could not find PR number from event: ${github.context.eventName}`);
@@ -86,6 +86,10 @@ async function determinePrNumber(client: Octokit): Promise<number | undefined> {
   let sha = process.env.PR_SHA;
   if (!sha && github.context.eventName === 'status') {
     sha = (github.context.payload as StatusEvent)?.sha;
+  }
+  if (!sha && github.context.eventName === 'check_suite') {
+    // For a check_suite event, take the SHA and try to find a PR for it.
+    sha = (github.context.payload as CheckSuiteEvent)?.check_suite.head_sha;
   }
   if (!sha) {
     throw new Error(`Could not determine a SHA from either \$PR_SHA or ${JSON.stringify(github.context.payload)}`);
