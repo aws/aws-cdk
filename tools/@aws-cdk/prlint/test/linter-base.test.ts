@@ -8,32 +8,9 @@
  */
 
 import { PullRequestLinterBase } from "../linter-base";
+import { createOctomock } from "./octomock";
 
-const octomock = {
-  pulls: {
-    get: jest.fn(),
-    listFiles: jest.fn(),
-    createReview: jest.fn(),
-    listReviews: jest.fn(),
-    dismissReview: jest.fn(),
-    updateReview: jest.fn(),
-    update: jest.fn(),
-  },
-  issues: {
-    createComment: jest.fn(),
-    deleteComment: jest.fn(),
-    listComments: jest.fn(),
-    removeLabel: jest.fn(),
-    addLabels: jest.fn(),
-  },
-  search: {
-    issuesAndPullRequests: jest.fn(),
-  },
-  repos: {
-    listCommitStatusesForRef: jest.fn(),
-  },
-  paginate: async (method: any, args: any) => { return (await method(args)).data; },
-};
+const octomock = createOctomock();
 
 const linter = new PullRequestLinterBase({
   client: octomock as any,
@@ -170,4 +147,28 @@ test('dismissing a review dismisses and changes the text of all previous reviews
   expect(octomock.pulls.dismissReview).not.toHaveBeenCalledWith(expect.objectContaining({
     review_id: 3333,
   }));
+});
+
+test('checks with duplicate names are combined so the latest wins', async () => {
+  // GIVEN
+  octomock.checks.listForRef.mockReturnValue({
+    data: [
+      {
+        name: 'some-check',
+        conclusion: 'success',
+        started_at: '2025-01-24T02:00:00Z',
+      },
+      {
+        name: 'some-check',
+        conclusion: 'failure',
+        started_at: '2025-01-24T01:00:00Z',
+      },
+    ],
+  });
+
+  // WHEN
+  const runs = await linter.checkRuns('asdf');
+
+  // THEN
+  expect(runs['some-check'].conclusion).toBe('success');
 });

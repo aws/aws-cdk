@@ -1,9 +1,9 @@
 import * as path from 'path';
 import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
-import { GitHubFile, GitHubPr, Review } from "./github";
+import { CheckRun, GitHubFile, GitHubPr, Review, summarizeRunConclusions } from "./github";
 import { TestResult, ValidationCollector } from './results';
-import { CODE_BUILD_CONTEXT, Exemption } from './constants';
+import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, Exemption } from './constants';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 
@@ -252,6 +252,28 @@ export class PullRequestLinter extends PullRequestLinterBase {
         { test: validateBranch },
       ],
     });
+
+    if (pr.base.ref === 'main') {
+      // Only check CodeCov for PRs targeting 'main'
+      const runs = await this.checkRuns(sha);
+      const codeCovRuns = CODECOV_CHECKS.map(c => runs[c] as CheckRun | undefined);
+
+      validationCollector.validateRuleSet({
+        exemption: () => hasLabel(pr, Exemption.CODECOV),
+        testRuleSet: [{
+          test: () => {
+            const summary = summarizeRunConclusions(codeCovRuns.map(r => r?.conclusion));
+            console.log('CodeCov Summary:', summary);
+
+            switch (summary) {
+              case 'failure': return TestResult.failure('CodeCov is indicating a drop in code coverage');
+              case 'waiting': return TestResult.failure('Still waiting for CodeCov results (make sure the build is passing first)');
+              case 'success': return TestResult.success();
+            }
+          },
+        }],
+      });
+    }
 
     // We always delete all comments; in the future we will just communicate via reviews.
     ret.deleteComments = await this.findExistingPRLinterComments();
