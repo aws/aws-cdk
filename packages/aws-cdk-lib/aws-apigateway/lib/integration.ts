@@ -2,7 +2,7 @@ import { Method } from './method';
 import { IVpcLink, VpcLink } from './vpc-link';
 import * as iam from '../../aws-iam';
 import { Lazy, Duration } from '../../core';
-import { UnscopedValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
 export interface IntegrationOptions {
   /**
@@ -224,7 +224,7 @@ export class Integration {
    * Can be overridden by subclasses to allow the integration to interact with the method
    * being integrated, access the REST API object, method ARNs, etc.
    */
-  public bind(_method: Method): IntegrationConfig {
+  public bind(method: Method): IntegrationConfig {
     let uri = this.props.uri;
     const options = this.props.options;
 
@@ -236,12 +236,12 @@ export class Integration {
           if (vpcLink instanceof VpcLink) {
             const targets = vpcLink._targetDnsNames;
             if (targets.length > 1) {
-              throw new UnscopedValidationError("'uri' is required when there are more than one NLBs in the VPC Link");
+              throw new ValidationError("'uri' is required when there are more than one NLBs in the VPC Link", method);
             } else {
               return `http://${targets[0]}`;
             }
           } else {
-            throw new UnscopedValidationError("'uri' is required when the 'connectionType' is VPC_LINK");
+            throw new ValidationError("'uri' is required when the 'connectionType' is VPC_LINK", method);
           }
         },
       });
