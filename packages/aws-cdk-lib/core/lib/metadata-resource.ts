@@ -127,7 +127,6 @@ export function redactTelemetryDataHelper(allowedKeys: Record<string, any>, data
       // Redact any keys that do not exist in the blueprint
       if (allowedKeys && typeof allowedKeys === 'object') {
         if (!Object.keys(allowedKeys).includes(key)) {
-          redactedResult[key] = '*';
           continue;
         }
 
