@@ -12,4 +12,8 @@ baseConfig.overrides.push({
   },
 });
 
+// TODO: turn these on
+// ignoring new eslint rules until CLI refactor is complete
+baseConfig.rules["@stylistic/spaced-comment"] = "off";
+
 module.exports = baseConfig;

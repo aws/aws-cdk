@@ -8,6 +8,7 @@ import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 export interface IVersion extends IFunction {
   /**
@@ -112,7 +113,6 @@ export interface VersionAttributes {
  * creating the `Version.
  */
 export class Version extends QualifiedFunctionBase implements IVersion {
-
   /**
    * Construct a Version object from a Version ARN.
    *
@@ -143,7 +143,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public get edgeArn(): string {
         if (version === '$LATEST') {
-          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+          throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
       }
@@ -170,7 +170,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public get edgeArn(): string {
         if (attrs.version === '$LATEST') {
-          throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+          throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
       }
@@ -256,7 +256,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public get edgeArn(): string {
     // Validate first that this version can be used for Lambda@Edge
     if (this.version === '$LATEST') {
-      throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+      throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
     }
 
     // Check compatibility at synthesis. It could be that the version was associated
@@ -284,7 +284,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     }
 
     if (props.provisionedConcurrentExecutions <= 0) {
-      throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
+      throw new ValidationError('provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
