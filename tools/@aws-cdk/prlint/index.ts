@@ -3,7 +3,7 @@ import { Octokit } from '@octokit/rest';
 import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
 import { PullRequestLinter } from './lint';
 import { LinterActions } from './linter-base';
-import { DEFEAULT_LINTER_LOGIN } from './constants';
+import { DEFAULT_LINTER_LOGIN } from './constants';
 
 /**
  * Entry point for PR linter
@@ -38,7 +38,7 @@ async function run() {
     repo,
     number,
     // On purpose || instead of ??, also collapse empty string
-    linterLogin: process.env.LINTER_LOGIN || DEFEAULT_LINTER_LOGIN,
+    linterLogin: process.env.LINTER_LOGIN || DEFAULT_LINTER_LOGIN,
   });
 
   let actions: LinterActions | undefined;

@@ -266,7 +266,7 @@ describe('Legacy Integration test cases', () => {
     // WHEN
     const context = LegacyIntegTestSuite.getPragmaContext(testsFile);
 
-    //THEN
+    // THEN
     expect(context).toEqual({
       '@aws-cdk/core:newStyleStackSynthesis': 'true',
     });
