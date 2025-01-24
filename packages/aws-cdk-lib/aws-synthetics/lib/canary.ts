@@ -354,15 +354,15 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       validateName(props.canaryName);
     }
 
-    if (props.cleanup === Cleanup.LAMBDA && props.provisionedResourceCleanup) {
-      throw new Error('Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.');
-    }
-
     super(scope, id, {
       physicalName: props.canaryName || cdk.Lazy.string({
         produce: () => this.generateUniqueName(),
       }),
     });
+
+    if (props.cleanup === Cleanup.LAMBDA && props.provisionedResourceCleanup) {
+      throw new ValidationError('Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.', this);
+    }
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
