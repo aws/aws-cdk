@@ -1,13 +1,13 @@
 // We need to mock the chokidar library, used by 'cdk watch'
 // This needs to happen ABOVE the import statements due to quirks with how jest works
-// Apparently, they hoist jest.mock commands just below the import statements so we 
+// Apparently, they hoist jest.mock commands just below the import statements so we
 // need to make sure that the constants they access are initialized before the imports.
 const mockChokidarWatcherOn = jest.fn();
 const fakeChokidarWatcher = {
   on: mockChokidarWatcherOn,
 };
 const fakeChokidarWatcherOn = {
-  get readyCallback(): () => void {
+  get readyCallback(): () => Promise<void> {
     expect(mockChokidarWatcherOn.mock.calls.length).toBeGreaterThanOrEqual(1);
     // The call to the first 'watcher.on()' in the production code is the one we actually want here.
     // This is a pretty fragile, but at least with this helper class,
@@ -21,8 +21,8 @@ const fakeChokidarWatcherOn = {
   },
 
   get fileEventCallback(): (
-    event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
-    path: string,
+  event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir',
+  path: string,
   ) => Promise<void> {
     expect(mockChokidarWatcherOn.mock.calls.length).toBeGreaterThanOrEqual(2);
     const secondCall = mockChokidarWatcherOn.mock.calls[1];
@@ -111,7 +111,7 @@ describe('watch', () => {
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'watch',
       level: 'debug',
-      message: expect.stringContaining(`'exclude' patterns for 'watch': ["cdk.out/**","**/.*","**/.*/**","**/node_modules/**"]`),
+      message: expect.stringContaining('\'exclude\' patterns for \'watch\': ["cdk.out/**","**/.*","**/.*/**","**/node_modules/**"]'),
     }));
   });
 
@@ -127,7 +127,7 @@ describe('watch', () => {
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'watch',
       level: 'debug',
-      message: expect.stringContaining(`'include' patterns for 'watch': ["index.ts"]`),
+      message: expect.stringContaining('\'include\' patterns for \'watch\': ["index.ts"]'),
     }));
   });
 
@@ -143,7 +143,7 @@ describe('watch', () => {
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'watch',
       level: 'debug',
-      message: expect.stringContaining(`'exclude' patterns for 'watch': ["index.ts"`),
+      message: expect.stringContaining('\'exclude\' patterns for \'watch\': ["index.ts"'),
     }));
   });
 
@@ -157,8 +157,7 @@ describe('watch', () => {
         hotswap: hotswapMode,
       });
 
-      fakeChokidarWatcherOn.readyCallback();
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await fakeChokidarWatcherOn.readyCallback();
 
       // THEN
       expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
@@ -170,4 +169,4 @@ describe('watch', () => {
   });
 });
 
-// @todo unit test watch with file events 
+// @todo unit test watch with file events

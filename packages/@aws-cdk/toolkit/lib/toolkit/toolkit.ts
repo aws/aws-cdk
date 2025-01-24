@@ -511,6 +511,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
    * Implies hotswap deployments.
    */
   public async watch(cx: ICloudAssemblySource, options: WatchOptions): Promise<void> {
+    // const assembly = this.assemblyFromSource(cx, false);
     const ioHost = withAction(this.ioHost, 'watch');
     const rootDir = options.watchDir ?? process.cwd();
     await ioHost.notify(debug(`root directory used for 'watch' is: ${rootDir}`));
@@ -565,7 +566,9 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       latch = 'deploying';
       // cloudWatchLogMonitor?.deactivate();
 
-      await this.invokeDeployFromWatch(cx, options);
+      await this.invokeDeployFromWatch(cx, options,
+        // assembly
+      );
 
       // If latch is still 'deploying' after the 'await', that's fine,
       // but if it's 'queued', that means we need to deploy again
@@ -584,7 +587,6 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       .watch(watchIncludes, {
         ignored: watchExcludes,
         cwd: rootDir,
-        // ignoreInitial: true,
       })
       .on('ready', async () => {
         latch = 'open';
@@ -728,10 +730,6 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const deployOptions: DeployOptions = {
       ...options,
       requireApproval: RequireApproval.NEVER,
-      // if 'watch' is called by invoking 'cdk deploy --watch',
-      // we need to make sure to not call 'deploy' with 'watch' again,
-      // as that would lead to a cycle
-      // watch: false,
       // cloudWatchLogMonitor,
       // cacheCloudAssembly: false,
       hotswap: options.hotswap,
@@ -740,7 +738,10 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     };
 
     try {
-      await this.deploy(cx, deployOptions);
+      // await this._deploy(
+      await this.deploy(
+        // assembly,
+        cx, deployOptions);
     } catch {
       // just continue - deploy will show the error
     }

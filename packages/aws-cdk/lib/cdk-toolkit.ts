@@ -694,7 +694,6 @@ export class CdkToolkit {
       .watch(watchIncludes, {
         ignored: watchExcludes,
         cwd: rootDir,
-        // ignoreInitial: true,
       })
       .on('ready', async () => {
         latch = 'open';
