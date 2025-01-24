@@ -8,7 +8,25 @@ import { GitHubFile, GitHubPr } from "./github";
  */
 export class TestResult {
   /**
-   * Create a test result from a potential failure
+   * Return a successful test result
+   */
+  public static success() {
+    return new TestResult();
+  }
+
+  /**
+   * Return an unconditionally failing test result
+   */
+  public static failure(message: string) {
+    const ret = new TestResult();
+    ret.assessFailure(true, message);
+    return ret;
+  }
+
+  /**
+   * Create a test result from a POTENTIAL failure
+   *
+   * If `failureCondition` is true, this will return a failure, otherwise it will return a success.
    */
   public static fromFailure(failureCondition: boolean, failureMessage: string): TestResult {
     const ret = new TestResult();
