@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
 import { Configuration, PROJECT_CONFIG, PROJECT_CONTEXT } from '../../lib/cli/user-configuration';
+import { parseCommandLineArguments } from '../../lib/cli/parse-command-line-arguments';
 
 // mock fs deeply
 jest.mock('fs-extra');
@@ -111,4 +112,34 @@ test('Can specify the `quiet` key in the user config', async () => {
   const config = await new Configuration().load();
 
   expect(config.settings.get(['quiet'])).toBe(true);
+});
+
+test('array settings are not overridden by yarg defaults', async () => {
+  // GIVEN
+  const GIVEN_CONFIG: Map<string, any> = new Map([
+    [PROJECT_CONFIG, {
+      plugin: ['dummy'],
+    }],
+  ]);
+  const argsWithPlugin = await parseCommandLineArguments(['ls', '--plugin', '[]']);
+  const argsWithoutPlugin = await parseCommandLineArguments(['ls']);
+
+  // WHEN
+  mockedFs.pathExists.mockImplementation(path => {
+    return GIVEN_CONFIG.has(path);
+  });
+  mockedFs.readJSON.mockImplementation(path => {
+    return GIVEN_CONFIG.get(path);
+  });
+
+  const configWithPlugin = await new Configuration({
+    commandLineArguments: argsWithPlugin,
+  }).load();
+  const configWithoutPlugin = await new Configuration({
+    commandLineArguments: argsWithoutPlugin,
+  }).load();
+
+  // THEN
+  expect(configWithPlugin.settings.get(['plugin'])).toEqual(['[]']);
+  expect(configWithoutPlugin.settings.get(['plugin'])).toEqual(['dummy']);
 });
