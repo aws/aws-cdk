@@ -10,6 +10,7 @@ import {
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { Stack, Duration, Names } from '../../../core';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 
 /**
  * Specifies the type responses the lambda returns
@@ -90,7 +91,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
    */
   public get authorizerId(): string {
     if (!this.authorizer) {
-      throw new Error(
+      throw new UnscopedValidationError(
         'Cannot access authorizerId until authorizer is attached to a HttpRoute',
       );
     }
@@ -99,7 +100,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (this.httpApi && (this.httpApi.apiId !== options.route.httpApi.apiId)) {
-      throw new Error('Cannot attach the same authorizer to multiple Apis');
+      throw new ValidationError('Cannot attach the same authorizer to multiple Apis', options.scope);
     }
 
     if (!this.authorizer) {
