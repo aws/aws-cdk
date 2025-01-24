@@ -2,12 +2,15 @@ import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { WaiterResult } from '@smithy/util-waiter';
 import * as chalk from 'chalk';
-import type { SDK, SdkProvider } from './aws-auth';
-import type { SuccessfulDeployStackResult } from './deploy-stack';
-import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
-import { info } from '../logging';
-import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
-import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
+import type { SDK, SdkProvider } from '../aws-auth';
+import type { CloudFormationStack } from './cloudformation';
+import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
+import { info } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { isHotswappableAppSyncChange } from '../hotswap/appsync-mapping-templates';
+import { isHotswappableCodeBuildProjectChange } from '../hotswap/code-build-projects';
 import {
   ICON,
   ChangeHotswapResult,
@@ -18,19 +21,16 @@ import {
   HotswapPropertyOverrides, ClassifiedResourceChanges,
   reportNonHotswappableChange,
   reportNonHotswappableResource,
-} from './hotswap/common';
-import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
-import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
+} from '../hotswap/common';
+import { isHotswappableEcsServiceChange } from '../hotswap/ecs-services';
+import { isHotswappableLambdaFunctionChange } from '../hotswap/lambda-functions';
 import {
   skipChangeForS3DeployCustomResourcePolicy,
   isHotswappableS3BucketDeploymentChange,
-} from './hotswap/s3-bucket-deployments';
-import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
-import { NestedStackTemplates, loadCurrentTemplateWithNestedStacks } from './nested-stack-helpers';
-import { Mode } from './plugin/mode';
-import { CloudFormationStack } from './util/cloudformation';
-import { ToolkitError } from '../toolkit/error';
-import { formatErrorMessage } from '../util/error';
+} from '../hotswap/s3-bucket-deployments';
+import { isHotswappableStateMachineChange } from '../hotswap/stepfunctions-state-machines';
+import { Mode } from '../plugin';
+import { SuccessfulDeployStackResult } from './deployment-result';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
 // eslint-disable-next-line @typescript-eslint/no-require-imports
