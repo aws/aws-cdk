@@ -7,6 +7,20 @@ import { IResource, Resource, Stack, Token } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 
 /**
+ * The branding version of managed login for the domain.
+ */
+export enum ManagedLoginVersion {
+  /**
+   * The classic hosted UI.
+   */
+  CLASSIC_HOSTED_UI = 1,
+  /**
+   * The newer managed login with the branding designer.
+   */
+  NEWER_MANAGED_LOGIN = 2,
+}
+
+/**
  * Represents a user pool domain.
  */
 export interface IUserPoolDomain extends IResource {
@@ -65,6 +79,16 @@ export interface UserPoolDomainOptions {
    * @default - not set if `customDomain` is specified, otherwise, throws an error.
    */
   readonly cognitoDomain?: CognitoDomainOptions;
+
+  /**
+   * A version that indicates the state of managed login.
+   * This choice applies to all app clients that host services at the domain.
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-managed-login.html
+   *
+   * @default undefined - Cognito default setting is ManagedLoginVersion.CLASSIC_HOSTED_UI
+   */
+  readonly managedLoginVersion?: ManagedLoginVersion;
 }
 
 /**
@@ -119,6 +143,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
       userPoolId: props.userPool.userPoolId,
       domain: domainName,
       customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateArn } : undefined,
+      managedLoginVersion: props.managedLoginVersion,
     });
 
     this.domainName = this.resource.ref;
