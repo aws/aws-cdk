@@ -267,7 +267,26 @@ export class PullRequestLinter extends PullRequestLinterBase {
 
             switch (summary) {
               case 'failure': return TestResult.failure('CodeCov is indicating a drop in code coverage');
-              case 'waiting': return TestResult.failure('Still waiting for CodeCov results (make sure the build is passing first)');
+              // If we don't know the result of the CodeCov results yet, we pretend that there isn't a problem.
+              //
+              // It would be safer to ask for changes until we're confident that CodeCov has passed, but if we do
+              // that the following sequence of events happens:
+              //
+              // 1. PR is ready to be merged (approved, everything passes)
+              // 2. Mergify enqueues it and merges from main
+              // 3. CodeCov needs to run again
+              // 4. PR linter requests changes because CodeCov result is uncertain
+              // 5. Mergify dequeues the PR because PR linter requests changes
+              //
+              // This looks very confusing and noisy, and also will never fix itself, so the PR ends up unmerged.
+              //
+              // The better solution would probably be not to do a "Request Changes" review, but leave a comment
+              // and create a GitHub "status" on the PR to say 'success/pending/failure', and make it required.
+              // (https://github.com/aws/aws-cdk/issues/33136)
+              //
+              // For now, not doing anything with a 'waiting' status is a smaller delta, and the race condition posed by it is
+              // unlikely to happen given that there are much slower jobs that the merge is blocked on anyway.
+              case 'waiting': return TestResult.success();
               case 'success': return TestResult.success();
             }
           },
