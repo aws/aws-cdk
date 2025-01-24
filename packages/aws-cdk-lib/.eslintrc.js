@@ -25,7 +25,15 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmcontacts',
   'aws-ssmincidents',
   'aws-ssmquicksetup',
+  'aws-apigatewayv2-authorizers',
   'aws-synthetics',
+  'aws-s3-assets',
+  'aws-s3-deployment',
+  'aws-s3-notifications',
+  'aws-s3express',
+  'aws-s3objectlambda',
+  'aws-s3outposts',
+  'aws-s3tables',
 ];
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
