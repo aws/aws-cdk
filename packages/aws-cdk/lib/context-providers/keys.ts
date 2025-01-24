@@ -5,6 +5,7 @@ import type { IKMSClient } from '../api';
 import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
+import { ContextProviderError } from '../toolkit/error';
 
 export class KeyContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {}
@@ -44,12 +45,12 @@ export class KeyContextProviderPlugin implements ContextProviderPlugin {
       const keyId = (args.dummyValue as { keyId: string }).keyId;
       return { TargetKeyId: keyId };
     }
-    throw new Error(`Could not find any key with alias named ${args.aliasName}`);
+    throw new ContextProviderError(`Could not find any key with alias named ${args.aliasName}`);
   }
 
   private async readKeyProps(alias: AliasListEntry, args: KeyContextQuery): Promise<KeyContextResponse> {
     if (!alias.TargetKeyId) {
-      throw new Error(`Could not find any key with alias named ${args.aliasName}`);
+      throw new ContextProviderError(`Could not find any key with alias named ${args.aliasName}`);
     }
 
     debug(`Key found ${alias.TargetKeyId}`);

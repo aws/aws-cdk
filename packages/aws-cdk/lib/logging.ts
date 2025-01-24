@@ -1,37 +1,10 @@
 import * as util from 'util';
 import * as chalk from 'chalk';
-import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageCode, IoMessageCodeCategory, IoCodeLevel } from './toolkit/cli-io-host';
+import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageCode, IoMessageCodeCategory, IoCodeLevel, levelPriority } from './toolkit/cli-io-host';
 
 // Corking mechanism
 let CORK_COUNTER = 0;
-const logBuffer: IoMessage[] = [];
-
-const levelPriority: Record<IoMessageLevel, number> = {
-  error: 0,
-  warn: 1,
-  info: 2,
-  debug: 3,
-  trace: 4,
-};
-
-let currentIoMessageThreshold: IoMessageLevel = 'info';
-
-/**
- * Sets the current threshold. Messages with a lower priority level will be ignored.
- * @param level The new log level threshold
- */
-export function setIoMessageThreshold(level: IoMessageLevel) {
-  currentIoMessageThreshold = level;
-}
-
-/**
- * Sets whether the logger is running in CI mode.
- * In CI mode, all non-error output goes to stdout instead of stderr.
- * @param newCI - Whether CI mode should be enabled
- */
-export function setCI(newCI: boolean) {
-  CliIoHost.ci = newCI;
-}
+const logBuffer: IoMessage<any>[] = [];
 
 /**
  * Executes a block of code with corked logging. All log messages during execution
@@ -48,14 +21,14 @@ export async function withCorkedLogging<T>(block: () => Promise<T>): Promise<T> 
     if (CORK_COUNTER === 0) {
       // Process each buffered message through notify
       for (const ioMessage of logBuffer) {
-        void CliIoHost.getIoHost().notify(ioMessage);
+        void CliIoHost.instance().notify(ioMessage);
       }
       logBuffer.splice(0);
     }
   }
 }
 
-interface LogOptions {
+interface LogMessage {
   /**
    * The log level to use
    */
@@ -79,28 +52,27 @@ interface LogOptions {
 
 /**
  * Internal core logging function that writes messages through the CLI IO host.
- * @param options Configuration options for the log message. See  {@link LogOptions}
+ * @param msg Configuration options for the log message. See  {@link LogMessage}
  */
-function log(options: LogOptions) {
-  if (levelPriority[options.level] > levelPriority[currentIoMessageThreshold]) {
-    return;
-  }
-
-  const ioMessage: IoMessage = {
-    level: options.level,
-    message: options.message,
-    forceStdout: options.forceStdout,
+function log(msg: LogMessage) {
+  const ioMessage: IoMessage<undefined> = {
+    level: msg.level,
+    message: msg.message,
+    forceStdout: msg.forceStdout,
     time: new Date(),
-    action: CliIoHost.currentAction ?? 'none',
-    code: options.code,
+    action: CliIoHost.instance().currentAction,
+    code: msg.code,
   };
 
   if (CORK_COUNTER > 0) {
+    if (levelPriority[msg.level] > levelPriority[CliIoHost.instance().logLevel]) {
+      return;
+    }
     logBuffer.push(ioMessage);
     return;
   }
 
-  void CliIoHost.getIoHost().notify(ioMessage);
+  void CliIoHost.instance().notify(ioMessage);
 }
 
 /**
