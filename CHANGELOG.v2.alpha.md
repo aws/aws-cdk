@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
 ## [2.177.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.176.0-alpha.0...v2.177.0-alpha.0) (2025-01-24)
 
 
@@ -16,12 +17,6 @@ configuration settings. See the RFC and/or new README for examples.
 
 Increased unit test coverage to > 90%, consulted with Glue service team
 on best practices and sane defaults, updated integration tests.
-
-### Checklist
-- [X] My code adheres to the [CONTRIBUTING
-GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and
-[DESIGN
-GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
 
 ### Features
 
