@@ -568,9 +568,7 @@ export class TableV2 extends TableBaseV2 {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
 
-    if (props.pointInTimeRecovery !== undefined && props.pointInTimeRecoverySpecification !== undefined) {
-      throw new Error('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
-    }
+    this.validatePitr(props);
 
     if (props.billing?.mode === BillingMode.PAY_PER_REQUEST || props.billing?.mode === undefined) {
       this.maxReadRequestUnits = props.billing?._renderReadCapacity();
@@ -1009,6 +1007,22 @@ export class TableV2 extends TableBaseV2 {
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
       throw new Error(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`);
+    }
+  }
+
+  private validatePitr(props: TablePropsV2) {
+    const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
+
+    if (props.pointInTimeRecovery !== undefined && props.pointInTimeRecoverySpecification !== undefined) {
+      throw new Error('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+    }
+
+    if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
+      throw new Error('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
+    }
+
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
+      throw new Error('`recoveryPeriodInDays` must be a value between `1` and `35`.');
     }
   }
 }

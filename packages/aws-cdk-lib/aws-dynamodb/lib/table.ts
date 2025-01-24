@@ -1189,15 +1189,7 @@ export class Table extends TableBase {
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 
-    if (props.pointInTimeRecoverySpecification !==undefined && props.pointInTimeRecovery !== undefined) {
-      throw new Error('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
-    }
-
-    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification | undefined =
-      props.pointInTimeRecoverySpecification ??
-      (props.pointInTimeRecovery !== undefined
-        ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
-        : undefined);
+    const pointInTimeRecoverySpecification = this.validatePitr(props);
 
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
@@ -1541,6 +1533,28 @@ export class Table extends TableBase {
 
     // store all non-key attributes
     nonKeyAttributes.forEach(att => this.nonKeyAttributes.add(att));
+  }
+
+  private validatePitr (props: TableProps): PointInTimeRecoverySpecification | undefined {
+
+    if (props.pointInTimeRecoverySpecification !==undefined && props.pointInTimeRecovery !== undefined) {
+      throw new Error('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+    }
+
+    const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
+
+    if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
+      throw new Error('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
+    }
+
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
+      throw new Error('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+    }
+
+    return props.pointInTimeRecoverySpecification ??
+      (props.pointInTimeRecovery !== undefined
+        ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
+        : undefined);
   }
 
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {

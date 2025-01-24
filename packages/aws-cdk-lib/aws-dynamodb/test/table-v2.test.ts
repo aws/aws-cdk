@@ -196,6 +196,32 @@ describe('table', () => {
     }).toThrow('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
   });
 
+  test('recoveryPeriodInDays set out of bounds', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 36,
+        },
+      });
+    }).toThrow('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+  });
+
+  test('recoveryPeriodInDays set but pitr disabled', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: false,
+          recoveryPeriodInDays: 35,
+        },
+      });
+    }).toThrow('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
+  });
+
   test('with STANDARD table class', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');

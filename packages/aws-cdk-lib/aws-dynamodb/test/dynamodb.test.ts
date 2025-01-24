@@ -215,6 +215,30 @@ describe('default properties', () => {
     })).toThrow('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
   });
 
+  test('recoveryPeriodInDays set out of bounds', () => {
+    expect(() => {
+      new Table(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 36,
+        },
+      });
+    }).toThrow('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+  });
+
+  test('recoveryPeriodInDays set but pitr disabled', () => {
+    expect(() => {
+      new Table(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: false,
+          recoveryPeriodInDays: 35,
+        },
+      });
+    }).toThrow('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
+  });
+
   test('server-side encryption is not enabled', () => {
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
