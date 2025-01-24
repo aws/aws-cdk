@@ -8,7 +8,7 @@ import { IRestApi, RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
-import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents an APIGateway Stage.
@@ -472,7 +472,7 @@ export class Stage extends StageBase {
         if (self.enableCacheCluster === undefined) {
           self.enableCacheCluster = true;
         } else if (self.enableCacheCluster === false) {
-          throw new UnscopedValidationError(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`);
+          throw new ValidationError(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`, self);
         }
       }
 
