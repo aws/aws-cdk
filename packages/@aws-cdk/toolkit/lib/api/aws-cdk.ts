@@ -1,3 +1,5 @@
+/* eslint-disable import/no-restricted-paths */
+export { formatErrorMessage } from '../../../../aws-cdk/lib/util/error';
 export { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider } from '../../../../aws-cdk/lib/api';
 export type { SuccessfulDeployStackResult } from '../../../../aws-cdk/lib/api';
 export { formatSdkLoggerContent } from '../../../../aws-cdk/lib/api/aws-auth/sdk-logger';
