@@ -16,6 +16,8 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 // no-throw-default-error
 const enableNoThrowDefaultErrorIn = [
+  'aws-apigatewayv2-integrations',
+  'aws-apigatewayv2-authorizers',
   'aws-lambda',
   'aws-rds',
   'aws-s3',
@@ -25,7 +27,6 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmcontacts',
   'aws-ssmincidents',
   'aws-ssmquicksetup',
-  'aws-apigatewayv2-authorizers',
   'aws-synthetics',
   'aws-route53',
   'aws-route53-patterns',
