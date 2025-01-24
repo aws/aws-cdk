@@ -240,7 +240,6 @@ export interface ReplicaRegion {
  * @deprecated Use `cdk.SecretValue` instead.
  */
 export class SecretStringValueBeta1 {
-
   /**
    * Creates a `SecretStringValueBeta1` from a plaintext value.
    *
@@ -602,7 +601,6 @@ export class Secret extends SecretBase {
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
       protected get arnForPolicies() { return secretArnIsPartial ? `${secretArn}-??????` : secretArn; }
-
     }(scope, id, { environmentFromArn: secretArn });
   }
 
@@ -830,7 +828,6 @@ export interface ISecretTargetAttachment extends ISecret {
  * An attached secret.
  */
 export class SecretTargetAttachment extends SecretBase implements ISecretTargetAttachment {
-
   public static fromSecretTargetAttachmentSecretArn(scope: Construct, id: string, secretTargetAttachmentSecretArn: string): ISecretTargetAttachment {
     class Import extends SecretBase implements ISecretTargetAttachment {
       public encryptionKey?: kms.IKey | undefined;

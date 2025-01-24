@@ -16,7 +16,6 @@ export interface IWebSocketApi extends IApi {
  * Represents the currently available API Key Selection Expressions
  */
 export class WebSocketApiKeySelectionExpression {
-
   /**
    * The API will extract the key value from the `x-api-key` header in the user request.
    */

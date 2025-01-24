@@ -142,7 +142,25 @@ describe('commit message format', () => {
       },
     };
     const prLinter = configureMock(issue, undefined);
-    await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(/The title of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
+    await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow(/The title scope of the pull request should omit 'aws-' from the name of modified packages. Use 's3' instead of 'aws-s3'./);
+  });
+
+  test('invalid scope with capital letters', async () => {
+    const issue = {
+      number: 1,
+      title: 'fix(S3): some title',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
+    };
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+      requestChanges: expect.objectContaining({
+        failures: ["The title scope of the pull request should be entirely in lowercase. Use 's3' instead."],
+      }),
+    }));
   });
 
   test('valid scope with aws- in summary and body', async () => {
@@ -199,6 +217,24 @@ describe('commit message format', () => {
     };
     const prLinter = configureMock(issue, undefined);
     expect(legacyValidatePullRequestTarget(await prLinter)).resolves;
+  });
+
+  test('invalid with capital letters in prefix', async () => {
+    const issue = {
+      number: 1,
+      title: 'Revert(s3): some title',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
+    };
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+      requestChanges: expect.objectContaining({
+        failures: ['The title prefix of this pull request must be one of "feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert"'],
+      }),
+    }));
   });
 
   test('invalid capitalized title', async () => {
@@ -532,7 +568,7 @@ describe('integration tests required on features', () => {
       labels.push({ name: 'pr-linter/cli-integ-tested' });
       const prLinter = configureMock(issue, files);
       // THEN: no exception
-      expect(async () => await legacyValidatePullRequestTarget(prLinter)).resolves;
+      await legacyValidatePullRequestTarget(prLinter);
     });
 
     test('with aws-cdk-automation author', async () => {
@@ -544,7 +580,8 @@ describe('integration tests required on features', () => {
 
       // WHEN
       const prLinter = configureMock(issue, files);
-legacyValidatePullRequestTarget(      await prLinter);
+      await legacyValidatePullRequestTarget(prLinter);
+
       // THEN: no exception
     });
   });
@@ -1039,7 +1076,7 @@ legacyValidatePullRequestTarget(      await prLinter);
 
     test('valid exemption request comment', async () => {
       const comments = [
-        { login: 'author', body: 'Exemption Request' }
+        { id: 1234, login: 'author', body: 'Exemption Request' }
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1050,7 +1087,7 @@ legacyValidatePullRequestTarget(      await prLinter);
 
     test('valid exemption request with additional context', async () => {
       const comments = [
-        { login: 'author', body: 'Exemption Request: \nThe reason is blah blah blah.' }
+        { id: 1234, login: 'author', body: 'Exemption Request: \nThe reason is blah blah blah.' }
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1062,7 +1099,7 @@ legacyValidatePullRequestTarget(      await prLinter);
 
     test('valid exemption request with middle exemption request', async () => {
       const comments = [
-        { login: 'author', body: 'Random content - Exemption Request - hello world' }
+        { id: 1234, login: 'author', body: 'Random content - Exemption Request - hello world' }
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1074,7 +1111,7 @@ legacyValidatePullRequestTarget(      await prLinter);
 
     test('exemption only counts if requested by PR author', async () => {
       const comments = [
-        { login: 'bert', body: 'Random content - Exemption Request - hello world' }
+        { id: 1234, login: 'bert', body: 'Random content - Exemption Request - hello world' }
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1087,7 +1124,7 @@ legacyValidatePullRequestTarget(      await prLinter);
 
     test('bot does not trigger on its own exemption requests', async () => {
       const comments = [
-        { login: 'aws-cdk-automation', body: 'Random content - Exemption Request - hello world' }
+        { id: 1234, login: 'aws-cdk-automation', body: 'Random content - Exemption Request - hello world' }
       ];
 
       const prLinter = configureMock(issue, undefined, comments);
@@ -1134,7 +1171,48 @@ legacyValidatePullRequestTarget(      await prLinter);
   });
 });
 
-function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingComments?: Array<{ login: string, body: string }>): PullRequestLinter {
+describe('for any PR', () => {
+  const ARBITRARY_PR = {
+    title: 'chore: update regions',
+    number: 1234,
+    labels: [],
+    user: {
+      login: 'johndoe',
+    },
+  };
+
+  const ARBITRARY_FILES: GitHubFile[] = [{
+    filename: 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts',
+  }];
+
+  test('deletes old comments', async () => {
+    const comments = [
+      {
+        id: 1111,
+        login: 'aws-cdk-automation',
+        body: 'The pull request linter is failing',
+      },
+      {
+        id: 2222,
+        login: 'aws-cdk-automation',
+        body: 'More things about the pull request linter',
+      },
+    ];
+
+    const prLinter = configureMock(ARBITRARY_PR, ARBITRARY_FILES, comments);
+
+    await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+      deleteComments: [
+        // For some reason our configureMock always adds this at the top
+        expect.objectContaining({ id: 1000 }),
+        expect.objectContaining({ id: 1111 }),
+        expect.objectContaining({ id: 2222 }),
+      ],
+    }));
+  });
+});
+
+function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingComments?: Array<{ id: number, login: string, body: string }>): PullRequestLinter {
   const pullsClient = {
     get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {
       return { data: { ...pr, base: { ref: 'main', ...pr?.base }, head: { sha: 'ABC', ...pr?.head }} };
@@ -1165,9 +1243,9 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingCom
     deleteComment() {},
 
     listComments() {
-      const data = [{ id: 1212121212, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }];
+      const data = [{ id: 1000, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }];
       if (existingComments) {
-        existingComments.forEach(comment => data.push({ id: 1212121211, user: { login: comment.login }, body: comment.body }));
+        existingComments.forEach(comment => data.push({ id: comment.id, user: { login: comment.login }, body: comment.body }));
       }
       return { data };
     },

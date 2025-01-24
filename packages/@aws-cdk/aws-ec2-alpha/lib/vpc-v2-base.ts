@@ -194,7 +194,6 @@ export interface IVpcV2 extends IVpc {
  * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html|AWS CDK Documentation on VPCs}.
  */
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
-
   /**
   * Identifier for this VPC
   */
@@ -502,7 +501,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
         routeName: 'CDKDefaultIPv6Route',
       });
     }
-    //Add default route to IGW for IPv4
+    // Add default route to IGW for IPv4
     new Route(this, `${subnet.node.id}-DefaultRoute`, {
       routeTable: subnet.routeTable,
       destination: options?.ipv4Destination ?? '0.0.0.0/0',
@@ -708,7 +707,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     return rest;
   }
-
 }
 
 class CompositeDependable implements IDependable {
