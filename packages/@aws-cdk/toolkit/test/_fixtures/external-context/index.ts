@@ -7,5 +7,5 @@ export default async () => {
   new s3.Bucket(stack, 'MyBucket', {
     bucketName: app.node.tryGetContext('externally-provided-bucket-name'),
   });
-  return app.synth() as any;
+  return app.synth();
 };

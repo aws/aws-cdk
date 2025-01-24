@@ -36,7 +36,7 @@ describe('task definition', () => {
         compatibility: ecs.Compatibility.EXTERNAL,
       });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: 'bridge',
       });
