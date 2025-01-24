@@ -29,7 +29,8 @@ async function run() {
       console.error(`Could not find PR belonging to event, but that's not unusual. Skipping.`);
       process.exit(0);
     }
-    throw new Error(`Could not find PR number from event: ${github.context.eventName}`);
+
+    throw new Error(`Could not determine a PR number from either \$PR_NUMBER or \$PR_SHA or ${github.context.eventName}: ${JSON.stringify(github.context.payload)}`);
   }
 
   const prLinter = new PullRequestLinter({
@@ -92,6 +93,7 @@ async function determinePrNumber(client: Octokit): Promise<number | undefined> {
     sha = (github.context.payload as CheckSuiteEvent)?.check_suite.head_sha;
   }
   if (!sha) {
+    return undefined;
     throw new Error(`Could not determine a SHA from either \$PR_SHA or ${JSON.stringify(github.context.payload)}`);
   }
 
