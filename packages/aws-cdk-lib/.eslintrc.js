@@ -17,10 +17,12 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 // no-throw-default-error
 const enableNoThrowDefaultErrorIn = [
   'aws-apigatewayv2-authorizers',
+  'aws-apigatewayv2-integrations',
+  'aws-apigatewayv2-authorizers',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
   'aws-elasticloadbalancingv2-actions',
-  'aws-elasticloadbalancingv2-targets',  
+  'aws-elasticloadbalancingv2-targets',    
   'aws-lambda',
   'aws-rds',
   'aws-route53',
