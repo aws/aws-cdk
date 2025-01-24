@@ -29,13 +29,13 @@ import {
   type RootTemplateWithNestedStacks,
 } from './nested-stack-helpers';
 import { debug, warning } from '../../logging';
-import type { Tag } from '../../tags';
 import { ToolkitError } from '../../toolkit/error';
 import { formatErrorMessage } from '../../util/error';
 import type { SdkProvider } from '../aws-auth/sdk-provider';
 import { EnvironmentAccess } from '../environment-access';
 import { type EnvironmentResources } from '../environment-resources';
 import { HotswapMode, HotswapPropertyOverrides } from '../hotswap/common';
+import type { Tag } from '../tags';
 import { DEFAULT_TOOLKIT_STACK_NAME } from '../toolkit-info';
 import { StackActivityMonitor, StackActivityProgress } from '../util/cloudformation/stack-activity-monitor';
 import { StackEventPoller } from '../util/cloudformation/stack-event-poller';

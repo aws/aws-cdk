@@ -51,8 +51,8 @@ const fakeChokidarWatch = {
 };
 
 const mockData = jest.fn();
-jest.mock('../lib/logging', () => ({
-  ...jest.requireActual('../lib/logging'),
+jest.mock('../../lib/logging', () => ({
+  ...jest.requireActual('../../lib/logging'),
   data: mockData,
 }));
 jest.setTimeout(30_000);
@@ -67,16 +67,8 @@ import { DescribeStacksCommand, GetTemplateCommand, StackStatus } from '@aws-sdk
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
-import { SdkProvider } from '../lib/api';
-import {
-  mockCloudFormationClient,
-  MockSdk,
-  MockSdkProvider,
-  mockSSMClient,
-  restoreSdkMocksToDefault,
-} from './util/mock-sdk';
-import { Bootstrapper, type BootstrapSource } from '../lib/api/bootstrap';
+import { SdkProvider } from '../../lib/api';
+import { Bootstrapper, type BootstrapSource } from '../../lib/api/bootstrap';
 import {
   DeployStackResult,
   SuccessfulDeployStackResult,
@@ -86,15 +78,23 @@ import {
   DestroyStackOptions,
   RollbackStackOptions,
   RollbackStackResult,
-} from '../lib/api/deployments';
-import { HotswapMode } from '../lib/api/hotswap/common';
-import { Mode } from '../lib/api/plugin';
-import { CdkToolkit, markTesting } from '../lib/cdk-toolkit';
-import { RequireApproval } from '../lib/diff';
-import { Configuration } from '../lib/settings';
-import { Tag } from '../lib/tags';
-import { CliIoHost } from '../lib/toolkit/cli-io-host';
-import { flatten } from '../lib/util';
+} from '../../lib/api/deployments';
+import { HotswapMode } from '../../lib/api/hotswap/common';
+import { Mode } from '../../lib/api/plugin';
+import { Tag } from '../../lib/api/tags';
+import { CdkToolkit, markTesting } from '../../lib/cli/cdk-toolkit';
+import { Configuration } from '../../lib/cli/user-configuration';
+import { RequireApproval } from '../../lib/diff';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
+import { flatten } from '../../lib/util';
+import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from '../util';
+import {
+  mockCloudFormationClient,
+  MockSdk,
+  MockSdkProvider,
+  mockSSMClient,
+  restoreSdkMocksToDefault,
+} from '../util/mock-sdk';
 
 markTesting();
 
@@ -1223,7 +1223,7 @@ describe('synth', () => {
   });
 
   describe('migrate', () => {
-    const testResourcePath = [__dirname, 'commands', 'test-resources'];
+    const testResourcePath = [__dirname, '..', 'commands', 'test-resources'];
     const templatePath = [...testResourcePath, 'templates'];
     const sqsTemplatePath = path.join(...templatePath, 'sqs-template.json');
     const autoscalingTemplatePath = path.join(...templatePath, 'autoscaling-template.yml');
@@ -1287,7 +1287,7 @@ describe('synth', () => {
       await expect(() =>
         toolkit.migrate({
           stackName: 'cannot-generate-template',
-          fromPath: path.join(__dirname, 'commands', 'test-resources', 'templates', 'sqs-template.json'),
+          fromPath: sqsTemplatePath,
           language: 'rust',
         }),
       ).rejects.toThrow(
