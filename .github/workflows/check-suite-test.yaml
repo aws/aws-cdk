@@ -1,25 +1,25 @@
 
-name: Check Suite Logger
+name: Check Run Logger
 
 on:
-  check_suite:
+  check_run:
     types: [completed]
 
 jobs:
-  log-check-suite:
+  log-check-run:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Log check suite event details
+      - name: Log check run event details
         run: |
-          echo "Check Suite ID: ${{ github.event.check_suite.id }}"
-          echo "Status: ${{ github.event.check_suite.status }}"
-          echo "Conclusion: ${{ github.event.check_suite.conclusion }}"
-          echo "URL: ${{ github.event.check_suite.url }}"
-          echo "Head Branch: ${{ github.event.check_suite.head_branch }}"
-          echo "Head SHA: ${{ github.event.check_suite.head_sha }}"
+          echo "Check Run ID: ${{ github.event.check_run.id }}"
+          echo "Status: ${{ github.event.check_run.status }}"
+          echo "Conclusion: ${{ github.event.check_run.conclusion }}"
+          echo "URL: ${{ github.event.check_run.url }}"
+          echo "Head Branch: ${{ github.event.check_run.head_branch }}"
+          echo "Head SHA: ${{ github.event.check_run.head_sha }}"
           echo "Repository: ${{ github.event.repository.full_name }}"
           echo "Sender: ${{ github.event.sender.login }}"
-          echo "Created At: ${{ github.event.check_suite.created_at }}"
-          echo "Updated At: ${{ github.event.check_suite.updated_at }}"
-          echo "Pull Requests: ${{ toJson(github.event.check_suite.pull_requests) }}"
+          echo "Created At: ${{ github.event.check_run.created_at }}"
+          echo "Updated At: ${{ github.event.check_run.updated_at }}"
+          echo "Pull Requests: ${{ toJson(github.event.check_run.pull_requests) }}"
