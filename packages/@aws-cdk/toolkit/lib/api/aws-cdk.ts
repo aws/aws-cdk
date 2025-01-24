@@ -16,6 +16,7 @@ export { RWLock, type ILock } from '../../../../aws-cdk/lib/api/util/rwlock';
 export { formatTime } from '../../../../aws-cdk/lib/api/util/string-manipulation';
 
 // @todo Not yet API probably should be
+export { formatErrorMessage } from '../../../../aws-cdk/lib/util/error';
 export { ResourceMigrator } from '../../../../aws-cdk/lib/migrator';
 export { obscureTemplate, serializeStructure } from '../../../../aws-cdk/lib/serialize';
 export { loadTree, some } from '../../../../aws-cdk/lib/tree';
