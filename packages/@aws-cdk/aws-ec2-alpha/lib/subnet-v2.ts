@@ -16,7 +16,6 @@ interface ICidr {
  * IPv4 or IPv6 CIDR range for the subnet
  */
 export class IpCidr implements ICidr {
-
   /**
  * IPv6 CIDR range for the subnet
  * Allowed only if IPv6 is enabled on VPc
@@ -129,7 +128,6 @@ export interface ISubnetV2 extends ISubnet {
  *
  */
 export class SubnetV2 extends Resource implements ISubnetV2 {
-
   /**
    * Import an existing subnet to the VPC
    */
@@ -139,7 +137,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     * @resource AWS::EC2::Subnet
     */
     class ImportedSubnetV2 extends Resource implements ISubnetV2 {
-
       /**
       * The IPv6 CIDR Block assigned to this subnet
       */
@@ -262,7 +259,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     overlap = validateOverlappingCidrRanges(props.vpc, props.ipv4CidrBlock.cidr);
 
-    //check whether VPC supports ipv6
+    // check whether VPC supports ipv6
     if (props.ipv6CidrBlock?.cidr) {
       validateSupportIpv6(props.vpc);
       overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);

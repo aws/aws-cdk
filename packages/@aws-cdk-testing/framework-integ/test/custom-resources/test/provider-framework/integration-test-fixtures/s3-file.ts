@@ -60,7 +60,6 @@ export class S3File extends Construct {
 }
 
 class S3FileProvider extends Construct {
-
   /**
    * Returns the singleton provider.
    */

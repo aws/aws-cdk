@@ -77,8 +77,10 @@ import {
   restoreSdkMocksToDefault,
 } from './util/mock-sdk';
 import { Bootstrapper, type BootstrapSource } from '../lib/api/bootstrap';
-import { DeployStackResult, SuccessfulDeployStackResult } from '../lib/api/deploy-stack';
 import {
+  DeployStackResult,
+  SuccessfulDeployStackResult,
+  Template,
   Deployments,
   DeployStackOptions,
   DestroyStackOptions,
@@ -86,8 +88,7 @@ import {
   RollbackStackResult,
 } from '../lib/api/deployments';
 import { HotswapMode } from '../lib/api/hotswap/common';
-import { Mode } from '../lib/api/plugin/mode';
-import { Template } from '../lib/api/util/cloudformation';
+import { Mode } from '../lib/api/plugin';
 import { CdkToolkit, markTesting } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { Configuration } from '../lib/settings';
