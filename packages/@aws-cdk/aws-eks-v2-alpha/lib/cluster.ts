@@ -16,7 +16,7 @@ import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
-import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -773,8 +773,6 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
-  private _spotInterruptHandler?: HelmChart;
-
   /**
    * Defines a Kubernetes resource in this cluster.
    *
@@ -829,28 +827,6 @@ abstract class ClusterBase extends Resource implements ICluster {
       ...options,
       cluster: this,
     });
-  }
-
-  /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added.
-   */
-  private addSpotInterruptHandler() {
-    if (!this._spotInterruptHandler) {
-      this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
-        chart: 'aws-node-termination-handler',
-        version: '0.18.0',
-        repository: 'https://aws.github.io/eks-charts',
-        namespace: 'kube-system',
-        values: {
-          nodeSelector: {
-            lifecycle: LifecycleLabel.SPOT,
-          },
-        },
-      });
-    }
-
-    return this._spotInterruptHandler;
   }
 
   /**
@@ -922,12 +898,6 @@ abstract class ClusterBase extends Resource implements ICluster {
     new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
       value: autoScalingGroup.role.roleArn,
     });
-
-    const addSpotInterruptHandler = options.spotInterruptHandler ?? true;
-    // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
-    if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
-      this.addSpotInterruptHandler();
-    }
 
     if (this instanceof Cluster && this.albController) {
       // the controller runs on the worker nodes so they cannot
@@ -1416,7 +1386,6 @@ export class Cluster extends ClusterBase {
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
-      spotInterruptHandler: options.spotInterruptHandler,
     });
 
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
@@ -1714,14 +1683,6 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
-
-  /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added. Only relevant if `spotPrice` is used.
-   *
-   * @default true
-   */
-  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -1814,14 +1775,6 @@ export interface AutoScalingGroupOptions {
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
-
-  /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added. Only relevant if `spotPrice` is configured on the auto-scaling group.
-   *
-   * @default true
-   */
-  readonly spotInterruptHandler?: boolean;
 }
 
 /**

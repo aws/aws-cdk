@@ -220,29 +220,6 @@ describe('cluster', () => {
     });
   });
 
-  test('spot interrupt handler is not added if spotInterruptHandler is false when connecting self-managed nodes', () => {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-      prune: false,
-    });
-
-    const selfManaged = new asg.AutoScalingGroup(stack, 'self-managed', {
-      instanceType: new ec2.InstanceType('t2.medium'),
-      vpc: vpc,
-      machineImage: new ec2.AmazonLinuxImage(),
-      spotPrice: '0.1',
-    });
-
-    // WHEN
-    cluster.connectAutoScalingGroupCapacity(selfManaged, { spotInterruptHandler: false });
-
-    expect(cluster.node.findAll().filter(c => c.node.id === 'chart-spot-interrupt-handler').length).toEqual(0);
-  });
-
   test('throws when a non cdk8s chart construct is added as cdk8s chart', () => {
     const { stack } = testFixture();
 
@@ -1105,77 +1082,6 @@ describe('cluster', () => {
           const template = app.synth().getStackByName(stack.stackName).template;
           const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
           expect(userData).toEqual({ 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'ClusterEB0386A7' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --apiserver-endpoint \'', { 'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['ClusterEB0386A7', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
-        });
-
-        test('interrupt handler is added', () => {
-          // GIVEN
-          const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', {
-            defaultCapacity: 0,
-            version: CLUSTER_VERSION,
-            prune: false,
-            kubectlProviderOptions: {
-              kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
-            },
-          });
-
-          // WHEN
-          cluster.addAutoScalingGroupCapacity('MyCapcity', {
-            instanceType: new ec2.InstanceType('m3.xlarge'),
-            spotPrice: '0.01',
-          });
-
-          // THEN
-          Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, {
-            Release: 'stackclusterchartspotinterrupthandlerdec62e07',
-            Chart: 'aws-node-termination-handler',
-            Values: '{\"nodeSelector\":{\"lifecycle\":\"Ec2Spot\"}}',
-            Namespace: 'kube-system',
-            Repository: 'https://aws.github.io/eks-charts',
-          });
-        });
-
-        test('interrupt handler is not added when spotInterruptHandler is false', () => {
-          // GIVEN
-          const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
-
-          // WHEN
-          cluster.addAutoScalingGroupCapacity('MyCapcity', {
-            instanceType: new ec2.InstanceType('m3.xlarge'),
-            spotPrice: '0.01',
-            spotInterruptHandler: false,
-          });
-
-          // THEN
-          expect(cluster.node.findAll().filter(c => c.node.id === 'chart-spot-interrupt-handler').length).toEqual(0);
-        });
-
-        test('its possible to add two capacities with spot instances and only one stop handler will be installed', () => {
-          // GIVEN
-          const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', {
-            defaultCapacity: 0,
-            version: CLUSTER_VERSION,
-            prune: false,
-            kubectlProviderOptions: {
-              kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
-            },
-          });
-
-          // WHEN
-          cluster.addAutoScalingGroupCapacity('Spot1', {
-            instanceType: new ec2.InstanceType('m3.xlarge'),
-            spotPrice: '0.01',
-          });
-
-          cluster.addAutoScalingGroupCapacity('Spot2', {
-            instanceType: new ec2.InstanceType('m4.xlarge'),
-            spotPrice: '0.01',
-          });
-
-          // THEN
-          Template.fromStack(stack).resourceCountIs(eks.HelmChart.RESOURCE_TYPE, 1);
         });
       });
     });
