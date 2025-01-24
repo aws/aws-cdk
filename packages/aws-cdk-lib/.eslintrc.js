@@ -26,6 +26,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-apigatewayv2',
+  'aws-apigatewayv2-authorizers',
   'aws-synthetics',
   'aws-s3-assets',
   'aws-s3-deployment',
