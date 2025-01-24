@@ -1,6 +1,126 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
+    "ResourceStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ResourceStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ResourceStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ResourceStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c9c74439c0d37ae9102e08811d80920056db00f3d240c8b3ac6e4cfa64fbb41.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ResourceStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ResourceStack.assets"
+      ],
+      "metadata": {
+        "/ResourceStack/ImportedTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedTable8FDCF7CA"
+          }
+        ],
+        "/ResourceStack/ImportedBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedBucket1C431EBF"
+          }
+        ],
+        "/ResourceStack/ImportedBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedBucketPolicy71C80354"
+          }
+        ],
+        "/ResourceStack/ImportedBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedBucketAutoDeleteObjectsCustomResource76C747CD"
+          }
+        ],
+        "/ResourceStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ResourceStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/ResourceStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/ResourceStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/ResourceStack/Exports/Output{\"Fn::GetAtt\":[\"ImportedBucket1C431EBF\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttImportedBucket1C431EBFArnEDCF3602"
+          }
+        ],
+        "/ResourceStack/Exports/Output{\"Fn::GetAtt\":[\"ImportedTable8FDCF7CA\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttImportedTable8FDCF7CAArn881C6C13"
+          }
+        ],
+        "/ResourceStack/Exports/Output{\"Ref\":\"ImportedBucket1C431EBF\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefImportedBucket1C431EBF15F80098"
+          }
+        ],
+        "/ResourceStack/Exports/Output{\"Ref\":\"ImportedTable8FDCF7CA\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefImportedTable8FDCF7CAD36DCB94"
+          }
+        ],
+        "/ResourceStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ResourceStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ResourceStack"
+    },
     "aws-cdk-iam-managed-policy.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -18,7 +138,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26f1836028ead2829dce663ff9f4b0c71fd9db149cb19a6c54ed9128e3e09120.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e513d21784e7f37b5f3f1cf9f30ddf4bbf498296607d150da638f36d8e1c8ec.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -31,6 +151,7 @@
         }
       },
       "dependencies": [
+        "ResourceStack",
         "aws-cdk-iam-managed-policy.assets"
       ],
       "metadata": {
@@ -40,10 +161,19 @@
             "data": "MyUserDC45028B"
           }
         ],
+        "/aws-cdk-iam-managed-policy/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
         "/aws-cdk-iam-managed-policy/OneManagedPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OneManagedPolicy77F9185F"
+            "data": "OneManagedPolicy77F9185F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-iam-managed-policy/TwoManagedPolicy/Resource": [
@@ -52,10 +182,52 @@
             "data": "TwoManagedPolicy7E701864"
           }
         ],
-        "/aws-cdk-iam-managed-policy/Role/Resource": [
+        "/aws-cdk-iam-managed-policy/StandardPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0"
+            "data": "StandardPolicyD67D508C"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/DefaultManagedPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultManagedPolicyD42A499A"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/DefaultPolicyArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultPolicyArn"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/UserName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserName"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/RoleName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleName"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/Exports/Output{\"Ref\":\"DefaultManagedPolicyD42A499A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDefaultManagedPolicyD42A499A3EDDD52E"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/Exports/Output{\"Ref\":\"MyUserDC45028B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyUserDC45028B53D3E858"
+          }
+        ],
+        "/aws-cdk-iam-managed-policy/Exports/Output{\"Ref\":\"Role1ABCC5F0\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefRole1ABCC5F06F481065"
           }
         ],
         "/aws-cdk-iam-managed-policy/BootstrapVersion": [
@@ -68,15 +240,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "MyUserDefaultPolicy7B897426": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyUserDefaultPolicy7B897426",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -99,7 +262,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/016ef750d8e4ae19f1e6dd8bfb7fa5b102551c45d9eab9819d0cbd0dbd6495f8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -112,9 +275,101 @@
         }
       },
       "dependencies": [
+        "aws-cdk-iam-managed-policy",
+        "ResourceStack",
         "ManagedPolicyIntegDefaultTestDeployAssert27007DC6.assets"
       ],
       "metadata": {
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallIAMgetPolicy43ff97f8c3d78eb9f5b6ed4831ddccc1/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIAMgetPolicy43ff97f8c3d78eb9f5b6ed4831ddccc1"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallIAMgetPolicy43ff97f8c3d78eb9f5b6ed4831ddccc1/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIAMgetPolicy43ff97f8c3d78eb9f5b6ed4831ddccc1"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallIAMgetPolicyVersione09a5c21da29915b0b934b25fd37df25/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIAMgetPolicyVersione09a5c21da29915b0b934b25fd37df25"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallIAMgetPolicyVersione09a5c21da29915b0b934b25fd37df25/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIAMgetPolicyVersione09a5c21da29915b0b934b25fd37df25"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallIAMlistAttachedUserPolicies86800ea5b5fb05b98df54a72a4b73aea/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIAMlistAttachedUserPolicies86800ea5b5fb05b98df54a72a4b73aea"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallIAMlistAttachedUserPolicies86800ea5b5fb05b98df54a72a4b73aea/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIAMlistAttachedUserPolicies86800ea5b5fb05b98df54a72a4b73aea"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallIAMgetRoleabe52f2a2b94392a0899a2050723dd83/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIAMgetRoleabe52f2a2b94392a0899a2050723dd83"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallIAMgetRoleabe52f2a2b94392a0899a2050723dd83/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIAMgetRoleabe52f2a2b94392a0899a2050723dd83"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallS3getBucketPolicy354907006741d00767fe2b0c1a224ecb/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3getBucketPolicy354907006741d00767fe2b0c1a224ecb"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallS3getBucketPolicy354907006741d00767fe2b0c1a224ecb/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3getBucketPolicy354907006741d00767fe2b0c1a224ecb"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallDynamoDBdescribeTablef4223e154a62a93016261cc20f48f0c6/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallDynamoDBdescribeTablef4223e154a62a93016261cc20f48f0c6"
+          }
+        ],
+        "/ManagedPolicyInteg/DefaultTest/DeployAssert/AwsApiCallDynamoDBdescribeTablef4223e154a62a93016261cc20f48f0c6/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallDynamoDBdescribeTablef4223e154a62a93016261cc20f48f0c6"
+          }
+        ],
         "/ManagedPolicyInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

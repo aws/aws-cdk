@@ -22,11 +22,43 @@
     ]
    }
   },
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "OneManagedPolicy77F9185F": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
     "Description": "My Policy",
-    "ManagedPolicyName": "Default",
+    "ManagedPolicyName": "OneManagedPolicy",
     "Path": "/some/path/",
     "PolicyDocument": {
      "Statement": [
@@ -87,36 +119,134 @@
     }
    }
   },
-  "Role1ABCC5F0": {
-   "Type": "AWS::IAM::Role",
+  "StandardPolicyD67D508C": {
+   "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
-    "AssumeRolePolicyDocument": {
+    "Description": "Grants team members permissions to perform BAU tasks such as lambda invocation and reading secrets. Copied verbatim as an ode to I32795",
+    "ManagedPolicyName": "StandardPolicy",
+    "Path": "/",
+    "PolicyDocument": {
      "Statement": [
       {
-       "Action": "sts:AssumeRole",
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
        "Effect": "Allow",
-       "Principal": {
-        "AWS": {
+       "Resource": [
+        {
+         "Fn::ImportValue": "ResourceStack:ExportsOutputFnGetAttImportedBucket1C431EBFArnEDCF3602"
+        },
+        {
          "Fn::Join": [
           "",
           [
-           "arn:",
            {
-            "Ref": "AWS::Partition"
+            "Fn::ImportValue": "ResourceStack:ExportsOutputFnGetAttImportedBucket1C431EBFArnEDCF3602"
            },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+           "/*"
           ]
          ]
         }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "ResourceStack:ExportsOutputFnGetAttImportedTable8FDCF7CAArn881C6C13"
        }
       }
      ],
      "Version": "2012-10-17"
     }
+   }
+  },
+  "DefaultManagedPolicyD42A499A": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "My Policy",
+    "ManagedPolicyName": "DefaultManagedPolicy",
+    "Path": "/some/path/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "DefaultPolicyArn": {
+   "Value": {
+    "Ref": "DefaultManagedPolicyD42A499A"
+   },
+   "Export": {
+    "Name": "DefaultPolicyArnExport"
+   }
+  },
+  "UserName": {
+   "Value": {
+    "Ref": "MyUserDC45028B"
+   }
+  },
+  "RoleName": {
+   "Value": {
+    "Ref": "Role1ABCC5F0"
+   }
+  },
+  "ExportsOutputRefDefaultManagedPolicyD42A499A3EDDD52E": {
+   "Value": {
+    "Ref": "DefaultManagedPolicyD42A499A"
+   },
+   "Export": {
+    "Name": "aws-cdk-iam-managed-policy:ExportsOutputRefDefaultManagedPolicyD42A499A3EDDD52E"
+   }
+  },
+  "ExportsOutputRefMyUserDC45028B53D3E858": {
+   "Value": {
+    "Ref": "MyUserDC45028B"
+   },
+   "Export": {
+    "Name": "aws-cdk-iam-managed-policy:ExportsOutputRefMyUserDC45028B53D3E858"
+   }
+  },
+  "ExportsOutputRefRole1ABCC5F06F481065": {
+   "Value": {
+    "Ref": "Role1ABCC5F0"
+   },
+   "Export": {
+    "Name": "aws-cdk-iam-managed-policy:ExportsOutputRefRole1ABCC5F06F481065"
    }
   }
  },
