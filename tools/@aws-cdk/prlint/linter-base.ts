@@ -168,6 +168,11 @@ export class PullRequestLinterBase {
           message,
         });
       } catch (e: any) {
+        if (githubResponseErrors(e).includes('Can not dismiss a dismissed pull request review')) {
+          // Can happen because of race conditions. We already achieved the result we wanted, so ignore.
+          continue;
+        }
+
         // This can fail with a "not found" for some reason
         throw new Error(`Dismissing review failed, user is probably not authorized: ${JSON.stringify(e, undefined, 2)}`);
       }
@@ -386,4 +391,11 @@ export function mergeLinterActions(a: LinterActions, b: LinterActions): LinterAc
 
 function nonEmpty<A>(xs: A[]): A[] | undefined {
   return xs.length > 0 ? xs : undefined;
+}
+
+/**
+ * Return error messages from an exception thrown by GitHub
+ */
+function githubResponseErrors(e: Error): string[] {
+  return (e as any).response?.data?.errors ?? [];
 }

@@ -21,7 +21,7 @@ const linter = new PullRequestLinterBase({
 });
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  jest.resetAllMocks();
 
   octomock.pulls.get.mockReturnValue({
     data: {
@@ -32,6 +32,66 @@ beforeEach(() => {
   });
   octomock.pulls.listReviews.mockReturnValue({ data: [] });
   octomock.repos.listCommitStatusesForRef.mockReturnValue({ data: [] });
+});
+
+test('ignore if dismissing reviews throws a specific "already dismissed" error', async () => {
+  // GIVEN
+  octomock.pulls.listReviews.mockReturnValue({
+    data: [
+      {
+        id: 1111,
+        user: { login: 'aws-cdk-automation' },
+        state: 'CHANGES_REQUESTED',
+        body: 'some comment',
+      },
+    ]
+  });
+  octomock.pulls.dismissReview.mockRejectedValue({
+    status: 422,
+    response: {
+      data: {
+        errors: [
+          'Can not dismiss a dismissed pull request review',
+        ],
+      },
+    },
+  });
+
+  // WHEN
+  await linter.executeActions({
+    dismissPreviousReview: true,
+  });
+
+  // THEN: no error
+});
+
+test('throw if dismissing reviews throws any other error', async () => {
+  // GIVEN
+  octomock.pulls.listReviews.mockReturnValue({
+    data: [
+      {
+        id: 1111,
+        user: { login: 'aws-cdk-automation' },
+        state: 'CHANGES_REQUESTED',
+        body: 'some comment',
+      },
+    ]
+  });
+  octomock.pulls.dismissReview.mockRejectedValue({
+    status: 422,
+    response: {
+      data: {
+        errors: [
+          'Review not found',
+        ],
+      },
+    },
+  });
+
+  // THEN
+  await expect(linter.executeActions({
+    dismissPreviousReview: true,
+  })).rejects.toThrow(/Dismissing review failed/);
 });
 
 test('dismissing a review dismisses and changes the text of all previous reviews', async () => {
