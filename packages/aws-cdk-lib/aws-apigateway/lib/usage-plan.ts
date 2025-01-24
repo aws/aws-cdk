@@ -209,11 +209,9 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
       resource.overrideLogicalId(options?.overrideLogicalId);
     }
   }
-
 }
 
 export class UsagePlan extends UsagePlanBase {
-
   /**
    * Import an externally defined usage plan using its ARN.
    *
