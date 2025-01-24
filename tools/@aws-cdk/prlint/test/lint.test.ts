@@ -1183,7 +1183,7 @@ describe('for any PR', () => {
   };
 
   const ARBITRARY_FILES: GitHubFile[] = [{
-    filename: 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts',
+    filename: 'README.md',
   }];
 
   test('deletes old comments', async () => {
@@ -1212,7 +1212,8 @@ describe('for any PR', () => {
     }));
   });
 
-  test('missing CodeCov runs lead to a failure', async () => {
+  test('missing CodeCov run does not lead to request changes', async () => {
+    // Not ideal, but https://github.com/aws/aws-cdk/issues/33136
     // GIVEN
     const prLinter = configureMock(ARBITRARY_PR, ARBITRARY_FILES);
     prLinter.octomock.checks.listForRef.mockReturnValue({ data: [] });
@@ -1221,9 +1222,7 @@ describe('for any PR', () => {
     const result = await prLinter.validatePullRequestTarget();
 
     // THEN
-    expect(result.requestChanges?.failures).toContainEqual(
-      expect.stringContaining('Still waiting for CodeCov results'),
-    );
+    expect(result.requestChanges).toBeUndefined();
   });
 
   test('failing CodeCov runs lead to a failure', async () => {
