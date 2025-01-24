@@ -110,8 +110,10 @@ export class StackParameters {
 export interface BaseDeployOptions {
   /**
    * Criteria for selecting stacks to deploy
+   *
+   * @default - all stacks
    */
-  readonly stacks: StackSelector;
+  readonly stacks?: StackSelector;
 
   /**
    * @deprecated set on toolkit
@@ -148,9 +150,9 @@ export interface BaseDeployOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - `HotswapMode.FALL_BACK` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
+   * @default - no hotswap
    */
-  readonly hotswap: HotswapMode;
+  readonly hotswap?: HotswapMode;
 
   /**
    * Rollback failed deployments
@@ -182,7 +184,7 @@ export interface DeployOptions extends BaseDeployOptions {
   /**
    * What kind of security changes require approval
    *
-   * @default RequireApproval.Broadening
+   * @default RequireApproval.NEVER
    */
   readonly requireApproval?: RequireApproval;
 
