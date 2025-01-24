@@ -16,8 +16,12 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 // no-throw-default-error
 const enableNoThrowDefaultErrorIn = [
-  'aws-apigatewayv2-integrations',
   'aws-apigatewayv2-authorizers',
+  'aws-apigatewayv2-integrations',
+  'aws-elasticloadbalancing',
+  'aws-elasticloadbalancingv2',
+  'aws-elasticloadbalancingv2-actions',
+  'aws-elasticloadbalancingv2-targets',    
   'aws-lambda',
   'aws-rds',
   'aws-s3',
@@ -37,6 +41,14 @@ const enableNoThrowDefaultErrorIn = [
   'aws-route53recoverycontrol',
   'aws-route53recoveryreadiness',
   'aws-route53resolver',
+  'aws-sns',
+  'aws-sqs',
+  'aws-ssm',
+  'aws-ssmcontacts',
+  'aws-ssmincidents',
+  'aws-ssmquicksetup',
+  'aws-synthetics',
+  'aws-s3',
   'aws-s3-assets',
   'aws-s3-deployment',
   'aws-s3-notifications',
