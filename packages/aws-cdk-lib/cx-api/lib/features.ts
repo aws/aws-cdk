@@ -1352,7 +1352,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       Using a feature flag to make sure existing customers who might be relying
       on the overly restrictive permissions are not broken.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.176.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules.',
   },
