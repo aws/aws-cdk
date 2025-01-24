@@ -321,7 +321,7 @@ export interface CdkGarbageCollectionCommandOptions {
 }
 
 export class TestFixture extends ShellHelper {
-  public readonly qualifier: string;
+  public readonly qualifier = this.randomString.slice(0, 10);
   private readonly bucketsToDelete = new Array<string>();
   public readonly packages: IPackageSource;
 
@@ -334,7 +334,6 @@ export class TestFixture extends ShellHelper {
 
     super(integTestDir, output);
 
-    this.qualifier = this.randomString.slice(0, 10);
     this.packages = packageSourceInSubprocess();
   }
 
@@ -343,22 +342,16 @@ export class TestFixture extends ShellHelper {
   }
 
   public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
-    return this.cdk(this.cdkDeployCommandLine(stackNames, options, skipStackRename));
-  }
-
-  public cdkDeployCommandLine(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
     stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
+
     const neverRequireApproval = options.neverRequireApproval ?? true;
 
-    return [
-      'deploy',
+    return this.cdk(['deploy',
       ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
       ...(options.options ?? []),
-      ...(options.verbose ? ['-v'] : []),
       // use events because bar renders bad in tests
       '--progress', 'events',
-      ...(skipStackRename ? stackNames : this.fullStackName(stackNames)),
-    ];
+      ...(skipStackRename ? stackNames : this.fullStackName(stackNames))], options);
   }
 
   public async cdkSynth(options: CdkCliOptions = {}) {
@@ -508,22 +501,13 @@ export class TestFixture extends ShellHelper {
     return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
-        ...this.cdkShellEnv(),
+        AWS_REGION: this.aws.region,
+        AWS_DEFAULT_REGION: this.aws.region,
+        STACK_NAME_PREFIX: this.stackNamePrefix,
+        PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
         ...options.modEnv,
       },
     });
-  }
-
-  /**
-   * Return the environment variables with which to execute CDK
-   */
-  public cdkShellEnv() {
-    return {
-      AWS_REGION: this.aws.region,
-      AWS_DEFAULT_REGION: this.aws.region,
-      STACK_NAME_PREFIX: this.stackNamePrefix,
-      PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
-    };
   }
 
   public template(stackName: string): any {
