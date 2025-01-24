@@ -533,6 +533,8 @@ export class ProxyResource extends Resource {
       defaultIntegration: props.defaultIntegration,
       defaultMethodOptions: props.defaultMethodOptions,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const anyMethod = props.anyMethod ?? true;
     if (anyMethod) {

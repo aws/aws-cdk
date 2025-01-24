@@ -858,6 +858,8 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.attachedSecret = props.secret;
 
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {

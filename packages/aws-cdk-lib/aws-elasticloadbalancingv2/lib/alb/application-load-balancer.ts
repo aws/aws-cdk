@@ -1189,6 +1189,8 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
     super(scope, id, {
       environmentFromArn: props.loadBalancerArn,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
@@ -1237,6 +1239,8 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
     super(scope, id, {
       environmentFromArn: props.loadBalancerArn,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;

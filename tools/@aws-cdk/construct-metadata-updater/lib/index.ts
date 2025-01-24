@@ -1,6 +1,11 @@
-import { ResourceMetadataUpdater } from './metadata-updater';
+import { PropertyUpdater, ConstructsUpdater } from './metadata-updater';
 
-export async function main() {
-  const updater = new ResourceMetadataUpdater("../../../../packages/");
-  await updater.execute();
+export function main() {
+  const dir = '../../../../packages/'
+
+  new PropertyUpdater(dir).execute();
+  console.log('Property updater finished.')
+
+  new ConstructsUpdater(dir).execute();
+  console.log('Constructs updater finished.');
 }

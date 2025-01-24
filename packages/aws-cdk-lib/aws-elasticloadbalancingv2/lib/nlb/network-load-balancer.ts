@@ -568,6 +568,8 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
     super(scope, id, { environmentFromArn: props.loadBalancerArn });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;

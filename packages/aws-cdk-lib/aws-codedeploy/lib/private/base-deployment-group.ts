@@ -120,6 +120,8 @@ export class DeploymentGroupBase extends Resource {
     super(scope, id, {
       physicalName: props.deploymentGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._role = props.role || new iam.Role(this, props.roleConstructId, {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),

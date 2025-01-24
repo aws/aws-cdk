@@ -945,6 +945,8 @@ class ImportedFileSystem extends FileSystemBase {
 
   constructor(scope: Construct, id: string, attrs: FileSystemAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
       throw new Error('One of fileSystemId or fileSystemArn, but not both, must be provided.');

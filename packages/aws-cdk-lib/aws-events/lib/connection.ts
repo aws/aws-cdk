@@ -380,6 +380,8 @@ class ImportedConnection extends Resource {
       account: arnParts.account,
       region: arnParts.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.connectionArn = attrs.connectionArn;
     this.connectionName = attrs.connectionName;

@@ -84,6 +84,8 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
         cloudformationRoleArn: Lazy.string({ produce: () => this.role.roleArn }),
       },
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.ruleScope = RuleScope.fromResource( ResourceType.CLOUDFORMATION_STACK, props.ownStackOnly ? Stack.of(this).stackId : undefined );
 
@@ -131,5 +133,7 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
       ),
       ruleScope: RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

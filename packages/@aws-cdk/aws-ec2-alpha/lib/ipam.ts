@@ -418,6 +418,8 @@ class IpamScope extends Resource implements IIpamScopeBase {
 
   constructor(scope: Construct, id: string, props: IpamScopeProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
       ipamId: props.ipamId,
     });
@@ -511,6 +513,8 @@ export class Ipam extends Resource {
 
   constructor(scope: Construct, id: string, props?: IpamProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     if (props?.ipamName) {
       Tags.of(this).add(NAME_TAG, props.ipamName);
     }

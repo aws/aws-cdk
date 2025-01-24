@@ -220,6 +220,8 @@ export class Pipe extends PipeBase {
   constructor(scope: Construct, id: string, props: PipeProps) {
 
     super(scope, id, { physicalName: props.pipeName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     /**
      * Role setup

@@ -494,6 +494,8 @@ function determineRuleScope(scope: Construct, props: RuleProps): Construct {
 class MirrorRule extends Rule {
   constructor(scope: Construct, id: string, props: RuleProps, private readonly source: Rule) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 
   public _renderEventPattern(): any {

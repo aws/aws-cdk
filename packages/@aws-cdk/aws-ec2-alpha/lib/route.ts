@@ -281,6 +281,8 @@ export class InternetGateway extends Resource implements IRouteTarget {
 
   constructor(scope: Construct, id: string, props: InternetGatewayProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.routerType = RouterType.GATEWAY;
 
@@ -340,6 +342,8 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
     super(scope, id, {
       physicalName: props.vpnGatewayName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.routerType = RouterType.GATEWAY;
 
@@ -424,6 +428,8 @@ export class NatGateway extends Resource implements IRouteTarget {
 
   constructor(scope: Construct, id: string, props: NatGatewayProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.routerType = RouterType.NAT_GATEWAY;
 
@@ -490,6 +496,8 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
   constructor(scope: Construct, id: string, props: VPCPeeringConnectionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.routerType = RouterType.VPC_PEERING_CONNECTION;
 
@@ -717,6 +725,8 @@ export class Route extends Resource implements IRouteV2 {
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.target = props.target;
     this.routeTable = props.routeTable;
@@ -789,6 +799,8 @@ export class RouteTable extends Resource implements IRouteTable {
 
   constructor(scope: Construct, id: string, props: RouteTableProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.resource = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpc.vpcId,

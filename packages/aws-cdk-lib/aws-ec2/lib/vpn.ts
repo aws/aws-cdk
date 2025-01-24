@@ -285,6 +285,8 @@ export class VpnConnection extends VpnConnectionBase {
 
   constructor(scope: Construct, id: string, props: VpnConnectionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.vpc.vpnGatewayId) {
       props.vpc.enableVpnGateway({

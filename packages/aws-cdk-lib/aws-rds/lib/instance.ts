@@ -1247,6 +1247,8 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let credentials = props.credentials;
     let secret = credentials?.secret;
@@ -1351,6 +1353,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.sourceDatabaseInstance.engine
         && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups

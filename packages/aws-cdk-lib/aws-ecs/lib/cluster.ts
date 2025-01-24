@@ -1060,6 +1060,8 @@ class ImportedCluster extends Resource implements ICluster {
    */
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.clusterName = props.clusterName;
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;

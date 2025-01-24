@@ -21,6 +21,7 @@ import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
 import { calculateFunctionHash } from '../lib/function-hash';
+import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 
 describe('function', () => {
   const dockerLambdaHandlerPath = path.join(__dirname, 'docker-lambda-handler');
@@ -4740,6 +4741,58 @@ describe('CMCMK', () => {
       },
     });
     bockfs.restore();
+  });
+});
+
+describe('telemetry metadata', () => {
+  it('redaction happens when feature flag is enabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+    const stack = new cdk.Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([{
+      data: { code: '*', handler: '*', runtime: '*' },
+      trace: undefined,
+      type: 'aws:cdk:analytics:construct',
+    }]);
+  });
+
+  it('redaction happens when feature flag is disabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
+    const stack = new cdk.Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([]);
   });
 });
 

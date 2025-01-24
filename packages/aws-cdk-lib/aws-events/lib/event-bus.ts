@@ -434,6 +434,8 @@ class ImportedEventBus extends EventBusBase {
       account: arnParts.account,
       region: arnParts.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.eventBusArn = attrs.eventBusArn;
     this.eventBusName = attrs.eventBusName;
@@ -480,6 +482,8 @@ export interface EventBusPolicyProps {
 export class EventBusPolicy extends Resource {
   constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     new CfnEventBusPolicy(this, 'Resource', {
       statementId: props.statementId!,

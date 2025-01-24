@@ -367,6 +367,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
 
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
@@ -499,6 +501,8 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
 
   constructor(scope: Construct, id: string, props: PrivateHostedZoneProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.addVpc(props.vpc);
   }

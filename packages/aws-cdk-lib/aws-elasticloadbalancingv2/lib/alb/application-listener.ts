@@ -777,6 +777,8 @@ class ImportedApplicationListener extends ExternalApplicationListener {
 
   constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
@@ -794,6 +796,8 @@ class LookedUpApplicationListener extends ExternalApplicationListener {
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
     this.connections = new ec2.Connections({

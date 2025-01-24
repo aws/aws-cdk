@@ -821,6 +821,8 @@ export class RestApi extends RestApiBase {
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.minCompressionSize !== undefined && props.minimumCompressionSize !== undefined) {
       throw new Error('both properties minCompressionSize and minimumCompressionSize cannot be set at once.');
@@ -985,6 +987,8 @@ class RootResource extends ResourceBase {
 
   constructor(api: RestApiBase, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, resourceId);
 
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;

@@ -255,6 +255,8 @@ class ImportedAccessPoint extends AccessPointBase {
 
   constructor(scope: Construct, id: string, attrs: AccessPointAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     if (!attrs.accessPointId) {
       if (!attrs.accessPointArn) {

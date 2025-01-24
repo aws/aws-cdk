@@ -281,6 +281,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       role: props.role,
       roleConstructId: 'Role',
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.role = this._role;
 
     this.application = props.application || new ServerApplication(this, 'Application', {
