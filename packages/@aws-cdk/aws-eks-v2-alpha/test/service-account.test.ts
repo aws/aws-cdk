@@ -179,7 +179,13 @@ describe('service account', () => {
       const oidcProvider = new iam.OpenIdConnectProvider(stack, 'ClusterOpenIdConnectProvider', {
         url: 'oidc_issuer',
       });
-      const kubectlProvider = eks.KubectlProvider.fromKubectlProviderFunctionArn(stack, 'importProvider', 'arn:aws:lambda:us-east-2:123456789012:function:myfunc');
+      const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+
+      const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:myfunc',
+        role: handlerRole,
+      });
+
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'Cluster',
         openIdConnectProvider: oidcProvider,

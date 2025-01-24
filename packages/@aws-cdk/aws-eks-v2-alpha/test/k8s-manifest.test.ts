@@ -1,6 +1,7 @@
 import { testFixtureNoVpc, testFixtureCluster } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import { CfnResource, Stack } from 'aws-cdk-lib/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart, KubectlProvider } from '../lib';
 
@@ -85,7 +86,11 @@ describe('k8s manifest', () => {
   test('can be added to an imported cluster with minimal config', () => {
     // GIVEN
     const stack = new Stack();
-    const kubectlProvider = KubectlProvider.fromKubectlProviderFunctionArn(stack, 'fdsaf', 'arn:aws:lambda:us-east-2:123456789012:function:myfunc');
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      role: handlerRole,
+    });
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
       kubectlProvider: kubectlProvider,
@@ -112,7 +117,11 @@ describe('k8s manifest', () => {
 
   test('default child is a CfnResource', () => {
     const stack = new Stack();
-    const kubectlProvider = KubectlProvider.fromKubectlProviderFunctionArn(stack, 'importProvider', 'arn:aws:lambda:us-east-2:123456789012:function:myfunc');
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      role: handlerRole,
+    });
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
       kubectlProvider: kubectlProvider,

@@ -65,6 +65,24 @@ export interface KubectlProviderProps extends KubectlProviderOptions {
 }
 
 /**
+ * Kubectl Provider Attributes
+ */
+export interface KubectlProviderAttributes {
+  /**
+   * The kubectl provider lambda arn
+   */
+  readonly serviceToken: string;
+
+  /**
+   * The role of the provider lambda function.
+   * Only required if you deploy helm charts using this imported provider.
+   *
+   * @default - no role.
+   */
+  readonly role?: iam.IRole;
+}
+
+/**
  * Imported KubectlProvider that can be used in place of the default one created by CDK
  */
 export interface IKubectlProvider extends IConstruct {
@@ -105,10 +123,14 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
    *
    * @param scope Construct
    * @param id an id of resource
-   * @param functionArn function arn for the provider
+   * @param attrs attributes for the provider
    */
-  public static fromKubectlProviderFunctionArn(scope: Construct, id: string, functionArn: string): IKubectlProvider {
-    return new ImportedKubectlProvider(scope, id, functionArn);
+  public static fromKubectlProviderAttributes(scope: Construct, id: string, attrs: KubectlProviderAttributes): IKubectlProvider {
+    class Import extends Construct implements IKubectlProvider {
+      public readonly serviceToken: string = attrs.serviceToken;
+      public readonly role?: iam.IRole = attrs.role;
+    }
+    return new Import(scope, id);
   }
 
   /**
@@ -197,17 +219,5 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
 
     this.serviceToken = provider.serviceToken;
     this.role = handlerRole;
-  }
-}
-
-class ImportedKubectlProvider extends Construct implements IKubectlProvider {
-  /**
-   * The custom resource provider's service token.
-   */
-  public readonly serviceToken: string;
-
-  constructor(scope: Construct, id: string, functionArn: string) {
-    super(scope, id);
-    this.serviceToken = functionArn;
   }
 }

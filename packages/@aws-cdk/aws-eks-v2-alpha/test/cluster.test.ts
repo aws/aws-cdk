@@ -778,9 +778,12 @@ describe('cluster', () => {
   test('import cluster with existing kubectl provider function', () => {
     const { stack } = testFixture();
 
-    const kubectlProvider = KubectlProvider.fromKubectlProviderFunctionArn(stack, 'KubectlProvider',
-      'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
-    );
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      role: handlerRole,
+    });
 
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
@@ -794,9 +797,11 @@ describe('cluster', () => {
     test('creates helm chart', () => {
       const { stack } = testFixture();
 
-      const kubectlProvider = KubectlProvider.fromKubectlProviderFunctionArn(stack, 'KubectlProvider',
-        'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
-      );
+      const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+      const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+        role: handlerRole,
+      });
 
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
@@ -816,9 +821,11 @@ describe('cluster', () => {
     test('creates Kubernetes patch', () => {
       const { stack } = testFixture();
 
-      const kubectlProvider = KubectlProvider.fromKubectlProviderFunctionArn(stack, 'KubectlProvider',
-        'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
-      );
+      const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+      const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+        role: handlerRole,
+      });
 
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
@@ -845,9 +852,11 @@ describe('cluster', () => {
     test('creates Kubernetes object value', () => {
       const { stack } = testFixture();
 
-      const kubectlProvider = KubectlProvider.fromKubectlProviderFunctionArn(stack, 'KubectlProvider',
-        'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
-      );
+      const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+      const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+        role: handlerRole,
+      });
 
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
@@ -1853,9 +1862,14 @@ describe('cluster', () => {
     test('imported cluster', () => {
       const clusterName = 'my-cluster';
       const stack = new cdk.Stack();
-      const kubectlProvider = KubectlProvider.fromKubectlProviderFunctionArn(stack, 'KubectlProvider',
-        'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
-      );
+
+      const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+
+      const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+        role: handlerRole,
+      });
+
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
         clusterName,
         kubectlProvider: kubectlProvider,
