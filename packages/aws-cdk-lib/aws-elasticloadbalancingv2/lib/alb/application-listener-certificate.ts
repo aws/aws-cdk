@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { IApplicationListener } from './application-listener';
+import { ValidationError } from '../../../core/lib/errors';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
 import { IListenerCertificate } from '../shared/listener-certificate';
-import { ValidationError } from '../../../core/lib/errors';
 
 /**
  * Properties for adding a set of certificates to a listener
