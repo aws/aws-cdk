@@ -1,4 +1,4 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import type * as cxapi from '@aws-cdk/cx-api';
 
 /**
  * @returns an array with the tags available in the stack metadata.

@@ -5,13 +5,14 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
+import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../cli/user-configuration';
+import { versionNumber } from '../../cli/version';
 import { debug, warning } from '../../logging';
-import { Configuration, PROJECT_CONFIG, Settings, USER_DEFAULTS } from '../../settings';
 import { ToolkitError } from '../../toolkit/error';
 import { loadTree, some } from '../../tree';
 import { splitBySize } from '../../util/objects';
-import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
+import { Settings } from '../settings';
 import { RWLock, ILock } from '../util/rwlock';
 
 export interface ExecProgramResult {

@@ -3,11 +3,11 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { cdkCacheDir, rootDir } from './util/directories';
+import { debug, info } from '../logging';
+import { ToolkitError } from '../toolkit/error';
+import { formatAsBanner } from './util/console-formatters';
+import { cdkCacheDir, rootDir } from '../util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
-import { debug, info } from '../lib/logging';
-import { ToolkitError } from './toolkit/error';
-import { formatAsBanner } from '../lib/util/console-formatters';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 

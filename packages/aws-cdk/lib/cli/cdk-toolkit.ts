@@ -6,23 +6,26 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { SdkProvider } from './api/aws-auth';
-import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
+import { Configuration, PROJECT_CONFIG } from './user-configuration';
+import { SdkProvider } from '../api/aws-auth';
+import { Bootstrapper, BootstrapEnvironmentOptions } from '../api/bootstrap';
 import {
   CloudAssembly,
   DefaultSelection,
   ExtendedStackSelection,
   StackCollection,
   StackSelector,
-} from './api/cxapp/cloud-assembly';
-import { CloudExecutable } from './api/cxapp/cloud-executable';
-import { Deployments, DeploymentMethod, SuccessfulDeployStackResult, createDiffChangeSet } from './api/deployments';
-import { GarbageCollector } from './api/garbage-collection/garbage-collector';
-import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from './api/hotswap/common';
-import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
-import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { formatTime } from './api/util/string-manipulation';
+} from '../api/cxapp/cloud-assembly';
+import { CloudExecutable } from '../api/cxapp/cloud-executable';
+import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../api/cxapp/environments';
+import { Deployments, DeploymentMethod, SuccessfulDeployStackResult, createDiffChangeSet } from '../api/deployments';
+import { GarbageCollector } from '../api/garbage-collection/garbage-collector';
+import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from '../api/hotswap/common';
+import { findCloudWatchLogGroups } from '../api/logs/find-cloudwatch-logs';
+import { CloudWatchLogEventMonitor } from '../api/logs/logs-monitor';
+import { tagsForStack, type Tag } from '../api/tags';
+import { StackActivityProgress } from '../api/util/cloudformation/stack-activity-monitor';
+import { formatTime } from '../api/util/string-manipulation';
 import {
   generateCdkApp,
   generateStack,
@@ -40,23 +43,20 @@ import {
   appendWarningsToReadme,
   isThereAWarning,
   buildCfnClient,
-} from './commands/migrate';
-import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { ResourceImporter, removeNonImportResources } from './import';
-import { listStacks } from './list-stacks';
-import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from './logging';
-import { ResourceMigrator } from './migrator';
-import { deserializeStructure, obscureTemplate, serializeStructure } from './serialize';
-import { Configuration, PROJECT_CONFIG } from './settings';
-import { Tag, tagsForStack } from './tags';
-import { ToolkitError } from './toolkit/error';
-import { numberFromBool, partition } from './util';
-import { formatErrorMessage } from './util/error';
-import { validateSnsTopicArn } from './util/validate-notification-arn';
-import { Concurrency, WorkGraph } from './util/work-graph';
-import { WorkGraphBuilder } from './util/work-graph-builder';
-import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
-import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+} from '../commands/migrate';
+import { printSecurityDiff, printStackDiff, RequireApproval } from '../diff';
+import { ResourceImporter, removeNonImportResources } from '../import';
+import { listStacks } from '../list-stacks';
+import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from '../logging';
+import { ResourceMigrator } from '../migrator';
+import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
+import { ToolkitError } from '../toolkit/error';
+import { numberFromBool, partition } from '../util';
+import { formatErrorMessage } from '../util/error';
+import { validateSnsTopicArn } from '../util/validate-notification-arn';
+import { Concurrency, WorkGraph } from '../util/work-graph';
+import { WorkGraphBuilder } from '../util/work-graph-builder';
+import { AssetBuildNode, AssetPublishNode, StackNode } from '../util/work-graph-types';
 
 // Must use a require() otherwise esbuild complains about calling a namespace
 // eslint-disable-next-line @typescript-eslint/no-require-imports

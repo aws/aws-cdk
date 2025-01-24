@@ -1,5 +1,5 @@
-import { convertConfigToUserInput, convertYargsToUserInput } from '../lib/convert-to-user-input';
-import { parseCommandLineArguments } from '../lib/parse-command-line-arguments';
+import { convertConfigToUserInput, convertYargsToUserInput } from '../../lib/cli/convert-to-user-input';
+import { parseCommandLineArguments } from '../../lib/cli/parse-command-line-arguments';
 
 describe('yargs', () => {
   test('yargs object can be converted to cli arguments', async () => {

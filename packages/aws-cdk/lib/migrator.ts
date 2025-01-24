@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import { StackCollection } from './api/cxapp/cloud-assembly';
 import { Deployments, ResourcesToImport } from './api/deployments';
 import { formatTime } from './api/util/string-manipulation';
-import { DeployOptions } from './cdk-toolkit';
+import { DeployOptions } from './cli/cdk-toolkit';
 import { ResourceImporter } from './import';
 import { info } from './logging';
 

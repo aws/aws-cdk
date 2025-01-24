@@ -9,7 +9,7 @@ import { DescribeChangeSetCommandOutput } from '@aws-sdk/client-cloudformation';
 import { instanceMockFrom, MockCloudExecutable } from './util';
 import { Deployments, PrepareChangeSetOptions, type NestedStackTemplates } from '../lib/api/deployments';
 import * as cfn from '../lib/api/deployments/cloudformation';
-import { CdkToolkit } from '../lib/cdk-toolkit';
+import { CdkToolkit } from '../lib/cli/cdk-toolkit';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;

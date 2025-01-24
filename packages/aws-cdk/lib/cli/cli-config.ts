@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CliHelpers, type CliConfig } from '@aws-cdk/user-input-gen';
 import * as cdk_from_cfn from 'cdk-from-cfn';
-import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { RequireApproval } from './diff';
-import { availableInitLanguages } from './init';
+import { StackActivityProgress } from '../api/util/cloudformation/stack-activity-monitor';
+import { RequireApproval } from '../diff';
+import { availableInitLanguages } from '../init';
 
 export const YARGS_HELPERS = new CliHelpers('./util/yargs-helpers');
 

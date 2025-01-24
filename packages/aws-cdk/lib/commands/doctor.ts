@@ -2,7 +2,7 @@ import * as process from 'process';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { info } from '../../lib/logging';
-import * as version from '../../lib/version';
+import * as version from '../cli/version';
 
 export async function doctor(): Promise<number> {
   let exitStatus: number = 0;

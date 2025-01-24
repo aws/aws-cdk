@@ -1,11 +1,11 @@
-import { exec } from '../lib/cli';
-import { CliIoHost } from '../lib/toolkit/cli-io-host';
+import { exec } from '../../lib/cli/cli';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
 
 // Store original version module exports so we don't conflict with other tests
-const originalVersion = jest.requireActual('../lib/version');
+const originalVersion = jest.requireActual('../../lib/cli/version');
 
 // Mock the dependencies
-jest.mock('../lib/logging', () => ({
+jest.mock('../../lib/logging', () => ({
   debug: jest.fn(),
   error: jest.fn(),
   print: jest.fn(),
@@ -14,11 +14,11 @@ jest.mock('../lib/logging', () => ({
 
 jest.mock('@aws-cdk/cx-api');
 jest.mock('@jsii/check-node/run');
-jest.mock('../lib/platform-warnings', () => ({
+jest.mock('../../lib/cli/platform-warnings', () => ({
   checkForPlatformWarnings: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('../lib/settings', () => ({
+jest.mock('../../lib/cli/user-configuration', () => ({
   Configuration: jest.fn().mockImplementation(() => ({
     load: jest.fn().mockResolvedValue(undefined),
     settings: {
@@ -30,7 +30,7 @@ jest.mock('../lib/settings', () => ({
   })),
 }));
 
-jest.mock('../lib/notices', () => ({
+jest.mock('../../lib/notices', () => ({
   Notices: {
     create: jest.fn().mockReturnValue({
       refresh: jest.fn().mockResolvedValue(undefined),
@@ -39,7 +39,7 @@ jest.mock('../lib/notices', () => ({
   },
 }));
 
-jest.mock('../lib/parse-command-line-arguments', () => ({
+jest.mock('../../lib/cli/parse-command-line-arguments', () => ({
   parseCommandLineArguments: jest.fn().mockImplementation((args) => Promise.resolve({
     _: ['version'],
     verbose: args.includes('-v') ? (
@@ -54,7 +54,7 @@ describe('exec verbose flag tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Set up version module for our tests
-    jest.mock('../lib/version', () => ({
+    jest.mock('../../lib/cli/version', () => ({
       ...originalVersion,
       DISPLAY_VERSION: 'test-version',
       displayVersionMessage: jest.fn().mockResolvedValue(undefined),
@@ -64,7 +64,7 @@ describe('exec verbose flag tests', () => {
   afterEach(() => {
     // Restore the version module to its original state
     jest.resetModules();
-    jest.setMock('../lib/version', originalVersion);
+    jest.setMock('../../lib/cli/version', originalVersion);
   });
 
   test('should not set log level when no verbose flag is present', async () => {

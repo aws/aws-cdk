@@ -1,5 +1,5 @@
 import { BootstrapSource } from './bootstrap-environment';
-import { Tag } from '../../tags';
+import { Tag } from '../tags';
 import { StringWithoutPlaceholders } from '../util/placeholders';
 
 export const BUCKET_NAME_OUTPUT = 'BucketName';

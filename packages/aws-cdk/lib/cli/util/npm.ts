@@ -1,8 +1,8 @@
 import { exec as _exec } from 'child_process';
 import { promisify } from 'util';
 import * as semver from 'semver';
-import { debug } from '../../lib/logging';
-import { ToolkitError } from '../toolkit/error';
+import { debug } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
 
 const exec = promisify(_exec);
 

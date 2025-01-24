@@ -1,6 +1,6 @@
-import * as version from '../../lib/version';
+import * as version from '../version';
 
-export { isCI } from '../toolkit/cli-io-host';
+export { isCI } from '../../toolkit/cli-io-host';
 
 /**
  * yargs middleware to negate an option if a negative alias is provided
