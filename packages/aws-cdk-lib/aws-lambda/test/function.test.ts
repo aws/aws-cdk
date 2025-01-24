@@ -3490,7 +3490,7 @@ describe('function', () => {
 
     test('function using SnapStart', () => {
       const stack = new cdk.Stack();
-      //WHEN
+      // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
@@ -3498,7 +3498,7 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
             {
@@ -3524,7 +3524,7 @@ describe('function', () => {
 
     test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
-      //WHEN
+      // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
@@ -3533,7 +3533,7 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
             {
