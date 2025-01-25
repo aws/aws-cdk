@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'TestStack');
 
 const handler = new lambda.NodejsFunction(stack, 'Function', {
   entry: path.join(__dirname, 'integ-handlers/bun/dependencies-bun.ts'),
-  runtime: Runtime.NODEJS_20_X,
+  runtime: Runtime.NODEJS_22_X,
   bundling: {
     minify: true,
     // Will be installed, not bundled

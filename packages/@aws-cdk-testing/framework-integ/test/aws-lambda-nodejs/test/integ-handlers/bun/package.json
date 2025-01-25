@@ -1,0 +1,8 @@
+{
+  "name": "bun",
+  "//": "It's important to have axios (bundled in the docker container) and an additional dependency to ensure that bun bundling works as expected when the lockfile changes",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "express": "^4.19.2"
+  }
+}

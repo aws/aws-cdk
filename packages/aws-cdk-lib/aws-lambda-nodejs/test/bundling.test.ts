@@ -620,7 +620,7 @@ test('Detects bun.lockb', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/bun\.lockb.+bun install --frozen-lockfile/),
+        expect.stringMatching(/bun\.lockb.+bun install/),
       ]),
     }),
   });
