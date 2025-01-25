@@ -297,7 +297,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
   }
 
   private renderBlueGreenDeploymentConfiguration(options: EcsBlueGreenDeploymentConfig):
-    CfnDeploymentGroup.BlueGreenDeploymentConfigurationProperty {
+  CfnDeploymentGroup.BlueGreenDeploymentConfigurationProperty {
     return {
       deploymentReadyOption: {
         actionOnTimeout: options.deploymentApprovalWaitTime ? 'STOP_DEPLOYMENT' : 'CONTINUE_DEPLOYMENT',

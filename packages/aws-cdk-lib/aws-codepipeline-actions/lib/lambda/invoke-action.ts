@@ -104,7 +104,7 @@ export class LambdaInvokeAction extends Action {
   }
 
   protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-    codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // allow pipeline to list functions
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['lambda:ListFunctions'],
