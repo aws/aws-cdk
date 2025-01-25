@@ -4,6 +4,7 @@ import { IDomainName } from './domain-name';
 import { IStage } from './stage';
 import { CfnApiMapping, CfnApiMappingProps } from '.././index';
 import { IResource, Resource } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource
@@ -95,11 +96,11 @@ export class ApiMapping extends Resource implements IApiMapping {
     // So casting to 'any'
     let stage = props.stage ?? (props.api as any).defaultStage;
     if (!stage) {
-      throw new Error('stage property must be specified');
+      throw new ValidationError('stage property must be specified', scope);
     }
 
     if (props.apiMappingKey === '') {
-      throw new Error('empty string for api mapping key not allowed');
+      throw new ValidationError('empty string for api mapping key not allowed', scope);
     }
 
     const apiMappingProps: CfnApiMappingProps = {

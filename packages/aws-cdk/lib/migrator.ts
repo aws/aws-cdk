@@ -2,10 +2,9 @@ import type * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { StackCollection } from './api/cxapp/cloud-assembly';
-import { Deployments } from './api/deployments';
-import { ResourcesToImport } from './api/util/cloudformation';
+import { Deployments, ResourcesToImport } from './api/deployments';
 import { formatTime } from './api/util/string-manipulation';
-import { DeployOptions } from './cdk-toolkit';
+import { DeployOptions } from './cli/cdk-toolkit';
 import { ResourceImporter } from './import';
 import { info } from './logging';
 

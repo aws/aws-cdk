@@ -75,7 +75,6 @@ export interface ResponseHeadersPolicyProps {
  * @resource AWS::CloudFront::ResponseHeadersPolicy
  */
 export class ResponseHeadersPolicy extends Resource implements IResponseHeadersPolicy {
-
   /** Use this managed policy to allow simple CORS requests from any origin. */
   public static readonly CORS_ALLOW_ALL_ORIGINS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('60669652-455b-4ae9-85a4-c4c02393f86c');
   /** Use this managed policy to allow CORS requests from any origin, including preflight requests. */

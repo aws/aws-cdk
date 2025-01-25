@@ -142,6 +142,8 @@ abstract class ConstructError extends Error {
  *
  * A ValidationError is always attached to a Construct scope. To a user, the error will present with additional
  * information on the construct that caused the validation to fail.
+ *
+ * @internal
  */
 export class ValidationError extends ConstructError {
   public get type(): 'validation' {
@@ -162,6 +164,8 @@ export class ValidationError extends ConstructError {
  *
  * To a User, these errors still present themselves as a "ValidationError".
  * However they do not contain any information about the location in the construct tree.
+ *
+ * @internal
  */
 export class UnscopedValidationError extends ConstructError {
   public get type(): 'validation' {
