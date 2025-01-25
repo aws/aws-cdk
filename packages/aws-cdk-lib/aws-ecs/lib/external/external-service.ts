@@ -120,10 +120,10 @@ export class ExternalService extends BaseService implements IExternalService {
       propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     },
-      {
-        cluster: props.cluster.clusterName,
-        taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
-      }, props.taskDefinition);
+    {
+      cluster: props.cluster.clusterName,
+      taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
+    }, props.taskDefinition);
 
     this.node.addValidation({
       validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
