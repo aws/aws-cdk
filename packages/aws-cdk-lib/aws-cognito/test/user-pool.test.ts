@@ -2371,6 +2371,39 @@ describe('email MFA test', () => {
       featurePlan: FeaturePlan.LITE,
     })).toThrow('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
   });
+
+  describe('test passwordHistorySize', () => {
+    test('correctly set passwordHistorySize', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'Pool', {
+        passwordPolicy: {
+          passwordHistorySize: 3,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+        Policies: {
+          PasswordPolicy: {
+            PasswordHistorySize: 3,
+          },
+        },
+      });
+    });
+
+    test.each([-1, 25])('throws when email passwordHistorySize is invalid', (passwordHistorySize) => {
+      const stack = new Stack();
+
+      expect(() => new UserPool(stack, 'Pool', {
+        passwordPolicy: {
+          passwordHistorySize,
+        },
+      })).toThrow(`passwordHistorySize must be between 0 and 24 (received: ${passwordHistorySize})`);
+    });
+  });
 });
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
