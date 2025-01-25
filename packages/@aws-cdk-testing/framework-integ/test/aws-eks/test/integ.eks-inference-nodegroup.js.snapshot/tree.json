@@ -2106,24 +2106,6 @@
                                           ]
                                         },
                                         {
-                                          "Action": "lambda:GetFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
                                           "Action": "states:StartExecution",
                                           "Effect": "Allow",
                                           "Resource": {
@@ -2358,24 +2340,6 @@
                                               ]
                                             }
                                           ]
-                                        },
-                                        {
-                                          "Action": "lambda:GetFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
-                                              ]
-                                            }
-                                          ]
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -2599,24 +2563,6 @@
                                                   },
                                                   ":*"
                                                 ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": "lambda:GetFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "IsCompleteHandler7073F4DA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "OnEventHandler42BEBAE0",
-                                                "Arn"
                                               ]
                                             }
                                           ]
@@ -3038,7 +2984,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/de3e026f98e3fba82f483168c0ae9a754def60eb00b86dce9c69a63a035c828e.json"
+                          "/2d4e6ec3f20f467975f7375cb10d9ccfe09404e54b71bbb36f55d03aebd66a50.json"
                         ]
                       ]
                     }
@@ -3330,16 +3276,6 @@
                                               ]
                                             }
                                           ]
-                                        },
-                                        {
-                                          "Action": "lambda:GetFunction",
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::GetAtt": [
-                                              "Handler886CB40B",
-                                              "Arn"
-                                            ]
-                                          }
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -3580,7 +3516,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/7068b03f1ebcfbeb89683009838f64abfe021023200d4fc4c7c3dfab7ee5f8cc.json"
+                          "/8113fb351599e95526a7512f5d9bdc09129782acbf5b0634eb3d24613f9fe209.json"
                         ]
                       ]
                     }
