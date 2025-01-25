@@ -1,5 +1,5 @@
 import { GetHostedZoneCommand, ListHostedZonesByNameCommand } from '@aws-sdk/client-route-53';
-import { SDK, SdkForEnvironment } from '../../lib';
+import { SDK, SdkForEnvironment } from '../../lib/api';
 import { HostedZoneContextProviderPlugin } from '../../lib/context-providers/hosted-zones';
 import { FAKE_CREDENTIAL_CHAIN, mockRoute53Client, MockSdkProvider } from '../util/mock-sdk';
 

@@ -91,7 +91,6 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
  * Base class for new and imported Kinesis Data Firehose delivery streams.
  */
 abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream {
-
   public abstract readonly deliveryStreamName: string;
 
   public abstract readonly deliveryStreamArn: string;
