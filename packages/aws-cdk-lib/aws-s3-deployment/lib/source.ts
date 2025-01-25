@@ -27,6 +27,23 @@ export interface SourceConfig {
    * @default - no markers
    */
   readonly markers?: Record<string, any>;
+
+  /**
+   * The identifier of the S3 version of the object in the source bucket.
+   * @default - none
+   */
+  readonly versionId?: string;
+}
+
+/**
+ * Source information.
+ */
+export interface BucketSourceOptions {
+  /**
+   * The identifier of the S3 version of the object in the source bucket.
+   * @default - none
+   */
+  readonly versionId?: string;
 }
 
 /**
@@ -97,7 +114,7 @@ export class Source {
    * @param bucket The S3 Bucket
    * @param zipObjectKey The S3 object key of the zip file with contents
    */
-  public static bucket(bucket: s3.IBucket, zipObjectKey: string): ISource {
+  public static bucket(bucket: s3.IBucket, zipObjectKey: string, options?: BucketSourceOptions): ISource {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         if (!context) {
@@ -105,7 +122,11 @@ export class Source {
         }
 
         bucket.grantRead(context.handlerRole);
-        return { bucket, zipObjectKey };
+        return {
+          bucket: bucket,
+          zipObjectKey: zipObjectKey,
+          versionId: options?.versionId,
+        };
       },
     };
   }

@@ -501,7 +501,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
+                      "s3Key": "4d497aac546ce8ab400f07a6f7edc33591bc57293f27c08973e57d834222feb8.zip"
                     },
                     "environment": {
                       "variables": {
@@ -701,7 +701,7 @@
                     "value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
                   }
                 ],
-                "solutionStackName": "64bit Amazon Linux 2023 v6.2.2 running Node.js 20"
+                "solutionStackName": "64bit Amazon Linux 2023 v6.4.0 running Node.js 20"
               }
             },
             "constructInfo": {
