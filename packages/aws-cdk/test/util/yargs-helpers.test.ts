@@ -1,4 +1,4 @@
-import { isCI } from '../../lib/util/yargs-helpers';
+import { isCI } from '../../lib/cli/util/yargs-helpers';
 
 test.each([
   ['true', true],
