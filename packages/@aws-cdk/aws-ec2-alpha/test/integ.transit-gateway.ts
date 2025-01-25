@@ -32,7 +32,10 @@ const tgw = new TransitGateway(stack, 'TransitGateway', {
 });
 
 // Can attach a VPC to the Transit Gateway
-const attachment = tgw.attachVpc('DefaultRtbAttachment', vpc, [subnet]);
+const attachment = tgw.attachVpc('DefaultRtbAttachment', {
+  vpc: vpc,
+  subnets: [subnet],
+});
 
 // Can add additional route tables to the Transit Gateway
 const customRtb = tgw.addRouteTable('RouteTable2');

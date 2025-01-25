@@ -6,7 +6,7 @@ import * as subnet from '../lib/subnet-v2';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { TransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
 import { TransitGatewayVpcAttachment } from '../lib/transit-gateway-vpc-attachment';
-import { TransitGatewayActiveRoute, TransitGatewayBlackholeRoute } from '../lib/transit-gateway-route';
+import { TransitGatewayRoute, TransitGatewayBlackholeRoute } from '../lib/transit-gateway-route';
 
 describe('Transit Gateway Route', () => {
   let stack: cdk.Stack;
@@ -60,7 +60,7 @@ describe('Transit Gateway Route', () => {
   describe('TransitGatewayActiveRoute', () => {
     test('creates a route with the correct properties', () => {
       // WHEN
-      new TransitGatewayActiveRoute(stack, 'ActiveRoute', {
+      new TransitGatewayRoute(stack, 'ActiveRoute', {
         transitGatewayAttachment: attachment,
         destinationCidrBlock: '10.1.0.0/16',
         transitGatewayRouteTable: routeTable,

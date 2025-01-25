@@ -33,7 +33,10 @@ describe('TransitGatewayVpcAttachment', () => {
 
   test('creates vpc attachment with required properties', () => {
     // WHEN
-    transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet]);
+    transitGateway.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
@@ -56,10 +59,14 @@ describe('TransitGatewayVpcAttachment', () => {
 
   test('creates vpc attachment with optional properties', () => {
     // WHEN
-    transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet], {
-      dnsSupport: true,
-      ipv6Support: true,
-      applianceModeSupport: true,
+    transitGateway.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+      vpcAttachmentOptions: {
+        dnsSupport: true,
+        ipv6Support: true,
+        applianceModeSupport: true,
+      },
     });
 
     // THEN
@@ -78,7 +85,10 @@ describe('TransitGatewayVpcAttachment', () => {
 
   test('can add subnets', () => {
     // GIVEN
-    const attachment = transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet]);
+    const attachment = transitGateway.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+    });
 
     const additionalSubnet = new subnet.SubnetV2(stack, 'AdditionalSubnet', {
       vpc: myVpc,
@@ -108,7 +118,10 @@ describe('TransitGatewayVpcAttachment', () => {
       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
     });
 
-    const attachment = transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet, additionalSubnet]);
+    const attachment = transitGateway.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet, additionalSubnet],
+    });
 
     // WHEN
     attachment.removeSubnets([additionalSubnet]);
@@ -121,7 +134,10 @@ describe('TransitGatewayVpcAttachment', () => {
 
   test('throws error when adding duplicate subnet', () => {
     // GIVEN
-    const attachment = transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet]);
+    const attachment = transitGateway.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+    });
 
     // THEN
     expect(() => attachment.addSubnets([mySubnet])).toThrow(
@@ -131,7 +147,10 @@ describe('TransitGatewayVpcAttachment', () => {
 
   test('throws error when removing non-existent subnet', () => {
     // GIVEN
-    const attachment = transitGateway.attachVpc('VpcAttachment', myVpc, [mySubnet]);
+    const attachment = transitGateway.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+    });
 
     const nonExistentSubnet = new subnet.SubnetV2(stack, 'NonExistentSubnet', {
       vpc: myVpc,

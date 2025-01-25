@@ -1,9 +1,11 @@
-import { ITransitGateway, TransitGatewayFeatureStatus } from './transit-gateway';
+import { ITransitGateway } from './transit-gateway';
 import { CfnTransitGatewayAttachment, ISubnet, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './transit-gateway-attachment';
+import { getFeatureStatusDefaultDisable } from './util';
+import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
 export interface ITransitGatewayVpcAttachment extends ITransitGatewayAttachment {}
 
@@ -37,17 +39,12 @@ export interface ITransitGatewayVpcAttachmentOptions {
   readonly securityGroupReferencingSupport?: boolean;
 }
 
-export interface TransitGatewayVpcAttachmentProps {
+interface BaseTransitGatewayVpcAttachmentProps {
   /**
    * A list of one or more subnets to place the attachment in.
    * It is recommended to specify more subnets for better availability.
    */
   readonly subnets: ISubnet[];
-
-  /**
-   * The transit gateway this attachment gets assigned to.
-   */
-  readonly transitGateway: ITransitGateway;
 
   /**
    * A VPC attachment(s) will get assigned to.
@@ -57,7 +54,26 @@ export interface TransitGatewayVpcAttachmentProps {
   /**
    * The VPC attachment options.
    */
-  readonly transitGatewayVpcAttachmentOptions?: ITransitGatewayVpcAttachmentOptions;
+  readonly vpcAttachmentOptions?: ITransitGatewayVpcAttachmentOptions;
+}
+
+export interface TransitGatewayVpcAttachmentProps extends BaseTransitGatewayVpcAttachmentProps {
+  /**
+   * The transit gateway this attachment gets assigned to.
+   */
+  readonly transitGateway: ITransitGateway;
+}
+
+export interface AttachVpcOptions extends BaseTransitGatewayVpcAttachmentProps {
+  /**
+   * An optional route table to associate with this VPC attachment.
+   */
+  readonly associationRouteTable?: ITransitGatewayRouteTable;
+
+  /**
+   * A list of optional route tables to propagate routes to.
+   */
+  readonly propagationRouteTables?: ITransitGatewayRouteTable[];
 }
 
 export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
@@ -72,15 +88,11 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
       subnetIds: props.subnets.map((subnet) => subnet.subnetId),
       transitGatewayId: props.transitGateway.transitGatewayId,
       vpcId: props.vpc.vpcId,
-      options: props.transitGatewayVpcAttachmentOptions ? {
-        ApplianceModeSupport: (props.transitGatewayVpcAttachmentOptions?.applianceModeSupport ?? false)
-          ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-        DnsSupport: (props.transitGatewayVpcAttachmentOptions?.dnsSupport ?? false)
-          ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-        Ipv6Support: (props.transitGatewayVpcAttachmentOptions?.ipv6Support ?? false)
-          ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-        SecurityGroupReferencingSupport: (props.transitGatewayVpcAttachmentOptions?.securityGroupReferencingSupport ?? false)
-          ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
+      options: props.vpcAttachmentOptions ? {
+        ApplianceModeSupport: getFeatureStatusDefaultDisable(props.vpcAttachmentOptions?.applianceModeSupport),
+        DnsSupport: getFeatureStatusDefaultDisable(props.vpcAttachmentOptions?.dnsSupport),
+        Ipv6Support: getFeatureStatusDefaultDisable(props.vpcAttachmentOptions?.ipv6Support),
+        SecurityGroupReferencingSupport: getFeatureStatusDefaultDisable(props.vpcAttachmentOptions?.securityGroupReferencingSupport),
       } : undefined,
     });
 

@@ -6,35 +6,35 @@ import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
 export interface ITransitGatewayRouteTablePropagation extends IResource {
   /**
-    * The ID of the transit gateway route table propagation.
-    * @attribute
-    */
+   * The ID of the transit gateway route table propagation.
+   * @attribute
+   */
   readonly transitGatewayRouteTablePropagationId: string;
 }
 
 export interface TransitGatewayRouteTablePropagationProps {
   /**
-    * The ID of the transit gateway route table propagation.
-    */
+   * The ID of the transit gateway route table propagation.
+   */
   readonly transitGatewayVpcAttachment: ITransitGatewayAttachment;
 
   /**
-    * The ID of the transit gateway route table propagation.
-    */
+   * The ID of the transit gateway route table propagation.
+   */
   readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
 }
 
 abstract class TransitGatewayRouteTablePropagationBase extends Resource implements ITransitGatewayRouteTablePropagation {
   /**
-    * The ID of the transit gateway route table propagation.
-    */
+   * The ID of the transit gateway route table propagation.
+   */
   public abstract readonly transitGatewayRouteTablePropagationId: string;
 }
 
 export class TransitGatewayRouteTablePropagation extends TransitGatewayRouteTablePropagationBase {
   /**
-    * The ID of the transit gateway route table propagation.
-    */
+   * The ID of the transit gateway route table propagation.
+   */
   public readonly transitGatewayRouteTablePropagationId: string;
 
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTablePropagationProps) {

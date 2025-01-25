@@ -1,11 +1,12 @@
-import { CfnTransitGateway, ISubnet, IVpc, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { CfnTransitGateway, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { ITransitGatewayRouteTable, TransitGatewayRouteTable } from './transit-gateway-route-table';
-import { TransitGatewayVpcAttachment, ITransitGatewayVpcAttachmentOptions } from './transit-gateway-vpc-attachment';
+import { TransitGatewayVpcAttachment, AttachVpcOptions } from './transit-gateway-vpc-attachment';
 import { IRouteTarget } from './route';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
+import { getFeatureStatusDefaultDisable, getFeatureStatusDefaultEnable } from './util';
 
 export enum TransitGatewayFeatureStatus {
   ENABLE = 'enable',
@@ -13,10 +14,46 @@ export enum TransitGatewayFeatureStatus {
 }
 
 export interface ITransitGateway {
+  /**
+   * The unique identifier of the Transit Gateway.
+   *
+   * This ID is automatically assigned by AWS upon creation of the Transit Gateway
+   * and is used to reference it in various configurations and operations.
+   * @attribute
+   */
   readonly transitGatewayId: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the Transit Gateway.
+   *
+   * The ARN uniquely identifies the Transit Gateway across AWS and is commonly
+   * used for permissions and resource tracking.
+   * @attribute
+   */
   readonly transitGatewayArn: string;
+
+  /**
+   * The default route table associated with the Transit Gateway.
+   *
+   * This route table is created by the CDK and is used to manage the routes
+   * for attachments that do not have an explicitly defined route table association.
+   */
   readonly defaultRouteTable: ITransitGatewayRouteTable;
+
+  /**
+   * Indicates whether new attachments are automatically associated with the default route table.
+   *
+   * If set to `true`, any VPC or VPN attachment will be automatically associated with
+   * the default route table unless otherwise specified.
+   */
   readonly defaultRouteTableAssociation: boolean;
+
+  /**
+   * Indicates whether route propagation to the default route table is enabled.
+   *
+   * When set to `true`, routes from attachments will be automatically propagated
+   * to the default route table unless propagation is explicitly disabled.
+   */
   readonly defaultRouteTablePropagation: boolean;
 }
 
@@ -103,31 +140,25 @@ abstract class TransitGatewayBase extends Resource implements ITransitGateway, I
     });
   }
 
-  attachVpc(
-    id: string, vpc: IVpc,
-    subnets: ISubnet[],
-    transitGatewayAttachmentOptions?: ITransitGatewayVpcAttachmentOptions,
-    associationRouteTable?: ITransitGatewayRouteTable,
-    propagationRouteTables?: ITransitGatewayRouteTable[],
-  ): TransitGatewayVpcAttachment {
+  attachVpc(id: string, options: AttachVpcOptions): TransitGatewayVpcAttachment {
     const attachment = new TransitGatewayVpcAttachment(this, id, {
       transitGateway: this,
-      vpc: vpc,
-      subnets: subnets,
-      transitGatewayVpcAttachmentOptions: transitGatewayAttachmentOptions ?? undefined,
+      vpc: options.vpc,
+      subnets: options.subnets,
+      vpcAttachmentOptions: options.vpcAttachmentOptions ?? undefined,
     });
 
     // If `associationRouteTable` is provided, skip creating the Association only if `associationRouteTable` is the default route table and
     // automatic association (`defaultRouteTableAssociation`) is enabled, as the TransitGatewayRouteTableAttachment's constructor will handle it in that case.
-    if (associationRouteTable && !(this.defaultRouteTable === associationRouteTable && this.defaultRouteTableAssociation)) {
+    if (options.associationRouteTable && !(this.defaultRouteTable === options.associationRouteTable && this.defaultRouteTableAssociation)) {
       new TransitGatewayRouteTableAssociation(this, `${id}-Association-${this.node.addr}`, {
         transitGatewayVpcAttachment: attachment,
-        transitGatewayRouteTable: associationRouteTable,
+        transitGatewayRouteTable: options.associationRouteTable,
       });
     }
 
-    if (propagationRouteTables) {
-      propagationRouteTables.forEach((propagationRouteTable, index) => {
+    if (options.propagationRouteTables) {
+      options.propagationRouteTables.forEach((propagationRouteTable, index) => {
         // If `propagationRouteTable` is provided, skip creating the Propagation only if `propagationRouteTable` is the default route table and
         // automatic propagation (`defaultRouteTablePropagation`) is enabled, as the TransitGatewayRouteTableAttachment's constructor will handle it in that case.
         if (!(this.defaultRouteTable === propagationRouteTable && this.defaultRouteTablePropagation)) {
@@ -157,18 +188,15 @@ export class TransitGateway extends TransitGatewayBase {
 
     const resource = new CfnTransitGateway(this, id, {
       amazonSideAsn: props?.amazonSideAsn ?? undefined,
-      autoAcceptSharedAttachments: (props?.autoAcceptSharedAttachments ?? false)
-        ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
+      autoAcceptSharedAttachments: getFeatureStatusDefaultDisable(props?.autoAcceptSharedAttachments),
       // Default Association/Propagation will always be false when creating the L1 to prevent EC2 from creating the default route table.
       // Instead, CDK will create a custom default route table and use the properties to mimic the automatic assocation/propagation behaviour.
-      defaultRouteTableAssociation: (props?.defaultRouteTableAssociation ?? false)
-        ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-      defaultRouteTablePropagation: (props?.defaultRouteTablePropagation ?? false)
-        ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
+      defaultRouteTableAssociation: getFeatureStatusDefaultDisable(props?.defaultRouteTableAssociation),
+      defaultRouteTablePropagation: getFeatureStatusDefaultDisable(props?.defaultRouteTablePropagation),
       description: props?.description,
-      dnsSupport: (props?.dnsSupport ?? true) ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-      multicastSupport: (props?.multicastSupport ?? false) ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
-      vpnEcmpSupport: (props?.vpnEcmpSupport ?? true) ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE,
+      dnsSupport: getFeatureStatusDefaultEnable(props?.dnsSupport),
+      multicastSupport: getFeatureStatusDefaultDisable(props?.multicastSupport),
+      vpnEcmpSupport: getFeatureStatusDefaultEnable(props?.vpnEcmpSupport),
     });
 
     this.transitGatewayId = resource.ref;

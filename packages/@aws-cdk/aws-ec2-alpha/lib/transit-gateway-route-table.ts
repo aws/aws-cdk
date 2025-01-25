@@ -3,7 +3,7 @@ import { ITransitGateway } from './transit-gateway';
 import { Construct } from 'constructs';
 import { CfnTransitGatewayRouteTable, IRouteTable } from 'aws-cdk-lib/aws-ec2';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
-import { TransitGatewayActiveRoute, TransitGatewayBlackholeRoute } from './transit-gateway-route';
+import { TransitGatewayRoute, TransitGatewayBlackholeRoute } from './transit-gateway-route';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 
@@ -26,8 +26,8 @@ abstract class TransitGatewayRouteTableBase extends Resource implements ITransit
   public abstract readonly routeTableId: string;
   public abstract readonly transitGateway: ITransitGateway;
 
-  addRoute(id: string, transitGatewayAttachment: ITransitGatewayAttachment, destinationCidr: string): TransitGatewayActiveRoute {
-    return new TransitGatewayActiveRoute(this, id, {
+  addRoute(id: string, transitGatewayAttachment: ITransitGatewayAttachment, destinationCidr: string): TransitGatewayRoute {
+    return new TransitGatewayRoute(this, id, {
       transitGatewayRouteTable: this,
       transitGatewayAttachment,
       destinationCidrBlock: destinationCidr,

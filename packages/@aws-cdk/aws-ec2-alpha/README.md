@@ -701,7 +701,7 @@ Tags.of(vpc).add('Environment', 'Production');
 
 The AWS Transit Gateway construct library allows you to create and configure Transit Gateway resources using AWS CDK.
 
-## Overview
+### Overview
 
 The Transit Gateway construct (`TransitGateway`) is the main entry point for creating and managing your Transit Gateway infrastructure. It provides methods to create route tables, attach VPCs, and configure cross-account access.
 
@@ -722,21 +722,14 @@ import * as ec2 from '@aws-cdk/aws-ec2-alpha';
 const transitGateway = new ec2.TransitGateway(this, 'MyTransitGateway');
 ```
 
-Key properties available:
-
-- `transitGatewayId`: The ID of the Transit Gateway
-- `transitGatewayArn`: The ARN of the Transit Gateway
-- `defaultRouteTable`: The default route table created with the Transit Gateway
-- `defaultRouteTableAssociation`: Controls automatic route table association
-- `defaultRouteTablePropagation`: Controls automatic route propagation
-
 ### Default Transit Gateway Route Table
 
 By default, `TransitGateway` is created with a default `TransitGatewayRouteTable`, for which automatic Associations and automatic Propagations are enabled. 
 
-> Note: When you create a default Transit Gateway in AWS Console, EC2 creates the default `TransitGatewayRouteTable` for you. When using this construct, CDK will create the default `TransitGatewayRouteTable` for you instead with the automatic Association/Propagation features being mimicked by the CDK. 
+> Note: When you create a default Transit Gateway in AWS Console, a default Transit Gateway Route Table is automatically created by AWS. However, when using the CDK Transit Gateway L2 construct, the underlying L1 construct is configured with `defaultRouteTableAssociation` and `defaultRouteTablePropagation` explicitly disabled. This ensures that AWS does not create the default route table, allowing the CDK to define a custom default route table instead.
 >
-> **Default association route table** and **Default propagation route table** will show as disabled in your AWS console but can still be toggled within CDK using the `defaultRouteTableAssociation` and `defaultRouteTablePropagation` properties respectively. 
+> As a result, in the AWS Console, the **Default association route table** and **Default propagation route table** settings will appear as disabled. Despite this, the CDK still provides automatic association and propagation functionality through its internal implementation, which can be controlled using the `defaultRouteTableAssociation` and `defaultRouteTablePropagation` properties within the CDK.
+
 
 You can disable the automatic Association/Propagation on the default `TransitGatewayRouteTable` via the `TransitGateway` properties. This will still create a default route table for you:
 
@@ -747,17 +740,7 @@ const transitGateway = new ec2.TransitGateway(this, 'MyTransitGateway', {
 });
 ```
 
-You can also provide your own `TransitGatewayRouteTable` to be used as the default route table:
-
-```ts
-const customRouteTable = new ec2.TransitGatewayRouteTable(this, 'TransitGatewayRouteTable');
-
-const transitGateway = new ec2.TransitGateway(this, 'MyTransitGateway', {
-  customDefaultRouteTable: customRouteTable,
-});
-```
-
-## Transit Gateway Route Table Management
+### Transit Gateway Route Table Management
 
 Add additional Transit Gateway Route Tables using the `addRouteTable()` method:
 
@@ -772,17 +755,24 @@ Create an attachment from a VPC to the Transit Gateway using the `attachVpc()` m
 
 ```ts
 // Create a basic attachment
-const attachment = transitGateway.attachVpc('VpcAttachment', vpc, [subnet1, subnet2]);
+const attachment = transitGateway.attachVpc('VpcAttachment', {
+  vpc: vpc, 
+  subnets: [subnet1, subnet2]
+});
 ```
 
 You can customize the VPC attachment by passing in optional parameters. These include options for fine-tuning the attachment behavior, such as support for DNS, IPv6, Appliance Mode and Security Group Referencing.
 
 ```ts
-const attachmentWithOptions = transitGateway.attachVpc('VpcAttachment', vpc, [subnet], {
-  dnsSupport: true,
-  applianceModeSupport: true,
-  ipv6Support: true,
-  securityGroupReferencingSupport: true,
+const attachmentWithOptions = transitGateway.attachVpc('VpcAttachment', {
+  vpc: vpc, 
+  subnets: [subnet], 
+  vpcAttachmentOptions: {
+    dnsSupport: true,
+    applianceModeSupport: true,
+    ipv6Support: true,
+    securityGroupReferencingSupport: true,
+  }
 });
 ```
 

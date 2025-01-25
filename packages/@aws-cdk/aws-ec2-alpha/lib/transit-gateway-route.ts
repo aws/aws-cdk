@@ -6,45 +6,45 @@ import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 
 export interface ITransitGatewayRoute extends IResource {
   /**
-     * The destination CIDR block for this route.
-     *
-     * Destination Cidr cannot overlap for static routes but is allowed for propagated routes.
-     * When overlapping occurs, static routes take precedence over propagated routes.
-     */
+   * The destination CIDR block for this route.
+   *
+   * Destination Cidr cannot overlap for static routes but is allowed for propagated routes.
+   * When overlapping occurs, static routes take precedence over propagated routes.
+   */
   readonly destinationCidrBlock: string;
 
   /**
-     * The transit gateway route table this route belongs to.
-     */
+   * The transit gateway route table this route belongs to.
+   */
   readonly routeTable: ITransitGatewayRouteTable;
 }
 
-export interface TransitGatewayActiveRouteProps {
+export interface TransitGatewayRouteProps {
   /**
-    * The transit gateway attachment to route the traffic to.
-    */
+   * The transit gateway attachment to route the traffic to.
+   */
   readonly transitGatewayAttachment: ITransitGatewayAttachment;
 
   /**
-    * The CIDR block used for destination matches.
-    */
+   * The CIDR block used for destination matches.
+   */
   readonly destinationCidrBlock: string;
 
   /**
-    * The transit gateway route table you want to install this route into.
-    */
+   * The transit gateway route table you want to install this route into.
+   */
   readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
 }
 
 export interface TransitGatewayBlackholeRouteProps {
   /**
-     * The CIDR block used for destination matches.
-     */
+   * The CIDR block used for destination matches.
+   */
   readonly destinationCidrBlock: string;
 
   /**
-     * The transit gateway route table you want to install this route into.
-     */
+   * The transit gateway route table you want to install this route into.
+   */
   readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
 }
 
@@ -53,11 +53,11 @@ abstract class TransitGatewayRouteBase extends Resource implements ITransitGatew
   public abstract destinationCidrBlock: string;
 }
 
-export class TransitGatewayActiveRoute extends TransitGatewayRouteBase {
+export class TransitGatewayRoute extends TransitGatewayRouteBase {
   public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;
 
-  constructor(scope: Construct, id: string, props: TransitGatewayActiveRouteProps) {
+  constructor(scope: Construct, id: string, props: TransitGatewayRouteProps) {
     super(scope, id);
 
     const resource = new CfnTransitGatewayRoute(this, 'TransitGatewayRoute', {

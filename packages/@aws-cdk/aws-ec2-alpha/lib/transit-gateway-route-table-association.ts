@@ -6,34 +6,35 @@ import { Construct } from 'constructs';
 
 export interface ITransitGatewayRouteTableAssociation extends IResource {
   /**
-     * The ID of the transit gateway route table association.
-     */
+   * The ID of the transit gateway route table association.
+   * @attribute
+   */
   readonly transitGatewayRouteTableAssociationId: string;
 }
 
 export interface TransitGatewayRouteTableAssociationProps {
   /**
-     * The ID of the transit gateway route table association.
-     */
+   * The ID of the transit gateway route table association.
+   */
   readonly transitGatewayVpcAttachment: ITransitGatewayAttachment;
 
   /**
-     * The ID of the transit gateway route table association.
-     */
+   * The ID of the transit gateway route table association.
+   */
   readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
 }
 
 abstract class TransitGatewayRouteTableAssociationBase extends Resource implements ITransitGatewayRouteTableAssociation {
   /**
-     * The ID of the transit gateway route table association.
-     */
+   * The ID of the transit gateway route table association.
+   */
   public abstract readonly transitGatewayRouteTableAssociationId: string;
 }
 
 export class TransitGatewayRouteTableAssociation extends TransitGatewayRouteTableAssociationBase {
   /**
-     * The ID of the transit gateway route table association.
-     */
+   * The ID of the transit gateway route table association.
+   */
   public readonly transitGatewayRouteTableAssociationId: string;
 
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTableAssociationProps) {

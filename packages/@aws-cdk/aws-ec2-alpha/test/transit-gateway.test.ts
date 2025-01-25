@@ -114,7 +114,10 @@ describe('Transit Gateway with default settings', () => {
 
   test('attach vpc method should create an attachment, association and propagation when default association/propagation are enabled', () => {
 
-    tgw.attachVpc('VpcAttachment', myVpc, [mySubnet]);
+    tgw.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
@@ -265,7 +268,10 @@ describe('Transit Gateway with default route table association and propagation d
 
   test('attach vpc method should create an attachment and not create an association or propagation when default association/propagation are disabled', () => {
 
-    tgw.attachVpc('VpcAttachment', myVpc, [mySubnet]);
+    tgw.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
@@ -416,7 +422,10 @@ describe('Transit Gateway with default route table association and propagation d
 
   test('attach vpc method should create an attachment and not create an association or propagation', () => {
 
-    tgw.attachVpc('VpcAttachment', myVpc, [mySubnet]);
+    tgw.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
@@ -456,7 +465,12 @@ describe('Transit Gateway with default route table association and propagation d
 
   test('attach vpc method should create an attachment, association and propagation when route tables are passed to the method', () => {
 
-    tgw.attachVpc('VpcAttachment', myVpc, [mySubnet], undefined, tgw.defaultRouteTable, [tgw.defaultRouteTable]);
+    tgw.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+      associationRouteTable: tgw.defaultRouteTable,
+      propagationRouteTables: [tgw.defaultRouteTable],
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayAttachment', {
       SubnetIds: [
