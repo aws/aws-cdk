@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "lambda-layer-awscli-integ-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,11 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-<<<<<<< HEAD
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d413a1fc10c505ffc78200bece4f8a3de0fe8b15fd6a0ca052ad2b7a28a31362.json",
-=======
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/936ae36cabe95e93149b585d7be93918c3237dc86cd72c2dec1bd00fbdf28960.json",
->>>>>>> origin/main
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ffb12b8b0a42bc63235695396c67f5903bf17686ebfc81a78f8d9ff56401620.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -41,10 +37,7 @@
         "/lambda-layer-awscli-integ-stack/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsCliLayerF44AAF94",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AwsCliLayerF44AAF94"
           }
         ],
         "/lambda-layer-awscli-integ-stack/Lambda$python3.9/ServiceRole/Resource": [
