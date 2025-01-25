@@ -972,6 +972,34 @@ describe('bucket', () => {
     });
   });
 
+  test('unspecified blockPublicAccess properties should default to true', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      blockPublicAccess: new s3.BlockPublicAccess({
+        blockPublicPolicy: false,
+        restrictPublicBuckets: false,
+      }),
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'PublicAccessBlockConfiguration': {
+              'BlockPublicAcls': true,
+              'BlockPublicPolicy': false,
+              'IgnorePublicAcls': true,
+              'RestrictPublicBuckets': false,
+            },
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
   test('bucket with default block public access setting to throw error msg', () => {
     const stack = new cdk.Stack();
 
