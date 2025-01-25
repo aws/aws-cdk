@@ -1,4 +1,4 @@
-/*import * as path from 'path';
+/* import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';

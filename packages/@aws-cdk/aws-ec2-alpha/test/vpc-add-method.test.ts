@@ -96,7 +96,7 @@ describe('Vpc V2 with full control', () => {
       vpc: vpc1,
       ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
       availabilityZone: 'ap-south-1b',
-      //Test secondary ipv6 address after IPAM pool creation
+      // Test secondary ipv6 address after IPAM pool creation
       ipv6CidrBlock: new IpCidr('2001:db8::/48'),
       subnetType: SubnetType.PRIVATE_ISOLATED,
     });
@@ -421,7 +421,7 @@ describe('Vpc V2 with full control', () => {
       ipv6Destination: '2001:db8::/48',
     });
     const template = Template.fromStack(stack);
-    //Route for custom IPv4 destination
+    // Route for custom IPv4 destination
     template.hasResourceProperties('AWS::EC2::Route', {
       GatewayId: {
         'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
@@ -431,7 +431,7 @@ describe('Vpc V2 with full control', () => {
       },
       DestinationCidrBlock: '203.0.113.25',
     });
-    //Route for custom IPv6 destination
+    // Route for custom IPv6 destination
     template.hasResourceProperties('AWS::EC2::Route', {
       GatewayId: {
         'Fn::GetAtt': ['TestVpcInternetGatewayIGW4C825874', 'InternetGatewayId'],
@@ -443,7 +443,7 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  //Tests for VPNGatewayV2
+  // Tests for VPNGatewayV2
   test('enableVpnGatewayV2 defines a new VPNGateway with attachment', () => {
     myVpc.enableVpnGatewayV2({
       type: VpnConnectionType.IPSEC_1,

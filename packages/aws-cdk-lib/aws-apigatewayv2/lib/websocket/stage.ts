@@ -3,6 +3,7 @@ import { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { Stack } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
@@ -64,11 +65,11 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new Error('url is not available for imported stages.');
+        throw new ValidationError('url is not available for imported stages.', scope);
       }
 
       get callbackUrl(): string {
-        throw new Error('callback url is not available for imported stages.');
+        throw new ValidationError('callback url is not available for imported stages.', scope);
       }
     }
     return new Import(scope, id);

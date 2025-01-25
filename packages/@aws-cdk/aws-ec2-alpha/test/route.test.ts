@@ -634,7 +634,7 @@ describe('VPCPeeringConnection', () => {
   test('Creates a cross account VPC peering connection', () => {
 
     const importedVpcB = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
-      vpcId: 'mockVpcBId', //cross account stack references are not supported
+      vpcId: 'mockVpcBId', // cross account stack references are not supported
       vpcCidrBlock: '10.2.0.0/16',
       region: vpcB.env.region,
       ownerAccountId: '123456789012',
@@ -660,7 +660,7 @@ describe('VPCPeeringConnection', () => {
   test('Creates a cross region VPC peering connection', () => {
 
     const importedVpcC = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
-      vpcId: 'mockVpcCId', //cross account stack references are not supported
+      vpcId: 'mockVpcCId', // cross account stack references are not supported
       vpcCidrBlock: '10.3.0.0/16',
       region: vpcC.env.region,
       ownerAccountId: '123456789012',
