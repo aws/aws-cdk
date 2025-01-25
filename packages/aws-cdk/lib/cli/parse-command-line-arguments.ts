@@ -24,7 +24,6 @@ export function parseCommandLineArguments(args: Array<string>): any {
       desc: 'Command-line for a pre-synth build',
     })
     .option('context', {
-      default: [],
       type: 'array',
       alias: 'c',
       desc: 'Add contextual string parameter (KEY=VALUE)',
@@ -32,7 +31,6 @@ export function parseCommandLineArguments(args: Array<string>): any {
       requiresArg: true,
     })
     .option('plugin', {
-      default: [],
       type: 'array',
       alias: 'p',
       desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times',
@@ -151,9 +149,9 @@ export function parseCommandLineArguments(args: Array<string>): any {
       desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr',
     })
     .option('unstable', {
-      default: [],
       type: 'array',
       desc: 'Opt in to unstable features. The flag indicates that the scope and API of a feature might still change. Otherwise the feature is generally production ready and fully supported. Can be specified multiple times.',
+      default: [],
       nargs: 1,
       requiresArg: true,
     })
@@ -237,10 +235,10 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ',
         })
         .option('tags', {
-          default: [],
           type: 'array',
           alias: 't',
           desc: 'Tags to add for the stack (KEY=VALUE)',
+          default: [],
           nargs: 1,
           requiresArg: true,
         })
@@ -250,30 +248,30 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)',
         })
         .option('trust', {
-          default: [],
           type: 'array',
           desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)',
+          default: [],
           nargs: 1,
           requiresArg: true,
         })
         .option('trust-for-lookup', {
-          default: [],
           type: 'array',
           desc: 'The AWS account IDs that should be trusted to look up values in this environment (may be repeated, modern bootstrapping only)',
+          default: [],
           nargs: 1,
           requiresArg: true,
         })
         .option('untrust', {
-          default: [],
           type: 'array',
           desc: 'The AWS account IDs that should not be trusted by this environment (may be repeated, modern bootstrapping only)',
+          default: [],
           nargs: 1,
           requiresArg: true,
         })
         .option('cloudformation-execution-policies', {
-          default: [],
           type: 'array',
           desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)',
+          default: [],
           nargs: 1,
           requiresArg: true,
         })
@@ -356,10 +354,10 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Deploy all available stacks',
         })
         .option('build-exclude', {
-          default: [],
           type: 'array',
           alias: 'E',
           desc: 'Do not rebuild asset with the given ID. Can be specified multiple times',
+          default: [],
           nargs: 1,
           requiresArg: true,
         })
@@ -382,7 +380,6 @@ export function parseCommandLineArguments(args: Array<string>): any {
           requiresArg: true,
         })
         .option('tags', {
-          default: [],
           type: 'array',
           alias: 't',
           desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)',
@@ -420,9 +417,9 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Always deploy stack even if templates are identical',
         })
         .option('parameters', {
-          default: {},
           type: 'array',
           desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)',
+          default: {},
           nargs: 1,
           requiresArg: true,
         })
@@ -524,9 +521,9 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: "Whether to validate the bootstrap stack version. Defaults to 'true', disable with --no-validate-bootstrap-version.",
         })
         .option('orphan', {
-          default: [],
           type: 'array',
           desc: 'Orphan the given resources, identified by their logical ID (can be specified multiple times)',
+          default: [],
           nargs: 1,
           requiresArg: true,
         }),
@@ -578,10 +575,10 @@ export function parseCommandLineArguments(args: Array<string>): any {
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", (yargs: Argv) =>
       yargs
         .option('build-exclude', {
-          default: [],
           type: 'array',
           alias: 'E',
           desc: 'Do not rebuild asset with the given ID. Can be specified multiple times',
+          default: [],
           nargs: 1,
           requiresArg: true,
         })
@@ -796,7 +793,6 @@ export function parseCommandLineArguments(args: Array<string>): any {
           desc: 'Determines if a new scan should be created, or the last successful existing scan should be used \n options are "new" or "most-recent"',
         })
         .option('filter', {
-          default: [],
           type: 'array',
           desc: 'Filters the resource scan based on the provided criteria in the following format: "key1=value1,key2=value2"\n This field can be passed multiple times for OR style filtering: \n filtering options: \n resource-identifier: A key-value pair that identifies the target resource. i.e. {"ClusterName", "myCluster"}\n resource-type-prefix: A string that represents a type-name prefix. i.e. "AWS::DynamoDB::"\n tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"\n tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"',
           nargs: 1,
