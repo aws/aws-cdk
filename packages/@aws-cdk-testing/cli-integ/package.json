@@ -52,7 +52,7 @@
     "@aws-sdk/credential-providers": "3.632.0",
     "@smithy/util-retry": "3.0.8",
     "@smithy/types": "3.6.0",
-    "axios": "^1.7.7",
+    "axios": "1.7.7",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",
