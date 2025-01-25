@@ -2394,14 +2394,25 @@ describe('email MFA test', () => {
       });
     });
 
-    test.each([-1, 25])('throws when email passwordHistorySize is invalid', (passwordHistorySize) => {
+    test('throws an error when email passwordHistorySize is set with FaturePlan.LITE', () => {
+      const stack = new Stack();
+
+      expect(() => new UserPool(stack, 'Pool', {
+        passwordPolicy: {
+          passwordHistorySize: 3,
+        },
+        featurePlan: FeaturePlan.LITE,
+      })).toThrow('`passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.');
+    });
+
+    test.each([-1, 25])('throws an error when email passwordHistorySize is invalid', (passwordHistorySize) => {
       const stack = new Stack();
 
       expect(() => new UserPool(stack, 'Pool', {
         passwordPolicy: {
           passwordHistorySize,
         },
-      })).toThrow(`passwordHistorySize must be between 0 and 24 (received: ${passwordHistorySize})`);
+      })).toThrow(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize})`);
     });
   });
 });

@@ -460,6 +460,9 @@ export interface PasswordPolicy {
 
   /**
    * The number of previous passwords that you want Amazon Cognito to restrict each user from reusing.
+   *
+   * `passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.
+   *
    * @default undefined - Cognito default setting is no restriction
    */
   readonly passwordHistorySize?: number;
@@ -1319,8 +1322,13 @@ export class UserPool extends UserPoolBase {
       throw new Error(`minLength for password must be between 6 and 99 (received: ${minLength})`);
     }
     const passwordHistorySize = props.passwordPolicy?.passwordHistorySize;
-    if (passwordHistorySize !== undefined && (passwordHistorySize < 0 || passwordHistorySize > 24)) {
-      throw new Error(`passwordHistorySize must be between 0 and 24 (received: ${passwordHistorySize})`);
+    if (passwordHistorySize !== undefined) {
+      if (props.featurePlan === FeaturePlan.LITE) {
+        throw new Error('`passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.');
+      }
+      if (passwordHistorySize < 0 || passwordHistorySize > 24) {
+        throw new Error(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize})`);
+      }
     }
     return undefinedIfNoKeys({
       temporaryPasswordValidityDays: tempPasswordValidity?.toDays({ integral: true }),
