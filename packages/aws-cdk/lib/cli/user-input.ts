@@ -143,14 +143,14 @@ export interface GlobalOptions {
   /**
    * Add contextual string parameter (KEY=VALUE)
    *
-   * @default - []
+   * @default - undefined
    */
   readonly context?: Array<string>;
 
   /**
    * Name or path of a node package that extend the CDK features. Can be specified multiple times
    *
-   * @default - []
+   * @default - undefined
    */
   readonly plugin?: Array<string>;
 
@@ -632,7 +632,7 @@ export interface DeployOptions {
    *
    * aliases: t
    *
-   * @default - []
+   * @default - undefined
    */
   readonly tags?: Array<string>;
 
@@ -1264,7 +1264,7 @@ export interface MigrateOptions {
    *  tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"
    *  tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"
    *
-   * @default - []
+   * @default - undefined
    */
   readonly filter?: Array<string>;
 
