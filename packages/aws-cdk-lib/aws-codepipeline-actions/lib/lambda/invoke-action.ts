@@ -104,14 +104,14 @@ export class LambdaInvokeAction extends Action {
   }
 
   protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+    codepipeline.ActionConfig {
     // allow pipeline to list functions
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['lambda:ListFunctions'],
       resources: ['*'],
     }));
 
-    // allow pipeline to invoke this lambda functionn
+    // allow pipeline to invoke this lambda function
     this.props.lambda.grantInvoke(options.role);
 
     // allow the Role access to the Bucket, if there are any inputs/outputs
