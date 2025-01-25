@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "38.0.1",
   "files": {
     "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8": {
       "source": {
@@ -40,7 +40,11 @@
         }
       }
     },
+<<<<<<< HEAD
     "d413a1fc10c505ffc78200bece4f8a3de0fe8b15fd6a0ca052ad2b7a28a31362": {
+=======
+    "936ae36cabe95e93149b585d7be93918c3237dc86cd72c2dec1bd00fbdf28960": {
+>>>>>>> origin/main
       "source": {
         "path": "lambda-layer-awscli-integ-stack.template.json",
         "packaging": "file"
@@ -48,7 +52,11 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
           "objectKey": "d413a1fc10c505ffc78200bece4f8a3de0fe8b15fd6a0ca052ad2b7a28a31362.json",
+=======
+          "objectKey": "936ae36cabe95e93149b585d7be93918c3237dc86cd72c2dec1bd00fbdf28960.json",
+>>>>>>> origin/main
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
