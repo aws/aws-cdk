@@ -57,8 +57,6 @@
   "forecastqueryservice": "forecastquery",
   "forecastservice": "forecast",
   "globalaccelerator": "global-accelerator",
-  "iot1clickdevicesservice": "iot-1click-devices-service",
-  "iot1clickprojects": "iot-1click-projects",
   "iotevents": "iot-events",
   "ioteventsdata": "iot-events-data",
   "iotjobsdataplane": "iot-jobs-data-plane",

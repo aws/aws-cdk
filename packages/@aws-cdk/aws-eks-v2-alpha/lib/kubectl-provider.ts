@@ -2,7 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from 'aws-cdk-lib/core';
+import { Duration, Stack, Names, CfnCondition, Fn, Aws } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCliLayer } from 'aws-cdk-lib/lambda-layer-awscli';
 import { KubectlLayer } from 'aws-cdk-lib/lambda-layer-kubectl';
@@ -61,8 +61,7 @@ export interface IKubectlProvider extends IConstruct {
 /**
  * Implementation of Kubectl Lambda
  */
-export class KubectlProvider extends NestedStack implements IKubectlProvider {
-
+export class KubectlProvider extends Construct implements IKubectlProvider {
   /**
    * Take existing provider or create new based on cluster
    *
@@ -203,11 +202,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
-
 }
 
 class ImportedKubectlProvider extends Construct implements IKubectlProvider {
-
   /**
    * The custom resource provider's service token.
    */
