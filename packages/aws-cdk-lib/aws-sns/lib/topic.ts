@@ -116,7 +116,7 @@ export interface TopicProps {
 export enum FifoThroughputScope {
   /**
    * Topic scope
-   * - Throughput: 3000 message per second and a bandwidth of 20MB per second.
+   * - Throughput: 3000 messages per second and a bandwidth of 20MB per second.
    * - Deduplication: Message deduplication is verified on the entire FIFO topic.
    */
   TOPIC = 'Topic',
