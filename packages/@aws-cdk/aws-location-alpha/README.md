@@ -82,7 +82,7 @@ const tracker = new location.Tracker(this, 'Tracker', {
 tracker.grantRead(role);
 ```
 
-If you want to associate a tracker with geofence collections, define a `geofenceCollections` property or use `addGeofenceCollections` method.
+If you want to associate a tracker with geofence collections, define a `geofenceCollections` property or use the `addGeofenceCollections()` method.
 
 ```ts
 declare const geofenceCollection: location.GeofenceCollection;
