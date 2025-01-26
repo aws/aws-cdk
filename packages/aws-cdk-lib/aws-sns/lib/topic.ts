@@ -4,6 +4,7 @@ import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Properties for a new SNS topic
@@ -98,6 +99,34 @@ export interface TopicProps {
    * @default TracingConfig.PASS_THROUGH
    */
   readonly tracingConfig?: TracingConfig;
+
+  /**
+   * Specifies the throughput quota and deduplication behavior to apply for the FIFO topic.
+   *
+   * You can only set this property when `fifo` is `true`.
+   *
+   * @default undefined - SNS default setting is FifoThroughputScope.TOPIC
+   */
+  readonly fifoThroughputScope?: FifoThroughputScope;
+}
+
+/**
+ * The throughput quota and deduplication behavior to apply for the FIFO topic.
+ */
+export enum FifoThroughputScope {
+  /**
+   * Topic scope
+   * - Throughput: 3000 messages per second and a bandwidth of 20MB per second.
+   * - Deduplication: Message deduplication is verified on the entire FIFO topic.
+   */
+  TOPIC = 'Topic',
+
+  /**
+   * Message group scope
+   * - Throughput: Maximum regional limits.
+   * - Deduplication: Message deduplication is only verified within a message group.
+   */
+  MESSAGE_GROUP = 'MessageGroup',
 }
 
 /**
@@ -202,7 +231,6 @@ export interface TopicAttributes {
  * A new SNS topic
  */
 export class Topic extends TopicBase {
-
   /**
    * Import an existing SNS topic provided an ARN
    *
@@ -226,7 +254,7 @@ export class Topic extends TopicBase {
     const fifo = topicName.endsWith('.fifo');
 
     if (attrs.contentBasedDeduplication && !fifo) {
-      throw new Error('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.');
+      throw new ValidationError('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.', scope);
     }
 
     class Import extends TopicBase {
@@ -259,17 +287,20 @@ export class Topic extends TopicBase {
     this.enforceSSL = props.enforceSSL;
 
     if (props.contentBasedDeduplication && !props.fifo) {
-      throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
+      throw new ValidationError('Content based deduplication can only be enabled for FIFO SNS topics.', this);
     }
     if (props.messageRetentionPeriodInDays && !props.fifo) {
-      throw new Error('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.');
+      throw new ValidationError('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.', this);
+    }
+    if (props.fifoThroughputScope && !props.fifo) {
+      throw new ValidationError('`fifoThroughputScope` can only be set for FIFO SNS topics.', this);
     }
     if (
       props.messageRetentionPeriodInDays !== undefined
       && !Token.isUnresolved(props.messageRetentionPeriodInDays)
       && (!Number.isInteger(props.messageRetentionPeriodInDays) || props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
     ) {
-      throw new Error('`messageRetentionPeriodInDays` must be an integer between 1 and 365');
+      throw new ValidationError('`messageRetentionPeriodInDays` must be an integer between 1 and 365', this);
     }
 
     if (props.loggingConfigs) {
@@ -296,11 +327,11 @@ export class Topic extends TopicBase {
       props.signatureVersion !== '1' &&
       props.signatureVersion !== '2'
     ) {
-      throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
+      throw new ValidationError(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`, this);
     }
 
     if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
-      throw new Error(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`);
+      throw new ValidationError(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`, this);
     }
 
     const resource = new CfnTopic(this, 'Resource', {
@@ -315,6 +346,7 @@ export class Topic extends TopicBase {
       signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
       tracingConfig: props.tracingConfig,
+      fifoThroughputScope: props.fifoThroughputScope,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {
@@ -327,13 +359,11 @@ export class Topic extends TopicBase {
   }
 
   private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
-    return this.loggingConfigs.map(renderLoggingConfig);
-
-    function renderLoggingConfig(spec: LoggingConfig): CfnTopic.LoggingConfigProperty {
+    const renderLoggingConfig = (spec: LoggingConfig): CfnTopic.LoggingConfigProperty => {
       if (spec.successFeedbackSampleRate !== undefined) {
         const rate = spec.successFeedbackSampleRate;
         if (!Number.isInteger(rate) || rate < 0 || rate > 100) {
-          throw new Error('Success feedback sample rate must be an integer between 0 and 100');
+          throw new ValidationError('Success feedback sample rate must be an integer between 0 and 100', this);
         }
       }
       return {
@@ -342,7 +372,9 @@ export class Topic extends TopicBase {
         successFeedbackRoleArn: spec.successFeedbackRole?.roleArn,
         successFeedbackSampleRate: spec.successFeedbackSampleRate?.toString(),
       };
-    }
+    };
+
+    return this.loggingConfigs.map(renderLoggingConfig);
   }
 
   /**

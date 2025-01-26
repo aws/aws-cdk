@@ -3,13 +3,14 @@ import * as path from 'path';
 import { TestContext } from './integ-test';
 import { RESOURCES_DIR } from './resources';
 import { AwsContext, withAws } from './with-aws';
-import { cloneDirectory, installNpmPackages, TestFixture, DEFAULT_TEST_TIMEOUT_S, CdkCliOptions } from './with-cdk-app';
+import { cloneDirectory, installNpmPackages, TestFixture, DEFAULT_TEST_TIMEOUT_S, CdkCliOptions, DisableBootstrapContext, ensureBootstrapped } from './with-cdk-app';
 import { withTimeout } from './with-timeout';
 
 /**
  * Higher order function to execute a block with a CliLib Integration CDK app fixture
  */
-export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext>(block: (context: CliLibIntegrationTestFixture) => Promise<void>) {
+export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext & DisableBootstrapContext>(
+  block: (context: CliLibIntegrationTestFixture) => Promise<void>) {
   return async (context: A) => {
     const randy = context.randomString;
     const stackNamePrefix = `cdktest-${randy}`;
@@ -43,6 +44,10 @@ export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext>(
         '@aws-cdk/aws-lambda-python-alpha': alphaInstallationVersion,
         'constructs': '^10',
       });
+
+      if (!context.disableBootstrap) {
+        await ensureBootstrapped(fixture);
+      }
 
       await block(fixture);
     } catch (e: any) {
@@ -130,5 +135,5 @@ __EOS__`], {
       },
     });
   }
-
 }
+

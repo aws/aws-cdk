@@ -1,4 +1,4 @@
-import { Resource, Stack, IResource } from 'aws-cdk-lib/core';
+import { Resource, Stack, IResource, ArnFormat } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as iot from 'aws-cdk-lib/aws-iot';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -119,7 +119,7 @@ export class Logging extends Resource implements ILogging {
                 Stack.of(this).formatArn({
                   service: 'logs',
                   resource: 'log-group',
-                  sep: ':',
+                  arnFormat: ArnFormat.COLON_RESOURCE_NAME,
                   resourceName: 'AWSIotLogsV2:*',
                 }),
               ],

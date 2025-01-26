@@ -4,7 +4,6 @@ import { Duration } from '../../core';
  * Schedule for EventBridge Scheduler
  */
 export class Schedule {
-
   /**
    * Construct a one-time schedule from a Date.
    */

@@ -103,7 +103,6 @@ export enum TreatMissingData {
  * An alarm on a CloudWatch metric
  */
 export class Alarm extends AlarmBase {
-
   /**
    * Import an existing CloudWatch alarm provided an Name.
    *
