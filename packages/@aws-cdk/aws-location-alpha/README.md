@@ -69,7 +69,7 @@ new location.Tracker(this, 'Tracker', {
 });
 ```
 
-Use the `grant()`, `grantUpdateDevicePositions` or `grantRead()` method to grant the given identity permissions to perform actions
+Use the `grant()`, `grantUpdateDevicePositions()` or `grantRead()` method to grant the given identity permissions to perform actions
 on the geofence collection:
 
 ```ts
