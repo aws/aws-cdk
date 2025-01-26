@@ -136,7 +136,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
-   * The task launch type compatiblity requirement.
+   * The task launch type compatibility requirement.
    */
   readonly compatibility: Compatibility;
 

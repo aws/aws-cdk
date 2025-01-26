@@ -80,7 +80,7 @@ export interface StandardAttributes {
   readonly profilePicture?: StandardAttribute;
 
   /**
-   * The user's preffered username, different from the immutable user name.
+   * The user's preferred username, different from the immutable user name.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly preferredUsername?: StandardAttribute;
@@ -438,7 +438,7 @@ export interface StandardAttributesMask {
   readonly profilePicture?: boolean;
 
   /**
-   * The user's preffered username, different from the immutable user name.
+   * The user's preferred username, different from the immutable user name.
    * @default false
    */
   readonly preferredUsername?: boolean;

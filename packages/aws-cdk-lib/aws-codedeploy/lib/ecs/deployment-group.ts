@@ -66,7 +66,7 @@ export interface EcsBlueGreenDeploymentConfig {
    * The load balancer listener used to route test traffic to the 'green' ECS task set during a blue-green deployment.
    *
    * During a blue-green deployment, validation can occur after test traffic has been re-routed and before production
-   * traffic has been re-routed to the 'green' ECS task set.  You can specify one or more Lambda funtions in the
+   * traffic has been re-routed to the 'green' ECS task set.  You can specify one or more Lambda functions in the
    * deployment's AppSpec file that run during the AfterAllowTestTraffic hook. The functions can run validation tests.
    * If a validation test fails, a deployment rollback is triggered. If the validation tests succeed, the next hook in
    * the deployment lifecycle, BeforeAllowTraffic, is triggered.
@@ -203,7 +203,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromEcsDeploymentGroupAttributes(
-    scope:Construct,
+    scope: Construct,
     id: string,
     attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
     return new ImportedEcsDeploymentGroup(scope, id, attrs);

@@ -53,7 +53,7 @@ export interface KubernetesObjectValueProps {
  */
 export class KubernetesObjectValue extends Construct {
   /**
-   * The CloudFormation reosurce type.
+   * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesObjectValue';
 

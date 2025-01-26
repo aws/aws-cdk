@@ -749,7 +749,7 @@ export class FileSystem extends FileSystemBase {
       throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
     }
 
-    // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
+    // we explicitly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
@@ -855,7 +855,7 @@ export class FileSystem extends FileSystemBase {
 
     // We now have to create the mount target for each of the mentioned subnet
 
-    // we explictly use FeatureFlags to maintain backwards compatibility
+    // we explicitly use FeatureFlags to maintain backwards compatibility
     const useMountTargetOrderInsensitiveLogicalID = FeatureFlags.of(this).isEnabled(cxapi.EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID);
     this.mountTargetsAvailable = [];
     if (useMountTargetOrderInsensitiveLogicalID) {
