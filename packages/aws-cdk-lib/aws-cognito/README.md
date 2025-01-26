@@ -323,7 +323,7 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 [time-based one time password
 (TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
-If you want to enable email-based MFA, set `email` propety to the Amazon SES email-sending configuration and set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.
+If you want to enable email-based MFA, set `email` property to the Amazon SES email-sending configuration and set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.
 For more information, see [SMS and email message MFA](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html).
 
 ```ts
@@ -850,7 +850,7 @@ const pool = new cognito.UserPool(this, 'Pool');
 
 const clientWriteAttributes = (new cognito.ClientAttributes())
   .withStandardAttributes({fullname: true, email: true})
-  .withCustomAttributes('favouritePizza', 'favouriteBeverage');
+  .withCustomAttributes('favoritePizza', 'favoriteBeverage');
 
 const clientReadAttributes = clientWriteAttributes
   .withStandardAttributes({emailVerified: true})
