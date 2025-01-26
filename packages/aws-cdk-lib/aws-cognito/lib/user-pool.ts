@@ -13,6 +13,7 @@ import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, Servic
 import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -457,6 +458,15 @@ export interface PasswordPolicy {
    * @default true
    */
   readonly requireSymbols?: boolean;
+
+  /**
+   * The number of previous passwords that you want Amazon Cognito to restrict each user from reusing.
+   *
+   * `passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.
+   *
+   * @default undefined - Cognito default setting is no restriction
+   */
+  readonly passwordHistorySize?: number;
 }
 
 /**
@@ -1312,6 +1322,15 @@ export class UserPool extends UserPoolBase {
     if (minLength !== undefined && (minLength < 6 || minLength > 99)) {
       throw new Error(`minLength for password must be between 6 and 99 (received: ${minLength})`);
     }
+    const passwordHistorySize = props.passwordPolicy?.passwordHistorySize;
+    if (passwordHistorySize !== undefined) {
+      if (props.featurePlan === FeaturePlan.LITE) {
+        throw new ValidationError('`passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.', this);
+      }
+      if (passwordHistorySize < 0 || passwordHistorySize > 24) {
+        throw new ValidationError(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize}).`, this);
+      }
+    }
     return undefinedIfNoKeys({
       temporaryPasswordValidityDays: tempPasswordValidity?.toDays({ integral: true }),
       minimumLength: minLength,
@@ -1319,6 +1338,7 @@ export class UserPool extends UserPoolBase {
       requireUppercase: props.passwordPolicy?.requireUppercase,
       requireNumbers: props.passwordPolicy?.requireDigits,
       requireSymbols: props.passwordPolicy?.requireSymbols,
+      passwordHistorySize: props.passwordPolicy?.passwordHistorySize,
     });
   }
 
