@@ -17,7 +17,7 @@ export interface IApiKey extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the api key resource
    *
-   * @attribute Arn,apiKeyArn
+   * @attribute Arn, apiKeyArn
    */
   readonly apiKeyArn: string;
 }
