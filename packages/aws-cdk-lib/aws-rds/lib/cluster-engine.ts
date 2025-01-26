@@ -1087,6 +1087,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_5 = AuroraPostgresEngineVersion.of('16.5', '16', { s3Import: true, s3Export: true });
   /** Version "16.6". */
   public static readonly VER_16_6 = AuroraPostgresEngineVersion.of('16.6', '16', { s3Import: true, s3Export: true });
+  /** Version "16.6 limitless" */
+  public static readonly VER_16_6_LIMITLESS = AuroraPostgresEngineVersion.of('16.6-limitless', '16', { s3Import: true, s3Export: true });
   /** Version "17.1". */
   public static readonly VER_17_1 = AuroraPostgresEngineVersion.of('17.1', '17', { s3Import: true, s3Export: true });
   /** Version "17.2". */
