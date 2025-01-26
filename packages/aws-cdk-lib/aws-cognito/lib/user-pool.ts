@@ -13,6 +13,7 @@ import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, Servic
 import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -1324,10 +1325,10 @@ export class UserPool extends UserPoolBase {
     const passwordHistorySize = props.passwordPolicy?.passwordHistorySize;
     if (passwordHistorySize !== undefined) {
       if (props.featurePlan === FeaturePlan.LITE) {
-        throw new Error('`passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.');
+        throw new ValidationError('`passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.', this);
       }
       if (passwordHistorySize < 0 || passwordHistorySize > 24) {
-        throw new Error(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize})`);
+        throw new ValidationError(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize}).`, this);
       }
     }
     return undefinedIfNoKeys({

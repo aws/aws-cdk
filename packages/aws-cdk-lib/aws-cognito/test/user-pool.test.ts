@@ -2412,7 +2412,7 @@ describe('email MFA test', () => {
         passwordPolicy: {
           passwordHistorySize,
         },
-      })).toThrow(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize})`);
+      })).toThrow(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize}).`);
     });
   });
 });
