@@ -1057,7 +1057,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d94bddc47fc4d0c6c04f735144e1b17b074ed151df0807bab5516a6f87427dfe.json"
+       "/94623fc5c3936ef09905022fa1bfc57cf1817e85f883c6637b492af5fb80aa96.json"
       ]
      ]
     }
@@ -1107,7 +1107,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/954cd97cc39f6d1deeaf8301d391257047d76aa601bbecc402b72214eeedf71f.json"
+       "/75e6340b2e61d2c74f9ae8a37d9fcfde9f296f872f9505680bb81e850e4e4855.json"
       ]
      ]
     }
@@ -1976,16 +1976,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "IngressPingerFunction54746D9B",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
