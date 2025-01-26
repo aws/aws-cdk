@@ -42,7 +42,7 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
   readonly mainNode?: number;
 
   /**
-   * Whether to propogate tags from the JobDefinition
+   * Whether to propagate tags from the JobDefinition
    * to the ECS task that Batch spawns
    *
    * @default false
@@ -109,7 +109,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
   readonly mainNode?: number;
 
   /**
-   * Whether to propogate tags from the JobDefinition
+   * Whether to propagate tags from the JobDefinition
    * to the ECS task that Batch spawns
    *
    * @default false
