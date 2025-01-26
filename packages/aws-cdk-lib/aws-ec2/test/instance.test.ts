@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Annotations, Match, Template } from '../../assertions';
+import { InstanceProfile, Role, ServicePrincipal } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
@@ -141,18 +142,18 @@ describe('instance', () => {
   test('sameInstanceClassAs compares InstanceTypes contains dashes', () => {
     // GIVEN
     const comparitor = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.LARGE);
-    //WHEN
+    // WHEN
     const largerInstanceType = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.XLARGE);
-    //THEN
+    // THEN
     expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
   });
 
   test('sameInstanceClassAs compares InstanceSize contains dashes', () => {
     // GIVEN
     const comparitor = new InstanceType('c7a.metal-48xl');
-    //WHEN
+    // WHEN
     const largerInstanceType = new InstanceType('c7a.xlarge');
-    //THEN
+    // THEN
     expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
   });
 
@@ -443,6 +444,45 @@ describe('instance', () => {
 
       // THEN
       Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3 [ack: @aws-cdk/aws-ec2:iopsIgnored]');
+    });
+  });
+
+  describe('instanceProfile', () => {
+    let instanceProfile: InstanceProfile;
+    let role: Role;
+
+    beforeEach(() => {
+      role = new Role(stack, 'MyRole', {
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+      });
+      instanceProfile = new InstanceProfile(stack, 'MyInstanceProfile', {
+        role,
+      });
+    });
+
+    test('can specify instanceProfile', () => {
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        instanceProfile,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::InstanceProfile', {
+        Roles: [{ Ref: 'MyRoleF48FFE04' }],
+      });
+    });
+
+    test('throws if used with role', () => {
+      expect(() => {
+        new Instance(stack, 'Instance', {
+          vpc,
+          machineImage: new AmazonLinuxImage(),
+          instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+          instanceProfile,
+          role,
+        });
+      }).toThrow(/You cannot provide both instanceProfile and role/);
     });
   });
 
@@ -824,27 +864,27 @@ test('ssm permissions adds right managed policy', () => {
 test('sameInstanceClassAs compares identical InstanceTypes correctly', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const sameInstanceType = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //THEN
+  // THEN
   expect(sameInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
 
 test('sameInstanceClassAs compares InstanceTypes correctly regardless of size', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const largerInstanceType = InstanceType.of(InstanceClass.T3, InstanceSize.XLARGE);
-  //THEN
+  // THEN
   expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
 
 test('sameInstanceClassAs compares different InstanceTypes correctly', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.C4, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const instanceType = new InstanceType('t3.large');
-  //THEN
+  // THEN
   expect(instanceType.sameInstanceClassAs(comparitor)).toBeFalsy();
 });
 

@@ -320,17 +320,17 @@ describe('delivery stream', () => {
       destination: mockS3Destination,
       encryption: firehose.StreamEncryption.awsOwnedKey(),
       source: new source.KinesisStreamSource(sourceStream),
-    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    })).toThrow('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 2', {
       destination: mockS3Destination,
       encryption: firehose.StreamEncryption.customerManagedKey(),
       source: new source.KinesisStreamSource(sourceStream),
-    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    })).toThrow('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
     expect(() => new firehose.DeliveryStream(stack, 'Delivery Stream 3', {
       destination: mockS3Destination,
       encryption: StreamEncryption.customerManagedKey(new kms.Key(stack, 'Key')),
       source: new source.KinesisStreamSource(sourceStream),
-    })).toThrowError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    })).toThrow('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
   });
 
   test('grant provides access to stream', () => {
@@ -630,12 +630,12 @@ describe('delivery stream', () => {
 
     test('throws when malformatted ARN', () => {
       expect(() => firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', { deliveryStreamArn: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/' }))
-        .toThrowError("No delivery stream name found in ARN: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/'");
+        .toThrow("No delivery stream name found in ARN: 'arn:aws:firehose:xx-west-1:111122223333:deliverystream/'");
     });
 
     test('throws when without name or ARN', () => {
       expect(() => firehose.DeliveryStream.fromDeliveryStreamAttributes(stack, 'DeliveryStream', {}))
-        .toThrowError('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
+        .toThrow('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
     });
   });
 });

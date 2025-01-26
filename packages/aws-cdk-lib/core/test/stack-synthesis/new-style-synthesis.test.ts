@@ -193,7 +193,6 @@ describe('new style synthesis', () => {
   test('contains asset but not requiring a specific version parameter', () => {
     // GIVEN
     class BootstraplessStackSynthesizer extends DefaultStackSynthesizer {
-
       /**
        * Synthesize the associated bootstrap stack to the session.
        */
@@ -329,7 +328,7 @@ describe('new style synthesis', () => {
           ABC: '123',
         },
       });
-    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+    }).toThrow(/Exactly one of 'directoryName' or 'executable' is required/);
 
     expect(() => {
       stack.synthesizer.addDockerImageAsset({
@@ -338,7 +337,7 @@ describe('new style synthesis', () => {
           DEF: '456',
         },
       });
-    }).toThrowError(/Exactly one of 'directoryName' or 'executable' is required/);
+    }).toThrow(/Exactly one of 'directoryName' or 'executable' is required/);
   });
 
   test('synthesis', () => {

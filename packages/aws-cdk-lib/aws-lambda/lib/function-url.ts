@@ -5,6 +5,7 @@ import { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * The auth types for a function url
@@ -144,6 +145,13 @@ export interface IFunctionUrl extends IResource {
   readonly functionArn: string;
 
   /**
+   * The authType of the function URL, used for access control
+   *
+   * @attribute AuthType
+   */
+  readonly authType: FunctionUrlAuthType;
+
+  /**
    * Grant the given identity permissions to invoke this Lambda Function URL
    */
   grantInvokeUrl(identity: iam.IGrantable): iam.Grant;
@@ -213,7 +221,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     super(scope, id);
 
     if (this.instanceOfVersion(props.function)) {
-      throw new Error('FunctionUrl cannot be used with a Version');
+      throw new ValidationError('FunctionUrl cannot be used with a Version', this);
     }
 
     // If the target function is an alias, then it must be configured using the underlying function
@@ -264,7 +272,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
 
   private renderCors(cors: FunctionUrlCorsOptions): CfnUrl.CorsProperty {
     if (cors.maxAge && !cors.maxAge.isUnresolved() && cors.maxAge.toSeconds() > 86400) {
-      throw new Error(`FunctionUrl CORS maxAge should be less than or equal to 86400 secs (got ${cors.maxAge.toSeconds()})`);
+      throw new ValidationError(`FunctionUrl CORS maxAge should be less than or equal to 86400 secs (got ${cors.maxAge.toSeconds()})`, this);
     }
 
     return {

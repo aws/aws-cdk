@@ -1,28 +1,40 @@
-/* eslint-disable import/order */
-import * as aws from 'aws-sdk';
-import * as AWS from 'aws-sdk-mock';
+import { DescribeSecurityGroupsCommand } from '@aws-sdk/client-ec2';
+import { SDK, type SdkForEnvironment } from '../../lib/api';
 import { hasAllTrafficEgress, SecurityGroupContextProviderPlugin } from '../../lib/context-providers/security-groups';
-import { MockSdkProvider } from '../util/mock-sdk';
+import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockEC2Client, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
-AWS.setSDK(require.resolve('aws-sdk'));
+const mockSDK = new (class extends MockSdkProvider {
+  public forEnvironment(): Promise<SdkForEnvironment> {
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
+  }
+})();
 
-const mockSDK = new MockSdkProvider();
-
-type AwsCallback<T> = (err: Error | null, val: T) => void;
-
-afterEach(done => {
-  AWS.restore();
-  done();
+beforeEach(() => {
+  restoreSdkMocksToDefault();
+  mockEC2Client.on(DescribeSecurityGroupsCommand).resolves({
+    SecurityGroups: [
+      {
+        GroupId: 'sg-1234',
+        IpPermissionsEgress: [
+          {
+            IpProtocol: '-1',
+            IpRanges: [{ CidrIp: '0.0.0.0/0' }],
+          },
+          {
+            IpProtocol: '-1',
+            Ipv6Ranges: [{ CidrIpv6: '::/0' }],
+          },
+        ],
+      },
+    ],
+  });
 });
 
 describe('security group context provider plugin', () => {
   test('errors when no matches are found', async () => {
     // GIVEN
+    restoreSdkMocksToDefault();
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
-
-    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      cb(null, { SecurityGroups: [] });
-    });
 
     // WHEN
     await expect(
@@ -38,31 +50,6 @@ describe('security group context provider plugin', () => {
     // GIVEN
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
 
-    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({ GroupIds: ['sg-1234'] });
-      cb(null, {
-        SecurityGroups: [
-          {
-            GroupId: 'sg-1234',
-            IpPermissionsEgress: [
-              {
-                IpProtocol: '-1',
-                IpRanges: [
-                  { CidrIp: '0.0.0.0/0' },
-                ],
-              },
-              {
-                IpProtocol: '-1',
-                Ipv6Ranges: [
-                  { CidrIpv6: '::/0' },
-                ],
-              },
-            ],
-          },
-        ],
-      });
-    });
-
     // WHEN
     const res = await provider.getValue({
       account: '1234',
@@ -73,45 +60,15 @@ describe('security group context provider plugin', () => {
     // THEN
     expect(res.securityGroupId).toEqual('sg-1234');
     expect(res.allowAllOutbound).toEqual(true);
+    expect(mockEC2Client).toHaveReceivedCommandWith(DescribeSecurityGroupsCommand, {
+      GroupIds: ['sg-1234'],
+    });
   });
 
   test('looks up by security group id and vpc id', async () => {
     // GIVEN
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
 
-    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({
-        GroupIds: ['sg-1234'],
-        Filters: [
-          {
-            Name: 'vpc-id',
-            Values: ['vpc-1234567'],
-          },
-        ],
-      });
-      cb(null, {
-        SecurityGroups: [
-          {
-            GroupId: 'sg-1234',
-            IpPermissionsEgress: [
-              {
-                IpProtocol: '-1',
-                IpRanges: [
-                  { CidrIp: '0.0.0.0/0' },
-                ],
-              },
-              {
-                IpProtocol: '-1',
-                Ipv6Ranges: [
-                  { CidrIpv6: '::/0' },
-                ],
-              },
-            ],
-          },
-        ],
-      });
-    });
-
     // WHEN
     const res = await provider.getValue({
       account: '1234',
@@ -123,43 +80,20 @@ describe('security group context provider plugin', () => {
     // THEN
     expect(res.securityGroupId).toEqual('sg-1234');
     expect(res.allowAllOutbound).toEqual(true);
+    expect(mockEC2Client).toHaveReceivedCommandWith(DescribeSecurityGroupsCommand, {
+      GroupIds: ['sg-1234'],
+      Filters: [
+        {
+          Name: 'vpc-id',
+          Values: ['vpc-1234567'],
+        },
+      ],
+    });
   });
 
   test('looks up by security group name', async () => {
     // GIVEN
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
-
-    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({
-        Filters: [
-          {
-            Name: 'group-name',
-            Values: ['my-security-group'],
-          },
-        ],
-      });
-      cb(null, {
-        SecurityGroups: [
-          {
-            GroupId: 'sg-1234',
-            IpPermissionsEgress: [
-              {
-                IpProtocol: '-1',
-                IpRanges: [
-                  { CidrIp: '0.0.0.0/0' },
-                ],
-              },
-              {
-                IpProtocol: '-1',
-                Ipv6Ranges: [
-                  { CidrIpv6: '::/0' },
-                ],
-              },
-            ],
-          },
-        ],
-      });
-    });
 
     // WHEN
     const res = await provider.getValue({
@@ -171,47 +105,19 @@ describe('security group context provider plugin', () => {
     // THEN
     expect(res.securityGroupId).toEqual('sg-1234');
     expect(res.allowAllOutbound).toEqual(true);
+    expect(mockEC2Client).toHaveReceivedCommandWith(DescribeSecurityGroupsCommand, {
+      Filters: [
+        {
+          Name: 'group-name',
+          Values: ['my-security-group'],
+        },
+      ],
+    });
   });
 
   test('looks up by security group name and vpc id', async () => {
     // GIVEN
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
-
-    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({
-        Filters: [
-          {
-            Name: 'vpc-id',
-            Values: ['vpc-1234567'],
-          },
-          {
-            Name: 'group-name',
-            Values: ['my-security-group'],
-          },
-        ],
-      });
-      cb(null, {
-        SecurityGroups: [
-          {
-            GroupId: 'sg-1234',
-            IpPermissionsEgress: [
-              {
-                IpProtocol: '-1',
-                IpRanges: [
-                  { CidrIp: '0.0.0.0/0' },
-                ],
-              },
-              {
-                IpProtocol: '-1',
-                Ipv6Ranges: [
-                  { CidrIpv6: '::/0' },
-                ],
-              },
-            ],
-          },
-        ],
-      });
-    });
 
     // WHEN
     const res = await provider.getValue({
@@ -224,30 +130,36 @@ describe('security group context provider plugin', () => {
     // THEN
     expect(res.securityGroupId).toEqual('sg-1234');
     expect(res.allowAllOutbound).toEqual(true);
+    expect(mockEC2Client).toHaveReceivedCommandWith(DescribeSecurityGroupsCommand, {
+      Filters: [
+        {
+          Name: 'vpc-id',
+          Values: ['vpc-1234567'],
+        },
+        {
+          Name: 'group-name',
+          Values: ['my-security-group'],
+        },
+      ],
+    });
   });
 
   test('detects non all-outbound egress', async () => {
     // GIVEN
-    const provider = new SecurityGroupContextProviderPlugin(mockSDK);
-
-    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({ GroupIds: ['sg-1234'] });
-      cb(null, {
-        SecurityGroups: [
-          {
-            GroupId: 'sg-1234',
-            IpPermissionsEgress: [
-              {
-                IpProtocol: '-1',
-                IpRanges: [
-                  { CidrIp: '10.0.0.0/16' },
-                ],
-              },
-            ],
-          },
-        ],
-      });
+    mockEC2Client.on(DescribeSecurityGroupsCommand).resolves({
+      SecurityGroups: [
+        {
+          GroupId: 'sg-1234',
+          IpPermissionsEgress: [
+            {
+              IpProtocol: '-1',
+              IpRanges: [{ CidrIp: '10.0.0.0/16' }],
+            },
+          ],
+        },
+      ],
     });
+    const provider = new SecurityGroupContextProviderPlugin(mockSDK);
 
     // WHEN
     const res = await provider.getValue({
@@ -259,41 +171,37 @@ describe('security group context provider plugin', () => {
     // THEN
     expect(res.securityGroupId).toEqual('sg-1234');
     expect(res.allowAllOutbound).toEqual(false);
+    expect(mockEC2Client).toHaveReceivedCommandWith(DescribeSecurityGroupsCommand, {
+      GroupIds: ['sg-1234'],
+    });
   });
 
   test('errors when more than one security group is found', async () => {
     // GIVEN
+    mockEC2Client.on(DescribeSecurityGroupsCommand).resolves({
+      SecurityGroups: [
+        {
+          GroupId: 'sg-1234',
+          IpPermissionsEgress: [
+            {
+              IpProtocol: '-1',
+              IpRanges: [{ CidrIp: '10.0.0.0/16' }],
+            },
+          ],
+        },
+        {
+          GroupId: 'sg-1234',
+          IpPermissionsEgress: [
+            {
+              IpProtocol: '-1',
+              IpRanges: [{ CidrIp: '10.0.0.0/16' }],
+            },
+          ],
+        },
+      ],
+    });
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
 
-    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
-      expect(_params).toEqual({ GroupIds: ['sg-1234'] });
-      cb(null, {
-        SecurityGroups: [
-          {
-            GroupId: 'sg-1234',
-            IpPermissionsEgress: [
-              {
-                IpProtocol: '-1',
-                IpRanges: [
-                  { CidrIp: '10.0.0.0/16' },
-                ],
-              },
-            ],
-          },
-          {
-            GroupId: 'sg-1234',
-            IpPermissionsEgress: [
-              {
-                IpProtocol: '-1',
-                IpRanges: [
-                  { CidrIp: '10.0.0.0/16' },
-                ],
-              },
-            ],
-          },
-        ],
-      });
-    });
     // WHEN
     await expect(
       provider.getValue({
@@ -302,6 +210,9 @@ describe('security group context provider plugin', () => {
         securityGroupId: 'sg-1234',
       }),
     ).rejects.toThrow(/\More than one security groups found matching/i);
+    expect(mockEC2Client).toHaveReceivedCommandWith(DescribeSecurityGroupsCommand, {
+      GroupIds: ['sg-1234'],
+    });
   });
 
   test('errors when securityGroupId and securityGroupName are specified both', async () => {
@@ -316,7 +227,9 @@ describe('security group context provider plugin', () => {
         securityGroupId: 'sg-1234',
         securityGroupName: 'my-security-group',
       }),
-    ).rejects.toThrow(/\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group/i);
+    ).rejects.toThrow(
+      /\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group/i,
+    );
   });
 
   test('errors when neither securityGroupId nor securityGroupName are specified', async () => {
@@ -338,15 +251,11 @@ describe('security group context provider plugin', () => {
         IpPermissionsEgress: [
           {
             IpProtocol: '-1',
-            IpRanges: [
-              { CidrIp: '0.0.0.0/0' },
-            ],
+            IpRanges: [{ CidrIp: '0.0.0.0/0' }],
           },
           {
             IpProtocol: '-1',
-            Ipv6Ranges: [
-              { CidrIpv6: '::/0' },
-            ],
+            Ipv6Ranges: [{ CidrIpv6: '::/0' }],
           },
         ],
       }),
@@ -359,12 +268,8 @@ describe('security group context provider plugin', () => {
         IpPermissionsEgress: [
           {
             IpProtocol: '-1',
-            IpRanges: [
-              { CidrIp: '0.0.0.0/0' },
-            ],
-            Ipv6Ranges: [
-              { CidrIpv6: '::/0' },
-            ],
+            IpRanges: [{ CidrIp: '0.0.0.0/0' }],
+            Ipv6Ranges: [{ CidrIpv6: '::/0' }],
           },
         ],
       }),
@@ -377,9 +282,7 @@ describe('security group context provider plugin', () => {
         IpPermissionsEgress: [
           {
             IpProtocol: '-1',
-            IpRanges: [
-              { CidrIp: '10.0.0.0/16' },
-            ],
+            IpRanges: [{ CidrIp: '10.0.0.0/16' }],
           },
         ],
       }),
@@ -390,9 +293,7 @@ describe('security group context provider plugin', () => {
         IpPermissions: [
           {
             IpProtocol: 'TCP',
-            IpRanges: [
-              { CidrIp: '0.0.0.0/0' },
-            ],
+            IpRanges: [{ CidrIp: '0.0.0.0/0' }],
           },
         ],
       }),

@@ -1,7 +1,8 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import { CfnParameter, Stack } from '../../core';
-import { UserPool, UserPoolDomain } from '../lib';
+import { ManagedLoginVersion, UserPool, UserPoolDomain } from '../lib';
 
 describe('User Pool Domain', () => {
   test('custom domain name', () => {
@@ -103,7 +104,7 @@ describe('User Pool Domain', () => {
     })).not.toThrow();
   });
 
-  test('custom resource is added when cloudFrontDomainName property is used', () => {
+  testDeprecated('custom resource is added when cloudFrontDomainName property is used', () => {
     // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
@@ -137,7 +138,7 @@ describe('User Pool Domain', () => {
     });
   });
 
-  test('cloudFrontDomainName property can be called multiple times', () => {
+  testDeprecated('cloudFrontDomainName property can be called multiple times', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
     const domain = pool.addDomain('Domain', {
@@ -150,6 +151,27 @@ describe('User Pool Domain', () => {
     const cfDomainNameSecond = domain.cloudFrontDomainName;
 
     expect(cfDomainNameSecond).toEqual(cfDomainNameFirst);
+  });
+
+  test('cloudFrontEndpoint property can be called without custom resource', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const domain = pool.addDomain('Domain', {
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
+    });
+
+    const cloudFrontEndpoint = domain.cloudFrontEndpoint;
+
+    expect(stack.resolve(cloudFrontEndpoint)).toEqual({
+      'Fn::GetAtt': [
+        'PoolDomainCFC71F56',
+        'CloudFrontDistribution',
+      ],
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::UserPoolCloudFrontDomainName', 0);
   });
 
   test('import', () => {
@@ -280,6 +302,24 @@ describe('User Pool Domain', () => {
 
       // THEN
       expect(signInUrl).toMatch(/amazoncognito\.com\/testsignin\?/);
+    });
+  });
+
+  test.each([
+    ManagedLoginVersion.CLASSIC_HOSTED_UI,
+    ManagedLoginVersion.NEWER_MANAGED_LOGIN,
+  ])('managed login version %s', (managedLoginVersion) => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    pool.addDomain('Domain', {
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
+      managedLoginVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
+      ManagedLoginVersion: managedLoginVersion,
     });
   });
 });

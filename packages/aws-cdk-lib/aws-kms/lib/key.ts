@@ -75,6 +75,21 @@ export interface IKey extends IResource {
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
 
   /**
+   * Grant sign permissions using this key to the given principal
+   */
+  grantSign(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant verify permissions using this key to the given principal
+   */
+  grantVerify(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   */
+  grantSignVerify(grantee: iam.IGrantable): iam.Grant;
+
+  /**
    * Grant permissions to generating MACs to the given principal
    */
   grantGenerateMac(grantee: iam.IGrantable): iam.Grant;
@@ -214,6 +229,27 @@ abstract class KeyBase extends Resource implements IKey {
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
+  }
+
+  /**
+   * Grant sign permissions using this key to the given principal
+   */
+  public grantSign(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.SIGN_ACTIONS);
+  }
+
+  /**
+   * Grant verify permissions using this key to the given principal
+   */
+  public grantVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+  }
+
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   */
+  public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
   }
 
   /**
@@ -404,6 +440,11 @@ export enum KeyUsage {
    * Generating and verifying MACs
    */
   GENERATE_VERIFY_MAC = 'GENERATE_VERIFY_MAC',
+
+  /**
+   * Deriving shared secrets
+   */
+  KEY_AGREEMENT = 'KEY_AGREEMENT',
 }
 
 /**
@@ -754,6 +795,17 @@ export class Key extends KeyBase {
         KeySpec.ECC_SECG_P256K1,
         KeySpec.SYMMETRIC_DEFAULT,
         KeySpec.SM2,
+      ],
+      [KeyUsage.KEY_AGREEMENT]: [
+        KeySpec.SYMMETRIC_DEFAULT,
+        KeySpec.RSA_2048,
+        KeySpec.RSA_3072,
+        KeySpec.RSA_4096,
+        KeySpec.ECC_SECG_P256K1,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;

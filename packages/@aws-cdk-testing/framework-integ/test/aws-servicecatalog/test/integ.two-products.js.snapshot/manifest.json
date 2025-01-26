@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "integ-servicecatalog-two-products.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "integ-servicecatalog-two-products.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/cd086b7ec847cfff6ae4b6830401e2f190f2fc531a2a67ccd34be36e3bc1d8cb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/5c5277b80917dd9d8b82ea9b940c43b1d5ea88a39a587e8b453867994d90488c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -180,7 +179,6 @@
         "templateFile": "integproductDefaultTestDeployAssertEB23E2A9.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

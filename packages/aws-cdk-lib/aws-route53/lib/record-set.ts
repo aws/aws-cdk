@@ -1,11 +1,13 @@
 import { Construct } from 'constructs';
 import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
 import { GeoLocation } from './geo-location';
+import { IHealthCheck } from './health-check';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
 import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
@@ -66,6 +68,15 @@ export enum RecordType {
   DS = 'DS',
 
   /**
+   * An HTTPS resource record is a form of the Service Binding (SVCB) DNS record that provides extended configuration information,
+   * enabling a client to easily and securely connect to a service with an HTTP protocol.
+   * The configuration information is provided in parameters that allow the connection in one DNS query, rather than necessitating multiple DNS queries.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#HTTPSFormat
+   */
+  HTTPS = 'HTTPS',
+
+  /**
    * An MX record specifies the names of your mail servers and, if you have two or more mail servers,
    * the priority order.
    *
@@ -119,6 +130,30 @@ export enum RecordType {
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SRVFormat
    */
   SRV = 'SRV',
+
+  /**
+   * A Secure Shell fingerprint record (SSHFP) identifies SSH keys associated with the domain name.
+   * SSHFP records must be secured with DNSSEC for a chain of trust to be established.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SSHFPFormat
+   */
+  SSHFP = 'SSHFP',
+
+  /**
+   * You use an SVCB record to deliver configuration information for accessing service endpoints.
+   * The SVCB is a generic DNS record and can be used to negotiate parameters for a variety of application protocols.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#SVCBFormat
+   */
+  SVCB = 'SVCB',
+
+  /**
+   * You use a TLSA record to use DNS-Based Authentication of Named Entities (DANE).
+   * A TLSA record associates a certificate/public key with a Transport Layer Security (TLS) endpoint, and clients can validate the certificate/public key using a TLSA record signed with DNSSEC.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#TLSAFormat
+   */
+  TLSA = 'TLSA',
 
   /**
    * A TXT record contains one or more strings that are enclosed in double quotation marks (").
@@ -231,6 +266,15 @@ export interface RecordSetOptions {
    * @default - Auto generated string
    */
   readonly setIdentifier?: string;
+
+  /**
+   * The health check to associate with the record set.
+   *
+   * Route53 will return this record set in response to DNS queries only if the health check is passing.
+   *
+   * @default - No health check configured
+   */
+  readonly healthCheck?: IHealthCheck;
 }
 
 /**
@@ -296,17 +340,17 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    if (props.weight && (props.weight < 0 || props.weight > 255)) {
-      throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
+    if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
+      throw new ValidationError(`weight must be between 0 and 255 inclusive, got: ${props.weight}`, this);
     }
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
-      throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
+      throw new ValidationError(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
     }
     if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
-      throw new Error('setIdentifier can only be specified for non-simple routing policies');
+      throw new ValidationError('setIdentifier can only be specified for non-simple routing policies', this);
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
-      throw new Error('multiValueAnswer cannot be specified for alias record');
+      throw new ValidationError('multiValueAnswer cannot be specified for alias record', this);
     }
 
     const nonSimpleRoutingPolicies = [
@@ -316,7 +360,7 @@ export class RecordSet extends Resource implements IRecordSet {
       props.multiValueAnswer,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new Error('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+      throw new ValidationError('Only one of region, weight, multiValueAnswer or geoLocation can be defined', this);
     }
 
     this.geoLocation = props.geoLocation;
@@ -345,6 +389,7 @@ export class RecordSet extends Resource implements IRecordSet {
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
       region: props.region,
+      healthCheckId: props.healthCheck?.healthCheckId,
     });
 
     this.domainName = recordSet.ref;
@@ -406,8 +451,15 @@ export class RecordSet extends Resource implements IRecordSet {
     }
 
     if (this.weight !== undefined) {
-      const idPrefix = `WEIGHT_${this.weight}_ID_`;
-      return this.createIdentifier(idPrefix);
+      if (Token.isUnresolved(this.weight)) {
+        const replacement = 'XXX'; // XXX simply because 255 is the highest value for a record weight
+        const idPrefix = `WEIGHT_${replacement}_ID_`;
+        const idTemplate = this.createIdentifier(idPrefix);
+        return idTemplate.replace(replacement, Token.asString(this.weight));
+      } else {
+        const idPrefix = `WEIGHT_${this.weight}_ID_`;
+        return this.createIdentifier(idPrefix);
+      }
     }
 
     if (this.region) {
@@ -462,7 +514,6 @@ export interface ARecordAttrs extends RecordSetOptions{
  * @resource AWS::Route53::RecordSet
  */
 export class ARecord extends RecordSet {
-
   /**
    * Creates new A record of type alias with target set to an existing A Record DNS.
    * Use when the target A record is created outside of CDK
@@ -496,9 +547,9 @@ class ARecordAsAliasTarget implements IAliasRecordTarget {
   constructor(private readonly aRrecordAttrs: ARecordAttrs) {
   }
 
-  public bind(_record: IRecordSet, _zone?: IHostedZone | undefined): AliasRecordTargetConfig {
-    if (!_zone) {
-      throw new Error('Cannot bind to record without a zone');
+  public bind(record: IRecordSet, zone?: IHostedZone | undefined): AliasRecordTargetConfig {
+    if (!zone) {
+      throw new ValidationError('Cannot bind to record without a zone', record);
     }
     return {
       dnsName: this.aRrecordAttrs.targetDNS,

@@ -173,7 +173,7 @@ test('Merged API throws when accessing schema property', () => {
   // THEN
   expect(() => {
     mergedApi.schema;
-  }).toThrowError('Schema does not exist for AppSync merged APIs.');
+  }).toThrow('Schema does not exist for AppSync merged APIs.');
 });
 
 test('source api association depends on source schema', () => {

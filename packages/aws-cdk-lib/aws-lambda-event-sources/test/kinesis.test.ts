@@ -326,9 +326,56 @@ describe('KinesisEventSource', () => {
         startingPositionTimestamp: 1640995200,
         onFailure: s3OnFailureDestination,
       }));
-    //THEN
-    }).toThrowError('S3 onFailure Destination is not supported for this event source');
+    // THEN
+    }).toThrow('S3 onFailure Destination is not supported for this event source');
 
   });
 
+  test('metrics config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+      metricsConfig: {
+        metrics: [],
+      },
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      MetricsConfig: {
+        Metrics: [],
+      },
+    });
+  });
+
+  test('metrics config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+      metricsConfig: {
+        metrics: [lambda.MetricType.EVENT_COUNT],
+      },
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      MetricsConfig: {
+        Metrics: ['EventCount'],
+      },
+    });
+  });
 });

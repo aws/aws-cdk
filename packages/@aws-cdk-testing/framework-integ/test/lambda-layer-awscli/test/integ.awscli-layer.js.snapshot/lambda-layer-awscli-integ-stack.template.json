@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
+     "S3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -152,7 +152,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+     "S3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.9)",
     "Environment": {
@@ -341,7 +341,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d320874294f5d626406d5f86087c2a2c8e6efc0aab690c5105572555dc445fd4.zip"
+     "S3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.10)",
     "Environment": {

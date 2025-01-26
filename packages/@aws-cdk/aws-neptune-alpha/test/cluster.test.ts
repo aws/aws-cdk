@@ -77,7 +77,7 @@ describe('DatabaseCluster', () => {
         vpc,
         instanceType: InstanceType.R5_LARGE,
       });
-    }).toThrowError('At least one instance is required');
+    }).toThrow('At least one instance is required');
   });
 
   test('errors when only one subnet is specified', () => {
@@ -97,7 +97,7 @@ describe('DatabaseCluster', () => {
         },
         instanceType: InstanceType.R5_LARGE,
       });
-    }).toThrowError('Cluster requires at least 2 subnets, got 1');
+    }).toThrow('Cluster requires at least 2 subnets, got 1');
   });
 
   test('can create a cluster with custom engine version', () => {
@@ -835,7 +835,7 @@ describe('DatabaseCluster', () => {
           maxCapacity: 200,
         },
       });
-    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived 200/);
+    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received 200/);
 
     expect(() => {
       new DatabaseCluster(stack, 'Database3', {

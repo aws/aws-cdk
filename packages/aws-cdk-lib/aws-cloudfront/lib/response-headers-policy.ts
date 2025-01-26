@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnResponseHeadersPolicy } from './cloudfront.generated';
-import { Duration, Names, Resource, Token } from '../../core';
+import { Duration, Names, Resource, Token, withResolved } from '../../core';
 
 /**
  * Represents a response headers policy.
@@ -75,7 +75,6 @@ export interface ResponseHeadersPolicyProps {
  * @resource AWS::CloudFront::ResponseHeadersPolicy
  */
 export class ResponseHeadersPolicy extends Resource implements IResponseHeadersPolicy {
-
   /** Use this managed policy to allow simple CORS requests from any origin. */
   public static readonly CORS_ALLOW_ALL_ORIGINS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('60669652-455b-4ae9-85a4-c4c02393f86c');
   /** Use this managed policy to allow CORS requests from any origin, including preflight requests. */
@@ -130,6 +129,15 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   }
 
   private _renderCorsConfig(behavior: ResponseHeadersCorsBehavior): CfnResponseHeadersPolicy.CorsConfigProperty {
+    withResolved(behavior.accessControlAllowMethods, (methods) => {
+      const allowedMethods = ['GET', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'ALL'];
+      if (methods.includes('ALL') && methods.length !== 1) {
+        throw new Error("accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.");
+      } else if (!methods.every((method) => Token.isUnresolved(method) || allowedMethods.includes(method))) {
+        throw new Error(`accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`);
+      }
+    });
+
     return {
       accessControlAllowCredentials: behavior.accessControlAllowCredentials,
       accessControlAllowHeaders: { items: behavior.accessControlAllowHeaders },
@@ -211,6 +219,9 @@ export interface ResponseHeadersCorsBehavior {
 
   /**
    * A list of HTTP methods that CloudFront includes as values for the Access-Control-Allow-Methods HTTP response header.
+   *
+   * Allowed methods: `'GET'`, `'DELETE'`, `'HEAD'`, `'OPTIONS'`, `'PATCH'`, `'POST'`, and `'PUT'`.
+   * You can specify `['ALL']` to allow all methods.
    */
   readonly accessControlAllowMethods: string[];
 

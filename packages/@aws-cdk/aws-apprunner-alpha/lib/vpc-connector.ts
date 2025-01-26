@@ -99,9 +99,9 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
     const securityGroups = attrs.securityGroups;
 
     class Import extends cdk.Resource {
-      public readonly vpcConnectorArn = vpcConnectorArn
-      public readonly vpcConnectorName = vpcConnectorName
-      public readonly vpcConnectorRevision = vpcConnectorRevision
+      public readonly vpcConnectorArn = vpcConnectorArn;
+      public readonly vpcConnectorName = vpcConnectorName;
+      public readonly vpcConnectorRevision = vpcConnectorRevision;
       public readonly connections = new Connections({ securityGroups });
     }
 
@@ -129,12 +129,27 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
   /**
    * Allows specifying security group connections for the VPC connector.
    */
-  public readonly connections: Connections
+  public readonly connections: Connections;
 
   public constructor(scope: Construct, id: string, props: VpcConnectorProps) {
     super(scope, id, {
       physicalName: props.vpcConnectorName,
     });
+
+    if (props.vpcConnectorName !== undefined && !cdk.Token.isUnresolved(props.vpcConnectorName)) {
+
+      if (props.vpcConnectorName.length < 4 || props.vpcConnectorName.length > 40) {
+        throw new Error(
+          `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`,
+        );
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcConnectorName)) {
+        throw new Error(
+          `\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcConnectorName}.`,
+        );
+      }
+    }
 
     const securityGroups = props.securityGroups?.length ?
       props.securityGroups

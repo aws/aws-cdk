@@ -177,8 +177,14 @@ export class Tracker extends Resource implements ITracker {
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }
 
-    if (props.trackerName && !Token.isUnresolved(props.trackerName) && !/^[-.\w]{1,100}$/.test(props.trackerName)) {
-      throw new Error(`Invalid tracker name. The tracker name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.trackerName}`);
+    if (props.trackerName !== undefined && !Token.isUnresolved(props.trackerName)) {
+      if (props.trackerName.length < 1 || props.trackerName.length > 100) {
+        throw new Error(`\`trackerName\` must be between 1 and 100 characters, got: ${props.trackerName.length} characters.`);
+      }
+
+      if (!/^[-._\w]+$/.test(props.trackerName)) {
+        throw new Error(`\`trackerName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.trackerName}.`);
+      }
     }
 
     if (!Token.isUnresolved(props.kmsKey)

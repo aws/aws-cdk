@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "lambda-layer-awscli-integ-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "lambda-layer-awscli-integ-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/87c9fe635c177efb12bbe16c872243a0dc6a90cf008b2d4e0d925ae57ee83e1e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ffb12b8b0a42bc63235695396c67f5903bf17686ebfc81a78f8d9ff56401620.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,10 +37,7 @@
         "/lambda-layer-awscli-integ-stack/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsCliLayerF44AAF94",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AwsCliLayerF44AAF94"
           }
         ],
         "/lambda-layer-awscli-integ-stack/Lambda$python3.9/ServiceRole/Resource": [
@@ -152,7 +148,6 @@
         "templateFile": "lambdalayerawscliintegtestDefaultTestDeployAssert8E1153D3.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

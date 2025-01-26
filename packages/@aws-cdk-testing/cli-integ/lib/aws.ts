@@ -29,11 +29,6 @@ interface ClientConfig {
 }
 
 export class AwsClients {
-  public static async default(output: NodeJS.WritableStream) {
-    const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
-    return AwsClients.forRegion(region, output);
-  }
-
   public static async forRegion(region: string, output: NodeJS.WritableStream) {
     return new AwsClients(region, output);
   }
@@ -127,7 +122,7 @@ export class AwsClients {
     }
   }
 
-  public async emptyBucket(bucketName: string) {
+  public async emptyBucket(bucketName: string, options?: { bypassGovernance?: boolean }) {
     const objects = await this.s3.send(
       new ListObjectVersionsCommand({
         Bucket: bucketName,
@@ -154,6 +149,7 @@ export class AwsClients {
           Objects: deletes,
           Quiet: false,
         },
+        BypassGovernanceRetention: options?.bypassGovernance ? true : undefined,
       }),
     );
   }

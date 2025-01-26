@@ -1322,7 +1322,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
-
 }
 
 /**
@@ -1457,8 +1456,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   private readonly domain: CfnDomain;
 
-  private accessPolicy?: ElasticsearchAccessPolicy
-  private encryptionAtRestOptions?: EncryptionAtRestOptions
+  private accessPolicy?: ElasticsearchAccessPolicy;
+  private encryptionAtRestOptions?: EncryptionAtRestOptions;
 
   private readonly _connections: ec2.Connections | undefined;
 

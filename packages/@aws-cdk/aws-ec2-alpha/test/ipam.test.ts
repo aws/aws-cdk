@@ -48,7 +48,7 @@ describe('IPAM Test', () => {
         },
         Locale: 'us-west-2',
       },
-    ); //End Template
+    ); // End Template
   }); // End Test
 
   test('Creates IP Pool under Private Scope', () => {
@@ -60,7 +60,7 @@ describe('IPAM Test', () => {
     });
 
     new vpc.VpcV2(stack, 'TestVPC', {
-      primaryAddressBlock: vpc.IpAddresses.ipv4('10.2.0.0/16'),
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4Ipam({
         ipamPool: pool,
         netmaskLength: 20,
@@ -76,7 +76,7 @@ describe('IPAM Test', () => {
         },
         Locale: 'us-west-2',
       },
-    ); //End Template
+    ); // End Template
   });
 
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {
