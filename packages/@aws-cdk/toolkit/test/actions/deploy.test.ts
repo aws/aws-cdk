@@ -4,7 +4,7 @@ import { builderFixture, TestIoHost } from '../_helpers';
 
 const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
-jest.spyOn(toolkit, 'rollback').mockResolvedValue();
+const rollbackSpy = jest.spyOn(toolkit as any, '_rollback').mockResolvedValue({});
 
 let mockDeployStack = jest.fn().mockResolvedValue({
   type: 'did-deploy-stack',
@@ -173,7 +173,7 @@ describe('deploy', () => {
 
       // THEN
       // We called rollback
-      expect(toolkit.rollback).toHaveBeenCalledTimes(1);
+      expect(rollbackSpy).toHaveBeenCalledTimes(1);
       successfulDeployment();
     });
 
