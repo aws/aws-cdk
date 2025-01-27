@@ -146,8 +146,8 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Return whether the given object is a Cluster
    */
-  public static isCluster(x: any) : x is Cluster {
-    return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
+  public static isCluster(x: any): x is Cluster {
+    return x !== null && typeof (x) === 'object' && CLUSTER_SYMBOL in x;
   }
 
   /**
@@ -877,7 +877,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * This method returns the specifed CloudWatch metric for this cluster.
+   * This method returns the specified CloudWatch metric for this cluster.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
