@@ -100,6 +100,7 @@ export function integTest(
       } else {
         // Use 'console.log' so the output is buffered by
         // jest and prints without a stack trace (if verbose: false).
+        // eslint-disable-next-line no-console
         console.log(output.buffer().toString());
       }
       throw e;

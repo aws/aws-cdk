@@ -159,6 +159,7 @@ export class SamIntegrationTestFixture extends TestFixture {
     if (success) {
       const cleaned = rimraf(this.integTestDir);
       if (!cleaned) {
+        // eslint-disable-next-line no-console
         console.error(`Failed to clean up ${this.integTestDir} due to permissions issues (Docker running as root?)`);
       }
     }
