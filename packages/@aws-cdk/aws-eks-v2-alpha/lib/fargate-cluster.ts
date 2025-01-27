@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Configuration props for EKS Fargate.
@@ -36,8 +35,6 @@ export class FargateCluster extends Cluster {
       coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE,
       version: props.version,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.defaultProfile = this.addFargateProfile(
       props.defaultProfile?.fargateProfileName ?? (props.defaultProfile ? 'custom' : 'default'),

@@ -26,7 +26,6 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, CfnTag, ArnComponents } from 'aws-cdk-lib/core';
 import { CfnCluster } from 'aws-cdk-lib/aws-eks';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1447,8 +1446,6 @@ export class Cluster extends ClusterBase {
     super(scope, id, {
       physicalName: props.clusterName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const stack = Stack.of(this);
 
@@ -2218,8 +2215,6 @@ class ImportedCluster extends ClusterBase {
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));

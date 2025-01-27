@@ -5,7 +5,6 @@ import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, In
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
 import * as cxapi from 'aws-cdk-lib/cx-api';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * NodeGroup interface
@@ -391,8 +390,6 @@ export class Nodegroup extends Resource implements INodegroup {
     super(scope, id, {
       physicalName: props.nodegroupName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
 

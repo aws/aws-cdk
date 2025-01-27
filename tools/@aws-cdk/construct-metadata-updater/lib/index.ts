@@ -1,4 +1,4 @@
-import { PropertyUpdater, ConstructsUpdater } from './metadata-updater';
+import { PropertyUpdater, EnumsUpdater } from './metadata-updater';
 
 export function main() {
   const dir = '../../../../packages/'
@@ -6,6 +6,9 @@ export function main() {
   new PropertyUpdater(dir).execute();
   console.log('Property updater finished.')
 
-  new ConstructsUpdater(dir).execute();
-  console.log('Constructs updater finished.');
+  // new ConstructsUpdater(dir).execute();
+  // console.log('Constructs updater finished.');
+
+  new EnumsUpdater(dir).execute();
+  console.log('Enums updater finished.');
 }

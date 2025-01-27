@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Initialization properties for `OpenIdConnectProvider`.
@@ -49,7 +48,5 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
       url: props.url,
       clientIds,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }

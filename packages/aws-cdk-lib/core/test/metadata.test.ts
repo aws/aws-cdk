@@ -106,3 +106,43 @@ describe('redactTelemetryDataHelper', () => {
     expect(metadata.redactTelemetryDataHelper({}, () => {})).toBe('*');
   });
 });
+
+jest.mock('../lib/analytics-data-source/enums', () => ({
+  AWS_CDK_ENUMS: {
+    ExampleEnum: ['VALUE_ONE', 'VALUE_TWO', 'VALUE_THREE'],
+    AnotherEnum: ['OPTION_A', 'OPTION_B', 'OPTION_C'],
+  },
+}));
+
+describe('isEnumValue', () => {
+  test('returns true for valid enum value', () => {
+    expect(metadata.isEnumValue('ExampleEnum', 'VALUE_ONE')).toBe(true);
+  });
+
+  test('returns false for invalid enum value', () => {
+    expect(metadata.isEnumValue('ExampleEnum', 'INVALID_VALUE')).toBe(false);
+  });
+
+  test('returns false for non-existent enum type', () => {
+    expect(metadata.isEnumValue('NonExistentEnum', 'VALUE_ONE')).toBe(false);
+  });
+
+  test('returns false if allowedKeys is "*" (wildcard)', () => {
+    expect(metadata.isEnumValue('*', 'VALUE_ONE')).toBe(false);
+  });
+
+  test('returns false if allowedKeys is not a string', () => {
+    expect(metadata.isEnumValue(123, 'VALUE_ONE')).toBe(false);
+    expect(metadata.isEnumValue(null, 'VALUE_ONE')).toBe(false);
+    expect(metadata.isEnumValue(undefined, 'VALUE_ONE')).toBe(false);
+    expect(metadata.isEnumValue({}, 'VALUE_ONE')).toBe(false);
+  });
+
+  test('returns false if value is not included in the enum values', () => {
+    expect(metadata.isEnumValue('AnotherEnum', 'NOT_AN_OPTION')).toBe(false);
+  });
+
+  test('returns true for another valid enum value', () => {
+    expect(metadata.isEnumValue('AnotherEnum', 'OPTION_A')).toBe(true);
+  });
+});

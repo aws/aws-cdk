@@ -1,5 +1,6 @@
 import { Construct, IConstruct } from 'constructs';
 import { AWS_CDK_CONSTRUCTOR_PROPS } from './analytics-data-source/classes';
+import { AWS_CDK_ENUMS } from './analytics-data-source/enums';
 import { RESOURCE_SYMBOL, JSII_RUNTIME_SYMBOL } from './constants';
 import { FeatureFlags } from './feature-flags';
 import { Resource } from './resource';
@@ -89,9 +90,13 @@ export function redactMetadata(fqn: string, data: any): any {
   return redactTelemetryDataHelper(allowedKeys, data);
 }
 
-export function redactTelemetryDataHelper(allowedKeys: Record<string, any>, data: any): any {
+export function redactTelemetryDataHelper(allowedKeys: any, data: any): any {
   // Return boolean as is
   if (typeof data === 'boolean') {
+    return data;
+  }
+
+  if (isEnumValue(allowedKeys, data)) {
     return data;
   }
 
@@ -145,4 +150,19 @@ export function redactTelemetryDataHelper(allowedKeys: Record<string, any>, data
 
   // Redact any other type of data
   return '*';
+}
+
+/**
+ * Check if a value is an ENUM and matches the ENUM blueprint.
+ */
+export function isEnumValue(allowedKeys: any, value: any): boolean {
+  if (typeof allowedKeys !== 'string' || allowedKeys === '*') {
+    return false;
+  }
+
+  if (!Object.keys(AWS_CDK_ENUMS).includes(allowedKeys)) {
+    return false;
+  }
+
+  return AWS_CDK_ENUMS[allowedKeys].includes(value);
 }

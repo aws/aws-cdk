@@ -4,7 +4,6 @@ import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
 import {
   Resource, IResource, Aws, Lazy,
 } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -326,8 +325,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
     this.principal = props.principal;
