@@ -605,7 +605,6 @@ describe('VPCPeeringConnection', () => {
     vpcC = new vpc.VpcV2(stackC, 'VpcC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
     });
-
     // Same Account VPC
     vpcD = new vpc.VpcV2(stackC, 'VpcD', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.3.0.0/16'),
