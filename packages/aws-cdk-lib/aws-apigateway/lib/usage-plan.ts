@@ -261,16 +261,11 @@ export class UsagePlan extends UsagePlanBase {
 
   /**
    * Adds an apiStage.
-   * @param apiStage
    */
   public addApiStage(apiStage: UsagePlanPerApiStage) {
     this.apiStages.push(apiStage);
   }
 
-  /**
-   *
-   * @param props
-   */
   private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
     if (apiStages && apiStages.length > 0) {
       const stages: CfnUsagePlan.ApiStageProperty[] = [];
