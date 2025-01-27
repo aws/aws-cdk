@@ -266,7 +266,7 @@ describe('AwsIpam Vpc Integration', () => {
 
     const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
-    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options/);;
+    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow(/If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options/);
 
   });
 
@@ -356,7 +356,7 @@ describe('AwsIpam Vpc Integration', () => {
 
     const ipAddresses = IpAddresses.awsIpamAllocation(awsIpamProps);
 
-    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow('IP space of size /18 not big enough to allocate subnets of sizes /17,/17,/17,/17');;
+    expect(() => {new Vpc(stack, 'VpcNetwork', { ipAddresses: ipAddresses });}).toThrow('IP space of size /18 not big enough to allocate subnets of sizes /17,/17,/17,/17');
 
   });
 
