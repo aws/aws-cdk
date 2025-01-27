@@ -2,7 +2,8 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { DockerBuildSecret, DockerImage, FileSystem } from '../lib';
+import { DockerBuildSecret, DockerImage, DockerVolumeType, FileSystem } from '../lib';
+import * as bundlingUtils from '../lib/private/bundling';
 
 const dockerCmd = process.env.CDK_DOCKER ?? 'docker';
 
@@ -583,9 +584,9 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
       '--volumes-from', 'foo',
       '--volumes-from', 'bar',
-      '-v', '/host-path:/container-path:delegated',
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
@@ -721,5 +722,198 @@ describe('bundling', () => {
 
     // THEN
     expect(fromSrc).toEqual('src=path.json');
+  });
+
+  test('can handle all volume types with opts', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({
+      command: ['cool', 'command'],
+      volumes: [{
+        dockerVolumeType: DockerVolumeType.VOLUME_COPY,
+        containerPath: '/container/path/1',
+        hostInputPath: '/host/input/1',
+      }, {
+        dockerVolumeType: DockerVolumeType.BIND_MOUNT,
+        containerPath: '/container/path/2',
+        hostPath: '/host/path/2',
+      }, {
+        dockerVolumeType: DockerVolumeType.EXISTING,
+        containerPath: '/container/path/3',
+        volumeName: 'container-volume-3',
+      }, {
+        dockerVolumeType: DockerVolumeType.VOLUME_COPY,
+        containerPath: '/container/path/4',
+        hostInputPath: '/host/input/4',
+        opts: ['opt1', 'opt2'],
+      }, {
+        dockerVolumeType: DockerVolumeType.BIND_MOUNT,
+        containerPath: '/container/path/5',
+        hostPath: '/host/path/5',
+        opts: ['opt1', 'opt2'],
+      }, {
+        dockerVolumeType: DockerVolumeType.EXISTING,
+        containerPath: '/container/path/6',
+        volumeName: 'container-volume-6',
+        opts: ['opt1', 'opt2'],
+      }],
+      volumesFrom: [
+        'volumes-from-container-1',
+        'volumes-from-container-2',
+      ],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    // copy container volume opts are correct
+    expect(spawnSyncStub.calledWith(dockerCmd, sinon.match([
+      'run',
+      '--name', sinon.match(/copyContainer.*/g),
+      '-v', '/container/path/1',
+      '-v', ':/container/path/4:opt1,opt2',
+      'public.ecr.aws/docker/library/alpine',
+      'sh',
+      '-c',
+      [
+        'mkdir -p /container/path/1 && chown -R user:group /container/path/1',
+        'mkdir -p /container/path/4 && chown -R user:group /container/path/4',
+      ].join(' && '),
+    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+
+    // main image run volume commands are correct
+    expect(spawnSyncStub.calledWith(dockerCmd, sinon.match([
+      'run', '--rm',
+      '-u', 'user:group',
+      '-v', '/host/path/2:/container/path/2:delegated',
+      '-v', '/host/path/5:/container/path/5:opt1,opt2,delegated',
+      '-v', 'container-volume-3:/container/path/3:',
+      '-v', 'container-volume-6:/container/path/6:opt1,opt2',
+      '--volumes-from', 'volumes-from-container-1',
+      '--volumes-from', 'volumes-from-container-2',
+      '--volumes-from', sinon.match(/copyContainer.*/g),
+      '-w', '/working-directory',
+      'alpine', 'cool', 'command',
+    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('can handle copy volume without user', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run({
+      command: ['cool', 'command'],
+      volumes: [{
+        dockerVolumeType: DockerVolumeType.VOLUME_COPY,
+        containerPath: '/container/path/1',
+        hostInputPath: '/host/input/1',
+      }, {
+        dockerVolumeType: DockerVolumeType.VOLUME_COPY,
+        containerPath: '/container/path/2',
+        hostInputPath: '/host/input/2',
+        opts: ['opt1', 'opt2'],
+      }],
+      workingDirectory: '/working-directory',
+    });
+
+    // copy container volume opts are correct
+    expect(spawnSyncStub.calledWith(dockerCmd, sinon.match([
+      'run',
+      '--name', sinon.match(/copyContainer.*/g),
+      '-v', '/container/path/1',
+      '-v', ':/container/path/2:opt1,opt2',
+      'public.ecr.aws/docker/library/alpine',
+      'sh',
+      '-c',
+      [
+        'mkdir -p /container/path/1',
+        'mkdir -p /container/path/2',
+      ].join(' && '),
+    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+
+    // main image run volume commands are correct
+    expect(spawnSyncStub.calledWith(dockerCmd, sinon.match([
+      'run', '--rm',
+      '--volumes-from', sinon.match(/copyContainer.*/g),
+      '-w', '/working-directory',
+      'alpine', 'cool', 'command',
+    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('cleans up volume helper', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const cleanupStub = sinon.stub();
+    class MockDockerVolumeHelper {
+      readonly volumeCommands: string[] = [];
+      public cleanup = cleanupStub;
+    }
+    const dockerVolumeHelperStub = sinon.stub(bundlingUtils, 'DockerVolumeHelper').callsFake(() => new MockDockerVolumeHelper());
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+    image.run();
+
+    // THEN
+    expect(dockerVolumeHelperStub.calledOnce).toBe(true);
+    expect(cleanupStub.calledOnce).toBe(true);
+  });
+
+  test('cleans up volume helper when run fails', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    sinon.stub(child_process, 'spawnSync').returns({
+      status: -1,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const cleanupStub = sinon.stub();
+    class MockDockerVolumeHelper {
+      readonly volumeCommands: string[] = [];
+      public cleanup = cleanupStub;
+    }
+    const dockerVolumeHelperStub = sinon.stub(bundlingUtils, 'DockerVolumeHelper').callsFake(() => new MockDockerVolumeHelper());
+
+    // WHEN
+    const image = DockerImage.fromRegistry('alpine');
+
+    // THEN
+    expect(() => image.run()).toThrow(/exited with status -1/);
+
+    expect(dockerVolumeHelperStub.calledOnce).toBe(true);
+    expect(cleanupStub.calledOnce).toBe(true);
   });
 });

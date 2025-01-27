@@ -1,9 +1,8 @@
-import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import { DockerCacheOption } from './assets';
 import { FileSystem } from './fs';
-import { dockerExec } from './private/asset-staging';
+import { dockerExec, DockerVolumeHelper } from './private/bundling';
 import { quiet, reset } from './private/jsii-deprecated';
 
 /**
@@ -61,7 +60,7 @@ export interface BundlingOptions {
    *
    * @default - no additional volumes are mounted
    */
-  readonly volumes?: DockerVolume[];
+  readonly volumes?: (DockerVolume | VolumeCopyDockerVolume | ExistingDockerVolume)[];
 
   /**
    * Where to mount the specified volumes from
@@ -255,7 +254,6 @@ export class BundlingDockerImage {
    * Runs a Docker image
    */
   public run(options: DockerRunOptions = {}) {
-    const volumes = options.volumes || [];
     const environment = options.environment || {};
     const entrypoint = options.entrypoint?.[0] || null;
     const command = [
@@ -267,36 +265,39 @@ export class BundlingDockerImage {
         : [],
     ];
 
-    const dockerArgs: string[] = [
-      'run', '--rm',
-      ...options.securityOpt
-        ? ['--security-opt', options.securityOpt]
-        : [],
-      ...options.network
-        ? ['--network', options.network]
-        : [],
-      ...options.platform
-        ? ['--platform', options.platform]
-        : [],
-      ...options.user
-        ? ['-u', options.user]
-        : [],
-      ...options.volumesFrom
-        ? flatten(options.volumesFrom.map(v => ['--volumes-from', v]))
-        : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
-      ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
-      ...options.workingDirectory
-        ? ['-w', options.workingDirectory]
-        : [],
-      ...entrypoint
-        ? ['--entrypoint', entrypoint]
-        : [],
-      this.image,
-      ...command,
-    ];
+    const volumeHelper = new DockerVolumeHelper(options);
 
-    dockerExec(dockerArgs);
+    try {
+      const dockerArgs: string[] = [
+        'run', '--rm',
+        ...options.securityOpt
+          ? ['--security-opt', options.securityOpt]
+          : [],
+        ...options.network
+          ? ['--network', options.network]
+          : [],
+        ...options.platform
+          ? ['--platform', options.platform]
+          : [],
+        ...options.user
+          ? ['-u', options.user]
+          : [],
+        ...volumeHelper.volumeCommands,
+        ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
+        ...options.workingDirectory
+          ? ['-w', options.workingDirectory]
+          : [],
+        ...entrypoint
+          ? ['--entrypoint', entrypoint]
+          : [],
+        this.image,
+        ...command,
+      ];
+
+      dockerExec(dockerArgs);
+    } finally {
+      volumeHelper.cleanup();
+    }
   }
 
   /**
@@ -461,18 +462,61 @@ export class DockerImage extends BundlingDockerImage {
 }
 
 /**
- * A Docker volume
+ * The access mechanism used to make this volume available to the bundling container
  */
-export interface DockerVolume {
+export enum DockerVolumeType {
   /**
-   * The path to the file or directory on the host machine
+   * Creates temporary volumes and containers to copy files from the host to the bundling container and back.
+   * This is slower, but works also in more complex situations with remote or shared docker sockets.
    */
-  readonly hostPath: string;
+  VOLUME_COPY = 'VOLUME_COPY',
 
   /**
-   * The path where the file or directory is mounted in the container
+   * The source and output folders will be mounted as bind mount from the host system
+   * This is faster and simpler, but less portable than `VOLUME_COPY`.
+   */
+  BIND_MOUNT = 'BIND_MOUNT',
+
+  /**
+   * The volume already exists and will not be created or destroyed by this class
+   */
+  EXISTING = 'EXISTING',
+}
+
+/**
+ * Common properties for all Docker volume types.
+ */
+export interface DockerVolumeBase {
+  /**
+   * The path inside the container where the volume is mounted.
+   * This property is required for all volume types.
    */
   readonly containerPath: string;
+
+  /**
+   * `--volume` options to use when mounting this volume to the docker container.
+   *
+   * @default - 'z' option is used for selinux bind mounts
+   */
+  readonly opts?: string[];
+}
+
+/**
+ * Configuration for a `BIND_MOUNT` type Docker volume.
+ */
+export interface DockerVolume extends DockerVolumeBase {
+  /**
+   * The type of the Docker volume.
+   *
+   * @default DockerVolumeType.BIND_MOUNT
+   */
+  readonly dockerVolumeType?: DockerVolumeType.BIND_MOUNT;
+
+  /**
+   * The path on the host machine to be mounted as a bind mount.
+   * This property is required for `BIND_MOUNT` volumes.
+   */
+  readonly hostPath: string;
 
   /**
    * Mount consistency. Only applicable for macOS
@@ -481,6 +525,48 @@ export interface DockerVolume {
    * @see https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
    */
   readonly consistency?: DockerVolumeConsistency;
+}
+
+/**
+ * Configuration for a `VOLUME_COPY` type Docker volume.
+ */
+export interface VolumeCopyDockerVolume extends DockerVolumeBase {
+  /**
+   * The type of the Docker volume.
+   *
+   * @default DockerVolumeType.BIND_MOUNT
+   */
+  readonly dockerVolumeType: DockerVolumeType.VOLUME_COPY;
+
+  /**
+   * The path on the host machine to be used as the input for the volume.
+   * @default - Does not copy from the host machine
+   */
+  readonly hostInputPath?: string;
+
+  /**
+   * The path on the host machine where the output from the volume will be written.
+   * @default - Does not copy to the host machine
+   */
+  readonly hostOutputPath?: string;
+}
+
+/**
+ * Configuration for an `EXISTING` type Docker volume.
+ */
+export interface ExistingDockerVolume extends DockerVolumeBase {
+  /**
+   * The type of the Docker volume.
+   *
+   * @default DockerVolumeType.BIND_MOUNT
+   */
+  readonly dockerVolumeType: DockerVolumeType.EXISTING;
+
+  /**
+   * The name of the existing volume.
+   * This property is required for `EXISTING` volumes.
+   */
+  readonly volumeName: string;
 }
 
 /**
@@ -524,7 +610,7 @@ export interface DockerRunOptions {
    *
    * @default - no volumes are mounted
    */
-  readonly volumes?: DockerVolume[];
+  readonly volumes?: (DockerVolume | VolumeCopyDockerVolume | ExistingDockerVolume)[];
 
   /**
    * Where to mount the specified volumes from
@@ -639,29 +725,4 @@ export interface DockerBuildOptions {
 
 function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
-}
-
-function isSeLinux(): boolean {
-  if (process.platform != 'linux') {
-    return false;
-  }
-  const prog = 'selinuxenabled';
-  const proc = spawnSync(prog, [], {
-    stdio: [ // show selinux status output
-      'pipe', // get value of stdio
-      process.stderr, // redirect stdout to stderr
-      'inherit', // inherit stderr
-    ],
-  });
-  if (proc.error) {
-    // selinuxenabled not a valid command, therefore not enabled
-    return false;
-  }
-  if (proc.status == 0) {
-    // selinux enabled
-    return true;
-  } else {
-    // selinux not enabled
-    return false;
-  }
 }

@@ -1569,15 +1569,11 @@ describe('staging with docker cp', () => {
     expect(staging.isArchive).toEqual(true);
     const dockerCalls: string[] = readDockerStubInputConcat(STUB_INPUT_CP_CONCAT_FILE).split(/\r?\n/);
     expect(dockerCalls).toEqual(expect.arrayContaining([
-      expect.stringContaining('volume create assetInput'),
-      expect.stringContaining('volume create assetOutput'),
-      expect.stringMatching('run --name copyContainer.* -v /input:/asset-input -v /output:/asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R .* /asset-output && chown -R .* /asset-input'),
+      expect.stringMatching('run --name copyContainer.* -v /asset-input -v /asset-output public.ecr.aws/docker/library/alpine sh -c mkdir -p /asset-input && chown -R .* /asset-input && mkdir -p /asset-output && chown -R .* /asset-output'),
       expect.stringMatching('cp .*fs/fixtures/test1/\. copyContainer.*:/asset-input'),
       expect.stringMatching('run --rm -u .* --volumes-from copyContainer.* -w /asset-input alpine DOCKER_STUB_VOLUME_SINGLE_ARCHIVE'),
       expect.stringMatching('cp copyContainer.*:/asset-output/\. .*'),
-      expect.stringContaining('rm copyContainer'),
-      expect.stringContaining('volume rm assetInput'),
-      expect.stringContaining('volume rm assetOutput'),
+      expect.stringContaining('rm -v copyContainer'),
     ]));
   });
 
@@ -1649,11 +1645,12 @@ describe('staging with docker cp', () => {
 
 // Reads a docker stub and cleans the volume paths out of the stub.
 function readAndCleanDockerStubInput(file: string) {
-  return fs
-    .readFileSync(file, 'utf-8')
+  const commands = fs
+    .readFileSync(file, 'utf-8');
+  return commands
     .trim()
-    .replace(/-v ([^:]+):\/asset-input/g, '-v /input:/asset-input')
-    .replace(/-v ([^:]+):\/asset-output/g, '-v /output:/asset-output');
+    .replace(/-v ([^:\n]+):\/asset-input/g, '-v /input:/asset-input')
+    .replace(/-v ([^:\n]+):\/asset-output/g, '-v /output:/asset-output');
 }
 
 // Last docker input since last teardown

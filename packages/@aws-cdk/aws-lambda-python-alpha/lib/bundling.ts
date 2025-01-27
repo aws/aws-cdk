@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from 'aws-cdk-lib/core';
+import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume, type ExistingDockerVolume, type VolumeCopyDockerVolume } from 'aws-cdk-lib/core';
 import { Packaging, DependenciesFile } from './packaging';
 import { BundlingOptions, ICommandHooks } from './types';
 
@@ -65,7 +65,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly image: DockerImage;
   public readonly entrypoint?: string[];
   public readonly command: string[];
-  public readonly volumes?: DockerVolume[];
+  public readonly volumes?: (DockerVolume | VolumeCopyDockerVolume | ExistingDockerVolume)[];
   public readonly volumesFrom?: string[];
   public readonly environment?: { [key: string]: string };
   public readonly workingDirectory?: string;
