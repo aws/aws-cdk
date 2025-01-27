@@ -1227,11 +1227,14 @@ Enable [WAF default one-click security protection](https://aws.amazon.com/about-
 ```ts
 declare const sourceBucket: s3.Bucket;
 
-new cloudfront.Distribution(this, 'MyCfWebDistribution', {
+const distribution = new cloudfront.Distribution(this, 'MyCfWebDistribution', {
   defaultBehavior: {
     origin: new origins.S3Origin(sourceBucket),
   },
-  enableWafCoreProtections: true,
+});
+
+distribution.enableWafProtection({
+  enableCoreProtection: true,
 });
 ```
 

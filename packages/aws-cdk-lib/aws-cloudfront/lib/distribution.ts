@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
@@ -7,7 +8,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
-import { formatDistributionArn, getDefaultWAFWebAclProps } from './private/utils';
+import { formatDistributionArn, getCoreProtectionWAFWebAclProps } from './private/utils';
 import { IRealtimeLogConfig } from './realtime-log-config';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
@@ -91,6 +92,20 @@ export interface DistributionAttributes {
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
   readonly originGroupId?: string;
+}
+
+/**
+ * One-click security protection config for CloudFront
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
+ * @default - disabled
+ */
+export interface WafProtectionConfig {
+  /**
+   * Specifies whether to enable core protection
+   * @default - false
+   */
+  readonly enableCoreProtection?: boolean;
 }
 
 /**
@@ -233,19 +248,6 @@ export interface DistributionProps {
   readonly webAclId?: string;
 
   /**
-   * Enable or disable WAF one-click security protections.
-   *
-   * Can only be used in US East (N. Virginia) Region (us-east-1).
-   *
-   * Cannot be used with webAclId.
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
-   *
-   * @default false
-   */
-  readonly enableWafCoreProtections?: boolean;
-
-  /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
    * @default - No custom error responses.
@@ -340,10 +342,6 @@ export class Distribution extends Resource implements IDistribution {
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
 
-    if (props.webAclId && props.enableWafCoreProtections) {
-      throw new Error('Cannot specify both webAclId and enableWafCoreProtections');
-    }
-
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
@@ -372,14 +370,6 @@ export class Distribution extends Resource implements IDistribution {
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
 
-    if (props.enableWafCoreProtections) {
-      const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
-      if (!regionIsUsEast1) {
-        throw new Error(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`);
-      }
-      this.addWafCoreProtection();
-    }
-
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
       props.comment && props.comment.length > 128
@@ -404,7 +394,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: props.enableWafCoreProtections ? this.webAclId : Lazy.string({ produce: () => this.webAclId }),
+        webAclId: Lazy.string({ produce: () => this.webAclId }),
       },
     });
 
@@ -647,18 +637,31 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   /**
-   * Adds WAF security protection.
+   * Enable WAF one-click security protections.
+   * This method will add an AWS::WAFv2::WebACL resource to the stack.
    *
-   * @param props WAF WebAcl options
+   * Can only be used in US East (N. Virginia) Region (us-east-1).
+   * Cannot be used with webAclId.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
    */
-  private addWafCoreProtection(props?: aws_wafv2.CfnWebACLProps) {
+  public enableWafProtection(config: WafProtectionConfig) {
     if (this.webAclId) {
       throw new Error('This distribution already had WAF WebAcl attached');
     }
 
-    const webAclName = `CreatedByCloudFront-${Names.uniqueId(this)}`;
+    if (!config.enableCoreProtection) {
+      return;
+    }
 
-    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', props ?? getDefaultWAFWebAclProps(webAclName));
+    const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
+    if (!regionIsUsEast1) {
+      throw new Error(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`);
+    }
+
+    const webAclName = `CreatedByCloudFront-${randomUUID()}`;
+
+    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', getCoreProtectionWAFWebAclProps(webAclName));
 
     this.attachWebAclId(webAcl.attrArn);
   }

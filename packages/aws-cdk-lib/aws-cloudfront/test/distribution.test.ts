@@ -1386,9 +1386,11 @@ describe('WAF protection', () => {
       env: { account: '1234', region: 'us-east-1' },
     });
 
-    new Distribution(stack, 'MyDist', {
+    const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
-      enableWafCoreProtections: true,
+    });
+    dist.enableWafProtection({
+      enableCoreProtection: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::WAFv2::WebACL', Match.objectLike({
@@ -1465,21 +1467,25 @@ describe('WAF protection', () => {
     const origin = defaultOrigin();
 
     expect(() => {
-      new Distribution(stack, 'MyDist', {
+      const dist = new Distribution(stack, 'MyDist', {
         defaultBehavior: { origin },
-        enableWafCoreProtections: true,
         webAclId: 'dummy',
       });
-    }).toThrow(/Cannot specify both webAclId and enableWafCoreProtections/);
+      dist.enableWafProtection({
+        enableCoreProtection: true,
+      });
+    }).toThrow(/This distribution already had WAF WebAcl attached/);
   });
 
   test('throws error if used outside us-east-1', () => {
     const origin = defaultOrigin();
 
     expect(() => {
-      new Distribution(stack, 'MyDist', {
+      const dist = new Distribution(stack, 'MyDist', {
         defaultBehavior: { origin },
-        enableWafCoreProtections: true,
+      });
+      dist.enableWafProtection({
+        enableCoreProtection: true,
       });
     }).toThrow(/To enable WAF core protection, the stack must be in the us-east-1 region but you are in/);
   });

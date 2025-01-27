@@ -19,7 +19,7 @@ export function formatDistributionArn(dist: IDistribution) {
  *
  * TODO: how to keep this up-to-date
  */
-export function getDefaultWAFWebAclProps(webAclName: string): aws_wafv2.CfnWebACLProps {
+export function getCoreProtectionWAFWebAclProps(webAclName: string): aws_wafv2.CfnWebACLProps {
   return {
     name: webAclName,
     defaultAction: {
