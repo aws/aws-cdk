@@ -79,7 +79,7 @@ Ref: https://docs.aws.amazon.com/cli/latest/reference/ec2/get-ipam-pool-allocati
 
 const stack = new Stack();
 const ipam = new Ipam(this, 'Ipam', {
-  operatingRegion: ['us-west-1']
+  operatingRegions: ['us-west-1']
 });
 const ipamPublicPool = ipam.publicScope.addPool('PublicPoolA', {
   addressFamily: AddressFamily.IP_V6,

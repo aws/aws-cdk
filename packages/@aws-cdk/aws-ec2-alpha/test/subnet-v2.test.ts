@@ -169,7 +169,7 @@ describe('Subnet V2 with custom IP and routing', () => {
 
   test('Create Subnet with IPv6 if it is Ipam Ipv6 is enabled on VPC', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
@@ -244,7 +244,7 @@ describe('Subnet V2 with custom IP and routing', () => {
 
   test('Should throw error if overlapping CIDR block(IPv6) for the subnet', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,

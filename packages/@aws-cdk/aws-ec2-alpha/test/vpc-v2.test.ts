@@ -124,7 +124,7 @@ describe('Vpc V2 with full control', () => {
   test('VPC Primary IP from Ipv4 Ipam', () => {
 
     const ipam = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
 
     const pool = ipam.privateScope.addPool('PrivatePool0', {
@@ -178,7 +178,7 @@ describe('Vpc V2 with full control', () => {
 
   test('VPC Secondary IP from Ipv6 Ipam', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
 
     const pool = ipam.publicScope.addPool('PublicPool0', {
@@ -311,7 +311,7 @@ describe('Vpc V2 with full control', () => {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
         ipamPool: new Ipam(stack, 'TestIpam', {
-          operatingRegion: ['us-west-1'],
+          operatingRegions: ['us-west-1'],
         }).publicScope.addPool('PublicPool0', {
           addressFamily: AddressFamily.IP_V6,
           awsService: AwsServiceName.EC2,

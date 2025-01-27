@@ -501,7 +501,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
           }
           this.addDefaultInternetRoute(subnet, igw, options);
           processedSubnets.add(subnet.node.id);
-        };
+        }
       }); // If there are no input subnets defined, default route will be added to all public subnets
     } else if (!options?.subnets && this.publicSubnets) {
       this.publicSubnets.forEach((publicSubnets) => this.addDefaultInternetRoute(publicSubnets, igw, options));

@@ -18,7 +18,7 @@ describe('IPAM Test', () => {
       env: envUSA,
     });
     ipam = new Ipam(stack, 'Ipam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
   });
 
@@ -82,7 +82,7 @@ describe('IPAM Test', () => {
   test('Creates IPAM CIDR pool under public scope for IPv6', () => {
     // Create IPAM resources
     const ipamIpv6 = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
@@ -116,7 +116,7 @@ describe('IPAM Test', () => {
   test('Get region from stack env', () => {
     // Create IPAM resources
     const ipamRegion = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
@@ -158,7 +158,7 @@ describe('IPAM Test', () => {
   test('IPAM throws error if awsService is not provided for IPv6 address', () => {
     // Create IPAM resources
     const ipamRegion = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
@@ -172,7 +172,7 @@ describe('IPAM Test', () => {
     const app = new cdk.App();
     const stack_new = new cdk.Stack(app, 'TestStack');
     expect(() => new Ipam(stack_new, 'TestIpam', {
-      operatingRegion: [],
+      operatingRegions: [],
     })).toThrow('Please provide at least one operating region');
   });
 
@@ -180,7 +180,7 @@ describe('IPAM Test', () => {
     const app = new cdk.App();
     const stack_new = new cdk.Stack(app, 'TestStack');
     new Ipam(stack_new, 'TestIpam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
     Template.fromStack(stack_new).hasResourceProperties(
       'AWS::EC2::IPAM', {
@@ -231,7 +231,7 @@ describe('IPAM Test', () => {
 
   test('IPAM throws error if locale(region) of pool is not one of the operating regions', () => {
     const ipamRegion = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-2'],
+      operatingRegions: ['us-west-2'],
     });
     const poolOptions: vpc.PoolOptions = {
       addressFamily: AddressFamily.IP_V6,
