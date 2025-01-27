@@ -1,8 +1,10 @@
 import { Construct } from 'constructs';
+
 import { Billing } from './billing';
 import { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryptionV2 } from './encryption';
+
 import {
   Attribute,
   BillingMode,
@@ -30,6 +32,7 @@ import {
   TagType,
   Token,
 } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -710,8 +713,14 @@ export class TableV2 extends TableBaseV2 {
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
 
+    // Determine if Point-In-Time Recovery (PITR) is enabled based on the provided property or table options (deprecated options).
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
 
+    /* Construct the PointInTimeRecoverySpecification object to configure PITR settings.
+    * 1. Explicitly provided specification via props.pointInTimeRecoverySpecification.
+    * 2. Fallback to default specification from tableOptions.pointInTimeRecoverySpecification.
+    * 3. Derive the specification based on pointInTimeRecovery if it's defined.
+    */
     const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification | undefined =
       props.pointInTimeRecoverySpecification ??
       this.tableOptions.pointInTimeRecoverySpecification ??
@@ -1014,15 +1023,15 @@ export class TableV2 extends TableBaseV2 {
     const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
 
     if (props.pointInTimeRecovery !== undefined && props.pointInTimeRecoverySpecification !== undefined) {
-      throw new Error('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+      throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
     }
 
     if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
-      throw new Error('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
+      throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
     }
 
     if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
-      throw new Error('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+      throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
   }
 }

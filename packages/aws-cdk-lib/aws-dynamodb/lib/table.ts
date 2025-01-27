@@ -21,6 +21,7 @@ import {
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
 } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -1538,17 +1539,17 @@ export class Table extends TableBase {
   private validatePitr (props: TableProps): PointInTimeRecoverySpecification | undefined {
 
     if (props.pointInTimeRecoverySpecification !==undefined && props.pointInTimeRecovery !== undefined) {
-      throw new Error('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+      throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
     }
 
     const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
 
     if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
-      throw new Error('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
+      throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
     }
 
     if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
-      throw new Error('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+      throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
 
     return props.pointInTimeRecoverySpecification ??
