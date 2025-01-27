@@ -19,6 +19,7 @@ let failed = false;
 
 export interface TestContext {
   readonly randomString: string;
+  readonly name: string;
   readonly output: NodeJS.WritableStream;
   log(s: string): void;
 };
@@ -61,6 +62,7 @@ export function integTest(
       return await callback({
         output,
         randomString: randomString(),
+        name,
         log(s: string) {
           output.write(`${s}\n`);
         },
