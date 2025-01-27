@@ -9,6 +9,7 @@ import {
   IVpcLink,
 } from '../../../../aws-apigatewayv2';
 import * as ec2 from '../../../../aws-ec2';
+import { ValidationError } from '../../../../core/lib/errors';
 
 /**
  * Options required to use an existing vpcLink or configure a new one
@@ -51,7 +52,7 @@ export abstract class HttpPrivateIntegration extends HttpRouteIntegration {
     let vpcLink = configOptions.vpcLink;
     if (!vpcLink) {
       if (!configOptions.vpc) {
-        throw new Error('One of vpcLink or vpc should be provided for private integration');
+        throw new ValidationError('One of vpcLink or vpc should be provided for private integration', bindOptions.scope);
       }
 
       vpcLink = bindOptions.route.httpApi.addVpcLink({ vpc: configOptions.vpc });

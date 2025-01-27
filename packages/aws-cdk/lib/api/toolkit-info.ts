@@ -10,7 +10,7 @@ import {
   DEFAULT_BOOTSTRAP_VARIANT,
   REPOSITORY_NAME_OUTPUT,
 } from './bootstrap/bootstrap-props';
-import { CloudFormationStack, stabilizeStack } from './util/cloudformation';
+import { type CloudFormationStack, stabilizeStack } from './deployments/cloudformation';
 import { ToolkitError } from '../toolkit/error';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
