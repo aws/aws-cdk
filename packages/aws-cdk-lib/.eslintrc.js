@@ -18,6 +18,8 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 const enableNoThrowDefaultErrorIn = [
   'aws-amplify',
   'aws-amplifyuibuilder',
+  'aws-apigateway',
+  'aws-apigatewayv2',
   'aws-apigatewayv2-authorizers',
   'aws-apigatewayv2-integrations',
   'aws-cognito',
@@ -34,8 +36,6 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmcontacts',
   'aws-ssmincidents',
   'aws-ssmquicksetup',
-  'aws-apigatewayv2',
-  'aws-apigatewayv2-authorizers',
   'aws-synthetics',
   'aws-route53',
   'aws-route53-patterns',
