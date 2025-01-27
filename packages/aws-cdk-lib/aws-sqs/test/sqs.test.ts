@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnParameter, Duration, Stack, App, Token } from '../../core';
 import * as sqs from '../lib';
+import { validateRedriveAllowPolicy } from '../lib/validate-queue-props';
 
 /* eslint-disable quote-props */
 
@@ -62,6 +63,17 @@ test('with a dead letter queue', () => {
   expect(queue.deadLetterQueue).toEqual(dlqProps);
 });
 
+test('multiple prop validation errors are presented to the user (out-of-range retentionPeriod and deliveryDelay)', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // THEN
+  expect(() => new sqs.Queue(stack, 'MyQueue', {
+    retentionPeriod: Duration.seconds(30),
+    deliveryDelay: Duration.minutes(16),
+  })).toThrow('Queue initialization failed due to the following validation error(s):\n- delivery delay must be between 0 and 900 seconds, but 960 was provided\n- message retention period must be between 60 and 1,209,600 seconds, but 30 was provided');
+});
+
 test('message retention period must be between 1 minute to 14 days', () => {
   // GIVEN
   const stack = new Stack();
@@ -69,11 +81,11 @@ test('message retention period must be between 1 minute to 14 days', () => {
   // THEN
   expect(() => new sqs.Queue(stack, 'MyQueue', {
     retentionPeriod: Duration.seconds(30),
-  })).toThrow(/message retention period must be 60 seconds or more/);
+  })).toThrow('Queue initialization failed due to the following validation error(s):\n- message retention period must be between 60 and 1,209,600 seconds, but 30 was provided');
 
   expect(() => new sqs.Queue(stack, 'AnotherQueue', {
     retentionPeriod: Duration.days(15),
-  })).toThrow(/message retention period must be 1209600 seconds or less/);
+  })).toThrow('Queue initialization failed due to the following validation error(s):\n- message retention period must be between 60 and 1,209,600 seconds, but 1296000 was provided');
 });
 
 test('message retention period can be provided as a parameter', () => {
@@ -152,6 +164,65 @@ test('addToPolicy will automatically create a policy for this queue', () => {
         },
       },
     },
+  });
+});
+
+describe('validateRedriveAllowPolicy', () => {
+  test('does not throw for valid policy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const redriveAllowPolicy = { redrivePermission: sqs.RedrivePermission.ALLOW_ALL };
+
+    // THEN
+    expect(() => validateRedriveAllowPolicy(stack, redriveAllowPolicy)).not.toThrow();
+  });
+
+  test('throws when sourceQueues is provided with ALLOW_ALL permission', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const sourceQueue = new sqs.Queue(stack, 'SourceQueue');
+    const redriveAllowPolicy = {
+      redrivePermission: sqs.RedrivePermission.ALLOW_ALL,
+      sourceQueues: [sourceQueue],
+    };
+
+    // THEN
+    expect(() => validateRedriveAllowPolicy(stack, redriveAllowPolicy))
+      .toThrow("Queue initialization failed due to the following validation error(s):\n- sourceQueues cannot be configured when RedrivePermission is set to 'allowAll' or 'denyAll'");
+  });
+
+  test('throws when sourceQueues is not provided with BY_QUEUE permission', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const redriveAllowPolicy = {
+      redrivePermission: sqs.RedrivePermission.BY_QUEUE,
+    };
+
+    // THEN
+    expect(() => validateRedriveAllowPolicy(stack, redriveAllowPolicy))
+      .toThrow("Queue initialization failed due to the following validation error(s):\n- At least one source queue must be specified when RedrivePermission is set to 'byQueue'");
+  });
+
+  test('throws when more than 10 sourceQueues are provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const sourceQueues = Array(11).fill(null).map((_, i) => new sqs.Queue(stack, `SourceQueue${i}`));
+    const redriveAllowPolicy = {
+      redrivePermission: sqs.RedrivePermission.BY_QUEUE,
+      sourceQueues,
+    };
+
+    // THEN
+    expect(() => validateRedriveAllowPolicy(stack, redriveAllowPolicy))
+      .toThrow("Queue initialization failed due to the following validation error(s):\n- Up to 10 sourceQueues can be specified. Set RedrivePermission to 'allowAll' to specify more");
   });
 });
 

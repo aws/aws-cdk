@@ -7,7 +7,7 @@ import * as semver from 'semver';
 import * as sinon from 'sinon';
 import { ImportMock } from 'ts-mock-imports';
 import { execProgram } from '../../lib/api/cxapp/exec';
-import { Configuration } from '../../lib/settings';
+import { Configuration } from '../../lib/cli/user-configuration';
 import { testAssembly } from '../util';
 import { mockSpawn } from '../util/mock-child_process';
 import { MockSdkProvider } from '../util/mock-sdk';
