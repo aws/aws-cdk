@@ -696,7 +696,6 @@ describe('managed policy', () => {
 
     class DummyResource extends cdk.Resource implements IResourceWithPolicy {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        //throw new Error('should not be called.');
         return { statementAdded: false };
       }
     };
@@ -717,7 +716,7 @@ describe('managed policy', () => {
   });
 
   test('Policies can now be granted principal permissions across accounts', () => {
-    //GIVEN
+    // GIVEN
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
@@ -728,10 +727,10 @@ describe('managed policy', () => {
       }
     };
     const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
-    //WHEN
+    // WHEN
     Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
       ManagedPolicyName: 'MyManagedPolicyName',
       PolicyDocument: {
@@ -746,7 +745,7 @@ describe('managed policy', () => {
   });
 
   test('Policies can now be granted resource permissions', () => {
-    //GIVEN
+    // GIVEN
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
@@ -757,11 +756,10 @@ describe('managed policy', () => {
       }
     };
     const resource = new DummyResource(stack, 'Dummy');
-    //WHEN
+    // WHEN
     Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    //THEN
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
       ManagedPolicyName: 'MyManagedPolicyName',
       PolicyDocument: {
