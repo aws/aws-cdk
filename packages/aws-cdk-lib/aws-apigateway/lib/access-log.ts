@@ -689,7 +689,6 @@ export class AccessLogFormat {
   /**
    * Custom log format.
    * You can create any log format string. You can easily get the $ context variable by using the methods of AccessLogField.
-   * @param format
    * @example
    *
    *  apigateway.AccessLogFormat.custom(JSON.stringify({
