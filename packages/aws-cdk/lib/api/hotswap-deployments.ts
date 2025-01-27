@@ -9,6 +9,7 @@ import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformatio
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
+import { isHotswappableDashboardChange } from './hotswap/cloudwatch-dashboards';
 
 /**
  * Perform a hotswap deployment,
@@ -75,6 +76,7 @@ async function findAllHotswappableChanges(
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableDashboardChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
     }
   });

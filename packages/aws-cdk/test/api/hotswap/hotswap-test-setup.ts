@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as AWS from 'aws-sdk';
+import * as cloudwatch from 'aws-sdk/clients/cloudwatch';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib';
@@ -78,6 +79,14 @@ export class CfnMockProvider {
   ) {
     this.mockSdkProvider.stubStepFunctions({
       updateStateMachine: mockUpdateMachineDefinition,
+    });
+  }
+
+  public setPutDashboardMock(
+    mockPutDashboardDefinition: (input: cloudwatch.PutDashboardInput) => cloudwatch.PutDashboardOutput,
+  ) {
+    this.mockSdkProvider.stubCloudWatch({
+      putDashboard: mockPutDashboardDefinition,
     });
   }
 
