@@ -1,19 +1,17 @@
 import { CfnTransitGateway, RouterType } from 'aws-cdk-lib/aws-ec2';
-import { Resource } from 'aws-cdk-lib/core';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { ITransitGatewayRouteTable, TransitGatewayRouteTable } from './transit-gateway-route-table';
-import { TransitGatewayVpcAttachment, AttachVpcOptions } from './transit-gateway-vpc-attachment';
+import { TransitGatewayVpcAttachment, AttachVpcOptions, ITransitGatewayVpcAttachment } from './transit-gateway-vpc-attachment';
 import { IRouteTarget } from './route';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 import { getFeatureStatusDefaultDisable, getFeatureStatusDefaultEnable } from './util';
 
-export enum TransitGatewayFeatureStatus {
-  ENABLE = 'enable',
-  DISABLE = 'disable',
-}
-
-export interface ITransitGateway {
+/**
+ * Represents a Transit Gateway.
+ */
+export interface ITransitGateway extends cdk.IResource {
   /**
    * The unique identifier of the Transit Gateway.
    *
@@ -21,7 +19,7 @@ export interface ITransitGateway {
    * and is used to reference it in various configurations and operations.
    * @attribute
    */
-  readonly transitGatewayId: string;
+  readonly transitGatewayId: string;                                                                                                                                                                      
 
   /**
    * The Amazon Resource Name (ARN) of the Transit Gateway.
@@ -57,11 +55,21 @@ export interface ITransitGateway {
   readonly defaultRouteTablePropagation: boolean;
 }
 
+/**
+ * Common properties for creating a Transit Gateway resource.
+ */
 export interface TransitGatewayProps {
+  /**
+   * Physical name of this Transit Gateway.
+   *
+   * @default - Assigned by CloudFormation.
+   */
+  readonly transitGatewayName?: string;
+
   /**
    * A private Autonomous System Number (ASN) for the Amazon side of a BGP session. The range is 64512 to 65534 for 16-bit ASNs.
    *
-   * @default - undefined
+   * @default - 64512, assigned by CloudFormation.
    */
   readonly amazonSideAsn?: number;
 
@@ -88,6 +96,8 @@ export interface TransitGatewayProps {
 
   /**
    * The description of the transit gateway.
+   *
+   * @default - no description
    */
   readonly description?: string;
 
@@ -114,6 +124,8 @@ export interface TransitGatewayProps {
 
   /**
    * The transit gateway CIDR blocks.
+   *
+   * @default - none
    */
   readonly transitGatewayCidrBlocks?: string[];
 
@@ -125,22 +137,36 @@ export interface TransitGatewayProps {
   readonly vpnEcmpSupport?: boolean;
 }
 
-abstract class TransitGatewayBase extends Resource implements ITransitGateway, IRouteTarget {
+/**
+ * A Transit Gateway.
+ * @internal
+ */
+abstract class TransitGatewayBase extends cdk.Resource implements ITransitGateway, IRouteTarget {
   public abstract readonly routerType: RouterType;
   public abstract readonly routerTargetId: string;
   public abstract readonly transitGatewayId: string;
   public abstract readonly transitGatewayArn: string;
-  public abstract readonly defaultRouteTable: TransitGatewayRouteTable;
+  public abstract readonly defaultRouteTable: ITransitGatewayRouteTable;
   public abstract readonly defaultRouteTableAssociation: boolean;
   public abstract readonly defaultRouteTablePropagation: boolean;
 
-  addRouteTable(id: string): TransitGatewayRouteTable {
+  /**
+   * Adds a new route table to the Transit Gateway.
+   *
+   * @returns The created Transit Gateway route table.
+   */
+  public addRouteTable(id: string): ITransitGatewayRouteTable {
     return new TransitGatewayRouteTable(this, id, {
       transitGateway: this,
     });
   }
 
-  attachVpc(id: string, options: AttachVpcOptions): TransitGatewayVpcAttachment {
+  /**
+   * Attaches a VPC to the Transit Gateway.
+   *
+   * @returns The created Transit Gateway VPC attachment.
+   */
+  public attachVpc(id: string, options: AttachVpcOptions): ITransitGatewayVpcAttachment {
     const attachment = new TransitGatewayVpcAttachment(this, id, {
       transitGateway: this,
       vpc: options.vpc,
@@ -174,29 +200,34 @@ abstract class TransitGatewayBase extends Resource implements ITransitGateway, I
   }
 }
 
+/**
+ * Creates a Transit Gateway.
+ *
+ * @resource AWS::EC2::TransitGateway
+ */
 export class TransitGateway extends TransitGatewayBase {
   public readonly routerType: RouterType;
   public readonly routerTargetId: string;
   public readonly transitGatewayId: string;
   public readonly transitGatewayArn: string;
-  public readonly defaultRouteTable: TransitGatewayRouteTable;
+  public readonly defaultRouteTable: ITransitGatewayRouteTable;
   public readonly defaultRouteTableAssociation: boolean;
   public readonly defaultRouteTablePropagation: boolean;
 
-  constructor(scope: Construct, id: string, props?: TransitGatewayProps) {
+  constructor(scope: Construct, id: string, props: TransitGatewayProps = {}) {
     super(scope, id);
 
     const resource = new CfnTransitGateway(this, id, {
-      amazonSideAsn: props?.amazonSideAsn ?? undefined,
-      autoAcceptSharedAttachments: getFeatureStatusDefaultDisable(props?.autoAcceptSharedAttachments),
+      amazonSideAsn: props.amazonSideAsn ?? undefined,
+      autoAcceptSharedAttachments: getFeatureStatusDefaultDisable(props.autoAcceptSharedAttachments),
       // Default Association/Propagation will always be false when creating the L1 to prevent EC2 from creating the default route table.
       // Instead, CDK will create a custom default route table and use the properties to mimic the automatic assocation/propagation behaviour.
-      defaultRouteTableAssociation: getFeatureStatusDefaultDisable(props?.defaultRouteTableAssociation),
-      defaultRouteTablePropagation: getFeatureStatusDefaultDisable(props?.defaultRouteTablePropagation),
-      description: props?.description,
-      dnsSupport: getFeatureStatusDefaultEnable(props?.dnsSupport),
-      multicastSupport: getFeatureStatusDefaultDisable(props?.multicastSupport),
-      vpnEcmpSupport: getFeatureStatusDefaultEnable(props?.vpnEcmpSupport),
+      defaultRouteTableAssociation: getFeatureStatusDefaultDisable(props.defaultRouteTableAssociation),
+      defaultRouteTablePropagation: getFeatureStatusDefaultDisable(props.defaultRouteTablePropagation),
+      description: props.description,
+      dnsSupport: getFeatureStatusDefaultEnable(props.dnsSupport),
+      multicastSupport: getFeatureStatusDefaultDisable(props.multicastSupport),
+      vpnEcmpSupport: getFeatureStatusDefaultEnable(props.vpnEcmpSupport),
     });
 
     this.transitGatewayId = resource.ref;
@@ -212,7 +243,7 @@ export class TransitGateway extends TransitGatewayBase {
       transitGateway: this,
     });
 
-    this.defaultRouteTableAssociation = props?.defaultRouteTableAssociation ?? true;
-    this.defaultRouteTablePropagation = props?.defaultRouteTablePropagation ?? true;
+    this.defaultRouteTableAssociation = props.defaultRouteTableAssociation ?? true;
+    this.defaultRouteTablePropagation = props.defaultRouteTablePropagation ?? true;
   }
 }

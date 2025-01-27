@@ -4,6 +4,9 @@ import { Construct } from 'constructs';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
+/**
+ * Represents a Transit Gateway Route Table Propagation
+ */
 export interface ITransitGatewayRouteTablePropagation extends IResource {
   /**
    * The ID of the transit gateway route table propagation.
@@ -12,6 +15,9 @@ export interface ITransitGatewayRouteTablePropagation extends IResource {
   readonly transitGatewayRouteTablePropagationId: string;
 }
 
+/**
+ * Common properties for a Transit Gateway Route Table Propagation.
+ */
 export interface TransitGatewayRouteTablePropagationProps {
   /**
    * The ID of the transit gateway route table propagation.
@@ -22,8 +28,19 @@ export interface TransitGatewayRouteTablePropagationProps {
    * The ID of the transit gateway route table propagation.
    */
   readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
+
+  /**
+   * Physical name of this propagation.
+   *
+   * @default - Assigned by CloudFormation.
+   */
+  readonly transitGatewayRouteTablePropagationName?: string;
 }
 
+/**
+ * A Transit Gateway Route Table Propagation.
+ * @internal
+ */
 abstract class TransitGatewayRouteTablePropagationBase extends Resource implements ITransitGatewayRouteTablePropagation {
   /**
    * The ID of the transit gateway route table propagation.
@@ -31,6 +48,11 @@ abstract class TransitGatewayRouteTablePropagationBase extends Resource implemen
   public abstract readonly transitGatewayRouteTablePropagationId: string;
 }
 
+/**
+ * Create a Transit Gateway Route Table Propagation
+ *
+ * @resource AWS::EC2::TransitGatewayRouteTablePropagation
+ */
 export class TransitGatewayRouteTablePropagation extends TransitGatewayRouteTablePropagationBase {
   /**
    * The ID of the transit gateway route table propagation.

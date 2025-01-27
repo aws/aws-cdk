@@ -7,21 +7,66 @@ import { TransitGatewayRoute, TransitGatewayBlackholeRoute } from './transit-gat
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 
+/**
+ * Represents a Transit Gateway Route Table
+ */
 export interface ITransitGatewayRouteTable extends IResource {
   /**
    * The ID of the transit gateway route table
    * @attribute
    */
   readonly routeTableId: string;
+
+  /**
+   * Add an active route to this route table
+   *
+   * @returns TransitGatewayRoute
+   */
+  addRoute(id: string, transitGatewayAttachment: ITransitGatewayAttachment, destinationCidr: string): TransitGatewayRoute;
+
+  /**
+   * Add a blackhole route to this route table
+   *
+   * @returns TransitGatewayBlackholeRoute
+   */
+  addBlackholeRoute(id: string, destinationCidr: string): TransitGatewayBlackholeRoute;
+
+  /**
+   * Add an Association to this route table
+   *
+   * @returns TransitGatewayRouteTableAssociation
+   */
+  addAssociation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): TransitGatewayRouteTableAssociation;
+
+  /**
+   * Enable propagation from an Attachment
+   *
+   * @returns TransitGatewayRouteTablePropagation
+   */
+  enablePropagation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): TransitGatewayRouteTablePropagation;
 }
 
+/**
+ * Common properties for creating a Transit Gateway Route Table resource.
+ */
 export interface TransitGatewayRouteTableProps {
   /**
-   * The ID of the transit gateway
+   * The Transit Gateway that this route table belongs to.
    */
   readonly transitGateway: ITransitGateway;
+
+  /**
+   * Physical name of this Transit Gateway Route Table.
+   *
+   * @default - Assigned by CloudFormation.
+   */
+  readonly transitGatewayRouteTableName?: string;
 }
 
+/**
+ * A Transit Gateway Route Table.
+ * @internal
+ */
 abstract class TransitGatewayRouteTableBase extends Resource implements ITransitGatewayRouteTable, IRouteTable {
   public abstract readonly routeTableId: string;
   public abstract readonly transitGateway: ITransitGateway;
@@ -57,12 +102,15 @@ abstract class TransitGatewayRouteTableBase extends Resource implements ITransit
 }
 
 /**
- * An AWS Transit Gateway route table
+ * Creates a Transit Gateway route table.
  *
  * @resource AWS::EC2::TransitGatewayRouteTable
  */
 export class TransitGatewayRouteTable extends TransitGatewayRouteTableBase {
   public readonly routeTableId: string;
+  /**
+   * The Transit Gateway.
+   */
   public readonly transitGateway: ITransitGateway;
 
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTableProps) {

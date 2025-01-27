@@ -1,7 +1,6 @@
 /* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
 import { ISubnet } from 'aws-cdk-lib/aws-ec2';
-import { TransitGatewayFeatureStatus } from './transit-gateway';
 
 /**
  * Return a subnet name from its construct ID
@@ -17,6 +16,21 @@ export function subnetGroupNameFromConstructId(subnet: ISubnet) {
  */
 export function subnetId(name: string, i: number) {
   return `${name}Subnet${i + 1}`;
+}
+
+/**
+ * The status of a Transit Gateway feature.
+ */
+enum TransitGatewayFeatureStatus {
+  /**
+   * The feature is enabled.
+   */
+  ENABLE = 'enable',
+
+  /**
+   * The feature is disabled.
+   */
+  DISABLE = 'disable',
 }
 
 export function getFeatureStatusDefaultEnable(status?: boolean): TransitGatewayFeatureStatus {

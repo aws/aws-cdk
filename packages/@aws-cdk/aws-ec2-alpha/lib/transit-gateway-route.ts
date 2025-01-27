@@ -4,6 +4,9 @@ import { CfnTransitGatewayRoute } from 'aws-cdk-lib/aws-ec2';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 
+/**
+ * Represents a Transit Gateway Route.
+ */
 export interface ITransitGatewayRoute extends IResource {
   /**
    * The destination CIDR block for this route.
@@ -19,40 +22,57 @@ export interface ITransitGatewayRoute extends IResource {
   readonly routeTable: ITransitGatewayRouteTable;
 }
 
-export interface TransitGatewayRouteProps {
+/**
+ * Common properties for a Transit Gateway Route.
+ */
+export interface BaseTransitGatewayRouteProps {
+  /**
+   * The CIDR block used for destination matches.
+   */
+  readonly destinationCidrBlock: string;
+
+  /**
+   * The transit gateway route table you want to install this route into.
+   */
+  readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
+
+  /**
+   * Physical name of this Transit Gateway Route.
+   *
+   * @default - Assigned by CloudFormation.
+   */
+  readonly transitGatewayRouteName?: string;
+}
+
+/**
+ * Common properties for a Transit Gateway Route.
+ */
+export interface TransitGatewayRouteProps extends BaseTransitGatewayRouteProps {
   /**
    * The transit gateway attachment to route the traffic to.
    */
   readonly transitGatewayAttachment: ITransitGatewayAttachment;
-
-  /**
-   * The CIDR block used for destination matches.
-   */
-  readonly destinationCidrBlock: string;
-
-  /**
-   * The transit gateway route table you want to install this route into.
-   */
-  readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
 }
 
-export interface TransitGatewayBlackholeRouteProps {
-  /**
-   * The CIDR block used for destination matches.
-   */
-  readonly destinationCidrBlock: string;
+/**
+ * Properties for a Transit Gateway Blackhole Route.
+ */
+export interface TransitGatewayBlackholeRouteProps extends BaseTransitGatewayRouteProps {}
 
-  /**
-   * The transit gateway route table you want to install this route into.
-   */
-  readonly transitGatewayRouteTable: ITransitGatewayRouteTable;
-}
-
+/**
+ * A Transit Gateway Route.
+ * @internal
+ */
 abstract class TransitGatewayRouteBase extends Resource implements ITransitGatewayRoute {
   public abstract routeTable: ITransitGatewayRouteTable;
   public abstract destinationCidrBlock: string;
 }
 
+/**
+ * Create a Transit Gateway Active Route
+ *
+ * @resource AWS::EC2::TransitGatewayRoute
+ */
 export class TransitGatewayRoute extends TransitGatewayRouteBase {
   public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;
@@ -72,6 +92,11 @@ export class TransitGatewayRoute extends TransitGatewayRouteBase {
   }
 }
 
+/**
+ * Create a Transit Gateway Blackhole Route
+ *
+ * @resource AWS::EC2::TransitGatewayRoute
+ */
 export class TransitGatewayBlackholeRoute extends TransitGatewayRouteBase {
   public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;

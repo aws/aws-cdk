@@ -2,7 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { Stack } from 'aws-cdk-lib/core';
 import * as vpc from '../lib';
 import { TransitGateway } from '../lib/transit-gateway';
-import { TransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
+import { ITransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
 import { TransitGatewayVpcAttachment } from '../lib/transit-gateway-vpc-attachment';
 import { TransitGatewayRouteTableAssociation } from '../lib/transit-gateway-route-table-association';
 import * as subnet from '../lib/subnet-v2';
@@ -12,7 +12,7 @@ describe('TransitGatewayRouteTableAssociation', () => {
   let stack: Stack;
   let myVpc: vpc.VpcV2;
   let transitGateway: TransitGateway;
-  let routeTable: TransitGatewayRouteTable;
+  let routeTable: ITransitGatewayRouteTable;
   let attachment: TransitGatewayVpcAttachment;
   let mySubnet: vpc.SubnetV2;
 

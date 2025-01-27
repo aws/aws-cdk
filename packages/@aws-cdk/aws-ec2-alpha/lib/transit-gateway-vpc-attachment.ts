@@ -7,8 +7,9 @@ import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './trans
 import { getFeatureStatusDefaultDisable } from './util';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
-export interface ITransitGatewayVpcAttachment extends ITransitGatewayAttachment {}
-
+/**
+ * Options for Transit Gateway VPC Attachment
+ */
 export interface ITransitGatewayVpcAttachmentOptions {
   /**
    * Enable or disable appliance mode support.
@@ -39,6 +40,24 @@ export interface ITransitGatewayVpcAttachmentOptions {
   readonly securityGroupReferencingSupport?: boolean;
 }
 
+/**
+ * Represents a Transit Gateway VPC Attachment
+ */
+export interface ITransitGatewayVpcAttachment extends ITransitGatewayAttachment {
+  /**
+   * Add additional subnets to this attachment.
+   */
+  addSubnets(subnets: ISubnet[]): void;
+
+  /**
+   * Remove subnets from this attachment.
+   */
+  removeSubnets(subnets: ISubnet[]): void;
+}
+
+/**
+ * Base class for Transit Gateway VPC Attachment
+ */
 interface BaseTransitGatewayVpcAttachmentProps {
   /**
    * A list of one or more subnets to place the attachment in.
@@ -53,10 +72,22 @@ interface BaseTransitGatewayVpcAttachmentProps {
 
   /**
    * The VPC attachment options.
+   *
+   * @default - All options are disabled.
    */
   readonly vpcAttachmentOptions?: ITransitGatewayVpcAttachmentOptions;
+
+  /**
+   * Physical name of this Transit Gateway VPC Attachment.
+   *
+   * @default - Assigned by CloudFormation.
+   */
+  readonly transitGatewayAttachmentName?: string;
 }
 
+/**
+ * Common properties for creating a Transit Gateway VPC Attachment resource.
+ */
 export interface TransitGatewayVpcAttachmentProps extends BaseTransitGatewayVpcAttachmentProps {
   /**
    * The transit gateway this attachment gets assigned to.
@@ -64,18 +95,30 @@ export interface TransitGatewayVpcAttachmentProps extends BaseTransitGatewayVpcA
   readonly transitGateway: ITransitGateway;
 }
 
+/**
+ * Options for creating an Attachment via the attachVpc() method
+ */
 export interface AttachVpcOptions extends BaseTransitGatewayVpcAttachmentProps {
   /**
    * An optional route table to associate with this VPC attachment.
+   *
+   * @default - No associations will be created unless it is for the default route table and automatic association is enabled.
    */
   readonly associationRouteTable?: ITransitGatewayRouteTable;
 
   /**
    * A list of optional route tables to propagate routes to.
+   *
+   * @default - No propagations will be created unless it is for the default route table and automatic propagation is enabled.
    */
   readonly propagationRouteTables?: ITransitGatewayRouteTable[];
 }
 
+/**
+ * Creates a Transit Gateway VPC Attachment.
+ *
+ * @resource AWS::EC2::TransitGatewayAttachment
+ */
 export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
   public readonly transitGatewayVpcAttachmentId: string;
   private readonly subnets: ISubnet[] = [];
@@ -115,6 +158,9 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
     }
   }
 
+  /**
+   * Add additional subnets to this attachment.
+   */
   addSubnets(subnets: ISubnet[]): void {
     for (const subnet of subnets) {
       if (this.subnets.some(existing => existing.subnetId === subnet.subnetId)) {
@@ -125,6 +171,9 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
     this.transitGatewayVpcAttachment.subnetIds = this.subnets.map(subnet => subnet.subnetId);
   }
 
+  /**
+   * Remove additional subnets to this attachment.
+   */
   removeSubnets(subnets: ISubnet[]): void {
     for (const subnet of subnets) {
       const index = this.subnets.findIndex(existing => existing.subnetId === subnet.subnetId);
