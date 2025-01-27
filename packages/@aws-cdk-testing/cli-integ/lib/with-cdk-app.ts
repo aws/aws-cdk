@@ -11,7 +11,7 @@ import { IPackageSource } from './package-sources/source';
 import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
 import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
-import { AwsContext, withAws } from './with-aws';
+import { AwsContext, atmosphereEnabled, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
 export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
@@ -290,6 +290,10 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
    * @default undefined
    */
   readonly usePreviousParameters?: boolean;
+
+  readonly trust?: string[];
+
+  readonly untrust?: string[];
 }
 
 export interface CdkGarbageCollectionCommandOptions {
@@ -444,6 +448,13 @@ export class TestFixture extends ShellHelper {
       args.push('--template', options.bootstrapTemplate);
     }
 
+    if (options.trust != null) {
+      args.push('--trust', options.trust.join(','));
+    }
+    if (options.untrust != null) {
+      args.push('--untrust', options.untrust.join(','));
+    }
+
     return this.cdk(args, {
       ...options.cliOptions,
       modEnv: {
@@ -506,6 +517,14 @@ export class TestFixture extends ShellHelper {
    * Return the environment variables with which to execute CDK
    */
   public cdkShellEnv() {
+    // if tests are using an explicit aws identity already (i.e creds)
+    // force every cdk command to use the same identity.
+    const awsCreds: Record<string, string> = this.aws.identity ? {
+      AWS_ACCESS_KEY_ID: this.aws.identity.accessKeyId,
+      AWS_SECRET_ACCESS_KEY: this.aws.identity.secretAccessKey,
+      AWS_SESSION_TOKEN: this.aws.identity.sessionToken!,
+    } : {};
+
     return {
       AWS_REGION: this.aws.region,
       AWS_DEFAULT_REGION: this.aws.region,
@@ -513,6 +532,7 @@ export class TestFixture extends ShellHelper {
       PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
       // In these tests we want to make a distinction between stdout and sterr
       CI: 'false',
+      ...awsCreds,
     };
   }
 
@@ -561,37 +581,44 @@ export class TestFixture extends ShellHelper {
    * Cleanup leftover stacks and bootstrapped resources
    */
   public async dispose(success: boolean) {
-    const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
-    this.sortBootstrapStacksToTheEnd(stacksToDelete);
+    // when using the atmosphere service, it does resource cleanup on our behalf
+    // so we don't have to wait for it.
+    if (!atmosphereEnabled()) {
 
-    // Bootstrap stacks have buckets that need to be cleaned
-    const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
-    // Parallelism will be reasonable
-    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-    await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
-    // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
-    this.bucketsToDelete.push(...bucketNames);
+      const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
-    // Bootstrap stacks have ECR repositories with images which should be deleted
-    const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
-    // Parallelism will be reasonable
-    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-    await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
+      this.sortBootstrapStacksToTheEnd(stacksToDelete);
 
-    await this.aws.deleteStacks(
-      ...stacksToDelete.map((s) => {
-        if (!s.StackName) {
-          throw new Error('Stack name is required to delete a stack.');
-        }
-        return s.StackName;
-      }),
-    );
+      // Bootstrap stacks have buckets that need to be cleaned
+      const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+      // Parallelism will be reasonable
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+      await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
+      // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
+      this.bucketsToDelete.push(...bucketNames);
 
-    // We might have leaked some buckets by upgrading the bootstrap stack. Be
-    // sure to clean everything.
-    for (const bucket of this.bucketsToDelete) {
-      await this.aws.deleteBucket(bucket);
+      // Bootstrap stacks have ECR repositories with images which should be deleted
+      const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+      // Parallelism will be reasonable
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+      await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
+
+      await this.aws.deleteStacks(
+        ...stacksToDelete.map((s) => {
+          if (!s.StackName) {
+            throw new Error('Stack name is required to delete a stack.');
+          }
+          return s.StackName;
+        }),
+      );
+
+      // We might have leaked some buckets by upgrading the bootstrap stack. Be
+      // sure to clean everything.
+      for (const bucket of this.bucketsToDelete) {
+        await this.aws.deleteBucket(bucket);
+      }
+
     }
 
     // If the tests completed successfully, happily delete the fixture
@@ -668,7 +695,11 @@ export async function ensureBootstrapped(fixture: TestFixture) {
     },
   });
 
-  ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
+  // when using the atmosphere service, every test needs to bootstrap
+  // its own environment.
+  if (!atmosphereEnabled()) {
+    ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
+  }
 }
 
 function defined<A>(x: A): x is NonNullable<A> {
