@@ -1,4 +1,4 @@
-/*eslint-disable no-console*/
+/* eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
 import { CrossRegionExports, ExportWriterCRProps } from '../types';
@@ -53,7 +53,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.error('Error processing event: ', e);
     throw e;
   }
-};
+}
 
 /**
  * Create parameters for existing exports

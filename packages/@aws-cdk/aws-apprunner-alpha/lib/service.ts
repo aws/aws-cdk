@@ -1294,7 +1294,6 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
     }
 
     if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
-
       if (props.serviceName.length < 4 || props.serviceName.length > 40) {
         throw new Error(
           `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`,

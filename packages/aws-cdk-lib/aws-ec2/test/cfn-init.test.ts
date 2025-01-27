@@ -388,7 +388,6 @@ const ASSET_STATEMENT = {
 };
 
 describe('assets n buckets', () => {
-
   test.each([
     ['Existing'],
     [''],

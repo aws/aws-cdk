@@ -515,7 +515,6 @@ describe('EC2 Routing', () => {
 });
 
 describe('VPCPeeringConnection', () => {
-
   let stackA: cdk.Stack;
   let stackB: cdk.Stack;
   let stackC: cdk.Stack;
@@ -545,11 +544,9 @@ describe('VPCPeeringConnection', () => {
     vpcC = new vpc.VpcV2(stackC, 'VpcC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
     });
-
   });
 
   test('Creates a cross account VPC peering connection', () => {
-
     const importedVpcB = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
       vpcId: 'mockVpcBId', // cross account stack references are not supported
       vpcCidrBlock: '10.2.0.0/16',
@@ -575,7 +572,6 @@ describe('VPCPeeringConnection', () => {
   });
 
   test('Creates a cross region VPC peering connection', () => {
-
     const importedVpcC = vpc.VpcV2.fromVpcV2Attributes(stackA, 'VpcB', {
       vpcId: 'mockVpcCId', // cross account stack references are not supported
       vpcCidrBlock: '10.3.0.0/16',

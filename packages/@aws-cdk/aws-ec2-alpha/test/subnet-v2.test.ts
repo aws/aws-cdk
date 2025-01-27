@@ -20,11 +20,9 @@ describe('Subnet V2 with custom IP and routing', () => {
       },
     });
     stack = new cdk.Stack(app);
-
   });
 
   test('should create a subnet with valid input parameters', () => {
-
     const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
@@ -64,7 +62,6 @@ describe('Subnet V2 with custom IP and routing', () => {
         },
       },
     });
-
   });
 
   test('Should throw error if overlapping CIDR block(IPv4) for the subnet', () => {

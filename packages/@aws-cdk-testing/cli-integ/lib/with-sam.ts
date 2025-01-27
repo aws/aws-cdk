@@ -270,7 +270,6 @@ export async function shellWithAction(
         reject(new Error(`'${command.join(' ')}' exited with error code ${code}. Output: \n${output}`));
       }
     });
-
   });
 }
 
@@ -284,5 +283,4 @@ function killSubProcess(child: child_process.ChildProcess, command: string) {
   } else {
     child.kill('SIGINT');
   }
-
 }

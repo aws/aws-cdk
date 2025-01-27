@@ -106,7 +106,6 @@ export class Formatter {
     entryType: string,
     collection: DifferenceCollection<V, T>,
     formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
-
     if (collection.differenceCount === 0) {
       return;
     }
