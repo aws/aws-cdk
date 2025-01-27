@@ -1,7 +1,29 @@
+import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 import { AwsClients } from './aws';
 import { TestContext } from './integ-test';
 import { ResourcePool } from './resource-pool';
 import { DisableBootstrapContext } from './with-cdk-app';
+
+export function atmosphereEnabled(): boolean {
+  const enabled = process.env.CDK_INTEG_ATMOSPHERE_ENABLED;
+  return enabled === 'true' || enabled === '1';
+}
+
+export function atmosphereEndpoint(): string {
+  const value = process.env.CDK_INTEG_ATMOSPHERE_ENDPOINT;
+  if (!value) {
+    throw new Error('CDK_INTEG_ATMOSPHERE_ENDPOINT is not defined');
+  }
+  return value;
+}
+
+export function atmospherePool() {
+  const value = process.env.CDK_INTEG_ATMOSPHERE_POOL;
+  if (!value) {
+    throw new Error('CDK_INTEG_ATMOSPHERE_POOL is not defined');
+  }
+  return value;
+}
 
 export type AwsContext = { readonly aws: AwsClients };
 
@@ -14,12 +36,40 @@ export function withAws<A extends TestContext>(
   block: (context: A & AwsContext & DisableBootstrapContext) => Promise<void>,
   disableBootstrap: boolean = false,
 ): (context: A) => Promise<void> {
-  return (context: A) => regionPool().using(async (region) => {
-    const aws = await AwsClients.forRegion(region, context.output);
-    await sanityCheck(aws);
+  return async (context: A) => {
 
-    return block({ ...context, disableBootstrap, aws });
-  });
+    if (atmosphereEnabled()) {
+      const atmosphere = new AtmosphereClient(atmosphereEndpoint());
+      const allocation = await atmosphere.acquire({ pool: atmospherePool(), requester: context.name });
+      const aws = await AwsClients.forIdentity(allocation.environment.region, {
+        accessKeyId: allocation.credentials.accessKeyId,
+        secretAccessKey: allocation.credentials.secretAccessKey,
+        sessionToken: allocation.credentials.sessionToken,
+        accountId: allocation.environment.account,
+      }, context.output);
+
+      await sanityCheck(aws);
+
+      let outcome = 'success';
+      try {
+        return await block({ ...context, disableBootstrap, aws });
+      } catch (e: any) {
+        outcome = 'failure';
+        throw e;
+      } finally {
+        await atmosphere.release(allocation.id, outcome);
+      }
+
+    } else {
+      return regionPool().using(async (region) => {
+        const aws = await AwsClients.forRegion(region, context.output);
+        await sanityCheck(aws);
+
+        return block({ ...context, disableBootstrap, aws });
+      });
+    }
+
+  };
 }
 
 let _regionPool: undefined | ResourcePool;
