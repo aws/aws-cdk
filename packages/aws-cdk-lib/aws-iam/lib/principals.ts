@@ -471,6 +471,7 @@ export class ArnPrincipal extends PrincipalBase {
  */
 export class AccountPrincipal extends ArnPrincipal {
   public readonly principalAccount: string | undefined;
+  private accountIdRegExp = new RegExp('^[0-9]{12}$');
 
   /**
    *
@@ -480,6 +481,10 @@ export class AccountPrincipal extends ArnPrincipal {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
     if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
       throw new Error('accountId should be of type string');
+    }
+    if (!this.accountIdRegExp.test(accountId)) {
+      /* eslint-disable-next-line no-console */
+      console.warn('accountId should be a 12-digit number');
     }
     this.principalAccount = accountId;
   }
