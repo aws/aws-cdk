@@ -868,7 +868,7 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
     });
   });
 
-};
+}
 
 function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined | null, optionsDisableInlineRules: boolean | undefined) {
 

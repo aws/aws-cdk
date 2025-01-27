@@ -163,7 +163,7 @@ export abstract class ScheduleTargetBase {
       if (maxAge < minMaxAge) {
         throw new Error('Minimum event age is 1 minute');
       }
-    };
+    }
     let maxAttempts = 185;
     if (typeof maximumRetryAttempts != 'undefined') {
       if (maximumRetryAttempts < 0) {

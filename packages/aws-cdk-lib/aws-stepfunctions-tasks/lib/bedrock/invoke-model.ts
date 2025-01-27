@@ -325,7 +325,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
             : 'DISABLED',
       }),
     };
-  };
+  }
 
   private getInputSource(props?: BedrockInvokeModelInputProps, inputPath?: string, useNewS3UriParamsForTask?: boolean): string | undefined {
     if (props?.s3Location) {

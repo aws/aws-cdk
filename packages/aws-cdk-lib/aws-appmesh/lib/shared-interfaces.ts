@@ -203,7 +203,7 @@ export abstract class LoggingFormat {
     }
 
     return new JsonLoggingFormat(jsonLoggingFormat);
-  };
+  }
 
   /**
    * Called when the Access Log Format is initialized. Can be used to enforce

@@ -1118,8 +1118,8 @@ export class Project extends ProjectBase {
     if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
       if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
         throw new Error(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`);
-      };
-    };
+      }
+    }
 
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,

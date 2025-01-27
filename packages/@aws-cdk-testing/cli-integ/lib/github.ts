@@ -40,4 +40,4 @@ export async function fetchPreviousVersion(token: string, options?: {
   if (previousMVRelease) { return previousMVRelease; }
 
   throw new Error(`Unable to find previous version given ${JSON.stringify(options)}`);
-};
+}

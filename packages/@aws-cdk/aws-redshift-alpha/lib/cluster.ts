@@ -629,7 +629,7 @@ export class Cluster extends ClusterBase {
 
     if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
       throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
-    };
+    }
     if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
       throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
     }

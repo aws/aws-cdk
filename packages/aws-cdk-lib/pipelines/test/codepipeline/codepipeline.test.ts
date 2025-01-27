@@ -203,7 +203,7 @@ test('CodeBuild asset role has the right Principal with the feature enabled', ()
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, true);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
   const template = Template.fromStack(pipelineStack);
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
@@ -225,7 +225,7 @@ test('CodeBuild asset role has the right Principal with the feature disabled', (
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));
   const template = Template.fromStack(pipelineStack);
   const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;

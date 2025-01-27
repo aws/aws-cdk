@@ -49,7 +49,7 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
     for (const key of keys) {
       if (!rvalue.hasOwnProperty(key)) { return false; }
       if (key === 'DependsOn') {
-        if (!dependsOnEqual(lvalue[key], rvalue[key])) { return false; };
+        if (!dependsOnEqual(lvalue[key], rvalue[key])) { return false; }
         // check differences other than `DependsOn`
         continue;
       }

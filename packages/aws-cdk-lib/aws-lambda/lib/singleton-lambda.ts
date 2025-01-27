@@ -125,7 +125,7 @@ export class SingletonFunction extends FunctionBase {
 
   public get resourceArnsForGrantInvoke() {
     return [this.functionArn, `${this.functionArn}:*`];
-  };
+  }
 
   /**
    * Adds an environment variable to this Lambda function.

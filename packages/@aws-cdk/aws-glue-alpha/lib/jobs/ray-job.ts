@@ -74,7 +74,7 @@ export class RayJob extends Job {
 
     if (props.workerType && props.workerType !== WorkerType.Z_2X) {
       throw new Error('Ray jobs only support Z.2X worker type');
-    };
+    }
 
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,

@@ -1591,15 +1591,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
-    };
+    }
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
-    };
+    }
 
     function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(t => instanceType.startsWith(t));
-    };
+    }
 
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
@@ -1706,7 +1706,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.slowSearchLogGroup);
-    };
+    }
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
@@ -1715,7 +1715,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.slowIndexLogGroup);
-    };
+    }
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
@@ -1724,7 +1724,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.appLogGroup);
-    };
+    }
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
@@ -1733,7 +1733,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.auditLogGroup);
-    };
+    }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0) {

@@ -1472,7 +1472,7 @@ export class ReplicationTimeValue {
   /**
    * @param minutes the time in minutes
    */
-  private constructor(public readonly minutes: number) {};
+  private constructor(public readonly minutes: number) {}
 }
 
 /**

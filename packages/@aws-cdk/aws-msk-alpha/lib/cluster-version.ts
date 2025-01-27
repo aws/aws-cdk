@@ -189,5 +189,5 @@ export class KafkaVersion {
    */
   public isTieredStorageCompatible(): boolean {
     return this.features?.tieredStorage ?? false;
-  };
+  }
 }

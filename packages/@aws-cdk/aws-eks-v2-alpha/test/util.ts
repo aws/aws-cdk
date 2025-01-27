@@ -24,7 +24,7 @@ export interface testFixtureClusterOptions {
    * If true, a FargateCluster will be created, otherwise a regular Cluster.
    */
   isFargate?: boolean;
-};
+}
 
 /**
  * Creates a test fixture for an EKS cluster.
@@ -44,4 +44,4 @@ export function testFixtureCluster(props: Omit<ClusterProps, 'version'> = {}, re
   const cluster = options?.isFargate ? new FargateCluster(stack, 'Cluster', clusterProps) : new Cluster(stack, 'Cluster', clusterProps);
 
   return { stack, app, cluster };
-};
+}

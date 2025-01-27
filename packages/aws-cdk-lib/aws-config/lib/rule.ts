@@ -455,7 +455,7 @@ export class CustomRule extends RuleNew {
         principal: new iam.ServicePrincipal('config.amazonaws.com'),
         sourceAccount: this.env.account,
       });
-    };
+    }
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(

@@ -200,7 +200,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
             };
           }),
         };
-      };
+      }
       acc[mappingKey] = roleMapping;
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });

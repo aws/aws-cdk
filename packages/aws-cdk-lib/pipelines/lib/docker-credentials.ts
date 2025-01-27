@@ -109,7 +109,7 @@ export enum DockerCredentialUsage {
   SELF_UPDATE = 'SELF_UPDATE',
   /** Asset publishing */
   ASSET_PUBLISHING = 'ASSET_PUBLISHING',
-};
+}
 
 /** DockerCredential defined by registry domain and a secret */
 class ExternalDockerCredential extends DockerCredential {

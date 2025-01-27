@@ -82,21 +82,21 @@ export class StackParameters {
    */
   public static onlyExisting() {
     return new StackParameters({}, true);
-  };
+  }
 
   /**
    * Use exactly these parameters and remove any other existing parameters from the stack.
    */
   public static exactly(params: { [name: string]: string | undefined }) {
     return new StackParameters(params, false);
-  };
+  }
 
   /**
    * Define additional parameters for the stack, while keeping existing parameters for unspecified values.
    */
   public static withExisting(params: { [name: string]: string | undefined }) {
     return new StackParameters(params, true);
-  };
+  }
 
   public readonly parameters: Map<string, string | undefined>;
   public readonly keepExistingParameters: boolean;

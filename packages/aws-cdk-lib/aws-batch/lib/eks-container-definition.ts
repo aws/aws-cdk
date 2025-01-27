@@ -631,7 +631,7 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
         },
       }),
     };
-  };
+  }
 }
 
 /**

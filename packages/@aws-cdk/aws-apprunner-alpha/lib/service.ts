@@ -73,7 +73,7 @@ export class Cpu {
     );
     if (!isValidValue) {
       throw new Error('CPU value is invalid');
-    };
+    }
 
     return new Cpu(unit);
   }
@@ -150,7 +150,7 @@ export class Memory {
     );
     if (!isValidValue) {
       throw new Error('Memory value is invalid');
-    };
+    }
 
     return new Memory(unit);
   }
