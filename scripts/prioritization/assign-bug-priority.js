@@ -1,12 +1,3 @@
-/**
- * Handles the initial priority assignment for PRs when labels are added. This script
- * processes R1 (team PRs with contribution/core label), R3 (PRs needing maintainer review),
- * and R4 (PRs needing clarification or exemption) priorities. When a matching label
- * is detected, the PR is added to the project board with appropriate priority and
- * set to Ready status.
- */
-
-
 const { PRIORITIES, LABELS, STATUS, ...PROJECT_CONFIG } = require('./project-config');
 const {
     updateProjectField,
