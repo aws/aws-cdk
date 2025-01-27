@@ -13,9 +13,10 @@ export function createTestSubnet(
     subnetType: SubnetType;
     addressFamily?: AddressFamily;
     ipv6Cidr?: subnet.IpCidr;
+    assignIpv6AddressOnCreation?: boolean;
   },
 ): subnet.SubnetV2 {
-  const { vpcV2, availabilityZone, cidrBlock, subnetType, ipv6Cidr } = config;
+  const { vpcV2, availabilityZone, cidrBlock, subnetType, ipv6Cidr, assignIpv6AddressOnCreation } = config;
 
   return new subnet.SubnetV2(stack, 'TestSubnet', {
     vpc: vpcV2,
@@ -23,5 +24,6 @@ export function createTestSubnet(
     ipv4CidrBlock: cidrBlock,
     subnetType,
     ipv6CidrBlock: ipv6Cidr,
+    assignIpv6AddressOnCreation,
   });
 }

@@ -23,7 +23,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-integ-ipam');
 
 const ipam = new Ipam(stack, 'IpamTest', {
-  operatingRegion: ['us-west-2'],
+  operatingRegions: ['us-west-2'],
 });
 
 /** Test Ipam Pool Ipv4 */
