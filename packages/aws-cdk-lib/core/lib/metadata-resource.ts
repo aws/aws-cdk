@@ -91,11 +91,17 @@ export function redactMetadata(fqn: string, data: any): any {
 }
 
 export function redactTelemetryDataHelper(allowedKeys: any, data: any): any {
+  // If no key is allowed
+  if (allowedKeys === undefined) {
+    return '*';
+  }
+
   // Return boolean as is
   if (typeof data === 'boolean') {
     return data;
   }
 
+  // Do not redact boolean value
   if (isEnumValue(allowedKeys, data)) {
     return data;
   }
