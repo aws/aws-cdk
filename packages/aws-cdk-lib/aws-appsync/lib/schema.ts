@@ -52,7 +52,7 @@ export interface SchemaProps {
    * existing file from disk.
    */
   readonly filePath: string;
-};
+}
 
 /**
  * The Schema for a GraphQL Api

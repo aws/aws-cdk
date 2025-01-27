@@ -832,7 +832,7 @@ export class CodePipeline extends PipelineBase {
     for (const roleArn of assets.flatMap(a => a.assetPublishingRoleArn ? [a.assetPublishingRoleArn] : [])) {
       // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
       role.addAssumeRole(this.cachedFnSub.fnSub(roleArn));
-    };
+    }
 
     // The base commands that need to be run
     const script = new CodeBuildStep(node.id, {

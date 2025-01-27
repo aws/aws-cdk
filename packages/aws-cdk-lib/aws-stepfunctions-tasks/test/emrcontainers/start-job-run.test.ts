@@ -369,7 +369,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     test('provided from user', () => {
       // WHEN
       const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Monitoring Group', 'providedloggroup');
-      const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'providedbucket');;
+      const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'providedbucket');
       const prefixName = 'prefix';
 
       const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {

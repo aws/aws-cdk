@@ -60,6 +60,7 @@ module.exports = {
     'quotes': ['error', 'single', { avoidEscape: true }],
     '@stylistic/member-delimiter-style': ['error'], // require semicolon delimiter
     '@stylistic/comma-dangle': ['error', 'always-multiline'], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    '@stylistic/no-extra-semi': ['error'], // no extra semicolons
     'comma-spacing': ['error', { before: false, after: true }], // space after, no space before
     'no-multi-spaces': ['error', { ignoreEOLComments: false }], // no multi spaces
     'array-bracket-spacing': ['error', 'never'], // [1, 2, 3]
