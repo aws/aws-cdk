@@ -24,9 +24,6 @@ const TYPESCRIPT_VERSION_AGE_DAYS = 2 * 365;
 
 const TYPESCRIPT_VERSIONS = typescriptVersionsYoungerThanDaysSync(TYPESCRIPT_VERSION_AGE_DAYS, typescriptVersionsSync());
 
-// eslint-disable-next-line no-console
-console.log(TYPESCRIPT_VERSIONS);
-
 /**
  * Test our generated code with various versions of TypeScript
  */
@@ -45,6 +42,10 @@ TYPESCRIPT_VERSIONS.forEach(tsVersion => {
     await removeDevDependencies(context);
 
     await shell.shell(['npm', 'install', '--save-dev', `typescript@${tsVersion}`]);
+
+    // After we've removed devDependencies we need to re-install ts-node because it's necessary for `cdk synth`
+    await shell.shell(['npm', 'install', '--save-dev', `ts-node@^10`]);
+
     await shell.shell(['npm', 'install']); // Older versions of npm require this to be a separate step from the one above
     await shell.shell(['npx', 'tsc', '--version']);
     await shell.shell(['npm', 'prune']);

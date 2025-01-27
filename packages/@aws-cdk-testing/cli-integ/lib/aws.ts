@@ -29,6 +29,11 @@ interface ClientConfig {
 }
 
 export class AwsClients {
+  public static async default(output: NodeJS.WritableStream) {
+    const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
+    return AwsClients.forRegion(region, output);
+  }
+
   public static async forRegion(region: string, output: NodeJS.WritableStream) {
     return new AwsClients(region, output);
   }
@@ -245,7 +250,7 @@ export async function sleep(ms: number) {
 }
 
 function chainableCredentials(region: string): AwsCredentialIdentityProvider | undefined {
-  if (process.env.CODEBUILD_BUILD_ARN && process.env.AWS_PROFILE) {
+  if ((process.env.CODEBUILD_BUILD_ARN || process.env.GITHUB_RUN_ID) && process.env.AWS_PROFILE) {
     // in codebuild we must assume the role that the cdk uses
     // otherwise credentials will just be picked up by the normal sdk
     // heuristics and expire after an hour.

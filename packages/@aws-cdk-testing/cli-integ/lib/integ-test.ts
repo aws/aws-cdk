@@ -11,6 +11,12 @@ if (SKIP_TESTS) {
   process.stderr.write(`ℹ️ Skipping tests: ${JSON.stringify(SKIP_TESTS)}\n`);
 }
 
+// Whether we want to stop after the first failure, for quicker debugging (hopefully).
+const FAIL_FAST = process.env.FAIL_FAST === 'true';
+
+// Keep track of whether the suite has failed. If so, we stop running.
+let failed = false;
+
 export interface TestContext {
   readonly randomString: string;
   readonly output: NodeJS.WritableStream;
@@ -48,6 +54,10 @@ export function integTest(
     const now = Date.now();
     process.stderr.write(`[INTEG TEST::${name}] Starting (pid ${process.pid})...\n`);
     try {
+      if (FAIL_FAST && failed) {
+        throw new Error('FAIL_FAST requested and currently failing. Stopping test early.');
+      }
+
       return await callback({
         output,
         randomString: randomString(),
@@ -56,13 +66,40 @@ export function integTest(
         },
       });
     } catch (e: any) {
-      process.stderr.write(`[INTEG TEST::${name}] Failed: ${e}\n`);
+      failed = true;
+
+      // Print the buffered output, only if the test fails.
       output.write(e.message);
       output.write(e.stack);
-      // Print output only if the test fails. Use 'console.log' so the output is buffered by
-      // jest and prints without a stack trace (if verbose: false).
-      // eslint-disable-next-line no-console
-      console.log(output.buffer().toString());
+      process.stderr.write(`[INTEG TEST::${name}] Failed: ${e}\n`);
+
+      const isGitHub = !!process.env.GITHUB_RUN_ID;
+
+      if (isGitHub) {
+        // GitHub Actions compatible output formatting
+        // https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-an-error-message
+        let written = process.stderr.write(`::error title=Failed ${name}::${e.message}\n`);
+        if (!written) {
+          // Wait for drain
+          await new Promise((ok) => process.stderr.once('drain', ok));
+        }
+
+        // Print output only if the test fails. Use 'console.log' so the output is buffered by
+        // jest and prints without a stack trace (if verbose: false).
+        written = process.stdout.write([
+          `::group::Failure details: ${name} (click to expand)\n`,
+          `${output.buffer().toString()}\n`,
+          '::endgroup::\n',
+        ].join(''));
+        if (!written) {
+          // Wait for drain
+          await new Promise((ok) => process.stdout.once('drain', ok));
+        }
+      } else {
+        // Use 'console.log' so the output is buffered by
+        // jest and prints without a stack trace (if verbose: false).
+        console.log(output.buffer().toString());
+      }
       throw e;
     } finally {
       const duration = Date.now() - now;
