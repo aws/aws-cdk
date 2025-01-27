@@ -41,7 +41,7 @@ function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
     type: 'CDK::Test::Resource',
   });
   linuxUserData = ec2.UserData.forLinux();
-};
+}
 
 beforeEach(resetState);
 
