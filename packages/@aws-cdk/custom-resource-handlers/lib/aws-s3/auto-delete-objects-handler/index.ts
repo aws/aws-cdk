@@ -51,6 +51,7 @@ async function denyWrites(bucketName: string) {
         Principal: '*',
         Effect: 'Deny',
         Action: ['s3:PutObject'],
+        // eslint-disable-next-line @cdklabs/no-literal-partition
         Resource: [`arn:aws:s3:::${bucketName}/*`],
       },
     );
