@@ -16,6 +16,7 @@ jest.setTimeout(35_000);
 import { handler } from '../../lib/aws-redshift-alpha/cluster-parameter-change-reboot-handler';
 
 describe('cluster-parameter-change-reboot-handler', () => {
+
   beforeEach(() => {
     jest.spyOn(global, 'setTimeout');
   });

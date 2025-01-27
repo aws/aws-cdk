@@ -77,6 +77,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 function renderResponse(
   cfnRequest: AWSLambda.CloudFormationCustomResourceEvent & { PhysicalResourceId?: string },
   handlerResponse: void | HandlerResponse = { }): Response {
+
   // if physical ID is not returned, we have some defaults for you based
   // on the request type.
   const physicalResourceId = handlerResponse.PhysicalResourceId ?? cfnRequest.PhysicalResourceId ?? cfnRequest.RequestId;

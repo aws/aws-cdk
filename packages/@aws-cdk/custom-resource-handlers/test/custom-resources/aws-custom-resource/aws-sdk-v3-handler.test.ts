@@ -597,7 +597,7 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
     ServiceToken: 'serviceToken',
     StackId: 'stackId',
   }, {} as AWSLambda.Context);
-  expect(credentialProviderMock).not.toHaveBeenCalled();
+  expect(credentialProviderMock).not.toBeCalled();
   credentialProviderMock.mockClear();
 
   await handler({
@@ -622,7 +622,7 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
     ServiceToken: 'serviceToken',
     StackId: 'stackId',
   }, {} as AWSLambda.Context);
-  expect(credentialProviderMock).toHaveBeenCalled();
+  expect(credentialProviderMock).toBeCalled();
   credentialProviderMock.mockClear();
 
   await handler({
@@ -646,7 +646,7 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
     ServiceToken: 'serviceToken',
     StackId: 'stackId',
   }, {} as AWSLambda.Context);
-  expect(credentialProviderMock).not.toHaveBeenCalled();
+  expect(credentialProviderMock).not.toBeCalled();
 });
 
 test('Being able to call the AWS SDK v2 format', async () => {

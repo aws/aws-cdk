@@ -1,11 +1,11 @@
-/* eslint-disable no-console*/
+/*eslint-disable no-console*/
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-import { ExportReaderCRProps, CrossRegionExports } from '../types';
 const pLimit: typeof import('p-limit') = require('p-limit');
+import { ExportReaderCRProps, CrossRegionExports } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props: ExportReaderCRProps = event.ResourceProperties.ReaderProps;
@@ -44,7 +44,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   return {
     Data: imports,
   };
-}
+};
 
 /**
  * Add tag to parameters for existing exports

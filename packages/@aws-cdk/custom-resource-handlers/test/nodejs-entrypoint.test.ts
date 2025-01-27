@@ -8,6 +8,7 @@ import * as entrypoint from '../lib/nodejs-entrypoint';
 
 describe('nodejs entrypoint', () => {
   describe('handler return value is sent back to cloudformation as a success response', () => {
+
     test('physical resource id (ref)', async () => {
       // GIVEN
       const createEvent = makeEvent({ RequestType: 'Create' });

@@ -47,6 +47,7 @@ export async function loadAwsSdk(
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         return require(packageName); // Fallback to pre-installed version
       }
+
     } else if (installedSdk[packageName]) {
       // MUST use require here. Dynamic import() do not support importing from directories
       // esbuild-disable unsupported-require-call -- not esbuildable but that's fine

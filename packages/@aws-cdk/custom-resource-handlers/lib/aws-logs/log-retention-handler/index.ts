@@ -30,6 +30,7 @@ async function createLogGroupSafe(logGroupName: string, client: Logs.CloudWatchL
       const params = { logGroupName };
       const command = new Logs.CreateLogGroupCommand(params);
       await client.send(command);
+
     } catch (error: any) {
       if (error.name === 'ResourceAlreadyExistsException') {
         // The log group is already created by the lambda execution
@@ -50,6 +51,7 @@ async function deleteLogGroup(logGroupName: string, client: Logs.CloudWatchLogsC
       const params = { logGroupName };
       const command = new Logs.DeleteLogGroupCommand(params);
       await client.send(command);
+
     } catch (error: any) {
       if (error.name === 'ResourceNotFoundException') {
         // The log group doesn't exist
@@ -70,6 +72,7 @@ async function setRetentionPolicy(
   withDelay: (block: () => Promise<void>) => Promise<void>,
   retentionInDays?: number,
 ) {
+
   await withDelay(async () => {
     if (!retentionInDays) {
       const params = { logGroupName };

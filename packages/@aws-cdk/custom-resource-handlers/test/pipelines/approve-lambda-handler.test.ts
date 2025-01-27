@@ -16,6 +16,7 @@ jest.setTimeout(10_000);
 import { handler } from '../../lib/pipelines/approve-lambda/index';
 
 describe('approve-lambda handler', () => {
+
   beforeEach(() => {
     jest.spyOn(global, 'setTimeout');
   });
