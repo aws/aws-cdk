@@ -1,10 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { ListStackResourcesCommand, StackResourceSummary, StackStatus } from '@aws-sdk/client-cloudformation';
-import { GetFunctionConfigurationCommand } from '@aws-sdk/client-lambda';
+import { GetFunctionCommand } from '@aws-sdk/client-lambda';
 import { ICloudFormationClient, SuccessfulDeployStackResult } from '../../../lib/api';
+import { CloudFormationStack, Template } from '../../../lib/api/deployments';
+import * as deployments from '../../../lib/api/deployments/hotswap-deployments';
 import { HotswapMode, HotswapPropertyOverrides } from '../../../lib/api/hotswap/common';
-import * as deployments from '../../../lib/api/hotswap-deployments';
-import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
 import {
   mockCloudFormationClient,
@@ -109,8 +109,10 @@ export class HotswapMockSdkProvider extends MockSdkProvider {
   constructor(rootStackName?: string) {
     super();
 
-    mockLambdaClient.on(GetFunctionConfigurationCommand).resolves({
-      LastUpdateStatus: 'Successful',
+    mockLambdaClient.on(GetFunctionCommand).resolves({
+      Configuration: {
+        LastUpdateStatus: 'Successful',
+      },
     });
 
     mockCloudFormationClient.on(ListStackResourcesCommand).callsFake((input) => {

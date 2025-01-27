@@ -36,7 +36,7 @@ describe('task definition', () => {
         compatibility: ecs.Compatibility.EXTERNAL,
       });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: 'bridge',
       });
@@ -456,6 +456,39 @@ describe('task definition', () => {
       expect(() => {
         Template.fromStack(stack);
       }).toThrow("ECS Container Container must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified");
+    });
+
+    test.each([true, false])('set enableFaultInjection to %s.', (enableFaultInjection) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        compatibility: ecs.Compatibility.EC2,
+        enableFaultInjection,
+        networkMode: ecs.NetworkMode.HOST,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        EnableFaultInjection: enableFaultInjection,
+      });
+    });
+
+    test('throws when enableFaultInjection is true with non AWSVPC or HOST Network Mode', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      expect(() => {
+        new ecs.TaskDefinition(stack, 'TD', {
+          cpu: '512',
+          compatibility: ecs.Compatibility.EC2,
+          enableFaultInjection: true,
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+      }).toThrow('Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got bridge mode.');
     });
   });
 

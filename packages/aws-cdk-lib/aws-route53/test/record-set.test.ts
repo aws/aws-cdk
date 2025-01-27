@@ -188,6 +188,110 @@ describe('record set', () => {
     });
   });
 
+  test('A record with alias health check', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const target: route53.IAliasRecordTarget = {
+      bind: () => {
+        return {
+          hostedZoneId: 'Z2P70J7EXAMPLE',
+          dnsName: 'foo.example.com',
+          evaluateTargetHealth: true,
+        };
+      },
+    };
+
+    // WHEN
+    new route53.ARecord(zone, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromAlias(target),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      Type: 'A',
+      AliasTarget: {
+        HostedZoneId: 'Z2P70J7EXAMPLE',
+        DNSName: 'foo.example.com',
+        EvaluateTargetHealth: true,
+      },
+    });
+  });
+
+  test('A record with health check', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const healthCheck = new route53.HealthCheck(stack, 'HealthCheck', {
+      type: route53.HealthCheckType.HTTP,
+      fqdn: 'example.com',
+      resourcePath: 'health',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromValues('1.2.3.4'),
+      healthCheck,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      Type: 'A',
+      HealthCheckId: stack.resolve(healthCheck.healthCheckId),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::HealthCheck', {
+      HealthCheckConfig: {
+        Type: 'HTTP',
+        FullyQualifiedDomainName: 'example.com',
+        ResourcePath: 'health',
+      },
+    });
+  });
+
+  test('A record with imported health check', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    const healthCheck = route53.HealthCheck.fromHealthCheckId(stack, 'HealthCheck', 'abcdef');
+
+    // WHEN
+    new route53.ARecord(stack, 'Alias', {
+      zone,
+      recordName: '_foo',
+      target: route53.RecordTarget.fromValues('1.2.3.4'),
+      healthCheck,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      Type: 'A',
+      HealthCheckId: 'abcdef',
+    });
+  });
+
   test('A record with imported alias', () => {
     // GIVEN
     const stack = new Stack();
@@ -1437,4 +1541,3 @@ describe('record set', () => {
     })).toThrow('multiValueAnswer cannot be specified for alias record');
   });
 });
-

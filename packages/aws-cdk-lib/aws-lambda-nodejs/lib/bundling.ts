@@ -81,7 +81,7 @@ export class Bundling implements cdk.BundlingOptions {
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
-  public readonly entrypoint?: string[]
+  public readonly entrypoint?: string[];
   public readonly command: string[];
   public readonly volumes?: cdk.DockerVolume[];
   public readonly volumesFrom?: string[];
@@ -255,8 +255,8 @@ export class Bundling implements cdk.BundlingOptions {
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : [],
-      ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(options.inputDir, this.relativeTsconfigPath)}"`] : [],
+      ...this.props.metafile ? [`--metafile="${pathJoin(options.outputDir, 'index.meta.json')}"`] : [],
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
@@ -280,6 +280,7 @@ export class Bundling implements cdk.BundlingOptions {
       const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
 
       const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
+      const isBun = this.packageManager.lockFile === LockFile.BUN;
 
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
@@ -289,6 +290,7 @@ export class Bundling implements cdk.BundlingOptions {
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
         isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '', // Remove '.modules.yaml' file which changes on each deployment
+        isBun ? osCommand.removeDir(pathJoin(options.outputDir, 'node_modules', '.cache')) : '', // Remove node_modules/.cache folder since you can't disable its creation
       ]);
     }
 
@@ -399,6 +401,14 @@ class OsCommand {
 
     const opts = force ? ['-f'] : [];
     return `rm ${opts.join(' ')} "${filePath}"`;
+  }
+
+  public removeDir(dir: string): string {
+    if (this.osPlatform === 'win32') {
+      return `rmdir /s /q "${dir}"`;
+    }
+
+    return `rm -rf "${dir}"`;
   }
 }
 

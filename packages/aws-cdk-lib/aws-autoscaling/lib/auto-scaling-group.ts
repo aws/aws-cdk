@@ -17,6 +17,7 @@ import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import {
   Annotations,
+  AspectPriority,
   Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
@@ -410,6 +411,12 @@ export interface CommonAutoScalingGroupProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * The strategy for distributing instances across Availability Zones.
+   * @default None
+   */
+  readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy;
 }
 
 /**
@@ -855,7 +862,6 @@ export abstract class Signals {
       },
     };
   }
-
 }
 
 /**
@@ -1019,7 +1025,6 @@ export interface RollingUpdateOptions {
  * A set of group metrics
  */
 export class GroupMetrics {
-
   /**
    * Report all group metrics.
    */
@@ -1041,7 +1046,6 @@ export class GroupMetrics {
  * Group metrics that an Auto Scaling group sends to Amazon CloudWatch.
  */
 export class GroupMetric {
-
   /**
    * The minimum size of the Auto Scaling group
    */
@@ -1097,8 +1101,21 @@ export class GroupMetric {
   }
 }
 
-abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
+/**
+ * The strategies for when launches fail in an Availability Zone.
+ */
+export enum CapacityDistributionStrategy {
+  /**
+   * If launches fail in an Availability Zone, Auto Scaling will continue to attempt to launch in the unhealthy zone to preserve a balanced distribution.
+   */
+  BALANCED_ONLY = 'balanced-only',
+  /**
+   * If launches fail in an Availability Zone, Auto Scaling will attempt to launch in another healthy Availability Zone instead.
+   */
+  BALANCED_BEST_EFFORT = 'balanced-best-effort',
+}
 
+abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
   public abstract readonly osType: ec2.OperatingSystemType;
@@ -1252,7 +1269,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
   elbv2.INetworkLoadBalancerTarget {
-
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
@@ -1529,6 +1545,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
+      availabilityZoneDistribution: props.azCapacityDistributionStrategy
+        ? { capacityDistributionStrategy: props.azCapacityDistributionStrategy }
+        : undefined,
       cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
@@ -1573,7 +1592,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.spotPrice = props.spotPrice;
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect());
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
     }
 
     this.node.addValidation({ validate: () => this.validateTargetGroup() });
@@ -1757,6 +1776,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
     if (props.blockDevices) {
       throw new Error('Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.requireImdsv2) {
+      throw new Error('Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
   }
 

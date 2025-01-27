@@ -1058,7 +1058,7 @@ describe('validate', () => {
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: glue.TableEncryption.KMS,
       });
-    }).toThrowError('you can not specify encryption settings if you also provide a bucket');
+    }).toThrow('you can not specify encryption settings if you also provide a bucket');
   });
 
   test('can explicitly pass bucket if Encryption undefined', () => {

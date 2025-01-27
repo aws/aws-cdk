@@ -3,17 +3,17 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-
   "customizations": {
     "vscode": {
-      "extensions": ["dbaeumer.vscode-eslint"]
+      "extensions": [
+        "dbaeumer.vscode-eslint"
+      ]
     }
   },
-
   "postCreateCommand": "yarn install",
   "remoteUser": "superchain",
   "features": {
-    "docker-in-docker": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest",
       "moby": true
     }

@@ -3,7 +3,7 @@ import { MAX_POLICY_NAME_LEN } from './util';
 import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
-import { IManagedPolicy } from '../managed-policy';
+import { IManagedPolicy, ManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
 import { PolicyStatement } from '../policy-statement';
 import { IComparablePrincipal, IPrincipal, ArnPrincipal, AddToPrincipalPolicyResult, PrincipalPolicyFragment } from '../principals';
@@ -75,7 +75,20 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   }
 
   public addManagedPolicy(policy: IManagedPolicy): void {
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:importedRoleManagedPolicyNotAdded', `Not adding managed policy: ${policy.managedPolicyArn} to imported role: ${this.roleName}`);
+    // Using "Type Predicate" to confirm x is ManagedPolicy, which allows to avoid
+    // using try ... catch and throw error.
+    const isManagedPolicy = (x: IManagedPolicy): x is ManagedPolicy => {
+      return (x as ManagedPolicy).attachToRole !== undefined;
+    };
+
+    if (isManagedPolicy(policy)) {
+      policy.attachToRole(this);
+    } else {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy',
+        `Can\'t combine imported IManagedPolicy: ${policy.managedPolicyArn} to imported role IRole: ${this.roleName}. Use ManagedPolicy directly.`,
+      );
+    }
   }
 
   public grantPassRole(identity: IPrincipal): Grant {

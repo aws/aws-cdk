@@ -11,6 +11,7 @@ new dynamodb.Table(stack, 'Table', {
   partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.STRING },
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   kinesisStream: stream,
+  kinesisPrecisionTimestamp: dynamodb.ApproximateCreationDateTimePrecision.MILLISECOND,
 });
 
 app.synth();

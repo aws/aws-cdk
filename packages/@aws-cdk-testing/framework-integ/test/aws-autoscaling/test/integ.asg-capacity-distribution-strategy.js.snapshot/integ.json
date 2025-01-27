@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "CapacityDistributionStrategyTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-integ"
+      ],
+      "assertionStack": "CapacityDistributionStrategyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CapacityDistributionStrategyTestDefaultTestDeployAssert83F1364B"
+    }
+  }
+}

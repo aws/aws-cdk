@@ -403,6 +403,13 @@ export interface DatabaseInstanceProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+   * Indicates that minor version patches are applied automatically.
+   *
+   * @default undefined
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
 }
 
 /**
@@ -464,7 +471,6 @@ export abstract class DatabaseInstanceBase extends cdk.Resource implements IData
  * @resource AWS::Neptune::DBInstance
  */
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
-
   /**
    * The instance's database cluster
    */
@@ -494,6 +500,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
     super(scope, id);
 
     const instance = new CfnDBInstance(this, 'Resource', {
+      autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       dbClusterIdentifier: props.cluster.clusterIdentifier,
       dbInstanceClass: props.instanceType._instanceType,
       availabilityZone: props.availabilityZone,

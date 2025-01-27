@@ -60,7 +60,7 @@ export class MappingValue implements IMappingValue {
   /**
    * Represents a Mapping Value.
    */
-  public readonly value: string
+  public readonly value: string;
 
   protected constructor(value: string) {
     this.value = value;
@@ -71,7 +71,6 @@ export class MappingValue implements IMappingValue {
  * Represents a Parameter Mapping.
  */
 export class ParameterMapping {
-
   /**
    * Creates a mapping from an object.
    */
@@ -86,7 +85,7 @@ export class ParameterMapping {
   /**
   * Represents all created parameter mappings.
   */
-  public readonly mappings: { [key: string]: string }
+  public readonly mappings: { [key: string]: string };
   constructor() {
     this.mappings = {};
   }

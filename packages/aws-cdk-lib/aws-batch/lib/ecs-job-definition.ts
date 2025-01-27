@@ -16,7 +16,7 @@ interface IEcsJobDefinition extends IJobDefinition {
   readonly container: IEcsContainerDefinition;
 
   /**
-   * Whether to propogate tags from the JobDefinition
+   * Whether to propagate tags from the JobDefinition
    * to the ECS task that Batch spawns
    *
    * @default false
@@ -42,7 +42,7 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
   readonly container: IEcsContainerDefinition;
 
   /**
-   * Whether to propogate tags from the JobDefinition
+   * Whether to propagate tags from the JobDefinition
    * to the ECS task that Batch spawns
    *
    * @default false
@@ -75,7 +75,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     return resourceName.split(':')[0];
   }
 
-  readonly container: IEcsContainerDefinition
+  readonly container: IEcsContainerDefinition;
   public readonly propagateTags?: boolean;
 
   public readonly jobDefinitionArn: string;

@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
+import { ToolkitError } from '../../toolkit/error';
 
 /**
  * A single-writer/multi-reader lock on a directory
@@ -11,6 +12,7 @@ import * as path from 'path';
  * This class is not 100% race safe, but in practice it should be a lot
  * better than the 0 protection we have today.
  */
+/* istanbul ignore next: code paths are unpredictable */
 export class RWLock {
   private readonly pidString: string;
   private readonly writerFile: string;
@@ -32,7 +34,7 @@ export class RWLock {
 
     const readers = await this.currentReaders();
     if (readers.length > 0) {
-      throw new Error(`Other CLIs (PID=${readers}) are currently reading from ${this.directory}. Invoke the CLI in sequence, or use '--output' to synth into different directories.`);
+      throw new ToolkitError(`Other CLIs (PID=${readers}) are currently reading from ${this.directory}. Invoke the CLI in sequence, or use '--output' to synth into different directories.`);
     }
 
     await writeFileAtomic(this.writerFile, this.pidString);
@@ -88,7 +90,7 @@ export class RWLock {
   private async assertNoOtherWriters() {
     const writer = await this.currentWriter();
     if (writer) {
-      throw new Error(`Another CLI (PID=${writer}) is currently synthing to ${this.directory}. Invoke the CLI in sequence, or use '--output' to synth into different directories.`);
+      throw new ToolkitError(`Another CLI (PID=${writer}) is currently synthing to ${this.directory}. Invoke the CLI in sequence, or use '--output' to synth into different directories.`);
     }
   }
 
@@ -158,6 +160,7 @@ export interface IWriterLock extends ILock {
   convertToReaderLock(): Promise<ILock>;
 }
 
+/* istanbul ignore next: code paths are unpredictable */
 async function readFileIfExists(filename: string): Promise<string | undefined> {
   try {
     return await fs.readFile(filename, { encoding: 'utf-8' });
@@ -168,6 +171,7 @@ async function readFileIfExists(filename: string): Promise<string | undefined> {
 }
 
 let tmpCounter = 0;
+/* istanbul ignore next: code paths are unpredictable */
 async function writeFileAtomic(filename: string, contents: string): Promise<void> {
   await fs.mkdir(path.dirname(filename), { recursive: true });
   const tmpFile = `${filename}.${process.pid}_${++tmpCounter}`;
@@ -175,6 +179,7 @@ async function writeFileAtomic(filename: string, contents: string): Promise<void
   await fs.rename(tmpFile, filename);
 }
 
+/* istanbul ignore next: code paths are unpredictable */
 async function deleteFile(filename: string) {
   try {
     await fs.unlink(filename);
@@ -186,6 +191,7 @@ async function deleteFile(filename: string) {
   }
 }
 
+/* istanbul ignore next: code paths are unpredictable */
 function processExists(pid: number) {
   try {
     process.kill(pid, 0);
