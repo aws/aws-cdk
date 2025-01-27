@@ -11,7 +11,8 @@ const PRIORITIES = {
   R2: '🔥 R2',
   R3: '🎯 R3',
   R4: '💭 R4',
-  R5: '📆 R5'
+  R5: '📆 R5',
+  R6: '🐛 R6'
 };
 
 const STATUS = {
