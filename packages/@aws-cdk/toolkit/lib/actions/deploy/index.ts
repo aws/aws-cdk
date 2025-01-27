@@ -82,21 +82,21 @@ export class StackParameters {
    */
   public static onlyExisting() {
     return new StackParameters({}, true);
-  };
+  }
 
   /**
    * Use exactly these parameters and remove any other existing parameters from the stack.
    */
   public static exactly(params: { [name: string]: string | undefined }) {
     return new StackParameters(params, false);
-  };
+  }
 
   /**
    * Define additional parameters for the stack, while keeping existing parameters for unspecified values.
    */
   public static withExisting(params: { [name: string]: string | undefined }) {
     return new StackParameters(params, true);
-  };
+  }
 
   public readonly parameters: Map<string, string | undefined>;
   public readonly keepExistingParameters: boolean;
@@ -173,6 +173,22 @@ export interface BaseDeployOptions {
    * @default 1
    */
   readonly concurrency?: number;
+}
+
+/**
+ * Deploy options needed by the watch command.
+ * Intentionally not exported because these options are not
+ * meant to be public facing.
+ *
+ * @internal
+ */
+export interface ExtendedDeployOptions extends DeployOptions {
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
 }
 
 export interface DeployOptions extends BaseDeployOptions {
