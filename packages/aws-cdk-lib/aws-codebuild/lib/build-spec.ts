@@ -256,4 +256,4 @@ function mergeDeep(lhs: any, rhs: any): any {
   }
 
   return rhs;
-};
+}

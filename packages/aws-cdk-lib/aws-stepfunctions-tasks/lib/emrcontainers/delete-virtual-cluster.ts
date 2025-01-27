@@ -50,7 +50,7 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
         Id: this.props.virtualClusterId.value,
       }),
     };
-  };
+  }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
     const actions = ['emr-containers:DeleteVirtualCluster'];

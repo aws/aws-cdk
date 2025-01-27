@@ -4,6 +4,7 @@ import { IDomainName } from './domain-name';
 import { IRestApi, RestApiBase } from './restapi';
 import { Stage } from './stage';
 import { Resource, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 export interface BasePathMappingOptions {
   /**
@@ -57,13 +58,13 @@ export class BasePathMapping extends Resource {
 
     if (props.basePath && !Token.isUnresolved(props.basePath)) {
       if (props.basePath.startsWith('/') || props.basePath.endsWith('/')) {
-        throw new Error(`A base path cannot start or end with /", received: ${props.basePath}`);
+        throw new ValidationError(`A base path cannot start or end with /", received: ${props.basePath}`, scope);
       }
       if (props.basePath.match(/\/{2,}/)) {
-        throw new Error(`A base path cannot have more than one consecutive /", received: ${props.basePath}`);
+        throw new ValidationError(`A base path cannot have more than one consecutive /", received: ${props.basePath}`, scope);
       }
       if (!props.basePath.match(/^[a-zA-Z0-9$_.+!*'()-/]+$/)) {
-        throw new Error(`A base path may only contain letters, numbers, and one of "$-_.+!*'()/", received: ${props.basePath}`);
+        throw new ValidationError(`A base path may only contain letters, numbers, and one of "$-_.+!*'()/", received: ${props.basePath}`, scope);
       }
     }
 
